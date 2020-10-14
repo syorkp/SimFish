@@ -1,0 +1,254 @@
+import os
+import json
+from time import time
+
+import numpy as np
+import tensorflow.compat.v1 as tf
+
+from Environment.simfish_env import SimState
+from Network.simfish_drqn import QNetwork, ExperienceBuffer
+from Tools.graph_functions import update_target_graph, update_target
+from Tools.make_gif import make_gif
+
+tf.disable_v2_behavior()
+
+
+class TrainingService:
+
+    def __init__(self, run_version="test"):
+        """
+        Should be initialised with the
+        name of the run version, which is used to find the configuration, as well as checkpoints and output data,
+        For now, all attributes below are intended to refer to a single training period. In future, it may be useful to
+        separate values. between this training service and a run service which handles multiple training services.
+        """
+        # TODO: Add hyperparameter control which may belong in RunService and could handle training of multiple models.
+
+        # Configuration
+        self.configuration_location = f"./Configurations/JSON Data/{run_version}"
+        self.params, self.env = self.load_configuration()
+
+        # Output location
+        self.output_location = f"./Output/{run_version}_output"
+        self.load_model = self.check_for_model()
+
+        self.simulation = SimState(self.env)
+
+        self.training_times = []  # Times in original.
+
+        self.main_QN, self.target_QN = self.create_networks()
+        self.training_buffer = ExperienceBuffer(buffer_size=self.params["exp_buffer_size"])
+        self.e = self.params["startE"]
+
+        self.save_frames = False
+        self.stepDrop = (self.params['startE'] - self.params['endE']) / self.params['anneling_steps']
+
+        self.saver = tf.train.Saver(max_to_keep=5)
+        self.frame_buffer = []
+
+        self.writer = tf.summary.FileWriter(self.output_location + '/logs/', tf.get_default_graph())
+        self.reward_list = []
+        self.total_steps = 0
+        self.times = []
+
+        self.init = tf.global_variables_initializer()
+        self.trainables = tf.trainable_variables()
+        self.targetOps = update_target_graph(self.trainables, self.params['tau'])
+        self.sess = None
+
+    def run(self):
+        print("Running simulation")
+        # TODO: Where appropriate, move to init. I.e. where are referenced outside of class, or in other methods.
+        # TODO: Also move as much as possible to the training loop
+
+        # Write the first line of the master log-file for the Control Center
+        with tf.Session() as self.sess:
+            if self.load_model:
+                print(f"Loading Model at {self.output_location}")
+                checkpoint = tf.train.get_checkpoint_state(self.output_location)
+                print(checkpoint)
+                self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
+            else:
+                self.sess.run(self.init)
+
+            update_target(self.targetOps, self.sess)  # Set the target network to be equal to the primary network.
+
+            for episode_number in range(self.params["num_episodes"]):
+                self.episode_loop(episode_number)
+
+    def load_configuration(self):
+        with open(self.configuration_location + '_learning.json', 'r') as f:
+            params = json.load(f)
+        with open(self.configuration_location + '_env.json', 'r') as f:
+            env = json.load(f)
+        return params, env
+
+    def check_for_model(self):
+        if not os.path.exists(self.output_location):
+            os.makedirs(self.output_location)
+            os.makedirs(self.output_location + '/episodes')
+            os.makedirs(self.output_location + '/logs')
+            return False
+        else:
+            return True
+
+    def create_networks(self):
+        cell = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim'], state_is_tuple=True)
+        cellT = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim'], state_is_tuple=True)
+        main_QN = QNetwork(self.simulation, self.params['rnn_dim'], cell, 'main', self.params['num_actions'],
+                           learning_rate=self.params['learning_rate'])
+        target_QN = QNetwork(self.simulation, self.params['rnn_dim'], cellT, 'target', self.params['num_actions'],
+                             learning_rate=self.params['learning_rate'])
+        return main_QN, target_QN
+
+    def episode_loop(self, episode_number):
+        t0 = time()
+        episode_buffer = []
+        environment_frames = []
+        self.simulation.reset()
+        sa = np.zeros((1, 128))
+        sv = np.zeros((1, 128))
+        s, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(3,
+                                                                                     frame_buffer=self.frame_buffer,
+                                                                                     save_frames=self.save_frames,
+                                                                                     activations=(sa,))
+        rAll = 0
+        step_number = 0
+        state = (np.zeros([1, self.main_QN.rnn_dim]),
+                 np.zeros([1, self.main_QN.rnn_dim]))  # Reset the recurrent layer's hidden state
+        a = 0
+        all_actions = []
+        while step_number < self.params["max_epLength"]:
+            step_number += 1
+            s, a, r, internal_state, s1, d, state1, self.frame_buffer = self.step_loop(s, internal_state, a, state,
+                                                                                       self.frame_buffer)
+            all_actions.append(a)
+            episode_buffer.append(np.reshape(np.array([s, a, r, internal_state, s1, d]), [1, 6]))
+            rAll += r
+            s = s1
+            state = state1
+            if self.total_steps > self.params['pre_train_steps']:
+                self.train_networks()
+            if d:
+                break
+
+        # Add the episode to the experience buffer
+        self.save_episode(t0, episode_number, all_actions, rAll,
+                          episode_buffer)  # TODO: provide all parameters needed in the function.
+
+    def save_episode(self, t0, episode_number, all_actions, rAll, episodeBuffer):
+        print('episode ' + str(episode_number) + ': num steps = ' + str(self.simulation.num_steps), flush=True)
+        if not self.save_frames:
+            self.times.append(time() - t0)
+        episode_summary = tf.Summary(value=[tf.Summary.Value(tag="episode reward", simple_value=rAll)])
+        self.writer.add_summary(episode_summary, self.total_steps)
+
+        for act in range(self.params['num_actions']):
+            action_freq = np.sum(np.array(all_actions) == act) / len(all_actions)
+            a_freq = tf.Summary(value=[tf.Summary.Value(tag="action " + str(act), simple_value=action_freq)])
+            self.writer.add_summary(a_freq, self.total_steps)
+
+        bufferArray = np.array(episodeBuffer)
+        episodeBuffer = list(zip(bufferArray))
+        self.training_buffer.add(episodeBuffer)
+        self.reward_list.append(rAll)
+        # Periodically save the model.
+        if episode_number % self.params['summaryLength'] == 0 and episode_number != 0:
+            print('mean time:')
+            print(np.mean(self.times))
+            self.saver.save(self.sess, self.output_location + '/model-' + str(episode_number) + '.cptk')
+
+            print("Saved Model")
+            print(self.total_steps, np.mean(self.reward_list[-50:]), self.e)
+            print(self.frame_buffer[0].shape)
+            make_gif(self.frame_buffer, self.output_location + '/episodes/episode-' + str(episode_number) + '.gif',
+                     duration=len(self.frame_buffer) * self.params['time_per_step'], true_image=True)
+            frame_buffer = []
+            self.save_frames = False
+
+        if (episode_number + 1) % self.params['summaryLength'] == 0:
+            print('starting to save frames', flush=True)
+            self.save_frames = True
+
+    def step_loop(self, s, internal_state, a, state, frame_buffer):
+        """
+        Returns the outputs of the step, which follows runnnig of the graphs.
+        :param
+        session:
+        :return:
+        s:
+        internal_state:
+        a:
+        state:
+
+        """
+
+        # Generate actions and corresponding steps.
+        if np.random.rand(1) < self.e or self.total_steps < self.params['pre_train_steps']:
+            [state1, sa, sv] = self.sess.run([self.main_QN.rnn_state, self.main_QN.streamA, self.main_QN.streamV],
+                                             feed_dict={self.main_QN.observation: s,
+                                                        self.main_QN.internal_state: internal_state,
+                                                        self.main_QN.prev_actions: [a], self.main_QN.trainLength: 1,
+                                                        self.main_QN.state_in: state, self.main_QN.batch_size: 1,
+                                                        self.main_QN.exp_keep: 1.0})
+            a = np.random.randint(0, self.params['num_actions'])
+        else:
+            a, state1, sa, sv = self.sess.run(
+                [self.main_QN.predict, self.main_QN.rnn_state, self.main_QN.streamA, self.main_QN.streamV],
+                feed_dict={self.main_QN.observation: s,
+                           self.main_QN.internal_state: internal_state,
+                           self.main_QN.prev_actions: [a], self.main_QN.trainLength: 1,
+                           self.main_QN.state_in: state, self.main_QN.batch_size: 1,
+                           self.main_QN.exp_keep: 1.0})
+            a = a[0]
+
+        # Simulation step
+        s1, r, internal_state, d, frame_buffer = self.simulation.simulation_step(a, frame_buffer=frame_buffer,
+                                                                                 save_frames=self.save_frames,
+                                                                                 activations=(sa,))
+        self.total_steps += 1
+        return s, a, r, internal_state, s1, d, state1, frame_buffer
+
+    def train_networks(self):
+        if self.e > self.params['endE']:
+            self.e -= self.stepDrop
+
+        if self.total_steps % (self.params['update_freq']) == 0:
+            update_target(self.targetOps, self.sess)
+            # Reset the recurrent layer's hidden state
+            state_train = (np.zeros([self.params['batch_size'], self.main_QN.rnn_dim]),
+                           np.zeros([self.params['batch_size'], self.main_QN.rnn_dim]))
+
+            trainBatch = self.training_buffer.sample(self.params['batch_size'],
+                                                     self.params['trace_length'])  # Get a random batch of experiences.
+
+            # Below we perform the Double-DQN update to the target Q-values
+            Q1 = self.sess.run(self.main_QN.predict, feed_dict={
+                self.main_QN.observation: np.vstack(trainBatch[:, 4]),
+                self.main_QN.prev_actions: np.hstack(([0], trainBatch[:-1, 1])),
+                self.main_QN.trainLength: self.params['trace_length'],
+                self.main_QN.internal_state: np.vstack(trainBatch[:, 3]), self.main_QN.state_in: state_train,
+                self.main_QN.batch_size: self.params['batch_size'], self.main_QN.exp_keep: 1.0})
+
+            Q2 = self.sess.run(self.target_QN.Q_out, feed_dict={
+                self.target_QN.observation: np.vstack(trainBatch[:, 4]),
+                self.target_QN.prev_actions: np.hstack(([0], trainBatch[:-1, 1])),
+                self.target_QN.trainLength: self.params['trace_length'],
+                self.target_QN.internal_state: np.vstack(trainBatch[:, 3]), self.target_QN.state_in: state_train,
+                self.target_QN.batch_size: self.params['batch_size'], self.target_QN.exp_keep: 1.0})
+
+            end_multiplier = -(trainBatch[:, 5] - 1)
+
+            doubleQ = Q2[range(self.params['batch_size'] * self.params['trace_length']), Q1]
+            targetQ = trainBatch[:, 2] + (self.params['y'] * doubleQ * end_multiplier)
+            # Update the network with our target values.
+            self.sess.run(self.main_QN.updateModel,
+                          feed_dict={self.main_QN.observation: np.vstack(trainBatch[:, 0]),
+                                     self.main_QN.targetQ: targetQ,
+                                     self.main_QN.actions: trainBatch[:, 1],
+                                     self.main_QN.internal_state: np.vstack(trainBatch[:, 3]),
+                                     self.main_QN.prev_actions: np.hstack(([3], trainBatch[:-1, 1])),
+                                     self.main_QN.trainLength: self.params['trace_length'],
+                                     self.main_QN.state_in: state_train,
+                                     self.main_QN.batch_size: self.params['batch_size'],
+                                     self.main_QN.exp_keep: 1.0})
