@@ -1,7 +1,7 @@
 from Legacy import training_script
 from Services.training_service import TrainingService
 
-# simfish_drqn.run("test")
-
-trial = TrainingService()
+trial = TrainingService("new_test")
 trial.run()
+
+# training_script.run("old_test")

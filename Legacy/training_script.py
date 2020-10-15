@@ -199,3 +199,5 @@ def run(arg="test"):
             if (i + 1) % params['summaryLength'] == 0:
                 print('starting to save frames', flush=True)
                 save_frames = True
+            # print(f"Total training time: {sum(times)}")
+            print(f"Total reward: {sum(rList)}")
