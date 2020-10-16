@@ -1,14 +1,4 @@
-import os
-from time import time
-import json
-
-import numpy as np
 import tensorflow.compat.v1 as tf
-
-from Environment.simfish_env import SimState
-from Network.experience_buffer import ExperienceBuffer
-from Tools.graph_functions import update_target_graph, update_target
-from Tools.make_gif import make_gif
 
 tf.disable_v2_behavior()
 
@@ -61,7 +51,7 @@ class QNetwork:
         self.trainLength = tf.placeholder(dtype=tf.int32)
         # We take the output from the final convolutional layer and send it to a recurrent layer.
         # The input must be reshaped into [batch x trace x units] for rnn processing,
-        # and then returned to [batch x units] when sent through the upper levles.
+        # and then returned to [batch x units] when sent through the upper levels.
 
         self.batch_size = tf.placeholder(dtype=tf.int32, shape=[])
         self.conv4l_flat = tf.layers.flatten(self.conv4l)
