@@ -91,8 +91,8 @@ configuration_folder = f"./JSON-Data/"
 if not os.path.exists(configuration_folder):
     os.makedirs(configuration_folder)
 
-with open('JSON-Data/' + base_name + '_env.json', 'w') as f:
+with open(f"JSON-Data/{base_name}_env.json", 'w') as f:
     json.dump(env, f)
 
-with open('JSON-Data/' + base_name + '_learning.json', 'w') as f:
+with open(f"JSON-Data/{base_name}_learning.json", 'w') as f:
     json.dump(params, f)

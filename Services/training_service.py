@@ -81,16 +81,16 @@ class TrainingService:
                 self.sess.run(self.init)
 
             update_target(self.target_ops, self.sess)  # Set the target network to be equal to the primary network.
-            self.writer = tf.summary.FileWriter(self.output_location + '/logs/', tf.get_default_graph())
+            self.writer = tf.summary.FileWriter(f"{self.output_location}/logs/", tf.get_default_graph())
 
-            for episode_number in range(self.params["num_episodes"]):
-                self.episode_loop(episode_number)
+            for e_number in range(self.params["num_episodes"]):
+                self.episode_loop(episode_number=e_number)
 
     def load_configuration(self):
         print("Loading configuration...")
-        with open(self.configuration_location + '_learning.json', 'r') as f:
+        with open(f"{self.configuration_location}_learning.json", 'r') as f:
             params = json.load(f)
-        with open(self.configuration_location + '_env.json', 'r') as f:
+        with open(f"{self.configuration_location}_env.json", 'r') as f:
             env = json.load(f)
         return params, env
 
@@ -98,8 +98,8 @@ class TrainingService:
         print("Checking for existing model...")
         if not os.path.exists(self.output_location):
             os.makedirs(self.output_location)
-            os.makedirs(self.output_location + '/episodes')
-            os.makedirs(self.output_location + '/logs')
+            os.makedirs(f"{self.output_location}/episodes")
+            os.makedirs(f"{self.output_location}/logs")
             return False
         else:
             return True
@@ -139,8 +139,8 @@ class TrainingService:
         a = 0  # Initialise action for episode.
         while step_number < self.params["max_epLength"]:
             step_number += 1
-            s, a, r, internal_state, s1, d, rnn_state_2, self.frame_buffer = self.step_loop(s, internal_state, a,
-                                                                                            rnn_state, self.frame_buffer) # TODO: stop returning frame buffer. make all self.
+            s, a, r, internal_state, s1, d, rnn_state_2 = self.step_loop(s=s, internal_state=internal_state,
+                                                                         a=a, rnn_state=rnn_state)
             all_actions.append(a)
             episode_buffer.append(np.reshape(np.array([s, a, r, internal_state, s1, d]), [1, 6]))
             total_episode_reward += r
@@ -152,16 +152,20 @@ class TrainingService:
                 break
 
         # Add the episode to the experience buffer
-        self.save_episode(t0, episode_number, all_actions, total_episode_reward, episode_buffer)
+        self.save_episode(episode_start_t=t0,
+                          episode_number=episode_number,
+                          all_actions=all_actions,
+                          total_episode_reward=total_episode_reward,
+                          episode_buffer=episode_buffer)
 
         # Print saved metrics
         # print(f"Total training time: {sum(self.training_times)}")
         # print(f"Total reward: {sum(self.reward_list)}")
 
-    def save_episode(self, t0, episode_number, all_actions, r_all, episode_buffer):
+    def save_episode(self, episode_start_t, episode_number, all_actions, total_episode_reward, episode_buffer):
         print(f"episode {str(episode_number)}: num steps = {str(self.simulation.num_steps)}", flush=True)
         if not self.save_frames:
-            self.training_times.append(time() - t0)
+            self.training_times.append(time() - episode_start_t)
         episode_summary = tf.Summary(value=[tf.Summary.Value(tag="episode reward", simple_value=r_all)])
         self.writer.add_summary(episode_summary, self.total_steps)
 
@@ -178,11 +182,11 @@ class TrainingService:
         if episode_number % self.params['summaryLength'] == 0 and episode_number != 0:
             print(f"mean time: {np.mean(self.training_times)}")
 
-            self.saver.save(self.sess, self.output_location + '/model-' + str(episode_number) + '.cptk')
+            self.saver.save(self.sess, f"{self.output_location}/model-{str(episode_number)}.cptk")
             print("Saved Model")
             print(self.total_steps, np.mean(self.reward_list[-50:]), self.e)
             print(self.frame_buffer[0].shape)
-            make_gif(self.frame_buffer, self.output_location + '/episodes/episode-' + str(episode_number) + '.gif',
+            make_gif(self.frame_buffer, f"{self.output_location}/episodes/episode-{str(episode_number)}.gif",
                      duration=len(self.frame_buffer) * self.params['time_per_step'], true_image=True)
             self.frame_buffer = []
             self.save_frames = False
@@ -191,7 +195,7 @@ class TrainingService:
             print('starting to save frames', flush=True)
             self.save_frames = True
 
-    def step_loop(self, s, internal_state, a, state, frame_buffer):
+    def step_loop(self, s, internal_state, a, rnn_state):
         """
         Returns the outputs of the step, which follows runnnig of the graphs.
         :param
@@ -209,7 +213,7 @@ class TrainingService:
                                              feed_dict={self.main_QN.observation: s,
                                                         self.main_QN.internal_state: internal_state,
                                                         self.main_QN.prev_actions: [a], self.main_QN.trainLength: 1,
-                                                        self.main_QN.state_in: state, self.main_QN.batch_size: 1,
+                                                        self.main_QN.state_in: rnn_state, self.main_QN.batch_size: 1,
                                                         self.main_QN.exp_keep: 1.0})
             a = np.random.randint(0, self.params['num_actions'])
         else:
@@ -218,17 +222,17 @@ class TrainingService:
                 feed_dict={self.main_QN.observation: s,
                            self.main_QN.internal_state: internal_state,
                            self.main_QN.prev_actions: [a], self.main_QN.trainLength: 1,
-                           self.main_QN.state_in: state, self.main_QN.batch_size: 1,
+                           self.main_QN.state_in: rnn_state, self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0})
             a = a[0]
 
         # Simulation step
-        s1, r, internal_state, d, frame_buffer = self.simulation.simulation_step(action=a,
-                                                                                 frame_buffer=frame_buffer,
-                                                                                 save_frames=self.save_frames,
-                                                                                 activations=(sa,))
+        s1, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=a,
+                                                                                      frame_buffer=self.frame_buffer,
+                                                                                      save_frames=self.save_frames,
+                                                                                      activations=(sa,))
         self.total_steps += 1
-        return s, a, r, internal_state, s1, d, state1, frame_buffer
+        return s, a, r, internal_state, s1, d, state1
 
     def train_networks(self):
         if self.e > self.params['endE']:
