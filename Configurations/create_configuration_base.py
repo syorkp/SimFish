@@ -5,9 +5,7 @@ Created on Mon Oct  5 07:52:17 2020
 
 @author: asaph
 """
-import os
 import json
-import sys
 
 # all distances in pixels
 

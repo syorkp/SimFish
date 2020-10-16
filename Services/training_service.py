@@ -68,6 +68,8 @@ class TrainingService:
         self.reward_list = []
 
     def run(self):
+        """Run the simulation"""
+
         print("Running simulation")
 
         # Write the first line of the master log-file for the Control Center
@@ -87,6 +89,8 @@ class TrainingService:
                 self.episode_loop(episode_number=e_number)
 
     def load_configuration(self):
+        """Load the configuration files for the environment and agent parameters."""
+
         print("Loading configuration...")
         with open(f"{self.configuration_location}_learning.json", 'r') as f:
             params = json.load(f)
@@ -95,6 +99,8 @@ class TrainingService:
         return params, env
 
     def check_for_model(self):
+        """Check whether a model for the environment and trial number exists. If not, create output file location"""
+
         print("Checking for existing model...")
         if not os.path.exists(self.output_location):
             os.makedirs(self.output_location)
@@ -115,9 +121,12 @@ class TrainingService:
         return main_QN, target_QN
 
     def episode_loop(self, episode_number):
+        # TODO: Rename all parameters given in the episode and step loops.
         t0 = time()
         episode_buffer = []
         environment_frames = []  # TODO:What was this for?
+
+        rnn_state = (np.zeros([1, self.main_QN.rnn_dim]), np.zeros([1, self.main_QN.rnn_dim]))  # Reset RNN hidden state
         self.simulation.reset()
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         sv = np.zeros((1, 128))  # Placeholder for the state value stream
@@ -127,15 +136,12 @@ class TrainingService:
                                                                                      frame_buffer=self.frame_buffer,
                                                                                      save_frames=self.save_frames,
                                                                                      activations=(sa,))
-        step_number = 0  # To allow exit after maximum steps.
 
         # For benchmarking each episode.
         all_actions = []
         total_episode_reward = 0  # Total reward over episode
 
-        # Reset the recurrent layer's hidden state
-        rnn_state = (np.zeros([1, self.main_QN.rnn_dim]), np.zeros([1, self.main_QN.rnn_dim]))
-
+        step_number = 0  # To allow exit after maximum steps.
         a = 0  # Initialise action for episode.
         while step_number < self.params["max_epLength"]:
             step_number += 1
