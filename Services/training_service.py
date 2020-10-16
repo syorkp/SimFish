@@ -26,7 +26,7 @@ class TrainingService:
         # TODO: Add hyperparameter control which may belong in RunService and could handle training of multiple models.
 
         # Configuration
-        self.configuration_location = f"./Configurations/JSON Data/{run_version}"
+        self.configuration_location = f"./Configurations/JSON-Data/{run_version}"
         self.params, self.env = self.load_configuration()
 
         # Output location

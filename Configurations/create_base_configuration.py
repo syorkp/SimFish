@@ -86,7 +86,7 @@ params = {'num_actions': 7,  # size of action space
           'learning_rate': 0.0001}
 
 base_name = sys.argv[1]
-configuration_folder = f"./Configurations/JSON-Data/"
+configuration_folder = f"./JSON-Data/"
 
 if not os.path.exists(configuration_folder):
     os.makedirs(configuration_folder)
