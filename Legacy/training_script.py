@@ -17,7 +17,7 @@ tf.disable_v2_behavior()
 def run(arg="test"):
     # Setting the training parameters
 
-    configuration_data = "./Configurations/JSON Data/" + arg
+    configuration_data = "./Configurations/JSON-Data/" + arg
 
     with open(configuration_data + '_learning.json', 'r') as f:
         params = json.load(f)

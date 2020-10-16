@@ -3,7 +3,7 @@ import os
 
 from Services.training_service import TrainingService
 
-configuration_folder = f"./Configurations/JSON Data/"
+configuration_folder = f"./Configurations/JSON-Data/"
 output_folder = f"./Output/"
 
 if not os.path.exists(configuration_folder):

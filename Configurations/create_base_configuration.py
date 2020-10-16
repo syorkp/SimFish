@@ -87,8 +87,8 @@ params = {'num_actions': 7,  # size of action space
 
 base_name = sys.argv[1]
 
-with open('JSON Data/' + base_name + '_env.json', 'w') as f:
+with open('JSON-Data/' + base_name + '_env.json', 'w') as f:
     json.dump(env, f)
 
-with open('JSON Data/' + base_name + '_learning.json', 'w') as f:
+with open('JSON-Data/' + base_name + '_learning.json', 'w') as f:
     json.dump(params, f)
