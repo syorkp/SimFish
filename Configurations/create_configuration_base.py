@@ -85,14 +85,12 @@ params = {'num_actions': 7,  # size of action space
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
           'learning_rate': 0.0001}
 
-base_name = sys.argv[1]
-configuration_folder = f"./JSON-Data/"
 
-if not os.path.exists(configuration_folder):
-    os.makedirs(configuration_folder)
+# Equal to that given in the file name.
+environment_name = "base"
 
-with open(f"JSON-Data/{base_name}_env.json", 'w') as f:
+with open(f"Configurations/JSON-Data/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)
 
-with open(f"JSON-Data/{base_name}_learning.json", 'w') as f:
+with open(f"Configurations/JSON-Data/{environment_name}_learning.json", 'w') as f:
     json.dump(params, f)

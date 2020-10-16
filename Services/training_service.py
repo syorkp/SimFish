@@ -16,7 +16,7 @@ tf.disable_v2_behavior()
 
 class TrainingService:
 
-    def __init__(self, run_version="test"):
+    def __init__(self, environment_name="test", trial_number="1"):
         """
         Should be initialised with the
         name of the run version, which is used to find the configuration, as well as checkpoints and output data,
@@ -26,11 +26,11 @@ class TrainingService:
         # TODO: Add hyperparameter control which may belong in RunService and could handle training of multiple models.
 
         # Configuration
-        self.configuration_location = f"./Configurations/JSON-Data/{run_version}"
+        self.configuration_location = f"./Configurations/JSON-Data/{environment_name}"
         self.params, self.env = self.load_configuration()
 
         # Output location
-        self.output_location = f"./Output/{run_version}_output"
+        self.output_location = f"./Output/{environment_name}_{trial_number}_output"
         self.load_model = self.check_for_model()
 
         # Environment and agent
@@ -166,7 +166,7 @@ class TrainingService:
         print(f"episode {str(episode_number)}: num steps = {str(self.simulation.num_steps)}", flush=True)
         if not self.save_frames:
             self.training_times.append(time() - episode_start_t)
-        episode_summary = tf.Summary(value=[tf.Summary.Value(tag="episode reward", simple_value=r_all)])
+        episode_summary = tf.Summary(value=[tf.Summary.Value(tag="episode reward", simple_value=total_episode_reward)])
         self.writer.add_summary(episode_summary, self.total_steps)
 
         for act in range(self.params['num_actions']):
@@ -177,7 +177,7 @@ class TrainingService:
         buffer_array = np.array(episode_buffer)
         episode_buffer = list(zip(buffer_array))
         self.training_buffer.add(episode_buffer)
-        self.reward_list.append(r_all)
+        self.reward_list.append(total_episode_reward)
         # Periodically save the model.
         if episode_number % self.params['summaryLength'] == 0 and episode_number != 0:
             print(f"mean time: {np.mean(self.training_times)}")
