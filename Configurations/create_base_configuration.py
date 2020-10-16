@@ -5,7 +5,7 @@ Created on Mon Oct  5 07:52:17 2020
 
 @author: asaph
 """
-
+import os
 import json
 import sys
 
@@ -86,6 +86,10 @@ params = {'num_actions': 7,  # size of action space
           'learning_rate': 0.0001}
 
 base_name = sys.argv[1]
+configuration_folder = f"./Configurations/JSON-Data/"
+
+if not os.path.exists(configuration_folder):
+    os.makedirs(configuration_folder)
 
 with open('JSON-Data/' + base_name + '_env.json', 'w') as f:
     json.dump(env, f)
