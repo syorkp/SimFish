@@ -7,7 +7,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from Environment.simfish_env import SimState
-from Network.simfish_drqn import QNetwork
+from Network.qnetwork import QNetwork
 from Network.experience_buffer import ExperienceBuffer
 from Tools.graph_functions import update_target_graph, update_target
 from Tools.make_gif import make_gif
@@ -313,15 +313,19 @@ class TrainingService:
                 self.main_QN.observation: np.vstack(train_batch[:, 4]),
                 self.main_QN.prev_actions: np.hstack(([0], train_batch[:-1, 1])),
                 self.main_QN.trainLength: self.params['trace_length'],
-                self.main_QN.internal_state: np.vstack(train_batch[:, 3]), self.main_QN.state_in: state_train,
-                self.main_QN.batch_size: self.params['batch_size'], self.main_QN.exp_keep: 1.0})
+                self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
+                self.main_QN.state_in: state_train,
+                self.main_QN.batch_size: self.params['batch_size'],
+                self.main_QN.exp_keep: 1.0})
 
             Q2 = self.sess.run(self.target_QN.Q_out, feed_dict={
                 self.target_QN.observation: np.vstack(train_batch[:, 4]),
                 self.target_QN.prev_actions: np.hstack(([0], train_batch[:-1, 1])),
                 self.target_QN.trainLength: self.params['trace_length'],
-                self.target_QN.internal_state: np.vstack(train_batch[:, 3]), self.target_QN.state_in: state_train,
-                self.target_QN.batch_size: self.params['batch_size'], self.target_QN.exp_keep: 1.0})
+                self.target_QN.internal_state: np.vstack(train_batch[:, 3]),
+                self.target_QN.state_in: state_train,
+                self.target_QN.batch_size: self.params['batch_size'],
+                self.target_QN.exp_keep: 1.0})
 
             end_multiplier = -(train_batch[:, 5] - 1)
 

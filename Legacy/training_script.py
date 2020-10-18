@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from Environment.simfish_env import SimState
-from Network.simfish_drqn import QNetwork
+from Legacy.simfish_drqn import QNetwork
 from Network.experience_buffer import ExperienceBuffer
 from Tools.graph_functions import update_target_graph, update_target
 from Tools.make_gif import make_gif
