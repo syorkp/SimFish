@@ -18,11 +18,13 @@ class TrainingService:
 
     def __init__(self, environment_name="test", trial_number="1"):
         """
-        Should be initialised with the
-        name of the run version, which is used to find the configuration, as well as checkpoints and output data,
-        For now, all attributes below are intended to refer to a single training period. In future, it may be useful to
-        separate values. between this training service and a run service which handles multiple training services.
+        An instance of TraningService handles the training of the DQN within a specified environment, according to
+        specified parameters.
+        :param environment_name: The name of the environment, to match the naming of the configuration files.
+        :param trial_number: The index of the trial, so that agents trained under the same configuration may be
+        distinguished in their output files.
         """
+
         # TODO: Add hyperparameter control which may belong in RunService and could handle training of multiple models.
 
         # Configuration
@@ -72,10 +74,10 @@ class TrainingService:
 
         print("Running simulation")
 
-        # Write the first line of the master log-file for the Control Center
         with tf.Session() as self.sess:
             if self.load_model:
                 print(f"Loading Model at {self.output_location}")
+                # Write the first line of the master log-file for the Control Center
                 checkpoint = tf.train.get_checkpoint_state(self.output_location)
                 print(checkpoint)
                 self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
@@ -89,7 +91,10 @@ class TrainingService:
                 self.episode_loop(episode_number=e_number)
 
     def load_configuration(self):
-        """Load the configuration files for the environment and agent parameters."""
+        """
+        Load the configuration files for the environment and agent parameters.
+        :return: The agent parameters and the environment parameters, as json objects.
+        """
 
         print("Loading configuration...")
         with open(f"{self.configuration_location}_learning.json", 'r') as f:
@@ -99,7 +104,10 @@ class TrainingService:
         return params, env
 
     def check_for_model(self):
-        """Check whether a model for the environment and trial number exists. If not, create output file location"""
+        """
+        Check whether a model for the environment and trial number exists. If not, create the output file location.
+        :return: A boolean to signal whether or not a checkpoint should be loaded.
+        """
 
         print("Checking for existing model...")
         if not os.path.exists(self.output_location):
@@ -111,6 +119,10 @@ class TrainingService:
             return True
 
     def create_networks(self):
+        """
+        Create the main and target Q networks, according to the configuration parameters.
+        :return: The main network and the target network graphs.
+        """
         print("Creating networks...")
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim'], state_is_tuple=True)
         cell_t = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim'], state_is_tuple=True)
@@ -121,6 +133,10 @@ class TrainingService:
         return main_QN, target_QN
 
     def episode_loop(self, episode_number):
+        """
+        Loops over an episode, which involves initialisation of the environment and RNN state, then iteration over the
+        steps in the episode. The relevant values are then saved to the experience buffer.
+        """
         # TODO: Rename all parameters given in the episode and step loops.
         t0 = time()
         episode_buffer = []
@@ -169,6 +185,16 @@ class TrainingService:
         # print(f"Total reward: {sum(self.reward_list)}")
 
     def save_episode(self, episode_start_t, episode_number, all_actions, total_episode_reward, episode_buffer):
+        """
+        Saves the episode the the experience buffer.
+        :param episode_start_t: The time at the start of the episode, used to calculate the time the episode took.
+        :param episode_number: The episode number.
+        :param all_actions: The array of all the actions taken during the episode.
+        :param total_episode_reward: The total reward of the episode.
+        :param episode_buffer: A buffer containing all the state transitions, actions and associated rewards yielded by
+        the environment.
+        :return:
+        """
         print(f"episode {str(episode_number)}: num steps = {str(self.simulation.num_steps)}", flush=True)
         if not self.save_frames:
             self.training_times.append(time() - episode_start_t)
@@ -203,14 +229,23 @@ class TrainingService:
 
     def step_loop(self, s, internal_state, a, rnn_state):
         """
-        Returns the outputs of the step, which follows runnnig of the graphs.
+        Runs a step, choosing an action given an initial condition using the network/randomly, and running this in the
+        environment.
+
         :param
-        session:
-        :return:
-        s:
+        session: The TF session.
         internal_state: The internal state of the agent - whether it is in light, and whether it is hungry.
-        a:
-        state:
+        a: The previous chosen action.
+        rnn_state: The state inside the RNN.
+
+        :return:
+        s: The environment state.
+        a: The action chosen randomly/by the network.
+        r: The reward returned.
+        internal_state: The internal state of the agent - whether it is in light, and whether it is hungry.
+        s1: The subsequent environment state
+        d: Boolean indicating agent death.
+        state1: The updated RNN state
         """
 
         # Generate actions and corresponding steps.
@@ -241,9 +276,13 @@ class TrainingService:
         return s, a, r, internal_state, s1, d, state1
 
     def train_networks(self):
+        """
+        Trains the two networks, copying over the target network if at an interval.
+        :return:
+        """
         if self.e > self.params['endE']:
             self.e -= self.step_drop
-
+        # TODO: Move if statement out of train_networks scope.
         if self.total_steps % (self.params['update_freq']) == 0:
             update_target(self.target_ops, self.sess)
             # Reset the recurrent layer's hidden state
