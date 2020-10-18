@@ -1,6 +1,7 @@
 import os
 import json
 from time import time
+import re
 
 import numpy as np
 import tensorflow.compat.v1 as tf
@@ -33,6 +34,7 @@ class TrainingService:
 
         # Output location
         self.output_location = f"./Output/{environment_name}_{trial_number}_output"
+
         self.load_model = self.check_for_model()
 
         # Environment and agent
@@ -64,31 +66,45 @@ class TrainingService:
 
         # Tally of steps for deciding when to use training data or to finish training.
         self.total_steps = 0
+        self.episode_number = 0
 
         # Used for performance monitoring (not essential for algorithm).
         self.training_times = []
         self.reward_list = []
 
     def run(self):
-        """Run the simulation"""
+        """Run the simulation, either loading a checkpoint if there or starting from scratch. If loading, uses the
+        previous checkpoint to set the episode number."""
 
         print("Running simulation")
 
         with tf.Session() as self.sess:
             if self.load_model:
-                print(f"Loading Model at {self.output_location}")
-                # Write the first line of the master log-file for the Control Center
+                print(f"Attempting to load model at {self.output_location}")
                 checkpoint = tf.train.get_checkpoint_state(self.output_location)
-                print(checkpoint)
-                self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
+                if hasattr(checkpoint, "model_checkpoint_path"):
+                    print(checkpoint)
+                    output_file_contents = os.listdir(self.output_location)
+                    numbers = []
+                    for name in output_file_contents:
+                        if ".cptk.index" in name:
+                            numbers.append(int(re.sub("[^0-9]", "", name)))
+                    self.episode_number = max(numbers) + 1
+                    self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
+                    print("Loading successful")
+                else:
+                    print("No saved checkpoints found, starting from scratch.")
+                    self.sess.run(self.init)
             else:
+                print("First attempt at running model. Starting from scratch.")
                 self.sess.run(self.init)
 
             update_target(self.target_ops, self.sess)  # Set the target network to be equal to the primary network.
             self.writer = tf.summary.FileWriter(f"{self.output_location}/logs/", tf.get_default_graph())
 
-            for e_number in range(self.params["num_episodes"]):
-                self.episode_loop(episode_number=e_number)
+            for e_number in range(self.episode_number, self.params["num_episodes"]):
+                self.episode_number = e_number
+                self.episode_loop()
 
     def load_configuration(self):
         """
@@ -132,7 +148,7 @@ class TrainingService:
                              learning_rate=self.params['learning_rate'])
         return main_QN, target_QN
 
-    def episode_loop(self, episode_number):
+    def episode_loop(self):
         """
         Loops over an episode, which involves initialisation of the environment and RNN state, then iteration over the
         steps in the episode. The relevant values are then saved to the experience buffer.
@@ -167,7 +183,7 @@ class TrainingService:
             episode_buffer.append(np.reshape(np.array([s, a, r, internal_state, s1, d]), [1, 6]))
             total_episode_reward += r
             s = s1
-            rnn_state = rnn_state_2
+            rnn_state = rnn_state_2  # TODO: Should just overwrite above?
             if self.total_steps > self.params['pre_train_steps']:
                 self.train_networks()
             if d:
@@ -175,7 +191,6 @@ class TrainingService:
 
         # Add the episode to the experience buffer
         self.save_episode(episode_start_t=t0,
-                          episode_number=episode_number,
                           all_actions=all_actions,
                           total_episode_reward=total_episode_reward,
                           episode_buffer=episode_buffer)
@@ -184,18 +199,18 @@ class TrainingService:
         # print(f"Total training time: {sum(self.training_times)}")
         # print(f"Total reward: {sum(self.reward_list)}")
 
-    def save_episode(self, episode_start_t, episode_number, all_actions, total_episode_reward, episode_buffer):
+    def save_episode(self, episode_start_t, all_actions, total_episode_reward, episode_buffer):
         """
-        Saves the episode the the experience buffer.
+        Saves the episode the the experience buffer. Also creates a gif if at interval.
         :param episode_start_t: The time at the start of the episode, used to calculate the time the episode took.
-        :param episode_number: The episode number.
         :param all_actions: The array of all the actions taken during the episode.
         :param total_episode_reward: The total reward of the episode.
         :param episode_buffer: A buffer containing all the state transitions, actions and associated rewards yielded by
         the environment.
         :return:
         """
-        print(f"episode {str(episode_number)}: num steps = {str(self.simulation.num_steps)}", flush=True)
+
+        print(f"episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}", flush=True)
         if not self.save_frames:
             self.training_times.append(time() - episode_start_t)
         episode_summary = tf.Summary(value=[tf.Summary.Value(tag="episode reward", simple_value=total_episode_reward)])
@@ -211,19 +226,19 @@ class TrainingService:
         self.training_buffer.add(episode_buffer)
         self.reward_list.append(total_episode_reward)
         # Periodically save the model.
-        if episode_number % self.params['summaryLength'] == 0 and episode_number != 0:
+        if self.episode_number % self.params['summaryLength'] == 0 and self.episode_number != 0:
             print(f"mean time: {np.mean(self.training_times)}")
 
-            self.saver.save(self.sess, f"{self.output_location}/model-{str(episode_number)}.cptk")
+            self.saver.save(self.sess, f"{self.output_location}/model-{str(self.episode_number)}.cptk")
             print("Saved Model")
             print(self.total_steps, np.mean(self.reward_list[-50:]), self.e)
             print(self.frame_buffer[0].shape)
-            make_gif(self.frame_buffer, f"{self.output_location}/episodes/episode-{str(episode_number)}.gif",
+            make_gif(self.frame_buffer, f"{self.output_location}/episodes/episode-{str(self.episode_number)}.gif",
                      duration=len(self.frame_buffer) * self.params['time_per_step'], true_image=True)
             self.frame_buffer = []
             self.save_frames = False
 
-        if (episode_number + 1) % self.params['summaryLength'] == 0:
+        if (self.episode_number + 1) % self.params['summaryLength'] == 0:
             print('starting to save frames', flush=True)
             self.save_frames = True
 
@@ -240,40 +255,41 @@ class TrainingService:
 
         :return:
         s: The environment state.
-        a: The action chosen randomly/by the network.
-        r: The reward returned.
+        chosen_a: The action chosen randomly/by the network.
+        given_reward: The reward returned.
         internal_state: The internal state of the agent - whether it is in light, and whether it is hungry.
         s1: The subsequent environment state
         d: Boolean indicating agent death.
-        state1: The updated RNN state
+        updated_rnn_state: The updated RNN state
         """
 
         # Generate actions and corresponding steps.
         if np.random.rand(1) < self.e or self.total_steps < self.params['pre_train_steps']:
-            [state1, sa, sv] = self.sess.run([self.main_QN.rnn_state, self.main_QN.streamA, self.main_QN.streamV],
-                                             feed_dict={self.main_QN.observation: s,
-                                                        self.main_QN.internal_state: internal_state,
-                                                        self.main_QN.prev_actions: [a], self.main_QN.trainLength: 1,
-                                                        self.main_QN.state_in: rnn_state, self.main_QN.batch_size: 1,
-                                                        self.main_QN.exp_keep: 1.0})
-            a = np.random.randint(0, self.params['num_actions'])
+            [updated_rnn_state, sa, sv] = self.sess.run(
+                [self.main_QN.rnn_state, self.main_QN.streamA, self.main_QN.streamV],
+                feed_dict={self.main_QN.observation: s,
+                           self.main_QN.internal_state: internal_state,
+                           self.main_QN.prev_actions: [a], self.main_QN.trainLength: 1,
+                           self.main_QN.state_in: rnn_state, self.main_QN.batch_size: 1,
+                           self.main_QN.exp_keep: 1.0})
+            chosen_a = np.random.randint(0, self.params['num_actions'])
         else:
-            a, state1, sa, sv = self.sess.run(
+            chosen_a, updated_rnn_state, sa, sv = self.sess.run(
                 [self.main_QN.predict, self.main_QN.rnn_state, self.main_QN.streamA, self.main_QN.streamV],
                 feed_dict={self.main_QN.observation: s,
                            self.main_QN.internal_state: internal_state,
                            self.main_QN.prev_actions: [a], self.main_QN.trainLength: 1,
                            self.main_QN.state_in: rnn_state, self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0})
-            a = a[0]
+            chosen_a = chosen_a[0]
 
         # Simulation step
-        s1, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=a,
-                                                                                      frame_buffer=self.frame_buffer,
-                                                                                      save_frames=self.save_frames,
-                                                                                      activations=(sa,))
+        s1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=chosen_a,
+                                                                                                 frame_buffer=self.frame_buffer,
+                                                                                                 save_frames=self.save_frames,
+                                                                                                 activations=(sa,))
         self.total_steps += 1
-        return s, a, r, internal_state, s1, d, state1
+        return s, chosen_a, given_reward, internal_state, s1, d, updated_rnn_state
 
     def train_networks(self):
         """
