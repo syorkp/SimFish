@@ -7,3 +7,6 @@ To run:
   2. Run the "run.py" file, from which the chosen environment name and trial number can be adjusted.
   3. This will create the necessary files (given a bespoke "create_configuration_{environment}.py" file)
   4. To test the environment, run the "run_environment_test.py" file. Note that for Linux this will require installation of tkinter, which can be done using "sudo apt-get install python3-tk"
+
+To view graphs, install tensorboard and run 'tensorboard --logdir="./Output/{trial_directory}/logs"'
+
