@@ -27,7 +27,7 @@ class SimState:
         self.prey_consumed = False
         self.touched_edge = False
         self.touched_predator = False
-        self.making_capture = False  # TODO: Or should be none.
+        self.making_capture = False
 
         self.predator_bodies = []
         self.predator_shapes = []

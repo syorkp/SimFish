@@ -153,18 +153,16 @@ class TrainingService:
         Loops over an episode, which involves initialisation of the environment and RNN state, then iteration over the
         steps in the episode. The relevant values are then saved to the experience buffer.
         """
-        # TODO: Rename all parameters given in the episode and step loops.
         t0 = time()
         episode_buffer = []
-        environment_frames = []  # TODO:What was this for?
 
         rnn_state = (np.zeros([1, self.main_QN.rnn_dim]), np.zeros([1, self.main_QN.rnn_dim]))  # Reset RNN hidden state
         self.simulation.reset()
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         sv = np.zeros((1, 128))  # Placeholder for the state value stream
 
-        # Take the first simulation step, with a capture action.
-        s, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=3,
+        # Take the first simulation step, with a capture action. Assigns observation, reward, internal state, done, and
+        o, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=3,
                                                                                      frame_buffer=self.frame_buffer,
                                                                                      save_frames=self.save_frames,
                                                                                      activations=(sa,))
@@ -177,15 +175,17 @@ class TrainingService:
         a = 0  # Initialise action for episode.
         while step_number < self.params["max_epLength"]:
             step_number += 1
-            s, a, r, internal_state, s1, d, rnn_state_2 = self.step_loop(s=s, internal_state=internal_state,
-                                                                         a=a, rnn_state=rnn_state)
+            o, a, r, internal_state, s1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
+                                                                       a=a, rnn_state=rnn_state)
             all_actions.append(a)
-            episode_buffer.append(np.reshape(np.array([s, a, r, internal_state, s1, d]), [1, 6]))
+            episode_buffer.append(np.reshape(np.array([o, a, r, internal_state, s1, d]), [1, 6]))
             total_episode_reward += r
-            s = s1
-            rnn_state = rnn_state_2  # TODO: Should just overwrite above?
+            o = s1
             if self.total_steps > self.params['pre_train_steps']:
-                self.train_networks()
+                if self.e > self.params['endE']:
+                    self.e -= self.step_drop
+                if self.total_steps % (self.params['update_freq']) == 0:
+                    self.train_networks()
             if d:
                 break
 
@@ -242,7 +242,7 @@ class TrainingService:
             print('starting to save frames', flush=True)
             self.save_frames = True
 
-    def step_loop(self, s, internal_state, a, rnn_state):
+    def step_loop(self, o, internal_state, a, rnn_state):
         """
         Runs a step, choosing an action given an initial condition using the network/randomly, and running this in the
         environment.
@@ -267,7 +267,7 @@ class TrainingService:
         if np.random.rand(1) < self.e or self.total_steps < self.params['pre_train_steps']:
             [updated_rnn_state, sa, sv] = self.sess.run(
                 [self.main_QN.rnn_state, self.main_QN.streamA, self.main_QN.streamV],
-                feed_dict={self.main_QN.observation: s,
+                feed_dict={self.main_QN.observation: o,
                            self.main_QN.internal_state: internal_state,
                            self.main_QN.prev_actions: [a],
                            self.main_QN.trainLength: 1,
@@ -278,7 +278,7 @@ class TrainingService:
         else:
             chosen_a, updated_rnn_state, sa, sv = self.sess.run(
                 [self.main_QN.predict, self.main_QN.rnn_state, self.main_QN.streamA, self.main_QN.streamV],
-                feed_dict={self.main_QN.observation: s,
+                feed_dict={self.main_QN.observation: o,
                            self.main_QN.internal_state: internal_state,
                            self.main_QN.prev_actions: [a],
                            self.main_QN.trainLength: 1,
@@ -288,61 +288,57 @@ class TrainingService:
             chosen_a = chosen_a[0]
 
         # Simulation step
-        s1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=chosen_a,
+        o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=chosen_a,
                                                                                                  frame_buffer=self.frame_buffer,
                                                                                                  save_frames=self.save_frames,
                                                                                                  activations=(sa,))
         self.total_steps += 1
-        return s, chosen_a, given_reward, internal_state, s1, d, updated_rnn_state
+        return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
 
     def train_networks(self):
         """
-        Trains the two networks, copying over the target network if at an interval.
+        Trains the two networks, copying over the target network
         :return:
         """
-        if self.e > self.params['endE']:
-            self.e -= self.step_drop
-        # TODO: Move if statement out of train_networks scope.
-        if self.total_steps % (self.params['update_freq']) == 0:
-            update_target(self.target_ops, self.sess)
-            # Reset the recurrent layer's hidden state
-            state_train = (np.zeros([self.params['batch_size'], self.main_QN.rnn_dim]),
-                           np.zeros([self.params['batch_size'], self.main_QN.rnn_dim]))
+        update_target(self.target_ops, self.sess)
+        # Reset the recurrent layer's hidden state
+        state_train = (np.zeros([self.params['batch_size'], self.main_QN.rnn_dim]),
+                       np.zeros([self.params['batch_size'], self.main_QN.rnn_dim]))
 
-            # Get a random batch of experiences.
-            train_batch = self.training_buffer.sample(self.params['batch_size'], self.params['trace_length'])
+        # Get a random batch of experiences.
+        train_batch = self.training_buffer.sample(self.params['batch_size'], self.params['trace_length'])
 
-            # Below we perform the Double-DQN update to the target Q-values
-            Q1 = self.sess.run(self.main_QN.predict, feed_dict={
-                self.main_QN.observation: np.vstack(train_batch[:, 4]),
-                self.main_QN.prev_actions: np.hstack(([0], train_batch[:-1, 1])),
-                self.main_QN.trainLength: self.params['trace_length'],
-                self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
-                self.main_QN.state_in: state_train,
-                self.main_QN.batch_size: self.params['batch_size'],
-                self.main_QN.exp_keep: 1.0})
+        # Below we perform the Double-DQN update to the target Q-values
+        Q1 = self.sess.run(self.main_QN.predict, feed_dict={
+            self.main_QN.observation: np.vstack(train_batch[:, 4]),
+            self.main_QN.prev_actions: np.hstack(([0], train_batch[:-1, 1])),
+            self.main_QN.trainLength: self.params['trace_length'],
+            self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
+            self.main_QN.state_in: state_train,
+            self.main_QN.batch_size: self.params['batch_size'],
+            self.main_QN.exp_keep: 1.0})
 
-            Q2 = self.sess.run(self.target_QN.Q_out, feed_dict={
-                self.target_QN.observation: np.vstack(train_batch[:, 4]),
-                self.target_QN.prev_actions: np.hstack(([0], train_batch[:-1, 1])),
-                self.target_QN.trainLength: self.params['trace_length'],
-                self.target_QN.internal_state: np.vstack(train_batch[:, 3]),
-                self.target_QN.state_in: state_train,
-                self.target_QN.batch_size: self.params['batch_size'],
-                self.target_QN.exp_keep: 1.0})
+        Q2 = self.sess.run(self.target_QN.Q_out, feed_dict={
+            self.target_QN.observation: np.vstack(train_batch[:, 4]),
+            self.target_QN.prev_actions: np.hstack(([0], train_batch[:-1, 1])),
+            self.target_QN.trainLength: self.params['trace_length'],
+            self.target_QN.internal_state: np.vstack(train_batch[:, 3]),
+            self.target_QN.state_in: state_train,
+            self.target_QN.batch_size: self.params['batch_size'],
+            self.target_QN.exp_keep: 1.0})
 
-            end_multiplier = -(train_batch[:, 5] - 1)
+        end_multiplier = -(train_batch[:, 5] - 1)
 
-            double_Q = Q2[range(self.params['batch_size'] * self.params['trace_length']), Q1]
-            target_Q = train_batch[:, 2] + (self.params['y'] * double_Q * end_multiplier)
-            # Update the network with our target values.
-            self.sess.run(self.main_QN.updateModel,
-                          feed_dict={self.main_QN.observation: np.vstack(train_batch[:, 0]),
-                                     self.main_QN.targetQ: target_Q,
-                                     self.main_QN.actions: train_batch[:, 1],
-                                     self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
-                                     self.main_QN.prev_actions: np.hstack(([3], train_batch[:-1, 1])),
-                                     self.main_QN.trainLength: self.params['trace_length'],
-                                     self.main_QN.state_in: state_train,
-                                     self.main_QN.batch_size: self.params['batch_size'],
-                                     self.main_QN.exp_keep: 1.0})
+        double_Q = Q2[range(self.params['batch_size'] * self.params['trace_length']), Q1]
+        target_Q = train_batch[:, 2] + (self.params['y'] * double_Q * end_multiplier)
+        # Update the network with our target values.
+        self.sess.run(self.main_QN.updateModel,
+                      feed_dict={self.main_QN.observation: np.vstack(train_batch[:, 0]),
+                                 self.main_QN.targetQ: target_Q,
+                                 self.main_QN.actions: train_batch[:, 1],
+                                 self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
+                                 self.main_QN.prev_actions: np.hstack(([3], train_batch[:-1, 1])),
+                                 self.main_QN.trainLength: self.params['trace_length'],
+                                 self.main_QN.state_in: state_train,
+                                 self.main_QN.batch_size: self.params['batch_size'],
+                                 self.main_QN.exp_keep: 1.0})

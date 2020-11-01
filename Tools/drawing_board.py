@@ -62,7 +62,6 @@ class DrawingBoard:
             else:
                 res[arm, :] = [0, 0, 0]
 
-        # TODO: Decide what this is for.
         # xmat_ = np.where((xmat<0) | (xmat>=self.width), 0, xmat)
         # ymat_ = np.where((ymat<0) | (ymat>=self.height), 0, ymat)
         #

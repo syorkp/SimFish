@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 
@@ -9,9 +10,10 @@ Due to PyCharm plots error, currently needs to be run in terminal"""
 try:
     arg = sys.argv[1]
 except IndexError:
-    arg = "test"  # Default arg
+    arg = "base"  # Default arg
 
-file_path = f"/home/sam/PycharmProjects/SimFish/Configurations/JSON Data/{arg}_env.json"  # NOTE: This will give error in windows. TODO: Make relational
+dirname = os.path.dirname(__file__)
+file_path = os.path.join(dirname, f"Configurations/JSON-Data/{arg}_env.json")
 
 with open(file_path, 'r') as f:
     env = json.load(f)
@@ -22,7 +24,6 @@ d = False
 sim_state.reset()
 while not q:
     # action = None
-    # TODO: Test if above needed.
     key = input()
     action_input = int(key)
 

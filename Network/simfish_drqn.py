@@ -9,9 +9,7 @@ class QNetwork:
         """The network receives the observation from both eyes, processes it
         #through convolutional layers, concatenates it with the internal state
         #and feeds it to the RNN."""
-        # TODO: Keep in self: rnn_state, streamA, streamV, observation, internal_state,
-        #  prev_actions, state_in, exp_keep, predict, trainLength, batch_size, rnn_dim,
-        #  Q_out, updateModel, targetQ, actions,
+
         self.num_arms = len(simulation.left_eye.vis_angles)  # Rays for each eye
         self.rnn_dim = rnn_dim
         self.rnn_output_size = self.rnn_dim
