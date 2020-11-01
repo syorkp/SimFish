@@ -269,8 +269,10 @@ class TrainingService:
                 [self.main_QN.rnn_state, self.main_QN.streamA, self.main_QN.streamV],
                 feed_dict={self.main_QN.observation: s,
                            self.main_QN.internal_state: internal_state,
-                           self.main_QN.prev_actions: [a], self.main_QN.trainLength: 1,
-                           self.main_QN.state_in: rnn_state, self.main_QN.batch_size: 1,
+                           self.main_QN.prev_actions: [a],
+                           self.main_QN.trainLength: 1,
+                           self.main_QN.state_in: rnn_state,
+                           self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0})
             chosen_a = np.random.randint(0, self.params['num_actions'])
         else:
@@ -278,8 +280,10 @@ class TrainingService:
                 [self.main_QN.predict, self.main_QN.rnn_state, self.main_QN.streamA, self.main_QN.streamV],
                 feed_dict={self.main_QN.observation: s,
                            self.main_QN.internal_state: internal_state,
-                           self.main_QN.prev_actions: [a], self.main_QN.trainLength: 1,
-                           self.main_QN.state_in: rnn_state, self.main_QN.batch_size: 1,
+                           self.main_QN.prev_actions: [a],
+                           self.main_QN.trainLength: 1,
+                           self.main_QN.state_in: rnn_state,
+                           self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0})
             chosen_a = chosen_a[0]
 

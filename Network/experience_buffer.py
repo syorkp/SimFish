@@ -14,7 +14,6 @@ class ExperienceBuffer:
         self.buffer.append(experience)
 
     def sample(self, batch_size, trace_length):
-        # print(len(self.buffer), batch_size)
         sampled_episodes = random.sample(self.buffer, batch_size)
         sampled_traces = []
         for episode in sampled_episodes:
