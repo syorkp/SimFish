@@ -18,5 +18,5 @@ configuration_creator_file = f"Configurations/create_configuration_{environment_
 os.system(configuration_creator_file)
 
 
-trial = TrainingService(environment_name, trial_number)
+trial = TrainingService()
 trial.run()

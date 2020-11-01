@@ -17,7 +17,7 @@ tf.disable_v2_behavior()
 
 class TrainingService:
 
-    def __init__(self, environment_name="test", trial_number="1"):
+    def __init__(self, environment_name="new_test", trial_number="1"):# TODO: Change back
         """
         An instance of TraningService handles the training of the DQN within a specified environment, according to
         specified parameters.
@@ -33,7 +33,8 @@ class TrainingService:
         self.params, self.env = self.load_configuration()
 
         # Output location
-        self.output_location = f"./Output/{environment_name}_{trial_number}_output"
+        # self.output_location = f"./Output/{environment_name}_{trial_number}_output"
+        self.output_location = f"./Output/{environment_name}_output"# TODO: Change back
 
         self.load_model = self.check_for_model()
 
@@ -92,6 +93,10 @@ class TrainingService:
                     self.episode_number = max(numbers) + 1
                     self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
                     print("Loading successful")
+                    print("Loading previous E")
+                    with open(f"{self.output_location}/saved_parameters.txt", "r") as file:
+                        self.e = float(file.read())
+
                 else:
                     print("No saved checkpoints found, starting from scratch.")
                     self.sess.run(self.init)
@@ -194,7 +199,6 @@ class TrainingService:
                           all_actions=all_actions,
                           total_episode_reward=total_episode_reward,
                           episode_buffer=episode_buffer)
-
         # Print saved metrics
         # print(f"Total training time: {sum(self.training_times)}")
         # print(f"Total reward: {sum(self.reward_list)}")
@@ -237,6 +241,8 @@ class TrainingService:
                      duration=len(self.frame_buffer) * self.params['time_per_step'], true_image=True)
             self.frame_buffer = []
             self.save_frames = False
+            with open(f"{self.output_location}/saved_parameters.txt", "w") as file:
+                file.write(str(self.e))
 
         if (self.episode_number + 1) % self.params['summaryLength'] == 0:
             print('starting to save frames', flush=True)
