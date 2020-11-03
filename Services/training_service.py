@@ -1,7 +1,4 @@
-import os
-import json
 from time import time
-import re
 
 import numpy as np
 import tensorflow.compat.v1 as tf
@@ -17,7 +14,7 @@ tf.disable_v2_behavior()
 
 class TrainingService:
 
-    def __init__(self, environment_name="new_test", trial_number="1"):# TODO: Change back
+    def __init__(self, environment_name, trial_number, model_exists, fish_mode, learning_params, env_params, e, episode_number):
         """
         An instance of TraningService handles the training of the DQN within a specified environment, according to
         specified parameters.
@@ -28,29 +25,35 @@ class TrainingService:
 
         # TODO: Add hyperparameter control which may belong in RunService and could handle training of multiple models.
 
-        # Configuration
-        self.configuration_location = f"./Configurations/JSON-Data/{environment_name}"
-        self.params, self.env = self.load_configuration()
-
-        # Output location
-        # self.output_location = f"./Output/{environment_name}_{trial_number}_output"
-        self.output_location = f"./Output/{environment_name}_output"# TODO: Change back
-
-        self.load_model = self.check_for_model()
+        self.trial_id = f"{environment_name}_{trial_number}"
+        self.load_model = model_exists
+        self.params = learning_params
+        self.env = env_params
+        self.output_location = f"./Output/{environment_name}_{trial_number}_output"
+        self.fish_mode = fish_mode
 
         # Environment and agent
         self.simulation = SimState(self.env)
 
-        # Create networks
-        self.main_QN, self.target_QN = self.create_networks()
-
         # Experience buffer
         self.training_buffer = ExperienceBuffer(buffer_size=self.params["exp_buffer_size"])
-        self.saver = tf.train.Saver(max_to_keep=5)
+
+        # Placeholder
+        self.main_QN, self.target_QN = None, None
+
+        self.saver = None
         self.frame_buffer = []
 
         # Mathematical variables
-        self.e = self.params["startE"]
+        if e is not None:
+            self.e = e
+        else:
+            self.e = self.params["startE"]
+        if episode_number is not None:
+            self.episode_number = episode_number
+        else:
+            self.episode_number = 0
+
         self.step_drop = (self.params['startE'] - self.params['endE']) / self.params['anneling_steps']
 
         # Whether to save the frames of an episode
@@ -60,14 +63,13 @@ class TrainingService:
         self.writer = None
 
         # Global tensorflow variables
-        self.init = tf.global_variables_initializer()
-        self.trainables = tf.trainable_variables()
-        self.target_ops = update_target_graph(self.trainables, self.params['tau'])
+        self.init = None
+        self.trainables = None
+        self.target_ops = None
         self.sess = None  # Placeholder for the tf-session.
 
         # Tally of steps for deciding when to use training data or to finish training.
-        self.total_steps = 0
-        self.episode_number = 0
+        self.total_steps = 0  # TODO: Carry this across.
 
         # Used for performance monitoring (not essential for algorithm).
         self.training_times = []
@@ -80,17 +82,22 @@ class TrainingService:
         print("Running simulation")
 
         with tf.Session() as self.sess:
+            self.main_QN, self.target_QN = self.create_networks()
+            self.saver = tf.train.Saver(max_to_keep=5)
+            self.init = tf.global_variables_initializer()
+            self.trainables = tf.trainable_variables()
+            self.target_ops = update_target_graph(self.trainables, self.params['tau'])
             if self.load_model:
                 print(f"Attempting to load model at {self.output_location}")
                 checkpoint = tf.train.get_checkpoint_state(self.output_location)
                 if hasattr(checkpoint, "model_checkpoint_path"):
                     print(checkpoint)
-                    output_file_contents = os.listdir(self.output_location)
-                    numbers = []
-                    for name in output_file_contents:
-                        if ".cptk.index" in name:
-                            numbers.append(int(re.sub("[^0-9]", "", name)))
-                    self.episode_number = max(numbers) + 1
+                    # output_file_contents = os.listdir(self.output_location)
+                    # numbers = []
+                    # for name in output_file_contents:
+                    #     if ".cptk.index" in name:
+                    #         numbers.append(int(re.sub("[^0-9]", "", name)))
+                    # self.episode_number = max(numbers) + 1
                     self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
                     print("Loading successful")
                     print("Loading previous E")
@@ -110,34 +117,6 @@ class TrainingService:
             for e_number in range(self.episode_number, self.params["num_episodes"]):
                 self.episode_number = e_number
                 self.episode_loop()
-
-    def load_configuration(self):
-        """
-        Load the configuration files for the environment and agent parameters.
-        :return: The agent parameters and the environment parameters, as json objects.
-        """
-
-        print("Loading configuration...")
-        with open(f"{self.configuration_location}_learning.json", 'r') as f:
-            params = json.load(f)
-        with open(f"{self.configuration_location}_env.json", 'r') as f:
-            env = json.load(f)
-        return params, env
-
-    def check_for_model(self):
-        """
-        Check whether a model for the environment and trial number exists. If not, create the output file location.
-        :return: A boolean to signal whether or not a checkpoint should be loaded.
-        """
-
-        print("Checking for existing model...")
-        if not os.path.exists(self.output_location):
-            os.makedirs(self.output_location)
-            os.makedirs(f"{self.output_location}/episodes")
-            os.makedirs(f"{self.output_location}/logs")
-            return False
-        else:
-            return True
 
     def create_networks(self):
         """
@@ -311,7 +290,7 @@ class TrainingService:
         state_train = (np.zeros([self.params['batch_size'], self.main_QN.rnn_dim]),
                        np.zeros([self.params['batch_size'], self.main_QN.rnn_dim]))
 
-        # Get a random batch of experiences.
+        # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
         train_batch = self.training_buffer.sample(self.params['batch_size'], self.params['trace_length'])
 
         # Below we perform the Double-DQN update to the target Q-values

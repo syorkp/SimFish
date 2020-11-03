@@ -1,22 +1,61 @@
 import os
 
-from Services.training_service import TrainingService
+from Services.trial_manager import TrialManager
 
+# Ensure Output File Exists
+if not os.path.exists("./Output/"):
+    os.makedirs("./Output/")
 
-# Specifications for simulation
-environment_name = "base"
-trial_number = "1"
+trial_configuration_example = [
+    {
+        "Environment Name": "base",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Fish Setup": "Free",
+        "Priority": 1
+    },
+    {
+        "Environment Name": "base",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Fish Setup": "Free",
+        "Priority": 2
+    },
+    {
+        "Environment Name": "base",
+        "Trial Number": 3,
+        "Run Mode": "Training",
+        "Fish Setup": "Free",
+        "Priority": 1
+    },
+    {
+        "Environment Name": "test",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Fish Setup": "Free",
+        "Priority": 3
+    },
+    {
+        "Environment Name": "new_test",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Fish Setup": "Free",
+        "Priority": 3
+    },
+]
 
-output_folder = "./Output/"
-
-if not os.path.exists(output_folder):
-    os.makedirs(output_folder)
+trial_configuration = [
+    {
+        "Environment Name": "base",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Fish Setup": "Free",
+        "Priority": 1
+    },
+]
 
 # Run the configuration creator
-configuration_creator_file = f"Configurations/create_configuration_{environment_name}.py"
-
-os.system(configuration_creator_file)
 
 
-trial = TrainingService()
-trial.run()
+manager = TrialManager(trial_configuration)
+manager.run_priority_loop()
