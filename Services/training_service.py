@@ -32,16 +32,13 @@ class TrainingService:
         self.params = learning_params
         self.env = env_params
         self.output_location = f"./Output/{environment_name}_{trial_number}_output"
-        self.fish_mode = fish_mode
+        self.apparatus_mode = fish_mode
 
         # Environment and agent
         self.simulation = SimState(self.env)
 
         # Experience buffer
         self.training_buffer = ExperienceBuffer(buffer_size=self.params["exp_buffer_size"])
-
-        # Placeholder
-        self.main_QN, self.target_QN = None, None
 
         self.saver = None
         self.frame_buffer = []
@@ -52,7 +49,9 @@ class TrainingService:
         else:
             self.e = self.params["startE"]
         if total_steps is not None:
-            self.total_steps = total_steps + 1
+            # self.total_steps = total_steps + 1
+            # not possible to carry steps over without also carrying the training buffer over. Could do this in future.
+            self.total_steps = 0
         else:
             self.total_steps = 0
         if episode_number is not None:
@@ -68,7 +67,8 @@ class TrainingService:
         # To save the graph (placeholder)
         self.writer = None
 
-        # Global tensorflow variables
+        # Global tensorflow placeholders
+        self.main_QN, self.target_QN = None, None
         self.init = None
         self.trainables = None
         self.target_ops = None
@@ -103,9 +103,6 @@ class TrainingService:
                     # self.episode_number = max(numbers) + 1
                     self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
                     print("Loading successful")
-                    print("Loading previous E")
-                    with open(f"{self.output_location}/saved_parameters.txt", "r") as file:
-                        self.e = float(file.read())
 
                 else:
                     print("No saved checkpoints found, starting from scratch.")
@@ -197,8 +194,10 @@ class TrainingService:
         """
 
         print(f"episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}", flush=True)
+
         output_data = {"epsilon": self.e, "episode_number": self.episode_number, "total_steps": self.total_steps}
-        json.dumps(output_data)
+        with open(f"{self.output_location}/saved_parameters.json", "w") as file:
+            json.dump(output_data, file)
 
         if not self.save_frames:
             self.training_times.append(time() - episode_start_t)
@@ -220,14 +219,10 @@ class TrainingService:
 
             self.saver.save(self.sess, f"{self.output_location}/model-{str(self.episode_number)}.cptk")
             print("Saved Model")
-            print(self.total_steps, np.mean(self.reward_list[-50:]), self.e)
-            print(self.frame_buffer[0].shape)
             make_gif(self.frame_buffer, f"{self.output_location}/episodes/episode-{str(self.episode_number)}.gif",
                      duration=len(self.frame_buffer) * self.params['time_per_step'], true_image=True)
             self.frame_buffer = []
             self.save_frames = False
-            with open(f"{self.output_location}/saved_parameters.txt", "w") as file:
-                file.write(str(self.e))
 
         if (self.episode_number + 1) % self.params['summaryLength'] == 0:
             print('starting to save frames', flush=True)
