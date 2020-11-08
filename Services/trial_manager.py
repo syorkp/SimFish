@@ -53,9 +53,20 @@ class TrialManager:
                 os.makedirs(f"{output_directory_location}/episodes")
                 os.makedirs(f"{output_directory_location}/logs")
                 self.priority_ordered_trials[index]["Model Exists"] = False
-            else:
+            elif self.check_model_exists(output_directory_location):
                 self.priority_ordered_trials[index]["Model Exists"] = True
+            else:
+                self.priority_ordered_trials[index]["Model Exists"] = False
         print(self.priority_ordered_trials)
+
+    @staticmethod
+    def  check_model_exists(output_directory_location):
+        """Checks if a model checkpoint has been saved."""
+        output_file_contents = os.listdir(output_directory_location)
+        for name in output_file_contents:
+            if ".cptk.index" in name:
+                return True
+        return False
 
     @staticmethod
     def load_configuration_files(environment_name):
@@ -84,17 +95,15 @@ class TrialManager:
             learning_params, environment_params = self.load_configuration_files(trial["Environment Name"])
             if trial["Model Exists"]:
                 output_directory_location = f"./Output/{trial['Environment Name']}_{trial['Trial Number']}_output"
-                with open(f"{output_directory_location}/saved_parameters.txt", "r") as file:
-                    e = float(file.read())
-                output_file_contents = os.listdir(output_directory_location)
-                numbers = []
-                for name in output_file_contents:
-                    if ".cptk.index" in name:
-                        numbers.append(int(re.sub("[^0-9]", "", name)))
-                episode_number = max(numbers) + 1
-                # Can make more general if saving more data e.g. trial number.
+                with open(f"{output_directory_location}/saved_parameters.json", "r") as file:
+                    data = json.load(file)
+                    # Could also just pass in data and assign within the service.
+                    epsilon = data["epsilon"]
+                    total_steps = data["total_steps"]
+                    episode_number = data["episode_number"]
             else:
-                e = None
+                epsilon = None
+                total_steps = None
                 episode_number = None
             # TODO: Standardise the way this is done and add to bespoke function.
             if trial["Run Mode"] == "Training":
@@ -104,7 +113,8 @@ class TrialManager:
                                                       fish_mode=trial["Fish Setup"],
                                                       learning_params=learning_params,
                                                       env_params=environment_params,
-                                                      e=e,
+                                                      e=epsilon,
+                                                      total_steps=total_steps,
                                                       episode_number=episode_number,
                                                       )
                                       )

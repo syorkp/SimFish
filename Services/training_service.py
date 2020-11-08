@@ -1,4 +1,5 @@
 from time import time
+import json
 
 import numpy as np
 import tensorflow.compat.v1 as tf
@@ -14,7 +15,8 @@ tf.disable_v2_behavior()
 
 class TrainingService:
 
-    def __init__(self, environment_name, trial_number, model_exists, fish_mode, learning_params, env_params, e, episode_number):
+    def __init__(self, environment_name, trial_number, model_exists, fish_mode, learning_params, env_params,
+                 e, total_steps, episode_number):
         """
         An instance of TraningService handles the training of the DQN within a specified environment, according to
         specified parameters.
@@ -49,8 +51,12 @@ class TrainingService:
             self.e = e
         else:
             self.e = self.params["startE"]
+        if total_steps is not None:
+            self.total_steps = total_steps + 1
+        else:
+            self.total_steps = 0
         if episode_number is not None:
-            self.episode_number = episode_number
+            self.episode_number = episode_number + 1
         else:
             self.episode_number = 0
 
@@ -67,9 +73,6 @@ class TrainingService:
         self.trainables = None
         self.target_ops = None
         self.sess = None  # Placeholder for the tf-session.
-
-        # Tally of steps for deciding when to use training data or to finish training.
-        self.total_steps = 0  # TODO: Carry this across.
 
         # Used for performance monitoring (not essential for algorithm).
         self.training_times = []
@@ -194,6 +197,9 @@ class TrainingService:
         """
 
         print(f"episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}", flush=True)
+        output_data = {"epsilon": self.e, "episode_number": self.episode_number, "total_steps": self.total_steps}
+        json.dumps(output_data)
+
         if not self.save_frames:
             self.training_times.append(time() - episode_start_t)
         episode_summary = tf.Summary(value=[tf.Summary.Value(tag="episode reward", simple_value=total_episode_reward)])
