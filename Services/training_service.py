@@ -94,13 +94,6 @@ class TrainingService:
                 print(f"Attempting to load model at {self.output_location}")
                 checkpoint = tf.train.get_checkpoint_state(self.output_location)
                 if hasattr(checkpoint, "model_checkpoint_path"):
-                    print(checkpoint)
-                    # output_file_contents = os.listdir(self.output_location)
-                    # numbers = []
-                    # for name in output_file_contents:
-                    #     if ".cptk.index" in name:
-                    #         numbers.append(int(re.sub("[^0-9]", "", name)))
-                    # self.episode_number = max(numbers) + 1
                     self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
                     print("Loading successful")
 

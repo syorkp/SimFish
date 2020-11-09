@@ -1,9 +1,8 @@
 import os
 import json
-import re
-
 
 from Services.training_service import TrainingService
+from Services.assay_service import AssayService
 
 
 class TrialManager:
@@ -48,19 +47,26 @@ class TrialManager:
         print("Checking whether any of the trial models exist...")
         for index, trial in enumerate(self.priority_ordered_trials):
             output_directory_location = f"./Output/{trial['Environment Name']}_{trial['Trial Number']}_output"
-            if not os.path.exists(output_directory_location):
-                os.makedirs(output_directory_location)
-                os.makedirs(f"{output_directory_location}/episodes")
-                os.makedirs(f"{output_directory_location}/logs")
-                self.priority_ordered_trials[index]["Model Exists"] = False
-            elif self.check_model_exists(output_directory_location):
+            assay_directory_location = f"./Assay-Output/{trial['Environment Name']}_{trial['Trial Number']}"
+
+            if trial["Run Mode"] == "Training":
+                if not os.path.exists(output_directory_location):
+                    os.makedirs(output_directory_location)
+                    os.makedirs(f"{output_directory_location}/episodes")
+                    os.makedirs(f"{output_directory_location}/logs")
+                    self.priority_ordered_trials[index]["Model Exists"] = False
+                elif self.check_model_exists(output_directory_location):
+                    self.priority_ordered_trials[index]["Model Exists"] = True
+                else:
+                    self.priority_ordered_trials[index]["Model Exists"] = False
+            elif trial["Run Mode"] == "Assay":
                 self.priority_ordered_trials[index]["Model Exists"] = True
-            else:
-                self.priority_ordered_trials[index]["Model Exists"] = False
+                if not os.path.exists(assay_directory_location):
+                    os.makedirs(assay_directory_location)
         print(self.priority_ordered_trials)
 
     @staticmethod
-    def  check_model_exists(output_directory_location):
+    def check_model_exists(output_directory_location):
         """Checks if a model checkpoint has been saved."""
         output_file_contents = os.listdir(output_directory_location)
         for name in output_file_contents:
@@ -118,8 +124,26 @@ class TrialManager:
                                                       episode_number=episode_number,
                                                       )
                                       )
-            elif trial["Run Mode"] == "Experimental":
-                pass  # TODO: Add in experiment_service here.
+            elif trial["Run Mode"] == "Assay":
+                assays = [
+                    {
+                        "assay id": "Assay 1",
+                        "stimulus": "Normal environment",
+                        "end requirement": "Death or 1000 steps",
+                        "to record": ["advantage stream", "behavioural choice", "rnn state"]
+                    }
+                ]  # Should simulate one episode of normal fish existence, recording values for advantage stream and
+                # behavioural choice. TODO: Move to run configuration
+
+                #
+                trial_services.append(AssayService(environment_name=trial["Environment Name"],
+                                                   trial_number=trial["Trial Number"],
+                                                   learning_params=learning_params,
+                                                   environment_params=environment_params,
+                                                   apparatus_mode=trial["Fish Setup"],
+                                                   assays=assays
+                                                   )
+                                      )
         return trial_services
 
     def run_priority_loop(self):
@@ -131,10 +155,3 @@ class TrialManager:
         # TODO: Check use of GPU and whether another thread should be dropped.
         for service in self.trial_services:
             service.run()
-
-
-
-
-
-
-

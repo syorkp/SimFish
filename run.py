@@ -6,6 +6,9 @@ from Services.trial_manager import TrialManager
 if not os.path.exists("./Output/"):
     os.makedirs("./Output/")
 
+if not os.path.exists("./Assay-Output/"):
+    os.makedirs("./Assay-Output/")
+
 trial_configuration_example = [
     {
         "Environment Name": "base",
@@ -38,7 +41,7 @@ trial_configuration_example = [
     {
         "Environment Name": "new_test",
         "Trial Number": 1,
-        "Run Mode": "Training",
+        "Run Mode": "Assay",
         "Fish Setup": "Free",
         "Priority": 3
     },
@@ -48,7 +51,7 @@ trial_configuration = [
     {
         "Environment Name": "base",
         "Trial Number": 1,
-        "Run Mode": "Training",
+        "Run Mode": "Assay",
         "Fish Setup": "Free",
         "Priority": 1
     },
