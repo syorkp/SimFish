@@ -3,17 +3,17 @@ import json
 import numpy as np
 import tensorflow.compat.v1 as tf
 
-from Network.simfish_drqn import QNetwork
-from Environment.simfish_env import SimState
+from Network.q_network import QNetwork
+from Environment.sim_state import SimState
 
 
 class AssayService:
 
     def __init__(self, environment_name, trial_number, learning_params, environment_params, apparatus_mode, assays):
 
-        self.trial_id = f"{environment_name}_{trial_number}"
+        self.trial_id = f"{environment_name}-{trial_number}"
 
-        self.model_location = f"./Output/{self.trial_id}_output"
+        self.model_location = f"./Training-Output/{self.trial_id}"
         self.data_save_location = f"./Assay-Output/{self.trial_id}"
 
         self.learning_params = learning_params
@@ -37,10 +37,6 @@ class AssayService:
 
         self.step_number = 0
 
-    def build_assays(self):
-        # Returns a list of assays which can be looped over. This must include information for the stimuli, interactions, and recording settings
-        return True
-
     def create_network(self):
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim'], state_is_tuple=True)
         network = QNetwork(simulation=self.simulation,
@@ -52,6 +48,10 @@ class AssayService:
         return network
 
     def create_testing_environment(self):
+        """
+        Creates the testing environment as specified  by apparatus mode and given assays.
+        :return:
+        """
         return SimState(self.environment_params)
 
     def run(self):
@@ -108,7 +108,6 @@ class AssayService:
         action = int(chosen_a)
         advantage_stream = sa.tolist()
         rnn_state = updated_rnn_state.c.tolist()
-        print(rnn_state)
 
         possible_data_to_save = {
             "behavioural choice": action,
@@ -125,17 +124,5 @@ class AssayService:
 
     def save_assay_results(self, assay):
         # Saves all the information from the assays in JSON format.
-        data = [
-            {
-                "step": 1,
-                "action": 4,
-                "advantage": 55,
-            },
-            {
-                "step": 2,
-                "action": 7,
-                "advantage": 40,
-            },
-        ]  # TODO: Swith to compile real data.
         with open(f"{self.data_save_location}/{assay['assay id']}.json", "w") as output_file:
             json.dump(self.assay_output_data, output_file)

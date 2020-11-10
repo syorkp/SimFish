@@ -22,7 +22,6 @@ class TrialManager:
         self.create_configuration_files()
         self.create_output_directories()
         self.trial_services = self.create_trial_services()
-        print(self.trial_services)
 
         # TODO: Should also extract all information that needs to be maintained across trials to allow purity of
         #  training service and prevent code repeats.
@@ -46,8 +45,8 @@ class TrialManager:
         """
         print("Checking whether any of the trial models exist...")
         for index, trial in enumerate(self.priority_ordered_trials):
-            output_directory_location = f"./Output/{trial['Environment Name']}_{trial['Trial Number']}_output"
-            assay_directory_location = f"./Assay-Output/{trial['Environment Name']}_{trial['Trial Number']}"
+            output_directory_location = f"./Training-Output/{trial['Environment Name']}-{trial['Trial Number']}"
+            assay_directory_location = f"./Assay-Output/{trial['Environment Name']}-{trial['Trial Number']}"
 
             if trial["Run Mode"] == "Training":
                 if not os.path.exists(output_directory_location):
@@ -100,7 +99,7 @@ class TrialManager:
         for trial in self.priority_ordered_trials:
             learning_params, environment_params = self.load_configuration_files(trial["Environment Name"])
             if trial["Model Exists"]:
-                output_directory_location = f"./Output/{trial['Environment Name']}_{trial['Trial Number']}_output"
+                output_directory_location = f"./Training-Output/{trial['Environment Name']}-{trial['Trial Number']}"
                 with open(f"{output_directory_location}/saved_parameters.json", "r") as file:
                     data = json.load(file)
                     # Could also just pass in data and assign within the service.
@@ -127,7 +126,7 @@ class TrialManager:
             elif trial["Run Mode"] == "Assay":
                 assays = [
                     {
-                        "assay id": "Assay 1",
+                        "assay id": "Assay-1",
                         "stimulus": "Normal environment",
                         "end requirement": "Death or 1000 steps",
                         "to record": ["advantage stream", "behavioural choice", "rnn state"]

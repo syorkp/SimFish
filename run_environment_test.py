@@ -2,7 +2,7 @@ import os
 import sys
 import json
 
-from Environment.simfish_env import SimState
+from Environment.sim_state import SimState
 
 """
 Due to PyCharm plots error, currently needs to be run in terminal"""

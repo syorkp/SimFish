@@ -4,8 +4,8 @@ import json
 import numpy as np
 import tensorflow.compat.v1 as tf
 
-from Environment.simfish_env import SimState
-from Network.simfish_drqn import QNetwork
+from Environment.sim_state import SimState
+from Network.q_network import QNetwork
 from Network.experience_buffer import ExperienceBuffer
 from Tools.graph_functions import update_target_graph, update_target
 from Tools.make_gif import make_gif
@@ -27,11 +27,12 @@ class TrainingService:
 
         # TODO: Add hyperparameter control which may belong in RunService and could handle training of multiple models.
 
-        self.trial_id = f"{environment_name}_{trial_number}"
+        self.trial_id = f"{environment_name}-{trial_number}"
+        self.output_location = f"./Training-Output/{environment_name}-{trial_number}"
+
         self.load_model = model_exists
         self.params = learning_params
         self.env = env_params
-        self.output_location = f"./Output/{environment_name}_{trial_number}_output"
         self.apparatus_mode = fish_mode
 
         # Environment and agent
@@ -188,10 +189,6 @@ class TrainingService:
 
         print(f"episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}", flush=True)
 
-        output_data = {"epsilon": self.e, "episode_number": self.episode_number, "total_steps": self.total_steps}
-        with open(f"{self.output_location}/saved_parameters.json", "w") as file:
-            json.dump(output_data, file)
-
         if not self.save_frames:
             self.training_times.append(time() - episode_start_t)
         episode_summary = tf.Summary(value=[tf.Summary.Value(tag="episode reward", simple_value=total_episode_reward)])
@@ -210,8 +207,16 @@ class TrainingService:
         if self.episode_number % self.params['summaryLength'] == 0 and self.episode_number != 0:
             print(f"mean time: {np.mean(self.training_times)}")
 
+            # Save the parameters to be carried over.
+            output_data = {"epsilon": self.e, "episode_number": self.episode_number, "total_steps": self.total_steps}
+            with open(f"{self.output_location}/saved_parameters.json", "w") as file:
+                json.dump(output_data, file)
+
+            # Save the model
             self.saver.save(self.sess, f"{self.output_location}/model-{str(self.episode_number)}.cptk")
             print("Saved Model")
+
+            # Create the GIF
             make_gif(self.frame_buffer, f"{self.output_location}/episodes/episode-{str(self.episode_number)}.gif",
                      duration=len(self.frame_buffer) * self.params['time_per_step'], true_image=True)
             self.frame_buffer = []
