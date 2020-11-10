@@ -9,7 +9,7 @@ if not os.path.exists("./Training-Output/"):
 if not os.path.exists("./Assay-Output/"):
     os.makedirs("./Assay-Output/")
 
-trial_configuration_example = [
+trial_configuration_examples = [
     {
         "Environment Name": "base",
         "Trial Number": 1,
@@ -39,11 +39,19 @@ trial_configuration_example = [
         "Priority": 3
     },
     {
-        "Environment Name": "new_test",
+        "Environment Name": "base",
         "Trial Number": 1,
         "Run Mode": "Assay",
         "Fish Setup": "Free",
-        "Priority": 3
+        "Priority": 3,
+        "Assays": [
+            {
+                "assay id": "Assay-1",
+                "stimulus": "Normal environment",
+                "end requirement": "Death or 1000 steps",
+                "to record": ["advantage stream", "behavioural choice", "rnn state"]
+            }
+        ]
     },
 ]
 
@@ -51,9 +59,18 @@ trial_configuration = [
     {
         "Environment Name": "base",
         "Trial Number": 1,
-        "Run Mode": "Training",
+        "Run Mode": "Assay",
         "Fish Setup": "Free",
-        "Priority": 1
+        "Priority": 1,
+        "Assays": [
+            {
+                "assay id": "Assay-1",
+                "stimulus": "Normal environment",
+                "end requirement": "Death or 1000 steps",
+                "to record": ["advantage stream", "behavioural choice", "rnn state"]
+            }
+        ]
+
     },
 ]
 

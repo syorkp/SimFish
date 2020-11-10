@@ -23,11 +23,6 @@ class TrialManager:
         self.create_output_directories()
         self.trial_services = self.create_trial_services()
 
-        # TODO: Should also extract all information that needs to be maintained across trials to allow purity of
-        #  training service and prevent code repeats.
-        # TODO: In fact, should do everything that is repeated over the different services not related to the learning
-        #  algorithm.
-
     def create_configuration_files(self):
         """
         For each of the trials specified, creates the required environment and learning configuration JSON files by
@@ -88,29 +83,36 @@ class TrialManager:
             env = json.load(f)
         return params, env
 
+    @staticmethod
+    def get_saved_parameters(trial):
+        """
+        Extracts the saved parameters in teh saved_parameters.json document.
+        :return:
+        """
+        if trial["Model Exists"]:
+            output_directory_location = f"./Training-Output/{trial['Environment Name']}-{trial['Trial Number']}"
+            with open(f"{output_directory_location}/saved_parameters.json", "r") as file:
+                data = json.load(file)
+                epsilon = data["epsilon"]
+                total_steps = data["total_steps"]
+                episode_number = data["episode_number"]
+        else:
+            epsilon = None
+            total_steps = None
+            episode_number = None
+
+        return epsilon, total_steps, episode_number
+
     def create_trial_services(self):
         """
         Creates the instances of TrainingService and ExperimentService required for the trial configuration.
         :return:
         """
-        # Pass in to services: Whether or not a model already exists, any other carried on information
-        # e.g. episode number, epsilon value.
         trial_services = []
         for trial in self.priority_ordered_trials:
             learning_params, environment_params = self.load_configuration_files(trial["Environment Name"])
-            if trial["Model Exists"]:
-                output_directory_location = f"./Training-Output/{trial['Environment Name']}-{trial['Trial Number']}"
-                with open(f"{output_directory_location}/saved_parameters.json", "r") as file:
-                    data = json.load(file)
-                    # Could also just pass in data and assign within the service.
-                    epsilon = data["epsilon"]
-                    total_steps = data["total_steps"]
-                    episode_number = data["episode_number"]
-            else:
-                epsilon = None
-                total_steps = None
-                episode_number = None
-            # TODO: Standardise the way this is done and add to bespoke function.
+            epsilon, total_steps, episode_number = self.get_saved_parameters(trial)
+
             if trial["Run Mode"] == "Training":
                 trial_services.append(TrainingService(environment_name=trial["Environment Name"],
                                                       trial_number=trial["Trial Number"],
@@ -124,23 +126,12 @@ class TrialManager:
                                                       )
                                       )
             elif trial["Run Mode"] == "Assay":
-                assays = [
-                    {
-                        "assay id": "Assay-1",
-                        "stimulus": "Normal environment",
-                        "end requirement": "Death or 1000 steps",
-                        "to record": ["advantage stream", "behavioural choice", "rnn state"]
-                    }
-                ]  # Should simulate one episode of normal fish existence, recording values for advantage stream and
-                # behavioural choice. TODO: Move to run configuration
-
-                #
                 trial_services.append(AssayService(environment_name=trial["Environment Name"],
                                                    trial_number=trial["Trial Number"],
                                                    learning_params=learning_params,
                                                    environment_params=environment_params,
                                                    apparatus_mode=trial["Fish Setup"],
-                                                   assays=assays
+                                                   assays=trial["Assays"]
                                                    )
                                       )
         return trial_services

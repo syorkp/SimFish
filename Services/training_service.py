@@ -31,11 +31,12 @@ class TrainingService:
         self.output_location = f"./Training-Output/{environment_name}-{trial_number}"
 
         self.load_model = model_exists
+
         self.params = learning_params
         self.env = env_params
-        self.apparatus_mode = fish_mode
 
-        # Environment and agent
+        # Create the training environment.
+        self.apparatus_mode = fish_mode
         self.simulation = SimState(self.env)
 
         # Experience buffer
@@ -49,16 +50,13 @@ class TrainingService:
             self.e = e
         else:
             self.e = self.params["startE"]
-        if total_steps is not None:
-            # self.total_steps = total_steps + 1
-            # not possible to carry steps over without also carrying the training buffer over. Could do this in future.
-            self.total_steps = 0
-        else:
-            self.total_steps = 0
         if episode_number is not None:
             self.episode_number = episode_number + 1
         else:
             self.episode_number = 0
+
+        # While would fix TB output, Not possible to carry steps over without also carrying the training buffer over.
+        self.total_steps = 0
 
         self.step_drop = (self.params['startE'] - self.params['endE']) / self.params['anneling_steps']
 
@@ -75,7 +73,7 @@ class TrainingService:
         self.target_ops = None
         self.sess = None  # Placeholder for the tf-session.
 
-        # Used for performance monitoring (not essential for algorithm).
+        # Used for performance monitoring.
         self.training_times = []
         self.reward_list = []
 
@@ -153,12 +151,12 @@ class TrainingService:
         a = 0  # Initialise action for episode.
         while step_number < self.params["max_epLength"]:
             step_number += 1
-            o, a, r, internal_state, s1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
+            o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
                                                                        a=a, rnn_state=rnn_state)
             all_actions.append(a)
-            episode_buffer.append(np.reshape(np.array([o, a, r, internal_state, s1, d]), [1, 6]))
+            episode_buffer.append(np.reshape(np.array([o, a, r, internal_state, o1, d]), [1, 6]))
             total_episode_reward += r
-            o = s1
+            o = o1
             if self.total_steps > self.params['pre_train_steps']:
                 if self.e > self.params['endE']:
                     self.e -= self.step_drop
