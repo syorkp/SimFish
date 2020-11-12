@@ -4,7 +4,7 @@ import json
 import numpy as np
 import tensorflow.compat.v1 as tf
 
-from Environment.sim_state import SimState
+from Environment.naturalistic_environment import NaturalisticEnvironment
 from Network.q_network import QNetwork
 from Network.experience_buffer import ExperienceBuffer
 from Tools.graph_functions import update_target_graph, update_target
@@ -35,7 +35,8 @@ class TrainingService:
 
         # Create the training environment.
         self.apparatus_mode = fish_mode
-        self.simulation = SimState(self.env)
+        # self.simulation = SimState(self.env)
+        self.simulation = NaturalisticEnvironment(self.env)
 
         # Experience buffer
         self.training_buffer = ExperienceBuffer(buffer_size=self.params["exp_buffer_size"])

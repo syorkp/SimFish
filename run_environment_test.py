@@ -2,7 +2,7 @@ import os
 import sys
 import json
 
-from Environment.sim_state import SimState
+from Legacy.sim_state import SimState
 
 """
 Due to PyCharm plots error, currently needs to be run in terminal"""

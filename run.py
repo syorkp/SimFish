@@ -59,7 +59,7 @@ trial_configuration = [
     {
         "Environment Name": "base",
         "Trial Number": 1,
-        "Run Mode": "Assay",
+        "Run Mode": "Training",
         "Fish Setup": "Free",
         "Priority": 1,
         "Assays": [

@@ -38,26 +38,7 @@ class SimState:
         self.space.add(self.fish.body, self.fish.shape)
 
         # Create walls.
-        static = [
-            pymunk.Segment(
-                self.space.static_body,
-                (0, 1), (0, self.env_variables['height']), 1),
-            pymunk.Segment(
-                self.space.static_body,
-                (1, self.env_variables['height']), (self.env_variables['width'], self.env_variables['height']), 1),
-            pymunk.Segment(
-                self.space.static_body,
-                (self.env_variables['width'] - 1, self.env_variables['height']), (self.env_variables['width'] - 1, 1), 1),
-            pymunk.Segment(
-                self.space.static_body,
-                (1, 1), (self.env_variables['width'], 1), 1)
-        ]
-        for s in static:
-            s.friction = 1.
-            s.group = 1
-            s.collision_type = 1
-            s.color = (1, 0, 0)
-        self.space.add(static)
+        self.create_walls()
 
         self.reset()
 
@@ -94,6 +75,28 @@ class SimState:
 
         for i in range(self.env_variables['predator_num']):
             self.create_predator()
+
+    def create_walls(self):
+        static = [
+            pymunk.Segment(
+                self.space.static_body,
+                (0, 1), (0, self.env_variables['height']), 1),
+            pymunk.Segment(
+                self.space.static_body,
+                (1, self.env_variables['height']), (self.env_variables['width'], self.env_variables['height']), 1),
+            pymunk.Segment(
+                self.space.static_body,
+                (self.env_variables['width'] - 1, self.env_variables['height']), (self.env_variables['width'] - 1, 1), 1),
+            pymunk.Segment(
+                self.space.static_body,
+                (1, 1), (self.env_variables['width'], 1), 1)
+        ]
+        for s in static:
+            s.friction = 1.
+            s.group = 1
+            s.collision_type = 1
+            s.color = (1, 0, 0)
+        self.space.add(static)
 
     def readings_to_photons(self, readings):
         photons = np.random.poisson(readings * self.env_variables['photon_ratio'])
@@ -222,6 +225,8 @@ class SimState:
         return frame
 
     def take_action(self, action):
+        # TODO: Consider moving to fish class.
+
         if action == 0:  # Swim forward
             reward = -self.env_variables['forward_swim_cost']
             self.fish.body.apply_impulse_at_local_point((self.env_variables['forward_swim_impulse'], 0))

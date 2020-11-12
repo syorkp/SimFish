@@ -3,7 +3,7 @@ import json
 import numpy as np
 import tensorflow.compat.v1 as tf
 
-from Environment.sim_state import SimState
+from Environment.naturalistic_environment import NaturalisticEnvironment
 from Network.q_network import QNetwork
 
 
@@ -50,7 +50,8 @@ class AssayService:
         Creates the testing environment as specified  by apparatus mode and given assays.
         :return:
         """
-        return SimState(self.environment_params)
+        # return SimState(self.environment_params)
+        return NaturalisticEnvironment(self.environment_params)
 
     def run(self):
         with tf.Session() as self.sess:
