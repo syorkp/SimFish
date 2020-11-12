@@ -4,7 +4,6 @@ from skimage.transform import resize, rescale
 import pymunk
 
 from Tools.drawing_board import DrawingBoard
-from Environment.vis_fan import VisFan
 from Environment.fish import Fish
 
 
