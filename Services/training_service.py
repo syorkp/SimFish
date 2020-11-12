@@ -25,8 +25,6 @@ class TrainingService:
         distinguished in their output files.
         """
 
-        # TODO: Add hyperparameter control which may belong in RunService and could handle training of multiple models.
-
         self.trial_id = f"{environment_name}-{trial_number}"
         self.output_location = f"./Training-Output/{environment_name}-{trial_number}"
 

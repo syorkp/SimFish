@@ -10,7 +10,7 @@ class QNetwork:
         #through convolutional layers, concatenates it with the internal state
         #and feeds it to the RNN."""
 
-        self.num_arms = len(simulation.left_eye.vis_angles)  # Rays for each eye
+        self.num_arms = len(simulation.fish.left_eye.vis_angles)  # Rays for each eye
         self.rnn_dim = rnn_dim
         self.rnn_output_size = self.rnn_dim
         self.actions = tf.placeholder(shape=[None], dtype=tf.int32, name='actions')
