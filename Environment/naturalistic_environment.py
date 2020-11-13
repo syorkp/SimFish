@@ -21,7 +21,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.fish = Fish(self.board, env_variables, self.dark_col)
         self.space.add(self.fish.body, self.fish.shape)
 
-         # Create walls.
+        # Create walls.
         self.create_walls()
         self.reset()
 
@@ -36,14 +36,17 @@ class NaturalisticEnvironment(BaseEnvironment):
 
     def reset(self):
         self.num_steps = 0
-
-        # Reset fish state
         self.fish.hungry = 0
 
         self.fish.body.position = (np.random.randint(self.env_variables['fish_size'], self.env_variables['width'] - self.env_variables['fish_size']),
                                    np.random.randint(self.env_variables['fish_size'], self.env_variables['height'] - self.env_variables['fish_size']))
         self.fish.body.angle = np.random.random()*2*np.pi
         self.fish.body.velocity = (0, 0)
+        for i, shp in enumerate(self.prey_shapes):
+            self.space.remove(shp, shp.body)
+
+        for i, shp in enumerate(self.predator_shapes):
+            self.space.remove(shp, shp.body)
 
         self.prey_shapes = []
         self.prey_bodies = []

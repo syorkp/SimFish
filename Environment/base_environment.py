@@ -82,7 +82,6 @@ class BaseEnvironment:
 
     def take_action(self, action):
         # TODO: Consider moving to fish class.
-
         if action == 0:  # Swim forward
             reward = -self.env_variables['forward_swim_cost']
             self.fish.body.apply_impulse_at_local_point((self.env_variables['forward_swim_impulse'], 0))
@@ -130,14 +129,6 @@ class BaseEnvironment:
         #     self.right_eye.update_angles(self.verg_angle, self.retinal_field, False)
         #     self.conv_state = 0
         return reward
-
-    def pla_simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None):
-        # TODO: Create later
-        ...
-
-    def pla_draw_shapes(self):
-        # TODO: Create later
-        ...
 
     def touch_edge(self, arbiter, space, data):
         self.fish.body.velocity = (0, 0)
