@@ -186,8 +186,11 @@ class TrainingService:
 
         print(f"episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}", flush=True)
 
-        if not self.save_frames:
-            self.training_times.append(time() - episode_start_t)
+        # # Log the average training time for episodes (when not saved)
+        # if not self.save_frames:
+        #     self.training_times.append(time() - episode_start_t)
+        #     print(np.mean(self.training_times))
+
         episode_summary = tf.Summary(value=[tf.Summary.Value(tag="episode reward", simple_value=total_episode_reward)])
         self.writer.add_summary(episode_summary, self.total_steps)
 

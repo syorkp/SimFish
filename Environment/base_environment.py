@@ -12,7 +12,7 @@ class BaseEnvironment:
 
     def __init__(self, env_variables, draw_screen):
         self.env_variables = env_variables
-        self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])
+        self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])  # Made change here for size of arena
         self.draw_screen = draw_screen
         self.show_all = False
         self.num_steps = 0
@@ -25,6 +25,8 @@ class BaseEnvironment:
             plt.show()
 
         self.dark_col = int(self.env_variables['width'] * self.env_variables['dark_light_ratio'])
+        if self.dark_col == 0: # Fixes bug with left wall always being invisible.
+            self.dark_col = -1
 
         self.space = pymunk.Space()
         self.space.gravity = pymunk.Vec2d(0.0, 0.0)

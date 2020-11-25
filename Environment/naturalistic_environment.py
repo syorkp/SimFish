@@ -8,6 +8,9 @@ from Environment.fish import Fish
 
 class NaturalisticEnvironment(BaseEnvironment):
 
+    # TODO: No reason that the touch and move methods cant be in the base class
+    #  (dont think will affect performance, in any case doesnt matter for arrayservice)
+
     def __init__(self, env_variables, draw_screen=False):
         super().__init__(env_variables, draw_screen)
 
