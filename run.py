@@ -49,7 +49,7 @@ trial_configuration_examples = [
                 "assay id": "Assay-1",
                 "stimulus": "Normal environment",
                 "end requirement": "Death or 1000 steps",
-                "to record": ["advantage stream", "behavioural choice", "rnn state"]
+                "to record": ["advantage stream", "behavioural choice", "rnn state", "position"]
             }
         ]
     },
@@ -59,23 +59,39 @@ trial_configuration = [
     {
         "Environment Name": "base",
         "Trial Number": 1,
-        "Run Mode": "Training",
+        "Run Mode": "Assay",
         "Fish Setup": "Free",
-        "Priority": 1,
+        "Priority": 3,
         "Assays": [
             {
                 "assay id": "Assay-1",
                 "stimulus": "Normal environment",
                 "end requirement": "Death or 1000 steps",
-                "to record": ["advantage stream", "behavioural choice", "rnn state"]
+                "to record": ["advantage stream", "behavioural choice", "rnn state", "position", "observation"]
             }
         ]
+    },
+]
 
+training_configuration = [
+    # {
+    #     "Environment Name": "base",
+    #     "Trial Number": 2,
+    #     "Run Mode": "Training",
+    #     "Fish Setup": "Free",
+    #     "Priority": 1,
+    # },
+    {
+        "Environment Name": "base",
+        "Trial Number": 3,
+        "Run Mode": "Training",
+        "Fish Setup": "Free",
+        "Priority": 2,
     },
 ]
 
 # Run the configuration creator
 
 
-manager = TrialManager(trial_configuration)
+manager = TrialManager(training_configuration)
 manager.run_priority_loop()

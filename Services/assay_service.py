@@ -102,8 +102,8 @@ class AssayService:
                                                                                             frame_buffer=frame_buffer,
                                                                                             save_frames=False,
                                                                                             activations=(sa,))
-
-        possible_data_to_save = self.package_output_data(chosen_a, sa, updated_rnn_state)
+        possible_data_to_save = self.package_output_data(chosen_a, sa, updated_rnn_state,
+                                                         self.simulation.fish.body.position, o1)
         self.make_recordings(possible_data_to_save)
 
         return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
@@ -114,16 +114,20 @@ class AssayService:
         self.assay_output_data.append(step_data)
 
     @staticmethod
-    def package_output_data(action, advantage_stream, rnn_state):
+    def package_output_data(action, advantage_stream, rnn_state, position, observation):
         # Make output data JSON serializable
         action = int(action)
         advantage_stream = advantage_stream.tolist()
         rnn_state = rnn_state.c.tolist()
+        position = list(position)
+        observation = observation.tolist()
 
         data = {
             "behavioural choice": action,
             "rnn state": rnn_state,
             "advantage stream": advantage_stream,
+            "position": position,
+            "observation": observation,
         }  # Will work for now but note is inefficient
 
         return data
