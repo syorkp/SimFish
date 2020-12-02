@@ -5,6 +5,7 @@ import tensorflow.compat.v1 as tf
 
 from Environment.naturalistic_environment import NaturalisticEnvironment
 from Network.q_network import QNetwork
+from Tools.make_gif import make_gif
 
 
 class AssayService:
@@ -24,6 +25,8 @@ class AssayService:
 
         # Create the assays
         self.assays = assays
+
+        self.frame_buffer = []
 
         self.saver = None
         self.network = None
@@ -71,11 +74,11 @@ class AssayService:
         self.simulation.reset()
         rnn_state = (np.zeros([1, self.network.rnn_dim]), np.zeros([1, self.network.rnn_dim]))  # Reset RNN hidden state
         sa = np.zeros((1, 128))
-        frame_buffer = []  # TODO: Remove as unnecessary when created separate simulation
-        o, r, internal_state, d, frame_buffer = self.simulation.simulation_step(action=3,
-                                                                                frame_buffer=frame_buffer,
-                                                                                save_frames=False,
-                                                                                activations=(sa,))
+
+        o, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=3,
+                                                                                     frame_buffer=self.frame_buffer,
+                                                                                     save_frames=True,
+                                                                                     activations=(sa,))
         a = 0
         self.step_number = 0
         while self.step_number < self.learning_params["max_epLength"]:
@@ -97,13 +100,12 @@ class AssayService:
                        self.network.batch_size: 1,
                        self.network.exp_keep: 1.0})
         chosen_a = chosen_a[0]
-        frame_buffer = []
-        o1, given_reward, internal_state, d, frame_buffer = self.simulation.simulation_step(action=chosen_a,
-                                                                                            frame_buffer=frame_buffer,
-                                                                                            save_frames=False,
-                                                                                            activations=(sa,))
+        o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=chosen_a,
+                                                                                                 frame_buffer=self.frame_buffer,
+                                                                                                 save_frames=True,
+                                                                                                 activations=(sa,))
         possible_data_to_save = self.package_output_data(chosen_a, sa, updated_rnn_state,
-                                                         self.simulation.fish.body.position, o1)
+                                                         self.simulation.fish.body.position)
         self.make_recordings(possible_data_to_save)
 
         return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
@@ -113,13 +115,14 @@ class AssayService:
         step_data["step"] = self.step_number
         self.assay_output_data.append(step_data)
 
-    @staticmethod
-    def package_output_data(action, advantage_stream, rnn_state, position, observation):
+    def package_output_data(self, action, advantage_stream, rnn_state, position):
         # Make output data JSON serializable
         action = int(action)
         advantage_stream = advantage_stream.tolist()
         rnn_state = rnn_state.c.tolist()
         position = list(position)
+        # observation = observation.tolist()
+        observation = self.simulation.get_visual_inputs()
         observation = observation.tolist()
 
         data = {
@@ -134,5 +137,9 @@ class AssayService:
 
     def save_assay_results(self, assay):
         # Saves all the information from the assays in JSON format.
+        if assay["save frames"] == "True":
+            make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
+                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+        self.frame_buffer = []
         with open(f"{self.data_save_location}/{assay['assay id']}.json", "w") as output_file:
             json.dump(self.assay_output_data, output_file)

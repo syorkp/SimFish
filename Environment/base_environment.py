@@ -39,13 +39,7 @@ class BaseEnvironment:
             photons += noise.astype(int)
         return photons
 
-    def output_frame(self, activations, internal_state, scale=0.25):
-        arena = self.board.db*255.0
-        arena[0, :, 0] = np.ones(self.env_variables['width']) * 255
-        arena[self.env_variables['height'] - 1, :, 0] = np.ones(self.env_variables['width']) * 255
-        arena[:, 0, 0] = np.ones(self.env_variables['height']) * 255
-        arena[:, self.env_variables['width'] - 1, 0] = np.ones(self.env_variables['height']) * 255
-
+    def get_visual_inputs(self):
         left_photons = self.readings_to_photons(self.fish.left_eye.readings)
         right_photons = self.readings_to_photons(self.fish.right_eye.readings)
         left_eye = resize(np.reshape(left_photons, (1, len(self.fish.left_eye.vis_angles), 3)) * (255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
@@ -53,6 +47,16 @@ class BaseEnvironment:
         eyes = np.hstack((left_eye, np.zeros((20, 100, 3)), right_eye))
         eyes[eyes < 0] = 0
         eyes[eyes > 255] = 255
+        return eyes
+
+    def output_frame(self, activations, internal_state, scale=0.25):
+        arena = self.board.db*255.0
+        arena[0, :, 0] = np.ones(self.env_variables['width']) * 255
+        arena[self.env_variables['height'] - 1, :, 0] = np.ones(self.env_variables['width']) * 255
+        arena[:, 0, 0] = np.ones(self.env_variables['height']) * 255
+        arena[:, self.env_variables['width'] - 1, 0] = np.ones(self.env_variables['height']) * 255
+
+        eyes = self.get_visual_inputs()
 
         frame = np.vstack((arena, np.zeros((50, self.env_variables['width'], 3)), eyes))
 
