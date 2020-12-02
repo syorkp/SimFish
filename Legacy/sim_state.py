@@ -225,7 +225,7 @@ class SimState:
         return frame
 
     def take_action(self, action):
-        # TODO: Consider moving to fish class.
+        # TODO: Remove if no bugs
 
         if action == 0:  # Swim forward
             reward = -self.env_variables['forward_swim_cost']
@@ -279,7 +279,7 @@ class SimState:
         if frame_buffer is None:
             frame_buffer = []
         self.fish.making_capture = False
-        reward = self.take_action(action)
+        reward = self.fish.take_action(action)
 
         done = False
 
