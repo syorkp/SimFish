@@ -6,7 +6,7 @@ import matplotlib.cm as cm
 with open("../Assay-Output/base-1/Assay-1.json", "r") as file:
     data = json.load(file)
 
-# TODO: Create code to load everything into a dataframe.
+# TODO: Create code to load everything into a dataframe - should be own function for loading data.
 rnn_unit_1 = [i["rnn state"][0][0] for i in data]
 rnn_unit_2 = [i["rnn state"][0][1] for i in data]
 rnn_unit_3 = [i["rnn state"][0][2] for i in data]

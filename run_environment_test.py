@@ -2,9 +2,8 @@ import os
 import sys
 import json
 
-from Legacy.sim_state import SimState
-from Environment.virtual_virtual_reality import VirtualVirtualReality
 from Environment.naturalistic_environment import NaturalisticEnvironment
+from Environment.virtual_virtual_reality import VirtualVirtualReality
 
 """
 Due to PyCharm plots error, currently needs to be run in terminal"""
@@ -19,8 +18,8 @@ file_path = os.path.join(dirname, f"Configurations/JSON-Data/{arg}_env.json")
 
 with open(file_path, 'r') as f:
     env = json.load(f)
-# TODO: Make possible to test each environment type
-sim_state = VirtualVirtualReality(env, draw_screen=True)
+
+sim_state = NaturalisticEnvironment(env, draw_screen=True)
 q = False
 d = False
 sim_state.reset()

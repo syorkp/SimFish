@@ -8,8 +8,7 @@ from Environment.fish import Fish
 
 class NaturalisticEnvironment(BaseEnvironment):
 
-    # TODO: No reason that the touch and move methods cant be in the base class
-    #  (dont think will affect performance, in any case doesnt matter for arrayservice)
+    # TODO: Consider adding touch and move methods to base - will require placeholders there.
 
     def __init__(self, env_variables, draw_screen=False):
         super().__init__(env_variables, draw_screen)
@@ -38,6 +37,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.edge_col.begin = self.touch_edge
 
     def reset(self):
+        # TODO: Add overlap for different environments to base method.
         self.num_steps = 0
         self.fish.hungry = 0
 
@@ -153,7 +153,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         if frame_buffer is None:
             frame_buffer = []
         self.fish.making_capture = False
-        reward = self.take_action(action)
+        reward = self.fish.take_action(action)
 
         done = False
 

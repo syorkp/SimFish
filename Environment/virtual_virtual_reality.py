@@ -95,7 +95,7 @@ class VirtualVirtualReality(BaseEnvironment):
         if frame_buffer is None:
             frame_buffer = []
         self.fish.making_capture = False
-        reward = self.take_action(action)
+        reward = self.fish.take_action(action)
 
         done = False
 

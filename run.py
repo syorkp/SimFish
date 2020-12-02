@@ -124,5 +124,5 @@ myriad_job = [
     },
 ]
 
-manager = TrialManager(training_configuration)
+manager = TrialManager(myriad_job)
 manager.run_priority_loop()
