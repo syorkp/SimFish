@@ -7,8 +7,8 @@ import json
 
 # TODO: Remove unnecessary variables
 
-env = {'width': 200,  # arena size
-       'height': 200,
+env = {'width': 400,  # arena size
+       'height': 400,
        'drag': 0.7,  # water drag
        'phys_dt': 0.1,  # physics time step
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step

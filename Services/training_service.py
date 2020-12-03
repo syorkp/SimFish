@@ -55,7 +55,12 @@ class TrainingService:
             self.episode_number = 0
 
         # While would fix TB output, Not possible to carry steps over without also carrying the training buffer over.
-        self.total_steps = 0
+        if total_steps is not None:
+            self.total_steps = total_steps
+        else:
+            self.total_steps = 0
+
+        self.pre_train_steps = self.total_steps + self.params["pre_train_steps"]
 
         self.step_drop = (self.params['startE'] - self.params['endE']) / self.params['anneling_steps']
 
@@ -156,14 +161,13 @@ class TrainingService:
             episode_buffer.append(np.reshape(np.array([o, a, r, internal_state, o1, d]), [1, 6]))
             total_episode_reward += r
             o = o1
-            if self.total_steps > self.params['pre_train_steps']:
+            if self.total_steps > self.pre_train_steps:
                 if self.e > self.params['endE']:
                     self.e -= self.step_drop
                 if self.total_steps % (self.params['update_freq']) == 0:
                     self.train_networks()
             if d:
                 break
-
         # Add the episode to the experience buffer
         self.save_episode(episode_start_t=t0,
                           all_actions=all_actions,
@@ -199,6 +203,11 @@ class TrainingService:
             a_freq = tf.Summary(value=[tf.Summary.Value(tag="action " + str(act), simple_value=action_freq)])
             self.writer.add_summary(a_freq, self.total_steps)
 
+        # Save the parameters to be carried over.
+        output_data = {"epsilon": self.e, "episode_number": self.episode_number, "total_steps": self.total_steps}
+        with open(f"{self.output_location}/saved_parameters.json", "w") as file:
+            json.dump(output_data, file)
+
         buffer_array = np.array(episode_buffer)
         episode_buffer = list(zip(buffer_array))
         self.training_buffer.add(episode_buffer)
@@ -207,10 +216,7 @@ class TrainingService:
         if self.episode_number % self.params['summaryLength'] == 0 and self.episode_number != 0:
             print(f"mean time: {np.mean(self.training_times)}")
 
-            # Save the parameters to be carried over.
-            output_data = {"epsilon": self.e, "episode_number": self.episode_number, "total_steps": self.total_steps}
-            with open(f"{self.output_location}/saved_parameters.json", "w") as file:
-                json.dump(output_data, file)
+
 
             # Save the model
             self.saver.save(self.sess, f"{self.output_location}/model-{str(self.episode_number)}.cptk")
@@ -248,7 +254,7 @@ class TrainingService:
         """
 
         # Generate actions and corresponding steps.
-        if np.random.rand(1) < self.e or self.total_steps < self.params['pre_train_steps']:
+        if np.random.rand(1) < self.e or self.total_steps < self.pre_train_steps:
             [updated_rnn_state, sa, sv] = self.sess.run(
                 [self.main_QN.rnn_state, self.main_QN.streamA, self.main_QN.streamV],
                 feed_dict={self.main_QN.observation: o,

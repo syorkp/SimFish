@@ -40,8 +40,8 @@ class TrialManager:
         """
         print("Checking whether any of the trial models exist...")
         for index, trial in enumerate(self.priority_ordered_trials):
-            output_directory_location = f"./Training-Output/{trial['Environment Name']}-{trial['Trial Number']}"
-            assay_directory_location = f"./Assay-Output/{trial['Environment Name']}-{trial['Trial Number']}"
+            output_directory_location = f"./Training-Output/{trial['Model Name']}-{trial['Trial Number']}"
+            assay_directory_location = f"./Assay-Output/{trial['Model Name']}-{trial['Trial Number']}"
 
             if trial["Run Mode"] == "Training":
                 if not os.path.exists(output_directory_location):
@@ -90,7 +90,7 @@ class TrialManager:
         :return:
         """
         if trial["Model Exists"]:
-            output_directory_location = f"./Training-Output/{trial['Environment Name']}-{trial['Trial Number']}"
+            output_directory_location = f"./Training-Output/{trial['Model Name']}-{trial['Trial Number']}"
             with open(f"{output_directory_location}/saved_parameters.json", "r") as file:
                 data = json.load(file)
                 epsilon = data["epsilon"]
@@ -126,7 +126,8 @@ class TrialManager:
                                                       )
                                       )
             elif trial["Run Mode"] == "Assay":
-                trial_services.append(AssayService(environment_name=trial["Environment Name"],
+                trial_services.append(AssayService(model_name="base",
+                                                   environment_name=trial["Environment Name"],
                                                    trial_number=trial["Trial Number"],
                                                    learning_params=learning_params,
                                                    environment_params=environment_params,

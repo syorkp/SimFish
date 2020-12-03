@@ -8,11 +8,12 @@ from Tools.drawing_board import DrawingBoard
 
 class BaseEnvironment:
 
-    """A base class to represent environments, for extension to VVR and Naturalistic environment classes."""
+    """A base class to represent environments, for extension to ProjectionEnvironment, VVR and Naturalistic
+    environment classes."""
 
     def __init__(self, env_variables, draw_screen):
         self.env_variables = env_variables
-        self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])  # Made change here for size of arena
+        self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])
         self.draw_screen = draw_screen
         self.show_all = False
         self.num_steps = 0
@@ -25,14 +26,21 @@ class BaseEnvironment:
             plt.show()
 
         self.dark_col = int(self.env_variables['width'] * self.env_variables['dark_light_ratio'])
-        if self.dark_col == 0: # Fixes bug with left wall always being invisible.
+        if self.dark_col == 0:  # Fixes bug with left wall always being invisible.
             self.dark_col = -1
 
         self.space = pymunk.Space()
         self.space.gravity = pymunk.Vec2d(0.0, 0.0)
         self.space.damping = self.env_variables['drag']
 
+        self.prey_bodies = []
+        self.prey_shapes = []
+
+        self.predator_bodies = []
+        self.predator_shapes = []
+
     def readings_to_photons(self, readings):
+        # TODO: Move to fish class.
         photons = np.random.poisson(readings * self.env_variables['photon_ratio'])
         if self.env_variables['read_noise_sigma'] > 0:
             noise = np.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
@@ -96,5 +104,18 @@ class BaseEnvironment:
 
         self.fish.touched_edge = True
         return True
+
+    def create_prey(self):
+        self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
+        self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_size']))
+        self.prey_shapes[-1].elasticity = 1.0
+        self.prey_bodies[-1].position = (np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_size'],
+                                                           self.env_variables['width'] - (self.env_variables['prey_size'] + self.env_variables['fish_size'])),
+                                         np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_size'],
+                                                           self.env_variables['height'] - (self.env_variables['prey_size'] + self.env_variables['fish_size'])))
+        self.prey_shapes[-1].color = (0, 0, 1)
+        self.prey_shapes[-1].collision_type = 2
+
+        self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
 
 

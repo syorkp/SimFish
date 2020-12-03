@@ -55,61 +55,62 @@ trial_configuration_examples = [
     },
 ]
 
-trial_configuration = [
+
+# TODO: Move ish setup inside Assays
+# TODO: Move whole thing to its own JSON configuration set.
+assay_configuration = [
     {
-        "Environment Name": "base",
+        "Model Name": "base",
+        "Environment Name": "test_square",
         "Trial Number": 1,
         "Run Mode": "Assay",
-        "Fish Setup": "Free",
-        "Priority": 3,
+        "Fish Setup": "Tethered",
+        "Priority": 1,
         "Assays": [
             {
-                "assay id": "Assay-1",
-                "stimulus": "Normal environment",
-                "end requirement": "Death or 1000 steps",
-                "to record": ["advantage stream", "behavioural choice", "rnn state", "position", "observation"]
-            }
+                "assay id": "Visual-Stimulus-Assay-1",
+                "stimulus paradigm": "Projection",
+                "duration": 100,
+                "save frames": True,
+                "stimuli": {
+                    "prey 1": [
+                        {"step": 0,
+                         "position": [100, 100]},
+                        {"step": 20,
+                         "position": [300, 100]},
+                        {"step": 40,
+                         "position": [300, 300]},
+                        {"step": 60,
+                         "position": [100, 300]},
+                    ]
+                },
+                "recordings": ["behavioural choice", "rnn state", "observation"]
+            },
+            # {
+            #     "assay id": "Assay-2",
+            #     "stimulus": "Normal environment",
+            #     "end requirement": "Death or 1000 steps",
+            #     "save frames": "True",
+            #     "to record": ["advantage stream", "behavioural choice", "rnn state", "position", "observation"]
+            # },
+            # {
+            #     "assay id": "Assay-3",
+            #     "stimulus": "Normal environment",
+            #     "end requirement": "Death or 1000 steps",
+            #     "save frames": "True",
+            #     "to record": ["advantage stream", "behavioural choice", "rnn state", "position", "observation"]
+            # },
         ]
     },
 ]
 
 training_configuration = [
-    # {
-    #     "Environment Name": "base",
-    #     "Trial Number": 2,
-    #     "Run Mode": "Training",
-    #     "Fish Setup": "Free",
-    #     "Priority": 1,
-    # },
-    # {
-    #     "Environment Name": "new-test",
-    #     "Trial Number": 1,
-    #     "Run Mode": "Training",
-    #     "Fish Setup": "Free",
-    #     "Priority": 2,
-    # },
     {
         "Environment Name": "base",
         "Trial Number": 1,
-        "Run Mode": "Assay",
+        "Run Mode": "Training",
         "Fish Setup": "Free",
-        "Priority": 3,
-        "Assays": [
-            {
-                "assay id": "Assay-2",
-                "stimulus": "Normal environment",
-                "end requirement": "Death or 1000 steps",
-                "save frames": "True",
-                "to record": ["advantage stream", "behavioural choice", "rnn state", "position", "observation"]
-            },
-            {
-                "assay id": "Assay-3",
-                "stimulus": "Normal environment",
-                "end requirement": "Death or 1000 steps",
-                "save frames": "True",
-                "to record": ["advantage stream", "behavioural choice", "rnn state", "position", "observation"]
-            },
-        ]
+        "Priority": 1,
     },
 ]
 
@@ -124,5 +125,5 @@ myriad_job = [
     },
 ]
 
-manager = TrialManager(myriad_job)
+manager = TrialManager(assay_configuration)
 manager.run_priority_loop()

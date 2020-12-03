@@ -13,12 +13,6 @@ class NaturalisticEnvironment(BaseEnvironment):
     def __init__(self, env_variables, draw_screen=False):
         super().__init__(env_variables, draw_screen)
 
-        self.prey_bodies = []
-        self.prey_shapes = []
-
-        self.predator_bodies = []
-        self.predator_shapes = []
-
         # Create the fish class instance and add to the space.
         self.fish = Fish(self.board, env_variables, self.dark_col)
         self.space.add(self.fish.body, self.fish.shape)
@@ -104,39 +98,6 @@ class NaturalisticEnvironment(BaseEnvironment):
         else:
             return True
 
-    def create_prey(self):
-        self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
-        self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_size']))
-        self.prey_shapes[-1].elasticity = 1.0
-        self.prey_bodies[-1].position = (np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_size'],
-                                                           self.env_variables['width'] - (self.env_variables['prey_size'] + self.env_variables['fish_size'])),
-                                         np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_size'],
-                                                           self.env_variables['height'] - (self.env_variables['prey_size'] + self.env_variables['fish_size'])))
-        self.prey_shapes[-1].color = (0, 0, 1)
-        self.prey_shapes[-1].collision_type = 2
-
-        self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
-
-    def create_predator(self):
-        self.predator_bodies.append(pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia']))
-        self.predator_shapes.append(pymunk.Circle(self.predator_bodies[-1], self.env_variables['predator_size']))
-        self.predator_shapes[-1].elasticity = 1.0
-        self.predator_bodies[-1].position = (np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_size'],
-                                                               self.env_variables['width'] - (self.env_variables['predator_size'] + self.env_variables['fish_size'])),
-                                             np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_size'],
-                                                               self.env_variables['height'] - (self.env_variables['predator_size'] + self.env_variables['fish_size'])))
-        self.predator_shapes[-1].color = (0, 0, 1)
-        self.predator_shapes[-1].collision_type = 5
-
-        self.space.add(self.predator_bodies[-1], self.predator_shapes[-1])
-
-    def move_prey(self):
-        to_move = np.where(np.random.rand(len(self.prey_bodies)) < self.env_variables['prey_impulse_rate'])[0]
-        angles = np.random.rand(len(to_move))*2*np.pi
-        for ii in range(len(to_move)):
-            self.prey_bodies[to_move[ii]].angle = angles[ii]
-            self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_impulse'], 0))
-
     def move_predator(self):
         for pr in self.predator_bodies:
             dist_to_fish = np.sqrt((pr.position[0] - self.fish.body.position[0])**2 + (pr.position[1] - self.fish.body.position[1])**2)
@@ -215,6 +176,27 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         return observation, reward, internal_state, done, frame_buffer
 
+    def create_predator(self):
+        self.predator_bodies.append(pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia']))
+        self.predator_shapes.append(pymunk.Circle(self.predator_bodies[-1], self.env_variables['predator_size']))
+        self.predator_shapes[-1].elasticity = 1.0
+        self.predator_bodies[-1].position = (np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_size'],
+                                                               self.env_variables['width'] - (self.env_variables['predator_size'] + self.env_variables['fish_size'])),
+                                             np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_size'],
+                                                               self.env_variables['height'] - (self.env_variables['predator_size'] + self.env_variables['fish_size'])))
+        self.predator_shapes[-1].color = (0, 0, 1)
+        self.predator_shapes[-1].collision_type = 5
+
+        self.space.add(self.predator_bodies[-1], self.predator_shapes[-1])
+
+    def move_prey(self):
+        to_move = np.where(np.random.rand(len(self.prey_bodies)) < self.env_variables['prey_impulse_rate'])[0]
+        angles = np.random.rand(len(to_move))*2*np.pi
+        for ii in range(len(to_move)):
+            self.prey_bodies[to_move[ii]].angle = angles[ii]
+            self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_impulse'], 0))
+
+
     def draw_shapes(self):
         self.board.circle(self.fish.body.position, self.env_variables['fish_size'], self.fish.shape.color)
 
@@ -226,5 +208,4 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         for i, pr in enumerate(self.predator_bodies):
             self.board.circle(pr.position, self.env_variables['predator_size'], self.predator_shapes[i].color)
-
 

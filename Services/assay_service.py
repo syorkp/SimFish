@@ -4,24 +4,25 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from Environment.naturalistic_environment import NaturalisticEnvironment
+from Environment.controlled_stimulus_environment import ProjectionEnvironment
 from Network.q_network import QNetwork
 from Tools.make_gif import make_gif
 
 
 class AssayService:
 
-    def __init__(self, environment_name, trial_number, learning_params, environment_params, apparatus_mode, assays):
+    def __init__(self, model_name, environment_name, trial_number, learning_params, environment_params, apparatus_mode, assays):
 
-        self.trial_id = f"{environment_name}-{trial_number}"
-        self.model_location = f"./Training-Output/{self.trial_id}"
-        self.data_save_location = f"./Assay-Output/{self.trial_id}"
+        self.model_id = f"{model_name}-{trial_number}"
+        self.model_location = f"./Training-Output/{self.model_id}"
+        self.data_save_location = f"./Assay-Output/{self.model_id}"
 
         self.learning_params = learning_params
         self.environment_params = environment_params
 
-        # Create the testing environment
+        # Create the testing environment TODO: Make individual for different assays.
         self.apparatus_mode = apparatus_mode
-        self.simulation = self.create_testing_environment()
+        self.simulation = NaturalisticEnvironment(self.environment_params)  # TODO: While this has no effects, is inelegant and should be changed. Potentially pass in eye size directly to netwrok rather than whole environment.
 
         # Create the assays
         self.assays = assays
@@ -48,13 +49,15 @@ class AssayService:
                            learning_rate=self.learning_params['learning_rate'])
         return network
 
-    def create_testing_environment(self):
+    def create_testing_environment(self, assay):
         """
         Creates the testing environment as specified  by apparatus mode and given assays.
         :return:
         """
-        # return SimState(self.environment_params)
-        return NaturalisticEnvironment(self.environment_params)
+        if assay["stimulus paradigm"] == "Projection":
+            self.simulation = ProjectionEnvironment(self.environment_params, assay["stimuli"], tethered=True)
+        else:
+            self.simulation =  NaturalisticEnvironment(self.environment_params)
 
     def run(self):
         with tf.Session() as self.sess:
@@ -65,11 +68,12 @@ class AssayService:
             self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
             print("Model loaded")
             for assay in self.assays:
+                self.create_testing_environment(assay)
                 self.perform_assay(assay)
                 self.save_assay_results(assay)
 
     def perform_assay(self, assay):
-        self.assay_output_data_format = {key: None for key in assay["to record"]}
+        self.assay_output_data_format = {key: None for key in assay["recordings"]}
 
         self.simulation.reset()
         rnn_state = (np.zeros([1, self.network.rnn_dim]), np.zeros([1, self.network.rnn_dim]))  # Reset RNN hidden state
@@ -81,7 +85,7 @@ class AssayService:
                                                                                      activations=(sa,))
         a = 0
         self.step_number = 0
-        while self.step_number < self.learning_params["max_epLength"]:
+        while self.step_number < assay["duration"]:
             self.step_number += 1
             o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
                                                                        a=a, rnn_state=rnn_state)
@@ -137,7 +141,7 @@ class AssayService:
 
     def save_assay_results(self, assay):
         # Saves all the information from the assays in JSON format.
-        if assay["save frames"] == "True":
+        if assay["save frames"]:
             make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
         self.frame_buffer = []
