@@ -123,6 +123,7 @@ class TrialManager:
                                                       e=epsilon,
                                                       total_steps=total_steps,
                                                       episode_number=episode_number,
+                                                      monitor_gpu=trial["monitor gpu"],
                                                       )
                                       )
             elif trial["Run Mode"] == "Assay":

@@ -1,5 +1,6 @@
 from time import time
 import json
+import os
 
 import numpy as np
 import tensorflow.compat.v1 as tf
@@ -16,7 +17,7 @@ tf.disable_v2_behavior()
 class TrainingService:
 
     def __init__(self, environment_name, trial_number, model_exists, fish_mode, learning_params, env_params,
-                 e, total_steps, episode_number):
+                 e, total_steps, episode_number, monitor_gpu):
         """
         An instance of TraningService handles the training of the DQN within a specified environment, according to
         specified parameters.
@@ -29,6 +30,7 @@ class TrainingService:
         self.output_location = f"./Training-Output/{environment_name}-{trial_number}"
 
         self.load_model = model_exists
+        self.monitor_gpu = monitor_gpu
 
         self.params = learning_params
         self.env = env_params
@@ -231,6 +233,8 @@ class TrainingService:
         if (self.episode_number + 1) % self.params['summaryLength'] == 0:
             print('starting to save frames', flush=True)
             self.save_frames = True
+        if self.monitor_gpu:
+            print(f"GPU usage {os.system('gpustat -cp')}")
 
     def step_loop(self, o, internal_state, a, rnn_state):
         """

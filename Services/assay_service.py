@@ -55,7 +55,7 @@ class AssayService:
         :return:
         """
         if assay["stimulus paradigm"] == "Projection":
-            self.simulation = ProjectionEnvironment(self.environment_params, assay["stimuli"], tethered=True)
+            self.simulation = ProjectionEnvironment(self.environment_params, assay["stimuli"], tethered=assay["ish setup"])
         else:
             self.simulation =  NaturalisticEnvironment(self.environment_params)
 

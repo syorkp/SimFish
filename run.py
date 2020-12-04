@@ -9,53 +9,6 @@ if not os.path.exists("./Training-Output/"):
 if not os.path.exists("./Assay-Output/"):
     os.makedirs("./Assay-Output/")
 
-trial_configuration_examples = [
-    {
-        "Environment Name": "base",
-        "Trial Number": 1,
-        "Run Mode": "Training",
-        "Fish Setup": "Free",
-        "Priority": 1
-    },
-    {
-        "Environment Name": "base",
-        "Trial Number": 2,
-        "Run Mode": "Training",
-        "Fish Setup": "Free",
-        "Priority": 2
-    },
-    {
-        "Environment Name": "base",
-        "Trial Number": 3,
-        "Run Mode": "Training",
-        "Fish Setup": "Free",
-        "Priority": 1
-    },
-    {
-        "Environment Name": "test",
-        "Trial Number": 1,
-        "Run Mode": "Training",
-        "Fish Setup": "Free",
-        "Priority": 3
-    },
-    {
-        "Environment Name": "base",
-        "Trial Number": 1,
-        "Run Mode": "Assay",
-        "Fish Setup": "Free",
-        "Priority": 3,
-        "Assays": [
-            {
-                "assay id": "Assay-1",
-                "stimulus": "Normal environment",
-                "end requirement": "Death or 1000 steps",
-                "to record": ["advantage stream", "behavioural choice", "rnn state", "position"]
-            }
-        ]
-    },
-]
-
-
 # TODO: Move ish setup inside Assays
 # TODO: Move whole thing to its own JSON configuration set.
 assay_configuration = [
@@ -64,14 +17,15 @@ assay_configuration = [
         "Environment Name": "test_square",
         "Trial Number": 1,
         "Run Mode": "Assay",
-        "Fish Setup": "Tethered",
         "Priority": 1,
         "Assays": [
             {
                 "assay id": "Visual-Stimulus-Assay-1",
                 "stimulus paradigm": "Projection",
                 "duration": 100,
+                "fish setup": "Tethered",
                 "save frames": True,
+                "recordings": ["behavioural choice", "rnn state", "observation"],
                 "stimuli": {
                     "prey 1": [
                         {"step": 0,
@@ -84,46 +38,23 @@ assay_configuration = [
                          "position": [100, 300]},
                     ]
                 },
-                "recordings": ["behavioural choice", "rnn state", "observation"]
+                "interactions": []
             },
-            # {
-            #     "assay id": "Assay-2",
-            #     "stimulus": "Normal environment",
-            #     "end requirement": "Death or 1000 steps",
-            #     "save frames": "True",
-            #     "to record": ["advantage stream", "behavioural choice", "rnn state", "position", "observation"]
-            # },
-            # {
-            #     "assay id": "Assay-3",
-            #     "stimulus": "Normal environment",
-            #     "end requirement": "Death or 1000 steps",
-            #     "save frames": "True",
-            #     "to record": ["advantage stream", "behavioural choice", "rnn state", "position", "observation"]
-            # },
         ]
     },
 ]
 
 training_configuration = [
     {
+        "Model Name": "base",
         "Environment Name": "base",
-        "Trial Number": 1,
+        "Trial Number": 6,
         "Run Mode": "Training",
         "Fish Setup": "Free",
         "Priority": 1,
+        "monitor gpu": True,
     },
 ]
 
-# Run the configuration creator
-myriad_job = [
-    {
-        "Environment Name": "base",
-        "Trial Number": 4,
-        "Run Mode": "Training",
-        "Fish Setup": "Free",
-        "Priority": 1,
-    },
-]
-
-manager = TrialManager(assay_configuration)
+manager = TrialManager(training_configuration)
 manager.run_priority_loop()
