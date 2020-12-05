@@ -78,14 +78,15 @@ training_configuration = [
     {
         "Model Name": "base",
         "Environment Name": "base",
-        "Trial Number": 6,
+        "Trial Number": 7,
         "Run Mode": "Training",
         "Fish Setup": "Free",
         "Priority": 1,
-        "using gpu": False,
-        "monitor gpu": True,
+        "using gpu": True,
+        "monitor gpu": False,
+
     },
 ]
 
-manager = TrialManager(assay_configuration)
+manager = TrialManager(training_configuration)
 manager.run_priority_loop()
