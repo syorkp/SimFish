@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pymunk
 
 from Environment.base_environment import BaseEnvironment
-from Environment.fish import Fish
+from Environment.Fish.fish import Fish
 
 
 class VirtualVirtualReality(BaseEnvironment):

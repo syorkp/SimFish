@@ -9,7 +9,6 @@ if not os.path.exists("./Training-Output/"):
 if not os.path.exists("./Assay-Output/"):
     os.makedirs("./Assay-Output/")
 
-# TODO: Move ish setup inside Assays
 # TODO: Move whole thing to its own JSON configuration set.
 assay_configuration = [
     {
@@ -19,15 +18,41 @@ assay_configuration = [
         "Run Mode": "Assay",
         "Priority": 1,
         "Assays": [
+            # {
+            #     "assay id": "Visual-Stimulus-Assay-1",
+            #     "stimulus paradigm": "Projection",
+            #     "duration": 300,
+            #     "fish setup": "Tethered",
+            #     "save frames": True,
+            #     "recordings": ["behavioural choice", "rnn state", "observation"],
+            #     "stimuli": {
+            #         "prey 1": [
+            #             {"step": 0,
+            #              "position": [100, 100]},
+            #             {"step": 20,
+            #              "position": [300, 100]},
+            #             {"step": 40,
+            #              "position": [300, 300]},
+            #             {"step": 60,
+            #              "position": [100, 300]},
+            #             {"step": 80,
+            #              "position": [300, 300]},
+            #             {"step": 100,
+            #              "position": [300, 100]},
+            #             {"step": 120,
+            #              "position": [100, 100]},
+            #         ],
+            #     },
+            #     "interactions": []},
             {
-                "assay id": "Visual-Stimulus-Assay-1",
+                "assay id": "Visual-Stimulus-Assay-2",
                 "stimulus paradigm": "Projection",
-                "duration": 100,
+                "duration": 300,
                 "fish setup": "Tethered",
                 "save frames": True,
                 "recordings": ["behavioural choice", "rnn state", "observation"],
                 "stimuli": {
-                    "prey 1": [
+                    "predator 1": [
                         {"step": 0,
                          "position": [100, 100]},
                         {"step": 20,
@@ -36,10 +61,15 @@ assay_configuration = [
                          "position": [300, 300]},
                         {"step": 60,
                          "position": [100, 300]},
+                        {"step": 80,
+                         "position": [300, 300]},
+                        {"step": 100,
+                         "position": [300, 100]},
+                        {"step": 120,
+                         "position": [100, 100]},
                     ]
-                },
-                "interactions": []
-            },
+                }
+            }
         ]
     },
 ]
@@ -52,9 +82,10 @@ training_configuration = [
         "Run Mode": "Training",
         "Fish Setup": "Free",
         "Priority": 1,
+        "using gpu": False,
         "monitor gpu": True,
     },
 ]
 
-manager = TrialManager(training_configuration)
+manager = TrialManager(assay_configuration)
 manager.run_priority_loop()

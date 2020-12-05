@@ -11,7 +11,7 @@ from Tools.make_gif import make_gif
 
 class AssayService:
 
-    def __init__(self, model_name, environment_name, trial_number, learning_params, environment_params, apparatus_mode, assays):
+    def __init__(self, model_name, environment_name, trial_number, learning_params, environment_params, assays):
 
         self.model_id = f"{model_name}-{trial_number}"
         self.model_location = f"./Training-Output/{self.model_id}"
@@ -20,8 +20,6 @@ class AssayService:
         self.learning_params = learning_params
         self.environment_params = environment_params
 
-        # Create the testing environment TODO: Make individual for different assays.
-        self.apparatus_mode = apparatus_mode
         self.simulation = NaturalisticEnvironment(self.environment_params)  # TODO: While this has no effects, is inelegant and should be changed. Potentially pass in eye size directly to netwrok rather than whole environment.
 
         # Create the assays
@@ -55,7 +53,7 @@ class AssayService:
         :return:
         """
         if assay["stimulus paradigm"] == "Projection":
-            self.simulation = ProjectionEnvironment(self.environment_params, assay["stimuli"], tethered=assay["ish setup"])
+            self.simulation = ProjectionEnvironment(self.environment_params, assay["stimuli"], tethered=assay["fish setup"])
         else:
             self.simulation =  NaturalisticEnvironment(self.environment_params)
 

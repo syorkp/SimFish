@@ -40,7 +40,6 @@ class BaseEnvironment:
         self.predator_shapes = []
 
     def readings_to_photons(self, readings):
-        # TODO: Move to fish class.
         photons = np.random.poisson(readings * self.env_variables['photon_ratio'])
         if self.env_variables['read_noise_sigma'] > 0:
             noise = np.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
@@ -56,6 +55,21 @@ class BaseEnvironment:
         eyes[eyes < 0] = 0
         eyes[eyes > 255] = 255
         return eyes
+
+    def reset(self):
+        self.num_steps = 0
+        self.fish.hungry = 0
+        for i, shp in enumerate(self.prey_shapes):
+            self.space.remove(shp, shp.body)
+
+        for i, shp in enumerate(self.predator_shapes):
+            self.space.remove(shp, shp.body)
+
+        self.prey_shapes = []
+        self.prey_bodies = []
+        self.predator_shapes = []
+        self.predator_bodies = []
+
 
     def output_frame(self, activations, internal_state, scale=0.25):
         arena = self.board.db*255.0
@@ -118,4 +132,28 @@ class BaseEnvironment:
 
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
 
+    def create_predator(self):
+        self.predator_bodies.append(pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia']))
+        self.predator_shapes.append(pymunk.Circle(self.predator_bodies[-1], self.env_variables['predator_size']))
+        self.predator_shapes[-1].elasticity = 1.0
+        self.predator_bodies[-1].position = (np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_size'],
+                                                               self.env_variables['width'] - (self.env_variables['predator_size'] + self.env_variables['fish_size'])),
+                                             np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_size'],
+                                                               self.env_variables['height'] - (self.env_variables['predator_size'] + self.env_variables['fish_size'])))
+        self.predator_shapes[-1].color = (0, 0, 1)
+        self.predator_shapes[-1].collision_type = 5
+
+        self.space.add(self.predator_bodies[-1], self.predator_shapes[-1])
+
+    def draw_shapes(self):
+        self.board.circle(self.fish.body.position, self.env_variables['fish_size'], self.fish.shape.color)
+
+        if len(self.prey_bodies) > 0:
+            px = np.round(np.array([pr.position[0] for pr in self.prey_bodies])).astype(int)
+            py = np.round(np.array([pr.position[1] for pr in self.prey_bodies])).astype(int)
+            rrs, ccs = self.board.multi_circles(px, py, self.env_variables['prey_size'])
+            self.board.db[rrs, ccs] = self.prey_shapes[0].color
+
+        for i, pr in enumerate(self.predator_bodies):
+            self.board.circle(pr.position, self.env_variables['predator_size'], self.predator_shapes[i].color)
 

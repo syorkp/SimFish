@@ -1,17 +1,16 @@
 import numpy as np
 import pymunk
 
-from Environment.vis_fan import VisFan
+from Environment.Fish.vis_fan import VisFan
 
 
-class TetheredFish:
+class Fish:
 
     """
     Created to simplify the SimState class, while making it easier to have environments with multiple agents in future.
     """
 
     def __init__(self, board, env_variables, dark_col):
-        # TODO: See if can just inherit from normal fish then overwrite the action method.
         inertia = pymunk.moment_for_circle(env_variables['fish_mass'], 0, env_variables['fish_size'], (0, 0))
         self.env_variables = env_variables
         self.body = pymunk.Body(1, inertia)
@@ -43,22 +42,32 @@ class TetheredFish:
     def take_action(self, action):
         if action == 0:  # Swim forward
             reward = -self.env_variables['forward_swim_cost']
+            self.body.apply_impulse_at_local_point((self.env_variables['forward_swim_impulse'], 0))
             self.shape.color = (0, 1, 0)
         elif action == 1:  # Turn right
             reward = -self.env_variables['routine_turn_cost']
+            self.body.angle += self.env_variables['routine_turn_dir_change']
+            self.body.apply_impulse_at_local_point((self.env_variables['routine_turn_impulse'], 0))
             self.shape.color = (0, 1, 0)
         elif action == 2:   # Turn left
             reward = -self.env_variables['routine_turn_cost']
+            self.body.angle -= self.env_variables['routine_turn_dir_change']
+            self.body.apply_impulse_at_local_point((self.env_variables['routine_turn_impulse'], 0))
             self.shape.color = (0, 1, 0)
         elif action == 3:   # Capture
             reward = -self.env_variables['capture_swim_cost']
+            self.body.apply_impulse_at_local_point((self.env_variables['capture_swim_impulse'], 0))
             self.shape.color = [1, 0, 1]
             self.making_capture = True
         elif action == 4:  # j turn right
             reward = -self.env_variables['j_turn_cost']
+            self.body.angle += self.env_variables['j_turn_dir_change']
+            self.body.apply_impulse_at_local_point((self.env_variables['j_turn_impulse'], 0))
             self.shape.color = [1, 1, 1]
         elif action == 5:  # j turn left
             reward = -self.env_variables['j_turn_cost']
+            self.body.angle -= self.env_variables['j_turn_dir_change']
+            self.body.apply_impulse_at_local_point((self.env_variables['j_turn_impulse'], 0))
             self.shape.color = [1, 1, 1]
         elif action == 6:   # do nothing:
             reward = -self.env_variables['rest_cost']

@@ -132,7 +132,6 @@ class TrialManager:
                                                    trial_number=trial["Trial Number"],
                                                    learning_params=learning_params,
                                                    environment_params=environment_params,
-                                                   apparatus_mode=trial["Fish Setup"],
                                                    assays=trial["Assays"]
                                                    )
                                       )
@@ -144,6 +143,5 @@ class TrialManager:
         :return:
         """
         # TODO: Add in threading and parallelism.
-        # TODO: Check use of GPU and whether another thread should be dropped.
         for service in self.trial_services:
             service.run()

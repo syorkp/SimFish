@@ -3,14 +3,15 @@ import matplotlib.pyplot as plt
 import pymunk
 
 from Environment.base_environment import BaseEnvironment
-from Environment.fish import Fish
-from Environment.tethered_fish import TetheredFish
+from Environment.Fish.fish import Fish
+from Environment.Fish.tethered_fish import TetheredFish
 
 
 class ProjectionEnvironment(BaseEnvironment):
     """
     This version is made with only the fixed projection configuration in mind.
     As a result, doesnt have walls, and fish appears directly in the centre of the environment.
+    For this environment, the following stimuli are available: prey, predators.
     """
 
     def __init__(self, env_variables, stimuli, tethered=True, draw_screen=False):
@@ -22,13 +23,11 @@ class ProjectionEnvironment(BaseEnvironment):
             self.fish = Fish(self.board, env_variables, self.dark_col)
         self.space.add(self.fish.body, self.fish.shape)
 
-        # TODO: Check cant just be in the same one.
+        # TODO: Unify in future with other stimuli
         self.prey_positions = {}
         self.predator_positions = {}
-        self.create_stimuli(stimuli)
-        self.interpolate_stimuli_positions(stimuli)
 
-        # Whole environment measurements. TODO: Replace all in program uses of env_variables reading with these.
+        # Whole environment measurements.
         board_height = env_variables["height"]
         board_width = env_variables["width"]
 
@@ -38,20 +37,22 @@ class ProjectionEnvironment(BaseEnvironment):
         self.wall_3_coordinates = [[1, 1], [board_width,1]]
         self.wall_4_coordinates = [[board_width, 1], [board_width, board_height]]
 
+        self.stimuli = stimuli
+
         self.create_walls()
         self.reset()
+
+        self.create_positional_information(stimuli)
 
         self.edge_col = self.space.add_collision_handler(1, 3)
         self.edge_col.begin = self.touch_edge
 
     def reset(self):
-        # TODO: Split parts of this into new methods in the BaseEnvironment class, such as reset_fish()
-        self.num_steps = 0
-        self.fish.hungry = 0
-
+        super().reset()
         self.fish.body.position = (self.env_variables['width']/2, self.env_variables['height']/2)
         self.fish.body.angle = 0
         self.fish.body.velocity = (0, 0)
+        self.create_stimuli(self.stimuli)
 
     def create_walls(self):
         static = [
@@ -128,51 +129,64 @@ class ProjectionEnvironment(BaseEnvironment):
 
         return observation, reward, internal_state, done, frame_buffer
 
-    def interpolate(self, a, b, t_interval):
-        dx = (b[0] - a[0])/t_interval
-        dy = (b[1] - a[1])/t_interval
-        interpolated_positions = [[a[0]+dx*i, a[1]+dy*i] for i in range(t_interval)]
-        return interpolated_positions
-
-    def interpolate_stimuli_positions(self, stimuli):
+    def create_positional_information(self, stimuli):
         for stimulus in stimuli:
             edge_index = 0
             if "prey" in stimulus:
                 self.prey_positions[stimulus] = []
                 while edge_index + 1 < len(stimuli[stimulus]):
-                    a = stimuli[stimulus][edge_index]["position"]
-                    b = stimuli[stimulus][edge_index + 1]["position"]
-                    t_interval = stimuli[stimulus][edge_index + 1]["step"] - stimuli[stimulus][edge_index]["step"]
-                    positions = self.interpolate(a, b, t_interval)
+                    positions = self.interpolate_stimuli_positions(stimuli[stimulus], edge_index)
                     self.prey_positions[stimulus] = self.prey_positions[stimulus] + positions
                     edge_index += 1
-                    # TODO: Fix so that removes stimuli after there is no position data.
-            # TODO: Add for other stimulus classes
+            elif "predator" in stimulus:
+                self.predator_positions[stimulus] = []
+                while edge_index + 1 < len(stimuli[stimulus]):
+                    positions = self.interpolate_stimuli_positions(stimuli[stimulus], edge_index)
+                    self.predator_positions[stimulus] = self.predator_positions[stimulus] + positions
+                    edge_index += 1
+
+    @staticmethod
+    def interpolate_stimuli_positions(stimulus, edge_index):
+        a = stimulus[edge_index]["position"]
+        b = stimulus[edge_index + 1]["position"]
+        t_interval = stimulus[edge_index + 1]["step"] - stimulus[edge_index]["step"]
+        dx = (b[0] - a[0])/t_interval
+        dy = (b[1] - a[1])/t_interval
+        interpolated_positions = [[a[0]+dx*i, a[1]+dy*i] for i in range(t_interval)]
+        return interpolated_positions
 
     def update_stimuli(self):
-        # Check if prey position.
-        # Also what to do when not enough prey positions.
+        # TODO: Coded very badly.
+        # TODO: Fix for delayed stimuli.
+        finished_prey = []
+        finished_predators = []
         for i, prey in enumerate(self.prey_positions):
             try:
-                self.prey_bodies[i].position = (self.prey_positions[prey][self.num_steps][0], self.prey_positions[prey][self.num_steps][1])
-            except:
-                # TODO: Remove prey stimulus
-                pass
-                # self.prey_bodies.pop(i)
-        # TODO: Add for other stimulus classes
+                self.prey_bodies[i].position = (self.prey_positions[prey][self.num_steps][0],
+                                                self.prey_positions[prey][self.num_steps][1])
+            except IndexError:
+                self.prey_bodies.pop(i)
+                self.prey_shapes.pop(i)
+                finished_prey.append(prey)
+
+        for i, predator in enumerate(self.predator_positions):
+            try:
+                self.predator_bodies[i].position = (self.predator_positions[predator][self.num_steps][0],
+                                                    self.predator_positions[predator][self.num_steps][1])
+            except IndexError:
+                self.predator_bodies.pop(i)
+                self.predator_shapes.pop(i)
+                finished_predators.append(predator)
+
+        for item in finished_prey:
+            del self.prey_positions[item]
+        for item in finished_predators:
+            del self.predator_positions[item]
 
     def create_stimuli(self, stimuli):
         for stimulus in stimuli:
             if "prey" in stimulus:
                 self.create_prey()
-            # TODO: Add for other stimulus classes
-
-    def draw_shapes(self):
-        self.board.circle(self.fish.body.position, self.env_variables['fish_size'], self.fish.shape.color)
-
-        if len(self.prey_bodies) > 0:
-            px = np.round(np.array([pr.position[0] for pr in self.prey_bodies])).astype(int)
-            py = np.round(np.array([pr.position[1] for pr in self.prey_bodies])).astype(int)
-            rrs, ccs = self.board.multi_circles(px, py, self.env_variables['prey_size'])
-            self.board.db[rrs, ccs] = self.prey_shapes[0].color
+            elif "predator" in stimulus:
+                self.create_predator()
 
