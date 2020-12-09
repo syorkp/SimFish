@@ -70,7 +70,6 @@ class BaseEnvironment:
         self.predator_shapes = []
         self.predator_bodies = []
 
-
     def output_frame(self, activations, internal_state, scale=0.25):
         arena = self.board.db*255.0
         arena[0, :, 0] = np.ones(self.env_variables['width']) * 255

@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.cm as cm
 
-with open("../Assay-Output/base-1/Assay-1.json", "r") as file:
+with open("../Assay-Output/base-1/Visual-Stimulus-Assay-1.json", "r") as file:
     data = json.load(file)
 
 # TODO: Create code to load everything into a dataframe - should be own function for loading data.
@@ -16,11 +16,11 @@ action_choice = [i["behavioural choice"] for i in data]
 
 # Shorten action choice
 
-action_choice = action_choice[200: 500]
-rnn_unit_1 = rnn_unit_1[200: 500]
-rnn_unit_2 = rnn_unit_2[200: 500]
-rnn_unit_3 = rnn_unit_3[200: 500]
-rnn_unit_200 = rnn_unit_200[200: 500]
+# action_choice = action_choice[200: 500]
+# rnn_unit_1 = rnn_unit_1[200: 500]
+# rnn_unit_2 = rnn_unit_2[200: 500]
+# rnn_unit_3 = rnn_unit_3[200: 500]
+# rnn_unit_200 = rnn_unit_200[200: 500]
 
 
 def calculate_average_rnn_activity():

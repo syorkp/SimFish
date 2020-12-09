@@ -6,12 +6,12 @@ import seaborn as sns
 import pandas as pd
 
 
-def clean_action_choice_data(reader, file_name):
+def clean_action_choice_data(reader, file_name, model):
     """For Action choice file located given the location of, reads, and ensures that no subsequent entry is of a lower
     step value than any other, increasing their step value when this is the case. Should be unnecessary in future"""
     increment = 0
     previous_step = 0
-    with open(file_name, "w") as csv_file:
+    with open(f"Action-Choice-Data/{model}/{file_name}", "w") as csv_file:
         writer = csv.writer(csv_file, delimiter=',')
         writer.writerow(["Wall time", "Step", "Value"])
         for i, row in enumerate(reader):
@@ -28,7 +28,7 @@ def clean_action_choice_data(reader, file_name):
 
 
 def get_action_choice(model, action):
-    with open(f"{model}/run-logs-tag-action {action}", "r") as original_file:
+    with open(f"Action-Choice-Data/{model}/run-logs-tag-action {action}", "r") as original_file:
         csv_reader = csv.reader(original_file, delimiter=',')
         x = []
         y = []
@@ -65,6 +65,25 @@ def cut_action_data(x_data, y_data, length):
             del y_data[i:]
             break
     return x_data, y_data
+
+
+def create_action_plots_unrestricted(action, models):
+    for model in models:
+        # Get the data
+        x, y = get_action_choice(model, str(action))
+        # Compute running average
+        x, y = compute_running_averages(x, y)
+        # Cut data
+        x, y = cut_action_data(x, y, 2500000)
+        # Add to plot
+        plt.plot(x, y)
+    plt.tick_params(labelsize=10)
+
+    # plt.plot(new_test_1_x, new_test_1_y, "y")
+    plt.title(f"Frequency of action {str(action)} over time", fontsize=15)
+    plt.xlabel("Step", fontsize=12)
+    plt.ylabel("Action frequency", fontsize=12)
+    plt.show()
 
 
 def create_action_plots(action):
@@ -132,21 +151,30 @@ filenames = ["run-logs-tag-action 0",
              "run-logs-tag-action 5",
              "run-logs-tag-action 6",
              ]
+models = ["base-1", "base-2", "base-3", "base-4",
+          "base-5", "base-6", "base-7", "base-8"]
 
-for i in filenames:
-    with open(f"/home/sam/Downloads/{i}.csv") as original_file:
-        csv_reader = csv.reader(original_file, delimiter=',')
-        clean_action_choice_data(csv_reader, i)
+for model in models:
+    for i in filenames:
+        with open(f"/home/sam/Downloads/{model}/{i}.csv") as original_file:
+            csv_reader = csv.reader(original_file, delimiter=',')
+            clean_action_choice_data(csv_reader, i, model)
 
 # Produce box plots for action choice frequency
-models = ["base_1", "base_2", "base_3", "new_test_1"]
-create_boxplots(500, models, 1000000)
-create_boxplots(999, models, 2000000)
+
+long_models = ["base-6", "base-7", "base-8"]
+
+# create_boxplots(500, models, 1000000)
+# create_boxplots(999, models, 2000000)
 
 # Produce running average action frequency graphs
-create_action_plots(0)
-create_action_plots(1)
-create_action_plots(6)
+# create_action_plots(0)
+# create_action_plots(1)
+# create_action_plots(6)
+
+create_action_plots_unrestricted(0, long_models)
+create_action_plots_unrestricted(1, long_models)
+create_action_plots_unrestricted(6, long_models)
 
 
 

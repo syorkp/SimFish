@@ -9,7 +9,7 @@ from Tools.make_gif import make_gif
 with open("../Assay-Output/base-1/Assay-1.json", "r") as file:
     data = json.load(file)
 
-observation =[i["observation"] for i in data]
+observation = [i["observation"] for i in data]
 
 observation = np.array(observation)
 
