@@ -32,7 +32,9 @@ file_path = os.path.join(dirname, f"Configurations/JSON-Data/{arg}_env.json")
 with open(file_path, 'r') as f:
     env = json.load(f)
 
-sim_state = ProjectionEnvironment(env, stimuli, tethered=True, draw_screen=True)
+# sim_state = ProjectionEnvironment(env, stimuli, tethered=True, draw_screen=True)
+sim_state = NaturalisticEnvironment(env, draw_screen=True)
+
 q = False
 d = False
 sim_state.reset()

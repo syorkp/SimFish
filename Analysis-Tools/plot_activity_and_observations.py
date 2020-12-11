@@ -47,7 +47,6 @@ def convert_photons_to_int(obs):
     return new_obs
 
 
-
 with open("../Assay-Output/base-1/Visual-Stimulus-Assay-1.json", "r") as file:
     data = json.load(file)
 

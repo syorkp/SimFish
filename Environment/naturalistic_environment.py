@@ -97,6 +97,14 @@ class NaturalisticEnvironment(BaseEnvironment):
                 pr.angle = np.random.rand(1)*2*np.pi
                 pr.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
 
+    def move_complex_predator(self):
+        if (round(self.complex_predator_body.position[0]), round(self.complex_predator_body.position[1])) == (round(self.complex_predator_target[0]), round(self.complex_predator_target[1])):
+            self.remove_complex_predator()
+            return
+        self.complex_predator_body.angle = np.pi / 2 - np.arctan2(self.complex_predator_target[0] - self.complex_predator_body.position[0],
+                                          self.complex_predator_target[1] - self.complex_predator_body.position[1])
+        self.complex_predator_body.apply_impulse_at_local_point((self.env_variables['predator_chase_impulse'] * 5, 0))
+
     def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None):
         if frame_buffer is None:
             frame_buffer = []
@@ -107,9 +115,17 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         self.fish.hungry += (1 - self.fish.hungry)*self.env_variables['hunger_inc_tau']
 
+        probability_of_complex_predator = 0.1  # TODO: Add to configuration
+        if np.random.rand(1) < probability_of_complex_predator and \
+                self.complex_predator_shape is None \
+                and self.num_steps > self.env_variables['immunity_steps']:
+            self.create_complex_predator()
+
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.move_prey()
             self.move_predator()
+            if self.complex_predator_body is not None:
+                self.move_complex_predator()
 
             self.space.step(self.env_variables['phys_dt'])
             if self.fish.prey_consumed:
@@ -131,6 +147,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                 if self.draw_screen:
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5)/255.)
                     plt.pause(0.0001)
+
         self.num_steps += 1
         self.board.erase()
         self.draw_shapes()

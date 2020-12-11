@@ -1,3 +1,5 @@
+import math
+import random
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage.transform import resize, rescale
@@ -39,6 +41,10 @@ class BaseEnvironment:
         self.predator_bodies = []
         self.predator_shapes = []
 
+        self.complex_predator_body = None
+        self.complex_predator_shape = None
+        self.complex_predator_target = None
+
     def readings_to_photons(self, readings):
         photons = np.random.poisson(readings * self.env_variables['photon_ratio'])
         if self.env_variables['read_noise_sigma'] > 0:
@@ -59,16 +65,23 @@ class BaseEnvironment:
     def reset(self):
         self.num_steps = 0
         self.fish.hungry = 0
+
+        # TODO: Create individual methods for each removal.
         for i, shp in enumerate(self.prey_shapes):
             self.space.remove(shp, shp.body)
 
         for i, shp in enumerate(self.predator_shapes):
             self.space.remove(shp, shp.body)
 
+        if self.complex_predator_shape is not None:
+            self.space.remove(self.complex_predator_shape, self.complex_predator_shape.body)
+
         self.prey_shapes = []
         self.prey_bodies = []
         self.predator_shapes = []
         self.predator_bodies = []
+        self.complex_predator_body = None
+        self.complex_predator_shape = None
 
     def output_frame(self, activations, internal_state, scale=0.25):
         arena = self.board.db*255.0
@@ -144,6 +157,35 @@ class BaseEnvironment:
 
         self.space.add(self.predator_bodies[-1], self.predator_shapes[-1])
 
+    def remove_complex_predator(self):
+        if self.complex_predator_body is not None:
+            self.space.remove(self.complex_predator_shape, self.complex_predator_shape.body)
+            self.complex_predator_shape = None
+            self.complex_predator_body = None
+        else:
+            pass
+
+    def create_complex_predator(self):
+        self.complex_predator_body = pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia'])
+        self.complex_predator_shape = pymunk.Circle(self.complex_predator_body, self.env_variables['predator_size'])
+        self.complex_predator_shape.elasticity = 1.0
+
+        # TODO: Convert math to np
+        distance_from_fish = 60  # TODO: make part of configuration parameters
+        fish_position = self.fish.body.position
+        angle_from_fish = random.randint(0, 360)
+        angle_from_fish = math.radians(angle_from_fish / math.pi)
+        dy = distance_from_fish * math.cos(angle_from_fish)
+        dx = distance_from_fish * math.sin(angle_from_fish)
+        self.complex_predator_body.position = (fish_position[0] + dx, fish_position[1] + dy)
+
+        self.complex_predator_target = fish_position
+
+        self.complex_predator_shape.color = (0, 0, 1)
+        self.complex_predator_shape.collision_type = 5
+
+        self.space.add(self.complex_predator_body, self.complex_predator_shape)
+
     def draw_shapes(self):
         self.board.circle(self.fish.body.position, self.env_variables['fish_size'], self.fish.shape.color)
 
@@ -155,4 +197,8 @@ class BaseEnvironment:
 
         for i, pr in enumerate(self.predator_bodies):
             self.board.circle(pr.position, self.env_variables['predator_size'], self.predator_shapes[i].color)
+
+        if self.complex_predator_body is not None:
+            self.board.circle(self.complex_predator_body.position, self.env_variables['predator_size'],
+                              self.complex_predator_shape.color)
 
