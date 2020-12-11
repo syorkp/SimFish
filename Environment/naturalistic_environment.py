@@ -32,16 +32,15 @@ class NaturalisticEnvironment(BaseEnvironment):
 
     def reset(self):
         super().reset()
-        self.fish.body.position = (np.random.randint(self.env_variables['fish_size'], self.env_variables['width'] - self.env_variables['fish_size']),
-                                   np.random.randint(self.env_variables['fish_size'], self.env_variables['height'] - self.env_variables['fish_size']))
-        self.fish.body.angle = np.random.random()*2*np.pi
+        self.fish.body.position = (np.random.randint(self.env_variables['fish_size'],
+                                                     self.env_variables['width'] - self.env_variables['fish_size']),
+                                   np.random.randint(self.env_variables['fish_size'],
+                                                     self.env_variables['height'] - self.env_variables['fish_size']))
+        self.fish.body.angle = np.random.random() * 2 * np.pi
         self.fish.body.velocity = (0, 0)
 
         for i in range(self.env_variables['prey_num']):
             self.create_prey()
-
-        for i in range(self.env_variables['predator_num']):
-            self.create_predator()
 
     def create_walls(self):
         static = [
@@ -53,7 +52,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                 (1, self.env_variables['height']), (self.env_variables['width'], self.env_variables['height']), 1),
             pymunk.Segment(
                 self.space.static_body,
-                (self.env_variables['width'] - 1, self.env_variables['height']), (self.env_variables['width'] - 1, 1), 1),
+                (self.env_variables['width'] - 1, self.env_variables['height']), (self.env_variables['width'] - 1, 1),
+                1),
             pymunk.Segment(
                 self.space.static_body,
                 (1, 1), (self.env_variables['width'], 1), 1)
@@ -87,23 +87,28 @@ class NaturalisticEnvironment(BaseEnvironment):
 
     def move_predator(self):
         for pr in self.predator_bodies:
-            dist_to_fish = np.sqrt((pr.position[0] - self.fish.body.position[0])**2 + (pr.position[1] - self.fish.body.position[1])**2)
+            dist_to_fish = np.sqrt(
+                (pr.position[0] - self.fish.body.position[0]) ** 2 + (pr.position[1] - self.fish.body.position[1]) ** 2)
 
             if dist_to_fish < self.env_variables['predator_sensing_dist']:
-                pr.angle = np.pi/2 - np.arctan2(self.fish.body.position[0] - pr.position[0], self.fish.body.position[1] - pr.position[1])
+                pr.angle = np.pi / 2 - np.arctan2(self.fish.body.position[0] - pr.position[0],
+                                                  self.fish.body.position[1] - pr.position[1])
                 pr.apply_impulse_at_local_point((self.env_variables['predator_chase_impulse'], 0))
 
             elif np.random.rand(1) < self.env_variables['predator_impulse_rate']:
-                pr.angle = np.random.rand(1)*2*np.pi
+                pr.angle = np.random.rand(1) * 2 * np.pi
                 pr.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
 
     def move_complex_predator(self):
-        if (round(self.complex_predator_body.position[0]), round(self.complex_predator_body.position[1])) == (round(self.complex_predator_target[0]), round(self.complex_predator_target[1])):
+        if (round(self.complex_predator_body.position[0]), round(self.complex_predator_body.position[1])) == (
+                round(self.complex_predator_target[0]), round(self.complex_predator_target[1])):
             self.remove_complex_predator()
+            print("Predator removed")
             return
-        self.complex_predator_body.angle = np.pi / 2 - np.arctan2(self.complex_predator_target[0] - self.complex_predator_body.position[0],
-                                          self.complex_predator_target[1] - self.complex_predator_body.position[1])
-        self.complex_predator_body.apply_impulse_at_local_point((self.env_variables['predator_chase_impulse'] * 5, 0))
+        self.complex_predator_body.angle = np.pi / 2 - np.arctan2(
+            self.complex_predator_target[0] - self.complex_predator_body.position[0],
+            self.complex_predator_target[1] - self.complex_predator_body.position[1])
+        self.complex_predator_body.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
 
     def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None):
         if frame_buffer is None:
@@ -113,17 +118,17 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         done = False
 
-        self.fish.hungry += (1 - self.fish.hungry)*self.env_variables['hunger_inc_tau']
+        self.fish.hungry += (1 - self.fish.hungry) * self.env_variables['hunger_inc_tau']
 
-        probability_of_complex_predator = 0.1  # TODO: Add to configuration
-        if np.random.rand(1) < probability_of_complex_predator and \
+        if np.random.rand(1) < self.env_variables["probability_of_predator"] and \
                 self.complex_predator_shape is None \
                 and self.num_steps > self.env_variables['immunity_steps']:
+            print("Predator created")
             self.create_complex_predator()
 
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.move_prey()
-            self.move_predator()
+            # self.move_predator()
             if self.complex_predator_body is not None:
                 self.move_complex_predator()
 
@@ -145,17 +150,19 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.board.erase()
                 self.draw_shapes()
                 if self.draw_screen:
-                    self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5)/255.)
+                    self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5) / 255.)
                     plt.pause(0.0001)
 
         self.num_steps += 1
         self.board.erase()
         self.draw_shapes()
 
-        right_eye_pos = (-np.cos(np.pi/2-self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
-                         +np.sin(np.pi/2-self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
-        left_eye_pos = (+np.cos(np.pi/2-self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
-                        -np.sin(np.pi/2-self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
+        right_eye_pos = (
+            -np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
+            +np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
+        left_eye_pos = (
+            +np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
+            -np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
 
         self.fish.left_eye.read(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
         self.fish.right_eye.read(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
@@ -173,16 +180,17 @@ class NaturalisticEnvironment(BaseEnvironment):
             if save_frames:
                 frame_buffer.append(self.output_frame(activations, internal_state, scale=0.25))
             if self.draw_screen:
-                self.board_image.set_data(self.output_frame(activations, internal_state, scale=0.5)/255.)
+                self.board_image.set_data(self.output_frame(activations, internal_state, scale=0.5) / 255.)
                 plt.pause(0.000001)
 
-        observation = np.dstack((self.readings_to_photons(self.fish.left_eye.readings), self.readings_to_photons(self.fish.right_eye.readings)))
+        observation = np.dstack((self.readings_to_photons(self.fish.left_eye.readings),
+                                 self.readings_to_photons(self.fish.right_eye.readings)))
 
         return observation, reward, internal_state, done, frame_buffer
 
     def move_prey(self):
         to_move = np.where(np.random.rand(len(self.prey_bodies)) < self.env_variables['prey_impulse_rate'])[0]
-        angles = np.random.rand(len(to_move))*2*np.pi
+        angles = np.random.rand(len(to_move)) * 2 * np.pi
         for ii in range(len(to_move)):
             self.prey_bodies[to_move[ii]].angle = angles[ii]
             self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_impulse'], 0))

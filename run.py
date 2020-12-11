@@ -74,6 +74,27 @@ assay_configuration = [
     },
 ]
 
+naturalistic_assay_configuration = [
+    {
+            "Model Name": "base",
+            "Environment Name": "base",
+            "Trial Number": 1,
+            "Run Mode": "Assay",
+            "Priority": 1,
+            "Assays": [
+                {
+                    "assay id": "Naturalistic-Assay-1",
+                    "stimulus paradigm": "Naturalistic",
+                    "duration": 200,
+                    "fish setup": "Free",
+                    "save frames": True,
+                    "recordings": [],
+                    "interactions": []
+                }
+            ],
+    }
+]
+
 training_configuration = [
     {
         "Model Name": "base",
@@ -88,5 +109,5 @@ training_configuration = [
     },
 ]
 
-manager = TrialManager(assay_configuration)
+manager = TrialManager(naturalistic_assay_configuration)
 manager.run_priority_loop()

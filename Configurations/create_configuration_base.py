@@ -34,12 +34,10 @@ env = {'width': 1000,  # arena size
        'predator_mass': 10.,
        'predator_inertia': 40.,
        'predator_size': 30.,
-       'predator_num': 1,
-       'predator_impulse': 2,
-       'predator_impulse_rate': 0.75,
-       'predator_sensing_dist': 120,  # below this distance predators chase the fish
-       'predator_chase_impulse': 0.1,  # impulse during chase
-       'immunity_steps': 65,  # number of steps in the begining of an episode where the fish is immune from predation
+       'predator_impulse': 1,
+       'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
+       'distance_from_fish': 200,  # Distance from the fish at which the predator appears.
+       'probability_of_predator': 0.05,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -63,7 +61,8 @@ env = {'width': 1000,  # arena size
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
        'capture_basic_reward': 1000,
-       'predator_cost': 100}
+       'predator_cost': 100,
+       }
 
 params = {'num_actions': 7,  # size of action space
           'batch_size': 16,  # How many experience traces to use for each training step.

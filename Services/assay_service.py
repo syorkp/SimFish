@@ -54,8 +54,10 @@ class AssayService:
         """
         if assay["stimulus paradigm"] == "Projection":
             self.simulation = ProjectionEnvironment(self.environment_params, assay["stimuli"], tethered=assay["fish setup"])
+        elif assay["stimulus paradigm"] == "Naturalistic":
+            self.simulation = NaturalisticEnvironment(self.environment_params)
         else:
-            self.simulation =  NaturalisticEnvironment(self.environment_params)
+            self.simulation = NaturalisticEnvironment(self.environment_params)
 
     def run(self):
         with tf.Session() as self.sess:

@@ -70,11 +70,11 @@ class BaseEnvironment:
         for i, shp in enumerate(self.prey_shapes):
             self.space.remove(shp, shp.body)
 
-        for i, shp in enumerate(self.predator_shapes):
-            self.space.remove(shp, shp.body)
+        # for i, shp in enumerate(self.predator_shapes):
+        #     self.space.remove(shp, shp.body)
 
         if self.complex_predator_shape is not None:
-            self.space.remove(self.complex_predator_shape, self.complex_predator_shape.body)
+            self.remove_complex_predator()
 
         self.prey_shapes = []
         self.prey_bodies = []
@@ -171,13 +171,21 @@ class BaseEnvironment:
         self.complex_predator_shape.elasticity = 1.0
 
         # TODO: Convert math to np
-        distance_from_fish = 60  # TODO: make part of configuration parameters
         fish_position = self.fish.body.position
         angle_from_fish = random.randint(0, 360)
         angle_from_fish = math.radians(angle_from_fish / math.pi)
-        dy = distance_from_fish * math.cos(angle_from_fish)
-        dx = distance_from_fish * math.sin(angle_from_fish)
+        dy = self.env_variables["distance_from_fish"] * math.cos(angle_from_fish)
+        dx = self.env_variables["distance_from_fish"] * math.sin(angle_from_fish)
         self.complex_predator_body.position = (fish_position[0] + dx, fish_position[1] + dy)
+
+        if self.complex_predator_body.position[0] < 0:
+            self.complex_predator_body.position[0] = 0
+        elif self.complex_predator_body.position[0] > self.env_variables["width"]:
+            self.complex_predator_body.position[0] = self.env_variables["width"]
+        if self.complex_predator_body.position[1] < 0:
+            self.complex_predator_body.position[1] = 0
+        elif self.complex_predator_body.position[1] > self.env_variables["height"]:
+            self.complex_predator_body.position[1] = self.env_variables["height"]
 
         self.complex_predator_target = fish_position
 
@@ -201,4 +209,3 @@ class BaseEnvironment:
         if self.complex_predator_body is not None:
             self.board.circle(self.complex_predator_body.position, self.env_variables['predator_size'],
                               self.complex_predator_shape.color)
-
