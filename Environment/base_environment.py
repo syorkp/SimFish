@@ -1,4 +1,3 @@
-import math
 import random
 import numpy as np
 import matplotlib.pyplot as plt
@@ -217,47 +216,113 @@ class BaseEnvironment:
         else:
             return True
 
+    def check_fish_proximity_to_walls(self):
+        fish_position = self.fish.body.position
+
+        # Check proximity to left wall
+        if 0 < fish_position[0] < self.env_variables["distance_from_fish"]:
+            left = True
+        else:
+            left = False
+
+        # Check proximity to right wall
+        if self.env_variables["width"] - self.env_variables["distance_from_fish"] < fish_position[0] < \
+                self.env_variables["width"]:
+            right = True
+        else:
+            right = False
+
+        # Check proximity to bottom wall
+        if self.env_variables["height"] - self.env_variables["distance_from_fish"] < fish_position[1] < \
+                self.env_variables["height"]:
+            bottom = True
+        else:
+            bottom = False
+
+        # Check proximity to top wall
+        if 0 < fish_position[0] < self.env_variables["distance_from_fish"]:
+            top = True
+        else:
+            top = False
+
+        return left, bottom, right, top
+
+    def select_predator_angle_of_attack(self):
+        left, bottom, right, top = self.check_fish_proximity_to_walls()
+        if left and top:
+            angle_from_fish = random.randint(90, 180)
+        elif left and bottom:
+            angle_from_fish = random.randint(0, 90)
+        elif right and top:
+            angle_from_fish = random.randint(180, 270)
+        elif right and bottom:
+            angle_from_fish = random.randint(270, 360)
+        elif left:
+            angle_from_fish = random.randint(0, 180)
+        elif top:
+            angle_from_fish = random.randint(90, 270)
+        elif bottom:
+            angles = [random.randint(270, 360), random.randint(0, 90)]
+            angle_from_fish = random.choice(angles)
+        elif right:
+            angle_from_fish = random.randint(180, 360)
+        else:
+            angle_from_fish = random.randint(0, 360)
+
+        angle_from_fish = np.radians(angle_from_fish / np.pi)
+        return angle_from_fish
+
     def create_realistic_predator(self):
         self.predator_body = pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia'])
         self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_size'])
         self.predator_shape.elasticity = 1.0
 
-        # TODO: Convert math to np
         fish_position = self.fish.body.position
-        angle_from_fish = random.randint(0, 360)
-        angle_from_fish = math.radians(angle_from_fish / math.pi)
-        dy = self.env_variables["distance_from_fish"] * math.cos(angle_from_fish)
-        dx = self.env_variables["distance_from_fish"] * math.sin(angle_from_fish)
-        self.predator_body.position = (fish_position[0] + dx, fish_position[1] + dy)
 
-        if self.predator_body.position[0] < 0:
-            self.predator_body.position[0] = 0
-        elif self.predator_body.position[0] > self.env_variables["width"]:
-            self.predator_body.position[0] = self.env_variables["width"]
-        if self.predator_body.position[1] < 0:
-            self.predator_body.position[1] = 0
-        elif self.predator_body.position[1] > self.env_variables["height"]:
-            self.predator_body.position[1] = self.env_variables["height"]
+        angle_from_fish = self.select_predator_angle_of_attack()
+        dy = self.env_variables["distance_from_fish"] * np.cos(angle_from_fish)
+        dx = self.env_variables["distance_from_fish"] * np.sin(angle_from_fish)
 
-        self.predator_target = fish_position
+        x_position = fish_position[0] + dx
+        y_position = fish_position[1] + dy
+
+        self.predator_body.position = (x_position, y_position)
+        self.predator_target = fish_position  # Update so appears where fish will be in a few steps.
 
         self.predator_shape.color = (0, 0, 1)
         self.predator_shape.collision_type = 5
 
         self.space.add(self.predator_body, self.predator_shape)
 
+    def check_predator_inside_walls(self):
+        x_position, y_position = self.predator_body.position[0], self.predator_body.position[1]
+        if x_position < 0:
+            return True
+        elif x_position > self.env_variables["width"]:
+            return True
+        if y_position < 0:
+            return True
+        elif y_position > self.env_variables["height"]:
+            return True
+
+
     def move_realistic_predator(self):
         if (round(self.predator_body.position[0]), round(self.predator_body.position[1])) == (
-                round(self.predator_target[0]), round(self.predator_target[1])):
+                round(self.predator_target[0]), round(self.predator_target[1])): # TODO: Add to method like belwow
             self.remove_realistic_predator()
             print("Predator removed")
             return
+        if self.check_predator_inside_walls():
+            self.remove_realistic_predator()
+            print("Predator removed")
+            return
+
         self.predator_body.angle = np.pi / 2 - np.arctan2(
             self.predator_target[0] - self.predator_body.position[0],
             self.predator_target[1] - self.predator_body.position[1])
         self.predator_body.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
 
-    def remove_realistic_predator(self):
+    def remove_realistic_predator(self, arbiter=None, space=None, data=None):
         if self.predator_body is not None:
             self.space.remove(self.predator_shape, self.predator_shape.body)
             self.predator_shape = None

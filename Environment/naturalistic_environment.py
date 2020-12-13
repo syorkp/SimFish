@@ -28,6 +28,9 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.edge_col = self.space.add_collision_handler(1, 3)
         self.edge_col.begin = self.touch_edge
 
+        self.edge_pred_col = self.space.add_collision_handler(1, 5)
+        self.edge_pred_col.begin = self.remove_realistic_predator
+
     def reset(self):
         super().reset()
         self.fish.body.position = (np.random.randint(self.env_variables['fish_size'],
@@ -55,8 +58,8 @@ class NaturalisticEnvironment(BaseEnvironment):
         if np.random.rand(1) < self.env_variables["probability_of_predator"] and \
                 self.predator_shape is None \
                 and self.num_steps > self.env_variables['immunity_steps']:
-            print("Predator created")
             self.create_realistic_predator()
+            print(f"Predator created at {self.predator_body.position}")
 
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.move_prey()
@@ -114,8 +117,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.board_image.set_data(self.output_frame(activations, internal_state, scale=0.5) / 255.)
                 plt.pause(0.000001)
 
-        observation = np.dstack((self.readings_to_photons(self.fish.left_eye.readings),
-                                 self.readings_to_photons(self.fish.right_eye.readings)))
+        observation = np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
+                                 self.fish.readings_to_photons(self.fish.right_eye.readings)))
 
         return observation, reward, internal_state, done, frame_buffer
 
