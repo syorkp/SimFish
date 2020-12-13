@@ -1,7 +1,3 @@
-import numpy as np
-import pymunk
-
-from Environment.Fish.vis_fan import VisFan
 from Environment.Fish.fish import Fish
 
 

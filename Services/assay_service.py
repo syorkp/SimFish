@@ -126,7 +126,7 @@ class AssayService:
         rnn_state = rnn_state.c.tolist()
         position = list(position)
         # observation = observation.tolist()
-        observation = self.simulation.get_visual_inputs()
+        observation = self.simulation.fish.get_visual_inputs()
         observation = observation.tolist()
 
         data = {

@@ -8,8 +8,6 @@ from Environment.Fish.fish import Fish
 
 class NaturalisticEnvironment(BaseEnvironment):
 
-    # TODO: Consider adding touch and move methods to base - will require placeholders there.
-
     def __init__(self, env_variables, draw_screen=False):
         super().__init__(env_variables, draw_screen)
 
@@ -42,75 +40,9 @@ class NaturalisticEnvironment(BaseEnvironment):
         for i in range(self.env_variables['prey_num']):
             self.create_prey()
 
-    def create_walls(self):
-        static = [
-            pymunk.Segment(
-                self.space.static_body,
-                (0, 1), (0, self.env_variables['height']), 1),
-            pymunk.Segment(
-                self.space.static_body,
-                (1, self.env_variables['height']), (self.env_variables['width'], self.env_variables['height']), 1),
-            pymunk.Segment(
-                self.space.static_body,
-                (self.env_variables['width'] - 1, self.env_variables['height']), (self.env_variables['width'] - 1, 1),
-                1),
-            pymunk.Segment(
-                self.space.static_body,
-                (1, 1), (self.env_variables['width'], 1), 1)
-        ]
-        for s in static:
-            s.friction = 1.
-            s.group = 1
-            s.collision_type = 1
-            s.color = (1, 0, 0)
-        self.space.add(static)
-
-    def touch_prey(self, arbiter, space, data):
-        if self.fish.making_capture:
-            for i, shp in enumerate(self.prey_shapes):
-                if shp == arbiter.shapes[0]:
-                    space.remove(shp, shp.body)
-                    self.prey_shapes.remove(shp)
-                    self.prey_bodies.remove(shp.body)
-
-            self.fish.prey_consumed = True
-            return False
-        else:
-            return True
-
-    def touch_predator(self, arbiter, space, data):
-        if self.num_steps > self.env_variables['immunity_steps']:
-            self.fish.touched_predator = True
-            return False
-        else:
-            return True
-
-    def move_predator(self):
-        for pr in self.predator_bodies:
-            dist_to_fish = np.sqrt(
-                (pr.position[0] - self.fish.body.position[0]) ** 2 + (pr.position[1] - self.fish.body.position[1]) ** 2)
-
-            if dist_to_fish < self.env_variables['predator_sensing_dist']:
-                pr.angle = np.pi / 2 - np.arctan2(self.fish.body.position[0] - pr.position[0],
-                                                  self.fish.body.position[1] - pr.position[1])
-                pr.apply_impulse_at_local_point((self.env_variables['predator_chase_impulse'], 0))
-
-            elif np.random.rand(1) < self.env_variables['predator_impulse_rate']:
-                pr.angle = np.random.rand(1) * 2 * np.pi
-                pr.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
-
-    def move_complex_predator(self):
-        if (round(self.complex_predator_body.position[0]), round(self.complex_predator_body.position[1])) == (
-                round(self.complex_predator_target[0]), round(self.complex_predator_target[1])):
-            self.remove_complex_predator()
-            print("Predator removed")
-            return
-        self.complex_predator_body.angle = np.pi / 2 - np.arctan2(
-            self.complex_predator_target[0] - self.complex_predator_body.position[0],
-            self.complex_predator_target[1] - self.complex_predator_body.position[1])
-        self.complex_predator_body.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
-
     def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None):
+        # TODO: Tidy up so is more readable. Do the same with comparable methods in other environment classes.
+
         if frame_buffer is None:
             frame_buffer = []
         self.fish.making_capture = False
@@ -121,16 +53,15 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.fish.hungry += (1 - self.fish.hungry) * self.env_variables['hunger_inc_tau']
 
         if np.random.rand(1) < self.env_variables["probability_of_predator"] and \
-                self.complex_predator_shape is None \
+                self.predator_shape is None \
                 and self.num_steps > self.env_variables['immunity_steps']:
             print("Predator created")
-            self.create_complex_predator()
+            self.create_realistic_predator()
 
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.move_prey()
-            # self.move_predator()
-            if self.complex_predator_body is not None:
-                self.move_complex_predator()
+            if self.predator_body is not None:
+                self.move_realistic_predator()
 
             self.space.step(self.env_variables['phys_dt'])
             if self.fish.prey_consumed:
@@ -188,9 +119,4 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         return observation, reward, internal_state, done, frame_buffer
 
-    def move_prey(self):
-        to_move = np.where(np.random.rand(len(self.prey_bodies)) < self.env_variables['prey_impulse_rate'])[0]
-        angles = np.random.rand(len(to_move)) * 2 * np.pi
-        for ii in range(len(to_move)):
-            self.prey_bodies[to_move[ii]].angle = angles[ii]
-            self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_impulse'], 0))
+

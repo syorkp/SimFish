@@ -54,28 +54,6 @@ class ProjectionEnvironment(BaseEnvironment):
         self.fish.body.velocity = (0, 0)
         self.create_stimuli(self.stimuli)
 
-    def create_walls(self):
-        static = [
-            pymunk.Segment(
-                self.space.static_body,
-                self.wall_1_coordinates[0], self.wall_1_coordinates[1], 1),
-            pymunk.Segment(
-                self.space.static_body,
-                self.wall_2_coordinates[0], self.wall_2_coordinates[1], 1),
-            pymunk.Segment(
-                self.space.static_body,
-                self.wall_3_coordinates[0], self.wall_3_coordinates[1], 1),
-            pymunk.Segment(
-                self.space.static_body,
-                self.wall_4_coordinates[0], self.wall_4_coordinates[1], 1)
-        ]
-        for s in static:
-            s.friction = 1.
-            s.group = 1
-            s.collision_type = 1
-            s.color = (1, 1, 1)
-        self.space.add(static)
-
     def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None):
         if frame_buffer is None:
             frame_buffer = []
@@ -129,31 +107,12 @@ class ProjectionEnvironment(BaseEnvironment):
 
         return observation, reward, internal_state, done, frame_buffer
 
-    def create_positional_information(self, stimuli):
+    def create_stimuli(self, stimuli):
         for stimulus in stimuli:
-            edge_index = 0
             if "prey" in stimulus:
-                self.prey_positions[stimulus] = []
-                while edge_index + 1 < len(stimuli[stimulus]):
-                    positions = self.interpolate_stimuli_positions(stimuli[stimulus], edge_index)
-                    self.prey_positions[stimulus] = self.prey_positions[stimulus] + positions
-                    edge_index += 1
+                self.create_prey()
             elif "predator" in stimulus:
-                self.predator_positions[stimulus] = []
-                while edge_index + 1 < len(stimuli[stimulus]):
-                    positions = self.interpolate_stimuli_positions(stimuli[stimulus], edge_index)
-                    self.predator_positions[stimulus] = self.predator_positions[stimulus] + positions
-                    edge_index += 1
-
-    @staticmethod
-    def interpolate_stimuli_positions(stimulus, edge_index):
-        a = stimulus[edge_index]["position"]
-        b = stimulus[edge_index + 1]["position"]
-        t_interval = stimulus[edge_index + 1]["step"] - stimulus[edge_index]["step"]
-        dx = (b[0] - a[0])/t_interval
-        dy = (b[1] - a[1])/t_interval
-        interpolated_positions = [[a[0]+dx*i, a[1]+dy*i] for i in range(t_interval)]
-        return interpolated_positions
+                self.create_predator()
 
     def update_stimuli(self):
         # TODO: Coded very badly.
@@ -183,10 +142,28 @@ class ProjectionEnvironment(BaseEnvironment):
         for item in finished_predators:
             del self.predator_positions[item]
 
-    def create_stimuli(self, stimuli):
+    def create_positional_information(self, stimuli):
         for stimulus in stimuli:
+            edge_index = 0
             if "prey" in stimulus:
-                self.create_prey()
+                self.prey_positions[stimulus] = []
+                while edge_index + 1 < len(stimuli[stimulus]):
+                    positions = self.interpolate_stimuli_positions(stimuli[stimulus], edge_index)
+                    self.prey_positions[stimulus] = self.prey_positions[stimulus] + positions
+                    edge_index += 1
             elif "predator" in stimulus:
-                self.create_predator()
+                self.predator_positions[stimulus] = []
+                while edge_index + 1 < len(stimuli[stimulus]):
+                    positions = self.interpolate_stimuli_positions(stimuli[stimulus], edge_index)
+                    self.predator_positions[stimulus] = self.predator_positions[stimulus] + positions
+                    edge_index += 1
 
+    @staticmethod
+    def interpolate_stimuli_positions(stimulus, edge_index):
+        a = stimulus[edge_index]["position"]
+        b = stimulus[edge_index + 1]["position"]
+        t_interval = stimulus[edge_index + 1]["step"] - stimulus[edge_index]["step"]
+        dx = (b[0] - a[0])/t_interval
+        dy = (b[1] - a[1])/t_interval
+        interpolated_positions = [[a[0]+dx*i, a[1]+dy*i] for i in range(t_interval)]
+        return interpolated_positions

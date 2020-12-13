@@ -34,7 +34,7 @@ def plot_all(rnn_data, observation, action_choice):
     axs[4].set_ylabel("Unit 2 activity", fontsize=20)
     axs[5].plot(rnn_data[2])
     axs[5].set_ylabel("Unit 3 activity", fontsize=20)
-    axs[5].set_xlabel("Tick", fontsize=20)
+    axs[5].set_xlabel("Step", fontsize=20)
 
     axs[0].tick_params(labelsize=15)
     axs[1].tick_params(labelsize=15)
