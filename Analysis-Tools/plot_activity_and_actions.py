@@ -7,12 +7,7 @@ with open("../Assay-Output/base-1/Visual-Stimulus-Assay-1.json", "r") as file:
     data = json.load(file)
 
 # TODO: Create code to load everything into a dataframe - should be own function for loading data.
-rnn_unit_1 = [i["rnn state"][0][0] for i in data]
-rnn_unit_2 = [i["rnn state"][0][1] for i in data]
-rnn_unit_3 = [i["rnn state"][0][2] for i in data]
-rnn_unit_200 = [i["rnn state"][0][199] for i in data]
 
-action_choice = [i["behavioural choice"] for i in data]
 
 # Shorten action choice
 
@@ -80,7 +75,7 @@ def plot_activity_and_actions(rnn_data, action_data):
                            (0.0, 0.75, 0.75),
                            (0.75, 0.75, 0.0),
                            (1.0, 0.0, 0.0),])
-    fig, axs = plt.subplots(5, 1, sharex=True)
+    fig, axs = plt.subplots(4, 1, sharex=True)
     # positions = range(len(colour_sequence))
     # colour_sequence = colour_sequence[1:]
     # plt.eventplot(separated_actions, color=colorCodes)
@@ -93,14 +88,14 @@ def plot_activity_and_actions(rnn_data, action_data):
     axs[2].set_ylabel("Unit 2 activity", fontsize=25)
     axs[3].plot(rnn_data[2])
     axs[3].set_ylabel("Unit 3 activity", fontsize=25)
-    axs[4].plot(rnn_data[3])
-    axs[4].set_ylabel("Unit 4 activity", fontsize=25)
-    axs[4].set_xlabel("Step", fontsize=25)
+    # axs[4].plot(rnn_data[3])
+    # axs[4].set_ylabel("Unit 4 activity", fontsize=25)
+    axs[3].set_xlabel("Step", fontsize=25)
     axs[0].tick_params(labelsize=15)
     axs[1].tick_params(labelsize=15)
     axs[2].tick_params(labelsize=15)
     axs[3].tick_params(labelsize=15)
-    axs[4].tick_params(labelsize=15)
+    # axs[4].tick_params(labelsize=15)
 
     # axs[0].set_ylim(0.5, 1.5)
     fig.set_size_inches(18.5, 20)
@@ -116,7 +111,12 @@ def plot_activity_and_actions(rnn_data, action_data):
 #     plot_activity_and_action(rnn_unit_200, i, action_choice)
 
 # For all actions
-unit_activity = [rnn_unit_1, rnn_unit_2, rnn_unit_3, rnn_unit_200]
+rnn_unit_1 = [i["rnn state"][0][0] for i in data]
+rnn_unit_3 = [i["rnn state"][0][19] for i in data]
+rnn_unit_200 = [i["rnn state"][0][190] for i in data]
+
+action_choice = [i["behavioural choice"] for i in data]
+unit_activity = [rnn_unit_1, rnn_unit_3, rnn_unit_200]
 plot_activity_and_actions(unit_activity, action_choice)
 
 # plt.plot(calculate_average_rnn_activity())

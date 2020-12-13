@@ -12,6 +12,7 @@ observation = np.array(observation)
 
 new_observation = [time[0] for time in observation]
 
+
 def convert_photons_to_int(obs):
     new_obs = np.zeros((121, 400, 3), int)
     for i, time in enumerate(obs):

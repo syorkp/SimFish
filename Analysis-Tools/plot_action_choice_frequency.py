@@ -133,7 +133,7 @@ def create_boxplots(index, models, timestamp):
         # action_lists.append(points)
     # data["values"] = action_lists
     data = pd.DataFrame(data)
-    ax = sns.boxplot(y="frequency", x="action", data=data, whis=np.inf)
+    ax = sns.boxplot(y="frequency", x="action", data=data, fliersize=0)  # whis=np.inf
     ax = sns.stripplot(y="frequency", x="action", data=data, color=".3")
     ax.tick_params(labelsize=10)
     plt.title(f"Frequency of actions at step {str(timestamp)}")
@@ -164,17 +164,17 @@ for model in models:
 
 long_models = ["base-6", "base-7", "base-8"]
 
-# create_boxplots(500, models, 1000000)
-# create_boxplots(999, models, 2000000)
+create_boxplots(500, models, 1000000)
+create_boxplots(999, models, 2000000)
 
 # Produce running average action frequency graphs
 # create_action_plots(0)
 # create_action_plots(1)
 # create_action_plots(6)
 
-create_action_plots_unrestricted(0, long_models)
-create_action_plots_unrestricted(1, long_models)
-create_action_plots_unrestricted(6, long_models)
+# create_action_plots_unrestricted(0, long_models)
+# create_action_plots_unrestricted(1, long_models)
+# create_action_plots_unrestricted(6, long_models)
 
 
 
