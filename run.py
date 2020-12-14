@@ -85,7 +85,7 @@ naturalistic_assay_configuration = [
                 {
                     "assay id": "Naturalistic-Assay-1",
                     "stimulus paradigm": "Naturalistic",
-                    "duration": 200,
+                    "duration": 400,
                     "fish setup": "Free",
                     "save frames": True,
                     "recordings": [],

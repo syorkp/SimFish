@@ -31,6 +31,8 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.edge_pred_col = self.space.add_collision_handler(1, 5)
         self.edge_pred_col.begin = self.remove_realistic_predator
 
+        self.grain_fish_col = self.space.add_collision_handler(3, 4)
+
     def reset(self):
         super().reset()
         self.fish.body.position = (np.random.randint(self.env_variables['fish_size'],
@@ -43,9 +45,12 @@ class NaturalisticEnvironment(BaseEnvironment):
         for i in range(self.env_variables['prey_num']):
             self.create_prey()
 
+        for i in range(self.env_variables['sand_grain_num']):
+            self.create_sand_grain()
+
     def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None):
         # TODO: Tidy up so is more readable. Do the same with comparable methods in other environment classes.
-
+        self.last_action = action
         if frame_buffer is None:
             frame_buffer = []
         self.fish.making_capture = False
@@ -59,7 +64,6 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.predator_shape is None \
                 and self.num_steps > self.env_variables['immunity_steps']:
             self.create_realistic_predator()
-            print(f"Predator created at {self.predator_body.position}")
 
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.move_prey()

@@ -44,12 +44,20 @@ class BaseEnvironment:
         self.predator_shape = None
         self.predator_target = None
 
+        self.sand_grain_shapes = []
+        self.sand_grain_bodies = []
+
+        self.last_action = None  # TODO: Ensure initialisation as none doesnt have any effects.
+
     def reset(self):
         self.num_steps = 0
         self.fish.hungry = 0
 
-        # TODO: Create individual methods for each removal.
+        # TODO: Create individual methods for each removal. sand grains, prey, predators.
         for i, shp in enumerate(self.prey_shapes):
+            self.space.remove(shp, shp.body)
+
+        for i, shp in enumerate(self.sand_grain_shapes):
             self.space.remove(shp, shp.body)
 
         if self.predator_shape is not None:
@@ -57,10 +65,12 @@ class BaseEnvironment:
 
         self.prey_shapes = []
         self.prey_bodies = []
+
         self.predator_shapes = []
         self.predator_bodies = []
-        self.predator_body = None
-        self.predator_shape = None
+
+        self.sand_grain_shapes = []
+        self.sand_grain_bodies = []
 
     def output_frame(self, activations, internal_state, scale=0.25):
         arena = self.board.db * 255.0
@@ -107,6 +117,12 @@ class BaseEnvironment:
             py = np.round(np.array([pr.position[1] for pr in self.prey_bodies])).astype(int)
             rrs, ccs = self.board.multi_circles(px, py, self.env_variables['prey_size'])
             self.board.db[rrs, ccs] = self.prey_shapes[0].color
+
+        if len(self.sand_grain_bodies) > 0:
+            px = np.round(np.array([pr.position[0] for pr in self.sand_grain_bodies])).astype(int)
+            py = np.round(np.array([pr.position[1] for pr in self.sand_grain_bodies])).astype(int)
+            rrs, ccs = self.board.multi_circles(px, py, self.env_variables['sand_grain_size'])
+            self.board.db[rrs, ccs] = self.sand_grain_shapes[0].color
 
         for i, pr in enumerate(self.predator_bodies):
             self.board.circle(pr.position, self.env_variables['predator_size'], self.predator_shapes[i].color)
@@ -162,12 +178,34 @@ class BaseEnvironment:
 
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
 
+    def check_paramecium_disturbance(self, prey_position):
+        fish_position = self.fish.body.position
+        sensing_area = [[prey_position[0]-self.env_variables['prey_sensing_distance']/2,
+                         prey_position[0]+self.env_variables['prey_sensing_distance']/2],
+                        [prey_position[1] - self.env_variables['prey_sensing_distance'] / 2,
+                         prey_position[1] + self.env_variables['prey_sensing_distance'] / 2]]
+        is_in_area = sensing_area[0][0] <= fish_position[0] <= sensing_area[0][1] or sensing_area[1][0] <= fish_position[1] <= sensing_area[1][1]
+        loud_actions = [0, 1, 2]
+        if is_in_area and self.last_action in loud_actions:
+            return True
+        else:
+            return False
+
     def move_prey(self):
+        # Not, currently, a prey isn't guaranteed to try to escape if a loud predator is near, only if it was going to
+        # move anyway. Should reconsider this in the future.
         to_move = np.where(np.random.rand(len(self.prey_bodies)) < self.env_variables['prey_impulse_rate'])[0]
         angles = np.random.rand(len(to_move)) * 2 * np.pi
         for ii in range(len(to_move)):
-            self.prey_bodies[to_move[ii]].angle = angles[ii]
-            self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_impulse'], 0))
+            if self.check_paramecium_disturbance(self.prey_bodies[to_move[ii]].position):
+                if self.prey_bodies[to_move[ii]].angle < (3 * np.pi)/2:
+                    self.prey_bodies[to_move[ii]].angle += np.pi/2
+                else:
+                    self.prey_bodies[to_move[ii]].angle -= np.pi/2
+                self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_escape_impulse'], 0))
+            else:
+                self.prey_bodies[to_move[ii]].angle = angles[ii]
+                self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_impulse'], 0))
 
     def touch_prey(self, arbiter, space, data):
         if self.fish.making_capture:
@@ -305,16 +343,13 @@ class BaseEnvironment:
         elif y_position > self.env_variables["height"]:
             return True
 
-
     def move_realistic_predator(self):
         if (round(self.predator_body.position[0]), round(self.predator_body.position[1])) == (
                 round(self.predator_target[0]), round(self.predator_target[1])): # TODO: Add to method like belwow
             self.remove_realistic_predator()
-            print("Predator removed")
             return
         if self.check_predator_inside_walls():
             self.remove_realistic_predator()
-            print("Predator removed")
             return
 
         self.predator_body.angle = np.pi / 2 - np.arctan2(
@@ -329,3 +364,16 @@ class BaseEnvironment:
             self.predator_body = None
         else:
             pass
+
+    def create_sand_grain(self):
+        self.sand_grain_bodies.append(pymunk.Body(self.env_variables['sand_grain_mass'], self.env_variables['sand_grain_inertia']))
+        self.sand_grain_shapes.append(pymunk.Circle(self.sand_grain_bodies[-1], self.env_variables['sand_grain_size']))
+        self.sand_grain_shapes[-1].elasticity = 1.0
+        self.sand_grain_bodies[-1].position = (np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_size'],
+                                                           self.env_variables['width'] - (self.env_variables['sand_grain_size'] + self.env_variables['fish_size'])),
+                                         np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_size'],
+                                                           self.env_variables['height'] - (self.env_variables['sand_grain_size'] + self.env_variables['fish_size'])))
+        self.sand_grain_shapes[-1].color = (0, 0, 1)
+        self.sand_grain_shapes[-1].collision_type = 4
+
+        self.space.add(self.sand_grain_bodies[-1], self.sand_grain_shapes[-1])
