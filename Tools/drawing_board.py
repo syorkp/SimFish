@@ -29,8 +29,28 @@ class DrawingBoard:
         rr, cc = draw.circle(center[1], center[0], rad, self.db.shape)
         self.db[rr, cc, :] = color
 
+    def tail(self, head, left, right, tip, color):
+        tail_coordinates = np.array((head, right, tip, left))
+        rr, cc = draw.polygon(tail_coordinates[:, 1], tail_coordinates[:, 0], self.db.shape)
+        self.db[rr, cc, :] = color
+
+    def fish_shape(self, mouth_centre, mouth_rad, head_rad, tail_length, color, angle):
+        offset = np.pi/2
+        angle += offset
+        angle = -angle
+        self.circle(mouth_centre, mouth_rad, color)  # For the mouth.
+        head_centre = (mouth_centre[0] + head_rad * np.sin(angle),
+                       mouth_centre[1] + head_rad * np.cos(angle))
+        self.circle(head_centre, head_rad, color)
+        left_flank = (head_centre[0] - head_rad * np.sin(np.pi/4),
+                      head_centre[1] - head_rad * np.cos(angle))
+        right_flank = (head_centre[0] + head_rad * np.sin(np.pi/4),
+                       head_centre[1] + head_rad * np.cos(angle))
+        tip = (mouth_centre[0] + (tail_length + head_rad) * np.sin(angle),
+               mouth_centre[1] + (tail_length + head_rad) * np.cos(angle))
+        self.tail(head_centre, left_flank, right_flank, tip, color)
+
     def vegetation(self, vertex, edge_size, color):
-        # TODO: Check this works.
         coordinates = np.array(((vertex[1], vertex[0]),
                                (vertex[1], vertex[0]+edge_size),
                                (vertex[1] + edge_size/2, vertex[0] + edge_size - edge_size/3),

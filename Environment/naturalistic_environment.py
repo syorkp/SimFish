@@ -13,7 +13,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         # Create the fish class instance and add to the space.
         self.fish = Fish(self.board, env_variables, self.dark_col)
-        self.space.add(self.fish.body, self.fish.shape)
+        self.space.add(self.fish.body, self.fish.mouth, self.fish.head)  # TODO: , self.fish.tail
 
         # Create walls.
         self.create_walls()
@@ -37,10 +37,10 @@ class NaturalisticEnvironment(BaseEnvironment):
 
     def reset(self):
         super().reset()
-        self.fish.body.position = (np.random.randint(self.env_variables['fish_size'],
-                                                     self.env_variables['width'] - self.env_variables['fish_size']),
-                                   np.random.randint(self.env_variables['fish_size'],
-                                                     self.env_variables['height'] - self.env_variables['fish_size']))
+        self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_size'],
+                                                     self.env_variables['width'] - self.env_variables['fish_mouth_size']),
+                                   np.random.randint(self.env_variables['fish_mouth_size'],
+                                                     self.env_variables['height'] - self.env_variables['fish_mouth_size']))
         self.fish.body.angle = np.random.random() * 2 * np.pi
         self.fish.body.velocity = (0, 0)
 

@@ -16,7 +16,9 @@ env = {'width': 1000,  # arena size
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step
 
        'fish_mass': 140.,
-       'fish_size': 5.,
+       'fish_mouth_size': 5.,
+       'fish_head_size': 10.,
+       'fish_tail_length': 50.,
        'eyes_verg_angle': 77.,  # in deg
        'visual_field': 163.,  # single eye angular visual field
        'eyes_biasx': 15,  # distance of eyes from midline
@@ -39,11 +41,11 @@ env = {'width': 1000,  # arena size
        'sand_grain_num': 10,
 
        'vegetation_size': 100.,
-       'vegetation_num': 3,
+       'vegetation_num': 0,
 
        'predator_mass': 10.,
        'predator_inertia': 40.,
-       'predator_size': 30.,
+       'predator_size': 100.,
        'predator_impulse': 1,
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 200,  # Distance from the fish at which the predator appears.
