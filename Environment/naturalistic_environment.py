@@ -33,6 +33,8 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         self.grain_fish_col = self.space.add_collision_handler(3, 4)
 
+        # TODO: May need collision handler for predator and vegatation.
+
     def reset(self):
         super().reset()
         self.fish.body.position = (np.random.randint(self.env_variables['fish_size'],
@@ -47,6 +49,9 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         for i in range(self.env_variables['sand_grain_num']):
             self.create_sand_grain()
+
+        for i in range(self.env_variables['vegetation_num']):
+            self.create_vegetation()
 
     def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None):
         # TODO: Tidy up so is more readable. Do the same with comparable methods in other environment classes.

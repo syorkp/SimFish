@@ -8,7 +8,6 @@ from Tools.drawing_board import DrawingBoard
 
 
 class BaseEnvironment:
-
     """A base class to represent environments, for extension to ProjectionEnvironment, VVR and Naturalistic
     environment classes."""
 
@@ -49,6 +48,9 @@ class BaseEnvironment:
 
         self.last_action = None  # TODO: Ensure initialisation as none doesnt have any effects.
 
+        self.vegetation_bodies = []
+        self.vegetation_shapes = []
+
     def reset(self):
         self.num_steps = 0
         self.fish.hungry = 0
@@ -58,6 +60,9 @@ class BaseEnvironment:
             self.space.remove(shp, shp.body)
 
         for i, shp in enumerate(self.sand_grain_shapes):
+            self.space.remove(shp, shp.body)
+
+        for i, shp in enumerate(self.vegetation_shapes):
             self.space.remove(shp, shp.body)
 
         if self.predator_shape is not None:
@@ -71,6 +76,9 @@ class BaseEnvironment:
 
         self.sand_grain_shapes = []
         self.sand_grain_bodies = []
+
+        self.vegetation_bodies = []
+        self.vegetation_shapes = []
 
     def output_frame(self, activations, internal_state, scale=0.25):
         arena = self.board.db * 255.0
@@ -127,6 +135,9 @@ class BaseEnvironment:
         for i, pr in enumerate(self.predator_bodies):
             self.board.circle(pr.position, self.env_variables['predator_size'], self.predator_shapes[i].color)
 
+        for i, pr in enumerate(self.vegetation_bodies):
+            self.board.vegetation(pr.position, self.env_variables['vegetation_size'], self.vegetation_shapes[i].color)
+
         if self.predator_body is not None:
             self.board.circle(self.predator_body.position, self.env_variables['predator_size'],
                               self.predator_shape.color)
@@ -169,10 +180,13 @@ class BaseEnvironment:
         self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
         self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_size']))
         self.prey_shapes[-1].elasticity = 1.0
-        self.prey_bodies[-1].position = (np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_size'],
-                                                           self.env_variables['width'] - (self.env_variables['prey_size'] + self.env_variables['fish_size'])),
-                                         np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_size'],
-                                                           self.env_variables['height'] - (self.env_variables['prey_size'] + self.env_variables['fish_size'])))
+        self.prey_bodies[-1].position = (
+        np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_size'],
+                          self.env_variables['width'] - (
+                                      self.env_variables['prey_size'] + self.env_variables['fish_size'])),
+        np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_size'],
+                          self.env_variables['height'] - (
+                                      self.env_variables['prey_size'] + self.env_variables['fish_size'])))
         self.prey_shapes[-1].color = (0, 0, 1)
         self.prey_shapes[-1].collision_type = 2
 
@@ -180,11 +194,12 @@ class BaseEnvironment:
 
     def check_paramecium_disturbance(self, prey_position):
         fish_position = self.fish.body.position
-        sensing_area = [[prey_position[0]-self.env_variables['prey_sensing_distance']/2,
-                         prey_position[0]+self.env_variables['prey_sensing_distance']/2],
+        sensing_area = [[prey_position[0] - self.env_variables['prey_sensing_distance'] / 2,
+                         prey_position[0] + self.env_variables['prey_sensing_distance'] / 2],
                         [prey_position[1] - self.env_variables['prey_sensing_distance'] / 2,
                          prey_position[1] + self.env_variables['prey_sensing_distance'] / 2]]
-        is_in_area = sensing_area[0][0] <= fish_position[0] <= sensing_area[0][1] or sensing_area[1][0] <= fish_position[1] <= sensing_area[1][1]
+        is_in_area = sensing_area[0][0] <= fish_position[0] <= sensing_area[0][1] or sensing_area[1][0] <= \
+                     fish_position[1] <= sensing_area[1][1]
         loud_actions = [0, 1, 2]
         if is_in_area and self.last_action in loud_actions:
             return True
@@ -198,11 +213,12 @@ class BaseEnvironment:
         angles = np.random.rand(len(to_move)) * 2 * np.pi
         for ii in range(len(to_move)):
             if self.check_paramecium_disturbance(self.prey_bodies[to_move[ii]].position):
-                if self.prey_bodies[to_move[ii]].angle < (3 * np.pi)/2:
-                    self.prey_bodies[to_move[ii]].angle += np.pi/2
+                if self.prey_bodies[to_move[ii]].angle < (3 * np.pi) / 2:
+                    self.prey_bodies[to_move[ii]].angle += np.pi / 2
                 else:
-                    self.prey_bodies[to_move[ii]].angle -= np.pi/2
-                self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_escape_impulse'], 0))
+                    self.prey_bodies[to_move[ii]].angle -= np.pi / 2
+                self.prey_bodies[to_move[ii]].apply_impulse_at_local_point(
+                    (self.env_variables['prey_escape_impulse'], 0))
             else:
                 self.prey_bodies[to_move[ii]].angle = angles[ii]
                 self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_impulse'], 0))
@@ -221,13 +237,17 @@ class BaseEnvironment:
             return True
 
     def create_predator(self):
-        self.predator_bodies.append(pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia']))
+        self.predator_bodies.append(
+            pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia']))
         self.predator_shapes.append(pymunk.Circle(self.predator_bodies[-1], self.env_variables['predator_size']))
         self.predator_shapes[-1].elasticity = 1.0
-        self.predator_bodies[-1].position = (np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_size'],
-                                                               self.env_variables['width'] - (self.env_variables['predator_size'] + self.env_variables['fish_size'])),
-                                             np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_size'],
-                                                               self.env_variables['height'] - (self.env_variables['predator_size'] + self.env_variables['fish_size'])))
+        self.predator_bodies[-1].position = (
+        np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_size'],
+                          self.env_variables['width'] - (
+                                      self.env_variables['predator_size'] + self.env_variables['fish_size'])),
+        np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_size'],
+                          self.env_variables['height'] - (
+                                      self.env_variables['predator_size'] + self.env_variables['fish_size'])))
         self.predator_shapes[-1].color = (0, 0, 1)
         self.predator_shapes[-1].collision_type = 5
 
@@ -345,7 +365,7 @@ class BaseEnvironment:
 
     def move_realistic_predator(self):
         if (round(self.predator_body.position[0]), round(self.predator_body.position[1])) == (
-                round(self.predator_target[0]), round(self.predator_target[1])): # TODO: Add to method like belwow
+                round(self.predator_target[0]), round(self.predator_target[1])):  # TODO: Add to method like belwow
             self.remove_realistic_predator()
             return
         if self.check_predator_inside_walls():
@@ -366,14 +386,36 @@ class BaseEnvironment:
             pass
 
     def create_sand_grain(self):
-        self.sand_grain_bodies.append(pymunk.Body(self.env_variables['sand_grain_mass'], self.env_variables['sand_grain_inertia']))
+        self.sand_grain_bodies.append(
+            pymunk.Body(self.env_variables['sand_grain_mass'], self.env_variables['sand_grain_inertia']))
         self.sand_grain_shapes.append(pymunk.Circle(self.sand_grain_bodies[-1], self.env_variables['sand_grain_size']))
         self.sand_grain_shapes[-1].elasticity = 1.0
-        self.sand_grain_bodies[-1].position = (np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_size'],
-                                                           self.env_variables['width'] - (self.env_variables['sand_grain_size'] + self.env_variables['fish_size'])),
-                                         np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_size'],
-                                                           self.env_variables['height'] - (self.env_variables['sand_grain_size'] + self.env_variables['fish_size'])))
+        self.sand_grain_bodies[-1].position = (
+            np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_size'],
+                              self.env_variables['width'] - (
+                                          self.env_variables['sand_grain_size'] + self.env_variables['fish_size'])),
+            np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_size'],
+                              self.env_variables['height'] - (
+                                          self.env_variables['sand_grain_size'] + self.env_variables['fish_size'])))
         self.sand_grain_shapes[-1].color = (0, 0, 1)
         self.sand_grain_shapes[-1].collision_type = 4
 
         self.space.add(self.sand_grain_bodies[-1], self.sand_grain_shapes[-1])
+
+    def create_vegetation(self):
+        size = self.env_variables['vegetation_size']
+        vertices = [(0, 0), (0, size), (size / 2, size - size / 3), (size, size), (size, 0), (size / 2, size / 3)]
+        self.vegetation_bodies.append(pymunk.Body(body_type=pymunk.Body.STATIC))
+        self.vegetation_shapes.append(pymunk.Poly(self.vegetation_bodies[-1], vertices))
+        self.vegetation_bodies[-1].position = (
+            np.random.randint(self.env_variables['vegetation_size'] + self.env_variables['fish_size'],
+                              self.env_variables['width'] - (
+                                          self.env_variables['vegetation_size'] + self.env_variables['fish_size'])),
+            np.random.randint(self.env_variables['vegetation_size'] + self.env_variables['fish_size'],
+                              self.env_variables['height'] - (
+                                          self.env_variables['vegetation_size'] + self.env_variables['fish_size'])))
+        self.vegetation_shapes[-1].color = (0, 1, 0)
+        self.vegetation_shapes[-1].collision_type = 1
+        self.vegetation_shapes[-1].friction = 1
+
+        self.space.add(self.vegetation_bodies[-1], self.vegetation_shapes[-1])

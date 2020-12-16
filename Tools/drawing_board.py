@@ -29,6 +29,18 @@ class DrawingBoard:
         rr, cc = draw.circle(center[1], center[0], rad, self.db.shape)
         self.db[rr, cc, :] = color
 
+    def vegetation(self, vertex, edge_size, color):
+        # TODO: Check this works.
+        coordinates = np.array(((vertex[1], vertex[0]),
+                               (vertex[1], vertex[0]+edge_size),
+                               (vertex[1] + edge_size/2, vertex[0] + edge_size - edge_size/3),
+                               (vertex[1] + edge_size, vertex[0] + edge_size),
+                               (vertex[1] + edge_size, vertex[0]),
+                               (vertex[1] + edge_size/2, vertex[0] + edge_size/3)))
+
+        rr, cc = draw.polygon(coordinates[:, 0], coordinates[:, 1], self.db.shape)
+        self.db[rr, cc, :] = color
+
     @staticmethod
     def multi_circles(cx, cy, rad):
         rr, cc = draw.circle(0, 0, rad)
