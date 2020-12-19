@@ -5,9 +5,12 @@ import pygame
 import numpy as np
 
 space = pymunk.Space()
-
-
+import sys
+sys.tracebacklimit = 0
 # space.gravity = 0, -900
+
+from contextlib import suppress
+
 
 def info(body):
     print(f'm={body.mass:.0f} moment={body.moment:.0f}')
@@ -76,7 +79,9 @@ if __name__ == '__main__':
     Box()
     body = pymunk.Body(mass=1, moment=1000)
     body.position = (900, 100)
-    body.angle = np.random.random() * 2 * np.pi
+    # body.angle = np.random.random() * 2 * np.pi
+    body.angle = 0
+    print(body.angle)
     # body.apply_impulse_at_local_point((100, 0))
 
     # Mouth
@@ -100,3 +105,4 @@ if __name__ == '__main__':
 
     space.add(body, mouth, head, tail)
     App().run()
+

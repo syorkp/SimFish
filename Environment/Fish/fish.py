@@ -23,20 +23,20 @@ class Fish:
         self.mouth.collision_type = 3
 
         # Head
-        self.head = pymunk.Circle(self.body, env_variables['fish_head_size'], offset=(env_variables['fish_head_size'], 0))  # TODO: Make sure offset is correct.
+        self.head = pymunk.Circle(self.body, env_variables['fish_head_size'], offset=(-env_variables['fish_head_size'], 0))  # TODO: Make sure offset is correct.
         self.head.color = (0, 1, 0)
         self.head.elasticity = 1.0
         self.head.collision_type = 3
 
         # # Tail
-        tail_coordinates = ((env_variables['fish_head_size'], 0),
-                            (env_variables['fish_head_size'], env_variables['fish_head_size']),
-                            (env_variables['fish_head_size'] + env_variables['fish_tail_length'], 0),
-                            (env_variables['fish_head_size'], -env_variables['fish_head_size']))
+        tail_coordinates = ((-env_variables['fish_head_size'], 0),
+                            (-env_variables['fish_head_size'], - env_variables['fish_head_size']),
+                            (-env_variables['fish_head_size'] - env_variables['fish_tail_length'], 0),
+                            (-env_variables['fish_head_size'], env_variables['fish_head_size']))
         self.tail = pymunk.Poly(self.body, tail_coordinates)
         self.tail.color = (0, 1, 0)
         self.tail.elasticity = 1.0
-        self.tail.collision_type = 3
+        self.tail.collision_type = 6
 
         self.verg_angle = env_variables['eyes_verg_angle'] * (np.pi / 180)
         self.retinal_field = env_variables['visual_field'] * (np.pi / 180)
@@ -63,32 +63,32 @@ class Fish:
         if action == 0:  # Swim forward
             reward = -self.env_variables['forward_swim_cost']
             self.body.apply_impulse_at_local_point((self.env_variables['forward_swim_impulse'], 0))
-            self.mouth.color = (0, 1, 0)
+            self.head.color = (0, 1, 0)
         elif action == 1:  # Turn right
             reward = -self.env_variables['routine_turn_cost']
             self.body.angle += self.env_variables['routine_turn_dir_change']
             self.body.apply_impulse_at_local_point((self.env_variables['routine_turn_impulse'], 0))
-            self.mouth.color = (0, 1, 0)
+            self.head.color = (0, 1, 0)
         elif action == 2:   # Turn left
             reward = -self.env_variables['routine_turn_cost']
             self.body.angle -= self.env_variables['routine_turn_dir_change']
             self.body.apply_impulse_at_local_point((self.env_variables['routine_turn_impulse'], 0))
-            self.mouth.color = (0, 1, 0)
+            self.head.color = (0, 1, 0)
         elif action == 3:   # Capture
             reward = -self.env_variables['capture_swim_cost']
             self.body.apply_impulse_at_local_point((self.env_variables['capture_swim_impulse'], 0))
-            self.mouth.color = [1, 0, 1]
+            self.head.color = [1, 0, 1]
             self.making_capture = True
         elif action == 4:  # j turn right
             reward = -self.env_variables['j_turn_cost']
             self.body.angle += self.env_variables['j_turn_dir_change']
             self.body.apply_impulse_at_local_point((self.env_variables['j_turn_impulse'], 0))
-            self.mouth.color = [1, 1, 1]
+            self.head.color = [1, 1, 1]
         elif action == 5:  # j turn left
             reward = -self.env_variables['j_turn_cost']
             self.body.angle -= self.env_variables['j_turn_dir_change']
             self.body.apply_impulse_at_local_point((self.env_variables['j_turn_impulse'], 0))
-            self.mouth.color = [1, 1, 1]
+            self.head.color = [1, 1, 1]
         elif action == 6:   # do nothing:
             reward = -self.env_variables['rest_cost']
         else:

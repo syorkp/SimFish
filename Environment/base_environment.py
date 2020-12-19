@@ -120,7 +120,7 @@ class BaseEnvironment:
     def draw_shapes(self):
         self.board.fish_shape(self.fish.body.position, self.env_variables['fish_mouth_size'],
                               self.env_variables['fish_head_size'], self.env_variables['fish_tail_length'],
-                              self.fish.mouth.color, self.fish.mouth.color, self.fish.body.angle)  # TODO: Change second to head colour.
+                              self.fish.mouth.color, self.fish.head.color, self.fish.body.angle)
 
         if len(self.prey_bodies) > 0:
             px = np.round(np.array([pr.position[0] for pr in self.prey_bodies])).astype(int)
@@ -169,12 +169,20 @@ class BaseEnvironment:
 
     def touch_edge(self, arbiter, space, data):
         self.fish.body.velocity = (0, 0)
+        current_position = self.fish.body.position
+        if current_position[0] < 10:
+            current_position[0] = 80
+        elif current_position[0] > self.env_variables['width'] - 10:
+            current_position[0] = self.env_variables['width'] - 80
+        if current_position[1] < 10:
+            current_position[1] = 80
+        elif current_position[1] > self.env_variables['height'] - 10:
+            current_position[1] = self.env_variables['height'] - 80
+        self.fish.body.position = current_position
         if self.fish.body.angle < np.pi:
             self.fish.body.angle += np.pi
         else:
             self.fish.body.angle -= np.pi
-        self.fish.body.apply_impulse_at_local_point((20, 0))
-
         self.fish.touched_edge = True
         return True
 
@@ -204,7 +212,6 @@ class BaseEnvironment:
                      sensing_area[1][0] <= fish_position[1] <= sensing_area[1][1]
         loud_actions = [0, 1, 2]
         if is_in_area and self.last_action in loud_actions:
-            print("Scared")
             return True
         else:
             return False
