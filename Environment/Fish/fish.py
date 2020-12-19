@@ -23,19 +23,20 @@ class Fish:
         self.mouth.collision_type = 3
 
         # Head
-        # self.head = pymunk.Circle(self.body, env_variables['fish_head_size'], offset=(env_variables['fish_head_size'], 0))  # TODO: Make sure offset is correct.
-        # self.head.color = (0, 1, 0)
-        # self.head.elasticity = 1.0
-        # self.head.collision_type = 3
+        self.head = pymunk.Circle(self.body, env_variables['fish_head_size'], offset=(env_variables['fish_head_size'], 0))  # TODO: Make sure offset is correct.
+        self.head.color = (0, 1, 0)
+        self.head.elasticity = 1.0
+        self.head.collision_type = 3
 
-        # TODO: Add in tail
         # # Tail
-        # tail_coordinates = ((0, 0), (env_variables['fish_head_size'], 0), (0, env_variables['fish_tail_length']),
-        #                     (0, env_variables['fish_head_size']))  # TODO: Make sure tail in correct place.
-        # self.tail = pymunk.Poly(self.body, tail_coordinates)  # TODO: Add to config
-        # self.tail.color = (0, 1, 0)
-        # self.tail.elasticity = 1.0
-        # self.tail.collision_type = 3
+        tail_coordinates = ((env_variables['fish_head_size'], 0),
+                            (env_variables['fish_head_size'], env_variables['fish_head_size']),
+                            (env_variables['fish_head_size'] + env_variables['fish_tail_length'], 0),
+                            (env_variables['fish_head_size'], -env_variables['fish_head_size']))
+        self.tail = pymunk.Poly(self.body, tail_coordinates)
+        self.tail.color = (0, 1, 0)
+        self.tail.elasticity = 1.0
+        self.tail.collision_type = 3
 
         self.verg_angle = env_variables['eyes_verg_angle'] * (np.pi / 180)
         self.retinal_field = env_variables['visual_field'] * (np.pi / 180)

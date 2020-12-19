@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import pymunk
 
 from Environment.base_environment import BaseEnvironment
 from Environment.Fish.fish import Fish
@@ -13,7 +12,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         # Create the fish class instance and add to the space.
         self.fish = Fish(self.board, env_variables, self.dark_col)
-        self.space.add(self.fish.body, self.fish.mouth)  # TODO: , self.fish.tail and head
+        self.space.add(self.fish.body, self.fish.mouth, self.fish.head)  # TODO: , self.fish.tail and head
 
         # Create walls.
         self.create_walls()

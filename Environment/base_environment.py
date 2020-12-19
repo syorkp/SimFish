@@ -196,15 +196,15 @@ class BaseEnvironment:
 
     def check_paramecium_disturbance(self, prey_position):
         fish_position = self.fish.body.position
-        print("i")
-        sensing_area = [[prey_position[0] - self.env_variables['prey_sensing_distance'] / 2,
-                         prey_position[0] + self.env_variables['prey_sensing_distance'] / 2],
-                        [prey_position[1] - self.env_variables['prey_sensing_distance'] / 2,
-                         prey_position[1] + self.env_variables['prey_sensing_distance'] / 2]]
+        sensing_area = [[prey_position[0] - self.env_variables['prey_sensing_distance'],
+                         prey_position[0] + self.env_variables['prey_sensing_distance']],
+                        [prey_position[1] - self.env_variables['prey_sensing_distance'],
+                         prey_position[1] + self.env_variables['prey_sensing_distance']]]
         is_in_area = sensing_area[0][0] <= fish_position[0] <= sensing_area[0][1] and \
                      sensing_area[1][0] <= fish_position[1] <= sensing_area[1][1]
         loud_actions = [0, 1, 2]
         if is_in_area and self.last_action in loud_actions:
+            print("Scared")
             return True
         else:
             return False
