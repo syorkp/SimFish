@@ -14,7 +14,9 @@ env = {'width': 400,  # arena size
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step
 
        'fish_mass': 140.,
-       'fish_size': 5.,
+       'fish_mouth_size': 5.,
+       'fish_head_size': 10.,
+       'fish_tail_length': 50.,
        'eyes_verg_angle': 77.,  # in deg
        'visual_field': 163.,  # single eye angular visual field
        'eyes_biasx': 15,  # distance of eyes from midline
@@ -25,21 +27,29 @@ env = {'width': 400,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 50,
+       'prey_num': 0,
        'prey_impulse': 0.3,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
+       'prey_escape_impulse': 2,
+       'prey_sensing_distance': 30,
+
+       'sand_grain_mass': 1.,
+       'sand_grain_inertia': 40.,
+       'sand_grain_size': 4.,
+       'sand_grain_num': 0,
+
+       'vegetation_size': 100.,
+       'vegetation_num': 0,
 
        'predator_mass': 10.,
        'predator_inertia': 40.,
-       'predator_size': 30.,
-       'predator_num': 1,
-       'predator_impulse': 2,
-       'predator_impulse_rate': 0.75,
-       'predator_sensing_dist': 120,  # below this distance predators chase the fish
-       'predator_chase_impulse': 0.1,  # impulse during chase
-       'immunity_steps': 65,  # number of steps in the begining of an episode where the fish is immune from predation
+       'predator_size': 100.,
+       'predator_impulse': 1,
+       'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
+       'distance_from_fish': 200,  # Distance from the fish at which the predator appears.
+       'probability_of_predator': 0.,  # Probability with which the predator appears at each step.
 
-       'dark_light_ratio': 0.0,  # fraction of arena in the dark
+       'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
        'photon_ratio': 100,  # expected number of photons for unit brightness
        'bkg_scatter': 0.3,  # base brightness of the background
@@ -61,7 +71,8 @@ env = {'width': 400,  # arena size
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
        'capture_basic_reward': 1000,
-       'predator_cost': 100}
+       'predator_cost': 100
+       }
 
 params = {'num_actions': 7,  # size of action space
           'batch_size': 16,  # How many experience traces to use for each training step.

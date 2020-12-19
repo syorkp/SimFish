@@ -21,7 +21,7 @@ class ProjectionEnvironment(BaseEnvironment):
             self.fish = TetheredFish(self.board, env_variables, self.dark_col)
         else:
             self.fish = Fish(self.board, env_variables, self.dark_col)
-        self.space.add(self.fish.body, self.fish.shape)
+        self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 
         # TODO: Unify in future with other stimuli
         self.prey_positions = {}
@@ -102,8 +102,8 @@ class ProjectionEnvironment(BaseEnvironment):
                 self.board_image.set_data(self.output_frame(activations, internal_state, scale=0.5) / 255.)
                 plt.pause(0.000001)
 
-        observation = np.dstack((self.readings_to_photons(self.fish.left_eye.readings),
-                                 self.readings_to_photons(self.fish.right_eye.readings)))
+        observation = np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
+                                 self.fish.readings_to_photons(self.fish.right_eye.readings)))
 
         return observation, reward, internal_state, done, frame_buffer
 

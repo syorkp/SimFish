@@ -57,7 +57,7 @@ def convert_photons_to_int(obs):
     return new_obs
 
 
-with open("../Assay-Output/base-1/Visual-Stimulus-Assay-1.json", "r") as file:
+with open("../Assay-Output/base-1/Visual-Stimulus-Assay-2.json", "r") as file:
     data = json.load(file)
 
 # rnn_unit_1 = [i["rnn state"][0][0] for i in data]

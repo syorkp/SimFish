@@ -10,7 +10,7 @@ if not os.path.exists("./Assay-Output/"):
     os.makedirs("./Assay-Output/")
 
 # TODO: Move whole thing to its own JSON configuration set.
-assay_configuration = [
+controlled_assay_configuration = [
     {
         "Model Name": "base",
         "Environment Name": "test_square",
@@ -19,7 +19,7 @@ assay_configuration = [
         "Priority": 1,
         "Assays": [
             {
-                "assay id": "Visual-Stimulus-Assay-1",
+                "assay id": "Visual-Stimulus-Assay-2",
                 "stimulus paradigm": "Projection",
                 "duration": 121,
                 "fish setup": "Tethered",
@@ -109,5 +109,5 @@ training_configuration = [
     },
 ]
 
-manager = TrialManager(naturalistic_assay_configuration)
+manager = TrialManager(controlled_assay_configuration)
 manager.run_priority_loop()

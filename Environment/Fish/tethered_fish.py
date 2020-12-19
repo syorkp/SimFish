@@ -13,23 +13,23 @@ class TetheredFish(Fish):
     def take_action(self, action):
         if action == 0:  # Swim forward
             reward = -self.env_variables['forward_swim_cost']
-            self.shape.color = (0, 1, 0)
+            self.head.color = (0, 1, 0)
         elif action == 1:  # Turn right
             reward = -self.env_variables['routine_turn_cost']
-            self.shape.color = (0, 1, 0)
+            self.head.color = (0, 1, 0)
         elif action == 2:   # Turn left
             reward = -self.env_variables['routine_turn_cost']
-            self.shape.color = (0, 1, 0)
+            self.head.color = (0, 1, 0)
         elif action == 3:   # Capture
             reward = -self.env_variables['capture_swim_cost']
-            self.shape.color = [1, 0, 1]
+            self.head.color = [1, 0, 1]
             self.making_capture = True
         elif action == 4:  # j turn right
             reward = -self.env_variables['j_turn_cost']
-            self.shape.color = [1, 1, 1]
+            self.head.color = [1, 1, 1]
         elif action == 5:  # j turn left
             reward = -self.env_variables['j_turn_cost']
-            self.shape.color = [1, 1, 1]
+            self.head.color = [1, 1, 1]
         elif action == 6:   # do nothing:
             reward = -self.env_variables['rest_cost']
         else:
