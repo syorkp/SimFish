@@ -97,17 +97,16 @@ naturalistic_assay_configuration = [
 
 training_configuration = [
     {
-        "Model Name": "base",
+        "Model Name": "updated_base",
         "Environment Name": "base",
-        "Trial Number": 8,
+        "Trial Number": 1,
         "Run Mode": "Training",
         "Fish Setup": "Free",
         "Priority": 1,
         "using gpu": True,
         "monitor gpu": False,
-
     },
 ]
 
-manager = TrialManager(controlled_assay_configuration)
+manager = TrialManager(training_configuration)
 manager.run_priority_loop()
