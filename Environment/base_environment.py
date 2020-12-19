@@ -120,7 +120,7 @@ class BaseEnvironment:
     def draw_shapes(self):
         self.board.fish_shape(self.fish.body.position, self.env_variables['fish_mouth_size'],
                               self.env_variables['fish_head_size'], self.env_variables['fish_tail_length'],
-                              self.fish.mouth.color, self.fish.body.angle)
+                              self.fish.mouth.color, self.fish.mouth.color, self.fish.body.angle)  # TODO: Change second to head colour.
 
         if len(self.prey_bodies) > 0:
             px = np.round(np.array([pr.position[0] for pr in self.prey_bodies])).astype(int)
@@ -200,8 +200,8 @@ class BaseEnvironment:
                          prey_position[0] + self.env_variables['prey_sensing_distance'] / 2],
                         [prey_position[1] - self.env_variables['prey_sensing_distance'] / 2,
                          prey_position[1] + self.env_variables['prey_sensing_distance'] / 2]]
-        is_in_area = sensing_area[0][0] <= fish_position[0] <= sensing_area[0][1] or sensing_area[1][0] <= \
-                     fish_position[1] <= sensing_area[1][1]
+        is_in_area = sensing_area[0][0] <= fish_position[0] <= sensing_area[0][1] and \
+                     sensing_area[1][0] <= fish_position[1] <= sensing_area[1][1]
         loud_actions = [0, 1, 2]
         if is_in_area and self.last_action in loud_actions:
             return True

@@ -17,16 +17,16 @@ class Fish:
         self.body = pymunk.Body(1, inertia)
 
         # Mouth
-        self.mouth = pymunk.Circle(self.body, env_variables['fish_mouth_size'])  # TODO: rename to mouth.
-        self.mouth.color = (1, 0, 0)
-        self.mouth.elasticity = 1.0
+        self.mouth = pymunk.Circle(self.body, env_variables['fish_mouth_size'], offset=(0, 0))  # TODO: rename to mouth.
+        self.mouth.color = (1, 0, 1)
+        self.mouth.elasticity = 1.0  # TODO: Set this.
         self.mouth.collision_type = 3
 
         # Head
-        self.head = pymunk.Circle(self.body, env_variables['fish_head_size'], offset=(-8, 0))  # TODO: Make sure offset is correct.
-        self.head.color = (0, 1, 0)
-        self.head.elasticity = 1.0
-        self.head.collision_type = 3
+        # self.head = pymunk.Circle(self.body, env_variables['fish_head_size'], offset=(env_variables['fish_head_size'], 0))  # TODO: Make sure offset is correct.
+        # self.head.color = (0, 1, 0)
+        # self.head.elasticity = 1.0
+        # self.head.collision_type = 3
 
         # TODO: Add in tail
         # # Tail

@@ -13,7 +13,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         # Create the fish class instance and add to the space.
         self.fish = Fish(self.board, env_variables, self.dark_col)
-        self.space.add(self.fish.body, self.fish.mouth, self.fish.head)  # TODO: , self.fish.tail
+        self.space.add(self.fish.body, self.fish.mouth)  # TODO: , self.fish.tail and head
 
         # Create walls.
         self.create_walls()
@@ -98,7 +98,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         self.num_steps += 1
         self.board.erase()
-        self.draw_shapes()
+        # self.draw_shapes()  TODO: Test whether this is needed.
 
         right_eye_pos = (
             -np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],

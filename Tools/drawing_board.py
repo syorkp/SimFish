@@ -30,25 +30,27 @@ class DrawingBoard:
         self.db[rr, cc, :] = color
 
     def tail(self, head, left, right, tip, color):
-        tail_coordinates = np.array((head, right, tip, left))
+        tail_coordinates = np.array((head, left, tip, right))
         rr, cc = draw.polygon(tail_coordinates[:, 1], tail_coordinates[:, 0], self.db.shape)
         self.db[rr, cc, :] = color
 
-    def fish_shape(self, mouth_centre, mouth_rad, head_rad, tail_length, color, angle):
+    def fish_shape(self, mouth_centre, mouth_rad, head_rad, tail_length, mouth_colour, body_colour, angle):
         offset = np.pi/2
         angle += offset
         angle = -angle
-        self.circle(mouth_centre, mouth_rad, color)  # For the mouth.
-        head_centre = (mouth_centre[0] + head_rad * np.sin(angle),
-                       mouth_centre[1] + head_rad * np.cos(angle))
-        self.circle(head_centre, head_rad, color)
-        left_flank = (head_centre[0] - head_rad * np.sin(np.pi/4),
-                      head_centre[1] - head_rad * np.cos(angle))
-        right_flank = (head_centre[0] + head_rad * np.sin(np.pi/4),
-                       head_centre[1] + head_rad * np.cos(angle))
+        self.circle(mouth_centre, mouth_rad, mouth_colour)  # For the mouth.
+        dx1, dy1 = head_rad * np.sin(angle), head_rad * np.cos(angle)
+        head_centre = (mouth_centre[0] + dx1,
+                       mouth_centre[1] + dy1)
+        self.circle(head_centre, head_rad, body_colour)
+        dx2, dy2 = -1 * dy1, dx1
+        left_flank = (head_centre[0] + dx2,
+                      head_centre[1] + dy2)
+        right_flank = (head_centre[0] - dx2,
+                       head_centre[1] - dy2)
         tip = (mouth_centre[0] + (tail_length + head_rad) * np.sin(angle),
                mouth_centre[1] + (tail_length + head_rad) * np.cos(angle))
-        self.tail(head_centre, left_flank, right_flank, tip, color)
+        self.tail(head_centre, left_flank, right_flank, tip, body_colour)
 
     def vegetation(self, vertex, edge_size, color):
         coordinates = np.array(((vertex[1], vertex[0]),
