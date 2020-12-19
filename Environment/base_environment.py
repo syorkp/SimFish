@@ -196,6 +196,7 @@ class BaseEnvironment:
 
     def check_paramecium_disturbance(self, prey_position):
         fish_position = self.fish.body.position
+        print("i")
         sensing_area = [[prey_position[0] - self.env_variables['prey_sensing_distance'] / 2,
                          prey_position[0] + self.env_variables['prey_sensing_distance'] / 2],
                         [prey_position[1] - self.env_variables['prey_sensing_distance'] / 2,
