@@ -441,6 +441,31 @@ class BaseEnvironment:
 
         self.space.add(self.sand_grain_bodies[-1], self.sand_grain_shapes[-1])
 
+    def check_sand_grain_disturbance(self, sand_grain_position):
+        # TODO: Consider merging with method for prey escape
+        fish_position = self.fish.body.position
+        sensing_area = [[sand_grain_position[0] - self.env_variables['sand_grain_displacement_distance'],
+                         sand_grain_position[0] + self.env_variables['sand_grain_displacement_distance']],
+                        [sand_grain_position[1] - self.env_variables['sand_grain_displacement_distance'],
+                         sand_grain_position[1] + self.env_variables['sand_grain_displacement_distance']]]
+        is_in_area = sensing_area[0][0] <= fish_position[0] <= sensing_area[0][1] and \
+                     sensing_area[1][0] <= fish_position[1] <= sensing_area[1][1]
+        loud_actions = [0, 1, 2]  # TODO: Convert to be related to magnitude of displacement.
+        if is_in_area and self.last_action in loud_actions:
+            return True
+        else:
+            return False
+
+    def displace_sand_grains(self):
+        for i, body in enumerate(self.sand_grain_bodies):
+            if self.check_sand_grain_disturbance(self.sand_grain_bodies[i].position):
+                if self.sand_grain_bodies[i].angle < (3 * np.pi) / 2:
+                    self.sand_grain_bodies[i].angle += np.pi / 2
+                else:
+                    self.sand_grain_bodies[i].angle -= np.pi / 2
+                self.sand_grain_bodies[i].apply_impulse_at_local_point(
+                    (self.env_variables['sand_grain_displacement_impulse_scaling_factor'], 0))
+
     def create_vegetation(self):
         size = self.env_variables['vegetation_size']
         vertices = [(0, 0), (0, size), (size / 2, size - size / 3), (size, size), (size, 0), (size / 2, size / 3)]

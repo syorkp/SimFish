@@ -71,6 +71,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.move_prey()
+            self.displace_sand_grains()
             if self.predator_body is not None:
                 self.move_realistic_predator()
 

@@ -41,6 +41,7 @@ env = {'width': 1000,  # arena size
        'sand_grain_size': 4.,
        'sand_grain_num': 10,
        'sand_grain_displacement_impulse_scaling_factor': 0.5,
+       'sand_grain_displacement_distance': 20,
 
        'vegetation_size': 100.,
        'vegetation_num': 0,
