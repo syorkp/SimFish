@@ -114,7 +114,7 @@ class TrialManager:
             epsilon, total_steps, episode_number = self.get_saved_parameters(trial)
 
             if trial["Run Mode"] == "Training":
-                trial_services.append(TrainingService(environment_name=trial["Environment Name"],
+                trial_services.append(TrainingService(model_name=trial["Model Name"],
                                                       trial_number=trial["Trial Number"],
                                                       model_exists=trial["Model Exists"],
                                                       fish_mode=trial["Fish Setup"],
@@ -127,8 +127,7 @@ class TrialManager:
                                                       )
                                       )
             elif trial["Run Mode"] == "Assay":
-                trial_services.append(AssayService(model_name="base",
-                                                   environment_name=trial["Environment Name"],
+                trial_services.append(AssayService(model_name=trial["Model Name"],
                                                    trial_number=trial["Trial Number"],
                                                    learning_params=learning_params,
                                                    environment_params=environment_params,

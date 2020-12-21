@@ -11,7 +11,7 @@ from Tools.make_gif import make_gif
 
 class AssayService:
 
-    def __init__(self, model_name, environment_name, trial_number, learning_params, environment_params, assays):
+    def __init__(self, model_name, trial_number, learning_params, environment_params, assays):
 
         self.model_id = f"{model_name}-{trial_number}"
         self.model_location = f"./Training-Output/{self.model_id}"

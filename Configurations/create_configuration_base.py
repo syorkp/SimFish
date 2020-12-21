@@ -34,11 +34,13 @@ env = {'width': 1000,  # arena size
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
+       'prey_max_turning_angle': 0.3,
 
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
        'sand_grain_size': 4.,
        'sand_grain_num': 10,
+       'sand_grain_displacement_impulse_scaling_factor': 0.5,
 
        'vegetation_size': 100.,
        'vegetation_num': 0,

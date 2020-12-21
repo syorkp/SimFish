@@ -51,9 +51,14 @@ class BaseEnvironment:
         self.vegetation_bodies = []
         self.vegetation_shapes = []
 
+        self.predators_avoided = 0
+        self.prey_caught = 0
+
     def reset(self):
         self.num_steps = 0
         self.fish.hungry = 0
+        self.prey_caught = 0
+        self.predators_avoided = 0
 
         # TODO: Create individual methods for each removal. sand grains, prey, predators.
         for i, shp in enumerate(self.prey_shapes):
@@ -167,22 +172,45 @@ class BaseEnvironment:
             s.color = (1, 0, 0)
         self.space.add(static)
 
+    def calculate_angle_of_adjustment(self, angle_of_incidence):
+        if angle_of_incidence is None:
+            print("Nonetype given for angle of incidence - not close to any walls.")  # TODO: Stop being called.
+        if angle_of_incidence < np.pi/2:
+            return np.pi - (2 * angle_of_incidence)
+        else:
+            return -(2 * angle_of_incidence) - np.pi/2
+
     def touch_edge(self, arbiter, space, data):
+        # TODO: Fix, currently not producing desired angles, or deflection.
         self.fish.body.velocity = (0, 0)
         current_position = self.fish.body.position
-        if current_position[0] < 10:
-            current_position[0] = 80
-        elif current_position[0] > self.env_variables['width'] - 10:
+        inc = None
+        # Decide which wall and calculate angle of incidence, update position accordingly.
+        if current_position[0] < 10:  # Wall d
+            inc = np.pi - self.fish.body.angle
+            current_position[0] = 80  # TODO: Make these adjustments with respect to fish size.
+        elif current_position[0] > self.env_variables['width'] - 10:  # wall b
+            inc = np.pi/2 - self.fish.body.angle
             current_position[0] = self.env_variables['width'] - 80
-        if current_position[1] < 10:
+        if current_position[1] < 10:  # wall a
+            inc = (2 * np.pi) - self.fish.body.angle
             current_position[1] = 80
-        elif current_position[1] > self.env_variables['height'] - 10:
+        elif current_position[1] > self.env_variables['height'] - 10:  # wall c
+            inc = self.fish.body.angle
             current_position[1] = self.env_variables['height'] - 80
+
         self.fish.body.position = current_position
-        if self.fish.body.angle < np.pi:
-            self.fish.body.angle += np.pi
+        if inc is not None:
+            adj = self.calculate_angle_of_adjustment(inc)
         else:
-            self.fish.body.angle -= np.pi
+            adj = np.pi/2
+
+        self.fish.body.angle += adj
+
+        # if self.fish.body.angle < np.pi:
+        #     self.fish.body.angle += np.pi
+        # else:
+        #     self.fish.body.angle -= np.pi
         self.fish.touched_edge = True
         return True
 
@@ -220,7 +248,6 @@ class BaseEnvironment:
         # Not, currently, a prey isn't guaranteed to try to escape if a loud predator is near, only if it was going to
         # move anyway. Should reconsider this in the future.
         to_move = np.where(np.random.rand(len(self.prey_bodies)) < self.env_variables['prey_impulse_rate'])[0]
-        angles = np.random.rand(len(to_move)) * 2 * np.pi
         for ii in range(len(to_move)):
             if self.check_paramecium_disturbance(self.prey_bodies[to_move[ii]].position):
                 if self.prey_bodies[to_move[ii]].angle < (3 * np.pi) / 2:
@@ -230,7 +257,8 @@ class BaseEnvironment:
                 self.prey_bodies[to_move[ii]].apply_impulse_at_local_point(
                     (self.env_variables['prey_escape_impulse'], 0))
             else:
-                self.prey_bodies[to_move[ii]].angle = angles[ii]
+                adjustment = np.random.uniform(-self.env_variables['prey_max_turning_angle'], self.env_variables['prey_max_turning_angle'])
+                self.prey_bodies[to_move[ii]].angle = self.prey_bodies[to_move[ii]].angle + adjustment
                 self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_impulse'], 0))
 
     def touch_prey(self, arbiter, space, data):
@@ -240,7 +268,7 @@ class BaseEnvironment:
                     space.remove(shp, shp.body)
                     self.prey_shapes.remove(shp)
                     self.prey_bodies.remove(shp.body)
-
+            self.prey_caught += 1
             self.fish.prey_consumed = True
             return False
         else:
@@ -377,6 +405,7 @@ class BaseEnvironment:
         if (round(self.predator_body.position[0]), round(self.predator_body.position[1])) == (
                 round(self.predator_target[0]), round(self.predator_target[1])):  # TODO: Add to method like belwow
             self.remove_realistic_predator()
+            self.predators_avoided += 1
             return
         if self.check_predator_inside_walls():
             self.remove_realistic_predator()

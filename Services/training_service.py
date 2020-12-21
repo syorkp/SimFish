@@ -16,18 +16,18 @@ tf.disable_v2_behavior()
 
 class TrainingService:
 
-    def __init__(self, environment_name, trial_number, model_exists, fish_mode, learning_params, env_params,
+    def __init__(self, model_name, trial_number, model_exists, fish_mode, learning_params, env_params,
                  e, total_steps, episode_number, monitor_gpu):
         """
         An instance of TraningService handles the training of the DQN within a specified environment, according to
         specified parameters.
-        :param environment_name: The name of the environment, to match the naming of the configuration files.
+        :param model_name: The name of the model, usually to match the naming of the env configuration files.
         :param trial_number: The index of the trial, so that agents trained under the same configuration may be
         distinguished in their output files.
         """
 
-        self.trial_id = f"{environment_name}-{trial_number}"
-        self.output_location = f"./Training-Output/{environment_name}-{trial_number}"
+        self.trial_id = f"{model_name}-{trial_number}"
+        self.output_location = f"./Training-Output/{model_name}-{trial_number}"
 
         self.load_model = model_exists
         self.monitor_gpu = monitor_gpu
@@ -174,12 +174,15 @@ class TrainingService:
         self.save_episode(episode_start_t=t0,
                           all_actions=all_actions,
                           total_episode_reward=total_episode_reward,
-                          episode_buffer=episode_buffer)
+                          episode_buffer=episode_buffer,
+                          prey_caught=self.simulation.prey_caught,
+                          predators_avoided=self.simulation.predators_avoided,
+                          )
         # Print saved metrics
         # print(f"Total training time: {sum(self.training_times)}")
         # print(f"Total reward: {sum(self.reward_list)}")
 
-    def save_episode(self, episode_start_t, all_actions, total_episode_reward, episode_buffer):
+    def save_episode(self, episode_start_t, all_actions, total_episode_reward, episode_buffer, prey_caught, predators_avoided):
         """
         Saves the episode the the experience buffer. Also creates a gif if at interval.
         :param episode_start_t: The time at the start of the episode, used to calculate the time the episode took.
@@ -197,13 +200,22 @@ class TrainingService:
         #     self.training_times.append(time() - episode_start_t)
         #     print(np.mean(self.training_times))
 
+        # Add Summary to Logs
         episode_summary = tf.Summary(value=[tf.Summary.Value(tag="episode reward", simple_value=total_episode_reward)])
         self.writer.add_summary(episode_summary, self.total_steps)
+
+        # Consider changing two below to total steps.
+        prey_caught_summary = tf.Summary(value=[tf.Summary.Value(tag="prey caught", simple_value=prey_caught)])
+        self.writer.add_summary(prey_caught_summary, self.episode_number)
+
+        predators_avoided_summary = tf.Summary(value=[tf.Summary.Value(tag="predators avoided", simple_value=predators_avoided)])
+        self.writer.add_summary(predators_avoided_summary, self.episode_number)
 
         for act in range(self.params['num_actions']):
             action_freq = np.sum(np.array(all_actions) == act) / len(all_actions)
             a_freq = tf.Summary(value=[tf.Summary.Value(tag="action " + str(act), simple_value=action_freq)])
             self.writer.add_summary(a_freq, self.total_steps)
+
 
         # Save the parameters to be carried over.
         output_data = {"epsilon": self.e, "episode_number": self.episode_number, "total_steps": self.total_steps}
@@ -216,9 +228,7 @@ class TrainingService:
         self.reward_list.append(total_episode_reward)
         # Periodically save the model.
         if self.episode_number % self.params['summaryLength'] == 0 and self.episode_number != 0:
-            print(f"mean time: {np.mean(self.training_times)}")
-
-
+            # print(f"mean time: {np.mean(self.training_times)}")
 
             # Save the model
             self.saver.save(self.sess, f"{self.output_location}/model-{str(self.episode_number)}.cptk")

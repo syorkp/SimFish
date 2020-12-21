@@ -103,7 +103,6 @@ training_configuration = [
         "Run Mode": "Training",
         "Fish Setup": "Free",
         "Priority": 1,
-        "using gpu": True,
         "monitor gpu": False,
     },
 ]
