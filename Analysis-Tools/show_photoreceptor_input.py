@@ -6,10 +6,14 @@ from Tools.make_gif import make_gif
 
 # TODO: Not finished or used yet.
 
-with open("../Assay-Output/base-1/Assay-1.json", "r") as file:
-    data = json.load(file)
+from load_data import load_data
 
-observation = [i["observation"] for i in data]
+
+# TODO: Make sure data load method fits.
+data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
+
+
+observation = data["observation"]
 
 observation = np.array(observation)
 

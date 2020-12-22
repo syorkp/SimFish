@@ -1,12 +1,13 @@
 import json
 import numpy as np
 import matplotlib.pyplot as plt
+from load_data import load_data
 
 
-with open("../Assay-Output/base-1/Visual-Stimulus-Assay-1.json", "r") as file:
-    data = json.load(file)
+data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
 
-observation = [i["observation"] for i in data]
+
+observation = data["observation"]
 
 observation = np.array(observation)
 

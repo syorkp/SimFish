@@ -15,6 +15,7 @@ controlled_assay_configuration = [
         "Model Name": "base",
         "Environment Name": "test_square",
         "Trial Number": 1,
+        "Assay Configuration Name": "Prey Stimuli",
         "Run Mode": "Assay",
         "Priority": 1,
         "Assays": [
@@ -78,6 +79,7 @@ naturalistic_assay_configuration = [
     {
             "Model Name": "base",
             "Environment Name": "base",
+            "Assay Configuration Name": "Naturalistic",
             "Trial Number": 1,
             "Run Mode": "Assay",
             "Priority": 1,
@@ -107,5 +109,5 @@ training_configuration = [
     },
 ]
 
-manager = TrialManager(training_configuration)
+manager = TrialManager(controlled_assay_configuration)
 manager.run_priority_loop()

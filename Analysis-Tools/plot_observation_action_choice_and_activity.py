@@ -1,6 +1,7 @@
 import json
 import numpy as np
 from matplotlib import pyplot as plt
+from load_data import load_data
 
 
 def plot_all(rnn_data, observation, action_choice):
@@ -47,7 +48,6 @@ def plot_all(rnn_data, observation, action_choice):
     fig.savefig('test2png.png', dpi=100)
     plt.show()
 
-
 def convert_photons_to_int(obs):
     new_obs = np.zeros((121, 400, 3), int)
     for i, time in enumerate(obs):
@@ -57,24 +57,23 @@ def convert_photons_to_int(obs):
     return new_obs
 
 
-with open("../Assay-Output/base-1/Visual-Stimulus-Assay-2.json", "r") as file:
-    data = json.load(file)
+data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
 
 # rnn_unit_1 = [i["rnn state"][0][0] for i in data]
 # rnn_unit_2 = [i["rnn state"][0][1] for i in data]
 # rnn_unit_3 = [i["rnn state"][0][2] for i in data]
 # rnn_unit_200 = [i["rnn state"][0][199] for i in data]
 
+rnn_unit_1 = [data["rnn state"][i-1][0][0] for i in data["step"]]
+rnn_unit_3 = [data["rnn state"][i-1][0][19] for i in data["step"]]
+rnn_unit_200 = [data["rnn state"][i-1][0][190] for i in data["step"]]
 
-rnn_unit_1 = [i["rnn state"][0][9] for i in data]
-rnn_unit_3 = [i["rnn state"][0][19] for i in data]
-rnn_unit_200 = [i["rnn state"][0][190] for i in data]
 
-action_choice = [i["behavioural choice"] for i in data]
+action_choice = data["behavioural choice"]
 unit_activity = [rnn_unit_1, rnn_unit_3, rnn_unit_200]
 
 
-observation = [i["observation"] for i in data]
+observation = data["observation"]
 
 observation = np.array(observation)
 

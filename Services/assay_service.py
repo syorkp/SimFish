@@ -1,4 +1,5 @@
 import json
+import h5py
 
 import numpy as np
 import tensorflow.compat.v1 as tf
@@ -11,11 +12,13 @@ from Tools.make_gif import make_gif
 
 class AssayService:
 
-    def __init__(self, model_name, trial_number, learning_params, environment_params, assays):
+    def __init__(self, model_name, trial_number, assay_config_name, learning_params, environment_params, assays):
 
         self.model_id = f"{model_name}-{trial_number}"
         self.model_location = f"./Training-Output/{self.model_id}"
         self.data_save_location = f"./Assay-Output/{self.model_id}"
+
+        self.assay_configuration_id = assay_config_name
 
         self.learning_params = learning_params
         self.environment_params = environment_params
@@ -34,6 +37,8 @@ class AssayService:
 
         self.assay_output_data_format = None
         self.assay_output_data = []
+
+        self.output_data = {}
 
         self.step_number = 0
 
@@ -68,9 +73,15 @@ class AssayService:
             self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
             print("Model loaded")
             for assay in self.assays:
+                self.create_output_data_storage(assay)
                 self.create_testing_environment(assay)
                 self.perform_assay(assay)
-                self.save_assay_results(assay)
+                # self.save_assay_results(assay)
+                self.save_hdf5_data(assay)
+
+    def create_output_data_storage(self, assay):
+        self.output_data = {key: [] for key in assay["recordings"]}
+        self.output_data["step"] = []
 
     def perform_assay(self, assay):
         self.assay_output_data_format = {key: None for key in assay["recordings"]}
@@ -108,14 +119,40 @@ class AssayService:
                                                                                                  frame_buffer=self.frame_buffer,
                                                                                                  save_frames=True,
                                                                                                  activations=(sa,))
+
+        # Old JSON saving
         possible_data_to_save = self.package_output_data(chosen_a, sa, updated_rnn_state,
                                                          self.simulation.fish.body.position)
-        self.make_recordings(possible_data_to_save)
+        # self.make_recordings(possible_data_to_save)
+
+        # New Saving for HDF5
+        for key in self.assay_output_data_format:
+            self.output_data[key].append(possible_data_to_save[key])
+        self.output_data["step"].append(self.step_number)
 
         return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
 
+    def save_hdf5_data(self, assay):
+        if assay["save frames"]:
+            make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
+                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+        self.frame_buffer = []
+
+        hdf5_file = h5py.File(f"{self.data_save_location}/{self.assay_configuration_id}.h5", "a")
+        try:
+            assay_group = hdf5_file.create_group(assay['assay id'])
+        except ValueError:
+            assay_group = hdf5_file.get(assay['assay id'])
+
+        for key in self.output_data:
+            assay_group.create_dataset(key, data=self.output_data[key])  # TODO: Compress data.
+        hdf5_file.close()
+
     def make_recordings(self, available_data):
         step_data = {i: available_data[i] for i in self.assay_output_data_format}
+        # TODO: This will be a headache as I will have to make sure the lists are combined properly.
+        # for d_type in step_data:
+        #     self.assay_output_data[d_type].append(available_data[d_type])
         step_data["step"] = self.step_number
         self.assay_output_data.append(step_data)
 

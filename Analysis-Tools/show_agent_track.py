@@ -3,11 +3,15 @@ import json
 from matplotlib import pyplot as plt
 import matplotlib.cm as cm
 
-with open("../Assay-Output/base-1/Assay-1.json", "r") as file:
-    data = json.load(file)
+from load_data import load_data
 
-position =[i["position"] for i in data]
-action_choice = [i["behavioural choice"] for i in data]
+
+# TODO: Make sure data load method fits.
+data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
+
+
+position = data["position"]
+action_choice = data["behavioural choice"]
 
 # TODO: Ensure is the right way up in future.
 

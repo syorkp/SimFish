@@ -2,20 +2,7 @@ import json
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.cm as cm
-
-with open("../Assay-Output/base-1/Visual-Stimulus-Assay-1.json", "r") as file:
-    data = json.load(file)
-
-# TODO: Create code to load everything into a dataframe - should be own function for loading data.
-
-
-# Shorten action choice
-
-# action_choice = action_choice[200: 500]
-# rnn_unit_1 = rnn_unit_1[200: 500]
-# rnn_unit_2 = rnn_unit_2[200: 500]
-# rnn_unit_3 = rnn_unit_3[200: 500]
-# rnn_unit_200 = rnn_unit_200[200: 500]
+from load_data import load_data
 
 
 def calculate_average_rnn_activity():
@@ -103,6 +90,23 @@ def plot_activity_and_actions(rnn_data, action_data):
     plt.show()
 
 
+data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
+
+# with open("../Assay-Output/base-1/Visual-Stimulus-Assay-1.json", "r") as file:
+#     data = json.load(file)
+
+# TODO: Create code to load everything into a dataframe - should be own function for loading data.
+
+
+# Shorten action choice
+
+# action_choice = action_choice[200: 500]
+# rnn_unit_1 = rnn_unit_1[200: 500]
+# rnn_unit_2 = rnn_unit_2[200: 500]
+# rnn_unit_3 = rnn_unit_3[200: 500]
+# rnn_unit_200 = rnn_unit_200[200: 500]
+
+
 # To print individual for each action
 # for i in range(6):
 #     plot_activity_and_action(rnn_unit_1, i, action_choice)
@@ -111,11 +115,17 @@ def plot_activity_and_actions(rnn_data, action_data):
 #     plot_activity_and_action(rnn_unit_200, i, action_choice)
 
 # For all actions
-rnn_unit_1 = [i["rnn state"][0][0] for i in data]
-rnn_unit_3 = [i["rnn state"][0][19] for i in data]
-rnn_unit_200 = [i["rnn state"][0][190] for i in data]
+rnn_unit_1 = [data["rnn state"][i-1][0][0] for i in data["step"]]
+rnn_unit_3 = [data["rnn state"][i-1][0][19] for i in data["step"]]
+rnn_unit_200 = [data["rnn state"][i-1][0][190] for i in data["step"]]
 
-action_choice = [i["behavioural choice"] for i in data]
+action_choice = data["behavioural choice"]
+
+
+# rnn_unit_3 = [i["rnn state"][0][19] for i in data]
+# rnn_unit_200 = [i["rnn state"][0][190] for i in data]
+#
+# action_choice = [i["behavioural choice"] for i in data]
 unit_activity = [rnn_unit_1, rnn_unit_3, rnn_unit_200]
 plot_activity_and_actions(unit_activity, action_choice)
 

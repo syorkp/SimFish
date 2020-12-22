@@ -2,6 +2,7 @@ import json
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.cm as cm
+from load_data import load_data
 
 
 def plot_activity(rnn_data, observation):
@@ -49,22 +50,15 @@ def convert_photons_to_int(obs):
     return new_obs
 
 
-with open("../Assay-Output/base-1/Visual-Stimulus-Assay-1.json", "r") as file:
-    data = json.load(file)
+# TODO: Make sure data load method fits.
+data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
 
-# rnn_unit_1 = [i["rnn state"][0][0] for i in data]
-# rnn_unit_2 = [i["rnn state"][0][1] for i in data]
-# rnn_unit_3 = [i["rnn state"][0][2] for i in data]
-# rnn_unit_200 = [i["rnn state"][0][199] for i in data]
+rnn_unit_1 = [data["rnn state"][i-1][0][0] for i in data["step"]]
+rnn_unit_2 = [data["rnn state"][i-1][0][2] for i in data["step"]]
+rnn_unit_3 = [data["rnn state"][i-1][0][19] for i in data["step"]]
+rnn_unit_200 = [data["rnn state"][i-1][0][190] for i in data["step"]]
 
-
-rnn_unit_1 = [i["rnn state"][0][100] for i in data]
-rnn_unit_2 = [i["rnn state"][0][110] for i in data]
-rnn_unit_3 = [i["rnn state"][0][120] for i in data]
-rnn_unit_200 = [i["rnn state"][0][190] for i in data]
-
-
-observation = [i["observation"] for i in data]
+observation = data["observation"]
 
 observation = np.array(observation)
 

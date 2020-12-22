@@ -2,6 +2,8 @@ import json
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.cm as cm
+from load_data import load_data
+
 
 def plot_activity(rnn_data):
     fig, axs = plt.subplots(4, 1, sharex=True)
@@ -25,11 +27,9 @@ def plot_activity(rnn_data):
     fig.savefig('test2png.png', dpi=100)
     plt.show()
 
+data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
 
-with open("../Assay-Output/base-1/Visual-Stimulus-Assay-1.json", "r") as file:
-    data = json.load(file)
 
-# TODO: Create code to load everything into a dataframe - should be own function for loading data.
 rnn_unit_1 = [i["rnn state"][0][0] for i in data]
 rnn_unit_2 = [i["rnn state"][0][1] for i in data]
 rnn_unit_3 = [i["rnn state"][0][2] for i in data]

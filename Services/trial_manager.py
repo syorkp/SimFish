@@ -129,6 +129,7 @@ class TrialManager:
             elif trial["Run Mode"] == "Assay":
                 trial_services.append(AssayService(model_name=trial["Model Name"],
                                                    trial_number=trial["Trial Number"],
+                                                   assay_config_name=trial["Assay Configuration Name"],
                                                    learning_params=learning_params,
                                                    environment_params=environment_params,
                                                    assays=trial["Assays"]
