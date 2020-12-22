@@ -1,5 +1,6 @@
 import json
 import h5py
+from datetime import datetime
 
 import numpy as np
 import tensorflow.compat.v1 as tf
@@ -12,7 +13,8 @@ from Tools.make_gif import make_gif
 
 class AssayService:
 
-    def __init__(self, model_name, trial_number, assay_config_name, learning_params, environment_params, assays):
+    def __init__(self, model_name, trial_number, assay_config_name, learning_params, environment_params, total_steps,
+                 episode_number, assays):
 
         self.model_id = f"{model_name}-{trial_number}"
         self.model_location = f"./Training-Output/{self.model_id}"
@@ -23,7 +25,12 @@ class AssayService:
         self.learning_params = learning_params
         self.environment_params = environment_params
 
-        self.simulation = NaturalisticEnvironment(self.environment_params)  # TODO: While this has no effects, is inelegant and should be changed. Potentially pass in eye size directly to netwrok rather than whole environment.
+        self.simulation = NaturalisticEnvironment(self.environment_params)
+        self.metadata = {
+            "Total Episodes": episode_number,
+            "Total Steps": total_steps,
+        }
+        # TODO: Consider creating a base service.
 
         # Create the assays
         self.assays = assays
@@ -78,6 +85,7 @@ class AssayService:
                 self.perform_assay(assay)
                 # self.save_assay_results(assay)
                 self.save_hdf5_data(assay)
+            self.save_metadata()
 
     def create_output_data_storage(self, assay):
         self.output_data = {key: [] for key in assay["recordings"]}
@@ -120,12 +128,9 @@ class AssayService:
                                                                                                  save_frames=True,
                                                                                                  activations=(sa,))
 
-        # Old JSON saving
+        # Saving step data
         possible_data_to_save = self.package_output_data(chosen_a, sa, updated_rnn_state,
                                                          self.simulation.fish.body.position)
-        # self.make_recordings(possible_data_to_save)
-
-        # New Saving for HDF5
         for key in self.assay_output_data_format:
             self.output_data[key].append(possible_data_to_save[key])
         self.output_data["step"].append(self.step_number)
@@ -134,7 +139,7 @@ class AssayService:
 
     def save_hdf5_data(self, assay):
         if assay["save frames"]:
-            make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
+            make_gif(self.frame_buffer, f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
         self.frame_buffer = []
 
@@ -145,16 +150,17 @@ class AssayService:
             assay_group = hdf5_file.get(assay['assay id'])
 
         for key in self.output_data:
-            assay_group.create_dataset(key, data=self.output_data[key])  # TODO: Compress data.
+            try:
+                assay_group.create_dataset(key, data=self.output_data[key])  # TODO: Compress data.
+            except RuntimeError:
+                del assay_group[key]
+                assay_group.create_dataset(key, data=self.output_data[key])  # TODO: Compress data.
         hdf5_file.close()
 
-    def make_recordings(self, available_data):
-        step_data = {i: available_data[i] for i in self.assay_output_data_format}
-        # TODO: This will be a headache as I will have to make sure the lists are combined properly.
-        # for d_type in step_data:
-        #     self.assay_output_data[d_type].append(available_data[d_type])
-        step_data["step"] = self.step_number
-        self.assay_output_data.append(step_data)
+    def save_metadata(self):
+        self.metadata["Assay Date"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        with open(f"{self.data_save_location}/{self.assay_configuration_id}.json", "w") as output_file:
+            json.dump(self.metadata, output_file)
 
     def package_output_data(self, action, advantage_stream, rnn_state, position):
         # Make output data JSON serializable
@@ -176,7 +182,17 @@ class AssayService:
 
         return data
 
+    def make_recordings(self, available_data):
+        """No longer used - saves data in JSON"""
+
+        step_data = {i: available_data[i] for i in self.assay_output_data_format}
+        for d_type in step_data:
+            self.assay_output_data[d_type].append(available_data[d_type])
+        step_data["step"] = self.step_number
+        self.assay_output_data.append(step_data)
+
     def save_assay_results(self, assay):
+        """No longer used - saves data in JSON"""
         # Saves all the information from the assays in JSON format.
         if assay["save frames"]:
             make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",

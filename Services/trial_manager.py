@@ -132,6 +132,8 @@ class TrialManager:
                                                    assay_config_name=trial["Assay Configuration Name"],
                                                    learning_params=learning_params,
                                                    environment_params=environment_params,
+                                                   total_steps=total_steps,
+                                                   episode_number=episode_number,
                                                    assays=trial["Assays"]
                                                    )
                                       )

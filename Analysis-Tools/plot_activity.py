@@ -27,6 +27,7 @@ def plot_activity(rnn_data):
     fig.savefig('test2png.png', dpi=100)
     plt.show()
 
+
 data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
 
 
