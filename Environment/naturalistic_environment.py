@@ -7,11 +7,15 @@ from Environment.Fish.fish import Fish
 
 class NaturalisticEnvironment(BaseEnvironment):
 
-    def __init__(self, env_variables, draw_screen=False):
+    def __init__(self, env_variables, draw_screen=False, fish_mass=None):
         super().__init__(env_variables, draw_screen)
 
         # Create the fish class instance and add to the space.
-        self.fish = Fish(self.board, env_variables, self.dark_col)
+        if fish_mass is None:
+            self.fish = Fish(self.board, env_variables, self.dark_col)
+        else:
+            self.fish = Fish(self.board, env_variables, self.dark_col, fish_mass=fish_mass)  # TODO: Remove all this.
+
         self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 
         # Create walls.
@@ -52,13 +56,18 @@ class NaturalisticEnvironment(BaseEnvironment):
         for i in range(self.env_variables['vegetation_num']):
             self.create_vegetation()
 
-    def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None):
+    def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None, impulse=None):
         # TODO: Tidy up so is more readable. Do the same with comparable methods in other environment classes.
+
         self.last_action = action
         if frame_buffer is None:
             frame_buffer = []
         self.fish.making_capture = False
-        reward = self.fish.take_action(action)
+        # TODO: Remove this conditional besides the else statement.
+        if impulse is not None:
+            reward = self.fish.try_impulse(impulse)
+        else:
+            reward = self.fish.take_realistic_action(action)
 
         done = False
 

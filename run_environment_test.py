@@ -2,6 +2,8 @@ import os
 import sys
 import json
 
+import numpy as np
+
 from Environment.naturalistic_environment import NaturalisticEnvironment
 from Environment.virtual_virtual_reality import VirtualVirtualReality
 from Environment.controlled_stimulus_environment import ProjectionEnvironment
@@ -43,6 +45,8 @@ while not q:
     key = input()
     action_input = int(key)
 
+    previous_position = sim_state.fish.body.position
+
     if action_input < 7:
         s, r, internal, d, fb = sim_state.simulation_step(action_input)
 
@@ -54,3 +58,5 @@ while not q:
 
     if d:
         sim_state.reset()
+
+    print(f"Distance moved: {np.sqrt((sim_state.fish.body.position[0]-previous_position[0])**2 + np.sqrt((sim_state.fish.body.position[1]-previous_position[1])**2))}")

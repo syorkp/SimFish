@@ -101,7 +101,7 @@ training_configuration = [
     {
         "Model Name": "updated_base",
         "Environment Name": "base",
-        "Trial Number": 1,
+        "Trial Number": 2,
         "Run Mode": "Training",
         "Fish Setup": "Free",
         "Priority": 1,
@@ -109,5 +109,5 @@ training_configuration = [
     },
 ]
 
-manager = TrialManager(controlled_assay_configuration)
+manager = TrialManager(training_configuration)
 manager.run_priority_loop()

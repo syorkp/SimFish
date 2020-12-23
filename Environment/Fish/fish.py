@@ -3,6 +3,7 @@ import pymunk
 from skimage.transform import resize, rescale
 
 from Environment.Fish.vis_fan import VisFan
+from Environment.Action_Space.draw_angle_dist import draw_angle_dist
 
 
 class Fish:
@@ -11,8 +12,12 @@ class Fish:
     Created to simplify the SimState class, while making it easier to have environments with multiple agents in future.
     """
 
-    def __init__(self, board, env_variables, dark_col):
-        inertia = pymunk.moment_for_circle(env_variables['fish_mass'], 0, env_variables['fish_mouth_size'], (0, 0))
+    def __init__(self, board, env_variables, dark_col, fish_mass=None):
+        if fish_mass is None:  # TODO: Remove this and parameter.
+            inertia = pymunk.moment_for_circle(env_variables['fish_mass'], 0, env_variables['fish_mouth_size'], (0, 0))  # TODO: Need to change size to full fish size?
+        else:
+            inertia = pymunk.moment_for_circle(fish_mass, 0, env_variables['fish_mouth_size'], (0, 0))
+
         self.env_variables = env_variables
         self.body = pymunk.Body(1, inertia)
 
@@ -59,6 +64,7 @@ class Fish:
         self.making_capture = False
 
     def take_action(self, action):
+        """Original version"""
         # TODO: Switch shape colour change to different body part.
         if action == 0:  # Swim forward
             reward = -self.env_variables['forward_swim_cost']
@@ -109,6 +115,77 @@ class Fish:
 
         # TODO: Make sure new fish body doesnt interfere with visual inputs.
         return reward
+
+    def calculate_impulse(self, distance):
+        """
+        Uses the derived distance-mass-impulse relationship to convert an input distance (in mm) to impulse
+        (arbitrary units).
+        :param distance:
+        :return:
+        """
+        return (distance*10 - (0.004644*self.env_variables['fish_mass'] + 0.081417))/1.771548
+
+    def take_realistic_action(self, action):
+        # TODO: Switch shape colour change to different body part.
+
+        if action == 0:  # Slow2
+            angle_change, distance = draw_angle_dist(8)  # Choose new one.
+            reward = -self.env_variables['forward_swim_cost']
+            self.body.angle += np.random.choice([-angle_change, angle_change])
+            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.head.color = (0, 1, 0)
+
+        elif action == 1:  # RT right
+            angle_change, distance = draw_angle_dist(7)
+            reward = -self.env_variables['routine_turn_cost']
+            self.body.angle += angle_change
+            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.head.color = (0, 1, 0)
+
+        elif action == 2:  # RT left
+            angle_change, distance = draw_angle_dist(7)
+            reward = -self.env_variables['routine_turn_cost']
+            self.body.angle -= angle_change
+            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.head.color = (0, 1, 0)
+
+        elif action == 3:  # Short capture swim
+            angle_change, distance = draw_angle_dist(0)
+            reward = -self.env_variables['capture_swim_cost']
+            self.body.angle += np.random.choice([-angle_change, angle_change])
+            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.head.color = [1, 0, 1]
+            self.making_capture = True
+
+        elif action == 4:  # j turn right
+            angle_change, distance = draw_angle_dist(4)
+            reward = -self.env_variables['j_turn_cost']
+            self.body.angle += angle_change
+            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.head.color = [1, 1, 1]
+
+        elif action == 5:  # j turn left
+            angle_change, distance = draw_angle_dist(4)
+            reward = -self.env_variables['j_turn_cost']
+            self.body.angle -= angle_change
+            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.head.color = [1, 1, 1]
+
+        elif action == 6:  # do nothing:
+            reward = -self.env_variables['rest_cost']
+            angle_change = None
+        else:
+            angle_change = None
+            reward = None
+            print("Invalid action given")
+        # print(f"Angle change{angle_change}")
+
+        return reward
+
+    def try_impulse(self, impulse):
+        # TODO: Remove this
+        self.body.apply_impulse_at_local_point((impulse, 0))
+        return -self.env_variables['j_turn_cost']
 
     def readings_to_photons(self, readings):
         photons = np.random.poisson(readings * self.env_variables['photon_ratio'])

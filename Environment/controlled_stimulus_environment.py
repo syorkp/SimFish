@@ -58,7 +58,7 @@ class ProjectionEnvironment(BaseEnvironment):
         if frame_buffer is None:
             frame_buffer = []
         self.fish.making_capture = False
-        reward = self.fish.take_action(action)
+        reward = self.fish.take_action(action)  # TODO: Change to realistic action.
 
         done = False
 

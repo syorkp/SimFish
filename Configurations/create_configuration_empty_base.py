@@ -29,7 +29,7 @@ env = {'width': 1000,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 50,
+       'prey_num': 0,
        'prey_impulse': 0.05,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
@@ -39,7 +39,7 @@ env = {'width': 1000,  # arena size
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
        'sand_grain_size': 4.,
-       'sand_grain_num': 10,
+       'sand_grain_num': 0,
        'sand_grain_displacement_impulse_scaling_factor': 0.5,
        'sand_grain_displacement_distance': 20,
 
@@ -52,7 +52,7 @@ env = {'width': 1000,  # arena size
        'predator_impulse': 1,
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 200,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.005,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -99,7 +99,7 @@ params = {'num_actions': 7,  # size of action space
 
 
 # Equal to that given in the file name.
-environment_name = "base"
+environment_name = "empty_base"
 
 with open(f"Configurations/JSON-Data/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)
