@@ -124,6 +124,7 @@ class TrialManager:
                                                       total_steps=total_steps,
                                                       episode_number=episode_number,
                                                       monitor_gpu=trial["monitor gpu"],
+                                                      realistic_bouts=trial["Realistic Bouts"]
                                                       )
                                       )
             elif trial["Run Mode"] == "Assay":
@@ -134,7 +135,8 @@ class TrialManager:
                                                    environment_params=environment_params,
                                                    total_steps=total_steps,
                                                    episode_number=episode_number,
-                                                   assays=trial["Assays"]
+                                                   assays=trial["Assays"],
+                                                   realistic_bouts=trial["Realistic Bouts"]
                                                    )
                                       )
         return trial_services

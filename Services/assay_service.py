@@ -14,18 +14,20 @@ from Tools.make_gif import make_gif
 class AssayService:
 
     def __init__(self, model_name, trial_number, assay_config_name, learning_params, environment_params, total_steps,
-                 episode_number, assays):
+                 episode_number, assays, realistic_bouts):
 
         self.model_id = f"{model_name}-{trial_number}"
         self.model_location = f"./Training-Output/{self.model_id}"
         self.data_save_location = f"./Assay-Output/{self.model_id}"
+
+        self.realistic_bouts = realistic_bouts
 
         self.assay_configuration_id = assay_config_name
 
         self.learning_params = learning_params
         self.environment_params = environment_params
 
-        self.simulation = NaturalisticEnvironment(self.environment_params)
+        self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
         self.metadata = {
             "Total Episodes": episode_number,
             "Total Steps": total_steps,
@@ -65,11 +67,11 @@ class AssayService:
         :return:
         """
         if assay["stimulus paradigm"] == "Projection":
-            self.simulation = ProjectionEnvironment(self.environment_params, assay["stimuli"], tethered=assay["fish setup"])
+            self.simulation = ProjectionEnvironment(self.environment_params, assay["stimuli"], self.realistic_bouts, tethered=assay["fish setup"])
         elif assay["stimulus paradigm"] == "Naturalistic":
-            self.simulation = NaturalisticEnvironment(self.environment_params)
+            self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
         else:
-            self.simulation = NaturalisticEnvironment(self.environment_params)
+            self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
 
     def run(self):
         with tf.Session() as self.sess:

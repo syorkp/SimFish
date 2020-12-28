@@ -17,6 +17,7 @@ controlled_assay_configuration = [
         "Trial Number": 1,
         "Assay Configuration Name": "Prey Stimuli",
         "Run Mode": "Assay",
+        "Realistic Bouts": True,
         "Priority": 1,
         "Assays": [
             {
@@ -83,17 +84,18 @@ naturalistic_assay_configuration = [
             "Trial Number": 1,
             "Run Mode": "Assay",
             "Priority": 1,
+            "Realistic Bouts": False,
             "Assays": [
-                {
-                    "assay id": "Naturalistic-Assay-1",
-                    "stimulus paradigm": "Naturalistic",
-                    "duration": 400,
-                    "fish setup": "Free",
-                    "save frames": True,
-                    "recordings": [],
-                    "interactions": []
-                }
-            ],
+                    {
+                        "assay id": "Naturalistic-Assay-1",
+                        "stimulus paradigm": "Naturalistic",
+                        "duration": 400,
+                        "fish setup": "Free",
+                        "save frames": True,
+                        "recordings": [],
+                        "interactions": []
+                    }
+                ],
     }
 ]
 
@@ -104,6 +106,7 @@ training_configuration = [
         "Trial Number": 2,
         "Run Mode": "Training",
         "Fish Setup": "Free",
+        "Realistic Bouts": True,
         "Priority": 1,
         "monitor gpu": False,
     },

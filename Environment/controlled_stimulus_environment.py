@@ -14,13 +14,13 @@ class ProjectionEnvironment(BaseEnvironment):
     For this environment, the following stimuli are available: prey, predators.
     """
 
-    def __init__(self, env_variables, stimuli, tethered=True, draw_screen=False):
+    def __init__(self, env_variables, stimuli, realistic_bouts, tethered=True, draw_screen=False):
         super().__init__(env_variables, draw_screen)
 
         if tethered:
-            self.fish = TetheredFish(self.board, env_variables, self.dark_col)
+            self.fish = TetheredFish(self.board, env_variables, self.dark_col, realistic_bouts)
         else:
-            self.fish = Fish(self.board, env_variables, self.dark_col)
+            self.fish = Fish(self.board, env_variables, self.dark_col, realistic_bouts)
         self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 
         # TODO: Unify in future with other stimuli
@@ -75,6 +75,7 @@ class ProjectionEnvironment(BaseEnvironment):
                 if self.draw_screen:
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5)/255.)
                     plt.pause(0.0001)
+
         self.num_steps += 1
         self.board.erase()
         self.draw_shapes()

@@ -173,20 +173,14 @@ class BaseEnvironment:
         self.space.add(static)
 
     def touch_edge(self, arbiter, space, data):
-        # TODO: Fix, currently not producing desired angles, or deflection.
-        print("Collided!")
         current_position = self.fish.body.position
         if current_position[0] < 30:  # Wall d
-            print("Here")
             current_position[0] += self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
         elif current_position[0] > self.env_variables['width'] - 30:  # wall b
-            print("Here")
             current_position[0] -= self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
         if current_position[1] < 30:  # wall a
-            print("Here")
             current_position[1] += self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
         elif current_position[1] > self.env_variables['height'] - 30:  # wall c
-            print("Here")
             current_position[1] -= self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
 
         self.fish.body.position = current_position

@@ -7,8 +7,8 @@ class TetheredFish(Fish):
     Same as normal fish, though overwrites any movement consequences of action choice.
     """
 
-    def __init__(self, board, env_variables, dark_col):
-        super().__init__(board, env_variables, dark_col)
+    def __init__(self, board, env_variables, dark_col, realistic_bouts):
+        super().__init__(board, env_variables, dark_col, realistic_bouts)
 
     def take_action(self, action):
         if action == 0:  # Swim forward

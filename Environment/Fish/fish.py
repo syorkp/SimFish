@@ -12,7 +12,7 @@ class Fish:
     Created to simplify the SimState class, while making it easier to have environments with multiple agents in future.
     """
 
-    def __init__(self, board, env_variables, dark_col, fish_mass=None):
+    def __init__(self, board, env_variables, dark_col, realistic_bouts, fish_mass=None):
         if fish_mass is None:  # TODO: Remove this and parameter.
             inertia = pymunk.moment_for_circle(env_variables['fish_mass'], 0, env_variables['fish_mouth_size'], (0, 0))  # TODO: Need to change size to full fish size?
         else:
@@ -20,6 +20,8 @@ class Fish:
 
         self.env_variables = env_variables
         self.body = pymunk.Body(1, inertia)
+
+        self.realistic_bouts = realistic_bouts
 
         # Mouth
         self.mouth = pymunk.Circle(self.body, env_variables['fish_mouth_size'], offset=(0, 0))  # TODO: rename to mouth.
@@ -64,8 +66,13 @@ class Fish:
         self.making_capture = False
 
     def take_action(self, action):
+        if self.realistic_bouts:
+            return self.take_realistic_action(action)
+        else:
+            return self.take_basic_action(action)
+
+    def take_basic_action(self, action):
         """Original version"""
-        # TODO: Switch shape colour change to different body part.
         # TODO: Modify so that there is a version which just selects the mean from the distributions (or put mean in config file).
         if action == 0:  # Swim forward
             reward = -self.env_variables['forward_swim_cost']
@@ -126,17 +133,16 @@ class Fish:
         """
         return (distance*10 - (0.004644*self.env_variables['fish_mass'] + 0.081417))/1.771548
 
-    def calculate_angle_cost(self, angle, distance):
+    @staticmethod
+    def calculate_angle_cost(angle, distance):
         """
         So far, a fairly arbitrary equation to calculate action cost from distance moved and angle changed.
-        cost = 1.5(angle change) + 0.2(distance moved)
+        cost = 0.05(angle change) + 1.5(distance moved)
         :return:
         """
-        return 1.5 * angle + 0.2 * distance
+        return 0.05 * abs(angle) + 1.5 * distance
 
     def take_realistic_action(self, action):
-        # TODO: Switch shape colour change to different body part.
-
         if action == 0:  # Slow2
             angle_change, distance = draw_angle_dist(8)  # Choose new one.
             reward = -self.calculate_angle_cost(angle_change, distance)
@@ -160,7 +166,7 @@ class Fish:
 
         elif action == 3:  # Short capture swim
             angle_change, distance = draw_angle_dist(0)
-            reward = -self.calculate_angle_cost(angle_change, distance) + 15
+            reward = -self.calculate_angle_cost(angle_change, distance) - 15
             self.body.angle += np.random.choice([-angle_change, angle_change])
             self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
             self.head.color = [1, 0, 1]
@@ -182,18 +188,13 @@ class Fish:
 
         elif action == 6:  # do nothing:
             reward = -self.env_variables['rest_cost']
-            angle_change = None
         else:
-            angle_change = None
             reward = None
             print("Invalid action given")
-        # print(f"Angle change{angle_change}")
-
-        print(reward)
         return reward
 
     def try_impulse(self, impulse):
-        # TODO: Remove this
+        # Used to produce calibration curve.
         self.body.apply_impulse_at_local_point((impulse, 0))
         return -self.env_variables['j_turn_cost']
 

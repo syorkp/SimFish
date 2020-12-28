@@ -17,7 +17,7 @@ tf.disable_v2_behavior()
 class TrainingService:
 
     def __init__(self, model_name, trial_number, model_exists, fish_mode, learning_params, env_params,
-                 e, total_steps, episode_number, monitor_gpu):
+                 e, total_steps, episode_number, monitor_gpu, realistic_bouts):
         """
         An instance of TraningService handles the training of the DQN within a specified environment, according to
         specified parameters.
@@ -32,13 +32,14 @@ class TrainingService:
         self.load_model = model_exists
         self.monitor_gpu = monitor_gpu
 
+        self.realistic_bouts = realistic_bouts
+
         self.params = learning_params
         self.env = env_params
 
         # Create the training environment.
         self.apparatus_mode = fish_mode
-        # self.simulation = SimState(self.env)
-        self.simulation = NaturalisticEnvironment(self.env)
+        self.simulation = NaturalisticEnvironment(self.env, realistic_bouts)
 
         # Experience buffer
         self.training_buffer = ExperienceBuffer(buffer_size=self.params["exp_buffer_size"])

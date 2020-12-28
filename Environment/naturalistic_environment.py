@@ -7,14 +7,15 @@ from Environment.Fish.fish import Fish
 
 class NaturalisticEnvironment(BaseEnvironment):
 
-    def __init__(self, env_variables, draw_screen=False, fish_mass=None):
+    def __init__(self, env_variables, realistic_bouts, draw_screen=False, fish_mass=None):
         super().__init__(env_variables, draw_screen)
 
         # Create the fish class instance and add to the space.
         if fish_mass is None:
-            self.fish = Fish(self.board, env_variables, self.dark_col)
+            self.fish = Fish(self.board, env_variables, self.dark_col, realistic_bouts)
         else:
-            self.fish = Fish(self.board, env_variables, self.dark_col, fish_mass=fish_mass)  # TODO: Remove all this.
+            # In the event that I am producing a calibration curve for distance moved.
+            self.fish = Fish(self.board, env_variables, self.dark_col, realistic_bouts, fish_mass=fish_mass)
 
         self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 
@@ -63,11 +64,12 @@ class NaturalisticEnvironment(BaseEnvironment):
         if frame_buffer is None:
             frame_buffer = []
         self.fish.making_capture = False
-        # TODO: Remove this conditional besides the else statement.
+
         if impulse is not None:
+            # To calculate calibration curve.
             reward = self.fish.try_impulse(impulse)
         else:
-            reward = self.fish.take_realistic_action(action)
+            reward = self.fish.take_action(action)
 
         done = False
 
