@@ -18,7 +18,7 @@ env = {'width': 1000,  # arena size
        'fish_mass': 140.,
        'fish_mouth_size': 5.,
        'fish_head_size': 10.,
-       'fish_tail_length': 50.,
+       'fish_tail_length': 70.,
        'eyes_verg_angle': 77.,  # in deg
        'visual_field': 163.,  # single eye angular visual field
        'eyes_biasx': 15,  # distance of eyes from midline

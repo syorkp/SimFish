@@ -172,45 +172,30 @@ class BaseEnvironment:
             s.color = (1, 0, 0)
         self.space.add(static)
 
-    def calculate_angle_of_adjustment(self, angle_of_incidence):
-        if angle_of_incidence is None:
-            print("Nonetype given for angle of incidence - not close to any walls.")  # TODO: Stop being called.
-        if angle_of_incidence < np.pi/2:
-            return np.pi - (2 * angle_of_incidence)
-        else:
-            return -(2 * angle_of_incidence) - np.pi/2
-
     def touch_edge(self, arbiter, space, data):
         # TODO: Fix, currently not producing desired angles, or deflection.
-        self.fish.body.velocity = (0, 0)
+        print("Collided!")
         current_position = self.fish.body.position
-        inc = None
-        # Decide which wall and calculate angle of incidence, update position accordingly.
-        if current_position[0] < 10:  # Wall d
-            inc = np.pi - self.fish.body.angle
-            current_position[0] = 80  # TODO: Make these adjustments with respect to fish size.
-        elif current_position[0] > self.env_variables['width'] - 10:  # wall b
-            inc = np.pi/2 - self.fish.body.angle
-            current_position[0] = self.env_variables['width'] - 80
-        if current_position[1] < 10:  # wall a
-            inc = (2 * np.pi) - self.fish.body.angle
-            current_position[1] = 80
-        elif current_position[1] > self.env_variables['height'] - 10:  # wall c
-            inc = self.fish.body.angle
-            current_position[1] = self.env_variables['height'] - 80
+        if current_position[0] < 30:  # Wall d
+            print("Here")
+            current_position[0] += self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+        elif current_position[0] > self.env_variables['width'] - 30:  # wall b
+            print("Here")
+            current_position[0] -= self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+        if current_position[1] < 30:  # wall a
+            print("Here")
+            current_position[1] += self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+        elif current_position[1] > self.env_variables['height'] - 30:  # wall c
+            print("Here")
+            current_position[1] -= self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
 
         self.fish.body.position = current_position
-        if inc is not None:
-            adj = self.calculate_angle_of_adjustment(inc)
+        self.fish.body.velocity = (0, 0)
+
+        if self.fish.body.angle < np.pi:
+            self.fish.body.angle += np.pi
         else:
-            adj = np.pi/2
-
-        self.fish.body.angle += adj
-
-        # if self.fish.body.angle < np.pi:
-        #     self.fish.body.angle += np.pi
-        # else:
-        #     self.fish.body.angle -= np.pi
+            self.fish.body.angle -= np.pi
         self.fish.touched_edge = True
         return True
 
