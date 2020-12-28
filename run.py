@@ -103,10 +103,10 @@ training_configuration = [
     {
         "Model Name": "updated_base",
         "Environment Name": "base",
-        "Trial Number": 2,
+        "Trial Number": 3,
         "Run Mode": "Training",
         "Fish Setup": "Free",
-        "Realistic Bouts": True,
+        "Realistic Bouts": False,
         "Priority": 1,
         "monitor gpu": False,
     },
