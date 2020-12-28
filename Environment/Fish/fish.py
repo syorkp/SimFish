@@ -66,6 +66,7 @@ class Fish:
     def take_action(self, action):
         """Original version"""
         # TODO: Switch shape colour change to different body part.
+        # TODO: Modify so that there is a version which just selects the mean from the distributions (or put mean in config file).
         if action == 0:  # Swim forward
             reward = -self.env_variables['forward_swim_cost']
             self.body.apply_impulse_at_local_point((self.env_variables['forward_swim_impulse'], 0))
@@ -125,33 +126,41 @@ class Fish:
         """
         return (distance*10 - (0.004644*self.env_variables['fish_mass'] + 0.081417))/1.771548
 
+    def calculate_angle_cost(self, angle, distance):
+        """
+        So far, a fairly arbitrary equation to calculate action cost from distance moved and angle changed.
+        cost = 1.5(angle change) + 0.2(distance moved)
+        :return:
+        """
+        return 1.5 * angle + 0.2 * distance
+
     def take_realistic_action(self, action):
         # TODO: Switch shape colour change to different body part.
 
         if action == 0:  # Slow2
             angle_change, distance = draw_angle_dist(8)  # Choose new one.
-            reward = -self.env_variables['forward_swim_cost']
+            reward = -self.calculate_angle_cost(angle_change, distance)
             self.body.angle += np.random.choice([-angle_change, angle_change])
             self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
             self.head.color = (0, 1, 0)
 
         elif action == 1:  # RT right
             angle_change, distance = draw_angle_dist(7)
-            reward = -self.env_variables['routine_turn_cost']
+            reward = -self.calculate_angle_cost(angle_change, distance)
             self.body.angle += angle_change
             self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
             self.head.color = (0, 1, 0)
 
         elif action == 2:  # RT left
             angle_change, distance = draw_angle_dist(7)
-            reward = -self.env_variables['routine_turn_cost']
+            reward = -self.calculate_angle_cost(angle_change, distance)
             self.body.angle -= angle_change
             self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
             self.head.color = (0, 1, 0)
 
         elif action == 3:  # Short capture swim
             angle_change, distance = draw_angle_dist(0)
-            reward = -self.env_variables['capture_swim_cost']
+            reward = -self.calculate_angle_cost(angle_change, distance) + 15
             self.body.angle += np.random.choice([-angle_change, angle_change])
             self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
             self.head.color = [1, 0, 1]
@@ -159,14 +168,14 @@ class Fish:
 
         elif action == 4:  # j turn right
             angle_change, distance = draw_angle_dist(4)
-            reward = -self.env_variables['j_turn_cost']
+            reward = -self.calculate_angle_cost(angle_change, distance)
             self.body.angle += angle_change
             self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
             self.head.color = [1, 1, 1]
 
         elif action == 5:  # j turn left
             angle_change, distance = draw_angle_dist(4)
-            reward = -self.env_variables['j_turn_cost']
+            reward = -self.calculate_angle_cost(angle_change, distance)
             self.body.angle -= angle_change
             self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
             self.head.color = [1, 1, 1]
@@ -180,6 +189,7 @@ class Fish:
             print("Invalid action given")
         # print(f"Angle change{angle_change}")
 
+        print(reward)
         return reward
 
     def try_impulse(self, impulse):
