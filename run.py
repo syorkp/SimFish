@@ -103,7 +103,18 @@ training_configuration = [
     {
         "Model Name": "scaffolding_test",
         "Environment Name": "gradual",
-        "Episode Transitions": [5, 10, 15],
+        "Total Configurations": 4,
+        "Episode Transitions": {
+            "2": 500,
+            "3": 1000,
+            "4": 1500,
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+            },
+            "Predators Avoided": {
+            }
+        },
         "Trial Number": 1,
         "Run Mode": "Training",
         "Fish Setup": "Free",
@@ -115,5 +126,5 @@ training_configuration = [
 
 # TODO: Change fish steup to tethered boolean.
 
-manager = TrialManager(naturalistic_assay_configuration)
+manager = TrialManager(training_configuration)
 manager.run_priority_loop()

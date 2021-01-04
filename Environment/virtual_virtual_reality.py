@@ -14,11 +14,11 @@ class VirtualVirtualReality(BaseEnvironment):
         self.fish = Fish(self.board, env_variables, self.dark_col)
         self.space.add(self.fish.body, self.fish.shape)
 
-        # Whole environment measurements. TODO: Replace all in program uses of env_variables reading with these.
+        # Whole environment measurements.
         board_height = env_variables["height"]
         board_width = env_variables["width"]
 
-        # The projections, which span the edges of the board. TODO: Check creates projections in correct place.
+        # The projections, which span the edges of the board.
         # self.projection_1_coordinates = [[0, 0], [0, board_height]]
         # self.projection_2_coordinates = [[0, board_height], [board_width, board_height]]
         # self.projection_3_coordinates = [[board_width, board_height], [board_width, 0]]

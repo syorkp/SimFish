@@ -17,6 +17,7 @@ tf.disable_v2_behavior()
 class TrainingService:
 
     def __init__(self, model_name, trial_number, model_exists, fish_mode, scaffold_name, episode_transitions,
+                 total_configurations, conditional_transitions,
                  e, total_steps, episode_number, monitor_gpu, realistic_bouts):
         """
         An instance of TraningService handles the training of the DQN within a specified environment, according to
@@ -34,7 +35,9 @@ class TrainingService:
         self.scaffold_name = scaffold_name
 
         self.realistic_bouts = realistic_bouts
+        self.total_configurations = total_configurations
         self.episode_transitions = episode_transitions
+        self.conditional_transitions = conditional_transitions
 
         self.configuration_index = 1
 
@@ -94,7 +97,6 @@ class TrainingService:
     def load_configuration_files(self):
         """
         Called by create_trials method, should return the learning and environment configurations in JSON format.
-        :param environment_name:
         :return:
         """
         print("Loading configuration...")
@@ -136,14 +138,46 @@ class TrainingService:
 
             for e_number in range(self.episode_number, self.params["num_episodes"]):
                 self.episode_number = e_number
-                if self.episode_number > self.episode_transitions[0]:
+                if self.configuration_index < self.total_configurations:
+                    self.check_update_configuration()
+                self.episode_loop()
+
+    def check_update_configuration(self):
+        # TODO: Will want to tidy this up later.
+        next_point = str(self.configuration_index + 1)
+        episode_transition_points = self.episode_transitions.keys()
+
+        if next_point in episode_transition_points:
+            if self.episode_number > self.episode_transitions[next_point]:
+                print("Changing configuration")
+                self.configuration_index = int(next_point)
+                print(f"Configuration: {self.configuration_index}")
+                self.params, self.env = self.load_configuration_files()
+                self.simulation = NaturalisticEnvironment(self.env, self.realistic_bouts)
+                return
+
+        if len(self.last_episodes_prey_caught) > 20:
+            prey_conditional_transition_points = self.conditional_transitions["Prey Caught"].keys()
+            predators_conditional_transition_points = self.conditional_transitions["Predators Avoided"].keys()
+            print(np.mean(self.last_episodes_prey_caught))
+            if next_point in predators_conditional_transition_points:
+                if np.mean(self.last_episodes_predators_avoided) > self.conditional_transitions["Predators Avoided"][next_point]:
                     print("Changing configuration")
-                    self.episode_transitions.pop(0)
-                    self.configuration_index += 1
+                    self.configuration_index = int(next_point)
+                    print(f"Configuration: {self.configuration_index}")
+
                     self.params, self.env = self.load_configuration_files()
                     self.simulation = NaturalisticEnvironment(self.env, self.realistic_bouts)
-                self.episode_loop()
-                print(self.last_episodes_predators_avoided, self.last_episodes_prey_caught)
+                    return
+            if next_point in prey_conditional_transition_points:
+                if np.mean(self.last_episodes_prey_caught) > self.conditional_transitions["Prey Caught"][next_point]:
+                    print("Changing configuration")
+                    self.configuration_index = int(next_point)
+                    print(f"Configuration: {self.configuration_index}")
+
+                    self.params, self.env = self.load_configuration_files()
+                    self.simulation = NaturalisticEnvironment(self.env, self.realistic_bouts)
+                    return
 
     def create_networks(self):
         """
@@ -211,7 +245,8 @@ class TrainingService:
         # print(f"Total training time: {sum(self.training_times)}")
         # print(f"Total reward: {sum(self.reward_list)}")
 
-    def save_episode(self, episode_start_t, all_actions, total_episode_reward, episode_buffer, prey_caught, predators_avoided):
+    def save_episode(self, episode_start_t, all_actions, total_episode_reward, episode_buffer, prey_caught,
+                     predators_avoided):
         """
         Saves the episode the the experience buffer. Also creates a gif if at interval.
         :param episode_start_t: The time at the start of the episode, used to calculate the time the episode took.
@@ -244,14 +279,14 @@ class TrainingService:
         prey_caught_summary = tf.Summary(value=[tf.Summary.Value(tag="prey caught", simple_value=prey_caught)])
         self.writer.add_summary(prey_caught_summary, self.episode_number)
 
-        predators_avoided_summary = tf.Summary(value=[tf.Summary.Value(tag="predators avoided", simple_value=predators_avoided)])
+        predators_avoided_summary = tf.Summary(
+            value=[tf.Summary.Value(tag="predators avoided", simple_value=predators_avoided)])
         self.writer.add_summary(predators_avoided_summary, self.episode_number)
 
         for act in range(self.params['num_actions']):
             action_freq = np.sum(np.array(all_actions) == act) / len(all_actions)
             a_freq = tf.Summary(value=[tf.Summary.Value(tag="action " + str(act), simple_value=action_freq)])
             self.writer.add_summary(a_freq, self.total_steps)
-
 
         # Save the parameters to be carried over.
         output_data = {"epsilon": self.e, "episode_number": self.episode_number, "total_steps": self.total_steps}

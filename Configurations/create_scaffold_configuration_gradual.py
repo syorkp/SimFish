@@ -120,11 +120,16 @@ number = 1
 save_files(number)
 number += 1
 
-env["prey_impulse"] = 0.1
+env["prey_impulse"] = 0.075
 save_files(number)
 number += 1
 
 
+env["prey_impulse"] = 0.1
+save_files(number)
+number += 1
+
 env["prey_jump"] = True
 save_files(number)
+number += 1
 

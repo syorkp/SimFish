@@ -119,6 +119,8 @@ class TrialManager:
                                                       fish_mode=trial["Fish Setup"],
                                                       scaffold_name=trial["Environment Name"],
                                                       episode_transitions=trial["Episode Transitions"],
+                                                      total_configurations=trial["Total Configurations"],
+                                                      conditional_transitions=trial["Conditional Transitions"],
                                                       e=epsilon,
                                                       total_steps=total_steps,
                                                       episode_number=episode_number,

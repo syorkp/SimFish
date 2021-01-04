@@ -31,7 +31,7 @@ class BaseEnvironment:
 
         self.space = pymunk.Space()
         self.space.gravity = pymunk.Vec2d(0.0, 0.0)
-        self.space.damping = self.env_variables['drag']  # TODO: Will need to update some of these values when switching config. Should have its own method.
+        self.space.damping = self.env_variables['drag']
 
         self.prey_bodies = []
         self.prey_shapes = []

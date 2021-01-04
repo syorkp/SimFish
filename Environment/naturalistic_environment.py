@@ -73,7 +73,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         done = False
 
-        self.fish.hungry += (1 - self.fish.hungry) * self.env_variables['hunger_inc_tau']  # TODO: Will need to update some of these values when switching config. Should have its own method.
+        self.fish.hungry += (1 - self.fish.hungry) * self.env_variables['hunger_inc_tau']
 
         if np.random.rand(1) < self.env_variables["probability_of_predator"] and \
                 self.predator_shape is None \

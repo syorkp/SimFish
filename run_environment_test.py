@@ -29,7 +29,7 @@ stimuli = {"prey 1": [
                 }
 
 dirname = os.path.dirname(__file__)
-file_path = os.path.join(dirname, f"Configurations/Assay-Configs/{arg}_env.json")  # TODO: Change path.
+file_path = os.path.join(dirname, f"Configurations/Assay-Configs/{arg}_env.json")
 
 with open(file_path, 'r') as f:
     env = json.load(f)
