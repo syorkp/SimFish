@@ -19,7 +19,7 @@ class TrialManager:
         trial_configuration.sort(key=lambda item: item.get("Priority"))
         self.priority_ordered_trials = trial_configuration
 
-        self.create_configuration_files()
+        # self.create_configuration_files()  TODO: Possibly add later if makes sense to.
         self.create_output_directories()
         self.trial_services = self.create_trial_services()
 
@@ -76,7 +76,7 @@ class TrialManager:
         :return:
         """
         print("Loading configuration...")
-        configuration_location = f"./Configurations/JSON-Data/{environment_name}"
+        configuration_location = f"./Configurations/Assay-Configs/{environment_name}"
         with open(f"{configuration_location}_learning.json", 'r') as f:
             params = json.load(f)
         with open(f"{configuration_location}_env.json", 'r') as f:
@@ -110,7 +110,6 @@ class TrialManager:
         """
         trial_services = []
         for trial in self.priority_ordered_trials:
-            learning_params, environment_params = self.load_configuration_files(trial["Environment Name"])
             epsilon, total_steps, episode_number = self.get_saved_parameters(trial)
 
             if trial["Run Mode"] == "Training":
@@ -118,8 +117,8 @@ class TrialManager:
                                                       trial_number=trial["Trial Number"],
                                                       model_exists=trial["Model Exists"],
                                                       fish_mode=trial["Fish Setup"],
-                                                      learning_params=learning_params,
-                                                      env_params=environment_params,
+                                                      scaffold_name=trial["Environment Name"],
+                                                      episode_transitions=trial["Episode Transitions"],
                                                       e=epsilon,
                                                       total_steps=total_steps,
                                                       episode_number=episode_number,
@@ -128,6 +127,8 @@ class TrialManager:
                                                       )
                                       )
             elif trial["Run Mode"] == "Assay":
+                learning_params, environment_params = self.load_configuration_files(trial["Environment Name"])
+
                 trial_services.append(AssayService(model_name=trial["Model Name"],
                                                    trial_number=trial["Trial Number"],
                                                    assay_config_name=trial["Assay Configuration Name"],

@@ -35,6 +35,7 @@ env = {'width': 1000,  # arena size
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
        'prey_max_turning_angle': 0.3,
+       'prey_jump': False,
 
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
@@ -101,8 +102,8 @@ params = {'num_actions': 7,  # size of action space
 # Equal to that given in the file name.
 environment_name = "empty_base"
 
-with open(f"Configurations/JSON-Data/{environment_name}_env.json", 'w') as f:
+with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)
 
-with open(f"Configurations/JSON-Data/{environment_name}_learning.json", 'w') as f:
+with open(f"Configurations/Assay-Configs/{environment_name}_learning.json", 'w') as f:
     json.dump(params, f)

@@ -31,7 +31,7 @@ class BaseEnvironment:
 
         self.space = pymunk.Space()
         self.space.gravity = pymunk.Vec2d(0.0, 0.0)
-        self.space.damping = self.env_variables['drag']
+        self.space.damping = self.env_variables['drag']  # TODO: Will need to update some of these values when switching config. Should have its own method.
 
         self.prey_bodies = []
         self.prey_shapes = []
@@ -228,7 +228,7 @@ class BaseEnvironment:
         # move anyway. Should reconsider this in the future.
         to_move = np.where(np.random.rand(len(self.prey_bodies)) < self.env_variables['prey_impulse_rate'])[0]
         for ii in range(len(to_move)):
-            if self.check_paramecium_disturbance(self.prey_bodies[to_move[ii]].position):
+            if self.check_paramecium_disturbance(self.prey_bodies[to_move[ii]].position) and self.env_variables["prey_jump"]:
                 if self.prey_bodies[to_move[ii]].angle < (3 * np.pi) / 2:
                     self.prey_bodies[to_move[ii]].angle += np.pi / 2
                 else:

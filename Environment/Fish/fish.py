@@ -11,7 +11,7 @@ class Fish:
     """
     Created to simplify the SimState class, while making it easier to have environments with multiple agents in future.
     """
-
+    # TODO: Ensure that when env config changes, also switches that of fish.
     def __init__(self, board, env_variables, dark_col, realistic_bouts, fish_mass=None):
 
         # For the purpose of producing a calibration curve.

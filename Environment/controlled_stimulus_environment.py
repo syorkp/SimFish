@@ -28,7 +28,7 @@ class ProjectionEnvironment(BaseEnvironment):
         self.predator_positions = {}
 
         # Whole environment measurements.
-        board_height = env_variables["height"]
+        board_height = env_variables["height"]# TODO: Will need to update some of these values when switching config. Should have its own method.
         board_width = env_variables["width"]
 
         # Wall coordinates

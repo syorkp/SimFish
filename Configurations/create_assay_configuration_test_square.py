@@ -1,16 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Oct  5 07:52:17 2020
 
-@author: asaph
-"""
 import json
 
 # all distances in pixels
 
-env = {'width': 1000,  # arena size
-       'height': 700,
+env = {'width': 400,  # arena size
+       'height': 400,
        'drag': 0.7,  # water drag
        'phys_dt': 0.1,  # physics time step
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step
@@ -18,7 +14,7 @@ env = {'width': 1000,  # arena size
        'fish_mass': 140.,
        'fish_mouth_size': 5.,
        'fish_head_size': 10.,
-       'fish_tail_length': 70.,
+       'fish_tail_length': 50.,
        'eyes_verg_angle': 77.,  # in deg
        'visual_field': 163.,  # single eye angular visual field
        'eyes_biasx': 15,  # distance of eyes from midline
@@ -29,19 +25,17 @@ env = {'width': 1000,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 50,
-       'prey_impulse': 0.05,  # impulse each prey receives per step
+       'prey_num': 0,
+       'prey_impulse': 0.3,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
-       'prey_max_turning_angle': 0.3,
+       'prey_jump': False,
 
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
        'sand_grain_size': 4.,
-       'sand_grain_num': 10,
-       'sand_grain_displacement_impulse_scaling_factor': 0.5,
-       'sand_grain_displacement_distance': 20,
+       'sand_grain_num': 0,
 
        'vegetation_size': 100.,
        'vegetation_num': 0,
@@ -52,7 +46,7 @@ env = {'width': 1000,  # arena size
        'predator_impulse': 1,
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 200,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.005,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -76,7 +70,7 @@ env = {'width': 1000,  # arena size
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
        'capture_basic_reward': 1000,
-       'predator_cost': 100,
+       'predator_cost': 100
        }
 
 params = {'num_actions': 7,  # size of action space
@@ -87,7 +81,7 @@ params = {'num_actions': 7,  # size of action space
           'startE': 0.2,  # Starting chance of random action
           'endE': 0.01,  # Final chance of random action
           'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
-          'num_episodes': 15000,  # How many episodes of game environment to train network with.
+          'num_episodes': 9999999999,  # How many episodes of game environment to train network with.
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
           'max_epLength': 1000,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
@@ -99,10 +93,10 @@ params = {'num_actions': 7,  # size of action space
 
 
 # Equal to that given in the file name.
-environment_name = "base"
+environment_name = "test_square"
 
-with open(f"Configurations/JSON-Data/{environment_name}_env.json", 'w') as f:
+with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)
 
-with open(f"Configurations/JSON-Data/{environment_name}_learning.json", 'w') as f:
+with open(f"Configurations/Assay-Configs/{environment_name}_learning.json", 'w') as f:
     json.dump(params, f)

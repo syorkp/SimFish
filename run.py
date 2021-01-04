@@ -101,9 +101,10 @@ naturalistic_assay_configuration = [
 
 training_configuration = [
     {
-        "Model Name": "updated_base",
-        "Environment Name": "base",
-        "Trial Number": 3,
+        "Model Name": "scaffolding_test",
+        "Environment Name": "gradual",
+        "Episode Transitions": [5, 10, 15],
+        "Trial Number": 1,
         "Run Mode": "Training",
         "Fish Setup": "Free",
         "Realistic Bouts": False,
@@ -112,5 +113,7 @@ training_configuration = [
     },
 ]
 
-manager = TrialManager(training_configuration)
+# TODO: Change fish steup to tethered boolean.
+
+manager = TrialManager(naturalistic_assay_configuration)
 manager.run_priority_loop()

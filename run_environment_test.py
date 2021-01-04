@@ -29,13 +29,13 @@ stimuli = {"prey 1": [
                 }
 
 dirname = os.path.dirname(__file__)
-file_path = os.path.join(dirname, f"Configurations/JSON-Data/{arg}_env.json")
+file_path = os.path.join(dirname, f"Configurations/Assay-Configs/{arg}_env.json")  # TODO: Change path.
 
 with open(file_path, 'r') as f:
     env = json.load(f)
 
 # sim_state = ProjectionEnvironment(env, stimuli, tethered=True, draw_screen=True)
-sim_state = NaturalisticEnvironment(env, draw_screen=True)
+sim_state = NaturalisticEnvironment(env, realistic_bouts=False, draw_screen=True)
 
 q = False
 d = False

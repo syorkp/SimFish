@@ -16,7 +16,7 @@ tf.disable_v2_behavior()
 
 class TrainingService:
 
-    def __init__(self, model_name, trial_number, model_exists, fish_mode, learning_params, env_params,
+    def __init__(self, model_name, trial_number, model_exists, fish_mode, scaffold_name, episode_transitions,
                  e, total_steps, episode_number, monitor_gpu, realistic_bouts):
         """
         An instance of TraningService handles the training of the DQN within a specified environment, according to
@@ -31,15 +31,19 @@ class TrainingService:
 
         self.load_model = model_exists
         self.monitor_gpu = monitor_gpu
+        self.scaffold_name = scaffold_name
 
         self.realistic_bouts = realistic_bouts
+        self.episode_transitions = episode_transitions
 
-        self.params = learning_params
-        self.env = env_params
+        self.configuration_index = 1
+
+        self.params, self.env = self.load_configuration_files()
 
         # Create the training environment.
         self.apparatus_mode = fish_mode
         self.simulation = NaturalisticEnvironment(self.env, realistic_bouts)
+        self.realistic_bouts = realistic_bouts
 
         # Experience buffer
         self.training_buffer = ExperienceBuffer(buffer_size=self.params["exp_buffer_size"])
@@ -84,6 +88,23 @@ class TrainingService:
         self.training_times = []
         self.reward_list = []
 
+        self.last_episodes_prey_caught = []
+        self.last_episodes_predators_avoided = []
+
+    def load_configuration_files(self):
+        """
+        Called by create_trials method, should return the learning and environment configurations in JSON format.
+        :param environment_name:
+        :return:
+        """
+        print("Loading configuration...")
+        configuration_location = f"./Configurations/{self.scaffold_name}/{str(self.configuration_index)}"
+        with open(f"{configuration_location}_learning.json", 'r') as f:
+            params = json.load(f)
+        with open(f"{configuration_location}_env.json", 'r') as f:
+            env = json.load(f)
+        return params, env
+
     def run(self):
         """Run the simulation, either loading a checkpoint if there or starting from scratch. If loading, uses the
         previous checkpoint to set the episode number."""
@@ -115,7 +136,14 @@ class TrainingService:
 
             for e_number in range(self.episode_number, self.params["num_episodes"]):
                 self.episode_number = e_number
+                if self.episode_number > self.episode_transitions[0]:
+                    print("Changing configuration")
+                    self.episode_transitions.pop(0)
+                    self.configuration_index += 1
+                    self.params, self.env = self.load_configuration_files()
+                    self.simulation = NaturalisticEnvironment(self.env, self.realistic_bouts)
                 self.episode_loop()
+                print(self.last_episodes_predators_avoided, self.last_episodes_prey_caught)
 
     def create_networks(self):
         """
@@ -200,6 +228,13 @@ class TrainingService:
         # if not self.save_frames:
         #     self.training_times.append(time() - episode_start_t)
         #     print(np.mean(self.training_times))
+
+        # Keep recent predators caught.
+        self.last_episodes_prey_caught.append(prey_caught)
+        self.last_episodes_predators_avoided.append(predators_avoided)
+        if len(self.last_episodes_predators_avoided) > 20:
+            self.last_episodes_prey_caught.pop(0)
+            self.last_episodes_predators_avoided.pop(0)
 
         # Add Summary to Logs
         episode_summary = tf.Summary(value=[tf.Summary.Value(tag="episode reward", simple_value=total_episode_reward)])

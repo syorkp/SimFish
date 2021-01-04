@@ -15,7 +15,7 @@ except IndexError:
 env = "empty_base"  # Default arg
 
 dirname = os.path.dirname(__file__)
-file_path = os.path.join(dirname, f"Configurations/JSON-Data/{env}_env.json")
+file_path = os.path.join(dirname, f"Configurations/Single-Configs/{env}_env.json")
 
 with open(file_path, 'r') as f:
     env = json.load(f)
