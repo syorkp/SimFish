@@ -13,8 +13,6 @@ data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
 position = data["position"]
 action_choice = data["behavioural choice"]
 
-# TODO: Ensure is the right way up in future.
-
 # Shorten data
 position = position[200: 500]
 action_choice = action_choice[200: 500]

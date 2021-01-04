@@ -5,8 +5,6 @@ import json
 
 # all distances in pixels
 
-# TODO: Remove unnecessary variables
-
 env = {'width': 400,  # arena size
        'height': 400,
        'drag': 0.7,  # water drag

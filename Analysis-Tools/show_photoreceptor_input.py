@@ -3,15 +3,13 @@ import numpy as np
 import moviepy.editor as mp
 
 from Tools.make_gif import make_gif
-
-# TODO: Not finished or used yet.
-
 from load_data import load_data
 
 
 # TODO: Make sure data load method fits.
 data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
 
+# TODO: Not finished or used yet.
 
 observation = data["observation"]
 

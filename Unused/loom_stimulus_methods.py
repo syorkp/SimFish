@@ -29,7 +29,7 @@ class Environment:
             self.complex_predator_size = size
 
         if position is None:
-            distance_from_fish = 30  # TODO: make part of configuration parameters
+            distance_from_fish = 30
             fish_position = self.fish.body.position
             angle_from_fish = random.randint(0, 360)
             angle_from_fish = math.radians(angle_from_fish / math.pi)
@@ -46,7 +46,7 @@ class Environment:
 
     def grow_complex_predator(self):
         size_limit = 100
-        increment = 0.03  # TODO: Add this and the above to configurations
+        increment = 0.03
         if self.complex_predator_size < size_limit:
             self.create_complex_predator(self.complex_predator_body.position, self.complex_predator_size + increment)
         else:

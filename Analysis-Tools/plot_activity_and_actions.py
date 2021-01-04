@@ -27,45 +27,17 @@ def plot_activity_and_action(rnn_data, action_number, action_data):
 
 
 def plot_activity_and_actions(rnn_data, action_data):
-    # colour_sequence = []
-    # TODO: Final three not right.
-    # for action in action_data:
-    #     if action == 0:
-    #         colour_sequence.append((0.0, 0.0, 1.0))
-    #     elif action == 1:
-    #         colour_sequence.append((0.75, 0.75, 0.0))
-    #     elif action == 2:
-    #         colour_sequence.append((0.0, 0.75, 0.75))
-    #     elif action == 3:
-    #         colour_sequence.append((1.0, 0.0, 0.0))
-    #     elif action == 4:
-    #         colour_sequence.append((0.75, 0.0, 0.75))
-    #     elif action == 5:
-    #         colour_sequence.append((0.75, 0.0, 0.75))
-    #     elif action == 6:
-    #         colour_sequence.append((0.75, 0.0, 0.75))
-    #     else:
-    #         print("error")
     separated_actions = []
     for action in range(7):
         action_timestamps = [i for i, a in enumerate(action_data) if a == action]
         if len(action_timestamps) > 0:
             separated_actions.append(action_timestamps)
-    # colorCodes = np.array([(0.0, 0.0, 1.0),
-    #                        (0.0, 0.75, 0.75),
-    #                        (0.75, 0.75, 0.0),
-    #                        (1.0, 0.0, 0.0),
-    #                        (0.75, 0.0, 0.75),
-    #                        (0.75, 0.0, 0.75),
-    #                        (0.75, 0.0, 0.75)])
     colorCodes = np.array([(0.0, 0.0, 1.0),
                            (0.0, 0.75, 0.75),
                            (0.75, 0.75, 0.0),
                            (1.0, 0.0, 0.0),])
     fig, axs = plt.subplots(4, 1, sharex=True)
-    # positions = range(len(colour_sequence))
-    # colour_sequence = colour_sequence[1:]
-    # plt.eventplot(separated_actions, color=colorCodes)
+
 
     axs[0].eventplot(separated_actions, color=colorCodes)
     axs[0].set_ylabel("Action Choice", fontsize=25)
@@ -94,9 +66,6 @@ data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
 
 # with open("../Assay-Output/base-1/Visual-Stimulus-Assay-1.json", "r") as file:
 #     data = json.load(file)
-
-# TODO: Create code to load everything into a dataframe - should be own function for loading data.
-
 
 # Shorten action choice
 

@@ -13,8 +13,10 @@ class Fish:
     """
 
     def __init__(self, board, env_variables, dark_col, realistic_bouts, fish_mass=None):
-        if fish_mass is None:  # TODO: Remove this and parameter.
-            inertia = pymunk.moment_for_circle(env_variables['fish_mass'], 0, env_variables['fish_mouth_size'], (0, 0))  # TODO: Need to change size to full fish size?
+
+        # For the purpose of producing a calibration curve.
+        if fish_mass is None:
+            inertia = pymunk.moment_for_circle(env_variables['fish_mass'], 0, env_variables['fish_mouth_size'], (0, 0))  # TODO: Need to change size to full fish size somehow
         else:
             inertia = pymunk.moment_for_circle(fish_mass, 0, env_variables['fish_mouth_size'], (0, 0))
 
@@ -24,13 +26,13 @@ class Fish:
         self.realistic_bouts = realistic_bouts
 
         # Mouth
-        self.mouth = pymunk.Circle(self.body, env_variables['fish_mouth_size'], offset=(0, 0))  # TODO: rename to mouth.
+        self.mouth = pymunk.Circle(self.body, env_variables['fish_mouth_size'], offset=(0, 0))
         self.mouth.color = (1, 0, 1)
-        self.mouth.elasticity = 1.0  # TODO: Set this.
+        self.mouth.elasticity = 1.0
         self.mouth.collision_type = 3
 
         # Head
-        self.head = pymunk.Circle(self.body, env_variables['fish_head_size'], offset=(-env_variables['fish_head_size'], 0))  # TODO: Make sure offset is correct.
+        self.head = pymunk.Circle(self.body, env_variables['fish_head_size'], offset=(-env_variables['fish_head_size'], 0))
         self.head.color = (0, 1, 0)
         self.head.elasticity = 1.0
         self.head.collision_type = 3
@@ -120,8 +122,6 @@ class Fish:
         #     self.left_eye.update_angles(self.verg_angle, self.retinal_field, True)
         #     self.right_eye.update_angles(self.verg_angle, self.retinal_field, False)
         #     self.conv_state = 0
-
-        # TODO: Make sure new fish body doesnt interfere with visual inputs.
         return reward
 
     def calculate_impulse(self, distance):

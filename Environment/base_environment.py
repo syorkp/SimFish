@@ -46,7 +46,7 @@ class BaseEnvironment:
         self.sand_grain_shapes = []
         self.sand_grain_bodies = []
 
-        self.last_action = None  # TODO: Ensure initialisation as none doesnt have any effects.
+        self.last_action = None
 
         self.vegetation_bodies = []
         self.vegetation_shapes = []
@@ -198,11 +198,11 @@ class BaseEnvironment:
         self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_size']))
         self.prey_shapes[-1].elasticity = 1.0
         self.prey_bodies[-1].position = (
-        np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
-                          self.env_variables['width'] - (
+            np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
+                              self.env_variables['width'] - (
                                       self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'])),
-        np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
-                          self.env_variables['height'] - (
+            np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
+                              self.env_variables['height'] - (
                                       self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'])))
         self.prey_shapes[-1].color = (0, 0, 1)
         self.prey_shapes[-1].collision_type = 2
@@ -236,7 +236,8 @@ class BaseEnvironment:
                 self.prey_bodies[to_move[ii]].apply_impulse_at_local_point(
                     (self.env_variables['prey_escape_impulse'], 0))
             else:
-                adjustment = np.random.uniform(-self.env_variables['prey_max_turning_angle'], self.env_variables['prey_max_turning_angle'])
+                adjustment = np.random.uniform(-self.env_variables['prey_max_turning_angle'],
+                                               self.env_variables['prey_max_turning_angle'])
                 self.prey_bodies[to_move[ii]].angle = self.prey_bodies[to_move[ii]].angle + adjustment
                 self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_impulse'], 0))
 
@@ -259,11 +260,11 @@ class BaseEnvironment:
         self.predator_shapes.append(pymunk.Circle(self.predator_bodies[-1], self.env_variables['predator_size']))
         self.predator_shapes[-1].elasticity = 1.0
         self.predator_bodies[-1].position = (
-        np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'],
-                          self.env_variables['width'] - (
+            np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'],
+                              self.env_variables['width'] - (
                                       self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'])),
-        np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'],
-                          self.env_variables['height'] - (
+            np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'],
+                              self.env_variables['height'] - (
                                       self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'])))
         self.predator_shapes[-1].color = (0, 0, 1)
         self.predator_shapes[-1].collision_type = 5
@@ -411,10 +412,10 @@ class BaseEnvironment:
         self.sand_grain_bodies[-1].position = (
             np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
                               self.env_variables['width'] - (
-                                          self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'])),
+                                      self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'])),
             np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
                               self.env_variables['height'] - (
-                                          self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'])))
+                                      self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'])))
         self.sand_grain_shapes[-1].color = (0, 0, 1)
         self.sand_grain_shapes[-1].collision_type = 4
 
@@ -453,10 +454,10 @@ class BaseEnvironment:
         self.vegetation_bodies[-1].position = (
             np.random.randint(self.env_variables['vegetation_size'] + self.env_variables['fish_mouth_size'],
                               self.env_variables['width'] - (
-                                          self.env_variables['vegetation_size'] + self.env_variables['fish_mouth_size'])),
+                                      self.env_variables['vegetation_size'] + self.env_variables['fish_mouth_size'])),
             np.random.randint(self.env_variables['vegetation_size'] + self.env_variables['fish_mouth_size'],
                               self.env_variables['height'] - (
-                                          self.env_variables['vegetation_size'] + self.env_variables['fish_mouth_size'])))
+                                      self.env_variables['vegetation_size'] + self.env_variables['fish_mouth_size'])))
         self.vegetation_shapes[-1].color = (0, 1, 0)
         self.vegetation_shapes[-1].collision_type = 1
         self.vegetation_shapes[-1].friction = 1

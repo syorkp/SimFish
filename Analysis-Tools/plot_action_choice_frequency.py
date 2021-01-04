@@ -118,8 +118,7 @@ def create_action_plots(action):
 
 
 def create_boxplots(index, models, timestamp):
-    # TODO: Note is not accurate at present - dont select on index, select on y-value proximity.
-    # TODO: FIx this for final data.
+    # TODO: Note is not accurate at present - dont select on index, select on y-value proximity. Fix this.
     data = {"action": [], "model": [], "frequency": []}
     action_lists = []
     for action in range(7):

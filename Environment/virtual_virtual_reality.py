@@ -11,8 +11,6 @@ class VirtualVirtualReality(BaseEnvironment):
     def __init__(self, env_variables, draw_screen=False):
         super().__init__(env_variables, draw_screen)
 
-        # TODO: Add in fixed option later
-
         self.fish = Fish(self.board, env_variables, self.dark_col)
         self.space.add(self.fish.body, self.fish.shape)
 
