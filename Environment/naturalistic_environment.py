@@ -109,7 +109,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         self.num_steps += 1
         self.board.erase()
-        self.draw_shapes()
+        # self.draw_shapes()  Causes error. TODO: Check if in original code, or if any use for it.
 
         right_eye_pos = (
             -np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],

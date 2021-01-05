@@ -103,11 +103,15 @@ training_configuration = [
     {
         "Model Name": "scaffolding_test",
         "Environment Name": "gradual",
-        "Total Configurations": 4,
+        "Total Configurations": 8,
         "Episode Transitions": {
-            "2": 500,
-            "3": 1000,
-            "4": 1500,
+            "2": 400,
+            "3": 8000,
+            "4": 1200,
+            "5": 1600,
+            "6": 1800,
+            "7": 2000,
+            "8": 2200,
         },
         "Conditional Transitions": {
             "Prey Caught": {
