@@ -106,7 +106,7 @@ training_configuration = [
         "Total Configurations": 8,
         "Episode Transitions": {
             "2": 400,
-            "3": 8000,
+            "3": 800,
             "4": 1200,
             "5": 1600,
             "6": 1800,
