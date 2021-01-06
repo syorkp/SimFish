@@ -102,16 +102,14 @@ naturalistic_assay_configuration = [
 training_configuration = [
     {
         "Model Name": "scaffolding_test",
-        "Environment Name": "gradual",
-        "Total Configurations": 8,
+        "Environment Name": "increasing_prey_speed",
+        "Total Configurations": 6,
         "Episode Transitions": {
-            "2": 400,
-            "3": 800,
-            "4": 1200,
-            "5": 1600,
-            "6": 1800,
-            "7": 2000,
-            "8": 2200,
+            "2": 800,
+            "3": 1200,
+            "4": 1600,
+            "5": 2000,
+            "6": 2600,
         },
         "Conditional Transitions": {
             "Prey Caught": {
