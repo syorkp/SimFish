@@ -443,7 +443,7 @@ class BaseEnvironment:
         else:
             imp = 0
             print("Wrong action selected")  # TODO: Will need to update for new action space.
-        return imp / 5
+        return imp / 100  # Scaled down both for mass effects and to make it possible for the prey to be caught.
 
     def displace_sand_grains(self):
         for i, body in enumerate(self.sand_grain_bodies):
