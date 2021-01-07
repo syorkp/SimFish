@@ -103,13 +103,12 @@ training_configuration = [
     {
         "Model Name": "scaffolding_test",
         "Environment Name": "increasing_prey_speed",
-        "Total Configurations": 6,
+        "Total Configurations": 5,
         "Episode Transitions": {
             "2": 800,
             "3": 1200,
             "4": 1600,
             "5": 2000,
-            "6": 2600,
         },
         "Conditional Transitions": {
             "Prey Caught": {
@@ -117,7 +116,7 @@ training_configuration = [
             "Predators Avoided": {
             }
         },
-        "Trial Number": 1,
+        "Trial Number": 4,
         "Run Mode": "Training",
         "Fish Setup": "Free",
         "Realistic Bouts": False,
