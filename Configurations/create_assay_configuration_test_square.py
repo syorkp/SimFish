@@ -48,7 +48,7 @@ env = {'width': 400,  # arena size
        'distance_from_fish': 200,  # Distance from the fish at which the predator appears.
        'probability_of_predator': 0.,  # Probability with which the predator appears at each step.
 
-       'dark_light_ratio': 0.3,  # fraction of arena in the dark
+       'dark_light_ratio': 0.,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
        'photon_ratio': 100,  # expected number of photons for unit brightness
        'bkg_scatter': 0.3,  # base brightness of the background

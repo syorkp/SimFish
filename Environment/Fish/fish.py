@@ -15,7 +15,7 @@ class Fish:
 
         # For the purpose of producing a calibration curve.
         if fish_mass is None:
-            inertia = pymunk.moment_for_circle(env_variables['fish_mass'], 0, env_variables['fish_mouth_size'], (0, 0))  # TODO: Need to change size to full fish size somehow
+            inertia = pymunk.moment_for_circle(env_variables['fish_mass'], 0, env_variables['fish_head_size'], (0, 0))
         else:
             inertia = pymunk.moment_for_circle(fish_mass, 0, env_variables['fish_mouth_size'], (0, 0))
 
@@ -74,7 +74,6 @@ class Fish:
 
     def take_basic_action(self, action):
         """Original version"""
-        # TODO: Modify so that there is a version which just selects the mean from the distributions (or put mean in config file).
         if action == 0:  # Swim forward
             reward = -self.env_variables['forward_swim_cost']
             self.body.apply_impulse_at_local_point((self.env_variables['forward_swim_impulse'], 0))

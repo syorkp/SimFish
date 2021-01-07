@@ -60,7 +60,6 @@ class BaseEnvironment:
         self.prey_caught = 0
         self.predators_avoided = 0
 
-        # TODO: Create individual methods for each removal. sand grains, prey, predators.
         for i, shp in enumerate(self.prey_shapes):
             self.space.remove(shp, shp.body)
 
@@ -209,16 +208,14 @@ class BaseEnvironment:
 
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
 
-    def check_paramecium_disturbance(self, prey_position):
-        fish_position = self.fish.body.position
-        sensing_area = [[prey_position[0] - self.env_variables['prey_sensing_distance'],
-                         prey_position[0] + self.env_variables['prey_sensing_distance']],
-                        [prey_position[1] - self.env_variables['prey_sensing_distance'],
-                         prey_position[1] + self.env_variables['prey_sensing_distance']]]
-        is_in_area = sensing_area[0][0] <= fish_position[0] <= sensing_area[0][1] and \
-                     sensing_area[1][0] <= fish_position[1] <= sensing_area[1][1]
-        loud_actions = [0, 1, 2]
-        if is_in_area and self.last_action in loud_actions:
+    def check_disturbance(self, feature_position, sensing_distance):
+        sensing_area = [[feature_position[0] - sensing_distance,
+                         feature_position[0] + sensing_distance],
+                        [feature_position[1] - sensing_distance,
+                         feature_position[1] + sensing_distance]]
+        is_in_area = sensing_area[0][0] <= self.fish.body.position[0] <= sensing_area[0][1] and \
+                     sensing_area[1][0] <= self.fish.body.position[1] <= sensing_area[1][1]
+        if is_in_area:
             return True
         else:
             return False
@@ -228,13 +225,14 @@ class BaseEnvironment:
         # move anyway. Should reconsider this in the future.
         to_move = np.where(np.random.rand(len(self.prey_bodies)) < self.env_variables['prey_impulse_rate'])[0]
         for ii in range(len(to_move)):
-            if self.check_paramecium_disturbance(self.prey_bodies[to_move[ii]].position) and self.env_variables["prey_jump"]:
+            if self.check_disturbance(self.prey_bodies[to_move[ii]].position,
+                                      self.env_variables['prey_sensing_distance']) and self.env_variables["prey_jump"]:
                 if self.prey_bodies[to_move[ii]].angle < (3 * np.pi) / 2:
                     self.prey_bodies[to_move[ii]].angle += np.pi / 2
                 else:
                     self.prey_bodies[to_move[ii]].angle -= np.pi / 2
                 self.prey_bodies[to_move[ii]].apply_impulse_at_local_point(
-                    (self.env_variables['prey_escape_impulse'], 0))
+                    (self.get_last_action_magnitude(), 0))
             else:
                 adjustment = np.random.uniform(-self.env_variables['prey_max_turning_angle'],
                                                self.env_variables['prey_max_turning_angle'])
@@ -381,9 +379,15 @@ class BaseEnvironment:
         elif y_position > self.env_variables["height"]:
             return True
 
-    def move_realistic_predator(self):
+    def check_predator_at_target(self):
         if (round(self.predator_body.position[0]), round(self.predator_body.position[1])) == (
-                round(self.predator_target[0]), round(self.predator_target[1])):  # TODO: Add to method like belwow
+                round(self.predator_target[0]), round(self.predator_target[1])):
+            return True
+        else:
+            return False
+
+    def move_realistic_predator(self):
+        if self.check_predator_at_target():
             self.remove_realistic_predator()
             self.predators_avoided += 1
             return
@@ -421,30 +425,35 @@ class BaseEnvironment:
 
         self.space.add(self.sand_grain_bodies[-1], self.sand_grain_shapes[-1])
 
-    def check_sand_grain_disturbance(self, sand_grain_position):
-        # TODO: Consider merging with method for prey escape
-        fish_position = self.fish.body.position
-        sensing_area = [[sand_grain_position[0] - self.env_variables['sand_grain_displacement_distance'],
-                         sand_grain_position[0] + self.env_variables['sand_grain_displacement_distance']],
-                        [sand_grain_position[1] - self.env_variables['sand_grain_displacement_distance'],
-                         sand_grain_position[1] + self.env_variables['sand_grain_displacement_distance']]]
-        is_in_area = sensing_area[0][0] <= fish_position[0] <= sensing_area[0][1] and \
-                     sensing_area[1][0] <= fish_position[1] <= sensing_area[1][1]
-        loud_actions = [0, 1, 2]  # TODO: Convert to be related to magnitude of displacement.
-        if is_in_area and self.last_action in loud_actions:
-            return True
+    def get_last_action_magnitude(self):
+        if self.last_action == 0:
+            imp = self.env_variables['forward_swim_impulse']
+        elif self.last_action == 1:
+            imp = self.env_variables['routine_turn_impulse']
+        elif self.last_action == 2:
+            imp = self.env_variables['routine_turn_impulse']
+        elif self.last_action == 3:
+            imp = self.env_variables['capture_swim_impulse']
+        elif self.last_action == 4:
+            imp = self.env_variables['j_turn_impulse']
+        elif self.last_action == 5:
+            imp = self.env_variables['j_turn_impulse']
+        elif self.last_action == 6:
+            imp = 0
         else:
-            return False
+            imp = 0
+            print("Wrong action selected")  # TODO: Will need to update for new action space.
+        return imp / 5
 
     def displace_sand_grains(self):
         for i, body in enumerate(self.sand_grain_bodies):
-            if self.check_sand_grain_disturbance(self.sand_grain_bodies[i].position):
+            if self.check_disturbance(self.sand_grain_bodies[i].position, self.env_variables['sand_grain_displacement_distance']):
                 if self.sand_grain_bodies[i].angle < (3 * np.pi) / 2:
                     self.sand_grain_bodies[i].angle += np.pi / 2
                 else:
                     self.sand_grain_bodies[i].angle -= np.pi / 2
                 self.sand_grain_bodies[i].apply_impulse_at_local_point(
-                    (self.env_variables['sand_grain_displacement_impulse_scaling_factor'], 0))
+                    (self.get_last_action_magnitude(), 0))
 
     def create_vegetation(self):
         size = self.env_variables['vegetation_size']
