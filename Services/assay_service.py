@@ -10,15 +10,35 @@ from Environment.controlled_stimulus_environment import ProjectionEnvironment
 from Network.q_network import QNetwork
 from Tools.make_gif import make_gif
 
+tf.logging.set_verbosity(tf.logging.ERROR)
+
+
+def assay_target(trial, learning_params, environment_params, total_steps, episode_number, memory_fraction):
+    service = AssayService(model_name=trial["Model Name"],
+                           trial_number=trial["Trial Number"],
+                           assay_config_name=trial["Assay Configuration Name"],
+                           learning_params=learning_params,
+                           environment_params=environment_params,
+                           total_steps=total_steps,
+                           episode_number=episode_number,
+                           assays=trial["Assays"],
+                           realistic_bouts=trial["Realistic Bouts"],
+                           memory_fraction=memory_fraction,
+                           using_gpu=trial["Using GPU"]
+                           )
+    service.run()
+
 
 class AssayService:
 
     def __init__(self, model_name, trial_number, assay_config_name, learning_params, environment_params, total_steps,
-                 episode_number, assays, realistic_bouts):
+                 episode_number, assays, realistic_bouts, memory_fraction, using_gpu):
 
         self.model_id = f"{model_name}-{trial_number}"
         self.model_location = f"./Training-Output/{self.model_id}"
         self.data_save_location = f"./Assay-Output/{self.model_id}"
+
+        self.using_gpu = using_gpu
 
         self.realistic_bouts = realistic_bouts
 
@@ -36,6 +56,7 @@ class AssayService:
 
         # Create the assays
         self.assays = assays
+        self.memory_fraction = memory_fraction
 
         self.frame_buffer = []
 
@@ -67,27 +88,40 @@ class AssayService:
         :return:
         """
         if assay["stimulus paradigm"] == "Projection":
-            self.simulation = ProjectionEnvironment(self.environment_params, assay["stimuli"], self.realistic_bouts, tethered=assay["fish setup"])
+            self.simulation = ProjectionEnvironment(self.environment_params, assay["stimuli"], self.realistic_bouts,
+                                                    tethered=assay["fish setup"])
         elif assay["stimulus paradigm"] == "Naturalistic":
             self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
         else:
             self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
 
     def run(self):
-        with tf.Session() as self.sess:
-            self.network = self.create_network()
-            self.saver = tf.train.Saver(max_to_keep=5)
-            self.init = tf.global_variables_initializer()
-            checkpoint = tf.train.get_checkpoint_state(self.model_location)
-            self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
-            print("Model loaded")
-            for assay in self.assays:
-                self.create_output_data_storage(assay)
-                self.create_testing_environment(assay)
-                self.perform_assay(assay)
-                # self.save_assay_results(assay)
-                self.save_hdf5_data(assay)
-            self.save_metadata()
+        if self.using_gpu:
+            options = tf.GPUOptions(per_process_gpu_memory_fraction=self.memory_fraction)
+        else:
+            options = None
+
+        if options:
+            with tf.Session(config=tf.ConfigProto(gpu_options=options)) as self.sess:
+                self._run()
+        else:
+            with tf.Session() as self.sess:
+                self._run()
+
+    def _run(self):
+        self.network = self.create_network()
+        self.saver = tf.train.Saver(max_to_keep=5)
+        self.init = tf.global_variables_initializer()
+        checkpoint = tf.train.get_checkpoint_state(self.model_location)
+        self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
+        print("Model loaded")
+        for assay in self.assays:
+            self.create_output_data_storage(assay)
+            self.create_testing_environment(assay)
+            self.perform_assay(assay)
+            # self.save_assay_results(assay)
+            self.save_hdf5_data(assay)
+        self.save_metadata()
 
     def create_output_data_storage(self, assay):
         self.output_data = {key: [] for key in assay["recordings"]}
@@ -141,7 +175,8 @@ class AssayService:
 
     def save_hdf5_data(self, assay):
         if assay["save frames"]:
-            make_gif(self.frame_buffer, f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
+            make_gif(self.frame_buffer,
+                     f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
         self.frame_buffer = []
 

@@ -121,6 +121,31 @@ training_configuration = [
         "Fish Setup": "Free",
         "Realistic Bouts": False,
         "Priority": 1,
+        "Using GPU": False,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "scaffolding_test",
+        "Environment Name": "increasing_prey_speed",
+        "Total Configurations": 5,
+        "Episode Transitions": {
+            "2": 800,
+            "3": 1200,
+            "4": 1600,
+            "5": 2000,
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+            },
+            "Predators Avoided": {
+            }
+        },
+        "Trial Number": 6,
+        "Run Mode": "Training",
+        "Fish Setup": "Free",
+        "Realistic Bouts": False,
+        "Priority": 2,
+        "Using GPU": False,
         "monitor gpu": False,
     },
 ]

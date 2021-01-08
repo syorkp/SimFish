@@ -12,13 +12,34 @@ from Tools.graph_functions import update_target_graph, update_target
 from Tools.make_gif import make_gif
 
 tf.disable_v2_behavior()
+tf.logging.set_verbosity(tf.logging.ERROR)
+
+
+def training_target(trial, epsilon, total_steps, episode_number, memory_fraction):
+    services = TrainingService(model_name=trial["Model Name"],
+                               trial_number=trial["Trial Number"],
+                               model_exists=trial["Model Exists"],
+                               fish_mode=trial["Fish Setup"],
+                               scaffold_name=trial["Environment Name"],
+                               episode_transitions=trial["Episode Transitions"],
+                               total_configurations=trial["Total Configurations"],
+                               conditional_transitions=trial["Conditional Transitions"],
+                               e=epsilon,
+                               total_steps=total_steps,
+                               episode_number=episode_number,
+                               monitor_gpu=trial["monitor gpu"],
+                               realistic_bouts=trial["Realistic Bouts"],
+                               memory_fraction=memory_fraction,
+                               using_gpu=trial["Using GPU"]
+                               )
+    services.run()
 
 
 class TrainingService:
 
     def __init__(self, model_name, trial_number, model_exists, fish_mode, scaffold_name, episode_transitions,
                  total_configurations, conditional_transitions,
-                 e, total_steps, episode_number, monitor_gpu, realistic_bouts):
+                 e, total_steps, episode_number, monitor_gpu, realistic_bouts, memory_fraction, using_gpu):
         """
         An instance of TraningService handles the training of the DQN within a specified environment, according to
         specified parameters.
@@ -33,11 +54,13 @@ class TrainingService:
         self.load_model = model_exists
         self.monitor_gpu = monitor_gpu
         self.scaffold_name = scaffold_name
+        self.using_gpu = using_gpu
 
         self.realistic_bouts = realistic_bouts
         self.total_configurations = total_configurations
         self.episode_transitions = episode_transitions
         self.conditional_transitions = conditional_transitions
+        self.memory_fraction = memory_fraction
 
         self.configuration_index = 1
 
@@ -113,34 +136,47 @@ class TrainingService:
 
         print("Running simulation")
 
-        with tf.Session() as self.sess:
-            self.main_QN, self.target_QN = self.create_networks()
-            self.saver = tf.train.Saver(max_to_keep=5)
-            self.init = tf.global_variables_initializer()
-            self.trainables = tf.trainable_variables()
-            self.target_ops = update_target_graph(self.trainables, self.params['tau'])
-            if self.load_model:
-                print(f"Attempting to load model at {self.output_location}")
-                checkpoint = tf.train.get_checkpoint_state(self.output_location)
-                if hasattr(checkpoint, "model_checkpoint_path"):
-                    self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
-                    print("Loading successful")
+        if self.using_gpu:
+            options = tf.GPUOptions(per_process_gpu_memory_fraction=self.memory_fraction)
+        else:
+            options = None
 
-                else:
-                    print("No saved checkpoints found, starting from scratch.")
-                    self.sess.run(self.init)
+        if options:
+            with tf.Session(config=tf.ConfigProto(gpu_options=options)) as self.sess:
+                self._run()
+        else:
+            with tf.Session() as self.sess:
+                self._run()
+
+
+    def _run(self):
+        self.main_QN, self.target_QN = self.create_networks()
+        self.saver = tf.train.Saver(max_to_keep=5)
+        self.init = tf.global_variables_initializer()
+        self.trainables = tf.trainable_variables()
+        self.target_ops = update_target_graph(self.trainables, self.params['tau'])
+        if self.load_model:
+            print(f"Attempting to load model at {self.output_location}")
+            checkpoint = tf.train.get_checkpoint_state(self.output_location)
+            if hasattr(checkpoint, "model_checkpoint_path"):
+                self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
+                print("Loading successful")
+
             else:
-                print("First attempt at running model. Starting from scratch.")
+                print("No saved checkpoints found, starting from scratch.")
                 self.sess.run(self.init)
+        else:
+            print("First attempt at running model. Starting from scratch.")
+            self.sess.run(self.init)
 
-            update_target(self.target_ops, self.sess)  # Set the target network to be equal to the primary network.
-            self.writer = tf.summary.FileWriter(f"{self.output_location}/logs/", tf.get_default_graph())
+        update_target(self.target_ops, self.sess)  # Set the target network to be equal to the primary network.
+        self.writer = tf.summary.FileWriter(f"{self.output_location}/logs/", tf.get_default_graph())
 
-            for e_number in range(self.episode_number, self.params["num_episodes"]):
-                self.episode_number = e_number
-                if self.configuration_index < self.total_configurations:
-                    self.check_update_configuration()
-                self.episode_loop()
+        for e_number in range(self.episode_number, self.params["num_episodes"]):
+            self.episode_number = e_number
+            if self.configuration_index < self.total_configurations:
+                self.check_update_configuration()
+            self.episode_loop()
 
     def check_update_configuration(self):
         # TODO: Will want to tidy this up later.
@@ -161,7 +197,8 @@ class TrainingService:
             predators_conditional_transition_points = self.conditional_transitions["Predators Avoided"].keys()
             print(np.mean(self.last_episodes_prey_caught))
             if next_point in predators_conditional_transition_points:
-                if np.mean(self.last_episodes_predators_avoided) > self.conditional_transitions["Predators Avoided"][next_point]:
+                if np.mean(self.last_episodes_predators_avoided) > self.conditional_transitions["Predators Avoided"][
+                    next_point]:
                     print("Changing configuration")
                     self.configuration_index = int(next_point)
                     print(f"Configuration: {self.configuration_index}")

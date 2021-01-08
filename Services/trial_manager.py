@@ -1,8 +1,9 @@
 import os
 import json
+import multiprocessing
 
-from Services.training_service import TrainingService
-from Services.assay_service import AssayService
+import Services.training_service as training
+import Services.assay_service as assay
 
 
 class TrialManager:
@@ -21,7 +22,6 @@ class TrialManager:
 
         # self.create_configuration_files()  TODO: Possibly add later if makes sense to.
         self.create_output_directories()
-        self.trial_services = self.create_trial_services()
 
     def create_configuration_files(self):
         """
@@ -103,52 +103,29 @@ class TrialManager:
 
         return epsilon, total_steps, episode_number
 
-    def create_trial_services(self):
-        """
-        Creates the instances of TrainingService and ExperimentService required for the trial configuration.
-        :return:
-        """
-        trial_services = []
-        for trial in self.priority_ordered_trials:
-            epsilon, total_steps, episode_number = self.get_saved_parameters(trial)
-
-            if trial["Run Mode"] == "Training":
-                trial_services.append(TrainingService(model_name=trial["Model Name"],
-                                                      trial_number=trial["Trial Number"],
-                                                      model_exists=trial["Model Exists"],
-                                                      fish_mode=trial["Fish Setup"],
-                                                      scaffold_name=trial["Environment Name"],
-                                                      episode_transitions=trial["Episode Transitions"],
-                                                      total_configurations=trial["Total Configurations"],
-                                                      conditional_transitions=trial["Conditional Transitions"],
-                                                      e=epsilon,
-                                                      total_steps=total_steps,
-                                                      episode_number=episode_number,
-                                                      monitor_gpu=trial["monitor gpu"],
-                                                      realistic_bouts=trial["Realistic Bouts"]
-                                                      )
-                                      )
-            elif trial["Run Mode"] == "Assay":
-                learning_params, environment_params = self.load_configuration_files(trial["Environment Name"])
-
-                trial_services.append(AssayService(model_name=trial["Model Name"],
-                                                   trial_number=trial["Trial Number"],
-                                                   assay_config_name=trial["Assay Configuration Name"],
-                                                   learning_params=learning_params,
-                                                   environment_params=environment_params,
-                                                   total_steps=total_steps,
-                                                   episode_number=episode_number,
-                                                   assays=trial["Assays"],
-                                                   realistic_bouts=trial["Realistic Bouts"]
-                                                   )
-                                      )
-        return trial_services
-
     def run_priority_loop(self):
         """
         Executes the trials in the required order.
         :return:
         """
-        # TODO: Add in threading and parallelism.
-        for service in self.trial_services:
-            service.run()
+        parallel_jobs = 2
+        memory_fraction = 0.99/parallel_jobs
+        running_jobs = {}
+        for index, trial in enumerate(self.priority_ordered_trials):
+            epsilon, total_steps, episode_number = self.get_saved_parameters(trial)
+            if trial["Run Mode"] == "Training":
+                running_jobs[str(index)] = multiprocessing.Process(target=training.training_target, args=(trial, epsilon, total_steps, episode_number, memory_fraction))
+            elif trial["Run Mode"] == "Assay":
+                learning_params, environment_params = self.load_configuration_files(trial["Environment Name"])
+                running_jobs[str(index)] = multiprocessing.Process(target=assay.assay_target, args=(trial, learning_params, environment_params, total_steps, episode_number, memory_fraction))
+            running_jobs[str(index)].start()
+            print(f"Jobs: {running_jobs}")
+            while len(running_jobs.keys()) > parallel_jobs - 1:
+                for process in running_jobs.keys():
+                    if running_jobs[process].is_alive():
+                        pass
+                    else:
+                        running_jobs[str(index)].join()
+                        del running_jobs[process]
+
+
