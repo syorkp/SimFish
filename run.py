@@ -103,7 +103,7 @@ training_configuration = [
     {
         "Model Name": "scaffolding_test",
         "Environment Name": "increasing_prey_speed",
-        "Total Configurations": 5,
+        "Total Configurations": 6,
         "Episode Transitions": {
             "2": 800,
             "3": 1200,
@@ -121,13 +121,13 @@ training_configuration = [
         "Fish Setup": "Free",
         "Realistic Bouts": False,
         "Priority": 1,
-        "Using GPU": False,
-        "monitor gpu": False,
+        "Using GPU": True,
+        "monitor gpu": True,
     },
     {
         "Model Name": "scaffolding_test",
         "Environment Name": "increasing_prey_speed",
-        "Total Configurations": 5,
+        "Total Configurations": 7,
         "Episode Transitions": {
             "2": 800,
             "3": 1200,
@@ -145,8 +145,8 @@ training_configuration = [
         "Fish Setup": "Free",
         "Realistic Bouts": False,
         "Priority": 2,
-        "Using GPU": False,
-        "monitor gpu": False,
+        "Using GPU": True,
+        "monitor gpu": True,
     },
 ]
 
