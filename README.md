@@ -11,3 +11,14 @@ To run:
 
 To view graphs, install tensorboard and run 'tensorboard --logdir="./Output/{trial_directory}/logs"'
 
+## Run Configurations
+
+The run.py file contains example configurations which specify parameters for either mode: training, or experimental.
+
+The different modes take different configuration parameters.
+
+## Simulation Configurations
+
+These can be found in the Configurations directory, along with python scripts that produce them. These are either single configurations for the assays, or scaffold configurations, which generate sequences of configurations used for training.
+
+

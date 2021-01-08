@@ -42,9 +42,11 @@ class NaturalisticEnvironment(BaseEnvironment):
     def reset(self):
         super().reset()
         self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_size'],
-                                                     self.env_variables['width'] - self.env_variables['fish_mouth_size']),
+                                                     self.env_variables['width'] - self.env_variables[
+                                                         'fish_mouth_size']),
                                    np.random.randint(self.env_variables['fish_mouth_size'],
-                                                     self.env_variables['height'] - self.env_variables['fish_mouth_size']))
+                                                     self.env_variables['height'] - self.env_variables[
+                                                         'fish_mouth_size']))
         self.fish.body.angle = np.random.random() * 2 * np.pi
         self.fish.body.velocity = (0, 0)
 
@@ -75,9 +77,9 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         self.fish.hungry += (1 - self.fish.hungry) * self.env_variables['hunger_inc_tau']
 
-        if np.random.rand(1) < self.env_variables["probability_of_predator"] and \
-                self.predator_shape is None \
-                and self.num_steps > self.env_variables['immunity_steps']:
+        # TODO: add below to function for clarity.
+        if self.predator_shape is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
+                self.num_steps > self.env_variables['immunity_steps'] and not self.check_fish_near_vegetation():
             self.create_realistic_predator()
 
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
@@ -141,5 +143,3 @@ class NaturalisticEnvironment(BaseEnvironment):
                                  self.fish.readings_to_photons(self.fish.right_eye.readings)))
 
         return observation, reward, internal_state, done, frame_buffer
-
-

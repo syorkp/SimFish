@@ -45,7 +45,8 @@ env = {'width': 1000,  # arena size
        'sand_grain_displacement_distance': 20,
 
        'vegetation_size': 100.,
-       'vegetation_num': 0,
+       'vegetation_num': 2,
+       'vegetation_effect_distance': 150,
 
        'predator_mass': 10.,
        'predator_inertia': 40.,
@@ -53,7 +54,7 @@ env = {'width': 1000,  # arena size
        'predator_impulse': 1,
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 200,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.005,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.05,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count

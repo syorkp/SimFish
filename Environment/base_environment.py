@@ -208,7 +208,7 @@ class BaseEnvironment:
 
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
 
-    def check_disturbance(self, feature_position, sensing_distance):
+    def check_proximity(self, feature_position, sensing_distance):
         sensing_area = [[feature_position[0] - sensing_distance,
                          feature_position[0] + sensing_distance],
                         [feature_position[1] - sensing_distance,
@@ -225,8 +225,8 @@ class BaseEnvironment:
         # move anyway. Should reconsider this in the future.
         to_move = np.where(np.random.rand(len(self.prey_bodies)) < self.env_variables['prey_impulse_rate'])[0]
         for ii in range(len(to_move)):
-            if self.check_disturbance(self.prey_bodies[to_move[ii]].position,
-                                      self.env_variables['prey_sensing_distance']) and self.env_variables["prey_jump"]:
+            if self.check_proximity(self.prey_bodies[to_move[ii]].position,
+                                    self.env_variables['prey_sensing_distance']) and self.env_variables["prey_jump"]:
                 if self.prey_bodies[to_move[ii]].angle < (3 * np.pi) / 2:
                     self.prey_bodies[to_move[ii]].angle += np.pi / 2
                 else:
@@ -447,7 +447,8 @@ class BaseEnvironment:
 
     def displace_sand_grains(self):
         for i, body in enumerate(self.sand_grain_bodies):
-            if self.check_disturbance(self.sand_grain_bodies[i].position, self.env_variables['sand_grain_displacement_distance']):
+            if self.check_proximity(self.sand_grain_bodies[i].position,
+                                    self.env_variables['sand_grain_displacement_distance']):
                 if self.sand_grain_bodies[i].angle < (3 * np.pi) / 2:
                     self.sand_grain_bodies[i].angle += np.pi / 2
                 else:
@@ -472,3 +473,16 @@ class BaseEnvironment:
         self.vegetation_shapes[-1].friction = 1
 
         self.space.add(self.vegetation_bodies[-1], self.vegetation_shapes[-1])
+
+    def check_fish_near_vegetation(self):
+        vegetation_locations = [v.position for v in self.vegetation_bodies]
+        fish_surrounding_area = [[self.fish.body.position[0] - self.env_variables['vegetation_effect_distance'],
+                                  self.fish.body.position[0] + self.env_variables['vegetation_effect_distance']],
+                                 [self.fish.body.position[1] - self.env_variables['vegetation_effect_distance'],
+                                  self.fish.body.position[1] + self.env_variables['vegetation_effect_distance']]]
+        for veg in vegetation_locations:
+            is_in_area = fish_surrounding_area[0][0] <= veg[0] <= fish_surrounding_area[0][1] and \
+                         fish_surrounding_area[1][0] <= veg[1] <= fish_surrounding_area[1][1]
+            if is_in_area:
+                return True
+        return False

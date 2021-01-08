@@ -87,7 +87,7 @@ naturalistic_assay_configuration = [
             "Realistic Bouts": False,
             "Assays": [
                     {
-                        "assay id": "Naturalistic-Assay-1",
+                        "assay id": "Vegetation-Effects",
                         "stimulus paradigm": "Naturalistic",
                         "duration": 400,
                         "fish setup": "Free",
