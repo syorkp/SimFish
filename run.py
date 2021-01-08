@@ -116,7 +116,7 @@ training_configuration = [
             "Predators Avoided": {
             }
         },
-        "Trial Number": 4,
+        "Trial Number": 5,
         "Run Mode": "Training",
         "Fish Setup": "Free",
         "Realistic Bouts": False,

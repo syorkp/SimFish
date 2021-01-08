@@ -70,12 +70,12 @@ env = {'width': 1000,  # arena size
        'routine_turn_cost': 3,
        'routine_turn_impulse': 5,
        'routine_turn_dir_change': 0.6,
-       'capture_swim_cost': 20,
+       'capture_swim_cost': 5,
        'capture_swim_impulse': 5,
-       'j_turn_cost': 2,
+       'j_turn_cost': 2.5,
        'j_turn_impulse': 0.1,
        'j_turn_dir_change': 0.07,
-       'rest_cost': 1,
+       'rest_cost': 2,
 
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
