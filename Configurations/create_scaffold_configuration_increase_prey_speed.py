@@ -101,7 +101,7 @@ params = {'num_actions': 7,  # size of action space
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
           'learning_rate': 0.0001}
 
-directory_name = "increasing_prey_speed"
+directory_name = "increasing_prey_speed_3"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):
@@ -117,7 +117,17 @@ def save_files(n):
         json.dump(params, f)
 
 
+env["fish_mouth_size"] = 10
+
 number = 1
+save_files(number)
+number += 1
+
+env["fish_mouth_size"] = 7.5
+save_files(number)
+number += 1
+
+env["fish_mouth_size"] = 5
 save_files(number)
 number += 1
 

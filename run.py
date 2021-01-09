@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from Services.trial_manager import TrialManager
 
@@ -18,6 +19,8 @@ controlled_assay_configuration = [
         "Assay Configuration Name": "Prey Stimuli",
         "Run Mode": "Assay",
         "Realistic Bouts": True,
+        "Using GPU": True,
+        "monitor gpu": True,
         "Priority": 1,
         "Assays": [
             {
@@ -85,6 +88,8 @@ naturalistic_assay_configuration = [
             "Run Mode": "Assay",
             "Priority": 1,
             "Realistic Bouts": False,
+            "Using GPU": True,
+            "monitor gpu": True,
             "Assays": [
                     {
                         "assay id": "Vegetation-Effects",
@@ -101,14 +106,14 @@ naturalistic_assay_configuration = [
 
 training_configuration = [
     {
-        "Model Name": "scaffolding_test",
-        "Environment Name": "increasing_prey_speed",
-        "Total Configurations": 6,
+        "Model Name": "earlier_transition",
+        "Environment Name": "increasing_prey_speed_1",
+        "Total Configurations": 5,
         "Episode Transitions": {
-            "2": 800,
-            "3": 1200,
-            "4": 1600,
-            "5": 2000,
+            "2": 400,
+            "3": 800,
+            "4": 1200,
+            "5": 1600,
         },
         "Conditional Transitions": {
             "Prey Caught": {
@@ -116,7 +121,7 @@ training_configuration = [
             "Predators Avoided": {
             }
         },
-        "Trial Number": 5,
+        "Trial Number": 1,
         "Run Mode": "Training",
         "Fish Setup": "Free",
         "Realistic Bouts": False,
@@ -125,9 +130,60 @@ training_configuration = [
         "monitor gpu": True,
     },
     {
-        "Model Name": "scaffolding_test",
-        "Environment Name": "increasing_prey_speed",
+        "Model Name": "reduce_prey",
+        "Environment Name": "increasing_prey_speed_2",
+        "Total Configurations": 6,
+        "Episode Transitions": {
+            "2": 600,
+            "3": 800,
+            "4": 1200,
+            "5": 1600,
+            "6": 2000,
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+            },
+            "Predators Avoided": {
+            }
+        },
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Fish Setup": "Free",
+        "Realistic Bouts": False,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": True,
+    },
+    {
+        "Model Name": "reduce_mouth",
+        "Environment Name": "increasing_prey_speed_3",
         "Total Configurations": 7,
+        "Episode Transitions": {
+            "2": 400,
+            "3": 800,
+            "4": 1000,
+            "5": 1200,
+            "6": 1400,
+            "7": 1800,
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+            },
+            "Predators Avoided": {
+            }
+        },
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Fish Setup": "Free",
+        "Realistic Bouts": False,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": True,
+    },
+    {
+        "Model Name": "modified_action_costs",
+        "Environment Name": "increasing_prey_speed_4",
+        "Total Configurations": 5,
         "Episode Transitions": {
             "2": 800,
             "3": 1200,
@@ -140,7 +196,7 @@ training_configuration = [
             "Predators Avoided": {
             }
         },
-        "Trial Number": 6,
+        "Trial Number": 1,
         "Run Mode": "Training",
         "Fish Setup": "Free",
         "Realistic Bouts": False,
@@ -151,6 +207,6 @@ training_configuration = [
 ]
 
 # TODO: Change fish steup to tethered boolean.
-
+print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 manager = TrialManager(training_configuration)
 manager.run_priority_loop()

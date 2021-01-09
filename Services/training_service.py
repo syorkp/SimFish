@@ -294,7 +294,7 @@ class TrainingService:
         :return:
         """
 
-        print(f"episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}", flush=True)
+        print(f"{self.trial_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}", flush=True)
 
         # # Log the average training time for episodes (when not saved)
         # if not self.save_frames:
