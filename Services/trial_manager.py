@@ -108,7 +108,7 @@ class TrialManager:
         Executes the trials in the required order.
         :return:
         """
-        parallel_jobs = 4
+        parallel_jobs = 3
         memory_fraction = 0.99/parallel_jobs
         running_jobs = {}
         for index, trial in enumerate(self.priority_ordered_trials):
@@ -126,6 +126,6 @@ class TrialManager:
                         pass
                     else:
                         running_jobs[str(index)].join()
-                        del running_jobs[process]
+            # TODO: Wont remove trials once complete as they are still in dictionary. Need to find a way of doing it without deleting from dictionary.
 
 

@@ -206,6 +206,8 @@ training_configuration = [
     },
 ]
 
+# Note that for conditional transformations, a sensible number of prey caught is 20 (achieved early in training).
+
 # TODO: Change fish steup to tethered boolean.
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 manager = TrialManager(training_configuration)
