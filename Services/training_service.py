@@ -137,17 +137,19 @@ class TrainingService:
         print("Running simulation")
 
         if self.using_gpu:
-            options = tf.GPUOptions(per_process_gpu_memory_fraction=self.memory_fraction)
+            # options = tf.GPUOptions(per_process_gpu_memory_fraction=self.memory_fraction)
+            # config = tf.ConfigProto(gpu_options=options)
+            config = tf.ConfigProto()
+            config.gpu_options.allow_growth = True
         else:
-            options = None
+            config = None
 
-        if options:
-            with tf.Session(config=tf.ConfigProto(gpu_options=options)) as self.sess:
+        if config:
+            with tf.Session(config=config) as self.sess:
                 self._run()
         else:
             with tf.Session() as self.sess:
                 self._run()
-
 
     def _run(self):
         self.main_QN, self.target_QN = self.create_networks()
@@ -197,8 +199,7 @@ class TrainingService:
             predators_conditional_transition_points = self.conditional_transitions["Predators Avoided"].keys()
             print(np.mean(self.last_episodes_prey_caught))
             if next_point in predators_conditional_transition_points:
-                if np.mean(self.last_episodes_predators_avoided) > self.conditional_transitions["Predators Avoided"][
-                    next_point]:
+                if np.mean(self.last_episodes_predators_avoided) > self.conditional_transitions["Predators Avoided"][next_point]:
                     print("Changing configuration")
                     self.configuration_index = int(next_point)
                     print(f"Configuration: {self.configuration_index}")
@@ -294,7 +295,8 @@ class TrainingService:
         :return:
         """
 
-        print(f"{self.trial_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}", flush=True)
+        print(f"{self.trial_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}",
+              flush=True)
 
         # # Log the average training time for episodes (when not saved)
         # if not self.save_frames:

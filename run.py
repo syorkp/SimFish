@@ -106,55 +106,6 @@ naturalistic_assay_configuration = [
 
 training_configuration = [
     {
-        "Model Name": "earlier_transition",
-        "Environment Name": "increasing_prey_speed_1",
-        "Total Configurations": 5,
-        "Episode Transitions": {
-            "2": 400,
-            "3": 800,
-            "4": 1200,
-            "5": 1600,
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-            },
-            "Predators Avoided": {
-            }
-        },
-        "Trial Number": 1,
-        "Run Mode": "Training",
-        "Fish Setup": "Free",
-        "Realistic Bouts": False,
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": True,
-    },
-    {
-        "Model Name": "reduce_prey",
-        "Environment Name": "increasing_prey_speed_2",
-        "Total Configurations": 6,
-        "Episode Transitions": {
-            "2": 600,
-            "3": 800,
-            "4": 1200,
-            "5": 1600,
-            "6": 2000,
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-            },
-            "Predators Avoided": {
-            }
-        },
-        "Trial Number": 1,
-        "Run Mode": "Training",
-        "Fish Setup": "Free",
-        "Realistic Bouts": False,
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": True,
-    },
-    {
         "Model Name": "reduce_mouth",
         "Environment Name": "increasing_prey_speed_3",
         "Total Configurations": 7,
@@ -204,9 +155,57 @@ training_configuration = [
         "Using GPU": True,
         "monitor gpu": True,
     },
-]
+    {
+        "Model Name": "earlier_transition",
+        "Environment Name": "increasing_prey_speed_1",
+        "Total Configurations": 5,
+        "Episode Transitions": {
+            "2": 400,
+            "3": 600,
+            "4": 800,
+            "5": 1000,
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+            },
+            "Predators Avoided": {
+            }
+        },
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Fish Setup": "Free",
+        "Realistic Bouts": False,
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": True,
+    },
+    {
+        "Model Name": "conditional_transfer",
+        "Environment Name": "increasing_prey_speed_1",
+        "Total Configurations": 6,
+        "Episode Transitions": {
 
-# Note that for conditional transformations, a sensible number of prey caught is 20 (achieved early in training).
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 20,
+                "3": 25,
+                "4": 27,
+                "5": 29,
+                "6": 31,
+            },
+            "Predators Avoided": {
+            }
+        },
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Fish Setup": "Free",
+        "Realistic Bouts": False,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": True,
+    },
+]
 
 # TODO: Change fish steup to tethered boolean.
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
