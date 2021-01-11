@@ -6,7 +6,6 @@ import matplotlib.cm as cm
 from load_data import load_data
 
 
-# TODO: Make sure data load method fits.
 data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
 
 

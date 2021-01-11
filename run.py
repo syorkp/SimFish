@@ -104,6 +104,131 @@ naturalistic_assay_configuration = [
     }
 ]
 
+asaph_data_configuration = [
+    {
+        "Model Name": "base",
+        "Environment Name": "example",
+        "Assay Configuration Name": "Asaph",
+        "Trial Number": 1,
+        "Run Mode": "Assay",
+        "Priority": 1,
+        "Realistic Bouts": False,
+        "Using GPU": False,
+        "monitor gpu": True,
+        "Assays": [
+            {
+                "assay id": "All-Features",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 200,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": [],
+                "interactions": []
+            }
+        ],
+    },
+    # {
+    #     "Model Name": "earlier_transition",
+    #     "Environment Name": "example",
+    #     "Assay Configuration Name": "Asaph",
+    #     "Trial Number": 1,
+    #     "Run Mode": "Assay",
+    #     "Priority": 1,
+    #     "Realistic Bouts": False,
+    #     "Using GPU": False,
+    #     "monitor gpu": True,
+    #     "Assays": [
+    #         {
+    #             "assay id": "All-Features",
+    #             "stimulus paradigm": "Naturalistic",
+    #             "duration": 200,
+    #             "fish setup": "Free",
+    #             "save frames": True,
+    #             "recordings": [],
+    #             "interactions": []
+    #         }
+    #     ],
+    # },
+# {
+#         "Model Name": "earlier_transition",
+#         "Environment Name": "test_square",
+#         "Trial Number": 1,
+#         "Assay Configuration Name": "new_model_data",
+#         "Run Mode": "Assay",
+#         "Realistic Bouts": True,
+#         "Using GPU": False,
+#         "monitor gpu": False,
+#         "Priority": 1,
+#         "Assays": [
+#             {
+#                 "assay id": "Prey-Stimulus",
+#                 "stimulus paradigm": "Projection",
+#                 "duration": 121,
+#                 "fish setup": "Tethered",
+#                 "save frames": True,
+#                 "recordings": ["behavioural choice", "rnn state", "observation"],
+#                 "stimuli": {
+#                     "prey 1": [
+#                         {"step": 0,
+#                          "position": [100, 100]},
+#                         {"step": 20,
+#                          "position": [300, 100]},
+#                         {"step": 40,
+#                          "position": [300, 300]},
+#                         {"step": 60,
+#                          "position": [100, 300]},
+#                         {"step": 80,
+#                          "position": [300, 300]},
+#                         {"step": 100,
+#                          "position": [300, 100]},
+#                         {"step": 120,
+#                          "position": [100, 100]},
+#                     ],
+#                 },
+#                 "interactions": []},
+#             ]
+#     },
+#     {
+#     "Model Name": "base",
+#         "Environment Name": "test_square",
+#         "Trial Number": 1,
+#         "Assay Configuration Name": "old_model_data",
+#         "Run Mode": "Assay",
+#         "Realistic Bouts": True,
+#         "Using GPU": False,
+#         "monitor gpu": False,
+#         "Priority": 1,
+#         "Assays": [
+#             {
+#                 "assay id": "Prey-Stimulus",
+#                 "stimulus paradigm": "Projection",
+#                 "duration": 121,
+#                 "fish setup": "Tethered",
+#                 "save frames": True,
+#                 "recordings": ["behavioural choice", "rnn state", "observation"],
+#                 "stimuli": {
+#                     "prey 1": [
+#                         {"step": 0,
+#                          "position": [100, 100]},
+#                         {"step": 20,
+#                          "position": [300, 100]},
+#                         {"step": 40,
+#                          "position": [300, 300]},
+#                         {"step": 60,
+#                          "position": [100, 300]},
+#                         {"step": 80,
+#                          "position": [300, 300]},
+#                         {"step": 100,
+#                          "position": [300, 100]},
+#                         {"step": 120,
+#                          "position": [100, 100]},
+#                     ],
+#                 },
+#                 "interactions": []},
+#             ]
+# }
+]
+
 training_configuration = [
     {
         "Model Name": "reduce_mouth",
@@ -209,5 +334,5 @@ training_configuration = [
 
 # TODO: Change fish steup to tethered boolean.
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(training_configuration)
+manager = TrialManager(asaph_data_configuration)
 manager.run_priority_loop()

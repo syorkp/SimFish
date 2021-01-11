@@ -21,7 +21,10 @@ def plot_all(rnn_data, observation, action_choice):
     colorCodes = np.array([(0.0, 0.0, 1.0),
                            (0.0, 0.75, 0.75),
                            (0.75, 0.75, 0.0),
-                           (1.0, 0.0, 0.0),])
+                           (1.0, 0.0, 0.0),
+                           # (1.0, 0.75, 0.0),
+                           # (0.0, 0.75, 1.0),
+                           ])
 
     axs[0].imshow(left, aspect="auto")
     axs[1].imshow(right, aspect="auto")
@@ -57,7 +60,7 @@ def convert_photons_to_int(obs):
     return new_obs
 
 
-data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
+data = load_data("old_model_data", "Prey-Stimulus", "base-1")
 
 # rnn_unit_1 = [i["rnn state"][0][0] for i in data]
 # rnn_unit_2 = [i["rnn state"][0][1] for i in data]

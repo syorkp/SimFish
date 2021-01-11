@@ -233,7 +233,7 @@ class AssayService:
         # Saves all the information from the assays in JSON format.
         if assay["save frames"]:
             make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
-                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True) # TODO: Remove 100 to change back to normal.
         self.frame_buffer = []
         with open(f"{self.data_save_location}/{assay['assay id']}.json", "w") as output_file:
             json.dump(self.assay_output_data, output_file)

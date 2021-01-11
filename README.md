@@ -11,6 +11,17 @@ To run:
 
 To view graphs, install tensorboard and run 'tensorboard --logdir="./Output/{trial_directory}/logs"'
 
+Uses the following packages:
+* Tensorflow
+* numpy
+* h5py
+* matplotlin
+* pymunk
+* skimage
+* pandas
+* moviepy
+* Cython
+
 ## Run Configurations
 
 The run.py file contains example configurations which specify parameters for either mode: training, or experimental.
