@@ -174,17 +174,20 @@ class BaseEnvironment:
         # self.space.add(static)
 
     def touch_edge(self, arbiter, space, data):
-        current_position = self.fish.body.position
-        if current_position[0] < 30:  # Wall d
-            current_position[0] += self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
-        elif current_position[0] > self.env_variables['width'] - 30:  # wall b
-            current_position[0] -= self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
-        if current_position[1] < 30:  # wall a
-            current_position[1] += self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
-        elif current_position[1] > self.env_variables['height'] - 30:  # wall c
-            current_position[1] -= self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+        # TODO: Recent changes made below.
+        new_position_x = self.fish.body.position[0]
+        new_position_y = self.fish.body.position[1]
+        if new_position_x < 30:  # Wall d
+            new_position_x += self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+        elif new_position_x > self.env_variables['width'] - 30:  # wall b
+            new_position_x -= self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+        if new_position_y < 30:  # wall a
+            new_position_y += self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+        elif new_position_y > self.env_variables['height'] - 30:  # wall c
+            new_position_y -= self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
 
-        self.fish.body.position = current_position
+        new_position = pymunk.Vec2d(new_position_x, new_position_y)
+        self.fish.body.position = new_position
         self.fish.body.velocity = (0, 0)
 
         if self.fish.body.angle < np.pi:

@@ -14,8 +14,6 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 
 def assay_target(trial, learning_params, environment_params, total_steps, episode_number, memory_fraction):
-    using_gpu = tf.test.is_gpu_available(cuda_only=True)
-    print(using_gpu)
     service = AssayService(model_name=trial["Model Name"],
                            trial_number=trial["Trial Number"],
                            assay_config_name=trial["Assay Configuration Name"],
