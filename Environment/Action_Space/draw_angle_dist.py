@@ -42,6 +42,8 @@ def display_pdf_and_cdf(bout_id):
 def draw_angle_dist(bout_id):
 
     with h5py.File('./Environment/Action_Space/bout_distributions.mat', 'r') as fl:
+# with h5py.File('./bout_distributions.mat', 'r') as fl:
+
         p_angle = np.array(fl['p_angle']).T
         angles = np.array(fl['angles']).T
         p_dist = np.array(fl['p_dist']).T
@@ -68,3 +70,5 @@ def draw_angle_dist(bout_id):
 #     print(i)
 #     angle, dist = draw_angle_dist(i)
 #     print(angle, dist)
+
+draw_angle_dist(2)
