@@ -30,12 +30,12 @@ env = {'width': 1000,  # arena size
        'prey_inertia': 40.,
        'prey_size': 4.,
        'prey_num': 50,
-       'prey_impulse': 0.0,  # impulse each prey receives per step
+       'prey_impulse': 0.1,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
-       'prey_escape_impulse': 2,
+       'prey_escape_impulse': 4,
        'prey_sensing_distance': 30,
-       'prey_max_turning_angle': 0.3,
-       'prey_jump': False,
+       'prey_max_turning_angle': 0.1,
+       'prey_jump': True,
 
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,

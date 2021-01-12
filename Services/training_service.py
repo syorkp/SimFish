@@ -16,6 +16,8 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 
 def training_target(trial, epsilon, total_steps, episode_number, memory_fraction):
+    using_gpu = tf.test.is_gpu_available(cuda_only=True)
+    print(f"Using GPU: {using_gpu}")  # TODO: Test in next model ouptut. If true, replace teh using_gpu configuration parameter with this. Add in for assay_service also
     services = TrainingService(model_name=trial["Model Name"],
                                trial_number=trial["Trial Number"],
                                model_exists=trial["Model Exists"],

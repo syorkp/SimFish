@@ -24,4 +24,4 @@ def make_gif(images, f_name, duration=2, true_image=False, salimgs=None):
         return x
 
     clip = mpy.VideoClip(make_frame, duration=duration)  # TODO: Remove 2s
-    clip.write_gif(f_name, fps=len(images) / duration*2, verbose=False)
+    clip.write_gif(f_name, fps=len(images) / duration, verbose=False)

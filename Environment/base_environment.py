@@ -169,8 +169,9 @@ class BaseEnvironment:
             s.group = 1
             s.collision_type = 1
             s.color = (1, 0, 0)
+            self.space.add(s)
 
-        self.space.add(static)
+        # self.space.add(static)
 
     def touch_edge(self, arbiter, space, data):
         current_position = self.fish.body.position
