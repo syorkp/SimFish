@@ -111,7 +111,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         self.num_steps += 1
         self.board.erase()
-        # self.draw_shapes()  Dont think is needed and causes an index error somehow.
+        self.draw_shapes()  # TODO: Needed, but causes index error sometimes.
 
         right_eye_pos = (
             -np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
