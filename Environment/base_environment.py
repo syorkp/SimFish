@@ -169,6 +169,7 @@ class BaseEnvironment:
             s.group = 1
             s.collision_type = 1
             s.color = (1, 0, 0)
+
         self.space.add(static)
 
     def touch_edge(self, arbiter, space, data):

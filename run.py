@@ -114,7 +114,7 @@ asaph_data_configuration = [
         "Priority": 1,
         "Realistic Bouts": False,
         "Using GPU": False,
-        "monitor gpu": True,
+        "monitor gpu": False,
         "Assays": [
             {
                 "assay id": "All-Features",
@@ -334,5 +334,5 @@ training_configuration = [
 
 # TODO: Change fish steup to tethered boolean.
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(asaph_data_configuration)
+manager = TrialManager(training_configuration)
 manager.run_priority_loop()
