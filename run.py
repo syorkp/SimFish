@@ -332,7 +332,85 @@ training_configuration = [
     },
 ]
 
+new_training_configuration = [
+    {
+        "Model Name": "conditional_prey_and_predators",
+        "Environment Name": "prey_and_predators",
+        "Total Configurations": 6,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 30,
+                "3": 32,
+                "4": 35,
+                "5": 40,
+            },
+            "Predators Avoided": {
+                "6": 5,
+            }
+        },
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Fish Setup": "Free",
+        "Realistic Bouts": False,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+{
+        "Model Name": "episodic_prey_and_predators",
+        "Environment Name": "prey_and_predators",
+        "Total Configurations": 6,
+        "Episode Transitions": {
+            "2": 300,
+            "3": 500,
+            "4": 700,
+            "5": 1000,
+            "6": 1400,
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+            },
+            "Predators Avoided": {
+            }
+        },
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Fish Setup": "Free",
+        "Realistic Bouts": False,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "conditional_prey_and_static",
+        "Environment Name": "prey_and_static",
+        "Total Configurations": 6,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 30,
+                "3": 32,
+                "4": 35,
+                "5": 39,
+                "6": 43,
+            },
+            "Predators Avoided": {
+            }
+        },
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Fish Setup": "Free",
+        "Realistic Bouts": False,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    }
+]
+
 # TODO: Change fish steup to tethered boolean.
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(training_configuration)
+manager = TrialManager(new_training_configuration)
 manager.run_priority_loop()
