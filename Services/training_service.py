@@ -52,6 +52,23 @@ class TrainingService:
         self.trial_id = f"{model_name}-{trial_number}"
         self.output_location = f"./Training-Output/{model_name}-{trial_number}"
 
+        # Configurations
+        self.scaffold_name = scaffold_name
+        self.total_configurations = total_configurations
+        self.episode_transitions = episode_transitions
+        self.conditional_transitions = conditional_transitions
+        self.apparatus_mode = fish_mode
+        self.configuration_index = 1
+        self.switched_configuration = False
+        self.params, self.env = self.load_configuration_files()
+
+        # Basic Parameters
+        self.load_model = model_exists
+        self.monitor_gpu = monitor_gpu
+        self.using_gpu = using_gpu
+        self.realistic_bouts = realistic_bouts
+        self.memory_fraction = memory_fraction
+
         # Maintain variables
         if e is not None:
             self.e = e
@@ -67,24 +84,6 @@ class TrainingService:
         else:
             self.total_steps = 0
 
-        # Configurations
-        self.scaffold_name = scaffold_name
-        self.total_configurations = total_configurations
-        self.episode_transitions = episode_transitions
-        self.conditional_transitions = conditional_transitions
-        self.params, self.env = self.load_configuration_files()
-        self.apparatus_mode = fish_mode
-        self.configuration_index = 1
-        self.pre_train_steps = self.total_steps + self.params["pre_train_steps"]
-        self.switched_configuration = False
-
-        # Basic Parameters
-        self.load_model = model_exists
-        self.monitor_gpu = monitor_gpu
-        self.using_gpu = using_gpu
-        self.realistic_bouts = realistic_bouts
-        self.memory_fraction = memory_fraction
-
         # Network and Training Parameters
         self.saver = None
         self.writer = None
@@ -94,6 +93,7 @@ class TrainingService:
         self.target_ops = None
         self.sess = None
         self.step_drop = (self.params['startE'] - self.params['endE']) / self.params['anneling_steps']
+        self.pre_train_steps = self.total_steps + self.params["pre_train_steps"]
 
         # Simulation
         self.simulation = NaturalisticEnvironment(self.env, realistic_bouts)
