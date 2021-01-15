@@ -37,7 +37,11 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         self.grain_fish_col = self.space.add_collision_handler(3, 4)
 
-        # TODO: May need collision handler for predator and vegatation.
+        # to prevent predators from knocking out prey  or static grains
+        self.grain_pred_col = self.space.add_collision_handler(4, 5)
+        self.grain_pred_col.begin = self.no_collision
+        self.prey_pred_col = self.space.add_collision_handler(2, 5)
+        self.prey_pred_col.begin = self.no_collision
 
     def reset(self):
         super().reset()

@@ -173,8 +173,10 @@ class BaseEnvironment:
 
         # self.space.add(static)
 
+    def no_collision(self, arbiter, space, data):
+        return False
+
     def touch_edge(self, arbiter, space, data):
-        # TODO: Recent changes made below.
         new_position_x = self.fish.body.position[0]
         new_position_y = self.fish.body.position[1]
         if new_position_x < 30:  # Wall d

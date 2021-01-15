@@ -187,9 +187,8 @@ class TrainingService:
 
         if next_point in episode_transition_points:
             if self.episode_number > self.episode_transitions[next_point]:
-                print("Changing configuration")
                 self.configuration_index = int(next_point)
-                print(f"Configuration: {self.configuration_index}")
+                print(f"{self.trial_id}: Changing configuration to configuration {self.configuration_index}")
                 self.params, self.env = self.load_configuration_files()
                 self.simulation = NaturalisticEnvironment(self.env, self.realistic_bouts)
                 return
