@@ -46,6 +46,7 @@ env = {'width': 1000,  # arena size
 
        'vegetation_size': 100.,
        'vegetation_num': 0,
+       'vegetation_effect_distance': 150,
 
        'predator_mass': 10.,
        'predator_inertia': 40.,
