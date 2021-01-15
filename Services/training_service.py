@@ -76,6 +76,7 @@ class TrainingService:
         self.apparatus_mode = fish_mode
         self.configuration_index = 1
         self.pre_train_steps = self.total_steps + self.params["pre_train_steps"]
+        self.switched_configuration = False
 
         # Basic Parameters
         self.load_model = model_exists
@@ -98,6 +99,7 @@ class TrainingService:
         self.simulation = NaturalisticEnvironment(self.env, realistic_bouts)
         self.realistic_bouts = realistic_bouts
         self.save_frames = False
+        self.switched_configuration = True
 
         # Data
         self.training_buffer = ExperienceBuffer(buffer_size=self.params["exp_buffer_size"])
@@ -170,6 +172,13 @@ class TrainingService:
                 self.check_update_configuration()
             self.episode_loop()
 
+    def switch_configuration(self, next_point):
+        self.configuration_index = int(next_point)
+        self.switched_configuration = True
+        print(f"{self.trial_id}: Changing configuration to configuration {self.configuration_index}")
+        self.params, self.env = self.load_configuration_files()
+        self.simulation = NaturalisticEnvironment(self.env, self.realistic_bouts)
+
     def check_update_configuration(self):
         # TODO: Will want to tidy this up later.
         next_point = str(self.configuration_index + 1)
@@ -177,10 +186,7 @@ class TrainingService:
 
         if next_point in episode_transition_points:
             if self.episode_number > self.episode_transitions[next_point]:
-                self.configuration_index = int(next_point)
-                print(f"{self.trial_id}: Changing configuration to configuration {self.configuration_index}")
-                self.params, self.env = self.load_configuration_files()
-                self.simulation = NaturalisticEnvironment(self.env, self.realistic_bouts)
+                self.switch_configuration(next_point)
                 return
 
         if len(self.last_episodes_prey_caught) >= 20:
@@ -189,19 +195,14 @@ class TrainingService:
 
             if next_point in predators_conditional_transition_points:
                 if np.mean(self.last_episodes_predators_avoided) > self.conditional_transitions["Predators Avoided"][next_point]:
-                    self.configuration_index = int(next_point)
-                    print(f"{self.trial_id}: Changing configuration to configuration {self.configuration_index}")
-                    self.params, self.env = self.load_configuration_files()
-                    self.simulation = NaturalisticEnvironment(self.env, self.realistic_bouts)
+                    self.switch_configuration(next_point)
                     return
 
             if next_point in prey_conditional_transition_points:
                 if np.mean(self.last_episodes_prey_caught) > self.conditional_transitions["Prey Caught"][next_point]:
-                    self.configuration_index = int(next_point)
-                    print(f"{self.trial_id}: Changing configuration to configuration {self.configuration_index}")
-                    self.params, self.env = self.load_configuration_files()
-                    self.simulation = NaturalisticEnvironment(self.env, self.realistic_bouts)
+                    self.switch_configuration(next_point)
                     return
+        self.switched_configuration = False
 
     def create_networks(self):
         """
@@ -312,6 +313,12 @@ class TrainingService:
         sand_grains_bumped_summary = tf.Summary(
             value=[tf.Summary.Value(tag="sand grains bumped", simple_value=sand_grains_bumped)])
         self.writer.add_summary(sand_grains_bumped_summary, self.episode_number)
+
+        if self.switched_configuration:
+            configuration_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="Episode change", simple_value=self.configuration_index)]
+            )
+            self.writer.add_summary(configuration_summary, self.episode_number)
 
         for act in range(self.params['num_actions']):
             action_freq = np.sum(np.array(all_actions) == act) / len(all_actions)
