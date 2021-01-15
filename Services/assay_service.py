@@ -34,43 +34,41 @@ class AssayService:
     def __init__(self, model_name, trial_number, assay_config_name, learning_params, environment_params, total_steps,
                  episode_number, assays, realistic_bouts, memory_fraction, using_gpu):
 
+        # Names and Directories
         self.model_id = f"{model_name}-{trial_number}"
         self.model_location = f"./Training-Output/{self.model_id}"
         self.data_save_location = f"./Assay-Output/{self.model_id}"
 
-        self.using_gpu = using_gpu
-
-        self.realistic_bouts = realistic_bouts
-
+        # Configurations
         self.assay_configuration_id = assay_config_name
-
         self.learning_params = learning_params
         self.environment_params = environment_params
-
-        self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
-        self.metadata = {
-            "Total Episodes": episode_number,
-            "Total Steps": total_steps,
-        }
-        # TODO: Consider creating a base service.
-
-        # Create the assays
         self.assays = assays
+
+        # Basic Parameters
+        self.using_gpu = using_gpu
+        self.realistic_bouts = realistic_bouts
         self.memory_fraction = memory_fraction
 
-        self.frame_buffer = []
-
+        # Network Parameters
         self.saver = None
         self.network = None
         self.init = None
         self.sess = None
 
+        # Simulation
+        self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
+        self.step_number = 0
+
+        # Data
+        self.metadata = {
+            "Total Episodes": episode_number,
+            "Total Steps": total_steps,
+        }
+        self.frame_buffer = []
         self.assay_output_data_format = None
         self.assay_output_data = []
-
         self.output_data = {}
-
-        self.step_number = 0
 
     def create_network(self):
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim'], state_is_tuple=True)

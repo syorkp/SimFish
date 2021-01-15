@@ -38,8 +38,8 @@ def training_target(trial, epsilon, total_steps, episode_number, memory_fraction
 class TrainingService:
 
     def __init__(self, model_name, trial_number, model_exists, fish_mode, scaffold_name, episode_transitions,
-                 total_configurations, conditional_transitions,
-                 e, total_steps, episode_number, monitor_gpu, realistic_bouts, memory_fraction, using_gpu):
+                 total_configurations, conditional_transitions, e, total_steps, episode_number, monitor_gpu,
+                 realistic_bouts, memory_fraction, using_gpu):
         """
         An instance of TraningService handles the training of the DQN within a specified environment, according to
         specified parameters.
@@ -48,36 +48,11 @@ class TrainingService:
         distinguished in their output files.
         """
 
+        # Names and directories
         self.trial_id = f"{model_name}-{trial_number}"
         self.output_location = f"./Training-Output/{model_name}-{trial_number}"
 
-        self.load_model = model_exists
-        self.monitor_gpu = monitor_gpu
-        self.scaffold_name = scaffold_name
-        self.using_gpu = using_gpu
-
-        self.realistic_bouts = realistic_bouts
-        self.total_configurations = total_configurations
-        self.episode_transitions = episode_transitions
-        self.conditional_transitions = conditional_transitions
-        self.memory_fraction = memory_fraction
-
-        self.configuration_index = 1
-
-        self.params, self.env = self.load_configuration_files()
-
-        # Create the training environment.
-        self.apparatus_mode = fish_mode
-        self.simulation = NaturalisticEnvironment(self.env, realistic_bouts)
-        self.realistic_bouts = realistic_bouts
-
-        # Experience buffer
-        self.training_buffer = ExperienceBuffer(buffer_size=self.params["exp_buffer_size"])
-
-        self.saver = None
-        self.frame_buffer = []
-
-        # Mathematical variables
+        # Maintain variables
         if e is not None:
             self.e = e
         else:
@@ -87,33 +62,48 @@ class TrainingService:
         else:
             self.episode_number = 0
 
-        # While would fix TB output, Not possible to carry steps over without also carrying the training buffer over.
         if total_steps is not None:
             self.total_steps = total_steps
         else:
             self.total_steps = 0
 
+        # Configurations
+        self.scaffold_name = scaffold_name
+        self.total_configurations = total_configurations
+        self.episode_transitions = episode_transitions
+        self.conditional_transitions = conditional_transitions
+        self.params, self.env = self.load_configuration_files()
+        self.apparatus_mode = fish_mode
+        self.configuration_index = 1
         self.pre_train_steps = self.total_steps + self.params["pre_train_steps"]
 
-        self.step_drop = (self.params['startE'] - self.params['endE']) / self.params['anneling_steps']
+        # Basic Parameters
+        self.load_model = model_exists
+        self.monitor_gpu = monitor_gpu
+        self.using_gpu = using_gpu
+        self.realistic_bouts = realistic_bouts
+        self.memory_fraction = memory_fraction
 
-        # Whether to save the frames of an episode
-        self.save_frames = False
-
-        # To save the graph (placeholder)
+        # Network and Training Parameters
+        self.saver = None
         self.writer = None
-
-        # Global tensorflow placeholders
         self.main_QN, self.target_QN = None, None
         self.init = None
         self.trainables = None
         self.target_ops = None
-        self.sess = None  # Placeholder for the tf-session.
+        self.sess = None
+        self.step_drop = (self.params['startE'] - self.params['endE']) / self.params['anneling_steps']
 
-        # Used for performance monitoring.
+        # Simulation
+        self.simulation = NaturalisticEnvironment(self.env, realistic_bouts)
+        self.realistic_bouts = realistic_bouts
+        self.save_frames = False
+
+        # Data
+        self.training_buffer = ExperienceBuffer(buffer_size=self.params["exp_buffer_size"])
+        self.frame_buffer = []
         self.training_times = []
         self.reward_list = []
-
         self.last_episodes_prey_caught = []
         self.last_episodes_predators_avoided = []
 
