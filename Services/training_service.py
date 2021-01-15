@@ -41,7 +41,7 @@ class TrainingService:
                  total_configurations, conditional_transitions, e, total_steps, episode_number, monitor_gpu,
                  realistic_bouts, memory_fraction, using_gpu):
         """
-        An instance of TraningService handles the training of the DQN within a specified environment, according to
+        An instance of TrainingService handles the training of the DQN within a specified environment, according to
         specified parameters.
         :param model_name: The name of the model, usually to match the naming of the env configuration files.
         :param trial_number: The index of the trial, so that agents trained under the same configuration may be
@@ -183,25 +183,22 @@ class TrainingService:
                 self.simulation = NaturalisticEnvironment(self.env, self.realistic_bouts)
                 return
 
-        if len(self.last_episodes_prey_caught) > 20:
+        if len(self.last_episodes_prey_caught) >= 20:
             prey_conditional_transition_points = self.conditional_transitions["Prey Caught"].keys()
             predators_conditional_transition_points = self.conditional_transitions["Predators Avoided"].keys()
-            print(np.mean(self.last_episodes_prey_caught))
+
             if next_point in predators_conditional_transition_points:
                 if np.mean(self.last_episodes_predators_avoided) > self.conditional_transitions["Predators Avoided"][next_point]:
-                    print("Changing configuration")
                     self.configuration_index = int(next_point)
-                    print(f"Configuration: {self.configuration_index}")
-
+                    print(f"{self.trial_id}: Changing configuration to configuration {self.configuration_index}")
                     self.params, self.env = self.load_configuration_files()
                     self.simulation = NaturalisticEnvironment(self.env, self.realistic_bouts)
                     return
+
             if next_point in prey_conditional_transition_points:
                 if np.mean(self.last_episodes_prey_caught) > self.conditional_transitions["Prey Caught"][next_point]:
-                    print("Changing configuration")
                     self.configuration_index = int(next_point)
-                    print(f"Configuration: {self.configuration_index}")
-
+                    print(f"{self.trial_id}: Changing configuration to configuration {self.configuration_index}")
                     self.params, self.env = self.load_configuration_files()
                     self.simulation = NaturalisticEnvironment(self.env, self.realistic_bouts)
                     return

@@ -33,6 +33,9 @@ class AssayService:
 
     def __init__(self, model_name, trial_number, assay_config_name, learning_params, environment_params, total_steps,
                  episode_number, assays, realistic_bouts, memory_fraction, using_gpu):
+        """
+        Runs a set of assays provided by the run configuraiton.
+        """
 
         # Names and Directories
         self.model_id = f"{model_name}-{trial_number}"
