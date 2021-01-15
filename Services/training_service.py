@@ -264,13 +264,14 @@ class TrainingService:
                           episode_buffer=episode_buffer,
                           prey_caught=self.simulation.prey_caught,
                           predators_avoided=self.simulation.predators_avoided,
+                          sand_grains_bumped=self.simulation.sand_grains_bumped
                           )
         # Print saved metrics
         # print(f"Total training time: {sum(self.training_times)}")
         # print(f"Total reward: {sum(self.reward_list)}")
 
     def save_episode(self, episode_start_t, all_actions, total_episode_reward, episode_buffer, prey_caught,
-                     predators_avoided):
+                     predators_avoided, sand_grains_bumped):
         """
         Saves the episode the the experience buffer. Also creates a gif if at interval.
         :param episode_start_t: The time at the start of the episode, used to calculate the time the episode took.
@@ -307,6 +308,10 @@ class TrainingService:
         predators_avoided_summary = tf.Summary(
             value=[tf.Summary.Value(tag="predators avoided", simple_value=predators_avoided)])
         self.writer.add_summary(predators_avoided_summary, self.episode_number)
+
+        sand_grains_bumped_summary = tf.Summary(
+            value=[tf.Summary.Value(tag="sand grains bumped", simple_value=sand_grains_bumped)])
+        self.writer.add_summary(sand_grains_bumped_summary, self.episode_number)
 
         for act in range(self.params['num_actions']):
             action_freq = np.sum(np.array(all_actions) == act) / len(all_actions)

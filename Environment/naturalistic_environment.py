@@ -36,6 +36,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.edge_pred_col.begin = self.remove_realistic_predator
 
         self.grain_fish_col = self.space.add_collision_handler(3, 4)
+        self.grain_fish_col.begin = self.touch_grain
 
         # to prevent predators from knocking out prey  or static grains
         self.grain_pred_col = self.space.add_collision_handler(4, 5)

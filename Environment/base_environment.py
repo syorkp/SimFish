@@ -53,6 +53,7 @@ class BaseEnvironment:
 
         self.predators_avoided = 0
         self.prey_caught = 0
+        self.sand_grains_bumped = 0
 
     def reset(self):
         self.num_steps = 0
@@ -173,7 +174,8 @@ class BaseEnvironment:
 
         # self.space.add(static)
 
-    def no_collision(self, arbiter, space, data):
+    @staticmethod
+    def no_collision(arbiter, space, data):
         return False
 
     def touch_edge(self, arbiter, space, data):
@@ -431,6 +433,9 @@ class BaseEnvironment:
         self.sand_grain_shapes[-1].collision_type = 4
 
         self.space.add(self.sand_grain_bodies[-1], self.sand_grain_shapes[-1])
+
+    def touch_grain(self,  arbiter, space, data):
+        self.sand_grains_bumped += 1
 
     def get_last_action_magnitude(self):
         if self.last_action == 0:

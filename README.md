@@ -16,7 +16,7 @@ Uses the following packages:
 * numpy
 * h5py
 * matplotlin
-* pymunk
+* pymunk - must be version 5.7
 * skimage
 * pandas
 * moviepy
