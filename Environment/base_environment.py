@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from skimage.transform import resize, rescale
 import pymunk
+import multiprocessing as mp
 
 from Tools.drawing_board import DrawingBoard
 
@@ -135,10 +136,12 @@ class BaseEnvironment:
             try:
                 self.board.db[rrs, ccs] = self.prey_shapes[0].color
             except IndexError:
-                print("Index error occurred")
+                print(f"Index error occurred for {mp.current_process()}")
                 print(f"Predator bodies: {self.predator_bodies}")
                 print(f"Step number: {self.num_steps}")
                 print(f"Last action: {self.last_action}")
+                print(f"Prey positions: {rrs, ccs}")
+                print(f"Fish position: {self.fish.body.position}")
 
         if len(self.sand_grain_bodies) > 0:
             px = np.round(np.array([pr.position[0] for pr in self.sand_grain_bodies])).astype(int)
@@ -147,10 +150,12 @@ class BaseEnvironment:
             try:
                 self.board.db[rrs, ccs] = self.sand_grain_shapes[0].color
             except IndexError:
-                print("Index error occurred")
+                print(f"Index error occurred for {mp.current_process()}")
                 print(f"Predator bodies: {self.predator_bodies}")
                 print(f"Step number: {self.num_steps}")
                 print(f"Last action: {self.last_action}")
+                print(f"Static positions: {rrs, ccs}")
+                print(f"Fish position: {self.fish.body.position}")
 
         for i, pr in enumerate(self.predator_bodies):
             self.board.circle(pr.position, self.env_variables['predator_size'], self.predator_shapes[i].color)
