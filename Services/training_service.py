@@ -106,8 +106,10 @@ class TrainingService:
         self.frame_buffer = []
         self.training_times = []
         self.reward_list = []
+
         self.last_episodes_prey_caught = []
         self.last_episodes_predators_avoided = []
+        self.last_episodes_sand_grains_bumped = []
 
     def load_configuration_files(self):
         """
@@ -294,9 +296,11 @@ class TrainingService:
         # Keep recent predators caught.
         self.last_episodes_prey_caught.append(prey_caught)
         self.last_episodes_predators_avoided.append(predators_avoided)
+        self.last_episodes_sand_grains_bumped.append(sand_grains_bumped)
         if len(self.last_episodes_predators_avoided) > 20:
             self.last_episodes_prey_caught.pop(0)
             self.last_episodes_predators_avoided.pop(0)
+            self.last_episodes_sand_grains_bumped.pop(0)
 
         # Add Summary to Logs
         episode_summary = tf.Summary(value=[tf.Summary.Value(tag="episode reward", simple_value=total_episode_reward)])

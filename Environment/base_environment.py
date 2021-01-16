@@ -60,6 +60,7 @@ class BaseEnvironment:
         self.fish.hungry = 0
         self.prey_caught = 0
         self.predators_avoided = 0
+        self.sand_grains_bumped = 0
 
         for i, shp in enumerate(self.prey_shapes):
             self.space.remove(shp, shp.body)
@@ -131,13 +132,23 @@ class BaseEnvironment:
             px = np.round(np.array([pr.position[0] for pr in self.prey_bodies])).astype(int)
             py = np.round(np.array([pr.position[1] for pr in self.prey_bodies])).astype(int)
             rrs, ccs = self.board.multi_circles(px, py, self.env_variables['prey_size'])
-            self.board.db[rrs, ccs] = self.prey_shapes[0].color
+            try:
+                self.board.db[rrs, ccs] = self.prey_shapes[0].color
+            except IndexError:
+                print("Index error occurred")
+                print(f"Predator bodies: {self.predator_bodies}")
+                self.draw_screen = True
 
         if len(self.sand_grain_bodies) > 0:
             px = np.round(np.array([pr.position[0] for pr in self.sand_grain_bodies])).astype(int)
             py = np.round(np.array([pr.position[1] for pr in self.sand_grain_bodies])).astype(int)
             rrs, ccs = self.board.multi_circles(px, py, self.env_variables['sand_grain_size'])
-            self.board.db[rrs, ccs] = self.sand_grain_shapes[0].color
+            try:
+                self.board.db[rrs, ccs] = self.sand_grain_shapes[0].color
+            except IndexError:
+                print("Index error occurred")
+                print(f"Predator bodies: {self.predator_bodies}")
+                self.draw_screen = True
 
         for i, pr in enumerate(self.predator_bodies):
             self.board.circle(pr.position, self.env_variables['predator_size'], self.predator_shapes[i].color)
@@ -214,6 +225,7 @@ class BaseEnvironment:
                                       self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'])))
         self.prey_shapes[-1].color = (0, 0, 1)
         self.prey_shapes[-1].collision_type = 2
+        self.prey_shapes[-1].filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_masks ^ 2)  # prevents collisions with predator
 
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
 
@@ -374,6 +386,7 @@ class BaseEnvironment:
 
         self.predator_shape.color = (0, 0, 1)
         self.predator_shape.collision_type = 5
+        self.predator_shape.filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_masks ^ 2)  # Category 2 objects cant collide with predator
 
         self.space.add(self.predator_body, self.predator_shape)
 
@@ -431,6 +444,7 @@ class BaseEnvironment:
                                       self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'])))
         self.sand_grain_shapes[-1].color = (0, 0, 1)
         self.sand_grain_shapes[-1].collision_type = 4
+        self.sand_grain_shapes[-1].filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_masks ^ 2)  # prevents collisions with predator
 
         self.space.add(self.sand_grain_bodies[-1], self.sand_grain_shapes[-1])
 
