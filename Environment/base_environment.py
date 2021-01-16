@@ -137,7 +137,8 @@ class BaseEnvironment:
             except IndexError:
                 print("Index error occurred")
                 print(f"Predator bodies: {self.predator_bodies}")
-                self.draw_screen = True
+                print(f"Step number: {self.num_steps}")
+                print(f"Last action: {self.last_action}")
 
         if len(self.sand_grain_bodies) > 0:
             px = np.round(np.array([pr.position[0] for pr in self.sand_grain_bodies])).astype(int)
@@ -148,7 +149,8 @@ class BaseEnvironment:
             except IndexError:
                 print("Index error occurred")
                 print(f"Predator bodies: {self.predator_bodies}")
-                self.draw_screen = True
+                print(f"Step number: {self.num_steps}")
+                print(f"Last action: {self.last_action}")
 
         for i, pr in enumerate(self.predator_bodies):
             self.board.circle(pr.position, self.env_variables['predator_size'], self.predator_shapes[i].color)
