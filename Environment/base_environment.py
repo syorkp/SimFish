@@ -225,7 +225,7 @@ class BaseEnvironment:
                                       self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'])))
         self.prey_shapes[-1].color = (0, 0, 1)
         self.prey_shapes[-1].collision_type = 2
-        self.prey_shapes[-1].filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_masks ^ 2)  # prevents collisions with predator
+        self.prey_shapes[-1].filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # prevents collisions with predator
 
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
 
@@ -386,7 +386,7 @@ class BaseEnvironment:
 
         self.predator_shape.color = (0, 0, 1)
         self.predator_shape.collision_type = 5
-        self.predator_shape.filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_masks ^ 2)  # Category 2 objects cant collide with predator
+        self.predator_shape.filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # Category 2 objects cant collide with predator
 
         self.space.add(self.predator_body, self.predator_shape)
 
@@ -444,7 +444,7 @@ class BaseEnvironment:
                                       self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'])))
         self.sand_grain_shapes[-1].color = (0, 0, 1)
         self.sand_grain_shapes[-1].collision_type = 4
-        self.sand_grain_shapes[-1].filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_masks ^ 2)  # prevents collisions with predator
+        self.sand_grain_shapes[-1].filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # prevents collisions with predator
 
         self.space.add(self.sand_grain_bodies[-1], self.sand_grain_shapes[-1])
 
