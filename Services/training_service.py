@@ -194,6 +194,7 @@ class TrainingService:
         if len(self.last_episodes_prey_caught) >= 20:
             prey_conditional_transition_points = self.conditional_transitions["Prey Caught"].keys()
             predators_conditional_transition_points = self.conditional_transitions["Predators Avoided"].keys()
+            grains_bumped_conditional_transfer_points = self.conditional_transitions["Sand Grains Bumped"].keys()
 
             if next_point in predators_conditional_transition_points:
                 if np.mean(self.last_episodes_predators_avoided) > self.conditional_transitions["Predators Avoided"][next_point]:
@@ -202,6 +203,11 @@ class TrainingService:
 
             if next_point in prey_conditional_transition_points:
                 if np.mean(self.last_episodes_prey_caught) > self.conditional_transitions["Prey Caught"][next_point]:
+                    self.switch_configuration(next_point)
+                    return
+
+            if next_point in grains_bumped_conditional_transfer_points:
+                if np.mean(self.last_episodes_sand_grains_bumped) > self.conditional_transitions["Sand Grains Bumped"][next_point]:
                     self.switch_configuration(next_point)
                     return
         self.switched_configuration = False

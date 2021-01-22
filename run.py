@@ -208,6 +208,8 @@ training_configuration = [
             "Prey Caught": {
             },
             "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
             }
         },
         "Trial Number": 1,
@@ -232,6 +234,8 @@ training_configuration = [
             "Prey Caught": {
             },
             "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
             }
         },
         "Trial Number": 1,
@@ -256,6 +260,8 @@ training_configuration = [
             "Prey Caught": {
             },
             "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
             }
         },
         "Trial Number": 2,
@@ -282,6 +288,8 @@ training_configuration = [
                 "6": 31,
             },
             "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
             }
         },
         "Trial Number": 1,
@@ -296,70 +304,25 @@ training_configuration = [
 
 new_training_configuration = [
     {
-        "Model Name": "conditional_prey_and_predators",
-        "Environment Name": "prey_and_predators",
-        "Total Configurations": 6,
+        "Model Name": "realistic_all_features",
+        "Environment Name": "all_features",
+        "Total Configurations": 9,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
             "Prey Caught": {
-                "2": 30,
-                "3": 32,
-                "4": 35,
-                "5": 40,
+                "5": 22,
+                "6": 27,
+                "7": 32,
             },
             "Predators Avoided": {
-                "6": 5,
-            }
-        },
-        "Trial Number": 1,
-        "Run Mode": "Training",
-        "Fish Setup": "Free",
-        "Realistic Bouts": False,
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-    },
-    {
-        "Model Name": "conditional_prey_and_static",
-        "Environment Name": "prey_and_static",
-        "Total Configurations": 6,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 30,
-                "3": 32,
-                "4": 35,
-                "5": 39,
-                "6": 43,
+                "2": 4,
+                "3": 6,
+                "4": 8,
             },
-            "Predators Avoided": {
-            }
-        },
-        "Trial Number": 1,
-        "Run Mode": "Training",
-        "Fish Setup": "Free",
-        "Realistic Bouts": False,
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-    },
-    {
-        "Model Name": "realistic_action_space",
-        "Environment Name": "prey_and_static",
-        "Total Configurations": 6,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 30,
-                "3": 32,
-                "4": 35,
-                "5": 39,
-                "6": 43,
-            },
-            "Predators Avoided": {
+            "Sand Grains Bumped": {
+                "8": 20,
+                "9": 10,
             }
         },
         "Trial Number": 1,
@@ -370,24 +333,26 @@ new_training_configuration = [
         "Using GPU": True,
         "monitor gpu": False,
     },
-]
-
-fixing_conf = [
-{
-        "Model Name": "realistic_action_space",
-        "Environment Name": "prey_and_static",
-        "Total Configurations": 6,
+    {
+        "Model Name": "realistic_all_features",
+        "Environment Name": "all_features",
+        "Total Configurations": 9,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
             "Prey Caught": {
-                "2": 30,
-                "3": 32,
-                "4": 35,
-                "5": 39,
-                "6": 43,
+                "5": 20,
+                "6": 24,
+                "7": 28,
             },
             "Predators Avoided": {
+                "2": 2,
+                "3": 4,
+                "4": 6,
+            },
+            "Sand Grains Bumped": {
+                "8": 30,
+                "9": 20,
             }
         },
         "Trial Number": 2,
@@ -395,62 +360,42 @@ fixing_conf = [
         "Fish Setup": "Free",
         "Realistic Bouts": True,
         "Priority": 2,
-        "Using GPU": False,
-        "monitor gpu": False,
-    },
-{
-        "Model Name": "realistic_action_space",
-        "Environment Name": "prey_and_static",
-        "Total Configurations": 6,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 30,
-                "3": 32,
-                "4": 35,
-                "5": 39,
-                "6": 43,
-            },
-            "Predators Avoided": {
-            }
-        },
-        "Trial Number": 3,
-        "Run Mode": "Training",
-        "Fish Setup": "Free",
-        "Realistic Bouts": True,
-        "Priority": 2,
-        "Using GPU": False,
+        "Using GPU": True,
         "monitor gpu": False,
     },
     {
-        "Model Name": "realistic_action_space",
-        "Environment Name": "prey_and_static",
-        "Total Configurations": 6,
+        "Model Name": "basic_all_features",
+        "Environment Name": "all_features",
+        "Total Configurations": 9,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
             "Prey Caught": {
-                "2": 30,
-                "3": 32,
-                "4": 35,
-                "5": 39,
-                "6": 43,
+                "5": 22,
+                "6": 27,
+                "7": 32,
             },
             "Predators Avoided": {
+                "2": 4,
+                "3": 6,
+                "4": 8,
+            },
+            "Sand Grains Bumped": {
+                "8": 20,
+                "9": 10,
             }
         },
-        "Trial Number": 4,
+        "Trial Number": 1,
         "Run Mode": "Training",
         "Fish Setup": "Free",
-        "Realistic Bouts": True,
+        "Realistic Bouts": False,
         "Priority": 2,
-        "Using GPU": False,
+        "Using GPU": True,
         "monitor gpu": False,
     },
 ]
 
 # TODO: Change fish steup to tethered boolean.
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(asaph_data_configuration)
+manager = TrialManager(new_training_configuration)
 manager.run_priority_loop()

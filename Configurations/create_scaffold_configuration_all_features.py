@@ -10,6 +10,7 @@ import os
 
 # all distances in pixels
 
+
 env = {'width': 1000,  # arena size
        'height': 700,
        'drag': 0.7,  # water drag
@@ -30,7 +31,7 @@ env = {'width': 1000,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 50,
+       'prey_num': 20,
        'prey_impulse': 0.05,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
@@ -52,11 +53,11 @@ env = {'width': 1000,  # arena size
        'predator_mass': 10.,
        'predator_inertia': 40.,
        'predator_size': 100.,
-       'predator_impulse': 1,
+       'predator_impulse': 0.5,
        'immunity_steps': 65,
        # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 200,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.05,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -70,12 +71,12 @@ env = {'width': 1000,  # arena size
        'routine_turn_cost': 3,
        'routine_turn_impulse': 5,
        'routine_turn_dir_change': 0.6,
-       'capture_swim_cost': 20,
+       'capture_swim_cost': 5,
        'capture_swim_impulse': 5,
-       'j_turn_cost': 2,
+       'j_turn_cost': 2.5,
        'j_turn_impulse': 0.1,
        'j_turn_dir_change': 0.07,
-       'rest_cost': 1,
+       'rest_cost': 2,
 
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
@@ -101,6 +102,7 @@ params = {'num_actions': 7,  # size of action space
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
           'learning_rate': 0.0001}
 
+
 directory_name = "all_features"
 
 # Ensure Output File Exists
@@ -117,44 +119,60 @@ def save_files(n):
         json.dump(params, f)
 
 
+# A. Learn Predator avoidance #
+
 # 1 Initial config
 number = 1
 save_files(number)
 number += 1
 
-# 2. Increase prey speed
-env["prey_impulse"] = 0.075
-save_files(number)
-number += 1
-
-# 3. Increase prey speed
-env["prey_impulse"] = 0.1
-save_files(number)
-number += 1
-
-# 4. Add prey jump
-env["prey_jump"] = True
-save_files(number)
-number += 1
-
-# 5. Add slow predators
-env["probability_of_predator"] = 0.005
-env["predator_impulse"] = 0.2
-save_files(number)
-number += 1
-
-# 6. Increase predator speed
-env["predator_impulse"] = 0.5
-save_files(number)
-number += 1
-
-# 7. Increase predator speed
+# 2. Increase predator speed
 env["predator_impulse"] = 1
 save_files(number)
 number += 1
 
-# 8. Add sand grains
+# 3. Increase predator speed
+env["predator_impulse"] = 1.5
+save_files(number)
+number += 1
+
+# B. Learn Prey Capture #
+
+# 4. Increase prey number and reduce predator probability
+env["probability_of_predator"] = 0.01
+env["prey_number"] = 40
+save_files(number)
+number += 1
+
+# 5. Increase prey speed
+env["prey_impulse"] = 0.1
+save_files(number)
+number += 1
+
+# 6. Add prey jump
+env["prey_jump"] = True
+save_files(number)
+number += 1
+
+# B. Recognise Sand Grains #
+
+# 7. Add sand grains, reduce prey
 env["sand_grain_num"] = 10
+env["prey_number"] = 30
+save_files(number)
+number += 1
+
+# 8. Add sand grains, reduce prey
+env["sand_grain_num"] = 20
+env["prey_number"] = 20
+save_files(number)
+number += 1
+
+# D. Learn to use Vegetation #
+
+# 9. Increase predation chance, add vegetation
+env["sand_grain_num"] = 20
+env["prey_number"] = 20
 save_files(number)
 number += 1
 
