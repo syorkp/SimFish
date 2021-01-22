@@ -267,14 +267,15 @@ class TrainingService:
                           episode_buffer=episode_buffer,
                           prey_caught=self.simulation.prey_caught,
                           predators_avoided=self.simulation.predators_avoided,
-                          sand_grains_bumped=self.simulation.sand_grains_bumped
+                          sand_grains_bumped=self.simulation.sand_grains_bumped,
+                          steps_near_vegetation=self.simulation.steps_near_vegetation
                           )
         # Print saved metrics
         # print(f"Total training time: {sum(self.training_times)}")
         # print(f"Total reward: {sum(self.reward_list)}")
 
     def save_episode(self, episode_start_t, all_actions, total_episode_reward, episode_buffer, prey_caught,
-                     predators_avoided, sand_grains_bumped):
+                     predators_avoided, sand_grains_bumped, steps_near_vegetation):
         """
         Saves the episode the the experience buffer. Also creates a gif if at interval.
         :param episode_start_t: The time at the start of the episode, used to calculate the time the episode took.
@@ -317,6 +318,10 @@ class TrainingService:
         sand_grains_bumped_summary = tf.Summary(
             value=[tf.Summary.Value(tag="sand grains bumped", simple_value=sand_grains_bumped)])
         self.writer.add_summary(sand_grains_bumped_summary, self.episode_number)
+
+        steps_near_vegetation_summary = tf.Summary(
+            value=[tf.Summary.Value(tag="steps near vegetation", simple_value=steps_near_vegetation)])
+        self.writer.add_summary(steps_near_vegetation_summary, self.episode_number)
 
         if self.switched_configuration:
             configuration_summary = tf.Summary(

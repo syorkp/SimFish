@@ -55,6 +55,7 @@ class BaseEnvironment:
         self.predators_avoided = 0
         self.prey_caught = 0
         self.sand_grains_bumped = 0
+        self.steps_near_vegetation = 0
 
     def reset(self):
         self.num_steps = 0
@@ -62,6 +63,7 @@ class BaseEnvironment:
         self.prey_caught = 0
         self.predators_avoided = 0
         self.sand_grains_bumped = 0
+        self.steps_near_vegetation = 0
 
         for i, shp in enumerate(self.prey_shapes):
             self.space.remove(shp, shp.body)
@@ -267,10 +269,11 @@ class BaseEnvironment:
         for ii in range(len(to_move)):
             if self.check_proximity(self.prey_bodies[to_move[ii]].position,
                                     self.env_variables['prey_sensing_distance']) and self.env_variables["prey_jump"]:
-                if self.prey_bodies[to_move[ii]].angle < (3 * np.pi) / 2:
-                    self.prey_bodies[to_move[ii]].angle += np.pi / 2
-                else:
-                    self.prey_bodies[to_move[ii]].angle -= np.pi / 2
+                self.prey_bodies[ii].angle = self.fish.body.angle + np.random.uniform(-1, 1)
+                # if self.prey_bodies[to_move[ii]].angle < (3 * np.pi) / 2:
+                #     self.prey_bodies[to_move[ii]].angle += np.pi / 2
+                # else:
+                #     self.prey_bodies[to_move[ii]].angle -= np.pi / 2
                 self.prey_bodies[to_move[ii]].apply_impulse_at_local_point(
                     (self.get_last_action_magnitude(), 0))
             else:
@@ -489,16 +492,17 @@ class BaseEnvironment:
         else:
             imp = 0
             print("Wrong action selected")  # TODO: Will need to update for new action space.
-        return imp / 100  # Scaled down both for mass effects and to make it possible for the prey to be caught. TODO: Consider making this a parameter.
+        return imp / 200  # Scaled down both for mass effects and to make it possible for the prey to be caught. TODO: Consider making this a parameter.
 
     def displace_sand_grains(self):
         for i, body in enumerate(self.sand_grain_bodies):
             if self.check_proximity(self.sand_grain_bodies[i].position,
                                     self.env_variables['sand_grain_displacement_distance']):
-                if self.sand_grain_bodies[i].angle < (3 * np.pi) / 2:
-                    self.sand_grain_bodies[i].angle += np.pi / 2
-                else:
-                    self.sand_grain_bodies[i].angle -= np.pi / 2
+                self.sand_grain_bodies[i].angle = self.fish.body.angle + np.random.uniform(-1, 1)
+                # if self.sand_grain_bodies[i].angle < (3 * np.pi) / 2:
+                #     self.sand_grain_bodies[i].angle += np.pi / 2
+                # else:
+                #     self.sand_grain_bodies[i].angle -= np.pi / 2
                 self.sand_grain_bodies[i].apply_impulse_at_local_point(
                     (self.get_last_action_magnitude(), 0))
 
@@ -530,5 +534,6 @@ class BaseEnvironment:
             is_in_area = fish_surrounding_area[0][0] <= veg[0] <= fish_surrounding_area[0][1] and \
                          fish_surrounding_area[1][0] <= veg[1] <= fish_surrounding_area[1][1]
             if is_in_area:
+                self.steps_near_vegetation += 1
                 return True
         return False

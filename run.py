@@ -452,5 +452,5 @@ fixing_conf = [
 
 # TODO: Change fish steup to tethered boolean.
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(fixing_conf)
+manager = TrialManager(asaph_data_configuration)
 manager.run_priority_loop()
