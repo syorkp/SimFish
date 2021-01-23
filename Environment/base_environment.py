@@ -139,13 +139,13 @@ class BaseEnvironment:
             try:  # Should be a fix for the index error.
                 self.board.db[rrs, ccs] = self.prey_shapes[0].color
             except IndexError:
-                if max(rrs) > self.env_variables['width']:
-                    lost_index = px.index(max(rrs))
-                elif max(ccs) > self.env_variables['height']:
-                    lost_index = px.index(max(ccs))
+                if max(px) > self.env_variables['width']:
+                    lost_index = px.index(max(px))
+                elif max(py) > self.env_variables['height']:
+                    lost_index = py.index(max(py))
                 else:
                     lost_index = None
-                    print(f"Fix needs to be tuned: RRS {max(rrs)}, CCS: {max(ccs)}")
+                    print(f"Fix needs to be tuned: PX: {max(px)}, PY: {max(py)}")
 
                 self.prey_bodies.pop(lost_index)
                 self.prey_shapes.pop(lost_index)
@@ -159,13 +159,13 @@ class BaseEnvironment:
             try:
                 self.board.db[rrs, ccs] = self.sand_grain_shapes[0].color
             except IndexError:
-                if max(rrs) > self.env_variables['width']:
-                    lost_index = px.index(max(rrs))
-                elif max(ccs) > self.env_variables['height']:
-                    lost_index = px.index(max(ccs))
+                if max(px) > self.env_variables['width']:
+                    lost_index = px.index(max(px))
+                elif max(py) > self.env_variables['height']:
+                    lost_index = py.index(max(py))
                 else:
                     lost_index = None
-                    print(f"Fix needs to be tuned: RRS {max(rrs)}, CCS: {max(ccs)}")
+                    print(f"Fix needs to be tuned: PX: {max(px)}, PY: {max(py)}")
 
                 self.sand_grain_shapes.pop(lost_index)
                 self.sand_grain_bodies.pop(lost_index)
