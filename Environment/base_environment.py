@@ -140,15 +140,15 @@ class BaseEnvironment:
                 self.board.db[rrs, ccs] = self.prey_shapes[0].color
             except IndexError:
                 if max(px) > self.env_variables['width']:
-                    lost_index = px.index(max(px))
+                    lost_index = np.argmax(px)
                 elif max(py) > self.env_variables['height']:
-                    lost_index = py.index(max(py))
+                    lost_index = np.argmax(py)
                 else:
                     lost_index = None
                     print(f"Fix needs to be tuned: PX: {max(px)}, PY: {max(py)}")
 
-                self.prey_bodies.pop(lost_index)
-                self.prey_shapes.pop(lost_index)
+                np.delete(self.prey_bodies, lost_index)
+                np.delete(self.prey_shapes, lost_index)
                 self.draw_shapes()
 
         if len(self.sand_grain_bodies) > 0:
@@ -160,15 +160,15 @@ class BaseEnvironment:
                 self.board.db[rrs, ccs] = self.sand_grain_shapes[0].color
             except IndexError:
                 if max(px) > self.env_variables['width']:
-                    lost_index = px.index(max(px))
+                    lost_index = np.argmax(px)
                 elif max(py) > self.env_variables['height']:
-                    lost_index = py.index(max(py))
+                    lost_index = np.argmax(py)
                 else:
                     lost_index = None
                     print(f"Fix needs to be tuned: PX: {max(px)}, PY: {max(py)}")
 
-                self.sand_grain_shapes.pop(lost_index)
-                self.sand_grain_bodies.pop(lost_index)
+                np.delete(self.sand_grain_bodies, lost_index)
+                np.delete(self.sand_grain_shapes, lost_index)
                 self.draw_shapes()
 
         for i, pr in enumerate(self.predator_bodies):
