@@ -139,9 +139,9 @@ class BaseEnvironment:
             try:  # Should be a fix for the index error.
                 self.board.db[rrs, ccs] = self.prey_shapes[0].color
             except IndexError:
-                if max(px) > self.env_variables['width']:
+                if max(rrs.flatten()) > self.env_variables['width']:
                     lost_index = np.argmax(px)
-                elif max(py) > self.env_variables['height']:
+                elif max(ccs.flatten()) > self.env_variables['height']:
                     lost_index = np.argmax(py)
                 else:
                     lost_index = None
@@ -166,7 +166,6 @@ class BaseEnvironment:
                 else:
                     lost_index = None
                     print(f"Fix needs to be tuned: PX: {max(px)}, PY: {max(py)}")
-
                 np.delete(self.sand_grain_bodies, lost_index)
                 np.delete(self.sand_grain_shapes, lost_index)
                 self.draw_shapes()
