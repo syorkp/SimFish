@@ -7,7 +7,7 @@ from Environment.Fish.fish import Fish
 from Environment.Fish.tethered_fish import TetheredFish
 
 
-class ProjectionEnvironment(BaseEnvironment):
+class ControlledStimulusEnvironment(BaseEnvironment):
     """
     This version is made with only the fixed projection configuration in mind.
     As a result, doesnt have walls, and fish appears directly in the centre of the environment.

@@ -66,7 +66,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
     def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None, impulse=None):
         # TODO: Tidy up so is more readable. Do the same with comparable methods in other environment classes.
-
+        self.prey_consumed_this_step = False
         self.last_action = action
         if frame_buffer is None:
             frame_buffer = []

@@ -144,7 +144,8 @@ asaph_data_configuration = [
                 "duration": 1000,
                 "fish setup": "Free",
                 "save frames": True,
-                "recordings": ["behavioural choice", "rnn state", "observation", "position"],
+                "recordings": ["behavioural choice", "rnn state", "observation", "position", "consumed",
+                               "predator"],
                 "interactions": []
             }
         ],
@@ -391,5 +392,5 @@ new_training_configuration = [
 
 # TODO: Change fish steup to tethered boolean.
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(new_training_configuration)
+manager = TrialManager(asaph_data_configuration)
 manager.run_priority_loop()

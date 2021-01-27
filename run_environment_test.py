@@ -6,7 +6,7 @@ import numpy as np
 
 from Environment.naturalistic_environment import NaturalisticEnvironment
 from Environment.virtual_virtual_reality import VirtualVirtualReality
-from Environment.controlled_stimulus_environment import ProjectionEnvironment
+from Environment.controlled_stimulus_environment import ControlledStimulusEnvironment
 
 """
 Due to PyCharm plots error, currently needs to be run in terminal"""

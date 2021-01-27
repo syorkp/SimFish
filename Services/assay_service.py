@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from Environment.naturalistic_environment import NaturalisticEnvironment
-from Environment.controlled_stimulus_environment import ProjectionEnvironment
+from Environment.controlled_stimulus_environment import ControlledStimulusEnvironment
 from Network.q_network import QNetwork
 from Tools.make_gif import make_gif
 
@@ -89,8 +89,8 @@ class AssayService:
         :return:
         """
         if assay["stimulus paradigm"] == "Projection":
-            self.simulation = ProjectionEnvironment(self.environment_params, assay["stimuli"], self.realistic_bouts,
-                                                    tethered=assay["fish setup"])
+            self.simulation = ControlledStimulusEnvironment(self.environment_params, assay["stimuli"], self.realistic_bouts,
+                                                            tethered=assay["fish setup"])
         elif assay["stimulus paradigm"] == "Naturalistic":
             self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
         else:
@@ -167,7 +167,9 @@ class AssayService:
 
         # Saving step data
         possible_data_to_save = self.package_output_data(chosen_a, sa, updated_rnn_state,
-                                                         self.simulation.fish.body.position)
+                                                         self.simulation.fish.body.position,
+                                                         self.simulation.prey_consumed_this_step,
+                                                         self.simulation.predator_body)  # TODO: Add in here
         for key in self.assay_output_data_format:
             self.output_data[key].append(possible_data_to_save[key])
         self.output_data["step"].append(self.step_number)
@@ -200,7 +202,16 @@ class AssayService:
         with open(f"{self.data_save_location}/{self.assay_configuration_id}.json", "w") as output_file:
             json.dump(self.metadata, output_file)
 
-    def package_output_data(self, action, advantage_stream, rnn_state, position):
+    def package_output_data(self, action, advantage_stream, rnn_state, position, prey_consumed, predator_body):
+        """
+
+        :param action:
+        :param advantage_stream:
+        :param rnn_state:
+        :param position:
+        :param prey_consumed: A boolean to say whether consumed this step.
+        :return:
+        """
         # Make output data JSON serializable
         action = int(action)
         advantage_stream = advantage_stream.tolist()
@@ -216,7 +227,16 @@ class AssayService:
             "advantage stream": advantage_stream,
             "position": position,
             "observation": observation,
-        }  # Will work for now but note is inefficient
+        }  # Will work for now but note is inefficient # TODO: Add in here
+
+        if prey_consumed:
+            data["consumed"] = 1
+        else:
+            data["consumed"] = 0
+        if predator_body is not None:
+            data["predator"] = 1
+        else:
+            data["predator"] = 0
 
         return data
 

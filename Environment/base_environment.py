@@ -52,6 +52,8 @@ class BaseEnvironment:
         self.vegetation_bodies = []
         self.vegetation_shapes = []
 
+        self.prey_consumed_this_step = False
+
         self.predators_avoided = 0
         self.prey_caught = 0
         self.sand_grains_bumped = 0
@@ -291,6 +293,8 @@ class BaseEnvironment:
                     self.prey_bodies.remove(shp.body)
             self.prey_caught += 1
             self.fish.prey_consumed = True
+            self.prey_consumed_this_step = True
+
             return False
         else:
             return True
