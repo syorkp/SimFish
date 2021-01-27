@@ -136,9 +136,10 @@ class BaseEnvironment:
             py = np.round(np.array([pr.position[1] for pr in self.prey_bodies])).astype(int)
             rrs, ccs = self.board.multi_circles(px, py, self.env_variables['prey_size'])
 
-            try:  # Should be a fix for the index error.
+            try:
                 self.board.db[rrs, ccs] = self.prey_shapes[0].color
             except IndexError:
+                print(f"Index Error for: PX: {max(rrs.flatten())}, PY: {max(ccs.flatten())}")
                 if max(rrs.flatten()) > self.env_variables['width']:
                     lost_index = np.argmax(px)
                 elif max(ccs.flatten()) > self.env_variables['height']:
@@ -159,13 +160,15 @@ class BaseEnvironment:
             try:
                 self.board.db[rrs, ccs] = self.sand_grain_shapes[0].color
             except IndexError:
-                if max(px) > self.env_variables['width']:
+                print(f"Index Error for: RRS: {max(rrs.flatten())}, CCS: {max(ccs.flatten())}")
+                if max(rrs.flatten()) > self.env_variables['width']:
                     lost_index = np.argmax(px)
-                elif max(py) > self.env_variables['height']:
+                elif max(ccs.flatten()) > self.env_variables['height']:
                     lost_index = np.argmax(py)
                 else:
                     lost_index = None
                     print(f"Fix needs to be tuned: PX: {max(px)}, PY: {max(py)}")
+
                 np.delete(self.sand_grain_bodies, lost_index)
                 np.delete(self.sand_grain_shapes, lost_index)
                 self.draw_shapes()

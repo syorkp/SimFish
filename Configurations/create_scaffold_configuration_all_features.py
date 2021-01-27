@@ -127,14 +127,14 @@ save_files(number)
 number += 1
 
 # 2. Increase predator speed
-env["predator_impulse"] = 1
-save_files(number)
-number += 1
+# env["predator_impulse"] = 1
+# save_files(number)
+# number += 1
 
 # 3. Increase predator speed
-env["predator_impulse"] = 1.5
-save_files(number)
-number += 1
+# env["predator_impulse"] = 1.5
+# save_files(number)
+# number += 1
 
 # B. Learn Prey Capture #
 

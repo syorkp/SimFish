@@ -306,23 +306,21 @@ new_training_configuration = [
     {
         "Model Name": "realistic_all_features",
         "Environment Name": "all_features",
-        "Total Configurations": 9,
+        "Total Configurations": 7,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
             "Prey Caught": {
-                "5": 22,
-                "6": 27,
-                "7": 32,
+                "3": 22,
+                "4": 27,
+                "5": 32,
             },
             "Predators Avoided": {
                 "2": 4,
-                "3": 6,
-                "4": 8,
             },
             "Sand Grains Bumped": {
-                "8": 20,
-                "9": 10,
+                "6": 20,
+                "7": 10,
             }
         },
         "Trial Number": 1,
@@ -336,23 +334,21 @@ new_training_configuration = [
     {
         "Model Name": "realistic_all_features",
         "Environment Name": "all_features",
-        "Total Configurations": 9,
+        "Total Configurations": 7,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
             "Prey Caught": {
-                "5": 20,
-                "6": 24,
-                "7": 28,
+                "3": 22,
+                "4": 27,
+                "5": 32,
             },
             "Predators Avoided": {
-                "2": 2,
-                "3": 4,
-                "4": 6,
+                "2": 4,
             },
             "Sand Grains Bumped": {
-                "8": 30,
-                "9": 20,
+                "6": 20,
+                "7": 10,
             }
         },
         "Trial Number": 2,
@@ -366,23 +362,21 @@ new_training_configuration = [
     {
         "Model Name": "basic_all_features",
         "Environment Name": "all_features",
-        "Total Configurations": 9,
+        "Total Configurations": 7,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
             "Prey Caught": {
-                "5": 22,
-                "6": 27,
-                "7": 32,
+                "3": 22,
+                "4": 27,
+                "5": 32,
             },
             "Predators Avoided": {
                 "2": 4,
-                "3": 6,
-                "4": 8,
             },
             "Sand Grains Bumped": {
-                "8": 20,
-                "9": 10,
+                "6": 20,
+                "7": 10,
             }
         },
         "Trial Number": 1,
