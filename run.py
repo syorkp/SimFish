@@ -128,7 +128,7 @@ asaph_data_configuration = [
     #     ],
     # },
     {
-        "Model Name": "conditional_prey_and_predators",
+        "Model Name": "realistic_all_features",
         "Environment Name": "example",
         "Assay Configuration Name": "simple_actions",
         "Trial Number": 1,
@@ -392,5 +392,5 @@ new_training_configuration = [
 
 # TODO: Change fish steup to tethered boolean.
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(asaph_data_configuration)
+manager = TrialManager(new_training_configuration)
 manager.run_priority_loop()

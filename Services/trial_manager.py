@@ -125,7 +125,6 @@ class TrialManager:
                     if running_jobs[process].is_alive():
                         pass
                     else:
-                        print(f"{process} is dead")
                         running_jobs[str(index)].join()
             # TODO: Wont remove trials once complete as they are still in dictionary. Need to find a way of doing it without deleting from dictionary.
 
