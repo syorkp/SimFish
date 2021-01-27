@@ -145,11 +145,10 @@ class BaseEnvironment:
                 elif max(ccs.flatten()) > self.env_variables['height']:
                     lost_index = np.argmax(py)
                 else:
-                    lost_index = None
+                    lost_index = 0
                     print(f"Fix needs to be tuned: PX: {max(px)}, PY: {max(py)}")
-
-                np.delete(self.prey_bodies, lost_index)
-                np.delete(self.prey_shapes, lost_index)
+                self.prey_bodies.pop(lost_index)
+                self.prey_shapes.pop(lost_index)
                 self.draw_shapes()
 
         if len(self.sand_grain_bodies) > 0:
@@ -166,11 +165,10 @@ class BaseEnvironment:
                 elif max(ccs.flatten()) > self.env_variables['height']:
                     lost_index = np.argmax(py)
                 else:
-                    lost_index = None
+                    lost_index = 0
                     print(f"Fix needs to be tuned: PX: {max(px)}, PY: {max(py)}")
-
-                np.delete(self.sand_grain_bodies, lost_index)
-                np.delete(self.sand_grain_shapes, lost_index)
+                self.sand_grain_bodies.pop(lost_index)
+                self.sand_grain_shapes.pop(lost_index)
                 self.draw_shapes()
 
         for i, pr in enumerate(self.predator_bodies):
