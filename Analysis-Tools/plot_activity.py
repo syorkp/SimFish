@@ -28,13 +28,13 @@ def plot_activity(rnn_data):
     plt.show()
 
 
-data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
+data = load_data("simple_actions", "All-Features", "realistic_all_features-1")
 
 
-rnn_unit_1 = [i["rnn state"][0][0] for i in data]
-rnn_unit_2 = [i["rnn state"][0][1] for i in data]
-rnn_unit_3 = [i["rnn state"][0][2] for i in data]
-rnn_unit_200 = [i["rnn state"][0][199] for i in data]
+rnn_unit_1 = [data["rnn state"][i-1][0][0] for i in data["step"]]
+rnn_unit_3 = [data["rnn state"][i-1][0][19] for i in data["step"]]
+rnn_unit_200 = [data["rnn state"][i-1][0][190] for i in data["step"]]
+conv_unit_1 = [data["left_conv_1"][i-1][0][0] for i in data["step"]]
 
-unit_activity = [rnn_unit_1, rnn_unit_2, rnn_unit_3, rnn_unit_200]
+unit_activity = [rnn_unit_1, rnn_unit_3, rnn_unit_200, conv_unit_1]
 plot_activity(unit_activity)

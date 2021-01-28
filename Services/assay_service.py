@@ -90,7 +90,8 @@ class AssayService:
         :return:
         """
         if assay["stimulus paradigm"] == "Projection":
-            self.simulation = ControlledStimulusEnvironment(self.environment_params, assay["stimuli"], self.realistic_bouts,
+            self.simulation = ControlledStimulusEnvironment(self.environment_params, assay["stimuli"],
+                                                            self.realistic_bouts,
                                                             tethered=assay["fish setup"])
         elif assay["stimulus paradigm"] == "Naturalistic":
             self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
@@ -152,15 +153,19 @@ class AssayService:
                 break
 
     def step_loop(self, o, internal_state, a, rnn_state):
-        chosen_a, updated_rnn_state, sa, sv = self.sess.run(
-            [self.network.predict, self.network.rnn_state, self.network.streamA, self.network.streamV],
-            feed_dict={self.network.observation: o,
-                       self.network.internal_state: internal_state,
-                       self.network.prev_actions: [a],
-                       self.network.trainLength: 1,
-                       self.network.state_in: rnn_state,
-                       self.network.batch_size: 1,
-                       self.network.exp_keep: 1.0})
+        chosen_a, updated_rnn_state, sa, sv, conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r = \
+            self.sess.run(
+                [self.network.predict, self.network.rnn_state, self.network.streamA, self.network.streamV,
+                 self.network.conv1l, self.network.conv2l, self.network.conv3l, self.network.conv4l,
+                 self.network.conv1r, self.network.conv2r, self.network.conv3r, self.network.conv4r
+                 ],
+                feed_dict={self.network.observation: o,
+                           self.network.internal_state: internal_state,
+                           self.network.prev_actions: [a],
+                           self.network.trainLength: 1,
+                           self.network.state_in: rnn_state,
+                           self.network.batch_size: 1,
+                           self.network.exp_keep: 1.0})
         chosen_a = chosen_a[0]
         o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=chosen_a,
                                                                                                  frame_buffer=self.frame_buffer,
@@ -171,7 +176,8 @@ class AssayService:
         possible_data_to_save = self.package_output_data(chosen_a, sa, updated_rnn_state,
                                                          self.simulation.fish.body.position,
                                                          self.simulation.prey_consumed_this_step,
-                                                         self.simulation.predator_body)  # TODO: Add in here
+                                                         self.simulation.predator_body,
+                                                         conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r)
         for key in self.assay_output_data_format:
             self.output_data[key].append(possible_data_to_save[key])
         self.output_data["step"].append(self.step_number)
@@ -215,7 +221,8 @@ class AssayService:
         with open(f"{self.data_save_location}/{self.assay_configuration_id}.json", "w") as output_file:
             json.dump(self.metadata, output_file)
 
-    def package_output_data(self, action, advantage_stream, rnn_state, position, prey_consumed, predator_body):
+    def package_output_data(self, action, advantage_stream, rnn_state, position, prey_consumed, predator_body,
+                            conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r,):
         """
 
         :param action:
@@ -240,7 +247,15 @@ class AssayService:
             "advantage stream": advantage_stream,
             "position": position,
             "observation": observation,
-        }  # Will work for now but note is inefficient # TODO: Add in here
+            "left_conv_1": conv1l,
+            "left_conv_2": conv2l,
+            "left_conv_3": conv3l,
+            "left_conv_4": conv4l,
+            "right_conv_1": conv1r,
+            "right_conv_2": conv2r,
+            "right_conv_3": conv3r,
+            "right_conv_4": conv4r,
+        }
 
         if prey_consumed:
             data["consumed"] = 1
@@ -267,7 +282,8 @@ class AssayService:
         # Saves all the information from the assays in JSON format.
         if assay["save frames"]:
             make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
-                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True) # TODO: Remove 100 to change back to normal.
+                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
+                     true_image=True)  # TODO: Remove 100 to change back to normal.
         self.frame_buffer = []
         with open(f"{self.data_save_location}/{assay['assay id']}.json", "w") as output_file:
             json.dump(self.assay_output_data, output_file)

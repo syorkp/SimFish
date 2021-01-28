@@ -51,29 +51,37 @@ def plot_all(rnn_data, observation, action_choice):
     fig.savefig('test2png.png', dpi=100)
     plt.show()
 
+
 def convert_photons_to_int(obs):
-    new_obs = np.zeros((121, 400, 3), int)
+    obs = np.array(obs)
+
+    new_obs = np.zeros(obs.shape, int)
     for i, time in enumerate(obs):
+        # if i == 121:
+        #     break
         for j, point in enumerate(obs[i]):
+            # if j == 400:
+            #     break
             for k, receptor in enumerate(obs[i][j]):
                 new_obs[i][j][k] = round(receptor)
     return new_obs
 
 
-data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2", "realistic_action_space-1")
+data = load_data("simple_actions", "All-Features", "realistic_all_features-1")
 
 # rnn_unit_1 = [i["rnn state"][0][0] for i in data]
 # rnn_unit_2 = [i["rnn state"][0][1] for i in data]
 # rnn_unit_3 = [i["rnn state"][0][2] for i in data]
 # rnn_unit_200 = [i["rnn state"][0][199] for i in data]
 
-rnn_unit_1 = [data["rnn state"][i-1][0][0] for i in data["step"]]
-rnn_unit_3 = [data["rnn state"][i-1][0][19] for i in data["step"]]
-rnn_unit_200 = [data["rnn state"][i-1][0][190] for i in data["step"]]
+conv_unit_1 = [data["left_conv_1"][i-1][0][0] for i in data["step"]]
+conv_unit_2 = [data["left_conv_1"][i-1][0][1] for i in data["step"]]
+conv_unit_3 = [data["left_conv_1"][i-1][0][2] for i in data["step"]]
+conv_unit_4 = [data["left_conv_1"][i-1][0][26] for i in data["step"]]
 
 
 action_choice = data["behavioural choice"]
-unit_activity = [rnn_unit_1, rnn_unit_3, rnn_unit_200]
+unit_activity = [conv_unit_1, conv_unit_2, conv_unit_3, conv_unit_4]
 
 
 observation = data["observation"]

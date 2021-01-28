@@ -144,8 +144,9 @@ asaph_data_configuration = [
                 "duration": 1000,
                 "fish setup": "Free",
                 "save frames": True,
-                "recordings": ["behavioural choice", "rnn state", "observation", "position", "consumed",
-                               "predator"],
+                "recordings": ["behavioural choice", "rnn state", "observation", "position", "consumed", "predator",
+                               "left_conv_1", "left_conv_2", "left_conv_3", "left_conv_4",
+                               "right_conv_1", "right_conv_2", "right_conv_3", "right_conv_4"],
                 "interactions": []
             }
         ],
