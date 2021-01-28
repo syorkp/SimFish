@@ -143,9 +143,9 @@ class BaseEnvironment:
             except IndexError:
                 print(f"Index Error for: PX: {max(rrs.flatten())}, PY: {max(ccs.flatten())}")
                 if max(rrs.flatten()) > self.env_variables['width']:
-                    lost_index = np.argmax(px)
-                elif max(ccs.flatten()) > self.env_variables['height']:
                     lost_index = np.argmax(py)
+                elif max(ccs.flatten()) > self.env_variables['height']:
+                    lost_index = np.argmax(px)
                 else:
                     lost_index = 0
                     print(f"Fix needs to be tuned: PX: {max(px)}, PY: {max(py)}")

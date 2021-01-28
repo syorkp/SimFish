@@ -317,7 +317,7 @@ new_training_configuration = [
                 "5": 32,
             },
             "Predators Avoided": {
-                "2": 4,
+                "2": 2,
             },
             "Sand Grains Bumped": {
                 "6": 20,
@@ -345,7 +345,7 @@ new_training_configuration = [
                 "5": 32,
             },
             "Predators Avoided": {
-                "2": 4,
+                "2": 2,
             },
             "Sand Grains Bumped": {
                 "6": 20,
@@ -373,7 +373,7 @@ new_training_configuration = [
                 "5": 32,
             },
             "Predators Avoided": {
-                "2": 4,
+                "2": 2,
             },
             "Sand Grains Bumped": {
                 "6": 20,
