@@ -72,6 +72,7 @@ class AssayService:
         self.assay_output_data_format = None
         self.assay_output_data = []
         self.output_data = {}
+        self.episode_summary_data = None
 
     def create_network(self):
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim'], state_is_tuple=True)
@@ -123,6 +124,7 @@ class AssayService:
             # self.save_assay_results(assay)
             self.save_hdf5_data(assay)
         self.save_metadata()
+        self.save_episode_data()
 
     def create_output_data_storage(self, assay):
         self.output_data = {key: [] for key in assay["recordings"]}
@@ -196,6 +198,17 @@ class AssayService:
                 del assay_group[key]
                 assay_group.create_dataset(key, data=self.output_data[key])  # TODO: Compress data.
         hdf5_file.close()
+
+    def save_episode_data(self):
+        self.episode_summary_data = {
+            "Prey Caught": self.simulation.prey_caught,
+            "Predators Avoided": self.simulation.predators_avoided,
+            "Sand Grains Bumped": self.simulation.sand_grains_bumped,
+            "Steps Near Vegetation": self.simulation.steps_near_vegetation
+        }
+        with open(f"{self.data_save_location}/{self.assay_configuration_id}-summary_data.json", "w") as output_file:
+            json.dump(self.episode_summary_data, output_file)
+        self.episode_summary_data = None
 
     def save_metadata(self):
         self.metadata["Assay Date"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
