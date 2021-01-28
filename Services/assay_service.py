@@ -26,6 +26,7 @@ def assay_target(trial, learning_params, environment_params, total_steps, episod
                            memory_fraction=memory_fraction,
                            using_gpu=trial["Using GPU"]
                            )
+
     service.run()
 
 
@@ -36,7 +37,6 @@ class AssayService:
         """
         Runs a set of assays provided by the run configuraiton.
         """
-
         # Names and Directories
         self.model_id = f"{model_name}-{trial_number}"
         self.model_location = f"./Training-Output/{self.model_id}"
@@ -172,12 +172,46 @@ class AssayService:
                                                                                                  save_frames=True,
                                                                                                  activations=(sa,))
 
+        fish_angle = self.simulation.fish.body.angle
+
+        if not self.simulation.sand_grain_bodies:
+            sand_grain_positions = [self.simulation.sand_grain_bodies[i].position for i, b in
+                                    enumerate(self.simulation.sand_grain_bodies)]
+            sand_grain_positions = [[i[0], i[1]] for i in sand_grain_positions]
+        else:
+            sand_grain_positions = [[10000, 10000]]
+
+        if not self.simulation.prey_bodies:
+            prey_positions = [self.simulation.prey_bodies[i].position for i, b in
+                              enumerate(self.simulation.prey_bodies)]
+            prey_positions = [[i[0], i[1]] for i in prey_positions]
+        else:
+            prey_positions = [[10000, 10000]]
+
+        if self.simulation.predator_body is not None:
+            predator_position = self.simulation.predator_body.position
+            predator_position = [predator_position[0], predator_position[1]]
+        else:
+            predator_position = [10000, 10000]
+
+        if self.simulation.vegetation_bodies is not None:
+            vegetation_positions = [self.simulation.vegetation_bodies[i].position for i, b in enumerate(self.simulation.vegetation_bodies)]
+            vegetation_positions = [[i[0], i[1]] for i in vegetation_positions]
+        else:
+            vegetation_positions = [[10000, 10000]]
+
         # Saving step data
         possible_data_to_save = self.package_output_data(chosen_a, sa, updated_rnn_state,
                                                          self.simulation.fish.body.position,
                                                          self.simulation.prey_consumed_this_step,
                                                          self.simulation.predator_body,
-                                                         conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r)
+                                                         conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r,
+                                                         prey_positions,
+                                                         predator_position,
+                                                         sand_grain_positions,
+                                                         vegetation_positions,
+                                                         fish_angle
+                                                         )
         for key in self.assay_output_data_format:
             self.output_data[key].append(possible_data_to_save[key])
         self.output_data["step"].append(self.step_number)
@@ -222,14 +256,28 @@ class AssayService:
             json.dump(self.metadata, output_file)
 
     def package_output_data(self, action, advantage_stream, rnn_state, position, prey_consumed, predator_body,
-                            conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r,):
+                            conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r,
+                            prey_positions, predator_position, sand_grain_positions, vegetation_positions, fish_angle):
         """
 
         :param action:
         :param advantage_stream:
         :param rnn_state:
         :param position:
-        :param prey_consumed: A boolean to say whether consumed this step.
+        :param prey_consumed:
+        :param predator_body: A boolean to say whether consumed this step.
+        :param conv1l:
+        :param conv2l:
+        :param conv3l:
+        :param conv4l:
+        :param conv1r:
+        :param conv2r:
+        :param conv3r:
+        :param conv4r:
+        :param prey_positions:
+        :param predator_position:
+        :param sand_grain_positions:
+        :param vegetation_positions:
         :return:
         """
         # Make output data JSON serializable
@@ -255,6 +303,11 @@ class AssayService:
             "right_conv_2": conv2r,
             "right_conv_3": conv3r,
             "right_conv_4": conv4r,
+            "prey_positions": prey_positions,
+            "predator_position": predator_position,
+            "sand_grain_positions": sand_grain_positions,
+            "vegetation_positions": vegetation_positions,
+            "fish_angle": fish_angle
         }
 
         if prey_consumed:

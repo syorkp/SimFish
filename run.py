@@ -104,7 +104,7 @@ naturalistic_assay_configuration = [
     }
 ]
 
-asaph_data_configuration = [
+test_assay_configuration = [
     # {
     #     "Model Name": "realistic_action_space",
     #     "Environment Name": "example",
@@ -141,12 +141,14 @@ asaph_data_configuration = [
             {
                 "assay id": "All-Features",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
+                "duration": 10,
                 "fish setup": "Free",
                 "save frames": True,
-                "recordings": ["behavioural choice", "rnn state", "observation", "position", "consumed", "predator",
-                               "left_conv_1", "left_conv_2", "left_conv_3", "left_conv_4",
-                               "right_conv_1", "right_conv_2", "right_conv_3", "right_conv_4"],
+                "recordings": [#"behavioural choice", "rnn state", "observation", "position", "consumed", "predator",
+                               #"left_conv_1", "left_conv_2", "left_conv_3", "left_conv_4",
+                               #"right_conv_1", "right_conv_2", "right_conv_3", "right_conv_4",
+                               "prey_positions", "predator_position", "sand_grain_positions", "vegetation_positions", "fish_angle"
+                              ],
                 "interactions": []
             }
         ],
@@ -393,5 +395,5 @@ new_training_configuration = [
 
 # TODO: Change fish steup to tethered boolean.
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(asaph_data_configuration)
+manager = TrialManager(test_assay_configuration)
 manager.run_priority_loop()

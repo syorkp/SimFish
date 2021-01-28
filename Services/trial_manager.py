@@ -111,6 +111,7 @@ class TrialManager:
         parallel_jobs = 3
         memory_fraction = 0.99/parallel_jobs
         running_jobs = {}
+
         for index, trial in enumerate(self.priority_ordered_trials):
             epsilon, total_steps, episode_number = self.get_saved_parameters(trial)
             if trial["Run Mode"] == "Training":
