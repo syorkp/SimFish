@@ -476,7 +476,8 @@ class BaseEnvironment:
 
     def touch_grain(self,  arbiter, space, data):
         # TODO: Considering only doing this if the last swim was a capture swim.
-        self.sand_grains_bumped += 1
+        if self.last_action == 3:
+            self.sand_grains_bumped += 1
 
     def get_last_action_magnitude(self):
         if self.last_action == 0:
