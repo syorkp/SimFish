@@ -622,9 +622,9 @@ training_configuration = [
 
 new_training_configuration = [
     {
-        "Model Name": "realistic_all_features",
+        "Model Name": "new_actions_all_features",
         "Environment Name": "all_features",
-        "Total Configurations": 7,
+        "Total Configurations": 6,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
@@ -638,7 +638,6 @@ new_training_configuration = [
             },
             "Sand Grains Bumped": {
                 "6": 20,
-                "7": 10,
             }
         },
         "Trial Number": 1,
@@ -650,9 +649,9 @@ new_training_configuration = [
         "monitor gpu": False,
     },
     {
-        "Model Name": "realistic_all_features",
+        "Model Name": "new_actions_all_features",
         "Environment Name": "all_features",
-        "Total Configurations": 7,
+        "Total Configurations": 6,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
@@ -666,7 +665,6 @@ new_training_configuration = [
             },
             "Sand Grains Bumped": {
                 "6": 20,
-                "7": 10,
             }
         },
         "Trial Number": 2,
@@ -678,9 +676,9 @@ new_training_configuration = [
         "monitor gpu": False,
     },
     {
-        "Model Name": "basic_all_features",
+        "Model Name": "new_actions_all_features",
         "Environment Name": "all_features",
-        "Total Configurations": 7,
+        "Total Configurations": 6,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
@@ -694,19 +692,17 @@ new_training_configuration = [
             },
             "Sand Grains Bumped": {
                 "6": 20,
-                "7": 10,
             }
         },
-        "Trial Number": 1,
+        "Trial Number": 3,
         "Run Mode": "Training",
         "Fish Setup": "Free",
-        "Realistic Bouts": False,
+        "Realistic Bouts": True,
         "Priority": 2,
         "Using GPU": True,
         "monitor gpu": False,
     },
 ]
-
 
 controlled_assay_configuration_2 = [
     {
@@ -845,5 +841,5 @@ controlled_assay_configuration_2 = [
 
 # TODO: Change fish steup to tethered boolean.
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(naturalistic_assay_configuration)
+manager = TrialManager(new_training_configuration)
 manager.run_priority_loop()

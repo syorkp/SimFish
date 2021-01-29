@@ -71,4 +71,4 @@ def draw_angle_dist(bout_id):
 #     angle, dist = draw_angle_dist(i)
 #     print(angle, dist)
 
-draw_angle_dist(2)
+#display_pdf_and_cdf(5)

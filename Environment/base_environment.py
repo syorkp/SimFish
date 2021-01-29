@@ -480,6 +480,7 @@ class BaseEnvironment:
             self.sand_grains_bumped += 1
 
     def get_last_action_magnitude(self):
+        # TODO: Change these to be for the realistic action space
         if self.last_action == 0:
             imp = self.env_variables['forward_swim_impulse']
         elif self.last_action == 1:
@@ -494,6 +495,12 @@ class BaseEnvironment:
             imp = self.env_variables['j_turn_impulse']
         elif self.last_action == 6:
             imp = 0
+        elif self.last_action == 7:
+            imp = self.env_variables['routine_turn_impulse']
+        elif self.last_action == 8:
+            imp = self.env_variables['routine_turn_impulse']
+        elif self.last_action == 9:
+            imp = self.env_variables['routine_turn_impulse']
         else:
             imp = 0
             print("Wrong action selected")  # TODO: Will need to update for new action space.

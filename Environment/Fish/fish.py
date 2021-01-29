@@ -142,7 +142,7 @@ class Fish:
 
     def take_realistic_action(self, action):
         if action == 0:  # Slow2
-            angle_change, distance = draw_angle_dist(8)  # Choose new one.
+            angle_change, distance = draw_angle_dist(8)
             reward = -self.calculate_angle_cost(angle_change, distance)
             self.body.angle += np.random.choice([-angle_change, angle_change])
             self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
@@ -184,8 +184,30 @@ class Fish:
             self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
             self.head.color = [1, 1, 1]
 
-        elif action == 6:  # do nothing:
+        elif action == 6:  # Do nothing
             reward = -self.env_variables['rest_cost']
+
+        elif action == 7:  # c start right
+            angle_change, distance = draw_angle_dist(5)
+            reward = -self.calculate_angle_cost(angle_change, distance)
+            self.body.angle += angle_change
+            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.head.color = [1, 0, 0]
+
+        elif action == 8:  # c start left
+            angle_change, distance = draw_angle_dist(5)
+            reward = -self.calculate_angle_cost(angle_change, distance)
+            self.body.angle -= angle_change
+            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.head.color = [1, 0, 0]
+
+        elif action == 9:  # Approach swim.
+            angle_change, distance = draw_angle_dist(10)
+            reward = -self.calculate_angle_cost(angle_change, distance)
+            self.body.angle -= angle_change
+            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.head.color = (0, 1, 0)
+
         else:
             reward = None
             print("Invalid action given")
