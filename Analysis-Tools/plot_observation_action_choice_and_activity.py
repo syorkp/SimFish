@@ -18,6 +18,7 @@ def plot_all(rnn_data, observation, action_choice):
         if len(action_timestamps) > 0:
             separated_actions.append(action_timestamps)
 
+
     colorCodes = np.array([(0.0, 0.0, 1.0),
                            (0.0, 0.75, 0.75),
                            (0.75, 0.75, 0.0),
@@ -25,6 +26,8 @@ def plot_all(rnn_data, observation, action_choice):
                            (1.0, 0.75, 0.0),
                            # (0.0, 0.75, 1.0),
                            ])
+    # TODO: Select number of codes automatically
+
 
     axs[0].imshow(left, aspect="auto")
     axs[1].imshow(right, aspect="auto")
@@ -67,22 +70,22 @@ def convert_photons_to_int(obs):
     return new_obs
 
 
-data = load_data("simple_actions", "All-Features", "realistic_all_features-1")
+data = load_data("Controlled_Visual_Stimuli", "Moving-Predator", "basic_all_features-1")
 
-# rnn_unit_1 = [i["rnn state"][0][0] for i in data]
-# rnn_unit_2 = [i["rnn state"][0][1] for i in data]
-# rnn_unit_3 = [i["rnn state"][0][2] for i in data]
-# rnn_unit_200 = [i["rnn state"][0][199] for i in data]
+rnn_unit_1 = [data["rnn state"][i-1][0][165] for i in data["step"]]
+rnn_unit_2 = [data["rnn state"][i-1][0][155] for i in data["step"]]
+rnn_unit_3 = [data["rnn state"][i-1][0][15] for i in data["step"]]
+rnn_unit_200 = [data["rnn state"][i-1][0][139] for i in data["step"]]
 
-conv_unit_1 = [data["left_conv_1"][i-1][0][0] for i in data["step"]]
-conv_unit_2 = [data["left_conv_1"][i-1][0][1] for i in data["step"]]
-conv_unit_3 = [data["left_conv_1"][i-1][0][2] for i in data["step"]]
-conv_unit_4 = [data["left_conv_1"][i-1][0][26] for i in data["step"]]
+# conv_unit_1 = [data["left_conv_1"][i-1][0][0] for i in data["step"]]
+# conv_unit_2 = [data["left_conv_1"][i-1][0][1] for i in data["step"]]
+# conv_unit_3 = [data["left_conv_1"][i-1][0][2] for i in data["step"]]
+# conv_unit_4 = [data["left_conv_1"][i-1][0][26] for i in data["step"]]
 
 
 action_choice = data["behavioural choice"]
-unit_activity = [conv_unit_1, conv_unit_2, conv_unit_3, conv_unit_4]
-
+# unit_activity = [conv_unit_1, conv_unit_2, conv_unit_3, conv_unit_4]
+unit_activity = [rnn_unit_1, rnn_unit_2, rnn_unit_3, rnn_unit_200]
 
 observation = data["observation"]
 

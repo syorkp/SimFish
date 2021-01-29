@@ -81,27 +81,85 @@ controlled_assay_configuration = [
 
 naturalistic_assay_configuration = [
     {
-            "Model Name": "base",
+            "Model Name": "realistic_all_features",
             "Environment Name": "base",
             "Assay Configuration Name": "Naturalistic",
-            "Trial Number": 1,
+            "Trial Number": 2,
             "Run Mode": "Assay",
             "Priority": 1,
-            "Realistic Bouts": False,
+            "Realistic Bouts": True,
             "Using GPU": True,
             "monitor gpu": True,
             "Assays": [
                     {
-                        "assay id": "Vegetation-Effects",
+                        "assay id": "All-Features-1",
                         "stimulus paradigm": "Naturalistic",
-                        "duration": 400,
+                        "duration": 1000,
+                        "fish setup": "Free",
+                        "save frames": True,
+                        "recordings": [],
+                        "interactions": []
+                    },
+                {
+                    "assay id": "All-Features-2",
+                    "stimulus paradigm": "Naturalistic",
+                    "duration": 1000,
+                    "fish setup": "Free",
+                    "save frames": True,
+                    "recordings": [],
+                    "interactions": []
+                },
+                {
+                        "assay id": "All-Features-3",
+                        "stimulus paradigm": "Naturalistic",
+                        "duration": 1000,
                         "fish setup": "Free",
                         "save frames": True,
                         "recordings": [],
                         "interactions": []
                     }
                 ],
-    }
+    },
+    {
+        "Model Name": "basic_all_features",
+        "Environment Name": "base",
+        "Assay Configuration Name": "Naturalistic",
+        "Trial Number": 1,
+        "Run Mode": "Assay",
+        "Priority": 1,
+        "Realistic Bouts": False,
+        "Using GPU": True,
+        "monitor gpu": True,
+        "Assays": [
+            {
+                "assay id": "All-Features-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": [],
+                "interactions": []
+            },
+            {
+                "assay id": "All-Features-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": [],
+                "interactions": []
+            },
+            {
+                "assay id": "All-Features-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": [],
+                "interactions": []
+            }
+        ],
+    },
 ]
 
 test_assay_configuration = [
@@ -194,6 +252,262 @@ test_assay_configuration = [
     #     ],
     # }
 ]
+
+behaviour_sequence_data_configuration_basic = [
+    {
+        "Model Name": "basic_all_features",
+        "Environment Name": "prey",
+        "Assay Configuration Name": "Prey-Capture",
+        "Trial Number": 1,
+        "Run Mode": "Assay",
+        "Priority": 1,
+        "Realistic Bouts": False,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Assays": [
+            {
+                "assay id": "Prey_Capture-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+            {
+                "assay id": "Prey_Capture-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+            {
+                "assay id": "Prey_Capture-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+            {
+                "assay id": "Prey_Capture-4",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            }
+        ],
+    },
+    {
+        "Model Name": "basic_all_features",
+        "Environment Name": "predators",
+        "Assay Configuration Name": "Predator-Avoidance",
+        "Trial Number": 1,
+        "Run Mode": "Assay",
+        "Priority": 1,
+        "Realistic Bouts": False,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Assays": [
+            {
+                "assay id": "Predator_Avoidance-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+            {
+                "assay id": "Predator_Avoidance-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+            {
+                "assay id": "Predator_Avoidance-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+            {
+                "assay id": "Predator_Avoidance-4",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+        ]
+    }
+]
+
+
+behaviour_sequence_data_configuration_realistic = [
+    {
+        "Model Name": "realistic_all_features",
+        "Environment Name": "prey",
+        "Assay Configuration Name": "Prey-Capture",
+        "Trial Number": 2,
+        "Run Mode": "Assay",
+        "Priority": 1,
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Assays": [
+            {
+                "assay id": "Prey_Capture-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+            {
+                "assay id": "Prey_Capture-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+            {
+                "assay id": "Prey_Capture-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+            {
+                "assay id": "Prey_Capture-4",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            }
+        ],
+    },
+    {
+        "Model Name": "realistic_all_features",
+        "Environment Name": "predators",
+        "Assay Configuration Name": "Predator-Avoidance",
+        "Trial Number": 2,
+        "Run Mode": "Assay",
+        "Priority": 1,
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Assays": [
+            {
+                "assay id": "Predator_Avoidance-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+            {
+                "assay id": "Predator_Avoidance-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+            {
+                "assay id": "Predator_Avoidance-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+            {
+                "assay id": "Predator_Avoidance-4",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+        ]
+    }
+]
+
+predators_only_config = [
+    {
+        "Model Name": "basic_all_features",
+        "Environment Name": "predators_only",
+        "Assay Configuration Name": "Predator-Only-Avoidance",
+        "Trial Number": 1,
+        "Run Mode": "Assay",
+        "Priority": 1,
+        "Realistic Bouts": False,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Assays": [
+            {
+                "assay id": "Predator_Avoidance-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+            {
+                "assay id": "Predator_Avoidance-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+            {
+                "assay id": "Predator_Avoidance-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+            {
+                "assay id": "Predator_Avoidance-4",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "fish setup": "Free",
+                "save frames": True,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "interactions": []
+            },
+        ]
+    }
+]
+
 
 training_configuration = [
     {
@@ -393,7 +707,143 @@ new_training_configuration = [
     },
 ]
 
+
+controlled_assay_configuration_2 = [
+    {
+        "Model Name": "basic_all_features",
+        "Environment Name": "test_square",
+        "Trial Number": 1,
+        "Assay Configuration Name": "Controlled_Visual_Stimuli",
+        "Run Mode": "Assay",
+        "Realistic Bouts": False,
+        "Using GPU": True,
+        "monitor gpu": True,
+        "Priority": 1,
+        "Assays": [
+            {
+                "assay id": "Moving-Prey",
+                "stimulus paradigm": "Projection",
+                "duration": 241,
+                "fish setup": "Tethered",
+                "save frames": True,
+                "recordings": ["behavioural choice", "rnn state", "observation"],
+                "stimuli": {
+                    "prey 1": [
+                        {"step": 0,
+                         "position": [150, 150]},
+                        {"step": 40,
+                         "position": [450, 150]},
+                        {"step": 80,
+                         "position": [450, 450]},
+                        {"step": 120,
+                         "position": [150, 450]},
+                        {"step": 160,
+                         "position": [450, 450]},
+                        {"step": 200,
+                         "position": [450, 150]},
+                        {"step": 240,
+                         "position": [150, 150]},
+                    ],
+                },
+                "interactions": []},
+{
+                "assay id": "Moving-Predator",
+                "stimulus paradigm": "Projection",
+                "duration": 121,
+                "fish setup": "Tethered",
+                "save frames": True,
+                "recordings": ["behavioural choice", "rnn state", "observation"],
+                "stimuli": {
+                    "predator 1": [
+                        {"step": 0,
+                         "position": [100, 100]},
+                        {"step": 20,
+                         "position": [500, 100]},
+                        {"step": 40,
+                         "position": [500, 500]},
+                        {"step": 60,
+                         "position": [100, 500]},
+                        {"step": 80,
+                         "position": [500, 500]},
+                        {"step": 100,
+                         "position": [500, 100]},
+                        {"step": 120,
+                         "position": [100, 100]},
+                    ],
+                },
+                "interactions": []},
+        ]
+    },
+    {
+        "Model Name": "realistic_all_features",
+        "Environment Name": "test_square",
+        "Trial Number": 2,
+        "Assay Configuration Name": "Controlled_Visual_Stimuli",
+        "Run Mode": "Assay",
+        "Realistic Bouts": True,
+        "Using GPU": True,
+        "monitor gpu": True,
+        "Priority": 1,
+        "Assays": [
+            {
+                "assay id": "Moving-Prey",
+                "stimulus paradigm": "Projection",
+                "duration": 241,
+                "fish setup": "Tethered",
+                "save frames": True,
+                "recordings": ["behavioural choice", "rnn state", "observation"],
+                "stimuli": {
+                    "prey 1": [
+                        {"step": 0,
+                         "position": [150, 150]},
+                        {"step": 40,
+                         "position": [450, 150]},
+                        {"step": 80,
+                         "position": [450, 450]},
+                        {"step": 120,
+                         "position": [150, 450]},
+                        {"step": 160,
+                         "position": [450, 450]},
+                        {"step": 200,
+                         "position": [450, 150]},
+                        {"step": 240,
+                         "position": [150, 150]},
+                    ],
+                },
+                "interactions": []
+            },
+            {
+                "assay id": "Moving-Predator",
+                "stimulus paradigm": "Projection",
+                "duration": 121,
+                "fish setup": "Tethered",
+                "save frames": True,
+                "recordings": ["behavioural choice", "rnn state", "observation"],
+                "stimuli": {
+                    "predator 1": [
+                        {"step": 0,
+                         "position": [100, 100]},
+                        {"step": 20,
+                         "position": [500, 100]},
+                        {"step": 40,
+                         "position": [500, 500]},
+                        {"step": 60,
+                         "position": [100, 500]},
+                        {"step": 80,
+                         "position": [500, 500]},
+                        {"step": 100,
+                         "position": [500, 100]},
+                        {"step": 120,
+                         "position": [100, 100]},
+                    ],
+                },
+                "interactions": []},
+        ]
+    },
+]
+
+
 # TODO: Change fish steup to tethered boolean.
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(test_assay_configuration)
+manager = TrialManager(naturalistic_assay_configuration)
 manager.run_priority_loop()

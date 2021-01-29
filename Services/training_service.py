@@ -331,7 +331,7 @@ class TrainingService:
 
         if self.switched_configuration:
             configuration_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="Episode change", simple_value=self.configuration_index)]
+                value=[tf.Summary.Value(tag="Configuration change", simple_value=self.configuration_index)]
             )
             self.writer.add_summary(configuration_summary, self.episode_number)
 
