@@ -623,7 +623,7 @@ training_configuration = [
 new_training_configuration = [
     {
         "Model Name": "new_actions_all_features",
-        "Environment Name": "all_features",
+        "Environment Name": "new_actions_all_features",
         "Total Configurations": 6,
         "Episode Transitions": {
         },
@@ -650,7 +650,7 @@ new_training_configuration = [
     },
     {
         "Model Name": "new_actions_all_features",
-        "Environment Name": "all_features",
+        "Environment Name": "new_actions_all_features",
         "Total Configurations": 6,
         "Episode Transitions": {
         },
@@ -677,7 +677,7 @@ new_training_configuration = [
     },
     {
         "Model Name": "new_actions_all_features",
-        "Environment Name": "all_features",
+        "Environment Name": "new_actions_all_features",
         "Total Configurations": 6,
         "Episode Transitions": {
         },
