@@ -164,7 +164,7 @@ class Fish:
 
         elif action == 3:  # Short capture swim
             angle_change, distance = draw_angle_dist(0)
-            reward = -self.calculate_angle_cost(angle_change, distance) - 15
+            reward = -self.calculate_angle_cost(angle_change, distance) - self.env_variables['capture_swim_extra_cost']
             self.body.angle += np.random.choice([-angle_change, angle_change])
             self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
             self.head.color = [1, 0, 1]

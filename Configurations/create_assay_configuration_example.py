@@ -75,6 +75,8 @@ env = {'width': 1000,  # arena size
        'j_turn_dir_change': 0.07,
        'rest_cost': 1,
 
+       'capture_swim_extra_cost': 15,
+
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
        'capture_basic_reward': 1000,
