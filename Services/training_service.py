@@ -313,7 +313,7 @@ class TrainingService:
         episode_summary = tf.Summary(value=[tf.Summary.Value(tag="episode reward", simple_value=total_episode_reward)])
         self.writer.add_summary(episode_summary, self.total_steps)
 
-        # Consider changing two below to total steps.
+        # Raw logs
         prey_caught_summary = tf.Summary(value=[tf.Summary.Value(tag="prey caught", simple_value=prey_caught)])
         self.writer.add_summary(prey_caught_summary, self.episode_number)
 
@@ -322,12 +322,36 @@ class TrainingService:
         self.writer.add_summary(predators_avoided_summary, self.episode_number)
 
         sand_grains_bumped_summary = tf.Summary(
-            value=[tf.Summary.Value(tag="sand grains bumped", simple_value=sand_grains_bumped)])
+            value=[tf.Summary.Value(tag="attempted sand grain captures", simple_value=sand_grains_bumped)])
         self.writer.add_summary(sand_grains_bumped_summary, self.episode_number)
 
         steps_near_vegetation_summary = tf.Summary(
             value=[tf.Summary.Value(tag="steps near vegetation", simple_value=steps_near_vegetation)])
         self.writer.add_summary(steps_near_vegetation_summary, self.episode_number)
+
+        # Normalised Logs
+        if self.env["prey_num"] != 0:
+            fraction_prey_caught = prey_caught/self.env["prey_num"]
+            prey_caught_summary = tf.Summary(value=[tf.Summary.Value(tag="prey capture index (fraction caught)", simple_value=fraction_prey_caught)])
+            self.writer.add_summary(prey_caught_summary, self.episode_number)
+
+        if self.env["probability_of_predator"] != 0:
+            predator_avoided_index = predators_avoided/self.env["probability_of_predator"]
+            predators_avoided_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="predator avoidance index (avoided/p_pred)", simple_value=predator_avoided_index)])
+            self.writer.add_summary(predators_avoided_summary, self.episode_number)
+
+        if self.env["sand_grain_num"] != 0:
+            sand_grain_capture_index = sand_grains_bumped/self.env["sand_grain_num"]
+            sand_grains_bumped_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="sand grain capture index (fraction attempted caught)", simple_value=sand_grain_capture_index)])
+            self.writer.add_summary(sand_grains_bumped_summary, self.episode_number)
+
+        if self.env["vegetation_num"] != 0:
+            vegetation_index = (steps_near_vegetation/self.simulation.num_steps)/self.env["vegetation_num"]
+            use_of_vegetation_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="use of vegetation index (fraction_steps/vegetation_num", simple_value=vegetation_index)])
+            self.writer.add_summary(use_of_vegetation_summary, self.episode_number)
 
         if self.switched_configuration:
             configuration_summary = tf.Summary(
