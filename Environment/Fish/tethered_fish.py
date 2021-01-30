@@ -32,6 +32,12 @@ class TetheredFish(Fish):
             self.head.color = [1, 1, 1]
         elif action == 6:   # do nothing:
             reward = -self.env_variables['rest_cost']
+        elif action == 7:   # c start right
+            reward = -self.env_variables['rest_cost']
+        elif action == 8:   # c start left
+            reward = -self.env_variables['rest_cost']
+        elif action == 9:   # approach swim
+            reward = -self.env_variables['rest_cost']
         else:
             reward = None
             print("Invalid action given")

@@ -92,7 +92,7 @@ class AssayService:
         if assay["stimulus paradigm"] == "Projection":
             self.simulation = ControlledStimulusEnvironment(self.environment_params, assay["stimuli"],
                                                             self.realistic_bouts,
-                                                            tethered=assay["fish setup"])
+                                                            tethered=assay["Tethered"])
         elif assay["stimulus paradigm"] == "Naturalistic":
             self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
         else:

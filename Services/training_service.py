@@ -19,7 +19,7 @@ def training_target(trial, epsilon, total_steps, episode_number, memory_fraction
     services = TrainingService(model_name=trial["Model Name"],
                                trial_number=trial["Trial Number"],
                                model_exists=trial["Model Exists"],
-                               fish_mode=trial["Fish Setup"],
+                               tethered=trial["Tethered"],
                                scaffold_name=trial["Environment Name"],
                                episode_transitions=trial["Episode Transitions"],
                                total_configurations=trial["Total Configurations"],
@@ -37,7 +37,7 @@ def training_target(trial, epsilon, total_steps, episode_number, memory_fraction
 
 class TrainingService:
 
-    def __init__(self, model_name, trial_number, model_exists, fish_mode, scaffold_name, episode_transitions,
+    def __init__(self, model_name, trial_number, model_exists, tethered, scaffold_name, episode_transitions,
                  total_configurations, conditional_transitions, e, total_steps, episode_number, monitor_gpu,
                  realistic_bouts, memory_fraction, using_gpu):
         """
@@ -57,7 +57,7 @@ class TrainingService:
         self.total_configurations = total_configurations
         self.episode_transitions = episode_transitions
         self.conditional_transitions = conditional_transitions
-        self.apparatus_mode = fish_mode
+        self.tethered = tethered
         self.configuration_index = 1
         self.switched_configuration = False
         self.params, self.env = self.load_configuration_files()
