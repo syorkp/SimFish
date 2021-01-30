@@ -65,6 +65,7 @@ class Fish:
         self.touched_edge = False
         self.touched_predator = False
         self.making_capture = False
+        self.prev_action_impulse = 0
 
     def take_action(self, action):
         if self.realistic_bouts:
@@ -145,28 +146,32 @@ class Fish:
             angle_change, distance = draw_angle_dist(8)
             reward = -self.calculate_angle_cost(angle_change, distance)
             self.body.angle += np.random.choice([-angle_change, angle_change])
-            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.prev_action_impulse = self.calculate_impulse(distance)
+            self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
             self.head.color = (0, 1, 0)
 
         elif action == 1:  # RT right
             angle_change, distance = draw_angle_dist(7)
             reward = -self.calculate_angle_cost(angle_change, distance)
             self.body.angle += angle_change
-            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.prev_action_impulse = self.calculate_impulse(distance)
+            self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
             self.head.color = (0, 1, 0)
 
         elif action == 2:  # RT left
             angle_change, distance = draw_angle_dist(7)
             reward = -self.calculate_angle_cost(angle_change, distance)
             self.body.angle -= angle_change
-            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.prev_action_impulse = self.calculate_impulse(distance)
+            self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
             self.head.color = (0, 1, 0)
 
         elif action == 3:  # Short capture swim
             angle_change, distance = draw_angle_dist(0)
             reward = -self.calculate_angle_cost(angle_change, distance) - self.env_variables['capture_swim_extra_cost']
             self.body.angle += np.random.choice([-angle_change, angle_change])
-            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.prev_action_impulse = self.calculate_impulse(distance)
+            self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
             self.head.color = [1, 0, 1]
             self.making_capture = True
 
@@ -174,43 +179,50 @@ class Fish:
             angle_change, distance = draw_angle_dist(4)
             reward = -self.calculate_angle_cost(angle_change, distance)
             self.body.angle += angle_change
-            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.prev_action_impulse = self.calculate_impulse(distance)
+            self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
             self.head.color = [1, 1, 1]
 
         elif action == 5:  # j turn left
             angle_change, distance = draw_angle_dist(4)
             reward = -self.calculate_angle_cost(angle_change, distance)
             self.body.angle -= angle_change
-            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.prev_action_impulse = self.calculate_impulse(distance)
+            self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
             self.head.color = [1, 1, 1]
 
         elif action == 6:  # Do nothing
+            self.prev_action_impulse = 0
             reward = -self.env_variables['rest_cost']
 
         elif action == 7:  # c start right
             angle_change, distance = draw_angle_dist(5)
             reward = -self.calculate_angle_cost(angle_change, distance)
             self.body.angle += angle_change
-            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.prev_action_impulse = self.calculate_impulse(distance)
+            self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
             self.head.color = [1, 0, 0]
 
         elif action == 8:  # c start left
             angle_change, distance = draw_angle_dist(5)
             reward = -self.calculate_angle_cost(angle_change, distance)
             self.body.angle -= angle_change
-            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.prev_action_impulse = self.calculate_impulse(distance)
+            self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
             self.head.color = [1, 0, 0]
 
         elif action == 9:  # Approach swim.
             angle_change, distance = draw_angle_dist(10)
             reward = -self.calculate_angle_cost(angle_change, distance)
             self.body.angle -= angle_change
-            self.body.apply_impulse_at_local_point((self.calculate_impulse(distance), 0))
+            self.prev_action_impulse = self.calculate_impulse(distance)
+            self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
             self.head.color = (0, 1, 0)
 
         else:
             reward = None
             print("Invalid action given")
+
         return reward
 
     def try_impulse(self, impulse):

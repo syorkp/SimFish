@@ -480,31 +480,7 @@ class BaseEnvironment:
             self.sand_grains_bumped += 1
 
     def get_last_action_magnitude(self):
-        # TODO: Change these to be for the realistic action space
-        if self.last_action == 0:
-            imp = self.env_variables['forward_swim_impulse']
-        elif self.last_action == 1:
-            imp = self.env_variables['routine_turn_impulse']
-        elif self.last_action == 2:
-            imp = self.env_variables['routine_turn_impulse']
-        elif self.last_action == 3:
-            imp = self.env_variables['capture_swim_impulse']
-        elif self.last_action == 4:
-            imp = self.env_variables['j_turn_impulse']
-        elif self.last_action == 5:
-            imp = self.env_variables['j_turn_impulse']
-        elif self.last_action == 6:
-            imp = 0
-        elif self.last_action == 7:
-            imp = self.env_variables['routine_turn_impulse']
-        elif self.last_action == 8:
-            imp = self.env_variables['routine_turn_impulse']
-        elif self.last_action == 9:
-            imp = self.env_variables['routine_turn_impulse']
-        else:
-            imp = 0
-            print("Wrong action selected")  # TODO: Will need to update for new action space.
-        return imp / 200  # Scaled down both for mass effects and to make it possible for the prey to be caught. TODO: Consider making this a parameter.
+        return self.fish.prev_action_impulse / 200  # Scaled down both for mass effects and to make it possible for the prey to be caught. TODO: Consider making this a parameter.
 
     def displace_sand_grains(self):
         for i, body in enumerate(self.sand_grain_bodies):
