@@ -13,79 +13,106 @@ if not os.path.exists("./Assay-Output/"):
 
 current_training_configuration = [
     {
-        "Model Name": "new_actions_all_features",
-        "Environment Name": "new_actions_all_features",
-        "Total Configurations": 6,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "3": 22,
-                "4": 27,
-                "5": 32,
-            },
-            "Predators Avoided": {
-                "2": 2,
-            },
-            "Sand Grains Bumped": {
-                "6": 20,
-            }
-        },
+        "Model Name": "changed_penalties",
+        "Environment Name": "changed_penalties_1",
         "Trial Number": 1,
+        "Total Configurations": 6,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "3": 3,
+                "4": 4,
+                "5": 5,
+            },
+            "Predators Avoided": {
+                "2": 2,
+            },
+            "Sand Grains Bumped": {
+                "6": 10,
+            }
+        },
         "Run Mode": "Training",
-        "Fish Setup": "Free",
+        "Tethered": True,
         "Realistic Bouts": True,
         "Priority": 2,
         "Using GPU": True,
         "monitor gpu": False,
     },
     {
-        "Model Name": "new_actions_all_features",
-        "Environment Name": "new_actions_all_features",
-        "Total Configurations": 6,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "3": 22,
-                "4": 27,
-                "5": 32,
-            },
-            "Predators Avoided": {
-                "2": 2,
-            },
-            "Sand Grains Bumped": {
-                "6": 20,
-            }
-        },
+        "Model Name": "changed_penalties",
+        "Environment Name": "changed_penalties_2",
         "Trial Number": 2,
+        "Total Configurations": 6,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "3": 3,
+                "4": 4,
+                "5": 5,
+            },
+            "Predators Avoided": {
+                "2": 2,
+            },
+            "Sand Grains Bumped": {
+                "6": 10,
+            }
+        },
         "Run Mode": "Training",
-        "Fish Setup": "Free",
+        "Tethered": True,
         "Realistic Bouts": True,
         "Priority": 2,
         "Using GPU": True,
         "monitor gpu": False,
     },
     {
-        "Model Name": "new_actions_all_features",
-        "Environment Name": "new_actions_all_features",
+        "Model Name": "larger_network",
+        "Environment Name": "larger_network",
+        "Trial Number": 1,
         "Total Configurations": 6,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
             "Prey Caught": {
-                "3": 22,
-                "4": 27,
-                "5": 32,
+                "3": 3,
+                "4": 4,
+                "5": 5,
             },
             "Predators Avoided": {
                 "2": 2,
             },
             "Sand Grains Bumped": {
-                "6": 20,
+                "6": 10,
             }
         },
-        "Trial Number": 3,
+        "Run Mode": "Training",
+        "Tethered": True,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "smaller_network",
+        "Environment Name": "smaller_network",
+        "Trial Number": 1,
+        "Total Configurations": 6,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "3": 3,
+                "4": 4,
+                "5": 5,
+            },
+            "Predators Avoided": {
+                "2": 2,
+            },
+            "Sand Grains Bumped": {
+                "6": 10,
+            }
+        },
         "Run Mode": "Training",
         "Tethered": True,
         "Realistic Bouts": True,
