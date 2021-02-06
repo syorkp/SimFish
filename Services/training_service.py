@@ -102,7 +102,7 @@ class TrainingService:
         self.switched_configuration = True
 
         # Data
-        self.training_buffer = ExperienceBuffer(buffer_size=self.params["exp_buffer_size"])
+        self.training_buffer = ExperienceBuffer(output_location=self.output_location, buffer_size=self.params["exp_buffer_size"])
         self.frame_buffer = []
         self.training_times = []
         self.reward_list = []
@@ -161,6 +161,12 @@ class TrainingService:
             else:
                 print("No saved checkpoints found, starting from scratch.")
                 self.sess.run(self.init)
+
+            # if self.training_buffer.check_saved():  TODO: Consider adding training buffer
+            #     print("Loading previous training buffer")
+            #     self.training_buffer.load()
+            # else:
+            #     print("No existing training buffer")
         else:
             print("First attempt at running model. Starting from scratch.")
             self.sess.run(self.init)
@@ -376,6 +382,10 @@ class TrainingService:
         # Periodically save the model.
         if self.episode_number % self.params['summaryLength'] == 0 and self.episode_number != 0:
             # print(f"mean time: {np.mean(self.training_times)}")
+
+            # Save training buffer  TODO: Consider adding training buffer in future
+            # print(f"Saving training buffer for {self.trial_id}")
+            # self.training_buffer.save()
 
             # Save the model
             self.saver.save(self.sess, f"{self.output_location}/model-{str(self.episode_number)}.cptk")
