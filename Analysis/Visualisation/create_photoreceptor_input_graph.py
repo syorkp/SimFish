@@ -1,10 +1,10 @@
 import json
 import numpy as np
 import matplotlib.pyplot as plt
-from load_data import load_data
+from Analysis.load_data import load_data
 
 
-data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
+data = load_data("changed_penalties-2", "Naturalistic", "Naturalistic-1")
 
 
 observation = data["observation"]

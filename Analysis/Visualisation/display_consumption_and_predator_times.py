@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-from load_data import load_data
+from Analysis.load_data import load_data
 
 
 def display_consumption_and_predator_times(data):
@@ -15,6 +15,6 @@ def display_consumption_and_predator_times(data):
     plt.show()
 
 
-data = load_data("simple_actions", "All-Features", "conditional_prey_and_predators-1")
+data = load_data("changed_penalties-2", "Naturalistic", "Naturalistic-1")
 display_consumption_and_predator_times(data)
 

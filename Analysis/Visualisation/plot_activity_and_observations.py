@@ -2,7 +2,7 @@ import json
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.cm as cm
-from load_data import load_data
+from Analysis.load_data import load_data
 
 
 def plot_activity(rnn_data, observation):
@@ -51,7 +51,7 @@ def convert_photons_to_int(obs):
 
 
 # TODO: Make sure data load method fits.
-data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
+data = load_data("changed_penalties-2", "Naturalistic", "Naturalistic-1")
 
 rnn_unit_1 = [data["rnn state"][i-1][0][0] for i in data["step"]]
 rnn_unit_2 = [data["rnn state"][i-1][0][2] for i in data["step"]]

@@ -1,7 +1,7 @@
 import json
 import numpy as np
 from matplotlib import pyplot as plt
-from load_data import load_data
+from Analysis.load_data import load_data
 
 """
 Should, given two indexes, give the full action sequence of the fish within.

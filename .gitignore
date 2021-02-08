@@ -1,8 +1,8 @@
 venv
 Assay-Output
 Training-Output
-/Analysis-Tools/Action-Choice-Data/
-/Analysis-Tools/__pycache__/
+/Analysis/Action-Choice-Data/
+/Analysis/__pycache__/
 /Environment/__pycache__/
 /Environment/Fish/__pycache__/
 /Environment/Action_Space/__pycache__/

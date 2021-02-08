@@ -3,11 +3,11 @@ import numpy as np
 import moviepy.editor as mp
 
 from Tools.make_gif import make_gif
-from load_data import load_data
+from Analysis.load_data import load_data
 
 
 # TODO: Make sure data load method fits.
-data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
+data = load_data("changed_penalties-2", "Naturalistic", "Naturalistic-1")
 
 # TODO: Not finished or used yet.
 

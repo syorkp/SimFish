@@ -181,9 +181,8 @@ class AssayService:
         else:
             sand_grain_positions = [[10000, 10000]]
 
-        if not self.simulation.prey_bodies:
-            prey_positions = [self.simulation.prey_bodies[i].position for i, b in
-                              enumerate(self.simulation.prey_bodies)]
+        if self.simulation.prey_bodies:
+            prey_positions = [prey.position for prey in self.simulation.prey_bodies]
             prey_positions = [[i[0], i[1]] for i in prey_positions]
         else:
             prey_positions = [[10000, 10000]]
@@ -232,6 +231,7 @@ class AssayService:
             assay_group = hdf5_file.get(assay['assay id'])
 
         for key in self.output_data:
+            print(type(self.output_data[key]))  # Its a list
             try:
                 assay_group.create_dataset(key, data=self.output_data[key])  # TODO: Compress data.
             except RuntimeError:
@@ -336,7 +336,8 @@ class AssayService:
         if assay["save frames"]:
             make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
-                     true_image=True)  # TODO: Remove 100 to change back to normal.
+                     true_image=True)
+
         self.frame_buffer = []
         with open(f"{self.data_save_location}/{assay['assay id']}.json", "w") as output_file:
             json.dump(self.assay_output_data, output_file)

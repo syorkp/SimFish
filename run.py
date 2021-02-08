@@ -11,6 +11,59 @@ if not os.path.exists("./Assay-Output/"):
     os.makedirs("./Assay-Output/")
 
 
+current_assay_configuration = [
+    {
+        "Model Name": "changed_penalties",
+        "Environment Name": "naturalistic",
+        "Assay Configuration Name": "Naturalistic",
+        "Trial Number": 2,
+        "Run Mode": "Assay",
+        "Priority": 1,
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Assays": [
+            {
+                "assay id": "Naturalistic-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": False,
+                "recordings": ["behavioural choice", "position", "fish_angle", "predator_position", "prey_positions"],
+                "interactions": []
+            },
+            # {
+            #     "assay id": "Naturalistic-2",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 1000,
+            #     "Tethered": False,
+            #     "save frames": False,
+            #     "recordings": ["behavioural choice", "position", "fish_angle", "predator_position", "prey_positions"],
+            #     "interactions": []
+            # },
+            # {
+            #     "assay id": "Naturalistic-3",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 1000,
+            #     "Tethered": False,
+            #     "save frames": False,
+            #     "recordings": ["behavioural choice", "position", "fish_angle", "predator_position", "prey_positions"],
+            #     "interactions": []
+            # },
+            # {
+            #     "assay id": "Naturalistic-4",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 1000,
+            #     "Tethered": False,
+            #     "save frames": False,
+            #     "recordings": ["behavioural choice", "position", "fish_angle", "predator_position", "prey_positions"],
+            #     "interactions": []
+            # }
+        ],
+    },
+]
+
+
 current_training_configuration = [
     {
         "Model Name": "changed_penalties",
@@ -123,5 +176,5 @@ current_training_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(current_training_configuration)
+manager = TrialManager(current_assay_configuration)
 manager.run_priority_loop()

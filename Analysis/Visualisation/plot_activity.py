@@ -2,7 +2,7 @@ import json
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.cm as cm
-from load_data import load_data
+from Analysis.load_data import load_data
 
 
 def plot_activity(rnn_data):
@@ -28,7 +28,7 @@ def plot_activity(rnn_data):
     plt.show()
 
 
-data = load_data("simple_actions", "All-Features", "realistic_all_features-1")
+data = load_data("changed_penalties-2", "Naturalistic", "Naturalistic-1")
 
 
 rnn_unit_1 = [data["rnn state"][i-1][0][0] for i in data["step"]]

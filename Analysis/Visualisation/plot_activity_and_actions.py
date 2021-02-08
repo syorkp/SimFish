@@ -2,7 +2,7 @@ import json
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.cm as cm
-from load_data import load_data
+from Analysis.load_data import load_data
 
 
 def calculate_average_rnn_activity():
@@ -62,7 +62,7 @@ def plot_activity_and_actions(rnn_data, action_data):
     plt.show()
 
 
-data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
+data = load_data("changed_penalties-2", "Naturalistic", "Naturalistic-1")
 
 # with open("../Assay-Output/base-1/Visual-Stimulus-Assay-1.json", "r") as file:
 #     data = json.load(file)

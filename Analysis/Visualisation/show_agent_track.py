@@ -3,10 +3,9 @@ import json
 from matplotlib import pyplot as plt
 import matplotlib.cm as cm
 
-from load_data import load_data
+from Analysis.load_data import load_data
 
-
-data = load_data("Prey Stimuli", "Visual-Stimulus-Assay-2")
+data = load_data("changed_penalties-2", "Naturalistic", "Naturalistic-1")
 
 
 position = data["position"]

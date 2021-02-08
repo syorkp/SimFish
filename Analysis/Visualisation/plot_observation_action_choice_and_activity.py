@@ -1,7 +1,7 @@
 import json
 import numpy as np
 from matplotlib import pyplot as plt
-from load_data import load_data
+from Analysis.load_data import load_data
 
 
 def plot_all(rnn_data, observation, action_choice):
@@ -70,7 +70,7 @@ def convert_photons_to_int(obs):
     return new_obs
 
 
-data = load_data("Controlled_Visual_Stimuli", "Moving-Predator", "basic_all_features-1")
+data = load_data("changed_penalties-2", "Naturalistic", "Naturalistic-1")
 
 rnn_unit_1 = [data["rnn state"][i-1][0][165] for i in data["step"]]
 rnn_unit_2 = [data["rnn state"][i-1][0][155] for i in data["step"]]
