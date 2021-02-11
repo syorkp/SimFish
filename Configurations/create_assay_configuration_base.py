@@ -98,8 +98,10 @@ params = {'num_actions': 7,  # size of action space
           'summaryLength': 200,  # Number of epidoes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
           'rnn_dim': 256,  # number of rnn cells
+          'extra_rnn': False,
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
-          'learning_rate': 0.0001}
+          'learning_rate': 0.0001
+          }
 
 
 # Equal to that given in the file name.

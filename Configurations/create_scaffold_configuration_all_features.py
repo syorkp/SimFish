@@ -31,23 +31,23 @@ env = {'width': 1000,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 20,
-       'prey_impulse': 0.05,  # impulse each prey receives per step
+       'prey_num': 60,
+       'prey_impulse': 0.1,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
        'prey_max_turning_angle': 0.3,
-       'prey_jump': False,
+       'prey_jump': True,
 
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
        'sand_grain_size': 4.,
-       'sand_grain_num': 0,
+       'sand_grain_num': 20,
        'sand_grain_displacement_impulse_scaling_factor': 0.5,
        'sand_grain_displacement_distance': 20,
 
        'vegetation_size': 100.,
-       'vegetation_num': 0,
+       'vegetation_num': 4,
        'vegetation_effect_distance': 150,
 
        'predator_mass': 10.,
@@ -57,7 +57,7 @@ env = {'width': 1000,  # arena size
        'immunity_steps': 65,
        # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 200,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.05,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.02,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -78,9 +78,9 @@ env = {'width': 1000,  # arena size
        'j_turn_dir_change': 0.07,
        'rest_cost': 2,
 
-       'capture_swim_extra_cost': 15,
+       'capture_swim_extra_cost': 25,
 
-       'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
+       'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not catching prey
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
        'capture_basic_reward': 1000,
        'predator_cost': 100,
@@ -98,14 +98,16 @@ params = {'num_actions': 7,  # size of action space
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
           'max_epLength': 1000,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
-          'summaryLength': 200,  # Number of epidoes to periodically save for analysis
+          'summaryLength': 500,  # Number of episodes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
           'rnn_dim': 256,  # number of rnn cells
+          'extra_rnn': True,
+
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
           'learning_rate': 0.0001}
 
 
-directory_name = "all_features"
+directory_name = "extra_layer_all_features"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):
@@ -125,56 +127,6 @@ def save_files(n):
 
 # 1 Initial config
 number = 1
-save_files(number)
-number += 1
-
-# 2. Increase predator speed
-# env["predator_impulse"] = 1
-# save_files(number)
-# number += 1
-
-# 3. Increase predator speed
-# env["predator_impulse"] = 1.5
-# save_files(number)
-# number += 1
-
-# B. Learn Prey Capture #
-
-# 4. Increase prey number and reduce predator probability
-env["probability_of_predator"] = 0.01
-env["prey_number"] = 40
-save_files(number)
-number += 1
-
-# 5. Increase prey speed
-env["prey_impulse"] = 0.1
-save_files(number)
-number += 1
-
-# 6. Add prey jump
-env["prey_jump"] = True
-save_files(number)
-number += 1
-
-# B. Recognise Sand Grains #
-
-# 7. Add sand grains, reduce prey
-env["sand_grain_num"] = 10
-env["prey_number"] = 30
-save_files(number)
-number += 1
-
-# 8. Add sand grains, reduce prey
-env["sand_grain_num"] = 20
-env["prey_number"] = 20
-save_files(number)
-number += 1
-
-# D. Learn to use Vegetation #
-
-# 9. Increase predation chance, add vegetation
-env["sand_grain_num"] = 20
-env["prey_number"] = 20
 save_files(number)
 number += 1
 

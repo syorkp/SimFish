@@ -227,9 +227,9 @@ class TrainingService:
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim'], state_is_tuple=True)
         cell_t = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim'], state_is_tuple=True)
         main_QN = QNetwork(self.simulation, self.params['rnn_dim'], cell, 'main', self.params['num_actions'],
-                           learning_rate=self.params['learning_rate'])
+                           learning_rate=self.params['learning_rate'], extra_layer=self.params['extra_rnn'])
         target_QN = QNetwork(self.simulation, self.params['rnn_dim'], cell_t, 'target', self.params['num_actions'],
-                             learning_rate=self.params['learning_rate'])
+                             learning_rate=self.params['learning_rate'], extra_layer=self.params['extra_rnn'])
         return main_QN, target_QN
 
     def episode_loop(self):

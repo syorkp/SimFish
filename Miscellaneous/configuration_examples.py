@@ -421,6 +421,117 @@ behaviour_sequence_data_configuration_basic = [
     }
 ]
 
+
+
+various_training_configuration = [
+    {
+        "Model Name": "changed_penalties",
+        "Environment Name": "changed_penalties_1",
+        "Trial Number": 1,
+        "Total Configurations": 6,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "3": 3,
+                "4": 4,
+                "5": 5,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+                "6": 10,
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": True,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "changed_penalties",
+        "Environment Name": "changed_penalties_2",
+        "Trial Number": 2,
+        "Total Configurations": 6,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "3": 3,
+                "4": 4,
+                "5": 5,
+            },
+            "Predators Avoided": {
+                "2": 2,
+            },
+            "Sand Grains Bumped": {
+                "6": 10,
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": True,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "larger_network",
+        "Environment Name": "larger_network",
+        "Trial Number": 1,
+        "Total Configurations": 6,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "3": 3,
+                "4": 4,
+                "5": 5,
+            },
+            "Predators Avoided": {
+                "2": 2,
+            },
+            "Sand Grains Bumped": {
+                "6": 10,
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": True,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "smaller_network",
+        "Environment Name": "smaller_network",
+        "Trial Number": 1,
+        "Total Configurations": 6,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "3": 3,
+                "4": 4,
+                "5": 5,
+            },
+            "Predators Avoided": {
+                "2": 2,
+            },
+            "Sand Grains Bumped": {
+                "6": 10,
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": True,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+]
 test_assay_configuration = [
     # {
     #     "Model Name": "realistic_action_space",

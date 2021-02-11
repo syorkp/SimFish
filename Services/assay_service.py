@@ -84,7 +84,8 @@ class AssayService:
                            rnn_cell=cell,
                            my_scope='main',
                            num_actions=self.learning_params['num_actions'],
-                           learning_rate=self.learning_params['learning_rate'])
+                           learning_rate=self.learning_params['learning_rate'],
+                           extra_layer=self.learning_params['extra_rnn'])
         return network
 
     def create_testing_environment(self, assay):

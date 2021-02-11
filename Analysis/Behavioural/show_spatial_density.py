@@ -112,17 +112,20 @@ def create_density_cloud(density_list, action_num, stimulus_name):
     plt.show()
 
 
+def get_all_density_plots(data):
+    for action_num in range(0, 10):
+        prey_1, pred_1 = get_clouds_with_action(data, action_num)
+
+        if len(prey_1) > 2:
+            create_density_cloud(prey_1, action_num, "Prey")
+
+        if len(pred_1) > 2:
+            create_density_cloud(pred_1, action_num, "Predator")
+
+
 data = load_data("changed_penalties-2", "Naturalistic", "Naturalistic-1")
 
-for action_num in range(0, 10):
-    prey_1, pred_1 = get_clouds_with_action(data, action_num)
-
-    if len(prey_1) > 2:
-        create_density_cloud(prey_1, action_num, "Prey")
-
-    if len(pred_1) > 2:
-        create_density_cloud(pred_1, action_num, "Predator")
-
+get_all_density_plots(data)
 
 
 

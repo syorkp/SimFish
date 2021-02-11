@@ -5,7 +5,7 @@ tf.disable_v2_behavior()
 
 class QNetwork:
 
-    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, num_actions, learning_rate=0.0001):
+    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, num_actions, learning_rate=0.0001, extra_layer=False):
         """The network receives the observation from both eyes, processes it
         #through convolutional layers, concatenates it with the internal state
         #and feeds it to the RNN."""
@@ -70,8 +70,21 @@ class QNetwork:
         self.rnn = tf.reshape(self.rnn, shape=[-1, self.rnn_dim])
         self.rnn_output = self.rnn
 
-        # The output from the recurrent player is then split into separate Value and Advantage streams
-        self.streamA, self.streamV = tf.split(self.rnn_output, 2, 1)
+        if extra_layer:
+            self.rnn_in2 = tf.layers.dense(self.rnn_output, self.rnn_dim, activation=tf.nn.relu,
+                                          kernel_initializer=tf.orthogonal_initializer,
+                                          trainable=True)
+            self.rnnFlat = tf.reshape(self.rnn_in2, [self.batch_size, self.trainLength, self.rnn_dim])
+
+            self.rnn2, self.rnn_state2 = tf.nn.dynamic_rnn(inputs=self.rnnFlat, cell=rnn_cell, dtype=tf.float32,
+                                                           initial_state=self.state_in, scope=my_scope + '_rnn2')
+            self.rnn2 = tf.reshape(self.rnn2, shape=[-1, self.rnn_dim])
+            self.rnn2_output = self.rnn2
+            # The output from the recurrent player is then split into separate Value and Advantage streams
+            self.streamA, self.streamV = tf.split(self.rnn2_output, 2, 1)
+
+        else:
+            self.streamA, self.streamV = tf.split(self.rnn_output, 2, 1)
         self.AW = tf.Variable(tf.random_normal([self.rnn_output_size // 2, num_actions]))
         self.VW = tf.Variable(tf.random_normal([self.rnn_output_size // 2, 1]))
         self.Advantage = tf.matmul(self.streamA, self.AW)
