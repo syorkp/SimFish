@@ -99,6 +99,7 @@ def get_action_name(action_num):
 
 
 def create_density_cloud(density_list, action_num, stimulus_name):
+    n_samples = len(density_list)
     x = np.array([i[0] for i in density_list])
     y = np.array([i[1] for i in density_list])
     # Evaluate a gaussian kde on a regular grid of nbins x nbins over data extents
@@ -106,7 +107,7 @@ def create_density_cloud(density_list, action_num, stimulus_name):
     k = kde.gaussian_kde([x, y])
     xi, yi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
     zi = k(np.vstack([xi.flatten(), yi.flatten()]))
-    plt.title(f"Feature: {stimulus_name}, Action: {get_action_name(action_num)}")
+    plt.title(f"Feature: {stimulus_name}, Action: {get_action_name(action_num)}, Samples: {n_samples}")
     # Make the plot
     plt.pcolormesh(xi, yi, zi.reshape(xi.shape))
     plt.show()
@@ -123,9 +124,29 @@ def get_all_density_plots(data):
             create_density_cloud(pred_1, action_num, "Predator")
 
 
-data = load_data("changed_penalties-2", "Naturalistic", "Naturalistic-1")
+def get_all_density_plots_all_subsets(p1, p2, p3, n):
+    for action_num in range(0, 10):
+        prey_cloud = []
+        pred_cloud = []
+        for i in range(1, n+1):
+            data = load_data(p1, p2, f"{p3}-{i}")
+            prey_1, pred_1 = get_clouds_with_action(data, action_num)
+            prey_cloud = prey_cloud + prey_1
+            pred_cloud = pred_cloud + pred_1
 
-get_all_density_plots(data)
+        if len(prey_cloud) > 2:
+            create_density_cloud(prey_cloud, action_num, "Prey")
+
+        if len(pred_cloud) > 2:
+            create_density_cloud(pred_cloud, action_num, "Predator")
+
+
+get_all_density_plots_all_subsets("larger_network-1", "Naturalistic", "Naturalistic", 4)
+
+# data = load_data("larger_network-1", "Naturalistic", f"Naturalistic-1")
+#
+#
+# get_all_density_plots(data)
 
 
 
