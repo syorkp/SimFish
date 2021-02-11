@@ -74,6 +74,9 @@ class AssayService:
         self.output_data = {}
         self.episode_summary_data = None
 
+        # Hacky fix for h5py problem:
+        self.last_position_dim = self.environment_params["prey_num"]
+
     def create_network(self):
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim'], state_is_tuple=True)
         network = QNetwork(simulation=self.simulation,
@@ -182,16 +185,25 @@ class AssayService:
             sand_grain_positions = [[10000, 10000]]
 
         if self.simulation.prey_bodies:
+            # TODO: Note hacky fix which may want to clean up later.
             prey_positions = [prey.position for prey in self.simulation.prey_bodies]
             prey_positions = [[i[0], i[1]] for i in prey_positions]
+            while True:
+                if len(prey_positions) < self.last_position_dim:
+                    prey_positions = np.append(prey_positions, [[10000, 10000]], axis=0)
+                else:
+                    break
+
+            self.last_position_dim = len(prey_positions)
+
         else:
-            prey_positions = [[10000, 10000]]
+            prey_positions = np.array([[10000, 10000]])
 
         if self.simulation.predator_body is not None:
             predator_position = self.simulation.predator_body.position
-            predator_position = [predator_position[0], predator_position[1]]
+            predator_position = np.array([predator_position[0], predator_position[1]])
         else:
-            predator_position = [10000, 10000]
+            predator_position = np.array([10000, 10000])
 
         if self.simulation.vegetation_bodies is not None:
             vegetation_positions = [self.simulation.vegetation_bodies[i].position for i, b in enumerate(self.simulation.vegetation_bodies)]
@@ -230,13 +242,13 @@ class AssayService:
         except ValueError:
             assay_group = hdf5_file.get(assay['assay id'])
 
+        self.output_data["prey_positions"] = np.stack(self.output_data["prey_positions"])
         for key in self.output_data:
-            print(type(self.output_data[key]))  # Its a list
             try:
-                assay_group.create_dataset(key, data=self.output_data[key])  # TODO: Compress data.
+                assay_group.create_dataset(key, data=np.array(self.output_data[key]))  # TODO: Compress data.
             except RuntimeError:
                 del assay_group[key]
-                assay_group.create_dataset(key, data=self.output_data[key])  # TODO: Compress data.
+                assay_group.create_dataset(key, data=np.array(self.output_data[key]))  # TODO: Compress data.
         hdf5_file.close()
 
     def save_episode_data(self):
