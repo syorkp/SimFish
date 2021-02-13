@@ -775,4 +775,34 @@ naturalistic_assay_configuration = [
     },
 ]
 
-
+random_projection_configuration = [
+    {
+        "Model Name": "changed_penalties",
+        "Environment Name": "test_square",
+        "Trial Number": 1,
+        "Assay Configuration Name": "Controlled_Visual_Stimuli",
+        "Run Mode": "Assay",
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Priority": 1,
+        "Assays": [
+            {
+                "assay id": "Random-Prey",
+                "stimulus paradigm": "Projection",
+                "random positions": True,
+                "reset": False,
+                "duration": 241,
+                "Tethered": True,
+                "save frames": True,
+                "recordings": ["behavioural choice", "rnn state", "observation"],
+                "stimuli": {
+                    "prey 1": {"steps": 240,
+                               "size": 10
+                               },
+                },
+                "interactions": []
+            }
+        ],
+    }
+]

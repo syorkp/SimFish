@@ -10,41 +10,10 @@ if not os.path.exists("./Training-Output/"):
 if not os.path.exists("./Assay-Output/"):
     os.makedirs("./Assay-Output/")
 
-random_projection_configuration = [
-    {
-        "Model Name": "changed_penalties",
-        "Environment Name": "test_square",
-        "Trial Number": 1,
-        "Assay Configuration Name": "Controlled_Visual_Stimuli",
-        "Run Mode": "Assay",
-        "Realistic Bouts": True,
-        "Using GPU": False,
-        "monitor gpu": False,
-        "Priority": 1,
-        "Assays": [
-            {
-                "assay id": "Random-Prey",
-                "stimulus paradigm": "Projection",
-                "random positions": True,
-                "reset": False,
-                "duration": 241,
-                "Tethered": True,
-                "save frames": True,
-                "recordings": ["behavioural choice", "rnn state", "observation"],
-                "stimuli": {
-                    "prey 1": {"steps": 240,
-                               "size": 10
-                               },
-                },
-                "interactions": []
-            }
-        ],
-    }
-]
 
 current_assay_configuration = [
     {
-        "Model Name": "larger_network",
+        "Model Name": "changed_penalties",
         "Environment Name": "prey_only",
         "Assay Configuration Name": "Naturalistic",
         "Trial Number": 1,
@@ -59,8 +28,10 @@ current_assay_configuration = [
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
-                "save frames": False,
-                "recordings": ["behavioural choice", "position", "fish_angle", "predator_position", "prey_positions"],
+                "save frames": True,
+                "random positions": False,
+                "reset": False,
+                "recordings": ["observation", "behavioural choice"],
                 "interactions": []
             },
             {
@@ -68,28 +39,12 @@ current_assay_configuration = [
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
-                "save frames": False,
-                "recordings": ["behavioural choice", "position", "fish_angle", "predator_position", "prey_positions"],
+                "save frames": True,
+                "random positions": False,
+                "reset": False,
+                "recordings": ["observation", "behavioural choice"],
                 "interactions": []
             },
-            {
-                "assay id": "Naturalistic-3",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": False,
-                "save frames": False,
-                "recordings": ["behavioural choice", "position", "fish_angle", "predator_position", "prey_positions"],
-                "interactions": []
-            },
-            {
-                "assay id": "Naturalistic-4",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": False,
-                "save frames": False,
-                "recordings": ["behavioural choice", "position", "fish_angle", "predator_position", "prey_positions"],
-                "interactions": []
-            }
         ],
     },
 ]
@@ -164,5 +119,5 @@ current_training_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(current_training_configuration)
+manager = TrialManager(current_assay_configuration)
 manager.run_priority_loop()

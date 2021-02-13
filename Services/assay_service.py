@@ -250,8 +250,9 @@ class AssayService:
         except ValueError:
             assay_group = hdf5_file.get(assay['assay id'])
 
-        if not assay["random positions"]:
+        if "prey_positions" in self.assay_output_data_format.keys():
             self.output_data["prey_positions"] = np.stack(self.output_data["prey_positions"])
+
         for key in self.output_data:
             try:
                 assay_group.create_dataset(key, data=np.array(self.output_data[key]))  # TODO: Compress data.
