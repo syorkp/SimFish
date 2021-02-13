@@ -96,7 +96,10 @@ class AssayService:
         if assay["stimulus paradigm"] == "Projection":
             self.simulation = ControlledStimulusEnvironment(self.environment_params, assay["stimuli"],
                                                             self.realistic_bouts,
-                                                            tethered=assay["Tethered"])
+                                                            tethered=assay["Tethered"],
+                                                            random=assay["random positions"],
+                                                            reset_each_step=assay["reset"]
+                                                            )
         elif assay["stimulus paradigm"] == "Naturalistic":
             self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
         else:
@@ -150,9 +153,13 @@ class AssayService:
         self.step_number = 0
         while self.step_number < assay["duration"]:
             self.step_number += 1
+            if assay["reset"]:
+                self.simulation.reset()
             o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
                                                                        a=a, rnn_state=rnn_state)
             o = o1
+
+
             if d:
                 break
 
@@ -243,7 +250,8 @@ class AssayService:
         except ValueError:
             assay_group = hdf5_file.get(assay['assay id'])
 
-        self.output_data["prey_positions"] = np.stack(self.output_data["prey_positions"])
+        if not assay["random positions"]:
+            self.output_data["prey_positions"] = np.stack(self.output_data["prey_positions"])
         for key in self.output_data:
             try:
                 assay_group.create_dataset(key, data=np.array(self.output_data[key]))  # TODO: Compress data.

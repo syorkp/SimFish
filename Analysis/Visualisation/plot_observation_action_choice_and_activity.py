@@ -9,11 +9,11 @@ def plot_all(rnn_data, observation, action_choice):
 
     new_observation = convert_photons_to_int(observation)
     new_observation = new_observation.transpose(1, 0, 2)
-    left = new_observation[:150]
-    right = new_observation[250:]
+    left = new_observation[:]
+    right = new_observation[400:]
 
     separated_actions = []
-    for action in range(7):
+    for action in range(10):
         action_timestamps = [i for i, a in enumerate(action_choice) if a == action]
         if len(action_timestamps) > 0:
             separated_actions.append(action_timestamps)
@@ -24,10 +24,10 @@ def plot_all(rnn_data, observation, action_choice):
                            (0.75, 0.75, 0.0),
                            (1.0, 0.0, 0.0),
                            (1.0, 0.75, 0.0),
-                           # (0.0, 0.75, 1.0),
+                           (0.75, 0.0, 1.0),
+                           (0.5, 0.5, 0.5),
                            ])
     # TODO: Select number of codes automatically
-
 
     axs[0].imshow(left, aspect="auto")
     axs[1].imshow(right, aspect="auto")
@@ -70,7 +70,7 @@ def convert_photons_to_int(obs):
     return new_obs
 
 
-data = load_data("changed_penalties-2", "Naturalistic", "Naturalistic-1")
+data = load_data("changed_penalties-1", "Controlled_Visual_Stimuli", "Random-Prey")
 
 rnn_unit_1 = [data["rnn state"][i-1][0][165] for i in data["step"]]
 rnn_unit_2 = [data["rnn state"][i-1][0][155] for i in data["step"]]

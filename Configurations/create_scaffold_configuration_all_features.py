@@ -11,8 +11,8 @@ import os
 # all distances in pixels
 
 
-env = {'width': 1000,  # arena size
-       'height': 700,
+env = {'width': 1500,  # arena size
+       'height': 1500,
        'drag': 0.7,  # water drag
        'phys_dt': 0.1,  # physics time step
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step
@@ -31,7 +31,7 @@ env = {'width': 1000,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 60,
+       'prey_num': 80,
        'prey_impulse': 0.1,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
@@ -47,7 +47,7 @@ env = {'width': 1000,  # arena size
        'sand_grain_displacement_distance': 20,
 
        'vegetation_size': 100.,
-       'vegetation_num': 4,
+       'vegetation_num': 3,
        'vegetation_effect_distance': 150,
 
        'predator_mass': 10.,
@@ -80,13 +80,13 @@ env = {'width': 1000,  # arena size
 
        'capture_swim_extra_cost': 25,
 
-       'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not catching prey
+       'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
        'capture_basic_reward': 1000,
        'predator_cost': 100,
        }
 
-params = {'num_actions': 7,  # size of action space
+params = {'num_actions': 10,  # size of action space
           'batch_size': 16,  # How many experience traces to use for each training step.
           'trace_length': 64,  # How long each experience trace will be when training
           'update_freq': 100,  # How often to perform a training step.
@@ -98,16 +98,16 @@ params = {'num_actions': 7,  # size of action space
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
           'max_epLength': 1000,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
-          'summaryLength': 500,  # Number of episodes to periodically save for analysis
+          'summaryLength': 500,  # Number of epidoes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
           'rnn_dim': 256,  # number of rnn cells
-          'extra_rnn': True,
+          'extra_rnn': False,
 
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
           'learning_rate': 0.0001}
 
 
-directory_name = "extra_layer_all_features"
+directory_name = "normal_all_features"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):

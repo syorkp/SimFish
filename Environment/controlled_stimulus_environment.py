@@ -14,7 +14,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     For this environment, the following stimuli are available: prey, predators.
     """
 
-    def __init__(self, env_variables, stimuli, realistic_bouts, tethered=True, draw_screen=False):
+    def __init__(self, env_variables, stimuli, realistic_bouts, tethered=True, random=False, reset_each_step=False, draw_screen=False):
         super().__init__(env_variables, draw_screen)
 
         if tethered:
@@ -26,6 +26,8 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         # TODO: Unify in future with other stimuli
         self.prey_positions = {}
         self.predator_positions = {}
+        self.random = random
+        self.reset_each_step = reset_each_step
 
         # Whole environment measurements.
         board_height = env_variables["height"]
@@ -42,7 +44,10 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.create_walls()
         self.reset()
 
-        self.create_positional_information(stimuli)
+        if self.random:
+            self.random_stimuli = stimuli
+        else:
+            self.create_positional_information(stimuli)
 
         self.edge_col = self.space.add_collision_handler(1, 3)
         self.edge_col.begin = self.touch_edge
@@ -63,7 +68,11 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         done = False
 
         self.fish.hungry += (1 - self.fish.hungry)*self.env_variables['hunger_inc_tau']
-        self.update_stimuli()
+
+        if self.random:
+            self.update_random_stimuli()
+        else:
+            self.update_stimuli()
 
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.space.step(self.env_variables['phys_dt'])
@@ -114,6 +123,30 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                 self.create_prey()
             elif "predator" in stimulus:
                 self.create_predator()
+
+    def get_distance_for_size(self, degree_size):
+        # TODO: This.
+        return 180
+
+    def place_on_curve(self, stimulus_key, index, distance, angle):
+        b = distance * np.sin(angle) + self.fish.body.position[0]
+        a = distance * np.cos(angle) + self.fish.body.position[1]
+        if "prey" in stimulus_key:
+            self.prey_bodies[index].position = (a, b)
+        elif "predator" in stimulus_key:
+            self.predator_positions[index].position = (a, b)
+
+    def update_random_stimuli(self):
+        stimuli_to_delete = []
+        for i, stimulus, in enumerate(self.random_stimuli.keys()):
+            if self.random_stimuli[stimulus]["steps"] > self.num_steps:
+                d = self.get_distance_for_size(self.random_stimuli[stimulus]["size"])
+                theta = np.random.uniform(-0.75, 0.75) * np.pi
+                self.place_on_curve(stimulus, i, d, theta)
+            else:
+                stimuli_to_delete.append(stimulus)
+        for stimulus in stimuli_to_delete:
+            del self.stimuli[stimulus]
 
     def update_stimuli(self):
         # TODO: Coded very badly.

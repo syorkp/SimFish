@@ -75,8 +75,7 @@ env = {'width': 600,  # arena size
        'capture_basic_reward': 1000,
        'predator_cost': 100
        }
-
-params = {'num_actions': 7,  # size of action space
+params = {'num_actions': 10,  # size of action space
           'batch_size': 16,  # How many experience traces to use for each training step.
           'trace_length': 64,  # How long each experience trace will be when training
           'update_freq': 100,  # How often to perform a training step.
