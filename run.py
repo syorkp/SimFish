@@ -49,6 +49,67 @@ current_assay_configuration = [
     },
 ]
 
+
+predator_assay_config = [
+    {
+        "Model Name": "changed_penalties",
+        "Environment Name": "predator_heavy",
+        "Assay Configuration Name": "Predator",
+        "Trial Number": 1,
+        "Run Mode": "Assay",
+        "Priority": 1,
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Assays": [
+            {
+                "assay id": "Predator-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "reset": False,
+                "recordings": ["observation", "behavioural choice"],
+                "interactions": []
+            },
+            {
+                "assay id": "Predator-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "reset": False,
+                "recordings": ["observation", "behavioural choice"],
+                "interactions": []
+            },
+            {
+                "assay id": "Predator-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "reset": False,
+                "recordings": ["observation", "behavioural choice"],
+                "interactions": []
+            },
+            {
+                "assay id": "Predator-4",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "reset": False,
+                "recordings": ["observation", "behavioural choice"],
+                "interactions": []
+            },
+        ],
+    },
+]
+
 current_training_configuration = [
     {
         "Model Name": "large_all_features",
@@ -119,5 +180,5 @@ current_training_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(current_assay_configuration)
+manager = TrialManager(predator_assay_config)
 manager.run_priority_loop()

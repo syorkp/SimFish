@@ -61,9 +61,6 @@ def average_visual_input_for_bouts(p1, p2, p3, n):
             axs[1].set_yticklabels([])
 
             plt.show()
-    # Get all the observation data from the required files for the given bout number.
-    # Perform some kind of average of the photons to get a new image.
-    #
     return
 
 
