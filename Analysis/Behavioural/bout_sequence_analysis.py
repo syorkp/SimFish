@@ -18,12 +18,15 @@ def plot_tsne_results(transition_probabilities, order=2, title="None"):
 
     tpd['tsne-2d-one'] = tsne_results[:, 0]
     tpd['tsne-2d-two'] = tsne_results[:, 1]
+    tpd['Point'] = ["Blue" for i in range(len(tsne_results[:, 0]))]
+    tpd["Point"][0] = "Red"
     plt.figure(figsize=(16, 10))
     plt.title(title)
 
     sns.scatterplot(
         x="tsne-2d-one", y="tsne-2d-two",
-        palette=sns.color_palette("hls", 10),
+        # palette=sns.color_palette("hls", 10),
+        hue="Point",
         data=tpd,
         legend="full",
         alpha=0.3
