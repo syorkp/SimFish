@@ -70,7 +70,7 @@ def convert_photons_to_int(obs):
     return new_obs
 
 
-data = load_data("changed_penalties-1", "Controlled_Visual_Stimuli", "Random-Prey")
+data = load_data("changed_penalties-1", "Naturalistic_test", "Naturalistic-1")
 
 rnn_unit_1 = [data["rnn state"][i-1][0][165] for i in data["step"]]
 rnn_unit_2 = [data["rnn state"][i-1][0][155] for i in data["step"]]

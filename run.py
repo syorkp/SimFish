@@ -26,7 +26,7 @@ current_assay_configuration = [
             {
                 "assay id": "Naturalistic-1",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 100,
+                "duration": 1000,
                 "Tethered": False,
                 "save frames": True,
                 "random positions": False,

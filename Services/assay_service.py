@@ -258,7 +258,6 @@ class AssayService:
             self.output_data["prey_positions"] = np.stack(self.output_data["prey_positions"])
 
         for key in self.output_data:
-            print(key)
             try:
                 assay_group.create_dataset(key, data=np.array(self.output_data[key]))  # TODO: Compress data.
             except RuntimeError:
