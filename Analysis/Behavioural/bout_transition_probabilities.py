@@ -20,73 +20,44 @@ from transitionMatrix.estimators import cohort_estimator as es
 from Analysis.load_data import load_data
 
 
-def get_previous_actions(data, a_num=0):
-    previous_step_actions = []
-    for index, action in enumerate(data["behavioural choice"]):
-        if index == 0:
-            pass
-        else:
-            if action == a_num:
-                previous_step_actions.append(data["behavioural choice"][index-1])
-    return previous_step_actions
-
-
-def get_first_order_transition_probabilities(transition_counts):
-    transition_probabilities = {"0": {},
-                         "1": {},
-                         "2": {},
-                         "3": {},
-                         "4": {},
-                         "5": {},
-                         "6": {},
-                         "7": {},
-                         "8": {},
-                         "9": {},
-                         }
-    for key in transition_counts.keys():
-        n = len(transition_counts[key])
-        options = set(transition_counts[key])
-        for action in options:
-            transition_probabilities[key][action] = transition_counts[key].count(action)/n
-    return transition_probabilities
-
-
 def get_first_order_transition_counts(p1, p2, p3, n):
-    transition_counts = {"0": [],
-                         "1": [],
-                         "2": [],
-                         "3": [],
-                         "4": [],
-                         "5": [],
-                         "6": [],
-                         "7": [],
-                         "8": [],
-                         "9": [],
-                         }
+    transition_counts = np.zeros((10, 10))
     for file_index in range(1, n+1):
-        data = load_data("larger_network-1", "Naturalistic", f"Naturalistic-{file_index}")
-        for action in range(0, 10):
-            transition_counts[str(action)] = transition_counts[str(action)] + get_previous_actions(data, a_num=action)
+        data = load_data(p1, p2, f"{p3}-{file_index}")
+        for i, a in enumerate(data["behavioural choice"]):
+            if i == 0:
+                pass
+            else:
+                transition_counts[data["behavioural choice"][i-1]][a] += 1
+
     return transition_counts
 
 
-def create_transiton_probabilities_matrix(transition_probabilities):
-    matrix_tran = np.zeros((10, 10))
-    for i, key in enumerate(transition_probabilities.keys()):
-        for j, key2 in enumerate(transition_probabilities[key].keys()):
-            matrix_tran[i, j] = transition_probabilities[key][key2]
-    return matrix_tran
+def get_second_order_transition_counts(p1, p2, p3, n):
+    transition_counts = np.zeros((10, 10, 10))
+    for file_index in range(1, n+1):
+        data = load_data(p1, p2, f"{p3}-{file_index}")
+        for i, a in enumerate(data["behavioural choice"]):
+            if i == 0 or i == 1:
+                pass
+            else:
+                transition_counts[data["behavioural choice"][i-2]][data["behavioural choice"][i-1]][a] += 1
+
+    return transition_counts
+
+
+def get_transition_probabilities(transition_counts):
+    transition_probabilities = transition_counts/np.sum(transition_counts)
+    return transition_probabilities
 
 
 def visualise_first_order_transitions(transition_probabilities):
-    matrix_tran = create_transiton_probabilities_matrix(transition_probabilities)
-    matrix_tran = matrix_tran[:4, :4]
+    matrix_tran = transition_probabilities[:4, :4]
     mc = MarkovChain(matrix_tran, [str(i) for i in range(0, 4)])
     mc.draw()
 
 
 def visualisation_method_2(transition_probabilities):
-    matrix_tran = create_transiton_probabilities_matrix(transition_probabilities)
     fig = plt.figure()
     ax = fig.add_subplot(111, aspect='equal')
 
@@ -98,10 +69,10 @@ def visualisation_method_2(transition_probabilities):
     # mymap = plt.get_cmap("Greys")
     normalize = mpl.colors.LogNorm(vmin=0.0001, vmax=1)
 
-    matrix_size = matrix_tran.shape[0]
+    matrix_size = transition_probabilities.shape[0]
     square_size = 1.0 / matrix_size
 
-    diagonal = matrix_tran.diagonal()
+    diagonal = transition_probabilities.diagonal()
     # colors = []
 
     ax.set_xticklabels(range(0, matrix_size))
@@ -113,8 +84,8 @@ def visualisation_method_2(transition_probabilities):
 
     for i in range(0, matrix_size):
         for j in range(0, matrix_size):
-            if matrix_tran[i, j] > 0:
-                rect_size = np.sqrt(matrix_tran[i, j]) * square_size
+            if transition_probabilities[i, j] > 0:
+                rect_size = np.sqrt(transition_probabilities[i, j]) * square_size
             else:
                 rect_size = 0
 
@@ -125,7 +96,7 @@ def visualisation_method_2(transition_probabilities):
                 rect_size,
                 rect_size,
                 fill=True,
-                color=mymap(normalize(matrix_tran[i, j]))
+                color=mymap(normalize(transition_probabilities[i, j]))
             )
             ax.add_patch(p)
 
@@ -136,11 +107,24 @@ def visualisation_method_2(transition_probabilities):
     plt.show(block=True)
     plt.interactive(False)
 
-
-t = get_first_order_transition_counts("larger_network-1", "Naturalistic", "Naturalistic-", 4)
-tp = get_first_order_transition_probabilities(t)
-visualisation_method_2(tp)
-
+#
+# t = get_first_order_transition_counts("changed_penalties-1", "Naturalistic", "Naturalistic", 2)
+# tp = get_transition_probabilities(t)
+# # visualisation_method_2(tp)
+#
+# test = get_second_order_transition_counts("changed_penalties-1", "Naturalistic", "Naturalistic", 2)
+# testp = get_transition_probabilities(test)
+#
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection='3d')
+# x, y, z = testp.nonzero()
+# ax.scatter(x, y, z)
+#
+# ax.set_xlabel('X Label')
+# ax.set_ylabel('Y Label')
+# ax.set_zlabel('Z Label')
+#
+# plt.show()
 
 #visualise_first_order_transitions(tp)
-x = True
+# x = True

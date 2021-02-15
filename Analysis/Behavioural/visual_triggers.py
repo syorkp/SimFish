@@ -40,7 +40,6 @@ def average_visual_input_for_bouts(p1, p2, p3, n):
         for i in range(1, n + 1):
             data = load_data(p1, p2, f"{p3}-{i}")
             observation = data["observation"]
-            #observation = np.swapaxes(observation, 0, 1)
             time_points_for_bout = [i for i, a in enumerate(data["behavioural choice"]) if a == action_num]
             for index, o in enumerate(observation):
                 if index in time_points_for_bout:
