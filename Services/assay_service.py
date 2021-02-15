@@ -164,9 +164,9 @@ class AssayService:
                 break
 
     def step_loop(self, o, internal_state, a, rnn_state):
-        chosen_a, updated_rnn_state, sa, sv, conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r = \
+        chosen_a, updated_rnn_state, rnn2_state, sa, sv, conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r = \
             self.sess.run(
-                [self.network.predict, self.network.rnn_state, self.network.streamA, self.network.streamV,
+                [self.network.predict, self.network.rnn_state, self.network.rnn_state2, self.network.streamA, self.network.streamV,
                  self.network.conv1l, self.network.conv2l, self.network.conv3l, self.network.conv4l,
                  self.network.conv1r, self.network.conv2r, self.network.conv3r, self.network.conv4r
                  ],
@@ -219,8 +219,12 @@ class AssayService:
         else:
             vegetation_positions = [[10000, 10000]]
 
+        if not self.learning_params["extra_rnn"]:
+            rnn2_state = [0.0]
+
         # Saving step data
         possible_data_to_save = self.package_output_data(chosen_a, sa, updated_rnn_state,
+                                                         rnn2_state,
                                                          self.simulation.fish.body.position,
                                                          self.simulation.prey_consumed_this_step,
                                                          self.simulation.predator_body,
@@ -254,6 +258,7 @@ class AssayService:
             self.output_data["prey_positions"] = np.stack(self.output_data["prey_positions"])
 
         for key in self.output_data:
+            print(key)
             try:
                 assay_group.create_dataset(key, data=np.array(self.output_data[key]))  # TODO: Compress data.
             except RuntimeError:
@@ -277,7 +282,7 @@ class AssayService:
         with open(f"{self.data_save_location}/{self.assay_configuration_id}.json", "w") as output_file:
             json.dump(self.metadata, output_file)
 
-    def package_output_data(self, action, advantage_stream, rnn_state, position, prey_consumed, predator_body,
+    def package_output_data(self, action, advantage_stream, rnn_state, rnn2_state, position, prey_consumed, predator_body,
                             conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r,
                             prey_positions, predator_position, sand_grain_positions, vegetation_positions, fish_angle):
         """
@@ -314,6 +319,7 @@ class AssayService:
         data = {
             "behavioural choice": action,
             "rnn state": rnn_state,
+            "rnn 2 state": rnn2_state,
             "advantage stream": advantage_stream,
             "position": position,
             "observation": observation,

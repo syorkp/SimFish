@@ -84,6 +84,7 @@ class QNetwork:
             self.streamA, self.streamV = tf.split(self.rnn2_output, 2, 1)
 
         else:
+            self.rnn_state2 = self.rnn_state
             self.streamA, self.streamV = tf.split(self.rnn_output, 2, 1)
         self.AW = tf.Variable(tf.random_normal([self.rnn_output_size // 2, num_actions]))
         self.VW = tf.Variable(tf.random_normal([self.rnn_output_size // 2, 1]))
