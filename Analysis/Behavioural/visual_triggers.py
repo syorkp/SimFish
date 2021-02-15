@@ -9,7 +9,7 @@ from Analysis.load_data import load_data
 Tools to display the average visual input received when: A) A specific bout is chosen, B) A specific behavioural sequence is initiated.
 """
 
-data = load_data("changed_penalties-1", "Naturalistic", "Naturalistic-1")
+data = load_data("changed_penalties-1", "Naturalistic_test", "Naturalistic-1")
 
 x = True
 

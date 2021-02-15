@@ -223,7 +223,7 @@ class AssayService:
             rnn2_state = [0.0]
 
         # Saving step data
-        possible_data_to_save = self.package_output_data(chosen_a, sa, updated_rnn_state,
+        possible_data_to_save = self.package_output_data(o1, chosen_a, sa, updated_rnn_state,
                                                          rnn2_state,
                                                          self.simulation.fish.body.position,
                                                          self.simulation.prey_consumed_this_step,
@@ -282,7 +282,7 @@ class AssayService:
         with open(f"{self.data_save_location}/{self.assay_configuration_id}.json", "w") as output_file:
             json.dump(self.metadata, output_file)
 
-    def package_output_data(self, action, advantage_stream, rnn_state, rnn2_state, position, prey_consumed, predator_body,
+    def package_output_data(self, observation, action, advantage_stream, rnn_state, rnn2_state, position, prey_consumed, predator_body,
                             conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r,
                             prey_positions, predator_position, sand_grain_positions, vegetation_positions, fish_angle):
         """
@@ -313,8 +313,6 @@ class AssayService:
         rnn_state = rnn_state.c.tolist()
         position = list(position)
         # observation = observation.tolist()
-        observation = self.simulation.fish.get_visual_inputs()
-        observation = observation.tolist()
 
         data = {
             "behavioural choice": action,

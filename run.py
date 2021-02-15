@@ -15,7 +15,7 @@ current_assay_configuration = [
     {
         "Model Name": "changed_penalties",
         "Environment Name": "prey_only",
-        "Assay Configuration Name": "Naturalistic_test",
+        "Assay Configuration Name": "Naturalistic",
         "Trial Number": 1,
         "Run Mode": "Assay",
         "Priority": 1,
@@ -31,20 +31,20 @@ current_assay_configuration = [
                 "save frames": True,
                 "random positions": False,
                 "reset": False,
-                "recordings": ["observation", "behavioural choice", "rnn 2 state"],
+                "recordings": ["observation", "behavioural choice"],
                 "interactions": []
             },
-            # {
-            #     "assay id": "Naturalistic-2",
-            #     "stimulus paradigm": "Naturalistic",
-            #     "duration": 1000,
-            #     "Tethered": False,
-            #     "save frames": True,
-            #     "random positions": False,
-            #     "reset": False,
-            #     "recordings": ["observation", "behavioural choice"],
-            #     "interactions": []
-            # },
+            {
+                "assay id": "Naturalistic-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "reset": False,
+                "recordings": ["observation", "behavioural choice"],
+                "interactions": []
+            },
         ],
     },
 ]
