@@ -14,7 +14,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     For this environment, the following stimuli are available: prey, predators.
     """
 
-    def __init__(self, env_variables, stimuli, realistic_bouts, tethered=True, random=False, reset_each_step=False, draw_screen=False):
+    def __init__(self, env_variables, stimuli, realistic_bouts, tethered=True, set_positions=False, random=False, reset_each_step=False, reset_interval=1, draw_screen=False):
         super().__init__(env_variables, draw_screen)
 
         if tethered:
@@ -26,8 +26,10 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         # TODO: Unify in future with other stimuli
         self.prey_positions = {}
         self.predator_positions = {}
+        self.set_positions = set_positions
         self.random = random
-        self.reset_each_step = reset_each_step
+        self.reset_at_interval = reset_each_step
+        self.reset_interval = reset_interval
 
         # Whole environment measurements.
         board_height = env_variables["height"]
@@ -44,10 +46,13 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.create_walls()
         self.reset()
 
-        if self.random:
-            self.random_stimuli = stimuli
-        else:
+        if self.set_positions:
             self.create_positional_information(stimuli)
+        else:
+            if self.random:
+                self.random_stimuli = stimuli
+            else:
+                self.unset_stimuli = stimuli
 
         self.edge_col = self.space.add_collision_handler(1, 3)
         self.edge_col.begin = self.touch_edge
@@ -59,7 +64,15 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.fish.body.velocity = (0, 0)
         self.create_stimuli(self.stimuli)
 
+    def special_reset(self):
+        self.fish.body.position = (self.env_variables['width'] / 2, self.env_variables['height'] / 2)
+        self.fish.body.angle = 0
+        self.fish.body.velocity = (0, 0)
+        self.fish.hungry = 0
+
     def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None):
+        if self.reset_at_interval and self.num_steps % self.reset_interval == 0:
+            self.special_reset()
         if frame_buffer is None:
             frame_buffer = []
         self.fish.making_capture = False
@@ -69,10 +82,14 @@ class ControlledStimulusEnvironment(BaseEnvironment):
 
         self.fish.hungry += (1 - self.fish.hungry)*self.env_variables['hunger_inc_tau']
 
-        if self.random:
-            self.update_random_stimuli()
-        else:
+        # According to the projection general mode:
+        if self.set_positions:
             self.update_stimuli()
+        else:
+            if self.random:
+                self.update_random_stimuli()
+            else:
+                self.update_unset_stimuli()
 
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.space.step(self.env_variables['phys_dt'])
@@ -124,11 +141,12 @@ class ControlledStimulusEnvironment(BaseEnvironment):
             elif "predator" in stimulus:
                 self.create_predator()
 
-    def get_distance_for_size(self, stimulus, degree_size):
+    @staticmethod
+    def get_distance_for_size(stimulus, degree_size):
         if "prey" in stimulus:
             return 298.97 * np.exp(-0.133 * degree_size)
         else:
-            return 180
+            return 180  # TODO: Add for predator
 
     def place_on_curve(self, stimulus_key, index, distance, angle):
         b = distance * np.sin(angle) + self.fish.body.position[0]
@@ -139,16 +157,41 @@ class ControlledStimulusEnvironment(BaseEnvironment):
             self.predator_positions[index].position = (a, b)
 
     def update_random_stimuli(self):
+        # TODO: Add in baseline feature.
         stimuli_to_delete = []
         for i, stimulus, in enumerate(self.random_stimuli.keys()):
-            if self.random_stimuli[stimulus]["steps"] > self.num_steps:
-                d = self.get_distance_for_size(stimulus, self.random_stimuli[stimulus]["size"])
-                theta = np.random.uniform(-0.75, 0.75) * np.pi
-                self.place_on_curve(stimulus, i, d, theta)
-            else:
-                stimuli_to_delete.append(stimulus)
+            if self.num_steps % self.unset_stimuli[stimulus]["interval"] == 0:
+                if self.random_stimuli[stimulus]["steps"] > self.num_steps:
+                    d = self.get_distance_for_size(stimulus, self.random_stimuli[stimulus]["size"])
+                    theta = np.random.uniform(-0.75, 0.75) * np.pi
+                    self.place_on_curve(stimulus, i, d, theta)
+                else:
+                    stimuli_to_delete.append(stimulus)
         for stimulus in stimuli_to_delete:
             del self.stimuli[stimulus]
+
+    def get_new_angle(self, duration):
+        if self.num_steps < 1:
+            return 0.75 * np.pi
+        else:
+            progression = self.num_steps/duration
+            return ((1.5 * progression) - 0.75) * np.pi
+
+    def update_unset_stimuli(self):
+        # TODO: Still need to update so that can have multiple, sequential stimuli. Will require adding in onset into stimulus, as well as changing the baseline phase. Not useful for current requirements.
+        stimuli_to_delete = []
+        for i, stimulus, in enumerate(self.unset_stimuli.keys()):
+            if self.num_steps % self.unset_stimuli[stimulus]["interval"] == 0:
+                self.prey_bodies[i].position = (10, 10)
+            elif self.num_steps % self.unset_stimuli[stimulus]["interval"] == self.unset_stimuli[stimulus]["interval"]/2:
+                if self.unset_stimuli[stimulus]["steps"] > self.num_steps:
+                    d = self.get_distance_for_size(stimulus, self.unset_stimuli[stimulus]["size"])
+                    theta = self.get_new_angle(self.unset_stimuli[stimulus]["steps"])
+                    self.place_on_curve(stimulus, i, d, theta)
+                else:
+                    stimuli_to_delete.append(stimulus)
+        for stimulus in stimuli_to_delete:
+            del self.unset_stimuli[stimulus]
 
     def update_stimuli(self):
         # TODO: Coded very badly.

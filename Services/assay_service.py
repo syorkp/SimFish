@@ -97,8 +97,10 @@ class AssayService:
             self.simulation = ControlledStimulusEnvironment(self.environment_params, assay["stimuli"],
                                                             self.realistic_bouts,
                                                             tethered=assay["Tethered"],
+                                                            set_positions=assay["set positions"],
                                                             random=assay["random positions"],
-                                                            reset_each_step=assay["reset"]
+                                                            reset_each_step=assay["reset"],
+                                                            reset_interval=assay["reset interval"]
                                                             )
         elif assay["stimulus paradigm"] == "Naturalistic":
             self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
@@ -152,13 +154,13 @@ class AssayService:
         a = 0
         self.step_number = 0
         while self.step_number < assay["duration"]:
+            if assay["reset"] and self.step_number % assay["reset interval"] == 0:
+                rnn_state = (np.zeros([1, self.network.rnn_dim]), np.zeros([1, self.network.rnn_dim]))  # Reset RNN hidden state
             self.step_number += 1
-            if assay["reset"]:
-                self.simulation.reset()
+
             o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
                                                                        a=a, rnn_state=rnn_state)
             o = o1
-
 
             if d:
                 break

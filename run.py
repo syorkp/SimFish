@@ -180,7 +180,7 @@ current_training_configuration = [
 ]
 
 
-random_projection_configuration = [
+non_random_projection_configuration = [
     {
         "Model Name": "changed_penalties",
         "Environment Name": "test_square",
@@ -193,44 +193,29 @@ random_projection_configuration = [
         "Priority": 1,
         "Assays": [
             {
-                "assay id": "Far-Prey",
+                "assay id": "Curved_prey",
                 "stimulus paradigm": "Projection",
-                "random positions": True,
-                "reset": False,
-                "duration": 241,
                 "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "reset": True,
+                "reset interval": 10,
+                "duration": 200,
                 "save frames": True,
                 "recordings": ["observation"],
                 "stimuli": {
-                    "prey 1": {"steps": 240,
-                               "size": 5
+                    "prey 1": {"steps": 200,
+                               "size": 5,
+                               "interval": 10,
                                },
                 },
                 "interactions": []
             },
-            {
-                "assay id": "Close-Prey",
-                "stimulus paradigm": "Projection",
-                "random positions": True,
-                "reset": False,
-                "duration": 241,
-                "Tethered": True,
-                "save frames": True,
-                "recordings": ["observation"],
-                "stimuli": {
-                    "prey 1": {"steps": 240,
-                               "size": 10
-                               },
-                },
-                "interactions": []
-            }
         ],
     }
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(prey_assay_config)
+manager = TrialManager(non_random_projection_configuration)
 manager.run_priority_loop()
 
-manager = TrialManager(predator_assay_config)
-manager.run_priority_loop()
