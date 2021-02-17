@@ -45,6 +45,7 @@ def get_second_order_transition_counts(p1, p2, p3, n):
 
     return transition_counts
 
+
 def get_third_order_transition_counts(p1, p2, p3, n):
     transition_counts = np.zeros((10, 10, 10, 10))
     for file_index in range(1, n+1):
@@ -56,6 +57,19 @@ def get_third_order_transition_counts(p1, p2, p3, n):
                 transition_counts[data["behavioural choice"][i-3]][data["behavioural choice"][i-2]][data["behavioural choice"][i-1]][a] += 1
 
     return transition_counts
+
+
+def get_third_order_transition_counts_from_sequences(sequences):
+    transition_counts = np.zeros((10, 10, 10, 10))
+    for sequence in sequences:
+        for i, a in enumerate(sequence):
+            if i == 0 or i == 1 or i == 2:
+                pass
+            else:
+                transition_counts[sequence[i-3]][sequence[i-2]][sequence[i-1]][a] += 1
+    return transition_counts
+
+
 
 def get_transition_probabilities(transition_counts):
     transition_probabilities = transition_counts/np.sum(transition_counts)

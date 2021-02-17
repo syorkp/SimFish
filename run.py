@@ -11,7 +11,7 @@ if not os.path.exists("./Assay-Output/"):
     os.makedirs("./Assay-Output/")
 
 
-current_assay_configuration = [
+prey_assay_config = [
     {
         "Model Name": "changed_penalties",
         "Environment Name": "prey_only",
@@ -31,7 +31,7 @@ current_assay_configuration = [
                 "save frames": True,
                 "random positions": False,
                 "reset": False,
-                "recordings": ["observation", "behavioural choice"],
+                "recordings": ["behavioural choice", "consumed", "predator"],
                 "interactions": []
             },
             {
@@ -42,7 +42,7 @@ current_assay_configuration = [
                 "save frames": True,
                 "random positions": False,
                 "reset": False,
-                "recordings": ["observation", "behavioural choice"],
+                "recordings": ["behavioural choice", "consumed", "predator"],
                 "interactions": []
             },
         ],
@@ -70,7 +70,7 @@ predator_assay_config = [
                 "save frames": True,
                 "random positions": False,
                 "reset": False,
-                "recordings": ["observation", "behavioural choice"],
+                "recordings": ["behavioural choice", "consumed", "predator"],
                 "interactions": []
             },
             {
@@ -81,7 +81,7 @@ predator_assay_config = [
                 "save frames": True,
                 "random positions": False,
                 "reset": False,
-                "recordings": ["observation", "behavioural choice"],
+                "recordings": ["behavioural choice", "consumed", "predator"],
                 "interactions": []
             },
             {
@@ -92,7 +92,7 @@ predator_assay_config = [
                 "save frames": True,
                 "random positions": False,
                 "reset": False,
-                "recordings": ["observation", "behavioural choice"],
+                "recordings": ["behavioural choice", "consumed", "predator"],
                 "interactions": []
             },
             {
@@ -103,7 +103,7 @@ predator_assay_config = [
                 "save frames": True,
                 "random positions": False,
                 "reset": False,
-                "recordings": ["observation", "behavioural choice"],
+                "recordings": ["behavioural choice", "consumed", "predator"],
                 "interactions": []
             },
         ],
@@ -229,5 +229,8 @@ random_projection_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(random_projection_configuration)
+manager = TrialManager(prey_assay_config)
+manager.run_priority_loop()
+
+manager = TrialManager(predator_assay_config)
 manager.run_priority_loop()
