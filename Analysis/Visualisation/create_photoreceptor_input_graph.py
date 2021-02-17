@@ -17,7 +17,7 @@ def convert_photons_to_int(obs):
     return new_obs
 
 
-data = load_data("changed_penalties-1", "Naturalistic_test", "Naturalistic-1")
+data = load_data("changed_penalties-1", "Controlled_Visual_Stimuli", "Close-Prey2")
 observation = data["observation"]
 left = observation[:, :, :, 0]
 left = np.swapaxes(left, 0, 1)

@@ -6,10 +6,7 @@ from Tools.make_gif import make_gif
 from Analysis.load_data import load_data
 
 
-# TODO: Make sure data load method fits.
-data = load_data("changed_penalties-2", "Naturalistic", "Naturalistic-1")
-
-# TODO: Not finished or used yet.
+data = load_data("changed_penalties-1", "Controlled_Visual_Stimuli", "Close-Prey")
 
 observation = data["observation"]
 

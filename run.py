@@ -179,6 +179,55 @@ current_training_configuration = [
     },
 ]
 
+
+random_projection_configuration = [
+    {
+        "Model Name": "changed_penalties",
+        "Environment Name": "test_square",
+        "Trial Number": 1,
+        "Assay Configuration Name": "Controlled_Visual_Stimuli",
+        "Run Mode": "Assay",
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Priority": 1,
+        "Assays": [
+            {
+                "assay id": "Far-Prey",
+                "stimulus paradigm": "Projection",
+                "random positions": True,
+                "reset": False,
+                "duration": 241,
+                "Tethered": True,
+                "save frames": True,
+                "recordings": ["observation"],
+                "stimuli": {
+                    "prey 1": {"steps": 240,
+                               "size": 5
+                               },
+                },
+                "interactions": []
+            },
+            {
+                "assay id": "Close-Prey",
+                "stimulus paradigm": "Projection",
+                "random positions": True,
+                "reset": False,
+                "duration": 241,
+                "Tethered": True,
+                "save frames": True,
+                "recordings": ["observation"],
+                "stimuli": {
+                    "prey 1": {"steps": 240,
+                               "size": 10
+                               },
+                },
+                "interactions": []
+            }
+        ],
+    }
+]
+
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(predator_assay_config)
+manager = TrialManager(random_projection_configuration)
 manager.run_priority_loop()

@@ -124,9 +124,11 @@ class ControlledStimulusEnvironment(BaseEnvironment):
             elif "predator" in stimulus:
                 self.create_predator()
 
-    def get_distance_for_size(self, degree_size):
-        # TODO: This.
-        return 180
+    def get_distance_for_size(self, stimulus, degree_size):
+        if "prey" in stimulus:
+            return 298.97 * np.exp(-0.133 * degree_size)
+        else:
+            return 180
 
     def place_on_curve(self, stimulus_key, index, distance, angle):
         b = distance * np.sin(angle) + self.fish.body.position[0]
@@ -140,7 +142,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         stimuli_to_delete = []
         for i, stimulus, in enumerate(self.random_stimuli.keys()):
             if self.random_stimuli[stimulus]["steps"] > self.num_steps:
-                d = self.get_distance_for_size(self.random_stimuli[stimulus]["size"])
+                d = self.get_distance_for_size(stimulus, self.random_stimuli[stimulus]["size"])
                 theta = np.random.uniform(-0.75, 0.75) * np.pi
                 self.place_on_curve(stimulus, i, d, theta)
             else:
