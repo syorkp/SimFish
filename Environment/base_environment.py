@@ -59,6 +59,8 @@ class BaseEnvironment:
         self.sand_grains_bumped = 0
         self.steps_near_vegetation = 0
 
+        self.stimuli_information = {}
+
     def reset(self):
         self.num_steps = 0
         self.fish.hungry = 0

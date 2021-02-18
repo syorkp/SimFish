@@ -76,6 +76,7 @@ class AssayService:
 
         # Hacky fix for h5py problem:
         self.last_position_dim = self.environment_params["prey_num"]
+        self.stimuli_data = []
 
     def create_network(self):
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim'], state_is_tuple=True)
@@ -131,6 +132,8 @@ class AssayService:
             self.create_output_data_storage(assay)
             self.create_testing_environment(assay)
             self.perform_assay(assay)
+            if assay["save stimuli"]:
+                self.save_stimuli_data()
             # self.save_assay_results(assay)
             self.save_hdf5_data(assay)
         self.save_metadata()
@@ -235,7 +238,7 @@ class AssayService:
                                                          predator_position,
                                                          sand_grain_positions,
                                                          vegetation_positions,
-                                                         fish_angle
+                                                         fish_angle,
                                                          )
         for key in self.assay_output_data_format:
             self.output_data[key].append(possible_data_to_save[key])
@@ -261,6 +264,7 @@ class AssayService:
 
         for key in self.output_data:
             try:
+                # print(self.output_data[key])
                 assay_group.create_dataset(key, data=np.array(self.output_data[key]))  # TODO: Compress data.
             except RuntimeError:
                 del assay_group[key]
@@ -277,6 +281,12 @@ class AssayService:
         with open(f"{self.data_save_location}/{self.assay_configuration_id}-summary_data.json", "w") as output_file:
             json.dump(self.episode_summary_data, output_file)
         self.episode_summary_data = None
+
+    def save_stimuli_data(self):
+        print(self.stimuli_data)
+        with open(f"{self.data_save_location}/{self.assay_configuration_id}-stimuli_data.json", "w") as output_file:
+            json.dump(self.stimuli_data, output_file)
+        self.stimuli_data = []
 
     def save_metadata(self):
         self.metadata["Assay Date"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -334,7 +344,7 @@ class AssayService:
             "predator_position": predator_position,
             "sand_grain_positions": sand_grain_positions,
             "vegetation_positions": vegetation_positions,
-            "fish_angle": fish_angle
+            "fish_angle": fish_angle,
         }
 
         if prey_consumed:
@@ -345,6 +355,23 @@ class AssayService:
             data["predator"] = 1
         else:
             data["predator"] = 0
+
+        stimuli = self.simulation.stimuli_information
+        to_save = {}
+        for stimulus in stimuli.keys():
+            if stimuli[stimulus]:
+                to_save[stimulus] = stimuli[stimulus]
+
+        # to_remove = []
+        # for stimulus in stimuli.keys():
+        #     if not stimuli[stimulus]:
+        #         to_remove.append(stimulus)
+        # for stimulus in to_remove:
+        #     del stimuli[stimulus]
+        # if stimuli:
+        #     self.stimuli_data.append(stimuli)
+        if to_save:
+            self.stimuli_data.append(to_save)
 
         return data
 

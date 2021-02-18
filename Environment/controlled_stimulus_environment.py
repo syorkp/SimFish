@@ -43,6 +43,8 @@ class ControlledStimulusEnvironment(BaseEnvironment):
 
         self.stimuli = stimuli
 
+        self.stimuli_information = {stimulus: {} for stimulus in stimuli}
+
         self.create_walls()
         self.reset()
 
@@ -182,14 +184,22 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         stimuli_to_delete = []
         for i, stimulus, in enumerate(self.unset_stimuli.keys()):
             if self.num_steps % self.unset_stimuli[stimulus]["interval"] == 0:
+                print(self.num_steps)
+                self.stimuli_information[stimulus]["Pre-onset"] = self.num_steps
                 self.prey_bodies[i].position = (10, 10)
             elif self.num_steps % self.unset_stimuli[stimulus]["interval"] == self.unset_stimuli[stimulus]["interval"]/2:
                 if self.unset_stimuli[stimulus]["steps"] > self.num_steps:
                     d = self.get_distance_for_size(stimulus, self.unset_stimuli[stimulus]["size"])
                     theta = self.get_new_angle(self.unset_stimuli[stimulus]["steps"])
                     self.place_on_curve(stimulus, i, d, theta)
+                    self.stimuli_information[stimulus]["Onset"] = self.num_steps
+                    self.stimuli_information[stimulus]["Angle"] = theta
+                    self.stimuli_information[stimulus]["Size"] = self.unset_stimuli[stimulus]["size"]
                 else:
+                    self.stimuli_information[stimulus]["Finish"] = self.num_steps
                     stimuli_to_delete.append(stimulus)
+            else:
+                self.stimuli_information[stimulus] = {}
         for stimulus in stimuli_to_delete:
             del self.unset_stimuli[stimulus]
 
