@@ -184,7 +184,6 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         stimuli_to_delete = []
         for i, stimulus, in enumerate(self.unset_stimuli.keys()):
             if self.num_steps % self.unset_stimuli[stimulus]["interval"] == 0:
-                print(self.num_steps)
                 self.stimuli_information[stimulus]["Pre-onset"] = self.num_steps
                 self.prey_bodies[i].position = (10, 10)
             elif self.num_steps % self.unset_stimuli[stimulus]["interval"] == self.unset_stimuli[stimulus]["interval"]/2:

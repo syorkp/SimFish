@@ -28,13 +28,20 @@ def plot_activity(rnn_data):
     plt.show()
 
 
-data = load_data("changed_penalties-2", "Naturalistic", "Naturalistic-1")
+data = load_data("changed_penalties-1", "Controlled_Visual_Stimuli", "Curved_prey")
 
 
-rnn_unit_1 = [data["rnn state"][i-1][0][0] for i in data["step"]]
-rnn_unit_3 = [data["rnn state"][i-1][0][19] for i in data["step"]]
-rnn_unit_200 = [data["rnn state"][i-1][0][190] for i in data["step"]]
-conv_unit_1 = [data["left_conv_1"][i-1][0][0] for i in data["step"]]
+rnn_unit_1 = [data["rnn state"][i-1][0][0] for i in data["step"][200:400]]
+rnn_unit_3 = [data["rnn state"][i-1][0][20] for i in data["step"][200:400]]
+rnn_unit_200 = [data["rnn state"][i-1][0][70] for i in data["step"][200:400]]
+conv_unit_1 = [data["rnn state"][i-1][0][69] for i in data["step"][200:400]]
+
+# rnn_unit_1 = [data["rnn state"][i-1][0][29] for i in data["step"]]
+# rnn_unit_3 = [data["rnn state"][i-1][0][20] for i in data["step"]]
+# rnn_unit_200 = [data["rnn state"][i-1][0][70] for i in data["step"]]
+# conv_unit_1 = [data["rnn state"][i-1][0][69] for i in data["step"]]
+
+
 
 unit_activity = [rnn_unit_1, rnn_unit_3, rnn_unit_200, conv_unit_1]
 plot_activity(unit_activity)

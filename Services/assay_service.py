@@ -283,7 +283,6 @@ class AssayService:
         self.episode_summary_data = None
 
     def save_stimuli_data(self):
-        print(self.stimuli_data)
         with open(f"{self.data_save_location}/{self.assay_configuration_id}-stimuli_data.json", "w") as output_file:
             json.dump(self.stimuli_data, output_file)
         self.stimuli_data = []
@@ -362,14 +361,6 @@ class AssayService:
             if stimuli[stimulus]:
                 to_save[stimulus] = stimuli[stimulus]
 
-        # to_remove = []
-        # for stimulus in stimuli.keys():
-        #     if not stimuli[stimulus]:
-        #         to_remove.append(stimulus)
-        # for stimulus in to_remove:
-        #     del stimuli[stimulus]
-        # if stimuli:
-        #     self.stimuli_data.append(stimuli)
         if to_save:
             self.stimuli_data.append(to_save)
 
