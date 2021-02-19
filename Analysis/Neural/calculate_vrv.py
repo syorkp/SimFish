@@ -40,11 +40,11 @@ def calculate_scalar_value(neural_data, t_start, t_mid, t_fin):
     return (response - baseline)/baseline
 
 
-data = load_data("changed_penalties-1", "Controlled_Visual_Stimuli", "Curved_prey")
-stimulus_data = load_stimulus_data("changed_penalties-1", "Controlled_Visual_Stimuli")
-
-stimulus_vector = get_stimulus_vector(stimulus_data, "prey 1")
-all_vectors = get_all_neuron_vectors(data, "prey 1", stimulus_data, "rnn state")
+# data = load_data("changed_penalties-1", "Controlled_Visual_Stimuli", "Curved_prey")
+# stimulus_data = load_stimulus_data("changed_penalties-1", "Controlled_Visual_Stimuli")
+#
+# stimulus_vector = get_stimulus_vector(stimulus_data, "prey 1")
+# all_vectors = get_all_neuron_vectors(data, "prey 1", stimulus_data, "rnn state")
 
 
 x = True

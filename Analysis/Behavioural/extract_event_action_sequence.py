@@ -34,7 +34,7 @@ def extract_consumption_action_sequences(data, n=10):
 
 def create_density_matrix(sequences):
     # TODO: Actually need to "count back" for the cases when the list is shorter than 10.
-    colour_density_matrix = np.zeros((6, 10), dtype=int)
+    colour_density_matrix = np.zeros((9, 10), dtype=int)
     for sequence in sequences:
         for j, n in enumerate(sequence):
             colour_density_matrix[n][j] += 1
@@ -57,7 +57,9 @@ def get_escape_sequences(model_name, assay_config, assay_id, n):
     return all_escape_sequences
 
 
-# dm_capture = create_density_matrix(capture_sequences)
-# dm_avoidance = create_density_matrix(escape_sequences)
+capture_sequences = get_capture_sequences("large_all_features-1", "Naturalistic", "Naturalistic", 2)
+escape_sequences = get_escape_sequences("large_all_features-1", "Predator", "Predator", 4)
+dm_capture = create_density_matrix(capture_sequences)
+dm_avoidance = create_density_matrix(escape_sequences)
 
 x = True

@@ -13,7 +13,7 @@ if not os.path.exists("./Assay-Output/"):
 
 prey_assay_config = [
     {
-        "Model Name": "changed_penalties",
+        "Model Name": "large_all_features",
         "Environment Name": "prey_only",
         "Assay Configuration Name": "Naturalistic",
         "Trial Number": 1,
@@ -30,6 +30,7 @@ prey_assay_config = [
                 "Tethered": False,
                 "save frames": True,
                 "random positions": False,
+                "save stimuli": False,
                 "reset": False,
                 "recordings": ["behavioural choice", "consumed", "predator"],
                 "interactions": []
@@ -40,6 +41,7 @@ prey_assay_config = [
                 "duration": 1000,
                 "Tethered": False,
                 "save frames": True,
+                "save stimuli": False,
                 "random positions": False,
                 "reset": False,
                 "recordings": ["behavioural choice", "consumed", "predator"],
@@ -52,7 +54,7 @@ prey_assay_config = [
 
 predator_assay_config = [
     {
-        "Model Name": "changed_penalties",
+        "Model Name": "large_all_features",
         "Environment Name": "predator_heavy",
         "Assay Configuration Name": "Predator",
         "Trial Number": 1,
@@ -68,6 +70,7 @@ predator_assay_config = [
                 "duration": 1000,
                 "Tethered": False,
                 "save frames": True,
+                "save stimuli": False,
                 "random positions": False,
                 "reset": False,
                 "recordings": ["behavioural choice", "consumed", "predator"],
@@ -78,6 +81,7 @@ predator_assay_config = [
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
+                "save stimuli": False,
                 "save frames": True,
                 "random positions": False,
                 "reset": False,
@@ -89,6 +93,7 @@ predator_assay_config = [
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
+                "save stimuli": False,
                 "save frames": True,
                 "random positions": False,
                 "reset": False,
@@ -100,6 +105,7 @@ predator_assay_config = [
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
+                "save stimuli": False,
                 "save frames": True,
                 "random positions": False,
                 "reset": False,
@@ -155,34 +161,12 @@ current_training_configuration = [
         "Using GPU": True,
         "monitor gpu": False,
     },
-    {
-        "Model Name": "extra_layer_all_features",
-        "Environment Name": "extra_layer_all_features",
-        "Trial Number": 1,
-        "Total Configurations": 1,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-    },
 ]
 
 
 non_random_projection_configuration = [
     {
-        "Model Name": "changed_penalties",
+        "Model Name": "large_all_features",
         "Environment Name": "test_square",
         "Trial Number": 1,
         "Assay Configuration Name": "Controlled_Visual_Stimuli",
@@ -199,7 +183,7 @@ non_random_projection_configuration = [
                 "set positions": False,
                 "random positions": False,
                 "reset": True,
-                "reset interval": 100,
+                "reset interval": 500,
                 "duration": 500,
                 "save frames": True,
                 "save stimuli": True,
@@ -215,6 +199,43 @@ non_random_projection_configuration = [
         ],
     }
 ]
+
+no_stimuli_projection_config = [
+    {
+        "Model Name": "large_all_features",
+        "Environment Name": "test_square",
+        "Trial Number": 1,
+        "Assay Configuration Name": "No_Stimuli",
+        "Run Mode": "Assay",
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Priority": 1,
+        "Assays": [
+            {
+                "assay id": "No_Stimuli",
+                "stimulus paradigm": "Projection",
+                "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "reset": True,
+                "reset interval": 500,
+                "duration": 500,
+                "save frames": True,
+                "save stimuli": True,
+                "recordings": ["rnn state"],
+                "stimuli": {
+                    # "prey 1": {"steps": 500,
+                    #            "size": 5,
+                    #            "interval": 100,
+                    #            },
+                },
+                "interactions": []
+            },
+        ],
+    }
+]
+
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 manager = TrialManager(non_random_projection_configuration)

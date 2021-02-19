@@ -14,7 +14,7 @@ Due to PyCharm plots error, currently needs to be run in terminal"""
 try:
     arg = sys.argv[1]
 except IndexError:
-    arg = "base"  # Default arg
+    arg = "prey_only"  # Default arg
 
 stimuli = {"prey 1": [
                         {"step": 0,
@@ -35,7 +35,7 @@ with open(file_path, 'r') as f:
     env = json.load(f)
 
 # sim_state = ProjectionEnvironment(env, stimuli, tethered=True, draw_screen=True)
-sim_state = NaturalisticEnvironment(env, realistic_bouts=False, draw_screen=True)
+sim_state = NaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True)
 
 q = False
 d = False
@@ -47,13 +47,13 @@ while not q:
 
     previous_position = sim_state.fish.body.position
 
-    if action_input < 7:
+    if action_input < 10:
         s, r, internal, d, fb = sim_state.simulation_step(action_input)
 
-    if action_input == 7:
+    if action_input == 10:
         q = True
 
-    if action_input == 9:
+    if action_input == 11:
         sim_state.reset()
 
     if d:
