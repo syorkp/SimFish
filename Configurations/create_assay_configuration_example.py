@@ -36,6 +36,8 @@ env = {'width': 1000,  # arena size
        'prey_sensing_distance': 30,
        'prey_max_turning_angle': 0.1,
        'prey_jump': True,
+       'differential_prey': False,
+       'prey_cloud_num': 0,
 
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,

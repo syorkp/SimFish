@@ -37,6 +37,15 @@ class BaseEnvironment:
         self.prey_bodies = []
         self.prey_shapes = []
 
+        if self.env_variables["differential_prey"]:
+            self.prey_cloud_locations = [
+                [np.random.randint(low=120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
+                                   high=self.env_variables['width'] - (
+                                           self.env_variables['prey_size'] + self.env_variables['fish_mouth_size']) - 120),
+                 np.random.randint(low=120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
+                                   high=self.env_variables['height'] - (
+                                           self.env_variables['prey_size'] + self.env_variables['fish_mouth_size']) - 120)]
+                for cloud in range(self.env_variables["prey_cloud_num"])]
         self.predator_bodies = []
         self.predator_shapes = []
 
@@ -241,16 +250,24 @@ class BaseEnvironment:
         self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
         self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_size']))
         self.prey_shapes[-1].elasticity = 1.0
-        self.prey_bodies[-1].position = (
-            np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
-                              self.env_variables['width'] - (
-                                      self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'])),
-            np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
-                              self.env_variables['height'] - (
-                                      self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'])))
+        if not self.env_variables["differential_prey"]:
+            self.prey_bodies[-1].position = (
+                np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
+                                  self.env_variables['width'] - (
+                                          self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'])),
+                np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
+                                  self.env_variables['height'] - (
+                                          self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'])))
+        else:
+            cloud = random.choice(self.prey_cloud_locations)
+            self.prey_bodies[-1].position = (
+                np.random.randint(low=cloud[0] - 120, high=cloud[0] + 120),
+                np.random.randint(low=cloud[1] - 120, high=cloud[1] + 120)
+            )
         self.prey_shapes[-1].color = (0, 0, 1)
         self.prey_shapes[-1].collision_type = 2
-        self.prey_shapes[-1].filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # prevents collisions with predator
+        self.prey_shapes[-1].filter = pymunk.ShapeFilter(
+            mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # prevents collisions with predator
 
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
 
@@ -274,12 +291,7 @@ class BaseEnvironment:
             if self.check_proximity(self.prey_bodies[to_move[ii]].position,
                                     self.env_variables['prey_sensing_distance']) and self.env_variables["prey_jump"]:
                 self.prey_bodies[ii].angle = self.fish.body.angle + np.random.uniform(-1, 1)
-                # if self.prey_bodies[to_move[ii]].angle < (3 * np.pi) / 2:
-                #     self.prey_bodies[to_move[ii]].angle += np.pi / 2
-                # else:
-                #     self.prey_bodies[to_move[ii]].angle -= np.pi / 2
-                self.prey_bodies[to_move[ii]].apply_impulse_at_local_point(
-                    (self.get_last_action_magnitude(), 0))
+                self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.get_last_action_magnitude(), 0))
             else:
                 adjustment = np.random.uniform(-self.env_variables['prey_max_turning_angle'],
                                                self.env_variables['prey_max_turning_angle'])
@@ -414,7 +426,8 @@ class BaseEnvironment:
 
         self.predator_shape.color = (0, 0, 1)
         self.predator_shape.collision_type = 5
-        self.predator_shape.filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # Category 2 objects cant collide with predator
+        self.predator_shape.filter = pymunk.ShapeFilter(
+            mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # Category 2 objects cant collide with predator
 
         self.space.add(self.predator_body, self.predator_shape)
 
@@ -472,11 +485,12 @@ class BaseEnvironment:
                                       self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'])))
         self.sand_grain_shapes[-1].color = (0, 0, 1)
         self.sand_grain_shapes[-1].collision_type = 4
-        self.sand_grain_shapes[-1].filter = pymunk.ShapeFilter(mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # prevents collisions with predator
+        self.sand_grain_shapes[-1].filter = pymunk.ShapeFilter(
+            mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # prevents collisions with predator
 
         self.space.add(self.sand_grain_bodies[-1], self.sand_grain_shapes[-1])
 
-    def touch_grain(self,  arbiter, space, data):
+    def touch_grain(self, arbiter, space, data):
         # TODO: Considering only doing this if the last swim was a capture swim.
         if self.last_action == 3:
             self.sand_grains_bumped += 1

@@ -26,7 +26,7 @@ prey_assay_config = [
             {
                 "assay id": "Naturalistic-1",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
+                "duration": 200,
                 "Tethered": False,
                 "save frames": True,
                 "random positions": False,
@@ -38,7 +38,7 @@ prey_assay_config = [
             {
                 "assay id": "Naturalistic-2",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
+                "duration": 200,
                 "Tethered": False,
                 "save frames": True,
                 "save stimuli": False,
@@ -238,6 +238,6 @@ no_stimuli_projection_config = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(non_random_projection_configuration)
+manager = TrialManager(prey_assay_config)
 manager.run_priority_loop()
 
