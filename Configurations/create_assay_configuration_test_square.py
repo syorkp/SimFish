@@ -91,7 +91,7 @@ params = {'num_actions': 10,  # size of action space
           'time_per_step': 0.03,  # Length of each step used in gif creation
           'summaryLength': 200,  # Number of epidoes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
-          'rnn_dim': 256,  # number of rnn cells
+          'rnn_dim': 512,  # number of rnn cells
           'extra_rnn': False,
 
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
