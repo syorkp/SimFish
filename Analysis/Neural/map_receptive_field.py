@@ -10,6 +10,7 @@ from Analysis.Neural.calculate_vrv import get_all_neuron_vectors, get_stimulus_v
 
 
 def create_figure(neuron_data, plot_number, n_subplots, n_prev_subplots, s_vector):
+    # TODO: Note, does not currently plot all channels, just one.
     if n_subplots > 2:
         fig, axs = plt.subplots(int(n_subplots/2), 2, sharex=True)
     else:
@@ -18,14 +19,14 @@ def create_figure(neuron_data, plot_number, n_subplots, n_prev_subplots, s_vecto
     fig.suptitle(f"CNN group {plot_number}", fontsize=16)
 
     for i in range(int(n_subplots/2)):
-        for channel in neuron_data[i]:
-            axs[i, 0].plot(s_vector, channel)
+        for j, channel in enumerate(neuron_data[i]):
+            axs[i, 0].plot(s_vector, channel, label=j)
             axs[i, 0].set_ylabel(f"Unit {i + n_prev_subplots} Response Vector")
             axs[i, 0].tick_params(labelsize=15)
 
     for i in range(int(n_subplots/2)):
-        for channel in neuron_data[i + int(n_subplots/2)]:
-            axs[i, 1].plot(s_vector, channel)
+        for j, channel in enumerate(neuron_data[i + int(n_subplots/2)]):
+            axs[i, 1].plot(s_vector, channel, label=j)
             axs[i, 1].set_ylabel(f"Unit {i + int(n_subplots/2) + n_prev_subplots} Response Vector")
             axs[i, 1].tick_params(labelsize=15)
 
