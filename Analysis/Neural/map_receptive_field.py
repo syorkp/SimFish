@@ -36,7 +36,6 @@ def create_figure(neuron_data, plot_number, n_subplots, n_prev_subplots, s_vecto
     plt.show()
 
 
-
 def plot_conv_vectors(s_vector, r_vector):
     n_subplots = len(r_vector)
     n_per_plot = 30

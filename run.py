@@ -189,13 +189,13 @@ non_random_projection_configuration = [
                 "set positions": False,
                 "random positions": False,
                 "reset": False,
-                "reset interval": 500,
-                "duration": 5000,
+                "reset interval": 100,
+                "duration": 500,
                 "save frames": True,
                 "save stimuli": True,
-                "recordings": ["left_conv_4", "right_conv_4"],
+                "recordings": ["rnn state"],
                 "stimuli": {
-                    "prey 1": {"steps": 5000,
+                    "prey 1": {"steps": 500,
                                "size": 5,
                                "interval": 100,
                                },
@@ -244,6 +244,6 @@ no_stimuli_projection_config = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(current_training_configuration)
+manager = TrialManager(non_random_projection_configuration)
 manager.run_priority_loop()
 
