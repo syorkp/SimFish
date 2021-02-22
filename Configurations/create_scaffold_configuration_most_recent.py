@@ -32,12 +32,12 @@ env = {'width': 1500,  # arena size
        'prey_inertia': 40.,
        'prey_size': 4.,
        'prey_num': 80,
-       'prey_impulse': 0.05,  # impulse each prey receives per step
+       'prey_impulse': 0.1,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
        'prey_max_turning_angle': 0.3,
-       'prey_jump': False,
+       'prey_jump': True,
        'differential_prey': False,
        'prey_cloud_num': 0,
 
@@ -55,7 +55,7 @@ env = {'width': 1500,  # arena size
        'predator_mass': 10.,
        'predator_inertia': 40.,
        'predator_size': 100.,
-       'predator_impulse': 0.5,
+       'predator_impulse': 0.7,
        'immunity_steps': 65,
        # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 200,  # Distance from the fish at which the predator appears.
@@ -80,13 +80,14 @@ env = {'width': 1500,  # arena size
        'j_turn_dir_change': 0.07,
        'rest_cost': 2,
 
-       'capture_swim_extra_cost': 15,
+       'capture_swim_extra_cost': 25,
 
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
        'capture_basic_reward': 1000,
        'predator_cost': 100,
        }
+
 
 params = {'num_actions': 10,  # size of action space
           'batch_size': 16,  # How many experience traces to use for each training step.
@@ -100,16 +101,16 @@ params = {'num_actions': 10,  # size of action space
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
           'max_epLength': 1000,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
-          'summaryLength': 1000,  # Number of epidoes to periodically save for analysis
+          'summaryLength': 500,  # Number of epidoes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
-          'rnn_dim': 256,  # number of rnn cells
+          'rnn_dim': 512,  # number of rnn cells
           'extra_rnn': False,
 
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
           'learning_rate': 0.0001}
 
 
-directory_name = "larger_network"
+directory_name = "even_prey"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):
@@ -125,61 +126,21 @@ def save_files(n):
         json.dump(params, f)
 
 
-# A. Learn Predator avoidance #
+# A. Learn Predator avoidance and prey capture #
 
 # 1 Initial config
 number = 1
 save_files(number)
 number += 1
 
-# 2. Increase predator speed
-# env["predator_impulse"] = 1
-# save_files(number)
-# number += 1
-
-# 3. Increase predator speed
-# env["predator_impulse"] = 1.5
-# save_files(number)
-# number += 1
-
-# B. Learn Prey Capture #
-
-# 4. Increase prey number and reduce predator probability
-# env["probability_of_predator"] = 0.01
-# env["prey_number"] = 40
-# save_files(number)
-# number += 1
-
-# 5. Increase prey speed
-env["prey_impulse"] = 0.1
-env["probability_of_predator"] = 0.01
+# 2. Reduce mouth size
+env["fish_mouth_size"] = 4
 save_files(number)
 number += 1
 
-# 6. Add prey jump
-env["prey_jump"] = True
-save_files(number)
-number += 1
 
-# B. Recognise Sand Grains #
-
-# 7. Add sand grains, reduce prey
-env["sand_grain_num"] = 40
-env["prey_num"] = env["prey_num"] - 40
-save_files(number)
-number += 1
-
-# 8. Add sand grains, reduce prey
-env["sand_grain_num"] = env["sand_grain_num"] + 20
-env["prey_num"] = env["prey_num"] - 20
-save_files(number)
-number += 1
-
-# D. Learn to use Vegetation #
-
-# 9. Increase predation chance, add vegetation
-env["vegetation_num"] = 4
-env["probability_of_predator"] = 0.05
+# 3. Reduce mouth size
+env["fish_mouth_size"] = 3
 save_files(number)
 number += 1
 
