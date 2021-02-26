@@ -81,6 +81,9 @@ class NaturalisticEnvironment(BaseEnvironment):
         done = False
 
         self.fish.hungry += (1 - self.fish.hungry) * self.env_variables['hunger_inc_tau']
+        self.fish.stress = self.fish.stress * self.env_variables['stress_compound']
+        if self.predator_body is not None:
+            self.fish.stress += 0.5
 
         # TODO: add below to function for clarity.
         if self.predator_shape is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
@@ -130,7 +133,14 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         # Calculate internal state
         in_light = self.fish.body.position[0] > self.dark_col
-        internal_state = np.array([[in_light, self.fish.hungry]])
+        if self.env_variables['hunger'] and self.env_variables['stress']:
+            internal_state = np.array([[in_light, self.fish.hungry, self.fish.stress]])
+        elif self.env_variables['hunger']:
+            internal_state = np.array([[in_light, self.fish.hungry]])
+        elif self.env_variables['stress']:
+            internal_state = np.array([[in_light, self.fish.stress]])
+        else:
+            internal_state = np.array([[in_light]])
 
         if save_frames or self.draw_screen:
             self.board.erase(bkg=self.env_variables['bkg_scatter'])

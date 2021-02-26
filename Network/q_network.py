@@ -5,7 +5,7 @@ tf.disable_v2_behavior()
 
 class QNetwork:
 
-    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, num_actions, learning_rate=0.0001, extra_layer=False):
+    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, num_actions, internal_states=2, learning_rate=0.0001, extra_layer=False):
         """The network receives the observation from both eyes, processes it
         #through convolutional layers, concatenates it with the internal state
         #and feeds it to the RNN."""
@@ -19,7 +19,7 @@ class QNetwork:
         self.prev_actions = tf.placeholder(shape=[None], dtype=tf.int32, name='prev_actions')
         self.prev_actions_one_hot = tf.one_hot(self.prev_actions, num_actions, dtype=tf.float32)
 
-        self.internal_state = tf.placeholder(shape=[None, 2], dtype=tf.float32, name='internal_state')
+        self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
 
         self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
         self.reshaped_observation = tf.reshape(self.observation, shape=[-1, self.num_arms, 3, 2])

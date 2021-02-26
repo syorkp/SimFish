@@ -79,12 +79,15 @@ class AssayService:
         self.stimuli_data = []
 
     def create_network(self):
+        internal_states = sum([1 for x in [self.environment_params['hunger'], self.environment_params['stress']] if x is True]) + 1
+
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim'], state_is_tuple=True)
         network = QNetwork(simulation=self.simulation,
                            rnn_dim=self.learning_params['rnn_dim'],
                            rnn_cell=cell,
                            my_scope='main',
                            num_actions=self.learning_params['num_actions'],
+                           internal_states=internal_states,
                            learning_rate=self.learning_params['learning_rate'],
                            extra_layer=self.learning_params['extra_rnn'])
         return network
@@ -344,6 +347,8 @@ class AssayService:
             "sand_grain_positions": sand_grain_positions,
             "vegetation_positions": vegetation_positions,
             "fish_angle": fish_angle,
+            "hunger": self.simulation.fish.hungry,
+            "stress": self.simulation.fish.stress,
         }
 
         if prey_consumed:

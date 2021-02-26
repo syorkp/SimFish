@@ -73,6 +73,7 @@ class BaseEnvironment:
     def reset(self):
         self.num_steps = 0
         self.fish.hungry = 0
+        self.fish.stress = 1
         self.prey_caught = 0
         self.predators_avoided = 0
         self.sand_grains_bumped = 0

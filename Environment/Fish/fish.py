@@ -61,6 +61,7 @@ class Fish:
                                 env_variables['light_gain'], env_variables['bkg_scatter'], dark_col)
 
         self.hungry = 0
+        self.stress = 1
         self.prey_consumed = False
         self.touched_edge = False
         self.touched_predator = False
