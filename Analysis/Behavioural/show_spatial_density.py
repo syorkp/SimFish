@@ -107,6 +107,8 @@ def create_density_cloud(density_list, action_num, stimulus_name):
     xi, yi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
     zi = k(np.vstack([xi.flatten(), yi.flatten()]))
     plt.title(f"Feature: {stimulus_name}, Action: {get_action_name(action_num)}, Samples: {n_samples}")
+    # plt.xlim([0, 500])
+    # plt.ylim([0, 500])
     # Make the plot
     plt.pcolormesh(xi, yi, zi.reshape(xi.shape))
     plt.show()
@@ -140,12 +142,11 @@ def get_all_density_plots_all_subsets(p1, p2, p3, n):
             create_density_cloud(pred_cloud, action_num, "Predator")
 
 
-get_all_density_plots_all_subsets("larger_network-1", "Naturalistic", "Naturalistic", 4)
+# get_all_density_plots_all_subsets("changed_penalties-1", "Naturalistic", "Naturalistic", 2)
+# get_all_density_plots_all_subsets("large_all_features-1", "Naturalistic", "Naturalistic", 4)
+# get_all_density_plots_all_subsets("even_prey-1", "Naturalistic", "Naturalistic", 4)
+get_all_density_plots_all_subsets("even_prey-1", "Predator", "Predator", 12)
 
-# data = load_data("larger_network-1", "Naturalistic", f"Naturalistic-1")
-#
-#
-# get_all_density_plots(data)
 
 
 

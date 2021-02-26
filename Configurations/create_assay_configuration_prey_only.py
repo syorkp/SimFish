@@ -29,15 +29,15 @@ env = {'width': 1500,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 60,
+       'prey_num': 3,
        'prey_impulse': 0.05,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
        'prey_max_turning_angle': 0.3,
        'prey_jump': False,
-       'differential_prey': True,
-       'prey_cloud_num': 2,
+       'differential_prey': False,
+       'prey_cloud_num': 0,
 
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
@@ -57,7 +57,7 @@ env = {'width': 1500,  # arena size
        'immunity_steps': 65,
        # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 200,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.1,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -107,7 +107,7 @@ params = {'num_actions': 10,  # size of action space
           }
 
 # Equal to that given in the file name.
-environment_name = "prey_only"
+environment_name = "predator_heavy"
 # environment_name = "prey_only"
 with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)

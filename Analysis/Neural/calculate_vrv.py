@@ -8,7 +8,6 @@ from Analysis.load_data import load_data
 def get_stimulus_vector(stimulus_data, stimulus):
     """Returns a list of all the stimulus features presented"""
     angles = []
-
     for period in stimulus_data:
         angles.append(period[stimulus]["Angle"])
 

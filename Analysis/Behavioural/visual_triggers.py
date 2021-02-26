@@ -5,6 +5,7 @@ import scipy.spatial.distance as dist
 import numpy as np
 
 from Analysis.load_data import load_data
+from Analysis.Processing.remove_near_wall_data import remove_near_wall_data
 
 """
 Tools to display the average visual input received when: A) A specific bout is chosen, B) A specific behavioural sequence is initiated.
@@ -37,6 +38,7 @@ def average_visual_input_for_bouts(p1, p2, p3, n):
         observation_tally = []
         for i in range(1, n + 1):
             data = load_data(p1, p2, f"{p3}-{i}")
+            data = remove_near_wall_data(data, 1500, 1500)
             observation = data["observation"]
             time_points_for_bout = [i for i, a in enumerate(data["behavioural choice"]) if a == action_num]
             for index, o in enumerate(observation):
@@ -95,7 +97,7 @@ def order_observation_tally(observation_tally):
         similarity_matrix[simil[current_axis], :] = 999999999
         similarity_matrix[:, simil[current_axis]] = 999999999
         if np.amin(working_simil_matrix) == 999999999:
-            simil = divmod(similarity_matrix.argmin(), similarity_matrix.shape[1])
+            simil = divmod(similarity_matrix.argmin(), similarity_matrix.shape[0])
         else:
             simil = divmod(working_simil_matrix.argmin(), working_simil_matrix.shape[1])
         ordered_observation_tally.append(observation_tally[simil[current_axis]])
@@ -135,12 +137,12 @@ def show_all_observations(p1, p2, p3, n):
             plt.show()
 
 
-data = load_data("changed_penalties-1", "Naturalistic_test", "Naturalistic-1")
+# data = load_data("changed_penalties-1", "Naturalistic_test", "Naturalistic-1")
 # average_visual_input_for_bouts("changed_penalties-1", "Naturalistic", "Naturalistic", 2)
-show_all_observations("changed_penalties-1", "Naturalistic", "Naturalistic", 1)
+# average_visual_input_for_bouts("even_prey-1", "Naturalistic", "Naturalistic", 2)
+average_visual_input_for_bouts("even_prey-1", "Predator", "Predator", 12)
+# average_visual_input_for_bouts("even_prey-1", "Predator", "Predator", 4)
+# show_all_observations("changed_penalties-1", "Naturalistic", "Naturalistic", 1)
 # TODO: FIx bug, some ordered observations are repeated.
-# obs1 = data["observation"][0].flatten()
-# obs2 = data["observation"][1].flatten()
-# print(dist.euclidean(obs1, obs2))
 
 x = True
