@@ -63,10 +63,10 @@ def plot_multiple_traces(neuron_data):
         else:
             neuron_subset_data = neuron_data[(i * n_per_plot): (i * n_per_plot) + n_per_plot]
         create_plot(neuron_subset_data, i + 1, len(neuron_subset_data), i * n_per_plot)
-
-
-# data = load_data("large_all_features-1", "No_Stimuli", "No_Stimuli")
-data = load_data("large_all_features-1", "Controlled_Visual_Stimuli", "Curved_prey")
-
-unit_activity = [[data["rnn state"][i - 1][0][j] for i in data["step"]] for j in range(512)]
-plot_multiple_traces(unit_activity)
+#
+#
+# # data = load_data("large_all_features-1", "No_Stimuli", "No_Stimuli")
+# data = load_data("large_all_features-1", "Controlled_Visual_Stimuli", "Curved_prey")
+#
+# unit_activity = [[data["rnn state"][i - 1][0][j] for i in data["step"]] for j in range(512)]
+# plot_multiple_traces(unit_activity)
