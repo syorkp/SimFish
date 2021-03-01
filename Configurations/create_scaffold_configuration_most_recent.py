@@ -38,8 +38,8 @@ env = {'width': 1500,  # arena size
        'prey_sensing_distance': 30,
        'prey_max_turning_angle': 0.3,
        'prey_jump': True,
-       'differential_prey': False,
-       'prey_cloud_num': 0,
+       'differential_prey': True,
+       'prey_cloud_num': 2,
 
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
@@ -105,7 +105,7 @@ params = {'num_actions': 10,  # size of action space
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
           'max_epLength': 1000,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
-          'summaryLength': 500,  # Number of epidoes to periodically save for analysis
+          'summaryLength': 2000,  # Number of epidoes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
           'rnn_dim': 512,  # number of rnn cells
           'extra_rnn': False,

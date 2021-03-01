@@ -262,7 +262,6 @@ class TrainingService:
             step_number += 1
             o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
                                                                        a=a, rnn_state=rnn_state)
-            print(internal_state)
             all_actions.append(a)
             episode_buffer.append(np.reshape(np.array([o, a, r, internal_state, o1, d]), [1, 6]))
             total_episode_reward += r

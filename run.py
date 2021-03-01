@@ -245,31 +245,31 @@ predator_assay_config = [
 ]
 
 current_training_configuration = [
-    # {
-    #     "Model Name": "differential_prey",
-    #     "Environment Name": "differential_prey",
-    #     "Trial Number": 1,
-    #     "Total Configurations": 3,
-    #     "Episode Transitions": {
-    #     },
-    #     "Conditional Transitions": {
-    #         "Prey Caught": {
-    #             "2": 10,
-    #             "3": 15,
-    #             "4": 20,
-    #         },
-    #         "Predators Avoided": {
-    #         },
-    #         "Sand Grains Bumped": {
-    #         }
-    #     },
-    #     "Run Mode": "Training",
-    #     "Tethered": False,
-    #     "Realistic Bouts": True,
-    #     "Priority": 2,
-    #     "Using GPU": True,
-    #     "monitor gpu": False,
-    # },
+    {
+        "Model Name": "differential_prey",
+        "Environment Name": "differential_prey",
+        "Trial Number": 2,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 10,
+                "3": 15,
+                "4": 20,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
     {
         "Model Name": "even_prey",
         "Environment Name": "even_prey",
