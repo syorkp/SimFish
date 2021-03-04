@@ -3,6 +3,7 @@ from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+from sklearn.cluster import KMeans
 
 from Analysis.load_stimuli_data import load_stimulus_data
 from Analysis.load_data import load_data
@@ -49,11 +50,16 @@ def label_point(x, y, val, ax):
         ax.text(point['x']+.02, point['y'], str(point['val']))
 
 
+def try_kmeans(response_vectors):
+    for i in range(1, 11):
+        kmeans = KMeans(n_clusters=i, random_state=0).fit(all_vectors)
+        print(kmeans.labels_)
+
+
 data = load_data("large_all_features-1", "Controlled_Visual_Stimuli", "Curved_prey")
 stimulus_data = load_stimulus_data("large_all_features-1", "Controlled_Visual_Stimuli")
 
 stimulus_vector = get_stimulus_vector(stimulus_data, "prey 1")
-all_vectors = get_all_neuron_vectors(data, "prey 1", stimulus_data, "right_conv_4")
-
+all_vectors = get_all_neuron_vectors(data, "prey 1", stimulus_data, "rnn state")
 
 plot_tsne_results(all_vectors, 5, "Visual Response Vectors")
