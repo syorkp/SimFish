@@ -30,47 +30,12 @@ prey_assay_config = [
                 "Tethered": False,
                 "save frames": False,
                 "random positions": False,
+                "moving": False,
                 "save stimuli": False,
                 "reset": False,
                 "recordings": ["position", "behavioural choice", "fish_angle", "prey_positions", "predator_position", "observation"],
                 "interactions": []
             },
-            # {
-            #     "assay id": "Naturalistic-2",
-            #     "stimulus paradigm": "Naturalistic",
-            #     "duration": 1000,
-            #     "Tethered": False,
-            #     "save frames": False,
-            #     "save stimuli": False,
-            #     "random positions": False,
-            #     "reset": False,
-            #     "recordings": ["position", "behavioural choice", "fish_angle", "prey_positions", "predator_position", "observation"],
-            #     "interactions": []
-            # },
-            # {
-            #     "assay id": "Naturalistic-3",
-            #     "stimulus paradigm": "Naturalistic",
-            #     "duration": 1000,
-            #     "Tethered": False,
-            #     "save frames": False,
-            #     "save stimuli": False,
-            #     "random positions": False,
-            #     "reset": False,
-            #     "recordings": ["position", "behavioural choice", "fish_angle", "prey_positions", "predator_position", "observation"],
-            #     "interactions": []
-            # },
-            # {
-            #     "assay id": "Naturalistic-4",
-            #     "stimulus paradigm": "Naturalistic",
-            #     "duration": 1000,
-            #     "Tethered": False,
-            #     "save frames": False,
-            #     "save stimuli": False,
-            #     "random positions": False,
-            #     "reset": False,
-            #     "recordings": ["position", "behavioural choice", "fish_angle", "prey_positions", "predator_position", "observation"],
-            #     "interactions": []
-            # },
         ],
     },
 ]
@@ -147,14 +112,15 @@ non_random_projection_configuration = [
                 "Tethered": True,
                 "set positions": False,
                 "random positions": False,
+                "moving": "Right",
                 "reset": False,
                 "reset interval": 100,
-                "duration": 2000,
+                "duration": 500,
                 "save frames": True,
                 "save stimuli": True,
-                "recordings": ["rnn state", "left_conv_4"],
+                "recordings": [],
                 "stimuli": {
-                    "prey 1": {"steps": 2000,
+                    "prey 1": {"steps": 500,
                                "size": 5,
                                "interval": 100,
                                },
@@ -183,6 +149,7 @@ no_stimuli_projection_config = [
                 "Tethered": True,
                 "set positions": False,
                 "random positions": False,
+                "moving": False,
                 "reset": False,
                 "reset interval": 500,
                 "duration": 10000,
@@ -190,10 +157,6 @@ no_stimuli_projection_config = [
                 "save stimuli": False,
                 "recordings": ["rnn state", "behavioural choice"],
                 "stimuli": {
-                    # "prey 1": {"steps": 500,
-                    #            "size": 5,
-                    #            "interval": 100,
-                    #            },
                 },
                 "interactions": []
             },
@@ -203,6 +166,6 @@ no_stimuli_projection_config = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(no_stimuli_projection_config)
+manager = TrialManager(non_random_projection_configuration)
 manager.run_priority_loop()
 

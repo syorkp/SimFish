@@ -14,7 +14,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     For this environment, the following stimuli are available: prey, predators.
     """
 
-    def __init__(self, env_variables, stimuli, realistic_bouts, tethered=True, set_positions=False, random=False, reset_each_step=False, reset_interval=1, draw_screen=False):
+    def __init__(self, env_variables, stimuli, realistic_bouts, tethered=True, set_positions=False, moving=False, random=False, reset_each_step=False, reset_interval=1, draw_screen=False):
         super().__init__(env_variables, draw_screen)
 
         if tethered:
@@ -55,6 +55,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                 self.random_stimuli = stimuli
             else:
                 self.unset_stimuli = stimuli
+        self.moving_stimuli = moving
 
         self.edge_col = self.space.add_collision_handler(1, 3)
         self.edge_col.begin = self.touch_edge
@@ -183,12 +184,33 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         for stimulus in stimuli_to_delete:
             del self.stimuli[stimulus]
 
-    def get_new_angle(self, duration):
-        if self.num_steps < 1:
-            return 0.75 * np.pi
+    def get_new_angle(self, duration, current_steps):
+        if self.moving_stimuli is False:
+            if current_steps < 1:
+                return 0.75 * np.pi
+            else:
+                progression = current_steps / duration
+                return ((1.5 * progression) - 0.75) * np.pi
         else:
-            progression = self.num_steps/duration
-            return ((1.5 * progression) - 0.75) * np.pi
+            if self.moving_stimuli is "Right":
+                if current_steps < 1:
+                    return 0.75 * np.pi
+                else:
+                    progression = current_steps / duration
+                    return ((1.5 * progression) - 0.75) * np.pi
+            else:
+                if current_steps < 1:
+                    return -0.75 * np.pi
+                else:
+                    progression = (duration - current_steps) / duration
+                    return ((1.5 * progression) - 0.75) * np.pi
+
+    @staticmethod
+    def get_distance_moved_on_arc(theta_1, theta_2, d):
+        # new_d = np.sqrt((p1[0]-p2[0])^2+(p1[1]-p2[1])^2)
+        # angle = np.arccos((2*(d^2)-new_d^2)/(4*new_d))
+        angle = abs(abs(theta_2)-abs(theta_1))
+        return angle * d
 
     def update_unset_stimuli(self):
         # TODO: Still need to update so that can have multiple, sequential stimuli. Will require adding in onset into stimulus, as well as changing the baseline phase. Not useful for current requirements.
@@ -203,15 +225,26 @@ class ControlledStimulusEnvironment(BaseEnvironment):
             elif self.num_steps % self.unset_stimuli[stimulus]["interval"] == round(2 * self.unset_stimuli[stimulus]["interval"]/3):
                 if self.unset_stimuli[stimulus]["steps"] > self.num_steps:
                     d = self.get_distance_for_size(stimulus, self.unset_stimuli[stimulus]["size"])
-                    theta = self.get_new_angle(self.unset_stimuli[stimulus]["steps"])
+                    theta = self.get_new_angle(self.unset_stimuli[stimulus]["steps"], self.num_steps)
                     self.place_on_curve(stimulus, i, d, theta)
                     self.stimuli_information[stimulus]["Onset"] = self.num_steps
                     self.stimuli_information[stimulus]["Angle"] = theta
                     self.stimuli_information[stimulus]["Size"] = self.unset_stimuli[stimulus]["size"]
+                    if self.moving_stimuli:
+                        self.stimuli_information[stimulus]["Direction"] = self.moving_stimuli
+                        time = self.unset_stimuli[stimulus]["interval"]/3
+                        theta2 = self.get_new_angle(self.unset_stimuli[stimulus]["steps"], self.num_steps + self.unset_stimuli[stimulus]["interval"]/3)
+                        d_moved = self.get_distance_moved_on_arc(theta, theta2, d)
+                        self.stimuli_information[stimulus]["Velocity"] = d_moved/time
+
                 else:
                     self.stimuli_information[stimulus]["Finish"] = self.num_steps
                     stimuli_to_delete.append(stimulus)
             else:
+                if self.moving_stimuli and self.unset_stimuli[stimulus]["interval"] * 2/3 < self.num_steps % self.unset_stimuli[stimulus]["interval"]:
+                    d = self.get_distance_for_size(stimulus, self.unset_stimuli[stimulus]["size"])
+                    theta = self.get_new_angle(self.unset_stimuli[stimulus]["steps"], self.num_steps)
+                    self.place_on_curve(stimulus, i, d, theta)
                 self.stimuli_information[stimulus] = {}
         for stimulus in stimuli_to_delete:
             del self.unset_stimuli[stimulus]

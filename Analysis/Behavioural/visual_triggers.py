@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import kde
 import scipy.spatial.distance as dist
+from scipy import stats
 import numpy as np
 
 from Analysis.load_data import load_data
@@ -23,7 +24,7 @@ def convert_photons_to_int(obs):
     return new_obs
 
 
-def take_observation_average(observation_list):
+def take_observation_mean(observation_list):
     av = np.zeros(observation_list[0].shape)
     for i in observation_list:
         av = np.add(av, i)
@@ -31,6 +32,18 @@ def take_observation_average(observation_list):
     average = np.true_divide(av, l, where=(av != 0) | (l != 0))
     average = convert_photons_to_int(average)
     return average
+
+
+def take_observation_mode(observation_list):
+    tally = np.zeros((120, 3, 2, len(observation_list)))
+    for i, o in enumerate(observation_list):
+        tally[:, :, :, i] = o
+    mode = np.zeros((120, 3, 2))
+    for pos in range(mode.shape[0]):
+        for ph in range(mode.shape[1]):
+            for eye in range(mode.shape[2]):
+                mode[pos, ph, eye] = stats.mode(tally[pos, ph, eye, :]).mode
+    return mode
 
 
 def average_visual_input_for_bouts(p1, p2, p3, n):
@@ -46,7 +59,7 @@ def average_visual_input_for_bouts(p1, p2, p3, n):
                     observation_tally.append(o)
 
         if len(observation_tally) > 0:
-            average_observation = take_observation_average(observation_tally)
+            average_observation = take_observation_mean(observation_tally)
             left = average_observation[:, :, 0]
             right = average_observation[:, :, 1]
             left = np.expand_dims(left, axis=0)

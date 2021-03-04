@@ -103,6 +103,7 @@ class AssayService:
                                                             tethered=assay["Tethered"],
                                                             set_positions=assay["set positions"],
                                                             random=assay["random positions"],
+                                                            moving=assay["moving"],
                                                             reset_each_step=assay["reset"],
                                                             reset_interval=assay["reset interval"]
                                                             )
