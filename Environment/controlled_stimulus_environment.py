@@ -159,6 +159,8 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     def get_distance_for_size(stimulus, degree_size):
         if "prey" in stimulus:
             return 298.97 * np.exp(-0.133 * degree_size)
+        elif "predator" in stimulus:
+            return 298.97 * np.exp(-0.133 * degree_size/25)
         else:
             return 180  # TODO: Add for predator
 
@@ -168,7 +170,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         if "prey" in stimulus_key:
             self.prey_bodies[index].position = (a, b)
         elif "predator" in stimulus_key:
-            self.predator_positions[index].position = (a, b)
+            self.predator_bodies[index].position = (a, b)
 
     def update_random_stimuli(self):
         # TODO: Add in baseline feature.
@@ -215,13 +217,20 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     def update_unset_stimuli(self):
         # TODO: Still need to update so that can have multiple, sequential stimuli. Will require adding in onset into stimulus, as well as changing the baseline phase. Not useful for current requirements.
         stimuli_to_delete = []
-        for i, stimulus, in enumerate(self.unset_stimuli.keys()):
+        for stimulus in self.unset_stimuli.keys():
+            i = int(stimulus.split()[1]) - 1
             if self.num_steps % self.unset_stimuli[stimulus]["interval"] == 0:
                 self.stimuli_information[stimulus]["Initialisation"] = self.num_steps
-                self.prey_bodies[i].position = (10, 10)
+                if "prey" in stimulus:
+                    self.prey_bodies[i].position = (10, 10)
+                elif "predator" in stimulus:
+                    self.predator_bodies[i].position = (10, 10)
             elif self.num_steps % self.unset_stimuli[stimulus]["interval"] == round(self.unset_stimuli[stimulus]["interval"]/3):
                 self.stimuli_information[stimulus]["Pre-onset"] = self.num_steps
-                self.prey_bodies[i].position = (10, 10)
+                if "prey" in stimulus:
+                    self.prey_bodies[i].position = (10, 10)
+                elif "predator" in stimulus:
+                    self.predator_bodies[i].position = (10, 10)
             elif self.num_steps % self.unset_stimuli[stimulus]["interval"] == round(2 * self.unset_stimuli[stimulus]["interval"]/3):
                 if self.unset_stimuli[stimulus]["steps"] > self.num_steps:
                     d = self.get_distance_for_size(stimulus, self.unset_stimuli[stimulus]["size"])
@@ -250,8 +259,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
             del self.unset_stimuli[stimulus]
 
     def update_stimuli(self):
-        # TODO: Coded very badly.
-        # TODO: Fix for delayed stimuli.
+        """For use with set positioned stimuli."""
         finished_prey = []
         finished_predators = []
         for i, prey in enumerate(self.prey_positions):

@@ -79,8 +79,11 @@ def plot_multiple_traces(neuron_data, stimulus_data=None):
 
 
 # data = load_data("large_all_features-1", "No_Stimuli", "No_Stimuli")
-data = load_data("large_all_features-1", "Controlled_Visual_Stimuli", "Curved_prey")
-stimulus_data = load_stimulus_data("large_all_features-1", "Controlled_Visual_Stimuli")
+# data = load_data("large_all_features-1", "Controlled_Visual_Stimuli", "Curved_prey")
+# stimulus_data = load_stimulus_data("large_all_features-1", "Controlled_Visual_Stimuli", "Curved_prey")
+
+data = load_data("large_all_features-1", "Controlled_Visual_Stimuli", "Predator-Static")
+stimulus_data = load_stimulus_data("large_all_features-1", "Controlled_Visual_Stimuli", "Predator-Static")
 
 unit_activity = [[data["rnn state"][i - 1][0][j] for i in data["step"]] for j in range(512)]
 plot_multiple_traces(unit_activity, stimulus_data)

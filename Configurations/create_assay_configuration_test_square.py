@@ -5,8 +5,8 @@ import json
 
 # all distances in pixels
 
-env = {'width': 600,  # arena size
-       'height': 600,
+env = {'width': 1000,  # arena size
+       'height': 1000,
        'drag': 0.7,  # water drag
        'phys_dt': 0.1,  # physics time step
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step

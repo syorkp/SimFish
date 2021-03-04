@@ -94,6 +94,43 @@ current_training_configuration = [
 ]
 
 
+predator_projection = [
+    {
+        "Model Name": "large_all_features",
+        "Environment Name": "test_square",
+        "Trial Number": 1,
+        "Assay Configuration Name": "Controlled_Visual_Stimuli",
+        "Run Mode": "Assay",
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Priority": 1,
+        "Assays": [
+            {
+                "assay id": "Predator-Static",
+                "stimulus paradigm": "Projection",
+                "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "moving": "Left",
+                "reset": False,
+                "reset interval": 100,
+                "duration": 500,
+                "save frames": True,
+                "save stimuli": True,
+                "recordings": ["rnn state"],
+                "stimuli": {
+                    "predator 1": {"steps": 500,
+                                   "size": 50,
+                                   "interval": 100,
+                                   },
+                },
+                "interactions": []
+            },
+        ]
+    }
+]
+
 non_random_projection_configuration = [
     {
         "Model Name": "large_all_features",
@@ -107,7 +144,28 @@ non_random_projection_configuration = [
         "Priority": 1,
         "Assays": [
             {
-                "assay id": "Curved_prey",
+                "assay id": "Prey-Moving-Left",
+                "stimulus paradigm": "Projection",
+                "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "moving": "Left",
+                "reset": False,
+                "reset interval": 100,
+                "duration": 1000,
+                "save frames": True,
+                "save stimuli": True,
+                "recordings": ["rnn state"],
+                "stimuli": {
+                    "prey 1": {"steps": 1000,
+                               "size": 5,
+                               "interval": 100,
+                               },
+                },
+                "interactions": []
+            },
+            {
+                "assay id": "Prey-Moving-Right",
                 "stimulus paradigm": "Projection",
                 "Tethered": True,
                 "set positions": False,
@@ -115,12 +173,33 @@ non_random_projection_configuration = [
                 "moving": "Right",
                 "reset": False,
                 "reset interval": 100,
-                "duration": 500,
+                "duration": 1000,
                 "save frames": True,
                 "save stimuli": True,
-                "recordings": [],
+                "recordings": ["rnn state"],
                 "stimuli": {
-                    "prey 1": {"steps": 500,
+                    "prey 1": {"steps": 1000,
+                               "size": 5,
+                               "interval": 100,
+                               },
+                },
+                "interactions": []
+            },
+            {
+                "assay id": "Prey-Static",
+                "stimulus paradigm": "Projection",
+                "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "moving": False,
+                "reset": False,
+                "reset interval": 100,
+                "duration": 1000,
+                "save frames": True,
+                "save stimuli": True,
+                "recordings": ["rnn state"],
+                "stimuli": {
+                    "prey 1": {"steps": 1000,
                                "size": 5,
                                "interval": 100,
                                },
@@ -166,6 +245,6 @@ no_stimuli_projection_config = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(non_random_projection_configuration)
+manager = TrialManager(predator_projection)
 manager.run_priority_loop()
 

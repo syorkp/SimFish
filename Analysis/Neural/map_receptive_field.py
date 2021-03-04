@@ -87,16 +87,21 @@ def plot_rnn_vectors(s_vector, r_vector):
         create_rnn_figure(neuron_subset_data, i + 1, len(neuron_subset_data), i * n_per_plot, s_vector)
 
 
-
-data = load_data("large_all_features-1", "Controlled_Visual_Stimuli", "Curved_prey")
-stimulus_data = load_stimulus_data("large_all_features-1", "Controlled_Visual_Stimuli")
-
+data = load_data("large_all_features-1", "Controlled_Visual_Stimuli", "Prey-Moving-Left")
+stimulus_data = load_stimulus_data("large_all_features-1", "Controlled_Visual_Stimuli", "Prey-Moving-Left")
 stimulus_vector = get_stimulus_vector(stimulus_data, "prey 1")
-# all_vectors = np.array(get_conv_neuron_vectors(data, "prey 1", stimulus_data, "left_conv_4"))
 all_vectors = get_all_neuron_vectors(data, "prey 1", stimulus_data, "rnn state")
-
 plot_rnn_vectors(stimulus_vector, all_vectors)
 
-# plot_conv_vectors(stimulus_vector, all_vectors)
+data = load_data("large_all_features-1", "Controlled_Visual_Stimuli", "Prey-Moving-Right")
+stimulus_data = load_stimulus_data("large_all_features-1", "Controlled_Visual_Stimuli",  "Prey-Moving-Right")
+stimulus_vector = get_stimulus_vector(stimulus_data, "prey 1")
+all_vectors = get_all_neuron_vectors(data, "prey 1", stimulus_data, "rnn state")
+plot_rnn_vectors(stimulus_vector, all_vectors)
 
-x = True
+
+data = load_data("large_all_features-1", "Controlled_Visual_Stimuli", "Prey-Static")
+stimulus_data = load_stimulus_data("large_all_features-1", "Controlled_Visual_Stimuli",  "Prey-Static")
+stimulus_vector = get_stimulus_vector(stimulus_data, "prey 1")
+all_vectors = get_all_neuron_vectors(data, "prey 1", stimulus_data, "rnn state")
+plot_rnn_vectors(stimulus_vector, all_vectors)

@@ -137,7 +137,7 @@ class AssayService:
             self.create_testing_environment(assay)
             self.perform_assay(assay)
             if assay["save stimuli"]:
-                self.save_stimuli_data()
+                self.save_stimuli_data(assay)
             # self.save_assay_results(assay)
             self.save_hdf5_data(assay)
         self.save_metadata()
@@ -286,8 +286,8 @@ class AssayService:
             json.dump(self.episode_summary_data, output_file)
         self.episode_summary_data = None
 
-    def save_stimuli_data(self):
-        with open(f"{self.data_save_location}/{self.assay_configuration_id}-stimuli_data.json", "w") as output_file:
+    def save_stimuli_data(self, assay):
+        with open(f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}-stimuli_data.json", "w") as output_file:
             json.dump(self.stimuli_data, output_file)
         self.stimuli_data = []
 

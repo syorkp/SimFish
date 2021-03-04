@@ -1,8 +1,8 @@
 import json
 
 
-def load_stimulus_data(model_name, assay_name):
-    path = f"{model_name}/{assay_name}-stimuli_data.json"
+def load_stimulus_data(model_name, assay_name, assay_id):
+    path = f"{model_name}/{assay_name}-{assay_id}-stimuli_data.json"
 
     with open(f"../../Assay-Output/{path}") as file:
         data = json.load(file)
