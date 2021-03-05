@@ -70,7 +70,6 @@ def get_third_order_transition_counts_from_sequences(sequences):
     return transition_counts
 
 
-
 def get_transition_probabilities(transition_counts):
     transition_probabilities = transition_counts/np.sum(transition_counts)
     return transition_probabilities
@@ -80,6 +79,10 @@ def visualise_first_order_transitions(transition_probabilities):
     matrix_tran = transition_probabilities[:4, :4]
     mc = MarkovChain(matrix_tran, [str(i) for i in range(0, 4)])
     mc.draw()
+
+
+def convert_probabilities_to_vectors(probability_list):
+    ...
 
 
 def visualisation_method_2(transition_probabilities):
@@ -133,8 +136,8 @@ def visualisation_method_2(transition_probabilities):
     plt.interactive(False)
 
 #
-# t = get_first_order_transition_counts("changed_penalties-1", "Naturalistic", "Naturalistic", 2)
-# tp = get_transition_probabilities(t)
+t = get_first_order_transition_counts("changed_penalties-1", "Naturalistic", "Naturalistic", 2)
+tp = get_transition_probabilities(t)
 # # visualisation_method_2(tp)
 #
 # test = get_second_order_transition_counts("changed_penalties-1", "Naturalistic", "Naturalistic", 2)

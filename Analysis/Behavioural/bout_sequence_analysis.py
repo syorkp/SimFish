@@ -3,8 +3,9 @@ from sklearn.manifold import TSNE
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from Analysis.Behavioural.bout_transition_probabilities import get_third_order_transition_counts_from_sequences, get_transition_probabilities, get_second_order_transition_counts, get_third_order_transition_counts
+from Analysis.Behavioural.bout_transition_probabilities import get_third_order_transition_counts_from_sequences, get_transition_probabilities, convert_probabilities_to_vectors, get_second_order_transition_counts, get_third_order_transition_counts
 from Analysis.Behavioural.extract_event_action_sequence import get_escape_sequences, get_capture_sequences
+from Analysis.load_data import load_data
 
 
 def plot_tsne_results(transition_probabilities, order=2, title="None"):
@@ -35,23 +36,40 @@ def plot_tsne_results(transition_probabilities, order=2, title="None"):
     plt.show()
 
 
-# From sequences:
-
-capture_sequences = get_capture_sequences("changed_penalties-1", "Naturalistic", f"Naturalistic", 2)
-escape_sequences = get_escape_sequences("changed_penalties-1", "Predator", f"Predator", 4)
-
-capture_counts = get_third_order_transition_counts_from_sequences(capture_sequences)
-escape_counts = get_third_order_transition_counts_from_sequences(escape_sequences)
-
-capture_probabilities = get_transition_probabilities(capture_counts)
-escape_probabilities = get_transition_probabilities(escape_counts)
-
-all_probabilities = capture_probabilities + escape_probabilities
+# Trials from data
+data = load_data("changed_penalties-1", "Naturalistic", "Naturalistic-1")["behavioural choice"]
+data2 = load_data("changed_penalties-1", "Naturalistic", "Naturalistic-2")["behavioural choice"]
+data3 = load_data("changed_penalties-1", "Predator", "Predator-1")["behavioural choice"]
+data4 = load_data("changed_penalties-1", "Predator", "Predator-2")["behavioural choice"]
+data5 = load_data("changed_penalties-1", "Predator", "Predator-3")["behavioural choice"]
+data6 = load_data("changed_penalties-1", "Predator", "Predator-4")["behavioural choice"]
 
 
-plot_tsne_results(capture_probabilities, 3, "Prey Capture")
-plot_tsne_results(escape_probabilities, 3, "Predator Avoidance")
-plot_tsne_results(all_probabilities, 3, "All Actions")
+data1_counts = get_third_order_transition_counts_from_sequences(data)
+data2_counts = get_third_order_transition_counts_from_sequences(data2)
+data3_counts = get_third_order_transition_counts_from_sequences(data3)
+data4_counts = get_third_order_transition_counts_from_sequences(data4)
+data5_counts = get_third_order_transition_counts_from_sequences(data5)
+data6_counts = get_third_order_transition_counts_from_sequences(data6)
+
+
+data1_probabilities = get_transition_probabilities(data1_counts)
+data2_probabilities = get_transition_probabilities(data2_counts)
+data3_probabilities = get_transition_probabilities(data3_counts)
+data4_probabilities = get_transition_probabilities(data4_counts)
+data5_probabilities = get_transition_probabilities(data5_counts)
+data6_probabilities = get_transition_probabilities(data6_counts)
+
+probabilities = [data1_probabilities, data2_probabilities, data3_probabilities, data4_probabilities, data5_probabilities,
+data6_probabilities]
+
+pvectors = convert_probabilities_to_vectors(probabilities)
+
+
+
+# plot_tsne_results(capture_probabilities, 3, "Prey Capture")
+# plot_tsne_results(escape_probabilities, 3, "Predator Avoidance")
+# plot_tsne_results(all_probabilities, 3, "All Actions")
 
 # Getting directly from files:
 
