@@ -60,6 +60,14 @@ def calculate_scalar_value(neural_data, t_start, t_mid, t_fin):
         return (response - baseline)/baseline
 
 
+def normalise_vrvs(vectors):
+    vectors = np.array(vectors)
+    vmax = np.amax(vectors)
+    vmin = np.amin(vectors)
+    for i, v in enumerate(vectors):
+        vectors[i] = np.interp(v, (-100, 100), (-1, 1))
+    return vectors
+
 # data = load_data("large_all_features-1", "Controlled_Visual_Stimuli", "Curved_prey")
 # stimulus_data = load_stimulus_data("changed_penalties-1", "Controlled_Visual_Stimuli")
 
