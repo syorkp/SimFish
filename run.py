@@ -44,7 +44,7 @@ current_training_configuration = [
     {
         "Model Name": "differential_prey",
         "Environment Name": "differential_prey",
-        "Trial Number": 2,
+        "Trial Number": 4,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -69,8 +69,8 @@ current_training_configuration = [
     {
         "Model Name": "even_prey",
         "Environment Name": "even_prey",
-        "Trial Number": 2,
-        "Total Configurations": 3,
+        "Trial Number": 3,
+        "Total Configurations": 2,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
@@ -245,6 +245,6 @@ no_stimuli_projection_config = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(predator_projection)
+manager = TrialManager(current_training_configuration)
 manager.run_priority_loop()
 
