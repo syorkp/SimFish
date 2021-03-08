@@ -3,9 +3,34 @@ from sklearn.manifold import TSNE
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from Analysis.Behavioural.bout_transition_probabilities import get_third_order_transition_counts_from_sequences, get_transition_probabilities, convert_probabilities_to_vectors, get_second_order_transition_counts, get_third_order_transition_counts
+from Analysis.Behavioural.bout_transition_probabilities import get_third_order_transition_counts_from_sequences, create_third_order_transition_count_matrix, get_transition_probabilities, convert_probabilities_to_vectors, get_second_order_transition_counts, get_third_order_transition_counts
 from Analysis.Behavioural.extract_event_action_sequence import get_escape_sequences, get_capture_sequences
 from Analysis.load_data import load_data
+
+
+def do_tsne(probability_vectors):
+    tsne = TSNE(n_components=2, n_iter=250)
+    tsne_results = tsne.fit_transform(probability_vectors)
+
+    tpd = {}
+
+    tpd['tsne-2d-one'] = tsne_results[:, 0]
+    tpd['tsne-2d-two'] = tsne_results[:, 1]
+    tpd['Point'] = ["Blue" for i in range(len(tsne_results[:, 0]))]
+    for i in range(14,18):
+        tpd["Point"][i] = "Red"
+    plt.figure(figsize=(16, 10))
+    plt.title("title")
+
+    sns.scatterplot(
+        x="tsne-2d-one", y="tsne-2d-two",
+        # palette=sns.color_palette("hls", 10),
+        hue="Point",
+        data=tpd,
+        legend="full",
+        alpha=0.3
+    )
+    plt.show()
 
 
 def plot_tsne_results(transition_probabilities, order=2, title="None"):
@@ -13,7 +38,7 @@ def plot_tsne_results(transition_probabilities, order=2, title="None"):
         transition_probabilities = np.vstack(transition_probabilities)
         order -= 1
 
-    tsne = TSNE(n_components=2)
+    tsne = TSNE(n_components=2, n_iter=0)
     tsne_results = tsne.fit_transform(transition_probabilities)
 
     tpd = {}
@@ -37,35 +62,69 @@ def plot_tsne_results(transition_probabilities, order=2, title="None"):
 
 
 # Trials from data
-data = load_data("changed_penalties-1", "Naturalistic", "Naturalistic-1")["behavioural choice"]
-data2 = load_data("changed_penalties-1", "Naturalistic", "Naturalistic-2")["behavioural choice"]
-data3 = load_data("changed_penalties-1", "Predator", "Predator-1")["behavioural choice"]
-data4 = load_data("changed_penalties-1", "Predator", "Predator-2")["behavioural choice"]
-data5 = load_data("changed_penalties-1", "Predator", "Predator-3")["behavioural choice"]
-data6 = load_data("changed_penalties-1", "Predator", "Predator-4")["behavioural choice"]
+a_data1 = create_third_order_transition_count_matrix(load_data("changed_penalties-1", "Naturalistic", "Naturalistic-1")["behavioural choice"])
+a_data2 = create_third_order_transition_count_matrix(load_data("changed_penalties-1", "Naturalistic", "Naturalistic-2")["behavioural choice"])
+a_data3 = create_third_order_transition_count_matrix(load_data("large_all_features-1", "Naturalistic", "Naturalistic-1")["behavioural choice"])
+a_data4 = create_third_order_transition_count_matrix(load_data("large_all_features-1", "Naturalistic", "Naturalistic-2")["behavioural choice"])
+a_data5 = create_third_order_transition_count_matrix(load_data("large_all_features-1", "Naturalistic", "Naturalistic-3")["behavioural choice"])
+a_data6 = create_third_order_transition_count_matrix(load_data("large_all_features-1", "Naturalistic", "Naturalistic-4")["behavioural choice"])
+a_data7 = create_third_order_transition_count_matrix(load_data("large_all_features-1", "Naturalistic", "Naturalistic-5")["behavioural choice"])
+a_data8 = create_third_order_transition_count_matrix(load_data("large_all_features-1", "Naturalistic", "Naturalistic-6")["behavioural choice"])
+a_data9 = create_third_order_transition_count_matrix(load_data("large_all_features-1", "Naturalistic", "Naturalistic-7")["behavioural choice"])
+a_data10 = create_third_order_transition_count_matrix(load_data("large_all_features-1", "Naturalistic", "Naturalistic-8")["behavioural choice"])
+a_data11 = create_third_order_transition_count_matrix(load_data("large_all_features-1", "Naturalistic", "Naturalistic-9")["behavioural choice"])
+a_data12 = create_third_order_transition_count_matrix(load_data("large_all_features-1", "Naturalistic", "Naturalistic-10")["behavioural choice"])
+a_data13 = create_third_order_transition_count_matrix(load_data("large_all_features-1", "Naturalistic", "Naturalistic-11")["behavioural choice"])
+a_data14 = create_third_order_transition_count_matrix(load_data("large_all_features-1", "Naturalistic", "Naturalistic-12")["behavioural choice"])
 
 
-data1_counts = get_third_order_transition_counts_from_sequences(data)
-data2_counts = get_third_order_transition_counts_from_sequences(data2)
-data3_counts = get_third_order_transition_counts_from_sequences(data3)
-data4_counts = get_third_order_transition_counts_from_sequences(data4)
-data5_counts = get_third_order_transition_counts_from_sequences(data5)
-data6_counts = get_third_order_transition_counts_from_sequences(data6)
+data3 = create_third_order_transition_count_matrix(load_data("changed_penalties-1", "Predator", "Predator-1")["behavioural choice"])
+data4 = create_third_order_transition_count_matrix(load_data("changed_penalties-1", "Predator", "Predator-2")["behavioural choice"])
+data5 = create_third_order_transition_count_matrix(load_data("changed_penalties-1", "Predator", "Predator-3")["behavioural choice"])
+data6 = create_third_order_transition_count_matrix(load_data("changed_penalties-1", "Predator", "Predator-4")["behavioural choice"])
 
 
-data1_probabilities = get_transition_probabilities(data1_counts)
-data2_probabilities = get_transition_probabilities(data2_counts)
-data3_probabilities = get_transition_probabilities(data3_counts)
-data4_probabilities = get_transition_probabilities(data4_counts)
-data5_probabilities = get_transition_probabilities(data5_counts)
-data6_probabilities = get_transition_probabilities(data6_counts)
+data1_probabilities = get_transition_probabilities(a_data1)
+data2_probabilities = get_transition_probabilities(a_data2)
+data3_probabilities = get_transition_probabilities(a_data3)
+data4_probabilities = get_transition_probabilities(a_data4)
+data5_probabilities = get_transition_probabilities(a_data5)
+data6_probabilities = get_transition_probabilities(a_data6)
+data7_probabilities = get_transition_probabilities(a_data7)
+data8_probabilities = get_transition_probabilities(a_data8)
+data9_probabilities = get_transition_probabilities(a_data9)
+data10_probabilities = get_transition_probabilities(a_data10)
+data11_probabilities = get_transition_probabilities(a_data11)
+data12_probabilities = get_transition_probabilities(a_data12)
+data13_probabilities = get_transition_probabilities(a_data13)
+data14_probabilities = get_transition_probabilities(a_data14)
+data15_probabilities = get_transition_probabilities(data3)
+data16_probabilities = get_transition_probabilities(data4)
+data17_probabilities = get_transition_probabilities(data5)
+data18_probabilities = get_transition_probabilities(data6)
+
+
 
 probabilities = [data1_probabilities, data2_probabilities, data3_probabilities, data4_probabilities, data5_probabilities,
-data6_probabilities]
+data6_probabilities,
+                 data7_probabilities,
+                 data8_probabilities,
+                 data9_probabilities,
+                 data10_probabilities,
+                 data11_probabilities,
+                 data12_probabilities,
+                 data13_probabilities,
+                 data14_probabilities,
+                 data15_probabilities,
+                 data16_probabilities,
+                 data17_probabilities,
+                 data18_probabilities,
+                 ]
 
-pvectors = convert_probabilities_to_vectors(probabilities)
 
+do_tsne(probabilities)
 
+x = True
 
 # plot_tsne_results(capture_probabilities, 3, "Prey Capture")
 # plot_tsne_results(escape_probabilities, 3, "Predator Avoidance")

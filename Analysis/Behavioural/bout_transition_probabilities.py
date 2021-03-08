@@ -59,6 +59,16 @@ def get_third_order_transition_counts(p1, p2, p3, n):
     return transition_counts
 
 
+def create_third_order_transition_count_matrix(actions):
+    transition_counts = np.zeros((10, 10, 10, 10))
+    for i, a in enumerate(actions):
+        if i == 0 or i == 1 or i == 2:
+            pass
+        else:
+            transition_counts[actions[i - 3]][actions[i - 2]][actions[i - 1]][a] += 1
+    return transition_counts
+
+
 def get_third_order_transition_counts_from_sequences(sequences):
     transition_counts = np.zeros((10, 10, 10, 10))
     for sequence in sequences:
@@ -70,9 +80,18 @@ def get_third_order_transition_counts_from_sequences(sequences):
     return transition_counts
 
 
+def get_sequence_from_index(index):
+    l = index % 10
+    k = round(index/10)
+    j = round(index/100)
+    i = round(index/1000)
+    return str(i) + str(j) + str(k) + str(l)
+
+
 def get_transition_probabilities(transition_counts):
+    """Returns transition probabilities as a 1D vector. Use above function to get the sequence from the 1D index"""
     transition_probabilities = transition_counts/np.sum(transition_counts)
-    return transition_probabilities
+    return transition_probabilities.ravel()
 
 
 def visualise_first_order_transitions(transition_probabilities):
