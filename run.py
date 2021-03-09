@@ -183,11 +183,40 @@ prey_assay_config = [
     },
 ]
 
+
+test_training_configuration = [
+    {
+        "Model Name": "test",
+        "Environment Name": "ref_test",
+        "Trial Number": 1,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 10,
+                "3": 15,
+                "4": 20,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+]
+
 current_training_configuration = [
     {
-        "Model Name": "differential_prey",
+        "Model Name": "differential_prey_ref",
         "Environment Name": "differential_prey",
-        "Trial Number": 4,
+        "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -210,10 +239,10 @@ current_training_configuration = [
         "monitor gpu": False,
     },
     {
-        "Model Name": "even_prey",
+        "Model Name": "even_prey_ref",
         "Environment Name": "even_prey",
-        "Trial Number": 3,
-        "Total Configurations": 2,
+        "Trial Number": 1,
+        "Total Configurations": 3,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
@@ -388,6 +417,6 @@ no_stimuli_projection_config = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(prey_assay_config)
+manager = TrialManager(current_training_configuration)
 manager.run_priority_loop()
 

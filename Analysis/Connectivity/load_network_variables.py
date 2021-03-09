@@ -30,15 +30,16 @@ def load_network_variables(model_name, conf_name):
     model_location = f"../../Training-Output/{model_name}"
 
     with tf.Session() as sess:
-        cell = tf.nn.rnn_cell.LSTMCell(num_units=512, state_is_tuple=True)
+        cell = tf.nn.rnn_cell.LSTMCell(num_units=learning["rnn_dim"], state_is_tuple=True)
+        internal_states = sum([1 for x in [env['hunger'], env['stress']] if x is True]) + 1
         network = QNetwork(simulation=simulation,
                            rnn_dim=learning["rnn_dim"],
                            rnn_cell=cell,
                            my_scope='main',
+                           internal_states=internal_states,
                            num_actions=learning["num_actions"],
-                           learning_rate=0.0001)
-        print(learning["rnn_dim"])
-        saver =tf.train.Saver(max_to_keep=5)
+                           learning_rate=learning["learning_rate"])
+        saver = tf.train.Saver(max_to_keep=5)
         init = tf.global_variables_initializer()
         checkpoint = tf.train.get_checkpoint_state(model_location)
         saver.restore(sess, checkpoint.model_checkpoint_path)
@@ -50,5 +51,6 @@ def load_network_variables(model_name, conf_name):
         return sorted_vars
 
 
+v = load_network_variables("test-1", "1")
 
-
+x = True

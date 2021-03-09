@@ -114,7 +114,7 @@ params = {'num_actions': 10,  # size of action space
           'learning_rate': 0.0001}
 
 
-directory_name = "even_prey"
+directory_name = "ref_test"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):
