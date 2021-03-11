@@ -78,9 +78,10 @@ env = {'width': 1000,  # arena size
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
        'reafference': False,
-       'stress': False,
+       'stress': True,
        'stress_compound': 0.9
        }
+
 params = {'num_actions': 10,  # size of action space
           'batch_size': 16,  # How many experience traces to use for each training step.
           'trace_length': 64,  # How long each experience trace will be when training
@@ -103,7 +104,7 @@ params = {'num_actions': 10,  # size of action space
 
 
 # Equal to that given in the file name.
-environment_name = "test_square"
+environment_name = "test_square_2"
 
 with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)

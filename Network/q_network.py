@@ -126,10 +126,11 @@ class QNetwork:
 
         self.conv4l_flat_ref = tf.layers.flatten(self.conv4l_ref)
         self.conv4r_flat_ref = tf.layers.flatten(self.conv4r_ref)
+        self.prev_actions_one_hot_rev = tf.reverse(self.prev_actions_one_hot, [1])
+        self.internal_state_rev = tf.reverse(self.internal_state, [1])
 
         self.conv_with_states_ref = tf.concat(
-            [self.conv4l_flat_ref, self.conv4r_flat_ref, tf.reverse(self.prev_actions_one_hot, [1]),
-             tf.reverse(self.internal_state, [1])], 1)
+            [self.conv4l_flat_ref, self.conv4r_flat_ref, self.prev_actions_one_hot_rev, self.internal_state_rev], 1)
         self.rnn_in_ref = tf.layers.dense(self.conv_with_states_ref, self.rnn_dim, activation=tf.nn.relu,
                                           kernel_initializer=tf.orthogonal_initializer,
                                           trainable=True, name=my_scope + '_rnn_in', reuse=True)
@@ -160,10 +161,8 @@ class QNetwork:
             self.rnn_state2_ref = self.rnn_state_ref
             self.streamA_ref, self.streamV_ref = tf.split(self.rnn_output_ref, 2, 1)
 
-        self.AW_ref = tf.Variable(tf.random_normal([self.rnn_output_size // 2, num_actions]))
-        self.VW_ref = tf.Variable(tf.random_normal([self.rnn_output_size // 2, 1]))
-        self.Advantage_ref = tf.matmul(self.streamA_ref, self.AW_ref)
-        self.Value_ref = tf.matmul(self.streamV_ref, self.VW_ref)
+        self.Advantage_ref = tf.matmul(self.streamA_ref, self.AW)
+        self.Value_ref = tf.matmul(self.streamV_ref, self.VW)
 
         #                ------------ Integrating Normal and Reflected ------------                   #
         self.Value_final = (self.Value + self.Value_ref)/2

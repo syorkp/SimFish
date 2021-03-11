@@ -216,7 +216,7 @@ current_training_configuration = [
     {
         "Model Name": "differential_prey_ref",
         "Environment Name": "differential_prey",
-        "Trial Number": 1,
+        "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -241,7 +241,7 @@ current_training_configuration = [
     {
         "Model Name": "even_prey_ref",
         "Environment Name": "even_prey",
-        "Trial Number": 1,
+        "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -305,8 +305,8 @@ predator_projection = [
 
 non_random_projection_configuration = [
     {
-        "Model Name": "large_all_features",
-        "Environment Name": "test_square",
+        "Model Name": "even_prey_ref",
+        "Environment Name": "test_square_2",
         "Trial Number": 1,
         "Assay Configuration Name": "Controlled_Visual_Stimuli",
         "Run Mode": "Assay",
@@ -324,60 +324,60 @@ non_random_projection_configuration = [
                 "moving": "Left",
                 "reset": False,
                 "reset interval": 100,
-                "duration": 1000,
+                "duration": 100,
                 "save frames": True,
                 "save stimuli": True,
-                "recordings": ["rnn state"],
+                "recordings": ["rev_observation", "observation"],
                 "stimuli": {
-                    "prey 1": {"steps": 1000,
+                    "prey 1": {"steps": 100,
                                "size": 5,
-                               "interval": 100,
+                               "interval": 50,
                                },
                 },
                 "interactions": []
             },
-            {
-                "assay id": "Prey-Moving-Right",
-                "stimulus paradigm": "Projection",
-                "Tethered": True,
-                "set positions": False,
-                "random positions": False,
-                "moving": "Right",
-                "reset": False,
-                "reset interval": 100,
-                "duration": 1000,
-                "save frames": True,
-                "save stimuli": True,
-                "recordings": ["rnn state"],
-                "stimuli": {
-                    "prey 1": {"steps": 1000,
-                               "size": 5,
-                               "interval": 100,
-                               },
-                },
-                "interactions": []
-            },
-            {
-                "assay id": "Prey-Static",
-                "stimulus paradigm": "Projection",
-                "Tethered": True,
-                "set positions": False,
-                "random positions": False,
-                "moving": False,
-                "reset": False,
-                "reset interval": 100,
-                "duration": 1000,
-                "save frames": True,
-                "save stimuli": True,
-                "recordings": ["rnn state"],
-                "stimuli": {
-                    "prey 1": {"steps": 1000,
-                               "size": 5,
-                               "interval": 100,
-                               },
-                },
-                "interactions": []
-            },
+            # {
+            #     "assay id": "Prey-Moving-Right",
+            #     "stimulus paradigm": "Projection",
+            #     "Tethered": True,
+            #     "set positions": False,
+            #     "random positions": False,
+            #     "moving": "Right",
+            #     "reset": False,
+            #     "reset interval": 100,
+            #     "duration": 1000,
+            #     "save frames": True,
+            #     "save stimuli": True,
+            #     "recordings": ["rnn state"],
+            #     "stimuli": {
+            #         "prey 1": {"steps": 1000,
+            #                    "size": 5,
+            #                    "interval": 100,
+            #                    },
+            #     },
+            #     "interactions": []
+            # },
+            # {
+            #     "assay id": "Prey-Static",
+            #     "stimulus paradigm": "Projection",
+            #     "Tethered": True,
+            #     "set positions": False,
+            #     "random positions": False,
+            #     "moving": False,
+            #     "reset": False,
+            #     "reset interval": 100,
+            #     "duration": 1000,
+            #     "save frames": True,
+            #     "save stimuli": True,
+            #     "recordings": ["rnn state"],
+            #     "stimuli": {
+            #         "prey 1": {"steps": 1000,
+            #                    "size": 5,
+            #                    "interval": 100,
+            #                    },
+            #     },
+            #     "interactions": []
+            # },
         ],
     }
 ]

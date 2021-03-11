@@ -38,8 +38,8 @@ env = {'width': 1500,  # arena size
        'prey_sensing_distance': 30,
        'prey_max_turning_angle': 0.3,
        'prey_jump': True,
-       'differential_prey': False,
-       'prey_cloud_num': 0,
+       'differential_prey': True,
+       'prey_cloud_num': 2,
 
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
@@ -88,7 +88,7 @@ env = {'width': 1500,  # arena size
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
        'reafference': False,
-       'stress': True,
+       'stress': False,
        'stress_compound': 0.9
        }
 
@@ -114,7 +114,7 @@ params = {'num_actions': 10,  # size of action space
           'learning_rate': 0.0001}
 
 
-directory_name = "ref_test"
+directory_name = "differential_prey"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):

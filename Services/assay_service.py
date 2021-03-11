@@ -173,11 +173,12 @@ class AssayService:
                 break
 
     def step_loop(self, o, internal_state, a, rnn_state):
-        chosen_a, updated_rnn_state, rnn2_state, sa, sv, conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r = \
+        chosen_a, updated_rnn_state, rnn2_state, sa, sv, conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r, o2 = \
             self.sess.run(
                 [self.network.predict, self.network.rnn_state, self.network.rnn_state2, self.network.streamA, self.network.streamV,
                  self.network.conv1l, self.network.conv2l, self.network.conv3l, self.network.conv4l,
-                 self.network.conv1r, self.network.conv2r, self.network.conv3r, self.network.conv4r
+                 self.network.conv1r, self.network.conv2r, self.network.conv3r, self.network.conv4r,
+                 [self.network.ref_left_eye, self.network.ref_right_eye],
                  ],
                 feed_dict={self.network.observation: o,
                            self.network.internal_state: internal_state,
@@ -191,7 +192,6 @@ class AssayService:
                                                                                                  frame_buffer=self.frame_buffer,
                                                                                                  save_frames=True,
                                                                                                  activations=(sa,))
-
         fish_angle = self.simulation.fish.body.angle
 
         if not self.simulation.sand_grain_bodies:
@@ -232,7 +232,7 @@ class AssayService:
             rnn2_state = [0.0]
 
         # Saving step data
-        possible_data_to_save = self.package_output_data(o1, chosen_a, sa, updated_rnn_state,
+        possible_data_to_save = self.package_output_data(o1, o2, chosen_a, sa, updated_rnn_state,
                                                          rnn2_state,
                                                          self.simulation.fish.body.position,
                                                          self.simulation.prey_consumed_this_step,
@@ -296,7 +296,7 @@ class AssayService:
         with open(f"{self.data_save_location}/{self.assay_configuration_id}.json", "w") as output_file:
             json.dump(self.metadata, output_file)
 
-    def package_output_data(self, observation, action, advantage_stream, rnn_state, rnn2_state, position, prey_consumed, predator_body,
+    def package_output_data(self, observation, rev_observation, action, advantage_stream, rnn_state, rnn2_state, position, prey_consumed, predator_body,
                             conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r,
                             prey_positions, predator_position, sand_grain_positions, vegetation_positions, fish_angle):
         """
@@ -335,6 +335,7 @@ class AssayService:
             "advantage stream": advantage_stream,
             "position": position,
             "observation": observation,
+            "rev_observation": rev_observation,
             "left_conv_1": conv1l,
             "left_conv_2": conv2l,
             "left_conv_3": conv3l,
