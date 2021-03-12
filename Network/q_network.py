@@ -161,26 +161,25 @@ class QNetwork:
             self.rnn_state2_ref = self.rnn_state_ref
             self.streamA_ref, self.streamV_ref = tf.split(self.rnn_output_ref, 2, 1)
 
-        self.Advantage_ref = tf.matmul(self.streamA_ref, self.AW)
         self.Value_ref = tf.matmul(self.streamV_ref, self.VW)
+        self.Advantage_ref = tf.matmul(self.streamA_ref, self.AW)
+
+        # Swapping rows in advantage - Note that this is specific to the current action space and order
+        self.Advantage_ref = tf.concat([self.Advantage_ref[0:, :][:, :1],
+                                        self.Advantage_ref[0:, :][:, 2:3],
+                                        self.Advantage_ref[0:, :][:, 1:2],
+                                        self.Advantage_ref[0:, :][:, 3:4],
+                                        self.Advantage_ref[0:, :][:, 5:6],
+                                        self.Advantage_ref[0:, :][:, 4:5],
+                                        self.Advantage_ref[0:, :][:, 6:7],
+                                        self.Advantage_ref[0:, :][:, 8:9],
+                                        self.Advantage_ref[0:, :][:, 7:8],
+                                        self.Advantage_ref[0:, :][:, 9:]], axis=1)
 
         #                ------------ Integrating Normal and Reflected ------------                   #
-        self.Value_final = (self.Value + self.Value_ref)/2
 
-        # TODO: Note that this is specific to the current action space and order (no easy way to make more general
-        self.Advantage_final = []
-        self.Advantage_final.append((self.Advantage[:, 0] + self.Advantage_ref[:, 0])/2)
-        self.Advantage_final.append((self.Advantage[:, 1] + self.Advantage_ref[:, 2])/2)
-        self.Advantage_final.append((self.Advantage[:, 2] + self.Advantage_ref[:, 1])/2)
-        self.Advantage_final.append((self.Advantage[:, 3] + self.Advantage_ref[:, 3])/2)
-        self.Advantage_final.append((self.Advantage[:, 4] + self.Advantage_ref[:, 5])/2)
-        self.Advantage_final.append((self.Advantage[:, 5] + self.Advantage_ref[:, 4])/2)
-        self.Advantage_final.append((self.Advantage[:, 6] + self.Advantage_ref[:, 6])/2)
-        self.Advantage_final.append((self.Advantage[:, 7] + self.Advantage_ref[:, 8])/2)
-        self.Advantage_final.append((self.Advantage[:, 8] + self.Advantage_ref[:, 7])/2)
-        self.Advantage_final.append((self.Advantage[:, 9] + self.Advantage_ref[:, 9])/2)
-        self.Advantage_final = tf.stack(self.Advantage_final)
-        self.Advantage_final = tf.reshape(self.Advantage_final, shape=[-1, self.Advantage_final.shape[0]])
+        self.Value_final = tf.divide(tf.add(self.Value, self.Value_ref), 2)
+        self.Advantage_final = tf.divide(tf.add(self.Advantage, self.Advantage_ref), 2)
 
         self.salience = tf.gradients(self.Advantage_final, self.observation)
         # Then combine them together to get our final Q-values.
