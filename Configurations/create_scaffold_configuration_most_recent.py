@@ -44,12 +44,12 @@ env = {'width': 1500,  # arena size
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
        'sand_grain_size': 4.,
-       'sand_grain_num': 0,
+       'sand_grain_num': 20,
        'sand_grain_displacement_impulse_scaling_factor': 0.5,
        'sand_grain_displacement_distance': 20,
 
        'vegetation_size': 100.,
-       'vegetation_num': 0,
+       'vegetation_num': 3,
        'vegetation_effect_distance': 150,
 
        'predator_mass': 10.,
@@ -114,7 +114,7 @@ params = {'num_actions': 10,  # size of action space
           'learning_rate': 0.0001}
 
 
-directory_name = "differential_prey"
+directory_name = "all_features"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):

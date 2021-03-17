@@ -214,9 +214,9 @@ test_training_configuration = [
 
 current_training_configuration = [
     {
-        "Model Name": "differential_prey_ref",
-        "Environment Name": "differential_prey",
-        "Trial Number": 3,
+        "Model Name": "all_features_ref",
+        "Environment Name": "all_features",
+        "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -241,7 +241,7 @@ current_training_configuration = [
     {
         "Model Name": "even_prey_ref",
         "Environment Name": "even_prey",
-        "Trial Number": 3,
+        "Trial Number": 4,
         "Total Configurations": 3,
         "Episode Transitions": {
         },

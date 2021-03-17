@@ -98,8 +98,8 @@ class QNetwork:
 
         #                ------------ Reflected network ------------                   #
 
-        self.ref_left_eye = tf.reverse(self.left_eye, [1])
-        self.ref_right_eye = tf.reverse(self.right_eye, [1])
+        self.ref_left_eye = tf.reverse(self.right_eye, [1])  # TODO: Note swapping here.
+        self.ref_right_eye = tf.reverse(self.left_eye, [1])
 
         self.conv1l_ref = tf.layers.conv1d(inputs=self.ref_left_eye, filters=16, kernel_size=16, strides=4,
                                            padding='valid',
