@@ -41,10 +41,12 @@ class BaseEnvironment:
             self.prey_cloud_locations = [
                 [np.random.randint(low=120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
                                    high=self.env_variables['width'] - (
-                                           self.env_variables['prey_size'] + self.env_variables['fish_mouth_size']) - 120),
+                                           self.env_variables['prey_size'] + self.env_variables[
+                                       'fish_mouth_size']) - 120),
                  np.random.randint(low=120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
                                    high=self.env_variables['height'] - (
-                                           self.env_variables['prey_size'] + self.env_variables['fish_mouth_size']) - 120)]
+                                           self.env_variables['prey_size'] + self.env_variables[
+                                       'fish_mouth_size']) - 120)]
                 for cloud in range(self.env_variables["prey_cloud_num"])]
         self.predator_bodies = []
         self.predator_shapes = []
@@ -60,6 +62,8 @@ class BaseEnvironment:
 
         self.vegetation_bodies = []
         self.vegetation_shapes = []
+
+        self.background = None
 
         self.prey_consumed_this_step = False
 
@@ -194,6 +198,17 @@ class BaseEnvironment:
         if self.predator_body is not None:
             self.board.circle(self.predator_body.position, self.env_variables['predator_size'],
                               self.predator_shape.color)
+
+        if self.background:
+            if self.background == "Green":
+                colour = (0, 1, 0)
+            elif self.background == "Red":
+                colour = (1, 0, 0)
+            else:
+                print("Invalid Background Colour")
+                return
+            self.board.create_screen(self.fish.body.position, self.env_variables["max_vis_dist"], colour)
+
 
     def create_walls(self):
         static = [

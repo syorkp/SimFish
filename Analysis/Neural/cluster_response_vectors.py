@@ -51,7 +51,7 @@ def label_point(x, y, val, ax):
 
 
 def try_kmeans(tsne_output, tsne_arrays, vectors, p):
-    for i in range(7, 8):
+    for i in range(4, 5):
         kmeans = KMeans(n_clusters=i, random_state=0).fit(tsne_arrays)
         labels = kmeans.labels_
 

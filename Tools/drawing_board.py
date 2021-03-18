@@ -52,6 +52,14 @@ class DrawingBoard:
                mouth_centre[1] + (tail_length + head_rad) * np.cos(angle))
         self.tail(head_centre, left_flank, right_flank, tip, body_colour)
 
+    def create_screen(self, fish_position, distance, colour):
+        rr, cc = draw.circle_perimeter(int(fish_position[0]), int(fish_position[1]), distance-10)
+        self.db[rr, cc, :] = colour
+        rr, cc = draw.circle_perimeter(int(fish_position[0]), int(fish_position[1]), distance-9)
+        self.db[rr, cc, :] = colour
+        rr, cc = draw.circle_perimeter(int(fish_position[0]), int(fish_position[1]), distance-8)
+        self.db[rr, cc, :] = colour
+
     def vegetation(self, vertex, edge_size, color):
         coordinates = np.array(((vertex[1], vertex[0]),
                                (vertex[1], vertex[0]+edge_size),

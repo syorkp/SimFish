@@ -350,7 +350,7 @@ projection_data = [
         "Model Name": "even_prey_ref",
         "Environment Name": "test_square",
         "Trial Number": 4,
-        "Assay Configuration Name": "Controlled_Visual_Stimuli",
+        "Assay Configuration Name": "Controlled_Visual_Stimuli_Red_Background",
         "Run Mode": "Assay",
         "Realistic Bouts": True,
         "Using GPU": False,
@@ -365,6 +365,7 @@ projection_data = [
                 "random positions": False,
                 "moving": False,
                 "reset": False,
+                "background": "Red",
                 "reset interval": 100,
                 "duration": 500,
                 "save frames": True,
@@ -386,6 +387,7 @@ projection_data = [
                 "random positions": False,
                 "moving": "Left",
                 "reset": False,
+                "background": "Red",
                 "reset interval": 100,
                 "duration": 500,
                 "save frames": True,
@@ -407,6 +409,7 @@ projection_data = [
                 "random positions": False,
                 "moving": "Right",
                 "reset": False,
+                "background": "Red",
                 "reset interval": 100,
                 "duration": 500,
                 "save frames": True,
@@ -428,6 +431,7 @@ projection_data = [
                 "random positions": False,
                 "moving": False,
                 "reset": False,
+                "background": "Red",
                 "reset interval": 100,
                 "duration": 500,
                 "save frames": True,
@@ -449,6 +453,7 @@ projection_data = [
                 "random positions": False,
                 "moving": "Left",
                 "reset": False,
+                "background": "Red",
                 "reset interval": 100,
                 "duration": 500,
                 "save frames": True,
@@ -470,6 +475,7 @@ projection_data = [
                 "random positions": False,
                 "moving": "Right",
                 "reset": False,
+                "background": "Red",
                 "reset interval": 100,
                 "duration": 500,
                 "save frames": True,
@@ -601,6 +607,6 @@ no_stimuli_projection_config = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(prey_distance_configs)
+manager = TrialManager(projection_data)
 manager.run_priority_loop()
 

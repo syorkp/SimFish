@@ -15,7 +15,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     """
 
     def __init__(self, env_variables, stimuli, realistic_bouts, tethered=True, set_positions=False, moving=False,
-                 random=False, reset_each_step=False, reset_interval=1, draw_screen=False):
+                 random=False, reset_each_step=False, reset_interval=1, background=None, draw_screen=False):
         super().__init__(env_variables, draw_screen)
 
         if tethered:
@@ -60,6 +60,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
 
         self.edge_col = self.space.add_collision_handler(1, 3)
         self.edge_col.begin = self.touch_edge
+        self.background = background
 
     def reset(self):
         super().reset()
@@ -67,6 +68,38 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.fish.body.angle = 0
         self.fish.body.velocity = (0, 0)
         self.create_stimuli(self.stimuli)
+
+    # def add_background(self, background_colour):
+    #     static = [
+    #         pymunk.Segment(
+    #             self.space.static_body,
+    #             (self.fish.body.position[0] - (self.env_variables["max_vis_dist"]-20), self.fish.body.position[1] - (self.env_variables["max_vis_dist"]-20)),
+    #             (self.fish.body.position[0] + (self.env_variables["max_vis_dist"]-20), self.fish.body.position[1] - (self.env_variables["max_vis_dist"]-20)), 1),
+    #         pymunk.Segment(
+    #             self.space.static_body,
+    #             (self.fish.body.position[0] + (self.env_variables["max_vis_dist"]-20), self.fish.body.position[1] - (self.env_variables["max_vis_dist"]-20)),
+    #             (self.fish.body.position[0] + (self.env_variables["max_vis_dist"]-20), self.fish.body.position[1] + (self.env_variables["max_vis_dist"]-20)), 1),
+    #         pymunk.Segment(
+    #             self.space.static_body,
+    #             (self.fish.body.position[0] + (self.env_variables["max_vis_dist"]-20), self.fish.body.position[1] + (self.env_variables["max_vis_dist"]-20)),
+    #             (self.fish.body.position[0] - (self.env_variables["max_vis_dist"]-20), self.fish.body.position[1] + (self.env_variables["max_vis_dist"]-20)), 1),
+    #         pymunk.Segment(
+    #             self.space.static_body,
+    #             (self.fish.body.position[0] - (self.env_variables["max_vis_dist"]-20), self.fish.body.position[1] + (self.env_variables["max_vis_dist"]-20)),
+    #             (self.fish.body.position[0] - (self.env_variables["max_vis_dist"]-20), self.fish.body.position[1] - (self.env_variables["max_vis_dist"]-20)), 1)
+    #     ]
+    #
+    #     background_b = []
+    #     background_s = []
+    #
+    #     for s in static:
+    #         s.friction = 0.
+    #         s.group = 7
+    #         s.collision_type = 7
+    #         s.color = colour
+    #         self.space.add(s)
+    #         background_b.append(s.body)
+    #     return background_b, background_s
 
     def special_reset(self):
         self.fish.body.position = (self.env_variables['width'] / 2, self.env_variables['height'] / 2)

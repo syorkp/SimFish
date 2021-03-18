@@ -105,7 +105,8 @@ class AssayService:
                                                             random=assay["random positions"],
                                                             moving=assay["moving"],
                                                             reset_each_step=assay["reset"],
-                                                            reset_interval=assay["reset interval"]
+                                                            reset_interval=assay["reset interval"],
+                                                            background=assay["background"]
                                                             )
         elif assay["stimulus paradigm"] == "Naturalistic":
             self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
