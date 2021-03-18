@@ -209,7 +209,6 @@ class BaseEnvironment:
                 return
             self.board.create_screen(self.fish.body.position, self.env_variables["max_vis_dist"], colour)
 
-
     def create_walls(self):
         static = [
             pymunk.Segment(

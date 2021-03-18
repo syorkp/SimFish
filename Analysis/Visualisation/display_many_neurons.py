@@ -124,35 +124,47 @@ def plot_multiple_traces(neuron_data_list, stimulus_data_list=None, trace_names=
                                     stimulus_data_list, trace_names=trace_names)
 
 
-data = load_data("large_all_features-1", "Controlled_Visual_Stimuli", "Predator-Static")
-stimulus_data = load_stimulus_data("large_all_features-1", "Controlled_Visual_Stimuli", "Predator-Static")
-unit_activity = [[data["rnn state"][i - 1][0][j] for i in data["step"]] for j in range(512)]
-plot_traces(unit_activity, stimulus_data)
+# data = load_data("large_all_features-1", "Controlled_Visual_Stimuli", "Predator-Static")
+# stimulus_data = load_stimulus_data("large_all_features-1", "Controlled_Visual_Stimuli", "Predator-Static")
+# unit_activity = [[data["rnn state"][i - 1][0][j] for i in data["step"]] for j in range(512)]
+# plot_traces(unit_activity, stimulus_data)
 
 
-data1 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Predator-Static")
-data2 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Predator-Moving-Left")
-data3 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Predator-Moving-Right")
-data4 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Static")
-data5 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-Left")
-data6 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-Right")
+data1a = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Predator-Static")
+# data2 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Predator-Moving-Left")
+# data3 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Predator-Moving-Right")
+# data4 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Static")
+# data5 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-Left")
+# data6 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-Right")
+# data7 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-1")
+# data8 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-2")
+# data9 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-3")
 
-data7 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-1")
-data8 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-2")
-data9 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-3")
+stimulus_data1a = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Predator-Static")
+# stimulus_data2 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Predator-Moving-Left")
+# stimulus_data3 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Predator-Moving-Right")
+# stimulus_data4 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Static")
+# stimulus_data5 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-Left")
+# stimulus_data6 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-Right")
+# stimulus_data7 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-1")
+# stimulus_data8 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-2")
+# stimulus_data9 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-3")
 
 
+data1 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli_Red_Background", "Predator-Static")
+data2 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli_Red_Background", "Predator-Moving-Left")
+data3 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli_Red_Background", "Predator-Moving-Right")
+data4 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli_Red_Background", "Prey-Static")
+data5 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli_Red_Background", "Prey-Moving-Left")
+data6 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli_Red_Background", "Prey-Moving-Right")
 
-stimulus_data1 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Predator-Static")
-stimulus_data2 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Predator-Moving-Left")
-stimulus_data3 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Predator-Moving-Right")
-stimulus_data4 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Static")
-stimulus_data5 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-Left")
-stimulus_data6 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-Right")
-stimulus_data7 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-1")
-stimulus_data8 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-2")
-stimulus_data9 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Moving-3")
 
+stimulus_data1 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli_Red_Background", "Predator-Static")
+stimulus_data2 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli_Red_Background", "Predator-Moving-Left")
+stimulus_data3 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli_Red_Background", "Predator-Moving-Right")
+stimulus_data4 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli_Red_Background", "Prey-Static")
+stimulus_data5 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli_Red_Background", "Prey-Moving-Left")
+stimulus_data6 = load_stimulus_data("even_prey_ref-4", "Controlled_Visual_Stimuli_Red_Background", "Prey-Moving-Right")
 
 
 unit_activity1 = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
@@ -161,9 +173,17 @@ unit_activity3 = [[data3["rnn state"][i - 1][0][j] for i in data3["step"]] for j
 unit_activity4 = [[data4["rnn state"][i - 1][0][j] for i in data4["step"]] for j in range(512)]
 unit_activity5 = [[data5["rnn state"][i - 1][0][j] for i in data5["step"]] for j in range(512)]
 unit_activity6 = [[data6["rnn state"][i - 1][0][j] for i in data6["step"]] for j in range(512)]
-unit_activity7 = [[data7["rnn state"][i - 1][0][j] for i in data7["step"]] for j in range(512)]
-unit_activity8 = [[data8["rnn state"][i - 1][0][j] for i in data8["step"]] for j in range(512)]
-unit_activity9 = [[data9["rnn state"][i - 1][0][j] for i in data9["step"]] for j in range(512)]
+# unit_activity7 = [[data7["rnn state"][i - 1][0][j] for i in data7["step"]] for j in range(512)]
+# unit_activity8 = [[data8["rnn state"][i - 1][0][j] for i in data8["step"]] for j in range(512)]
+# unit_activity9 = [[data9["rnn state"][i - 1][0][j] for i in data9["step"]] for j in range(512)]
+
+unit_activity1a = [[data1a["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
+
+
+# No vs red background
+plot_multiple_traces([unit_activity1a, unit_activity1],
+                     [stimulus_data1a, stimulus_data1],
+                     ["No Background", "Red Background"])
 
 # Left vs right predators
 # plot_multiple_traces([unit_activity2, unit_activity3],
@@ -176,9 +196,9 @@ unit_activity9 = [[data9["rnn state"][i - 1][0][j] for i in data9["step"]] for j
 #                      ["Prey-Moving-Left", "Prey-Moving-Right"])
 
 # # Static prey vs predators
-plot_multiple_traces([unit_activity1, unit_activity4],
-                     [stimulus_data1, stimulus_data4],
-                     ["Predator-Static", "Prey-Static"])
+# plot_multiple_traces([unit_activity1, unit_activity4],
+#                      [stimulus_data1, stimulus_data4],
+#                      ["Predator-Static", "Prey-Static"])
 #
 #
 # Right prey vs static
@@ -191,8 +211,8 @@ plot_multiple_traces([unit_activity1, unit_activity4],
 #                      [stimulus_data7, stimulus_data8, unit_activity9],
 #                      ["Prey-Size-5", "Prey-Size-10", "Prey-Size-15"])
 
-
 # All
 # plot_multiple_traces([unit_activity1, unit_activity2, unit_activity3, unit_activity4, unit_activity5, unit_activity6],
 #                      [stimulus_data1, stimulus_data2, stimulus_data3, stimulus_data4, stimulus_data5, stimulus_data6],
 #                      ["Predator-Static", "Predator-Moving-Left", "Predator-Moving-Right", "Prey-Static", "Prey-Moving-Left", "Prey-Moving-Right"])
+
