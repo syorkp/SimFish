@@ -265,12 +265,91 @@ current_training_configuration = [
     },
 ]
 
-
-predator_projection = [
+prey_distance_configs = [
     {
-        "Model Name": "large_all_features",
+        "Model Name": "even_prey_ref",
         "Environment Name": "test_square",
-        "Trial Number": 1,
+        "Trial Number": 4,
+        "Assay Configuration Name": "Controlled_Visual_Stimuli",
+        "Run Mode": "Assay",
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Priority": 1,
+        "Assays": [
+            {
+                "assay id": "Prey-Moving-1",
+                "stimulus paradigm": "Projection",
+                "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "moving": "Left",
+                "reset": False,
+                "reset interval": 100,
+                "duration": 500,
+                "save frames": True,
+                "save stimuli": True,
+                "recordings": ["rnn state"],
+                "stimuli": {
+                    "prey 1": {"steps": 500,
+                                   "size": 5,
+                                   "interval": 100,
+                                   },
+                },
+                "interactions": []
+            },
+            {
+                "assay id": "Prey-Moving-2",
+                "stimulus paradigm": "Projection",
+                "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "moving": "Left",
+                "reset": False,
+                "reset interval": 100,
+                "duration": 500,
+                "save frames": True,
+                "save stimuli": True,
+                "recordings": ["rnn state"],
+                "stimuli": {
+                    "prey 1": {"steps": 500,
+                               "size": 10,
+                               "interval": 100,
+                               },
+                },
+                "interactions": []
+            },
+            {
+                "assay id": "Prey-Moving-3",
+                "stimulus paradigm": "Projection",
+                "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "moving": "Left",
+                "reset": False,
+                "reset interval": 100,
+                "duration": 500,
+                "save frames": True,
+                "save stimuli": True,
+                "recordings": ["rnn state"],
+                "stimuli": {
+                    "prey 1": {"steps": 500,
+                               "size": 15,
+                               "interval": 100,
+                               },
+                },
+                "interactions": []
+            },
+        ]
+    }
+    ]
+
+
+projection_data = [
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "test_square",
+        "Trial Number": 4,
         "Assay Configuration Name": "Controlled_Visual_Stimuli",
         "Run Mode": "Assay",
         "Realistic Bouts": True,
@@ -280,6 +359,27 @@ predator_projection = [
         "Assays": [
             {
                 "assay id": "Predator-Static",
+                "stimulus paradigm": "Projection",
+                "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "moving": False,
+                "reset": False,
+                "reset interval": 100,
+                "duration": 500,
+                "save frames": True,
+                "save stimuli": True,
+                "recordings": ["rnn state"],
+                "stimuli": {
+                    "predator 1": {"steps": 500,
+                                   "size": 50,
+                                   "interval": 100,
+                                   },
+                },
+                "interactions": []
+            },
+            {
+                "assay id": "Predator-Moving-Left",
                 "stimulus paradigm": "Projection",
                 "Tethered": True,
                 "set positions": False,
@@ -294,6 +394,90 @@ predator_projection = [
                 "stimuli": {
                     "predator 1": {"steps": 500,
                                    "size": 50,
+                                   "interval": 100,
+                                   },
+                },
+                "interactions": []
+            },
+            {
+                "assay id": "Predator-Moving-Right",
+                "stimulus paradigm": "Projection",
+                "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "moving": "Right",
+                "reset": False,
+                "reset interval": 100,
+                "duration": 500,
+                "save frames": True,
+                "save stimuli": True,
+                "recordings": ["rnn state"],
+                "stimuli": {
+                    "predator 1": {"steps": 500,
+                                   "size": 50,
+                                   "interval": 100,
+                                   },
+                },
+                "interactions": []
+            },
+            {
+                "assay id": "Prey-Static",
+                "stimulus paradigm": "Projection",
+                "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "moving": False,
+                "reset": False,
+                "reset interval": 100,
+                "duration": 500,
+                "save frames": True,
+                "save stimuli": True,
+                "recordings": ["rnn state"],
+                "stimuli": {
+                    "prey 1": {"steps": 500,
+                                   "size": 5,
+                                   "interval": 100,
+                                   },
+                },
+                "interactions": []
+            },
+            {
+                "assay id": "Prey-Moving-Left",
+                "stimulus paradigm": "Projection",
+                "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "moving": "Left",
+                "reset": False,
+                "reset interval": 100,
+                "duration": 500,
+                "save frames": True,
+                "save stimuli": True,
+                "recordings": ["rnn state"],
+                "stimuli": {
+                    "prey 1": {"steps": 500,
+                                   "size": 5,
+                                   "interval": 100,
+                                   },
+                },
+                "interactions": []
+            },
+            {
+                "assay id": "Prey-Moving-Right",
+                "stimulus paradigm": "Projection",
+                "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "moving": "Right",
+                "reset": False,
+                "reset interval": 100,
+                "duration": 500,
+                "save frames": True,
+                "save stimuli": True,
+                "recordings": ["rnn state"],
+                "stimuli": {
+                    "prey 1": {"steps": 500,
+                                   "size": 5,
                                    "interval": 100,
                                    },
                 },
@@ -417,6 +601,6 @@ no_stimuli_projection_config = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(current_training_configuration)
+manager = TrialManager(prey_distance_configs)
 manager.run_priority_loop()
 

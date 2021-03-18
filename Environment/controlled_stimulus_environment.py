@@ -14,7 +14,8 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     For this environment, the following stimuli are available: prey, predators.
     """
 
-    def __init__(self, env_variables, stimuli, realistic_bouts, tethered=True, set_positions=False, moving=False, random=False, reset_each_step=False, reset_interval=1, draw_screen=False):
+    def __init__(self, env_variables, stimuli, realistic_bouts, tethered=True, set_positions=False, moving=False,
+                 random=False, reset_each_step=False, reset_interval=1, draw_screen=False):
         super().__init__(env_variables, draw_screen)
 
         if tethered:
@@ -162,7 +163,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         elif "predator" in stimulus:
             return 298.97 * np.exp(-0.133 * degree_size/25)
         else:
-            return 180  # TODO: Add for predator
+            return 180
 
     def place_on_curve(self, stimulus_key, index, distance, angle):
         b = distance * np.sin(angle) + self.fish.body.position[0]
