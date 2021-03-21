@@ -214,8 +214,8 @@ test_training_configuration = [
 
 current_training_configuration = [
     {
-        "Model Name": "all_features_ref",
-        "Environment Name": "all_features",
+        "Model Name": "no_predators_ref",
+        "Environment Name": "no_predators",
         "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
@@ -241,7 +241,7 @@ current_training_configuration = [
     {
         "Model Name": "even_prey_ref",
         "Environment Name": "even_prey",
-        "Trial Number": 4,
+        "Trial Number": 5,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -607,6 +607,6 @@ no_stimuli_projection_config = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(projection_data)
+manager = TrialManager(current_training_configuration)
 manager.run_priority_loop()
 

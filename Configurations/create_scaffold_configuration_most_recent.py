@@ -31,25 +31,25 @@ env = {'width': 1500,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 80,
+       'prey_num': 60,
        'prey_impulse': 0.1,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
        'prey_max_turning_angle': 0.3,
        'prey_jump': True,
-       'differential_prey': True,
-       'prey_cloud_num': 2,
+       'differential_prey': False,
+       'prey_cloud_num': 0,
 
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
        'sand_grain_size': 4.,
-       'sand_grain_num': 20,
+       'sand_grain_num': 40,
        'sand_grain_displacement_impulse_scaling_factor': 0.5,
        'sand_grain_displacement_distance': 20,
 
        'vegetation_size': 100.,
-       'vegetation_num': 3,
+       'vegetation_num': 0,
        'vegetation_effect_distance': 150,
 
        'predator_mass': 10.,
@@ -59,7 +59,7 @@ env = {'width': 1500,  # arena size
        'immunity_steps': 65,
        # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 200,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.02,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -114,7 +114,7 @@ params = {'num_actions': 10,  # size of action space
           'learning_rate': 0.0001}
 
 
-directory_name = "all_features"
+directory_name = "no_predators"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):
