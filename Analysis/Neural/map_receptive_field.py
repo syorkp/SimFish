@@ -107,9 +107,25 @@ def plot_rnn_vectors(s_vector, r_vector):
 # all_vectors = get_all_neuron_vectors(data, "prey 1", stimulus_data, "rnn state")
 # plot_rnn_vectors(stimulus_vector, all_vectors)
 
+# For Prey
+data1 = load_data("even_prey_ref-4", "Receptive_Field_Mapping", "Predator-Static")
+data2 = load_data("even_prey_ref-4", "Receptive_Field_Mapping", "Predator-Moving-Left")
+data3 = load_data("even_prey_ref-4", "Receptive_Field_Mapping", "Predator-Moving-Right")
 
-data = load_data("large_all_features-1", "Controlled_Visual_Stimuli", "Predator-Static")
-stimulus_data = load_stimulus_data("large_all_features-1", "Controlled_Visual_Stimuli", "Predator-Static")
-stimulus_vector = get_stimulus_vector(stimulus_data, "predator 1")
-all_vectors = get_all_neuron_vectors(data, "predator 1", stimulus_data, "rnn state")
-plot_rnn_vectors(stimulus_vector, all_vectors)
+stimulus_data1 = load_stimulus_data("even_prey_ref-4", "Receptive_Field_Mapping", "Predator-Static")
+stimulus_data2 = load_stimulus_data("even_prey_ref-4", "Receptive_Field_Mapping", "Predator-Moving-Left")
+stimulus_data3 = load_stimulus_data("even_prey_ref-4", "Receptive_Field_Mapping", "Predator-Moving-Right")
+
+stimulus_vector1 = get_stimulus_vector(stimulus_data1, "predator 1")
+stimulus_vector2 = get_stimulus_vector(stimulus_data2, "predator 1")
+stimulus_vector3 = get_stimulus_vector(stimulus_data3, "predator 1")
+
+
+all_vectors1 = get_all_neuron_vectors(data1, "predator 1", stimulus_data1, "rnn state")
+all_vectors2 = get_all_neuron_vectors(data2, "predator 1", stimulus_data2, "rnn state")
+all_vectors3 = get_all_neuron_vectors(data3, "predator 1", stimulus_data3, "rnn state")
+
+
+plot_rnn_vectors(stimulus_vector1, all_vectors1)
+#plot_rnn_vectors(stimulus_vector2, all_vectors2)
+# plot_rnn_vectors(stimulus_vector3, all_vectors3)

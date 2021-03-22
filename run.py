@@ -10,13 +10,12 @@ if not os.path.exists("./Training-Output/"):
 if not os.path.exists("./Assay-Output/"):
     os.makedirs("./Assay-Output/")
 
-
 prey_assay_config = [
     {
-        "Model Name": "large_all_features",
+        "Model Name": "even_prey_ref",
         "Environment Name": "naturalistic",
         "Assay Configuration Name": "Naturalistic",
-        "Trial Number": 1,
+        "Trial Number": 4,
         "Run Mode": "Assay",
         "Priority": 1,
         "Realistic Bouts": True,
@@ -30,185 +29,157 @@ prey_assay_config = [
                 "Tethered": False,
                 "save frames": False,
                 "random positions": False,
+                "background": None,
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
-                "recordings": ["behavioural choice"],
+                "recordings": ["behavioural choice", "rnn state", "position", "observation", "fish_angle", "prey_positions", "consumed", "predator_position"],
                 "interactions": []
             },
-            {
-                "assay id": "Naturalistic-2",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": False,
-                "save frames": False,
-                "random positions": False,
-                "moving": False,
-                "save stimuli": False,
-                "reset": False,
-                "recordings": ["behavioural choice"],
-                "interactions": []
-            },
-            {
-                "assay id": "Naturalistic-3",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": False,
-                "save frames": False,
-                "random positions": False,
-                "moving": False,
-                "save stimuli": False,
-                "reset": False,
-                "recordings": ["behavioural choice"],
-                "interactions": []
-            },
-            {
-                "assay id": "Naturalistic-4",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": False,
-                "save frames": False,
-                "random positions": False,
-                "moving": False,
-                "save stimuli": False,
-                "reset": False,
-                "recordings": ["behavioural choice"],
-                "interactions": []
-            },
-            {
-                "assay id": "Naturalistic-5",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": False,
-                "save frames": False,
-                "random positions": False,
-                "moving": False,
-                "save stimuli": False,
-                "reset": False,
-                "recordings": ["behavioural choice"],
-                "interactions": []
-            },
-            {
-                "assay id": "Naturalistic-6",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": False,
-                "save frames": False,
-                "random positions": False,
-                "moving": False,
-                "save stimuli": False,
-                "reset": False,
-                "recordings": ["behavioural choice"],
-                "interactions": []
-            },
-            {
-                "assay id": "Naturalistic-7",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": False,
-                "save frames": False,
-                "random positions": False,
-                "moving": False,
-                "save stimuli": False,
-                "reset": False,
-                "recordings": ["behavioural choice"],
-                "interactions": []
-            },
-            {
-                "assay id": "Naturalistic-8",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": False,
-                "save frames": False,
-                "random positions": False,
-                "moving": False,
-                "save stimuli": False,
-                "reset": False,
-                "recordings": ["behavioural choice"],
-                "interactions": []
-            },
-            {
-                "assay id": "Naturalistic-9",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": False,
-                "save frames": False,
-                "random positions": False,
-                "moving": False,
-                "save stimuli": False,
-                "reset": False,
-                "recordings": ["behavioural choice"],
-                "interactions": []
-            },
-            {
-                "assay id": "Naturalistic-10",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": False,
-                "save frames": False,
-                "random positions": False,
-                "moving": False,
-                "save stimuli": False,
-                "reset": False,
-                "recordings": ["behavioural choice"],
-                "interactions": []
-            },
-            {
-                "assay id": "Naturalistic-11",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": False,
-                "save frames": False,
-                "random positions": False,
-                "moving": False,
-                "save stimuli": False,
-                "reset": False,
-                "recordings": ["behavioural choice"],
-                "interactions": []
-            },
-            {
-                "assay id": "Naturalistic-12",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": False,
-                "save frames": False,
-                "random positions": False,
-                "moving": False,
-                "save stimuli": False,
-                "reset": False,
-                "recordings": ["behavioural choice"],
-                "interactions": []
-            },
+            # {
+            #     "assay id": "Naturalistic-2",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 1000,
+            #     "Tethered": False,
+            #     "save frames": False,
+            #     "random positions": False,
+            #     "moving": False,
+            #     "save stimuli": False,
+            #     "reset": False,
+            #     "recordings": ["behavioural choice"],
+            #     "interactions": []
+            # },
+            # {
+            #     "assay id": "Naturalistic-3",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 1000,
+            #     "Tethered": False,
+            #     "save frames": False,
+            #     "random positions": False,
+            #     "moving": False,
+            #     "save stimuli": False,
+            #     "reset": False,
+            #     "recordings": ["behavioural choice"],
+            #     "interactions": []
+            # },
+            # {
+            #     "assay id": "Naturalistic-4",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 1000,
+            #     "Tethered": False,
+            #     "save frames": False,
+            #     "random positions": False,
+            #     "moving": False,
+            #     "save stimuli": False,
+            #     "reset": False,
+            #     "recordings": ["behavioural choice"],
+            #     "interactions": []
+            # },
+            # {
+            #     "assay id": "Naturalistic-5",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 1000,
+            #     "Tethered": False,
+            #     "save frames": False,
+            #     "random positions": False,
+            #     "moving": False,
+            #     "save stimuli": False,
+            #     "reset": False,
+            #     "recordings": ["behavioural choice"],
+            #     "interactions": []
+            # },
+            # {
+            #     "assay id": "Naturalistic-6",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 1000,
+            #     "Tethered": False,
+            #     "save frames": False,
+            #     "random positions": False,
+            #     "moving": False,
+            #     "save stimuli": False,
+            #     "reset": False,
+            #     "recordings": ["behavioural choice"],
+            #     "interactions": []
+            # },
+            # {
+            #     "assay id": "Naturalistic-7",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 1000,
+            #     "Tethered": False,
+            #     "save frames": False,
+            #     "random positions": False,
+            #     "moving": False,
+            #     "save stimuli": False,
+            #     "reset": False,
+            #     "recordings": ["behavioural choice"],
+            #     "interactions": []
+            # },
+            # {
+            #     "assay id": "Naturalistic-8",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 1000,
+            #     "Tethered": False,
+            #     "save frames": False,
+            #     "random positions": False,
+            #     "moving": False,
+            #     "save stimuli": False,
+            #     "reset": False,
+            #     "recordings": ["behavioural choice"],
+            #     "interactions": []
+            # },
+            # {
+            #     "assay id": "Naturalistic-9",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 1000,
+            #     "Tethered": False,
+            #     "save frames": False,
+            #     "random positions": False,
+            #     "moving": False,
+            #     "save stimuli": False,
+            #     "reset": False,
+            #     "recordings": ["behavioural choice"],
+            #     "interactions": []
+            # },
+            # {
+            #     "assay id": "Naturalistic-10",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 1000,
+            #     "Tethered": False,
+            #     "save frames": False,
+            #     "random positions": False,
+            #     "moving": False,
+            #     "save stimuli": False,
+            #     "reset": False,
+            #     "recordings": ["behavioural choice"],
+            #     "interactions": []
+            # },
+            # {
+            #     "assay id": "Naturalistic-11",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 1000,
+            #     "Tethered": False,
+            #     "save frames": False,
+            #     "random positions": False,
+            #     "moving": False,
+            #     "save stimuli": False,
+            #     "reset": False,
+            #     "recordings": ["behavioural choice"],
+            #     "interactions": []
+            # },
+            # {
+            #     "assay id": "Naturalistic-12",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 1000,
+            #     "Tethered": False,
+            #     "save frames": False,
+            #     "random positions": False,
+            #     "moving": False,
+            #     "save stimuli": False,
+            #     "reset": False,
+            #     "recordings": ["behavioural choice"],
+            #     "interactions": []
+            #},
         ],
-    },
-]
-
-
-test_training_configuration = [
-    {
-        "Model Name": "test",
-        "Environment Name": "ref_test",
-        "Trial Number": 1,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 10,
-                "3": 15,
-                "4": 20,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
     },
 ]
 
@@ -265,12 +236,12 @@ current_training_configuration = [
     },
 ]
 
-prey_distance_configs = [
+prey_configs = [
     {
         "Model Name": "even_prey_ref",
         "Environment Name": "test_square",
         "Trial Number": 4,
-        "Assay Configuration Name": "Controlled_Visual_Stimuli",
+        "Assay Configuration Name": "Receptive_Field_Mapping",
         "Run Mode": "Assay",
         "Realistic Bouts": True,
         "Using GPU": False,
@@ -278,7 +249,7 @@ prey_distance_configs = [
         "Priority": 1,
         "Assays": [
             {
-                "assay id": "Prey-Moving-1",
+                "assay id": "Prey-Moving-Left",
                 "stimulus paradigm": "Projection",
                 "Tethered": True,
                 "set positions": False,
@@ -286,55 +257,58 @@ prey_distance_configs = [
                 "moving": "Left",
                 "reset": False,
                 "reset interval": 100,
-                "duration": 500,
+                "duration": 1500,
+                "background": None,
                 "save frames": True,
                 "save stimuli": True,
                 "recordings": ["rnn state"],
                 "stimuli": {
-                    "prey 1": {"steps": 500,
-                                   "size": 5,
-                                   "interval": 100,
-                                   },
-                },
-                "interactions": []
-            },
-            {
-                "assay id": "Prey-Moving-2",
-                "stimulus paradigm": "Projection",
-                "Tethered": True,
-                "set positions": False,
-                "random positions": False,
-                "moving": "Left",
-                "reset": False,
-                "reset interval": 100,
-                "duration": 500,
-                "save frames": True,
-                "save stimuli": True,
-                "recordings": ["rnn state"],
-                "stimuli": {
-                    "prey 1": {"steps": 500,
-                               "size": 10,
+                    "prey 1": {"steps": 1500,
+                               "size": 5,
                                "interval": 100,
                                },
                 },
                 "interactions": []
             },
             {
-                "assay id": "Prey-Moving-3",
+                "assay id": "Prey-Moving-Right",
                 "stimulus paradigm": "Projection",
                 "Tethered": True,
                 "set positions": False,
                 "random positions": False,
-                "moving": "Left",
+                "moving": "Right",
                 "reset": False,
                 "reset interval": 100,
-                "duration": 500,
+                "duration": 1500,
+                "background": None,
                 "save frames": True,
                 "save stimuli": True,
                 "recordings": ["rnn state"],
                 "stimuli": {
-                    "prey 1": {"steps": 500,
-                               "size": 15,
+                    "prey 1": {"steps": 1500,
+                               "size": 5,
+                               "interval": 100,
+                               },
+                },
+                "interactions": []
+            },
+            {
+                "assay id": "Prey-Static",
+                "stimulus paradigm": "Projection",
+                "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "moving": False,
+                "reset": False,
+                "background": None,
+                "reset interval": 100,
+                "duration": 1500,
+                "save frames": True,
+                "save stimuli": True,
+                "recordings": ["rnn state"],
+                "stimuli": {
+                    "prey 1": {"steps": 1500,
+                               "size": 5,
                                "interval": 100,
                                },
                 },
@@ -342,8 +316,89 @@ prey_distance_configs = [
             },
         ]
     }
-    ]
+]
 
+predator_configs = [
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "test_square",
+        "Trial Number": 4,
+        "Assay Configuration Name": "Receptive_Field_Mapping",
+        "Run Mode": "Assay",
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Priority": 1,
+        "Assays": [
+            {
+                "assay id": "Predator-Moving-Left",
+                "stimulus paradigm": "Projection",
+                "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "moving": "Left",
+                "reset": False,
+                "background": None,
+                "reset interval": 100,
+                "duration": 1500,
+                "save frames": True,
+                "save stimuli": True,
+                "recordings": ["rnn state"],
+                "stimuli": {
+                    "predator 1": {"steps": 1500,
+                                   "size": 50,
+                                   "interval": 100,
+                                   },
+                },
+                "interactions": []
+            },
+            {
+                "assay id": "Predator-Moving-Right",
+                "stimulus paradigm": "Projection",
+                "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "moving": "Right",
+                "reset": False,
+                "background": None,
+                "reset interval": 100,
+                "duration": 1500,
+                "save frames": True,
+                "save stimuli": True,
+                "recordings": ["rnn state"],
+                "stimuli": {
+                    "predator 1": {"steps": 1500,
+                                   "size": 50,
+                                   "interval": 100,
+                                   },
+                },
+                "interactions": []
+            },
+            {
+                "assay id": "Predator-Static",
+                "stimulus paradigm": "Projection",
+                "Tethered": True,
+                "set positions": False,
+                "random positions": False,
+                "moving": False,
+                "reset": False,
+                "background": None,
+                "reset interval": 100,
+                "duration": 1500,
+                "save frames": True,
+                "save stimuli": True,
+                "recordings": ["rnn state"],
+                "stimuli": {
+                    "predator 1": {"steps": 1500,
+                                   "size": 50,
+                                   "interval": 100,
+                                   },
+                },
+                "interactions": []
+            },
+        ]
+    }
+]
 
 projection_data = [
     {
@@ -439,9 +494,9 @@ projection_data = [
                 "recordings": ["rnn state"],
                 "stimuli": {
                     "prey 1": {"steps": 500,
-                                   "size": 5,
-                                   "interval": 100,
-                                   },
+                               "size": 5,
+                               "interval": 100,
+                               },
                 },
                 "interactions": []
             },
@@ -461,9 +516,9 @@ projection_data = [
                 "recordings": ["rnn state"],
                 "stimuli": {
                     "prey 1": {"steps": 500,
-                                   "size": 5,
-                                   "interval": 100,
-                                   },
+                               "size": 5,
+                               "interval": 100,
+                               },
                 },
                 "interactions": []
             },
@@ -483,9 +538,9 @@ projection_data = [
                 "recordings": ["rnn state"],
                 "stimuli": {
                     "prey 1": {"steps": 500,
-                                   "size": 5,
-                                   "interval": 100,
-                                   },
+                               "size": 5,
+                               "interval": 100,
+                               },
                 },
                 "interactions": []
             },
@@ -605,8 +660,6 @@ no_stimuli_projection_config = [
     }
 ]
 
-
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(current_training_configuration)
+manager = TrialManager(prey_assay_config)
 manager.run_priority_loop()
-

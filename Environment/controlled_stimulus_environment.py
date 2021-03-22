@@ -69,38 +69,6 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.fish.body.velocity = (0, 0)
         self.create_stimuli(self.stimuli)
 
-    # def add_background(self, background_colour):
-    #     static = [
-    #         pymunk.Segment(
-    #             self.space.static_body,
-    #             (self.fish.body.position[0] - (self.env_variables["max_vis_dist"]-20), self.fish.body.position[1] - (self.env_variables["max_vis_dist"]-20)),
-    #             (self.fish.body.position[0] + (self.env_variables["max_vis_dist"]-20), self.fish.body.position[1] - (self.env_variables["max_vis_dist"]-20)), 1),
-    #         pymunk.Segment(
-    #             self.space.static_body,
-    #             (self.fish.body.position[0] + (self.env_variables["max_vis_dist"]-20), self.fish.body.position[1] - (self.env_variables["max_vis_dist"]-20)),
-    #             (self.fish.body.position[0] + (self.env_variables["max_vis_dist"]-20), self.fish.body.position[1] + (self.env_variables["max_vis_dist"]-20)), 1),
-    #         pymunk.Segment(
-    #             self.space.static_body,
-    #             (self.fish.body.position[0] + (self.env_variables["max_vis_dist"]-20), self.fish.body.position[1] + (self.env_variables["max_vis_dist"]-20)),
-    #             (self.fish.body.position[0] - (self.env_variables["max_vis_dist"]-20), self.fish.body.position[1] + (self.env_variables["max_vis_dist"]-20)), 1),
-    #         pymunk.Segment(
-    #             self.space.static_body,
-    #             (self.fish.body.position[0] - (self.env_variables["max_vis_dist"]-20), self.fish.body.position[1] + (self.env_variables["max_vis_dist"]-20)),
-    #             (self.fish.body.position[0] - (self.env_variables["max_vis_dist"]-20), self.fish.body.position[1] - (self.env_variables["max_vis_dist"]-20)), 1)
-    #     ]
-    #
-    #     background_b = []
-    #     background_s = []
-    #
-    #     for s in static:
-    #         s.friction = 0.
-    #         s.group = 7
-    #         s.collision_type = 7
-    #         s.color = colour
-    #         self.space.add(s)
-    #         background_b.append(s.body)
-    #     return background_b, background_s
-
     def special_reset(self):
         self.fish.body.position = (self.env_variables['width'] / 2, self.env_variables['height'] / 2)
         self.fish.body.angle = 0

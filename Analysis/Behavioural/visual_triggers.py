@@ -153,7 +153,7 @@ def show_all_observations(p1, p2, p3, n):
 # data = load_data("changed_penalties-1", "Naturalistic_test", "Naturalistic-1")
 # average_visual_input_for_bouts("changed_penalties-1", "Naturalistic", "Naturalistic", 2)
 # average_visual_input_for_bouts("even_prey-1", "Naturalistic", "Naturalistic", 2)
-average_visual_input_for_bouts("even_prey-1", "Predator", "Predator", 12)
+average_visual_input_for_bouts("even_prey_ref-4", "Naturalistic", "Naturalistic", 1)
 # average_visual_input_for_bouts("even_prey-1", "Predator", "Predator", 4)
 # show_all_observations("changed_penalties-1", "Naturalistic", "Naturalistic", 1)
 # TODO: FIx bug, some ordered observations are repeated.

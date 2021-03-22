@@ -24,6 +24,7 @@ def get_nearby_features(data, step, proximity=300):
                      nearby_area[1][0] <= i[1] <= nearby_area[1][1]
         if is_in_area:
             nearby_prey_coordinates.append(i)
+    return nearby_prey_coordinates, nearby_predator_coordinates  # TODO: Remove
 
     is_in_area = nearby_area[0][0] <= data["predator_position"][step][0] <= nearby_area[0][1] and \
                  nearby_area[1][0] <= data["predator_position"][step][1] <= nearby_area[1][1]
@@ -145,7 +146,7 @@ def get_all_density_plots_all_subsets(p1, p2, p3, n):
 # get_all_density_plots_all_subsets("changed_penalties-1", "Naturalistic", "Naturalistic", 2)
 # get_all_density_plots_all_subsets("large_all_features-1", "Naturalistic", "Naturalistic", 4)
 # get_all_density_plots_all_subsets("even_prey-1", "Naturalistic", "Naturalistic", 4)
-get_all_density_plots_all_subsets("even_prey-1", "Predator", "Predator", 12)
+get_all_density_plots_all_subsets("even_prey_ref-4", "Naturalistic", "Naturalistic", 1)
 
 
 

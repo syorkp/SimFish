@@ -57,7 +57,7 @@ env = {'width': 1500,  # arena size
        'immunity_steps': 65,
        # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 200,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.02,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -107,7 +107,6 @@ params = {'num_actions': 10,  # size of action space
           'tau': 0.001,  # target network update time constant
           'rnn_dim': 512,  # number of rnn cells
           'extra_rnn': False,
-
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
           'learning_rate': 0.0001}
 
