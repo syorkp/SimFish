@@ -66,6 +66,15 @@ def normalise_vrvs(vectors):
         vectors[:, i] = np.interp(vectors[:, i], (-100, 100), (-1, 1))
     return vectors
 
+
+def create_full_response_vector(model_name):
+    # Creates the full 484 dimensional response vector.
+    # TODO: Determine a sensible velocity
+    # TODO: Write an assay protocol that can generate all the required data for this.
+    # TODO: Complete this script.
+    ...
+
+
 # data = load_data("large_all_features-1", "Controlled_Visual_Stimuli", "Curved_prey")
 # stimulus_data = load_stimulus_data("changed_penalties-1", "Controlled_Visual_Stimuli")
 

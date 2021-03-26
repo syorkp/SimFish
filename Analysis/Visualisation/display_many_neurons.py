@@ -130,7 +130,7 @@ def plot_multiple_traces(neuron_data_list, stimulus_data_list=None, trace_names=
 # plot_traces(unit_activity, stimulus_data)
 
 
-# data1a = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Predator-Static")
+
 # data2 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Predator-Moving-Left")
 # data3 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Predator-Moving-Right")
 # data4 = load_data("even_prey_ref-4", "Controlled_Visual_Stimuli", "Prey-Static")
@@ -177,11 +177,17 @@ unit_activity6 = [[data6["rnn state"][i - 1][0][j] for i in data6["step"]] for j
 # unit_activity8 = [[data8["rnn state"][i - 1][0][j] for i in data8["step"]] for j in range(512)]
 # unit_activity9 = [[data9["rnn state"][i - 1][0][j] for i in data9["step"]] for j in range(512)]
 
+data1a = load_data("even_prey_ref-5", "Controlled_Visual_Stimuli", "Prey-Moving-Left")
+data2b = load_data("all_features_ref-1", "Controlled_Visual_Stimuli", "Prey-Moving-Left")
+stimulus_data1a = load_stimulus_data("even_prey_ref-5", "Controlled_Visual_Stimuli", "Prey-Moving-Left")
+stimulus_data2a = load_stimulus_data("all_features_ref-1", "Controlled_Visual_Stimuli", "Prey-Moving-Left")
+unit_activity1a = [[data1a["rnn state"][i - 1][0][j] for i in data1a["step"]] for j in range(512)]
+unit_activity2a = [[data2b["rnn state"][i - 1][0][j] for i in data2b["step"]] for j in range(512)]
 
 # Many presentations for RF mapping (Prey)
-plot_multiple_traces([unit_activity4, unit_activity5, unit_activity6],
-                     [stimulus_data4, stimulus_data5, stimulus_data6],
-                     ["Prey-Static", "Moving-Prey-Left", "Moving-Prey-Right"])
+plot_multiple_traces([unit_activity1a, unit_activity2a],
+                     [stimulus_data1a, stimulus_data2a],
+                     ["even_prey", "all_features"])
 
 
 # No vs red background
@@ -219,4 +225,3 @@ plot_multiple_traces([unit_activity4, unit_activity5, unit_activity6],
 # plot_multiple_traces([unit_activity1, unit_activity2, unit_activity3, unit_activity4, unit_activity5, unit_activity6],
 #                      [stimulus_data1, stimulus_data2, stimulus_data3, stimulus_data4, stimulus_data5, stimulus_data6],
 #                      ["Predator-Static", "Predator-Moving-Left", "Predator-Moving-Right", "Prey-Static", "Prey-Moving-Left", "Prey-Moving-Right"])
-
