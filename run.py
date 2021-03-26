@@ -657,9 +657,9 @@ full_response_vector_config = [
                 "save stimuli": True,
                 "recordings": ["rnn state"],
                 "stimuli": {
-                    "prey 1": {"steps": 500,
+                    "prey 1": {"steps": 1100,
                                "size": 5,
-                               "interval": 1100,
+                               "interval": 100,
                                },
                 },
                 "interactions": []
@@ -679,9 +679,9 @@ full_response_vector_config = [
                 "save stimuli": True,
                 "recordings": ["rnn state"],
                 "stimuli": {
-                    "prey 1": {"steps": 500,
+                    "prey 1": {"steps": 1100,
                                "size": 5,
-                               "interval": 1100,
+                               "interval": 100,
                                },
                 },
                 "interactions": []
@@ -701,9 +701,9 @@ full_response_vector_config = [
                 "save stimuli": True,
                 "recordings": ["rnn state"],
                 "stimuli": {
-                    "prey 1": {"steps": 500,
+                    "prey 1": {"steps": 1100,
                                "size": 10,
-                               "interval": 1100,
+                               "interval": 100,
                                },
                 },
                 "interactions": []
@@ -723,9 +723,9 @@ full_response_vector_config = [
                 "save stimuli": True,
                 "recordings": ["rnn state"],
                 "stimuli": {
-                    "prey 1": {"steps": 500,
+                    "prey 1": {"steps": 1100,
                                "size": 15,
-                               "interval": 1100,
+                               "interval": 100,
                                },
                 },
                 "interactions": []
@@ -745,9 +745,9 @@ full_response_vector_config = [
                 "save stimuli": True,
                 "recordings": ["rnn state"],
                 "stimuli": {
-                    "prey 1": {"steps": 500,
+                    "prey 1": {"steps": 1100,
                                "size": 5,
-                               "interval": 1100,
+                               "interval": 100,
                                },
                 },
                 "interactions": []
@@ -767,9 +767,9 @@ full_response_vector_config = [
                 "save stimuli": True,
                 "recordings": ["rnn state"],
                 "stimuli": {
-                    "prey 1": {"steps": 500,
+                    "prey 1": {"steps": 1100,
                                "size": 10,
-                               "interval": 1100,
+                               "interval": 100,
                                },
                 },
                 "interactions": []
@@ -789,9 +789,9 @@ full_response_vector_config = [
                 "save stimuli": True,
                 "recordings": ["rnn state"],
                 "stimuli": {
-                    "prey 1": {"steps": 500,
+                    "prey 1": {"steps": 1100,
                                "size": 15,
-                               "interval": 1100,
+                               "interval": 100,
                                },
                 },
                 "interactions": []
@@ -811,9 +811,9 @@ full_response_vector_config = [
                 "save stimuli": True,
                 "recordings": ["rnn state"],
                 "stimuli": {
-                    "prey 1": {"steps": 500,
+                    "prey 1": {"steps": 1100,
                                "size": 15,
-                               "interval": 1100,
+                               "interval": 100,
                                },
                 },
                 "interactions": []
@@ -833,9 +833,9 @@ full_response_vector_config = [
                 "save stimuli": True,
                 "recordings": ["rnn state"],
                 "stimuli": {
-                    "prey 1": {"steps": 500,
+                    "prey 1": {"steps": 1100,
                                "size": 5,
-                               "interval": 1100,
+                               "interval": 100,
                                },
                 },
                 "interactions": []
