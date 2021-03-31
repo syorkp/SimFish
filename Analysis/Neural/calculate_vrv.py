@@ -70,19 +70,54 @@ def normalise_vrvs(vectors):
     return vectors
 
 
-def create_full_response_vector(model_name):
-    # Creates the full 484 dimensional response vector.
-    response_vectors = [[] for i in range(512)]
-    file_precursors = ["Prey", "Predator", "Background-Prey", "Background-Predator"]
-    file_precursors = ["Prey"]  # TODO: Remove.
+def create_full_stimulus_vector(model_name, background=False):
+    full_stimulus_vector = []
+    if background:
+        file_precursors = ["Prey", "Predator", "Background-Prey", "Background-Predator"]
+    else:
+        file_precursors = ["Prey", "Predator"]
     prey_assay_ids = ["Prey-Static-5", "Prey-Static-10", "Prey-Static-15",
                       "Prey-Left-5", "Prey-Left-10", "Prey-Left-15",
                       "Prey-Right-5", "Prey-Right-10", "Prey-Right-15",
                       "Prey-Away", "Prey-Towards"]
-    predator_assay_ids = ["Prey-Static-5", "Prey-Static-10", "Prey-Static-15",
-                          "Prey-Left-5", "Prey-Left-10", "Prey-Left-15",
-                          "Prey-Right-5", "Prey-Right-10", "Prey-Right-15",
-                          "Prey-Away", "Prey-Towards"]
+    predator_assay_ids = ["Predator-Static-40", "Predator-Static-60", "Predator-Static-80",
+                          "Predator-Left-40", "Predator-Left-60", "Predator-Left-80",
+                          "Predator-Right-40", "Predator-Right-60", "Predator-Right-80",
+                          "Predator-Away", "Predator-Towards"]
+    for file_p in file_precursors:
+        if "Prey" in file_p:
+            for aid in prey_assay_ids:
+                stimulus_data = load_stimulus_data(model_name, f"{file_p}-Full-Response-Vector", aid)
+                stimulus_vector = get_stimulus_vector(stimulus_data, "prey 1")
+                stimulus_vector = [aid + "-" + str(s) for s in stimulus_vector]
+                full_stimulus_vector += stimulus_vector
+
+        elif "Predator" in file_p:
+            for aid in predator_assay_ids:
+                stimulus_data = load_stimulus_data(model_name, f"{file_p}-Full-Response-Vector", aid)
+                stimulus_vector = get_stimulus_vector(stimulus_data, "predator 1")
+                stimulus_vector = [aid + "-" + str(s) for s in stimulus_vector]
+                full_stimulus_vector += stimulus_vector
+
+    return full_stimulus_vector
+
+
+def create_full_response_vector(model_name, background=False):
+    # Creates the full 484 dimensional response vector.
+    response_vectors = [[] for i in range(512)]
+    file_precursors = ["Prey", "Predator", "Background-Prey", "Background-Predator"]
+    if background:
+        file_precursors = ["Prey", "Predator", "Background-Prey", "Background-Predator"]
+    else:
+        file_precursors = ["Prey", "Predator"]
+    prey_assay_ids = ["Prey-Static-5", "Prey-Static-10", "Prey-Static-15",
+                      "Prey-Left-5", "Prey-Left-10", "Prey-Left-15",
+                      "Prey-Right-5", "Prey-Right-10", "Prey-Right-15",
+                      "Prey-Away", "Prey-Towards"]
+    predator_assay_ids = ["Predator-Static-40", "Predator-Static-60", "Predator-Static-80",
+                          "Predator-Left-40", "Predator-Left-60", "Predator-Left-80",
+                          "Predator-Right-40", "Predator-Right-60", "Predator-Right-80",
+                          "Predator-Away", "Predator-Towards"]
     for file_p in file_precursors:
         if "Prey" in file_p:
             for aid in prey_assay_ids:

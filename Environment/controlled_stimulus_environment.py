@@ -221,7 +221,14 @@ class ControlledStimulusEnvironment(BaseEnvironment):
             current_steps = int(interval / 3)
         else:
             current_steps = (current_steps % interval) - (interval * 2/3)
-        sizes = np.linspace(5, 15, int(interval/3)+1)
+        if "prey" in stimulus:
+            sizes = np.linspace(5, 15, int(interval / 3) + 1)
+        elif "predator" in stimulus:
+            sizes = np.linspace(40, 80, int(interval/3)+1)
+        else:
+            print("Error")
+            sizes = np.linspace(5, 15, int(interval / 3) + 1)
+
         if self.moving_stimuli == "Towards":
             progression = int(current_steps)
         elif self.moving_stimuli == "Away":

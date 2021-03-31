@@ -134,6 +134,8 @@ class AssayService:
         self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
         print("Model loaded")
         for assay in self.assays:
+            if assay["ablations"]:
+                self.ablate_units(assay["ablations"])
             self.create_output_data_storage(assay)
             self.create_testing_environment(assay)
             self.perform_assay(assay)
@@ -147,6 +149,19 @@ class AssayService:
     def create_output_data_storage(self, assay):
         self.output_data = {key: [] for key in assay["recordings"]}
         self.output_data["step"] = []
+
+    def ablate_units(self, unit_indexes):
+        for unit in unit_indexes:
+            if unit < 256:
+                output = self.sess.graph.get_tensor_by_name('mainaw:0')
+                new_tensor = output.eval()
+                new_tensor[unit] = np.array([0 for i in range(10)])
+                self.sess.run(tf.assign(output, new_tensor))
+            else:
+                output = self.sess.graph.get_tensor_by_name('mainvw:0')
+                new_tensor = output.eval()
+                new_tensor[unit-256] = np.array([0])
+                self.sess.run(tf.assign(output, new_tensor))
 
     def perform_assay(self, assay):
         self.assay_output_data_format = {key: None for key in assay["recordings"]}
