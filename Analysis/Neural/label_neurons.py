@@ -143,6 +143,12 @@ sel = label_all_units_selectivities(full_rv, full_sv)
 neurons_to_ablate = get_with_selectivity(["Prey-Static-15-0.07", "Prey-Left-15-0.07", "Prey-Right-15-0.07"], sel)
 print(neurons_to_ablate)
 cat = assign_neuron_names(sel)
+prey_only = [i for i, name in enumerate(cat) if name=="Prey-Only"]
+pred_only = [i for i, name in enumerate(cat) if name=="Predator-Only"]
+unvexed_only = [i for i, name in enumerate(cat) if name=="Unvexed Down" or name=="Unveded Up"]
+print(prey_only)
+print(pred_only)
+print(unvexed_only)
 import random
 random_neurons = set(random.sample(range(0, 512), 105))
 print(list(random_neurons))

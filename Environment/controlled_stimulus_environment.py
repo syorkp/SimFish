@@ -61,6 +61,10 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.edge_col = self.space.add_collision_handler(1, 3)
         self.edge_col.begin = self.touch_edge
         self.background = background
+        self.pred_fish_col = self.space.add_collision_handler(3, 5)
+        self.pred_fish_col.begin = self.no_collision
+        self.prey_fish_col = self.space.add_collision_handler(3, 2)
+        self.prey_fish_col.begin = self.no_collision
 
     def reset(self):
         super().reset()

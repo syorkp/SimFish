@@ -17,31 +17,20 @@ def convert_photons_to_int(obs):
     return new_obs
 
 
-data = load_data("even_prey_ref-1", "Controlled_Visual_Stimuli", "Prey-Moving-Left")
-observation = data["observation"]
-left_1 = observation[:, :, :, 0]
-left_1 = np.swapaxes(left_1, 0, 1)
-right_1 = observation[:, :, :, 1]
-right_1 = np.swapaxes(right_1, 0, 1)
+def create_photoreceptor_input_graph(model, config, assay_id):
+    data = load_data(model, config, assay_id)
+    observation = data["observation"]
+    left_1 = observation[:, :, :, 0]
+    left_1 = np.swapaxes(left_1, 0, 1)
+    right_1 = observation[:, :, :, 1]
+    right_1 = np.swapaxes(right_1, 0, 1)
 
-fig, axs = plt.subplots(2, 1, sharex=True)
+    fig, axs = plt.subplots(2, 1, sharex=True)
 
-axs[0].imshow(left_1, aspect="auto")
-axs[1].imshow(right_1, aspect="auto")
-plt.show()
+    axs[0].imshow(left_1, aspect="auto")
+    axs[1].imshow(right_1, aspect="auto")
+    plt.show()
 
 
-observation = data["rev_observation"]
-left = np.squeeze(observation[:, 0, :, :, :])
-left = np.swapaxes(left, 0, 1)
-right = np.squeeze(observation[:, 1, :, :, :])
-right = np.swapaxes(right, 0, 1)
-left = convert_photons_to_int(left)
-right = convert_photons_to_int(right)
-
-fig, axs = plt.subplots(2, 1, sharex=True)
-
-axs[0].imshow(left, aspect="auto")
-axs[1].imshow(right, aspect="auto")
-plt.show()
-
+create_photoreceptor_input_graph("even_prey_ref-5", "Vis-Test", "Prey-Left-10")
+create_photoreceptor_input_graph("even_prey_ref-5", "Vis-Test", "Naturalistic")

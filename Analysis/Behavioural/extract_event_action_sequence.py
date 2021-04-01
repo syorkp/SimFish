@@ -56,18 +56,8 @@ def get_escape_sequences(model_name, assay_config, assay_id, n):
         all_escape_sequences = all_escape_sequences + extract_predator_action_sequences(data)
     return all_escape_sequences
 
-
-data = load_data("even_prey_ref-5", "Ablation-Test-1", "Naturalistic-1")
-data2 = load_data("even_prey_ref-5", "Ablation-Test-2", "Naturalistic-1")
-data3 = load_data("even_prey_ref-5", "Ablation-Test-3", "Naturalistic-1")
-data4 = load_data("even_prey_ref-5", "Ablation-Test-4", "Naturalistic-1")
-print(f"No ablation total = {sum(data['consumed']), }  "
-      f"Ablation total = {sum(data2['consumed'])}, "
-      f"Random ablation total = {sum(data3['consumed'])}, "
-      f"Random ablation 2 total = {sum(data4['consumed'])}")
 # capture_sequences = get_capture_sequences("large_all_features-1", "Naturalistic", "Naturalistic", 2)
 # escape_sequences = get_escape_sequences("large_all_features-1", "Predator", "Predator", 4)
 # dm_capture = create_density_matrix(capture_sequences)
 # dm_avoidance = create_density_matrix(escape_sequences)
 
-x = True
