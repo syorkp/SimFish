@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from skimage.transform import resize, rescale
 import pymunk
-import multiprocessing as mp
 
 from Tools.drawing_board import DrawingBoard
 

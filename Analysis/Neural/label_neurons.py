@@ -118,6 +118,16 @@ def assign_neuron_names(selectivities):
     return categories
 
 
+def get_with_selectivity(features, selectivities):
+    ns = []
+    for n, neuron in enumerate(selectivities):
+        for key in neuron.keys():
+            for s in neuron[key]:
+                if any(feature in s for feature in features):
+                    ns.append(n)
+    return list(set(ns))
+
+
 def label_all_units_tsne(response_vectors, archetypes):
     """Based on the archetypes, clusters the nearest units and assigns this manual category to them."""
     ...
@@ -126,9 +136,18 @@ def label_all_units_tsne(response_vectors, archetypes):
 full_rv = create_full_response_vector("even_prey_ref-5")
 full_sv = create_full_stimulus_vector("even_prey_ref-5")
 sel = label_all_units_selectivities(full_rv, full_sv)
+# neurons_to_ablate = get_with_selectivity(["Prey-Static-15", "Prey-Left-15", "Prey-Right-15"], sel)
+# neurons_to_ablate = get_with_selectivity(["Prey-Static-5-0.07", "Prey-Left-5-0.07", "Prey-Right-5-0.07",
+#                                           "Prey-Static-10-0.07", "Prey-Left-10-0.07", "Prey-Right-10-0.07",
+#                                           "Prey-Static-15-0.07", "Prey-Left-15-0.07", "Prey-Right-15-0.07"], sel)
+neurons_to_ablate = get_with_selectivity(["Prey-Static-15-0.07", "Prey-Left-15-0.07", "Prey-Right-15-0.07"], sel)
+print(neurons_to_ablate)
 cat = assign_neuron_names(sel)
-
+import random
+random_neurons = set(random.sample(range(0, 512), 105))
+print(list(random_neurons))
 archetypes = [[5, "Prey"],
               [10, "Predator"]]
 
 x = True
+

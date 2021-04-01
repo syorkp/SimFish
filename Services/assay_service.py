@@ -24,7 +24,8 @@ def assay_target(trial, learning_params, environment_params, total_steps, episod
                            assays=trial["Assays"],
                            realistic_bouts=trial["Realistic Bouts"],
                            memory_fraction=memory_fraction,
-                           using_gpu=trial["Using GPU"]
+                           using_gpu=trial["Using GPU"],
+                           set_random_seed=trial["set random seed"]
                            )
 
     service.run()
@@ -33,10 +34,15 @@ def assay_target(trial, learning_params, environment_params, total_steps, episod
 class AssayService:
 
     def __init__(self, model_name, trial_number, assay_config_name, learning_params, environment_params, total_steps,
-                 episode_number, assays, realistic_bouts, memory_fraction, using_gpu):
+                 episode_number, assays, realistic_bouts, memory_fraction, using_gpu, set_random_seed):
         """
         Runs a set of assays provided by the run configuraiton.
         """
+
+        # Set random seed
+        if set_random_seed:
+            np.random.seed(404)
+
         # Names and Directories
         self.model_id = f"{model_name}-{trial_number}"
         self.model_location = f"./Training-Output/{self.model_id}"
