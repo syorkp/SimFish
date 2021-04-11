@@ -378,9 +378,9 @@ predator_heavy_config = [
 
 current_training_configuration = [
     {
-        "Model Name": "no_predators_ref",
-        "Environment Name": "no_predators",
-        "Trial Number": 1,
+        "Model Name": "even_prey_ref",
+        "Environment Name": "even_prey",
+        "Trial Number": 7,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -405,7 +405,7 @@ current_training_configuration = [
     {
         "Model Name": "even_prey_ref",
         "Environment Name": "even_prey",
-        "Trial Number": 5,
+        "Trial Number": 6,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -688,5 +688,5 @@ full_response_vector_config = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(predator_heavy_config)
+manager = TrialManager(current_training_configuration)
 manager.run_priority_loop()
