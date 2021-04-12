@@ -115,7 +115,7 @@ class AssayService:
                                                             background=assay["background"]
                                                             )
         elif assay["stimulus paradigm"] == "Naturalistic":
-            self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
+            self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts, collisions=assay["collisions"])
         else:
             self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
 

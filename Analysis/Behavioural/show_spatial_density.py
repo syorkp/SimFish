@@ -24,13 +24,11 @@ def get_nearby_features(data, step, proximity=300):
                      nearby_area[1][0] <= i[1] <= nearby_area[1][1]
         if is_in_area:
             nearby_prey_coordinates.append(i)
-    return nearby_prey_coordinates, nearby_predator_coordinates  # TODO: Remove
-
-    is_in_area = nearby_area[0][0] <= data["predator_position"][step][0] <= nearby_area[0][1] and \
-                 nearby_area[1][0] <= data["predator_position"][step][1] <= nearby_area[1][1]
+    j = data["predator_position"][step]
+    is_in_area = nearby_area[0][0] <= j[0] <= nearby_area[0][1] and \
+                    nearby_area[1][0] <= j[1] <= nearby_area[1][1]
     if is_in_area:
-        nearby_predator_coordinates = [data["predator_position"][step]]
-
+        nearby_predator_coordinates.append(j)
     return nearby_prey_coordinates, nearby_predator_coordinates
 
 
@@ -102,16 +100,19 @@ def create_density_cloud(density_list, action_num, stimulus_name):
     n_samples = len(density_list)
     x = np.array([i[0] for i in density_list])
     y = np.array([i[1] for i in density_list])
+    y = np.negative(y)
     # Evaluate a gaussian kde on a regular grid of nbins x nbins over data extents
     nbins = 300
     k = kde.gaussian_kde([x, y])
     xi, yi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
+
     zi = k(np.vstack([xi.flatten(), yi.flatten()]))
     plt.title(f"Feature: {stimulus_name}, Action: {get_action_name(action_num)}, Samples: {n_samples}")
     # plt.xlim([0, 500])
     # plt.ylim([0, 500])
     # Make the plot
     plt.pcolormesh(xi, yi, zi.reshape(xi.shape))
+    plt.arrow(220, -300, 40, 0, width=10, color="red")
     plt.show()
 
 
@@ -146,9 +147,11 @@ def get_all_density_plots_all_subsets(p1, p2, p3, n):
 # get_all_density_plots_all_subsets("changed_penalties-1", "Naturalistic", "Naturalistic", 2)
 # get_all_density_plots_all_subsets("large_all_features-1", "Naturalistic", "Naturalistic", 4)
 # get_all_density_plots_all_subsets("even_prey-1", "Naturalistic", "Naturalistic", 4)
-get_all_density_plots_all_subsets("even_prey_ref-4", "Naturalistic", "Naturalistic", 1)
-
-
+# get_all_density_plots_all_subsets("even_prey_ref-4", "Naturalistic", "Naturalistic", 1)
+#get_all_density_plots_all_subsets("even_prey_ref-5", "Behavioural-Data-Free", "Prey", 10)
+#get_all_density_plots_all_subsets("even_prey_ref-5", "Behavioural-Data-Free-Predator", "Predator", 10)
+get_all_density_plots_all_subsets("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 10)
+# get_all_density_plots_all_subsets("even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
 
 
 

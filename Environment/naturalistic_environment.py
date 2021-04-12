@@ -7,7 +7,7 @@ from Environment.Fish.fish import Fish
 
 class NaturalisticEnvironment(BaseEnvironment):
 
-    def __init__(self, env_variables, realistic_bouts, draw_screen=False, fish_mass=None):
+    def __init__(self, env_variables, realistic_bouts, draw_screen=False, fish_mass=None, collisions=True):
         super().__init__(env_variables, draw_screen)
 
         # Create the fish class instance and add to the space.
@@ -26,8 +26,9 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.col = self.space.add_collision_handler(2, 3)
         self.col.begin = self.touch_prey
 
-        self.pred_col = self.space.add_collision_handler(5, 3)
-        self.pred_col.begin = self.touch_predator
+        if collisions:
+            self.pred_col = self.space.add_collision_handler(5, 3)
+            self.pred_col.begin = self.touch_predator
 
         self.edge_col = self.space.add_collision_handler(1, 3)
         self.edge_col.begin = self.touch_edge

@@ -29,13 +29,13 @@ env = {'width': 1500,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 3,
-       'prey_impulse': 0.05,  # impulse each prey receives per step
+       'prey_num': 20,
+       'prey_impulse': 0.02,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
        'prey_max_turning_angle': 0.3,
-       'prey_jump': False,
+       'prey_jump': True,
        'differential_prey': False,
        'prey_cloud_num': 0,
 
@@ -111,7 +111,7 @@ params = {'num_actions': 10,  # size of action space
           }
 
 # Equal to that given in the file name.
-environment_name = "predator_heavy"
+environment_name = "prey_low_density"
 # environment_name = "prey_only"
 with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)

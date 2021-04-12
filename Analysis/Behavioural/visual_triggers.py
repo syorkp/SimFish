@@ -25,11 +25,15 @@ def convert_photons_to_int(obs):
 
 
 def take_observation_mean(observation_list):
-    av = np.zeros(observation_list[0].shape)
-    for i in observation_list:
-        av = np.add(av, i)
-    l = len(observation_list)
-    average = np.true_divide(av, l, where=(av != 0) | (l != 0))
+    average = np.zeros(observation_list[0].shape)
+    N = len(observation_list)
+    for im in observation_list:
+        average = average + im/N
+    # av = np.zeros(observation_list[0].shape)
+    # for i in observation_list:
+    #     av = np.add(av, i)
+    # l = len(observation_list)
+    # average = np.true_divide(av, l, where=(av != 0) | (l != 0))
     average = convert_photons_to_int(average)
     return average
 
@@ -42,7 +46,12 @@ def take_observation_mode(observation_list):
     for pos in range(mode.shape[0]):
         for ph in range(mode.shape[1]):
             for eye in range(mode.shape[2]):
-                mode[pos, ph, eye] = stats.mode(tally[pos, ph, eye, :]).mode
+                pool = tally[pos, ph, eye, :]
+                v = stats.mode(pool).mode[0]
+                m = np.median(pool)
+                me = np.mean(pool)
+                mode[pos, ph, eye] = me
+    mode = convert_photons_to_int(mode)
     return mode
 
 
@@ -59,7 +68,7 @@ def average_visual_input_for_bouts(p1, p2, p3, n):
                     observation_tally.append(o)
 
         if len(observation_tally) > 0:
-            average_observation = take_observation_mean(observation_tally)
+            average_observation = take_observation_mode(observation_tally)
             left = average_observation[:, :, 0]
             right = average_observation[:, :, 1]
             left = np.expand_dims(left, axis=0)
@@ -149,11 +158,15 @@ def show_all_observations(p1, p2, p3, n):
 
             plt.show()
 
-
+# average_visual_input_for_bouts("even_prey_ref-4", "Naturalistic", "Naturalistic", 1)
+#
+# average_visual_input_for_bouts("even_prey_ref-5", "Behavioural-Data-Free", "Prey", 10)
+# average_visual_input_for_bouts("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 10)
+average_visual_input_for_bouts("even_prey_ref-4", "Behavioural-Data-Free", "Prey", 2)
 # data = load_data("changed_penalties-1", "Naturalistic_test", "Naturalistic-1")
-# average_visual_input_for_bouts("changed_penalties-1", "Naturalistic", "Naturalistic", 2)
+# average_visual_input_for_bouts("changed_penalties-1", "Naturalistic", "Naturalistic", 2).
 # average_visual_input_for_bouts("even_prey-1", "Naturalistic", "Naturalistic", 2)
-average_visual_input_for_bouts("even_prey_ref-4", "Naturalistic", "Naturalistic", 1)
+# average_visual_input_for_bouts("even_prey_ref-4", "Naturalistic", "Naturalistic", 1)
 # average_visual_input_for_bouts("even_prey-1", "Predator", "Predator", 4)
 # show_all_observations("changed_penalties-1", "Naturalistic", "Naturalistic", 1)
 # TODO: FIx bug, some ordered observations are repeated.

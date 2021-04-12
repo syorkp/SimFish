@@ -79,12 +79,13 @@ test_config = [
     }
     ]
 
-predator_heavy_config = [
+
+additional_data_config = [
     {
         "Model Name": "even_prey_ref",
-        "Environment Name": "predator_heavy",
-        "Assay Configuration Name": "TP-Calculation",
-        "Trial Number": 5,
+        "Environment Name": "prey_no_jump",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 4,
         "Run Mode": "Assay",
         "Priority": 1,
         "Realistic Bouts": True,
@@ -93,77 +94,204 @@ predator_heavy_config = [
         "set random seed": False,
         "Assays": [
             {
-                "assay id": "Prey-Predator-1",
+                "assay id": "Prey-No-Jump-1",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
-                "save frames": False,
+                "save frames": True,
                 "random positions": False,
                 "background": None,
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
+                "collisions": False,
                 "recordings": ["behavioural choice", "consumed", "predator"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-2",
+                "assay id": "Prey-No-Jump-2",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
-                "save frames": False,
+                "save frames": True,
                 "random positions": False,
                 "background": None,
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "ablations": []
+            },
+        ]
+    },
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "prey_slow",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 4,
+        "Run Mode": "Assay",
+        "Priority": 1,
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "set random seed": False,
+        "Assays": [
+            {
+                "assay id": "Prey-Slow-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": False,
                 "recordings": ["behavioural choice", "consumed", "predator"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-3",
+                "assay id": "Prey-Slow-2",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
-                "save frames": False,
+                "save frames": True,
                 "random positions": False,
                 "background": None,
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "ablations": []
+            },
+        ]
+    },
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "prey_differential",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 4,
+        "Run Mode": "Assay",
+        "Priority": 1,
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "set random seed": False,
+        "Assays": [
+            {
+                "assay id": "Prey-Differential-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": False,
                 "recordings": ["behavioural choice", "consumed", "predator"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-4",
+                "assay id": "Prey-Differential-2",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
-                "save frames": False,
+                "save frames": True,
                 "random positions": False,
                 "background": None,
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator"],
+                "ablations": []
+            },
+        ]
+    },
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "prey_low_density",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 4,
+        "Run Mode": "Assay",
+        "Priority": 1,
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "set random seed": False,
+        "Assays": [
+            {
+                "assay id": "Prey-Low-Density-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": False,
                 "recordings": ["behavioural choice", "consumed", "predator"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-5",
+                "assay id": "Prey-Low-Density-2",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
-                "save frames": False,
+                "save frames": True,
                 "random positions": False,
                 "background": None,
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
+                "collisions": False,
                 "recordings": ["behavioural choice", "consumed", "predator"],
+                "ablations": []
+            },
+        ]
+    },
+]
+
+
+
+behavioural_data_config = [
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "predator_heavy",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 4,
+        "Run Mode": "Assay",
+        "Priority": 1,
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "set random seed": False,
+        "Assays": [
+            {
+                "assay id": "Predator-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+                               "prey_positions", "predator_position", "fish_angle"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-6",
+                "assay id": "Predator-2",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -173,11 +301,13 @@ predator_heavy_config = [
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
-                "recordings": ["behavioural choice", "consumed", "predator"],
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+                               "prey_positions", "predator_position", "fish_angle"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-7",
+                "assay id": "Predator-3",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -187,11 +317,13 @@ predator_heavy_config = [
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
-                "recordings": ["behavioural choice", "consumed", "predator"],
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+                               "prey_positions", "predator_position", "fish_angle"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-8",
+                "assay id": "Predator-4",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -201,11 +333,13 @@ predator_heavy_config = [
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
-                "recordings": ["behavioural choice", "consumed", "predator"],
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+                               "prey_positions", "predator_position", "fish_angle"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-9",
+                "assay id": "Predator-5",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -215,11 +349,13 @@ predator_heavy_config = [
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
-                "recordings": ["behavioural choice", "consumed", "predator"],
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+                               "prey_positions", "predator_position", "fish_angle"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-10",
+                "assay id": "Predator-6",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -229,25 +365,106 @@ predator_heavy_config = [
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
-                "recordings": ["behavioural choice", "consumed", "predator"],
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+                               "prey_positions", "predator_position", "fish_angle"],
                 "ablations": []
             },
+            {
+                "assay id": "Predator-7",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": False,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+                               "prey_positions", "predator_position", "fish_angle"],
+                "ablations": []
+            },
+            {
+                "assay id": "Predator-8",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": False,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+                               "prey_positions", "predator_position", "fish_angle"],
+                "ablations": []
+            },
+            {
+                "assay id": "Predator-9",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": False,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+                               "prey_positions", "predator_position", "fish_angle"],
+                "ablations": []
+            },
+            {
+                "assay id": "Predator-10",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": False,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+                               "prey_positions", "predator_position", "fish_angle"],
+                "ablations": []
+            },
+        ]
+    },
 {
-                "assay id": "Prey-Predator-11",
+        "Model Name": "even_prey_ref",
+        "Environment Name": "prey_only",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 4,
+        "Run Mode": "Assay",
+        "Priority": 2,
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "set random seed": False,
+        "Assays": [
+            {
+                "assay id": "Prey-1",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
-                "save frames": False,
+                "save frames": True,
                 "random positions": False,
                 "background": None,
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
-                "recordings": ["behavioural choice", "consumed", "predator"],
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position", "prey_positions", "predator_position", "fish_angle"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-12",
+                "assay id": "Prey-2",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -257,11 +474,12 @@ predator_heavy_config = [
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
-                "recordings": ["behavioural choice", "consumed", "predator"],
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position", "prey_positions", "predator_position", "fish_angle"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-13",
+                "assay id": "Prey-3",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -271,11 +489,12 @@ predator_heavy_config = [
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
-                "recordings": ["behavioural choice", "consumed", "predator"],
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position", "prey_positions", "predator_position", "fish_angle"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-14",
+                "assay id": "Prey-4",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -285,11 +504,12 @@ predator_heavy_config = [
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
-                "recordings": ["behavioural choice", "consumed", "predator"],
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position", "prey_positions", "predator_position", "fish_angle"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-15",
+                "assay id": "Prey-5",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -299,11 +519,12 @@ predator_heavy_config = [
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
-                "recordings": ["behavioural choice", "consumed", "predator"],
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position", "prey_positions", "predator_position", "fish_angle"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-16",
+                "assay id": "Prey-6",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -313,11 +534,12 @@ predator_heavy_config = [
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
-                "recordings": ["behavioural choice", "consumed", "predator"],
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position", "prey_positions", "predator_position", "fish_angle"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-17",
+                "assay id": "Prey-7",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -327,11 +549,12 @@ predator_heavy_config = [
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
-                "recordings": ["behavioural choice", "consumed", "predator"],
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position", "prey_positions", "predator_position", "fish_angle"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-18",
+                "assay id": "Prey-8",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -341,11 +564,12 @@ predator_heavy_config = [
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
-                "recordings": ["behavioural choice", "consumed", "predator"],
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position", "prey_positions", "predator_position", "fish_angle"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-19",
+                "assay id": "Prey-9",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -355,11 +579,12 @@ predator_heavy_config = [
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
-                "recordings": ["behavioural choice", "consumed", "predator"],
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position", "prey_positions", "predator_position", "fish_angle"],
                 "ablations": []
             },
             {
-                "assay id": "Prey-Predator-20",
+                "assay id": "Prey-10",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -369,12 +594,13 @@ predator_heavy_config = [
                 "moving": False,
                 "save stimuli": False,
                 "reset": False,
-                "recordings": ["behavioural choice", "consumed", "predator"],
+                "collisions": False,
+                "recordings": ["behavioural choice", "consumed", "predator", "observation", "position", "prey_positions", "predator_position", "fish_angle"],
                 "ablations": []
             },
             ]
     }
-    ]
+]
 
 current_training_configuration = [
     {
@@ -687,6 +913,7 @@ full_response_vector_config = [
     },
 ]
 
+
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(current_training_configuration)
+manager = TrialManager(additional_data_config)
 manager.run_priority_loop()
