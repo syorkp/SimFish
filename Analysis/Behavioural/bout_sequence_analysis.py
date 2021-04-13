@@ -37,13 +37,41 @@ def do_tsne(probability_vectors, groups):
             plt.show()
 
 
-action_choices_prey = [create_third_order_transition_count_matrix(load_data("even_prey_ref-4", "Behavioural-Data-Free", f"Prey-{i}")["behavioural choice"]) for i in range(1, 11)]
-action_choices_predator = [create_third_order_transition_count_matrix(load_data("even_prey_ref-4", "Behavioural-Data-Free", f"Predator-{i}")["behavioural choice"]) for i in range(1, 11)]
+action_choices_prey = [create_third_order_transition_count_matrix(
+    load_data("even_prey_ref-4", "Behavioural-Data-Free", f"Prey-{i}")["behavioural choice"]) for i in range(1, 11)]
+action_choices_predator = [create_third_order_transition_count_matrix(
+    load_data("even_prey_ref-4", "Behavioural-Data-Free", f"Predator-{i}")["behavioural choice"]) for i in range(1, 11)]
 
-action_choices_prey_2 = [create_third_order_transition_count_matrix(load_data("even_prey_ref-5", "Behavioural-Data-Free", f"Prey-{i}")["behavioural choice"]) for i in range(1, 11)]
-action_choices_predator_2 = [create_third_order_transition_count_matrix(load_data("even_prey_ref-5", "Behavioural-Data-Free-Predator", f"Predator-{i}")["behavioural choice"]) for i in range(1, 11)]
+action_choices_prey_2 = [create_third_order_transition_count_matrix(
+    load_data("even_prey_ref-5", "Behavioural-Data-Free", f"Prey-{i}")["behavioural choice"]) for i in range(1, 11)]
+action_choices_predator_2 = [create_third_order_transition_count_matrix(
+    load_data("even_prey_ref-5", "Behavioural-Data-Free-Predator", f"Predator-{i}")["behavioural choice"]) for i in
+                             range(1, 11)]
 
-probabilities = [get_transition_probabilities(ac) for ac in action_choices_prey+action_choices_predator+action_choices_prey_2+action_choices_predator_2]
-groups = ["1-Prey" for i in range(10)] + ["1-Predator" for i in range(10)] + ["2-Prey" for i in range(10)] + ["2-Predator" for i in range(10)]
+action_choices_prey_slow = [create_third_order_transition_count_matrix(
+    load_data("even_prey_ref-4", "Behavioural-Data-Free", f"Prey-Slow-{i}")["behavioural choice"]) for i in range(1, 3)]
+action_choices_prey_no_jump = [create_third_order_transition_count_matrix(
+    load_data("even_prey_ref-4", "Behavioural-Data-Free", f"Prey-No-Jump-{i}")["behavioural choice"]) for i in
+                               range(1, 3)]
+action_choices_prey_differential = [create_third_order_transition_count_matrix(
+    load_data("even_prey_ref-4", "Behavioural-Data-Free", f"Prey-Differential-{i}")["behavioural choice"]) for i in
+                                    range(1, 3)]
+action_choices_prey_sparse = [create_third_order_transition_count_matrix(
+    load_data("even_prey_ref-4", "Behavioural-Data-Free", f"Prey-Low-Density-{i}")["behavioural choice"]) for i in
+                              range(1, 3)]
+
+probabilities = [get_transition_probabilities(ac) for ac in
+                 action_choices_prey + action_choices_predator + action_choices_prey_2 + action_choices_predator_2 + action_choices_prey_slow + action_choices_prey_no_jump +
+                 action_choices_prey_differential +
+                 action_choices_prey_sparse]
+groups = ["1-Prey" for i in range(10)] + \
+         ["1-Predator" for i in range(10)] + \
+         ["2-Prey" for i in range(10)] + \
+         ["2-Predator" for i in range(10)] + \
+         ["1-Prey-Slow" for i in range(2)] + \
+         ["1-Prey-No-Jump" for i in range(2)]+ \
+         ["1-Prey-Differential" for i in range(2)]+\
+         ["1-Prey-Sparse" for i in range(2)]
+
 
 do_tsne(probabilities, groups)

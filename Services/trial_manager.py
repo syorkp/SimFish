@@ -57,7 +57,7 @@ class TrialManager:
                 self.priority_ordered_trials[index]["Model Exists"] = True
                 if not os.path.exists(assay_directory_location):
                     os.makedirs(assay_directory_location)
-        print(self.priority_ordered_trials)
+        #print(self.priority_ordered_trials)
 
     @staticmethod
     def check_model_exists(output_directory_location):
@@ -111,8 +111,11 @@ class TrialManager:
         parallel_jobs = 2
         memory_fraction = 0.99/parallel_jobs
         running_jobs = {}
-
+        to_delete = None
         for index, trial in enumerate(self.priority_ordered_trials):
+            if to_delete is not None:
+                del running_jobs[to_delete]
+                to_delete = None
             epsilon, total_steps, episode_number = self.get_saved_parameters(trial)
             if trial["Run Mode"] == "Training":
                 running_jobs[str(index)] = multiprocessing.Process(target=training.training_target, args=(trial, epsilon, total_steps, episode_number, memory_fraction))
@@ -120,13 +123,12 @@ class TrialManager:
                 learning_params, environment_params = self.load_configuration_files(trial["Environment Name"])
                 running_jobs[str(index)] = multiprocessing.Process(target=assay.assay_target, args=(trial, learning_params, environment_params, total_steps, episode_number, memory_fraction))
             running_jobs[str(index)].start()
-            print(f"Jobs: {running_jobs}")
-            while len(running_jobs.keys()) > parallel_jobs - 1:
+            print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
+
+            while len(running_jobs.keys()) > parallel_jobs - 1 and to_delete is None:
                 for process in running_jobs.keys():
                     if running_jobs[process].is_alive():
                         pass
                     else:
+                        to_delete = process
                         running_jobs[str(index)].join()
-            # TODO: Wont remove trials once complete as they are still in dictionary. Need to find a way of doing it without deleting from dictionary.
-
-
