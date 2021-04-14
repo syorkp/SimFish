@@ -4878,5 +4878,5 @@ all_response_vectors_config = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(all_response_vectors_config)
+manager = TrialManager(current_training_configuration)
 manager.run_priority_loop()
