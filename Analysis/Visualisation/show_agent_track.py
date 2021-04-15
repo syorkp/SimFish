@@ -1,60 +1,35 @@
-import json
-
 from matplotlib import pyplot as plt
 import matplotlib.cm as cm
-
+from matplotlib.colors import ListedColormap
+import math
 from Analysis.load_data import load_data
+import numpy as np
+import seaborn as sns
 
-data = load_data("changed_penalties-2", "Naturalistic", "Naturalistic-1")
+
+def colored_2d_track(position, action_choice):
+    # Note that due to the inverse scale in the environment, should be rotated in y axis.
+    data  = {}
+    data["x"] = [i[0] for i in position]
+    data["y"] = [i[1] for i in position]
+    data["a"] = [str(a) for a in action_choice]
+    data["s"] = [10 for i in range(len(action_choice))]
+
+    colors = sns.color_palette("hls", len(set(action_choice)))
+
+    plt.figure(figsize=(10, 10))
+    sns.scatterplot(x="x", y="y", hue="a", data=data, palette=colors, s=100, alpha=1)
+    plt.xlim(0, 1500)
+    plt.ylim(0, 1500)
+    plt.show()
 
 
+data = load_data("even_prey_ref-4", "Behavioural-Data-Free", "Prey-1")
 position = data["position"]
 action_choice = data["behavioural choice"]
 
 # Shorten data
-position = position[200: 500]
-action_choice = action_choice[200: 500]
+# position = position[200: 500]
+# action_choice = action_choice[200: 500]
 
-
-def plot_2d_track():
-    # Note that due to the inverse scale in the environment, should be rotated in y axis.
-    fig = plt.figure()
-    ax = fig.gca()
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
-    # ax.set_zlabel('Time')
-
-    x = [i[0] for i in position]
-    y = [i[1] for i in position]
-
-    ax.plot(x, y)
-    plt.xlim(0, 1000)
-    plt.ylim(0, 700)
-    # plt.gca().invert_yaxis()
-    plt.show()
-
-
-def colored_2d_track():
-    x = [i[0] for i in position]
-    y = [i[1] for i in position]
-
-    cmap = cm.jet
-
-    fig = plt.figure(1)
-    fig.clf()
-    ax = fig.add_subplot(1, 1, 1)
-
-    c = action_choice
-    ax.scatter(x, y, c=c, cmap=cmap)
-    ax.set_xlabel("X Position (arbitrary distance units)", fontsize=12)
-    ax.set_ylabel("Y Position (arbitrary distance units)", fontsize=12)
-    ax.tick_params(labelsize=12)
-
-    plt.xlim(0, 1000)
-    plt.ylim(0, 700)
-    plt.show()
-
-
-# plot_2d_track()
-
-colored_2d_track()
+colored_2d_track(position, action_choice)

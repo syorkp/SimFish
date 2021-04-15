@@ -717,7 +717,7 @@ all_response_vectors_config = [
     {
         "Model Name": "even_prey_ref",
         "Environment Name": "test_square",
-        "Trial Number": 4,
+        "Trial Number": 5,
         "Assay Configuration Name": "Predator-Full-Response-Vector",
         "Run Mode": "Assay",
         "Realistic Bouts": True,
@@ -1237,7 +1237,7 @@ all_response_vectors_config = [
     {
         "Model Name": "even_prey_ref",
         "Environment Name": "test_square",
-        "Trial Number": 4,
+        "Trial Number": 5,
         "Assay Configuration Name": "Prey-Full-Response-Vector",
         "Run Mode": "Assay",
         "Realistic Bouts": True,
@@ -1757,7 +1757,7 @@ all_response_vectors_config = [
     {
         "Model Name": "even_prey_ref",
         "Environment Name": "test_square",
-        "Trial Number": 5,
+        "Trial Number": 4,
         "Assay Configuration Name": "Predator-Full-Response-Vector",
         "Run Mode": "Assay",
         "Realistic Bouts": True,
@@ -2277,7 +2277,7 @@ all_response_vectors_config = [
     {
         "Model Name": "even_prey_ref",
         "Environment Name": "test_square",
-        "Trial Number": 5,
+        "Trial Number": 4,
         "Assay Configuration Name": "Prey-Full-Response-Vector",
         "Run Mode": "Assay",
         "Realistic Bouts": True,
@@ -4878,5 +4878,5 @@ all_response_vectors_config = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(current_training_configuration)
+manager = TrialManager(all_response_vectors_config)
 manager.run_priority_loop()

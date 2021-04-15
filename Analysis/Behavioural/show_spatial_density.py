@@ -103,16 +103,15 @@ def create_density_cloud(density_list, action_num, stimulus_name):
     y = np.negative(y)
     # Evaluate a gaussian kde on a regular grid of nbins x nbins over data extents
     nbins = 300
-    k = kde.gaussian_kde([x, y])
-    xi, yi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
+    k = kde.gaussian_kde([y, x])
+    yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
 
     zi = k(np.vstack([xi.flatten(), yi.flatten()]))
     plt.title(f"Feature: {stimulus_name}, Action: {get_action_name(action_num)}, Samples: {n_samples}")
-    # plt.xlim([0, 500])
-    # plt.ylim([0, 500])
+
     # Make the plot
     plt.pcolormesh(xi, yi, zi.reshape(xi.shape))
-    plt.arrow(220, -300, 40, 0, width=10, color="red")
+    plt.arrow(-300, 220, 0, 40, width=10, color="red")
     plt.show()
 
 
@@ -144,15 +143,53 @@ def get_all_density_plots_all_subsets(p1, p2, p3, n):
             create_density_cloud(pred_cloud, action_num, "Predator")
 
 
+def create_j_turn_overlap_plot(p1, p2, p3, n):
+    prey_cloud_left = []
+    for i in range(1, n+1):
+        data = load_data(p1, p2, f"{p3}-{i}")
+        prey_1, pred_1 = get_clouds_with_action(data, 4)
+        prey_cloud_left = prey_cloud_left + prey_1
+    prey_cloud_right = []
+    for i in range(1, n+1):
+        data = load_data(p1, p2, f"{p3}-{i}")
+        prey_1, pred_1 = get_clouds_with_action(data, 5)
+        prey_cloud_right = prey_cloud_right + prey_1
+    n_samples = len(prey_cloud_left) + len(prey_cloud_right)
+    # For left
+    x = np.array([i[0] for i in prey_cloud_left])
+    y = np.array([i[1] for i in prey_cloud_left])
+    #y = np.negative(y)
+    nbins = 300
+    k = kde.gaussian_kde([y, x])
+    yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
+
+    zi = k(np.vstack([xi.flatten(), yi.flatten()]))
+
+    # For right
+    x = np.array([i[0] for i in prey_cloud_right])
+    y = np.array([i[1] for i in prey_cloud_right])
+    #y = np.negative(y)
+    nbins = 300
+    k = kde.gaussian_kde([y, x])
+    zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
+    plt.title(f"Feature: Prey, Action: J-turns, Samples: {n_samples}")
+
+    zi = zi - zi2
+    # Make the plot
+    plt.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
+    plt.arrow(300, 220, 0, 40, width=10, color="red")
+    plt.show()
+
+
 # get_all_density_plots_all_subsets("changed_penalties-1", "Naturalistic", "Naturalistic", 2)
 # get_all_density_plots_all_subsets("large_all_features-1", "Naturalistic", "Naturalistic", 4)
 # get_all_density_plots_all_subsets("even_prey-1", "Naturalistic", "Naturalistic", 4)
 # get_all_density_plots_all_subsets("even_prey_ref-4", "Naturalistic", "Naturalistic", 1)
 #get_all_density_plots_all_subsets("even_prey_ref-5", "Behavioural-Data-Free", "Prey", 10)
 #get_all_density_plots_all_subsets("even_prey_ref-5", "Behavioural-Data-Free-Predator", "Predator", 10)
-get_all_density_plots_all_subsets("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 10)
+# get_all_density_plots_all_subsets("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 10)
 # get_all_density_plots_all_subsets("even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
-
+create_j_turn_overlap_plot("even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
 
 
 

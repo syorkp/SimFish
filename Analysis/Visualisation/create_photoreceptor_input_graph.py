@@ -28,7 +28,10 @@ def create_photoreceptor_input_graph(model, config, assay_id):
     fig, axs = plt.subplots(2, 1, sharex=True)
 
     axs[0].imshow(left_1, aspect="auto")
+    axs[0].set_ylabel("Left eye Photoreceptor")
     axs[1].imshow(right_1, aspect="auto")
+    axs[1].set_ylabel("Right eye Photoreceptor")
+    axs[1].set_xlabel("Step")
     plt.show()
 
 
