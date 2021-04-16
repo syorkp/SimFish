@@ -133,10 +133,10 @@ def label_all_units_tsne(response_vectors, archetypes):
     ...
 
 
-full_rv = create_full_response_vector("even_prey_ref-7")
-full_sv = create_full_stimulus_vector("even_prey_ref-7")
-sel = label_all_units_selectivities(full_rv, full_sv)
-x = True
+# full_rv = create_full_response_vector("even_prey_ref-7")
+# full_sv = create_full_stimulus_vector("even_prey_ref-7")
+# sel = label_all_units_selectivities(full_rv, full_sv)
+# x = True
 # # neurons_to_ablate = get_with_selectivity(["Prey-Static-15", "Prey-Left-15", "Prey-Right-15"], sel)
 # # neurons_to_ablate = get_with_selectivity(["Prey-Static-5-0.07", "Prey-Left-5-0.07", "Prey-Right-5-0.07",
 # #                                           "Prey-Static-10-0.07", "Prey-Left-10-0.07", "Prey-Right-10-0.07",
