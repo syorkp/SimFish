@@ -1,14 +1,15 @@
 import numpy as np
-
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 from Analysis.Neural.calculate_vrv import create_full_response_vector, create_full_stimulus_vector
 
 
 def check_boring_unit(vector):
     if all(r <= 0 for r in vector):# and abs(max(vector)) - abs(min(vector)) < abs(np.mean(vector)):
-        return "Unvexed Up"
+        return "Neither"
     elif all(r >= 0 for r in vector): # and abs(max(vector)) - abs(min(vector)) < abs(np.mean(vector)):
-        return "Unvexed Down"
+        return "Neither"
     else:
         return None
 
@@ -132,10 +133,64 @@ def label_all_units_tsne(response_vectors, archetypes):
     """Based on the archetypes, clusters the nearest units and assigns this manual category to them."""
     ...
 
+import pandas as pd
 
-# full_rv = create_full_response_vector("even_prey_ref-7")
-# full_sv = create_full_stimulus_vector("even_prey_ref-7")
-# sel = label_all_units_selectivities(full_rv, full_sv)
+
+def display_categories_counts(category_list):
+    pap = []
+    pred = []
+    prey = []
+    neither = []
+    for categories in category_list:
+        pap.append(categories.count("Prey-and-Predator"))
+        pred.append(categories.count("Predator-Only"))
+        prey.append(categories.count("Prey-Only"))
+        neither.append(categories.count("Neither"))
+    data = pd.DataFrame([pap, pred, prey, neither])
+    df = pd.DataFrame(data).T
+    df = df.rename(columns={k: f'Data{k + 1}' for k in range(len(data))}).reset_index()
+    df = pd.wide_to_long(df, stubnames=['Data'], i='index', j='ID').reset_index()[['ID', 'Data']]
+    sns.boxplot(x='ID', y='Data', data=df)
+    plt.xticks([0, 1, 2, 3], ["Prey-and-Predator", "Predator", "Prey", "Neither"])
+    plt.xlabel("Selectivity")
+    plt.ylabel("Number of Neurons")
+    plt.show()
+
+
+def display_selectivity_tally(selectivities, stimulus_vector):
+    counts = []
+    for i, neuron in enumerate(selectivities):
+        new_sel = []
+        for key in neuron.keys():
+            if type(neuron[key]) is list:
+                new_sel = new_sel + neuron[key]
+            else:
+                new_sel.append(neuron[key])
+        counts = counts + new_sel
+    for i, c in enumerate(counts):
+        c = c.split("-")[:-2]
+        n = ""
+        for cc in c:
+            n = n + "-" + cc
+        counts[i] = n
+    fig, ax = plt.subplots(figsize=(30,10))
+
+    g = sns.countplot(counts)
+    # g.set_xticklabels(lables=g.labels, rotation=90)
+    plt.xticks(rotation=90)
+    plt.show()
+
+cats = []
+
+for i in range(4, 8):
+    full_rv = create_full_response_vector(f"even_prey_ref-{i}")
+    full_sv = create_full_stimulus_vector(f"even_prey_ref-{i}")
+    sel = label_all_units_selectivities(full_rv, full_sv)
+    display_selectivity_tally(sel, full_sv)
+    cat = assign_neuron_names(sel)
+    cats.append(cat)
+
+display_categories_counts(cats)
 # x = True
 # # neurons_to_ablate = get_with_selectivity(["Prey-Static-15", "Prey-Left-15", "Prey-Right-15"], sel)
 # # neurons_to_ablate = get_with_selectivity(["Prey-Static-5-0.07", "Prey-Left-5-0.07", "Prey-Right-5-0.07",
@@ -143,7 +198,6 @@ def label_all_units_tsne(response_vectors, archetypes):
 # #                                           "Prey-Static-15-0.07", "Prey-Left-15-0.07", "Prey-Right-15-0.07"], sel)
 # neurons_to_ablate = get_with_selectivity(["Prey-Static-15-0.07", "Prey-Left-15-0.07", "Prey-Right-15-0.07"], sel)
 # print(neurons_to_ablate)
-# cat = assign_neuron_names(sel)
 # prey_only = [i for i, name in enumerate(cat) if name=="Prey-Only"]
 # pred_only = [i for i, name in enumerate(cat) if name=="Predator-Only"]
 # unvexed_only = [i for i, name in enumerate(cat) if name=="Unvexed Down" or name=="Unveded Up"]

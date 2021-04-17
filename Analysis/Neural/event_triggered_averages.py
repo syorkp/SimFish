@@ -112,8 +112,11 @@ def shared_eta_distribution(event_triggered_averages_1, event_triggered_averages
         atas2 = event_triggered_averages_2[str(a)]
         if np.any(atas) or numpy.any(atas2):
             plt.figure(figsize=(5, 8))
-            plt.hist([atas, atas2], color=["r", "b"])
+            plt.hist([atas, atas2], color=["r", "b"], bins=range(-100, 100, 10))
+            # sns.histplot(x=atas, color='skyblue', label='1', kde=True)
+            # sns.histplot(x=atas2, color='red', label='2', kde=True)
             plt.title(f"ETAs for action {a}")
+            # plt.xlim([-100, 100])
             plt.show()
 
 
@@ -126,16 +129,17 @@ def boxplot_of_etas(atas):
     plt.show()
 
 
-# data = load_data("even_prey_ref-5", "Naturalistic", "Naturalistic-1")
-# ata = get_eta(data, "actions")
+data = load_data("even_prey_ref-5", "Naturalistic", "Naturalistic-1")
+ata = get_eta(data, "actions")
 # boxplot_of_etas(ata)
-# prey_only = [13, 21, 29, 44, 51, 52, 53, 57, 59, 60, 65, 69, 76, 86, 90, 115, 116, 121, 122, 129, 138, 142, 149, 157, 171, 173, 175, 176, 182, 183, 186, 188, 191, 201, 203, 205, 221, 225, 232, 239, 250, 260, 268, 292, 303, 312, 321, 327, 328, 347, 354, 362, 366, 368, 390, 395, 399, 402, 403, 406, 415, 429, 446, 447, 456, 463, 481, 497, 504]
-# pred_only = [4, 5, 9, 10, 15, 16, 17, 22, 28, 34, 41, 42, 46, 47, 49, 55, 56, 64, 70, 77, 79, 85, 89, 93, 95, 98, 99, 100, 101, 106, 114, 118, 120, 133, 134, 135, 136, 139, 140, 145, 156, 158, 163, 166, 172, 174, 178, 179, 181, 189, 193, 194, 198, 200, 204, 206, 208, 213, 220, 224, 234, 236, 245, 249, 251, 253, 255, 257, 261, 263, 266, 269, 271, 275, 295, 296, 307, 317, 329, 338, 345, 346, 352, 364, 372, 381, 383, 385, 388, 418, 421, 424, 436, 449, 450, 453, 454, 458, 462, 468, 470, 482, 483, 489, 492, 495, 501, 503, 505, 509, 511]
-# ata_subset_1 = get_for_specific_neurons(ata, prey_only)
-# ata_subset_2 = get_for_specific_neurons(ata, pred_only)
+prey_only = [13, 21, 29, 44, 51, 52, 53, 57, 59, 60, 65, 69, 76, 86, 90, 115, 116, 121, 122, 129, 138, 142, 149, 157, 171, 173, 175, 176, 182, 183, 186, 188, 191, 201, 203, 205, 221, 225, 232, 239, 250, 260, 268, 292, 303, 312, 321, 327, 328, 347, 354, 362, 366, 368, 390, 395, 399, 402, 403, 406, 415, 429, 446, 447, 456, 463, 481, 497, 504]
+pred_only = [4, 5, 9, 10, 15, 16, 17, 22, 28, 34, 41, 42, 46, 47, 49, 55, 56, 64, 70, 77, 79, 85, 89, 93, 95, 98, 99, 100, 101, 106, 114, 118, 120, 133, 134, 135, 136, 139, 140, 145, 156, 158, 163, 166, 172, 174, 178, 179, 181, 189, 193, 194, 198, 200, 204, 206, 208, 213, 220, 224, 234, 236, 245, 249, 251, 253, 255, 257, 261, 263, 266, 269, 271, 275, 295, 296, 307, 317, 329, 338, 345, 346, 352, 364, 372, 381, 383, 385, 388, 418, 421, 424, 436, 449, 450, 453, 454, 458, 462, 468, 470, 482, 483, 489, 492, 495, 501, 503, 505, 509, 511]
+ata_subset_1 = get_for_specific_neurons(ata, prey_only)
+ata_subset_2 = get_for_specific_neurons(ata, pred_only)
+# plot_average_action_scores(ata_subset_1)
+# plot_average_action_scores(ata_subset_2)
 # boxplot_of_etas(ata_subset_1)
 # boxplot_of_etas(ata_subset_2)
-# shared_eta_distribution(ata_subset_1, ata_subset_2, ["prey only", "pred only"])
+shared_eta_distribution(ata_subset_1, ata_subset_2, ["prey only", "pred only"])
 # eta_distribution(ata_subset_1, "Prey-Only")
 # eta_distribution(ata_subset_2, "Predator-Only")
-# plot_all_action_scores(ata)

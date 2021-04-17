@@ -11,7 +11,7 @@ def display_all_sequences_capture(sequences):
     plot_dim = max([len(seq) for seq in sequences])
 
     color_set = sns.color_palette("hls", 10)
-    color_set = ['b', 'g', 'g', 'r', 'y', 'y', "k", "m", "m"]
+    color_set = ['b', 'g', 'g', 'r', 'y', 'y', "k", "m", "m", "k"]
     plt.figure(figsize=(5, 15))
     for i, seq in enumerate(sequences):
         for j, a in enumerate(reversed(seq)):
@@ -25,7 +25,7 @@ def display_all_sequences_escape(sequences):
     sequences.sort(key=len)
     plot_dim = max([len(seq) for seq in sequences])
 
-    color_set = ['b', 'g', 'g', 'r', 'y', 'y', "k", "m", "m"]
+    color_set = ['b', 'g', 'g', 'r', 'y', 'y', "k", "m", "m", "b"]
     plt.figure(figsize=(5, 15))
     for i, seq in enumerate(sequences):
         for j, a in enumerate(reversed(seq)):
@@ -73,10 +73,9 @@ def display_average_sequence(sequences):
 
 
 
-capture_sequences = get_capture_sequences("even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
-escape_sequences = get_escape_sequences("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 10)
-display_average_sequence(escape_sequences[:61])
-# display_all_sequences_capture(capture_sequences)
-# display_all_sequences_escape(escape_sequences[:61])
+capture_sequences = get_capture_sequences("even_prey_ref-3", "Behavioural-Data-Free", "Naturalistic", 1)
+display_all_sequences_capture(capture_sequences[:70])
+escape_sequences = get_escape_sequences("even_prey_ref-3", "Behavioural-Data-Free", "Predator", 1)
+display_all_sequences_escape(escape_sequences)
 
 

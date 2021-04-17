@@ -15,7 +15,7 @@ def get_formatted_data(broad_categories, atas, sel, threshold=10):
             if type(selec) is not list:
                 selec = [selec]
             selectivities = selectivities + selec
-        action_associations = [atas[str(a)][neuron] for a in range(10) if atas[str(a)][neuron]>threshold]
+        action_associations = {str(a): atas[str(a)][neuron] for a in range(10) if atas[str(a)][neuron]>threshold}
         data[f"Neuron {neuron}"] = {"category":broad_categories[neuron],
                                     "selectivities": selectivities,
                                     "action_associations": action_associations}
@@ -35,6 +35,8 @@ def save_all_categorisations(model_name):
         json.dump(d, outfile, indent=4)
 
 
-# TODO: Create script for tallying selectivities/categories.
 
+save_all_categorisations("even_prey_ref-4")
 save_all_categorisations("even_prey_ref-5")
+save_all_categorisations("even_prey_ref-6")
+save_all_categorisations("even_prey_ref-7")
