@@ -42,23 +42,6 @@ def format_func_pred(value, tick_number):
     else:
         return ""
 
-import seaborn as sns
-
-def sort_by_knn(response_vector):
-    dist_sq = np.sum((response_vector[:, np.newaxis, :] - response_vector[np.newaxis, :, :]) ** 2, axis=-1)
-    differences = X[:, np.newaxis, :] - X[np.newaxis, :, :]
-    sq_differences = differences ** 2
-    dist_sq = sq_differences.sum(-1)
-    nearest = np.argsort(dist_sq, axis=1)
-    K = len(response_vector[0])
-    nearest_partition = np.argpartition(dist_sq, K + 1, axis=1)
-
-    new_array = []
-    for i in range(response_vector.shape[0]):
-        for j in nearest_partition[i, :K+1]:
-            new_array.append(response_vector[j])
-
-
 def pairwise_distances_sort(response_vector):
     # D = np.zeros((len(response_vector), len(response_vector)))
     # for i in range(len(response_vector)):
@@ -75,13 +58,13 @@ def pairwise_distances_sort(response_vector):
 def show_full_vector_simple(response_vector, stimulus_vector, title):
     fig, ax = plt.subplots()
     fig.set_size_inches(18.5, 20)
-    idex = np.lexsort([response_vector[:, 0], response_vector[:, 11]])
-    response_vector = response_vector[idex, :]
+    # idex = np.lexsort([response_vector[:, 0], response_vector[:, 11]])
+    # response_vector = response_vector[idex, :]
     #response_vector = sorted(response_vector, key=lambda x: sum(x[:]))
     # response_vector = pairwise_distances_sort(response_vector)
     ax.set_title(title, fontsize=45)
     ax.pcolor(response_vector, cmap='coolwarm')
-    ax.set_xticks(np.linspace(0.5, len(stimulus_vector)+0.5, len(stimulus_vector)))
+    ax.set_xticks(np.linspace(0.5, len(stimulus_vector)-0.5, len(stimulus_vector)))
     ax.set_xticklabels(stimulus_vector, rotation='vertical')
     plt.show()
 
@@ -89,7 +72,7 @@ def show_full_vector_simple(response_vector, stimulus_vector, title):
 def display_full_response_vector(response_vector, stimulus_vector, title):
     fig, ax = plt.subplots()
     fig.set_size_inches(18.5, 20)
-    response_vector = sorted(response_vector, key=lambda x: sum(x[:]))
+    # response_vector = sorted(response_vector, key=lambda x: sum(x[:]))
     ax.set_title(title, fontsize=45)
     ax.pcolor(response_vector, cmap='coolwarm')
     ax.grid(True, which='minor', axis='both', linestyle='-', color='k')
@@ -126,19 +109,33 @@ def get_central_vectors(response_vector, stimulus_vector):
         new_response_vector.append(new_neuron_vector)
     return np.array(new_response_vector), new_stimulus_vector
 
-full_rv = create_full_response_vector("even_prey_ref-5")
-full_rv = normalise_response_vectors(full_rv)
-full_sv = create_full_stimulus_vector("even_prey_ref-5")
-full_rv = remove_initialisation_effects(full_rv)
 
-prey_rv = full_rv[:, :121]
-prey_sv = full_sv[:121]
-pred_rv = full_rv[:, 121:]
-pred_sv = full_sv[121:]
+from sklearn.cluster import KMeans
 
-simple_rv, simple_sv = get_central_vectors(full_rv, full_sv)
+def order_vectors_by_kmeans(vectors):
+    ordered_vectors = []
+    kmeans = KMeans(n_clusters=30).fit(vectors)
+    lab = kmeans.labels_
+    for cluster in set(lab):
+        for i, neuron in enumerate(vectors):
+            if lab[i] == cluster:
+                ordered_vectors.append(neuron)
+    return np.array(ordered_vectors)
 
-# display_full_response_vector(full_rv, full_sv)
+#
+# full_rv = create_full_response_vector("even_prey_ref-5")
+# full_rv = normalise_response_vectors(full_rv)
+# full_sv = create_full_stimulus_vector("even_prey_ref-5")
+# full_rv = remove_initialisation_effects(full_rv)
+#
+# prey_rv = order_vectors_by_kmeans(full_rv[:, :121])
+# prey_sv = full_sv[:121]
+# pred_rv = order_vectors_by_kmeans(full_rv[:, 121:])
+# pred_sv = full_sv[121:]
+#
+# simple_rv, simple_sv = get_central_vectors(full_rv, full_sv)
+# simple_rv = order_vectors_by_kmeans(simple_rv)
+# # display_full_response_vector(full_rv, full_sv)
 # display_full_response_vector(prey_rv, prey_sv, "Prey Stimuli")
 # display_full_response_vector(pred_rv, pred_sv, "Predator Stimuli")
-show_full_vector_simple(simple_rv, simple_sv, "Simplified")
+# show_full_vector_simple(simple_rv, simple_sv, "Simplified")

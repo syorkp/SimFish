@@ -9,9 +9,10 @@ from sklearn.neighbors import NearestNeighbors, KNeighborsClassifier
 from Analysis.load_stimuli_data import load_stimulus_data
 from Analysis.load_data import load_data
 from Analysis.Neural.calculate_vrv import get_all_neuron_vectors, get_stimulus_vector, normalise_vrvs, create_full_response_vector
+from Analysis.Neural.label_neurons import create_full_stimulus_vector, label_all_units_selectivities, assign_neuron_names
 
 
-def plot_tsne_results(vectors, title="None"):
+def plot_tsne_results(vectors, title="None", labels=None):
     for p in range(5, 10, 5):
         tsne = TSNE(n_components=2, n_iter=1000, perplexity=p)
         tsne_results = tsne.fit_transform(vectors)
@@ -20,28 +21,27 @@ def plot_tsne_results(vectors, title="None"):
 
         tpd['tsne-2d-one'] = tsne_results[:, 0]
         tpd['tsne-2d-two'] = tsne_results[:, 1]
-        tpd['Point'] = ["Blue" for i in range(len(tsne_results[:, 0]))]
-        tpd["Point"][0] = "Red"
-        # plt.figure(figsize=(16, 10))
-        # plt.title(title)
-        #
-        # p1 = sns.scatterplot(
-        #     x="tsne-2d-one", y="tsne-2d-two",
-        #     # palette=sns.color_palette("hls", 10),
-        #     hue="Point",
-        #     # palette=sns.color_palette("hls"),
-        #     data=tpd,
-        #     legend="full",
-        #     alpha=0.3
-        # )
+        tpd['Point'] = labels
+        plt.figure(figsize=(16, 10))
+        plt.title(title)
+
+        p1 = sns.scatterplot(
+            x="tsne-2d-one", y="tsne-2d-two",
+            # palette=sns.color_palette("hls", 10),
+            hue="Point",
+            # palette=sns.color_palette("hls"),
+            data=tpd,
+            legend="full",
+            alpha=0.3
+        )
         # labels = [f"Neuron: {i}" for i, e in enumerate(vectors[:30])]
         # for line in range(len(vectors[:30])):
         #     p1.text(tpd['tsne-2d-one'][line] + 0.01, tpd['tsne-2d-two'][line],
         #             labels[line], horizontalalignment='left',
         #             size='small', color='black', weight='light')
         # label_point(tpd["tsne-2d-one"], tpd["tsne-2d-two"], [f"Neuron: {i}" for i, e in enumerate(vectors)], plt.gca())
-        # plt.show()
-        try_kmeans(tpd, tsne_results, vectors, p)
+        plt.show()
+        # try_kmeans(tpd, tsne_results, vectors, p)
 
 
 def label_point(x, y, val, ax):
@@ -141,9 +141,10 @@ def knn_clustering(tsne_output):
 # all_vectors = np.concatenate([vector2, vector3], axis=1).tolist()
 # normalised_vectors = normalise_vrvs(all_vectors)
 
-full_rv = create_full_response_vector("even_prey_ref-5")
-
-plot_tsne_results(full_rv, "Visual Response Vectors")
+full_rv = create_full_response_vector("even_prey_ref-7")
+full_sv = create_full_stimulus_vector(f"even_prey_ref-7")
+sel = label_all_units_selectivities(full_rv, full_sv)
+cat = assign_neuron_names(sel)
+plot_tsne_results(full_rv, "Visual Response Vectors", cat)
 full_rv = np.array(full_rv)
-x = True
 # plot_tsne_results(normalised_vectors, "Visual Response Vectors")

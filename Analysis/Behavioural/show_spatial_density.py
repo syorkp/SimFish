@@ -107,7 +107,7 @@ def create_density_cloud(density_list, action_num, stimulus_name):
     yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
 
     zi = k(np.vstack([xi.flatten(), yi.flatten()]))
-    plt.title(f"Feature: {stimulus_name}, Action: {get_action_name(action_num)}, Samples: {n_samples}")
+    plt.title(f"Feature: {stimulus_name}, Action: {get_action_name(action_num)}")
 
     # Make the plot
     plt.pcolormesh(xi, yi, zi.reshape(xi.shape))
@@ -172,7 +172,7 @@ def create_j_turn_overlap_plot(p1, p2, p3, n):
     nbins = 300
     k = kde.gaussian_kde([y, x])
     zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
-    plt.title(f"Feature: Prey, Action: J-turns, Samples: {n_samples}")
+    plt.title(f"Feature: Prey, Action: J-turns")
 
     zi = zi - zi2
     # Make the plot
@@ -210,9 +210,9 @@ def create_routine_turn_overlap_plot(p1, p2, p3, n):
     nbins = 300
     k = kde.gaussian_kde([y, x])
     zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
-    plt.title(f"Feature: Prey, Action: Routine turns, Samples: {n_samples}")
+    plt.title(f"Feature: Prey, Action: Routine turns")
 
-    zi = zi - zi2
+    zi = zi2 - zi
     # Make the plot
     plt.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
     plt.arrow(300, 220, 0, 40, width=10, color="red")
@@ -248,7 +248,7 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
     nbins = 300
     k = kde.gaussian_kde([y, x])
     zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
-    plt.title(f"Feature: Predator, Action: C-Starts, Samples: {n_samples}")
+    plt.title(f"Feature: Predator, Action: C-Starts")
 
     zi = zi - zi2
     # Make the plot
@@ -257,20 +257,21 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
     plt.show()
 
 
-get_all_density_plots_all_subsets("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 10)
-create_cstart_overlap_plot("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 10)
-create_cstart_overlap_plot("even_prey_ref-7", "Behavioural-Data-Free", "Predator", 10)
-
 # get_all_density_plots_all_subsets("even_prey_ref-7", "Behavioural-Data-Free", "Prey", 10)
-# get_all_density_plots_all_subsets("even_prey_ref-7", "Behavioural-Data-Free", "Predator", 10)
-# create_cstart_overlap_plot("even_prey_ref-7", "Behavioural-Data-Free", "Predator", 10)
-# create_routine_turn_overlap_plot("even_prey_ref-7", "Behavioural-Data-Free", "Prey", 10)
+# get_all_density_plots_all_subsets("even_prey_ref-7", "Ablation-Test-Spatial-Density", "Prey-Only-Ablated-100", 3)
 # create_j_turn_overlap_plot("even_prey_ref-7", "Behavioural-Data-Free", "Prey", 10)
+# create_j_turn_overlap_plot("even_prey_ref-7", "Ablation-Test-Spatial-Density", "Prey-Only-Ablated-100", 3)
 
 
-# create_j_turn_overlap_plot("even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
-# create_j_turn_overlap_plot("even_prey_ref-5", "Behavioural-Data-Free", "Prey", 10)
-# create_j_turn_overlap_plot("even_prey_ref-6", "Behavioural-Data-Free", "Prey", 10)
+# create_cstart_overlap_plot("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 10)
+#
+# # create_routine_turn_overlap_plot("even_prey_ref-5", "Behavioural-Data-Free", "Prey", 10)
+#
+# # create_j_turn_overlap_plot("even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
+# get_all_density_plots_all_subsets("even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
+# get_all_density_plots_all_subsets("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 10)
+
+# create_cstart_overlap_plot("even_prey_ref-7", "Behavioural-Data-Free", "Predator", 10)
 # create_j_turn_overlap_plot("even_prey_ref-7", "Behavioural-Data-Free", "Prey", 10)
 
 

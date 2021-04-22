@@ -125,17 +125,17 @@ def plot_multiple_traces(neuron_data_list, stimulus_data_list=None, trace_names=
                                     stimulus_data_list, trace_names=trace_names)
 
 
-data1 = load_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
-data2 = load_data("even_prey_ref-5", "For-Traces", "Predator-Static-40")
-stimulus_data1 = load_stimulus_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
-stimulus_data2 = load_stimulus_data("even_prey_ref-5", "For-Traces", "Predator-Static-40")
-
-unit_activity1 = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
-unit_activity2 = [[data2["rnn state"][i - 1][0][j] for i in data2["step"]] for j in range(512)]
-
-plot_multiple_traces([unit_activity1, unit_activity2],
-                     [stimulus_data1, stimulus_data2],
-                     ["Prey", "Predator"])
+# data1 = load_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
+# data2 = load_data("even_prey_ref-5", "For-Traces", "Predator-Static-40")
+# stimulus_data1 = load_stimulus_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
+# stimulus_data2 = load_stimulus_data("even_prey_ref-5", "For-Traces", "Predator-Static-40")
+#
+# unit_activity1 = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
+# unit_activity2 = [[data2["rnn state"][i - 1][0][j] for i in data2["step"]] for j in range(512)]
+#
+# plot_multiple_traces([unit_activity1, unit_activity2],
+#                      [stimulus_data1, stimulus_data2],
+#                      ["Prey", "Predator"])
 
 # data1a = load_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Static-5")
 # data2b = load_data("even_prey_ref-5", "Predator-Full-Response-Vector", "Predator-Static-40")
