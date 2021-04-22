@@ -2689,9 +2689,9 @@ behavioural_data_config = [
 
 current_training_configuration = [
     {
-        "Model Name": "even_prey_ref",
-        "Environment Name": "even_prey",
-        "Trial Number": 7,
+        "Model Name": "sparse_prey_ref",
+        "Environment Name": "sparse_prey",
+        "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -2714,9 +2714,9 @@ current_training_configuration = [
         "monitor gpu": False,
     },
     {
-        "Model Name": "even_prey_ref",
-        "Environment Name": "even_prey",
-        "Trial Number": 6,
+        "Model Name": "sparse_prey_and_static",
+        "Environment Name": "sparse_prey_and_static",
+        "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -2805,5 +2805,5 @@ mini_assay = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(spatial_density_data)
+manager = TrialManager(current_training_configuration)
 manager.run_priority_loop()
