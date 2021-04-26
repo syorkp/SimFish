@@ -55,11 +55,11 @@ env = {'width': 1500,  # arena size
        'predator_mass': 10.,
        'predator_inertia': 40.,
        'predator_size': 100.,
-       'predator_impulse': 0.7,
+       'predator_impulse': 1.0,
        'immunity_steps': 65,
        # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 200,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.01,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -81,7 +81,7 @@ env = {'width': 1500,  # arena size
        'rest_cost': 2,
 
        'capture_swim_extra_cost': 25,
-       'capture_basic_reward': 1000,
+       'capture_basic_reward': 10000,
        'predator_cost': 100,
 
        'hunger': True,
