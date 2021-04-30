@@ -34,7 +34,7 @@ class Fish:
         self.head = pymunk.Circle(self.body, env_variables['fish_head_size'], offset=(-env_variables['fish_head_size'], 0))
         self.head.color = (0, 1, 0)
         self.head.elasticity = 1.0
-        self.head.collision_type = 3
+        self.head.collision_type = 6
 
         # # Tail
         tail_coordinates = ((-env_variables['fish_head_size'], 0),

@@ -36,6 +36,7 @@ class BaseEnvironment:
         self.prey_bodies = []
         self.prey_shapes = []
 
+        self.prey_cloud_wall_shapes = []
         if self.env_variables["differential_prey"]:
             self.prey_cloud_locations = [
                 [np.random.randint(low=120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
@@ -91,8 +92,12 @@ class BaseEnvironment:
         for i, shp in enumerate(self.vegetation_shapes):
             self.space.remove(shp, shp.body)
 
+        self.prey_cloud_wall_shapes = []
+
         if self.predator_shape is not None:
             self.remove_realistic_predator()
+
+        print(len(self.prey_cloud_wall_shapes))
 
         self.prey_shapes = []
         self.prey_bodies = []
@@ -207,6 +212,30 @@ class BaseEnvironment:
                 print("Invalid Background Colour")
                 return
             self.board.create_screen(self.fish.body.position, self.env_variables["max_vis_dist"], colour)
+
+    def build_prey_cloud_walls(self):
+        for i in self.prey_cloud_locations:
+            wall_edges = [
+            pymunk.Segment(
+                    self.space.static_body,
+                    (i[0] - 150, i[1] - 150), (i[0] - 150, i[1] + 150), 1),
+                pymunk.Segment(
+                    self.space.static_body,
+                    (i[0] - 150, i[1] + 150), (i[0] + 150, i[1] + 150), 1),
+                pymunk.Segment(
+                    self.space.static_body,
+                    (i[0] + 150, i[1] + 150), (i[0] + 150, i[1] - 150), 1),
+                pymunk.Segment(
+                    self.space.static_body,
+                    (i[0] - 150, i[1] - 150), (i[0] + 150, i[1] - 150), 1)
+            ]
+            for s in wall_edges:
+                s.friction = 1.
+                s.group = 1
+                s.collision_type = 7
+                s.color = (0, 0, 0)
+                self.space.add(s)
+                self.prey_cloud_wall_shapes.append(s)
 
     def create_walls(self):
         static = [

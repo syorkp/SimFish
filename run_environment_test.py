@@ -5,7 +5,6 @@ import json
 import numpy as np
 
 from Environment.naturalistic_environment import NaturalisticEnvironment
-from Environment.virtual_virtual_reality import VirtualVirtualReality
 from Environment.controlled_stimulus_environment import ControlledStimulusEnvironment
 
 """
@@ -14,7 +13,7 @@ Due to PyCharm plots error, currently needs to be run in terminal"""
 try:
     arg = sys.argv[1]
 except IndexError:
-    arg = "prey_only"  # Default arg
+    arg = "dif_prey_test"  # Default arg
 
 stimuli = {"prey 1": [
                         {"step": 0,

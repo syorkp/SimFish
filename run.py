@@ -1472,10 +1472,117 @@ behavioural_data_config = [
 ]
 
 
+test_config = [
+{
+        "Model Name": "even_prey_ref",
+        "Environment Name": "dif_prey_test",
+        "Assay Configuration Name": "Test",
+        "Trial Number": 3,
+        "Run Mode": "Assay",
+        "Priority": 2,
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "set random seed": False,
+        "Assays": [
+            {
+                "assay id": "Prey-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 200,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": False,
+                "recordings": [],
+                "ablations": []
+            },
+            {
+                "assay id": "Prey-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 200,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": False,
+                "recordings": [],
+                "ablations": []
+            },
+            {
+                "assay id": "Prey-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 200,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": False,
+                "recordings": [],
+                "ablations": []
+            },
+            {
+                "assay id": "Prey-4",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 200,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": False,
+                "recordings": [],
+                "ablations": []
+            },
+            {
+                "assay id": "Prey-5",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 200,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": False,
+                "recordings": [],
+                "ablations": []
+            },
+            {
+                "assay id": "Prey-6",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 200,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": False,
+                "recordings": [],
+                "ablations": []
+            },
+        ]
+}
+]
+
 current_training_configuration = [
     {
-        "Model Name": "sparse_prey_fast_pred_ref",
-        "Environment Name": "sparse_prey_fast_pred",
+        "Model Name": "new_differential_prey_ref",
+        "Environment Name": "differential_prey",
         "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
@@ -1499,8 +1606,8 @@ current_training_configuration = [
         "monitor gpu": False,
     },
     {
-        "Model Name": "sparse_prey_and_static",
-        "Environment Name": "sparse_prey_and_static",
+        "Model Name": "new_differential_prey_ref",
+        "Environment Name": "differential_prey",
         "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
@@ -1525,58 +1632,6 @@ current_training_configuration = [
     },
 ]
 
-previous_training_configuration = [
-    {
-        "Model Name": "sparse_prey_ref",
-        "Environment Name": "sparse_prey",
-        "Trial Number": 1,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 10,
-                "3": 15,
-                "4": 20,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-    },
-    {
-        "Model Name": "sparse_prey_and_static",
-        "Environment Name": "sparse_prey_and_static",
-        "Trial Number": 1,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 10,
-                "3": 15,
-                "4": 20,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-    },
-]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 manager = TrialManager(current_training_configuration)

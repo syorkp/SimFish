@@ -45,6 +45,14 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.prey_pred_col = self.space.add_collision_handler(2, 5)
         self.prey_pred_col.begin = self.no_collision
 
+        # To prevent the differential wall being hit by fish
+        self.fish_prey_wall = self.space.add_collision_handler(3, 7)
+        self.fish_prey_wall.begin = self.no_collision
+        self.fish_prey_wall2 = self.space.add_collision_handler(6, 7)
+        self.fish_prey_wall2.begin = self.no_collision
+        self.pred_prey_wall2 = self.space.add_collision_handler(5, 7)
+        self.pred_prey_wall2.begin = self.no_collision
+
     def reset(self):
         super().reset()
         self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_size'],
@@ -55,6 +63,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                                                          'fish_mouth_size']))
         self.fish.body.angle = np.random.random() * 2 * np.pi
         self.fish.body.velocity = (0, 0)
+        if self.env_variables["differential_prey"]:
+            self.build_prey_cloud_walls()
 
         for i in range(self.env_variables['prey_num']):
             self.create_prey()

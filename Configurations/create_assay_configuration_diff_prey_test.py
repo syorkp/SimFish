@@ -6,10 +6,8 @@ Created on Mon Oct  5 07:52:17 2020
 @author: asaph
 """
 import json
-import os
 
 # all distances in pixels
-
 
 env = {'width': 1500,  # arena size
        'height': 1500,
@@ -31,8 +29,8 @@ env = {'width': 1500,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 30,
-       'prey_impulse': 0.1,  # impulse each prey receives per step
+       'prey_num': 20,
+       'prey_impulse': 0.3,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
@@ -55,11 +53,11 @@ env = {'width': 1500,  # arena size
        'predator_mass': 10.,
        'predator_inertia': 40.,
        'predator_size': 100.,
-       'predator_impulse': 1.0,
+       'predator_impulse': 0.5,
        'immunity_steps': 65,
        # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 200,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.05,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -81,7 +79,7 @@ env = {'width': 1500,  # arena size
        'rest_cost': 2,
 
        'capture_swim_extra_cost': 25,
-       'capture_basic_reward': 10000,
+       'capture_basic_reward': 1000,
        'predator_cost': 100,
 
        'hunger': True,
@@ -91,7 +89,6 @@ env = {'width': 1500,  # arena size
        'stress': False,
        'stress_compound': 0.9
        }
-
 
 params = {'num_actions': 10,  # size of action space
           'batch_size': 16,  # How many experience traces to use for each training step.
@@ -105,46 +102,19 @@ params = {'num_actions': 10,  # size of action space
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
           'max_epLength': 1000,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
-          'summaryLength': 2000,  # Number of epidoes to periodically save for analysis
+          'summaryLength': 1000,  # Number of epidoes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
           'rnn_dim': 512,  # number of rnn cells
           'extra_rnn': False,
-
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
-          'learning_rate': 0.0001}
-
-
-directory_name = "differential_prey"
-
-# Ensure Output File Exists
-if not os.path.exists(f"Configurations/{directory_name}/"):
-    os.makedirs(f"Configurations/{directory_name}/")
-
+          'learning_rate': 0.0001
+          }
 
 # Equal to that given in the file name.
-def save_files(n):
-    with open(f"Configurations/{directory_name}/{str(n)}_env.json", 'w') as f:
-        json.dump(env, f)
+environment_name = "dif_prey_test"
+# environment_name = "prey_only"
+with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
+    json.dump(env, f)
 
-    with open(f"Configurations/{directory_name}/{str(n)}_learning.json", 'w') as f:
-        json.dump(params, f)
-
-
-# A. Learn Predator avoidance and prey capture #
-
-# 1 Initial config
-number = 1
-save_files(number)
-number += 1
-
-# 2. Reduce mouth size
-env["fish_mouth_size"] = 4
-save_files(number)
-number += 1
-
-
-# 3. Reduce mouth size
-env["fish_mouth_size"] = 3
-save_files(number)
-number += 1
-
+with open(f"Configurations/Assay-Configs/{environment_name}_learning.json", 'w') as f:
+    json.dump(params, f)
