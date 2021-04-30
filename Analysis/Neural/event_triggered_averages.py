@@ -36,6 +36,23 @@ def get_action_triggered_average(data):
     return action_triggered_averages
 
 
+def get_ata_timeseries(data, window=5):
+    ata_timeseries = {str(i): [[0 for i in range(2*window)] for i in range(len(data["rnn state"][0][0]))] for i in range(10)}
+    action_counts = {str(i): 0 for i in range(10)}
+    neuron_baseline = [np.mean(data["rnn state"][:, :, i]) for i in range(len(data["rnn state"][0][0]))]
+    for i, a in enumerate(data["behavioural choice"]):
+        if i < window or i > len(data["behavioural choice"])-window:
+            continue
+        for n in range(data["rnn state"].shape[-1]):
+            ata_timeseries[str(a)][n] = ata_timeseries[str(a)][n] + data["rnn state"][i-window: i+window, 0, n]
+        action_counts[str(a)] += 1
+    for a in action_counts.keys():
+        if action_counts[a] > 2:
+            for i, n in enumerate(ata_timeseries[a]):
+                ata_timeseries[str(a)][i] = (((n/action_counts[a]) - neuron_baseline[i])/neuron_baseline[i]) * 100
+    return ata_timeseries
+
+
 def get_eta(data, event_name):
     if event_name == "actions":
         return get_action_triggered_average(data)
@@ -153,7 +170,6 @@ def boxplot_of_etas(atas):
     plt.show()
 
 
-
 # boxplot_of_etas(ata)
 # 4
 prey_only_4 = [33, 52, 65, 247, 311, 376, 486]
@@ -176,7 +192,9 @@ pred_only_7 = [1, 23, 25, 31, 37, 38, 39, 44, 45, 50, 57, 60, 67, 70, 71, 73, 78
 prey_in_front_7 =[4, 5, 14, 15, 17, 21, 22, 30, 35, 48, 55, 58, 63, 64, 66, 74, 75, 82, 92, 95, 97, 99, 111, 113, 116, 118, 123, 136, 137, 140, 142, 147, 148, 149, 156, 158, 167, 170, 182, 184, 194, 197, 201, 205, 207, 209, 215, 225, 226, 235, 238, 248, 252, 266, 279, 292, 294, 301, 305, 311, 316, 323, 328, 331, 333, 336, 337, 338, 339, 346, 351, 363, 366, 369, 375, 388, 390, 397, 404, 405, 410, 411, 418, 420, 425, 428, 432, 435, 436, 440, 442, 444, 450, 451, 458, 466, 469, 470, 479, 480, 484, 485, 488, 500, 502, 510]
 
 
-# data = load_data("even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-7")
+data = load_data("even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-7")
+ts = get_ata_timeseries(data)
+x = True
 # ata = get_eta(data, "actions")
 #
 # ata_subset_1 = get_for_specific_neurons(ata, prey_only_4)
