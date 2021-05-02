@@ -1472,6 +1472,38 @@ behavioural_data_config = [
 ]
 
 
+empty_environment_config = [
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "prey_low_density",
+        "Assay Configuration Name": "Empty-Environment",
+        "Trial Number": 5,
+        "Run Mode": "Assay",
+        "Priority": 2,
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "set random seed": False,
+        "Assays": [
+            {
+                "assay id": "Empty-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 100,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": False,
+                "recordings": ["behavioural choice", "position", "fish_angle", "predator", "prey_positions"],
+                "ablations": []
+            },
+            ]
+    }
+]
+
 test_config = [
 {
         "Model Name": "even_prey_ref",
@@ -1634,5 +1666,5 @@ current_training_configuration = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(current_training_configuration)
+manager = TrialManager(empty_environment_config)
 manager.run_priority_loop()
