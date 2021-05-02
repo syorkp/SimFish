@@ -92,12 +92,13 @@ class BaseEnvironment:
         for i, shp in enumerate(self.vegetation_shapes):
             self.space.remove(shp, shp.body)
 
+        for i, shp in enumerate(self.prey_cloud_wall_shapes):
+            self.space.remove(shp)
+
         self.prey_cloud_wall_shapes = []
 
         if self.predator_shape is not None:
             self.remove_realistic_predator()
-
-        print(len(self.prey_cloud_wall_shapes))
 
         self.prey_shapes = []
         self.prey_bodies = []
