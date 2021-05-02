@@ -27,6 +27,6 @@ stimulus_data1 = load_stimulus_data("even_prey_ref-4", "Prey-Full-Response-Vecto
 unit_activity1a = [[data1a["rnn state"][i - 1][0][j] for i in data1a["step"]] for j in range(512)]
 activity = unit_activity1a[273]
 
-plot_actions_and_activity(data1a, activity)
+# plot_actions_and_activity(data1a, activity)
 
 # plot_traces(unit_activity1a, stimulus_data1)

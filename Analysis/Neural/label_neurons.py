@@ -182,11 +182,11 @@ def display_selectivity_tally(selectivities, stimulus_vector):
 
 # cats = []
 #
-for i in range(4, 8):
-    full_rv = create_full_response_vector(f"even_prey_ref-{i}")
-    full_sv = create_full_stimulus_vector(f"even_prey_ref-{i}")
-    sel = label_all_units_selectivities(full_rv, full_sv)
-    display_selectivity_tally(sel, full_sv)
+# for i in range(4, 8):
+#     full_rv = create_full_response_vector(f"even_prey_ref-{i}")
+#     full_sv = create_full_stimulus_vector(f"even_prey_ref-{i}")
+#     sel = label_all_units_selectivities(full_rv, full_sv)
+#     display_selectivity_tally(sel, full_sv)
     # cat = assign_neuron_names(sel)
 #     prey_only = [i for i, name in enumerate(cat) if name == "Prey-Only"]
 #     pred_only = [i for i, name in enumerate(cat) if name == "Predator-Only"]
@@ -201,8 +201,6 @@ for i in range(4, 8):
     # cats.append(cat)
 
     # display_categories_counts(cats)
-
-
 
 # x = True
 # # neurons_to_ablate = get_with_selectivity(["Prey-Static-15", "Prey-Left-15", "Prey-Right-15"], sel)

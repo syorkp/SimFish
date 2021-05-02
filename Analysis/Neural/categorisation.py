@@ -35,7 +35,6 @@ def save_all_categorisations(model_name):
         json.dump(d, outfile, indent=4)
 
 
-
 save_all_categorisations("even_prey_ref-4")
 save_all_categorisations("even_prey_ref-5")
 save_all_categorisations("even_prey_ref-6")

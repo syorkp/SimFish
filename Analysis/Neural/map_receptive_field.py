@@ -142,7 +142,7 @@ stimulus_vector2 = get_stimulus_vector(stimulus_data2, "prey 1")
 all_vectors1 = get_all_neuron_vectors(data1, "predator 1", stimulus_data1, "rnn state")
 all_vectors2 = get_all_neuron_vectors(data2, "prey 1", stimulus_data2, "rnn state")
 
-plot_rnn_vectors_overlaid(stimulus_vector1, all_vectors2, all_vectors1, ["Prey", "Predator"])
+# plot_rnn_vectors_overlaid(stimulus_vector1, all_vectors2, all_vectors1, ["Prey", "Predator"])
 
 # plot_rnn_vectors(stimulus_vector1, all_vectors1)
 #plot_rnn_vectors(stimulus_vector2, all_vectors2)
