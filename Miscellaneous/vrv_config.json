@@ -1,268 +1,1218 @@
 [
     {
         "Model Name": "even_prey_ref",
-        "Environment Name": "natur",
-        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Environment Name": "test_square",
         "Trial Number": 5,
+        "Assay Configuration Name": "Prey-Full-Response-Vector",
         "Run Mode": "Assay",
-        "Priority": 1,
         "Realistic Bouts": true,
         "Using GPU": false,
         "monitor gpu": false,
         "set random seed": false,
+        "Priority": 1,
         "Assays": [
             {
-                "assay id": "Naturalistic-1",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": false,
-                "save frames": true,
+                "assay id": "Prey-Static-5",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
                 "random positions": false,
-                "background": null,
                 "moving": false,
-                "save stimuli": false,
                 "reset": false,
-                "collisions": true,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
                 "recordings": [
-                    "behavioural choice",
-                    "consumed",
-                    "predator",
-                    "observation",
-                    "position",
-                    "prey_positions",
-                    "predator_position",
-                    "fish_angle",
-                    "rnn state"
+                    "rnn state",
+                    "behavioural choice"
                 ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 5,
+                        "interval": 50
+                    }
+                },
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-2",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": false,
-                "save frames": false,
+                "assay id": "Prey-Static-10",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
                 "random positions": false,
-                "background": null,
                 "moving": false,
-                "save stimuli": false,
                 "reset": false,
-                "collisions": true,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
                 "recordings": [
-                    "behavioural choice",
-                    "consumed",
-                    "predator",
-                    "observation",
-                    "position",
-                    "prey_positions",
-                    "predator_position",
-                    "fish_angle",
-                    "rnn state"
+                    "rnn state",
+                    "behavioural choice"
                 ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 10,
+                        "interval": 50
+                    }
+                },
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-3",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": false,
-                "save frames": false,
+                "assay id": "Prey-Static-15",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
                 "random positions": false,
-                "background": null,
                 "moving": false,
-                "save stimuli": false,
                 "reset": false,
-                "collisions": true,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
                 "recordings": [
-                    "behavioural choice",
-                    "consumed",
-                    "predator",
-                    "observation",
-                    "position",
-                    "prey_positions",
-                    "predator_position",
-                    "fish_angle",
-                    "rnn state"
+                    "rnn state",
+                    "behavioural choice"
                 ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 15,
+                        "interval": 50
+                    }
+                },
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-4",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": false,
-                "save frames": false,
+                "assay id": "Prey-Left-5",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
                 "random positions": false,
-                "background": null,
-                "moving": false,
-                "save stimuli": false,
+                "moving": "Left",
                 "reset": false,
-                "collisions": true,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
                 "recordings": [
-                    "behavioural choice",
-                    "consumed",
-                    "predator",
-                    "observation",
-                    "position",
-                    "prey_positions",
-                    "predator_position",
-                    "fish_angle",
-                    "rnn state"
+                    "rnn state",
+                    "behavioural choice"
                 ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 5,
+                        "interval": 50
+                    }
+                },
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-5",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": false,
-                "save frames": false,
+                "assay id": "Prey-Left-10",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
                 "random positions": false,
-                "background": null,
-                "moving": false,
-                "save stimuli": false,
+                "moving": "Left",
                 "reset": false,
-                "collisions": true,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
                 "recordings": [
-                    "behavioural choice",
-                    "consumed",
-                    "predator",
-                    "observation",
-                    "position",
-                    "prey_positions",
-                    "predator_position",
-                    "fish_angle",
-                    "rnn state"
+                    "rnn state",
+                    "behavioural choice"
                 ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 10,
+                        "interval": 50
+                    }
+                },
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-6",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": false,
-                "save frames": false,
+                "assay id": "Prey-Left-15",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
                 "random positions": false,
-                "background": null,
-                "moving": false,
-                "save stimuli": false,
+                "moving": "Left",
                 "reset": false,
-                "collisions": true,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
                 "recordings": [
-                    "behavioural choice",
-                    "consumed",
-                    "predator",
-                    "observation",
-                    "position",
-                    "prey_positions",
-                    "predator_position",
-                    "fish_angle",
-                    "rnn state"
+                    "rnn state",
+                    "behavioural choice"
                 ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 15,
+                        "interval": 50
+                    }
+                },
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-7",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": false,
-                "save frames": false,
+                "assay id": "Prey-Right-5",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
                 "random positions": false,
-                "background": null,
-                "moving": false,
-                "save stimuli": false,
+                "moving": "Right",
                 "reset": false,
-                "collisions": true,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
                 "recordings": [
-                    "behavioural choice",
-                    "consumed",
-                    "predator",
-                    "observation",
-                    "position",
-                    "prey_positions",
-                    "predator_position",
-                    "fish_angle",
-                    "rnn state"
+                    "rnn state",
+                    "behavioural choice"
                 ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 5,
+                        "interval": 50
+                    }
+                },
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-8",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": false,
-                "save frames": false,
+                "assay id": "Prey-Right-10",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
                 "random positions": false,
-                "background": null,
-                "moving": false,
-                "save stimuli": false,
+                "moving": "Right",
                 "reset": false,
-                "collisions": true,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
                 "recordings": [
-                    "behavioural choice",
-                    "consumed",
-                    "predator",
-                    "observation",
-                    "position",
-                    "prey_positions",
-                    "predator_position",
-                    "fish_angle",
-                    "rnn state"
+                    "rnn state",
+                    "behavioural choice"
                 ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 10,
+                        "interval": 50
+                    }
+                },
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-9",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": false,
-                "save frames": false,
+                "assay id": "Prey-Right-15",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
                 "random positions": false,
-                "background": null,
-                "moving": false,
-                "save stimuli": false,
+                "moving": "Right",
                 "reset": false,
-                "collisions": true,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
                 "recordings": [
-                    "behavioural choice",
-                    "consumed",
-                    "predator",
-                    "observation",
-                    "position",
-                    "prey_positions",
-                    "predator_position",
-                    "fish_angle",
-                    "rnn state"
+                    "rnn state",
+                    "behavioural choice"
                 ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 15,
+                        "interval": 50
+                    }
+                },
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-10",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": false,
-                "save frames": false,
+                "assay id": "Prey-Away",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
                 "random positions": false,
-                "background": null,
-                "moving": false,
-                "save stimuli": false,
+                "moving": "Away",
                 "reset": false,
-                "collisions": true,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
                 "recordings": [
-                    "behavioural choice",
-                    "consumed",
-                    "predator",
-                    "observation",
-                    "position",
-                    "prey_positions",
-                    "predator_position",
-                    "fish_angle",
-                    "rnn state"
+                    "rnn state",
+                    "behavioural choice"
                 ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 15,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Prey-Towards",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Towards",
+                "reset": false,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 5,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Prey-Static-5",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": false,
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 5,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Prey-Static-10",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": false,
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 10,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Prey-Static-15",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": false,
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 15,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Prey-Left-5",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Left",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 5,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Prey-Left-10",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Left",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 10,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Prey-Left-15",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Left",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 15,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Prey-Right-5",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Right",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 5,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Prey-Right-15",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Right",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 15,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Prey-Right-15",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Right",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 15,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Prey-Away",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Away",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 15,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Prey-Towards",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Towards",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 550,
+                        "size": 5,
+                        "interval": 50
+                    }
+                },
                 "ablations": []
             }
         ]
     },
     {
         "Model Name": "even_prey_ref",
-        "Environment Name": 
+        "Environment Name": "test_square",
+        "Trial Number": 5,
+        "Assay Configuration Name": "Predator-Full-Response-Vector",
+        "Run Mode": "Assay",
+        "Realistic Bouts": true,
+        "Using GPU": false,
+        "monitor gpu": false,
+        "set random seed": false,
+        "Priority": 1,
+        "Assays": [
+            {
+                "assay id": "Predator-Static-40",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": false,
+                "reset": false,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 40,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Predator-Static-60",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": false,
+                "reset": false,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 60,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Predator-Static-80",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": false,
+                "reset": false,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 80,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Predator-Left-40",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Left",
+                "reset": false,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 40,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Predator-Left-60",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Left",
+                "reset": false,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 60,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Predator-Left-80",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Left",
+                "reset": false,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 80,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Predator-Right-40",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Right",
+                "reset": false,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 40,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Predator-Right-60",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Right",
+                "reset": false,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 60,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Predator-Right-80",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Right",
+                "reset": false,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 80,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Predator-Away",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Away",
+                "reset": false,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 80,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Predator-Towards",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Towards",
+                "reset": false,
+                "background": null,
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 40,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Predator-Static-40",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": false,
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 40,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Predator-Static-60",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": false,
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 60,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Predator-Static-80",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": false,
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 80,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Predator-Left-40",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Left",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 40,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Predator-Left-60",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Left",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 60,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Predator-Left-80",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Left",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 80,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Predator-Right-40",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Right",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 40,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Predator-Right-60",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Right",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 60,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Predator-Right-80",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Right",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 80,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Predator-Away",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Away",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 80,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Predator-Towards",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Towards",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 550,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 550,
+                        "size": 40,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            }
+        ]
+    }
+]

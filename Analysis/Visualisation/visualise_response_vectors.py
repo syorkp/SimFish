@@ -42,6 +42,7 @@ def format_func_pred(value, tick_number):
     else:
         return ""
 
+
 def pairwise_distances_sort(response_vector):
     # D = np.zeros((len(response_vector), len(response_vector)))
     # for i in range(len(response_vector)):
@@ -123,10 +124,11 @@ def order_vectors_by_kmeans(vectors):
     return np.array(ordered_vectors)
 
 #
-# full_rv = create_full_response_vector("even_prey_ref-5")
-# full_rv = normalise_response_vectors(full_rv)
-# full_sv = create_full_stimulus_vector("even_prey_ref-5")
-# full_rv = remove_initialisation_effects(full_rv)
+full_rv = create_full_response_vector("even_prey_ref-5")
+full_rv = normalise_response_vectors(full_rv)
+full_sv = create_full_stimulus_vector("even_prey_ref-5")
+full_rv = remove_initialisation_effects(full_rv)
+full_rv = order_vectors_by_kmeans(full_rv)
 #
 # prey_rv = order_vectors_by_kmeans(full_rv[:, :121])
 # prey_sv = full_sv[:121]
@@ -135,7 +137,7 @@ def order_vectors_by_kmeans(vectors):
 #
 # simple_rv, simple_sv = get_central_vectors(full_rv, full_sv)
 # simple_rv = order_vectors_by_kmeans(simple_rv)
-# # display_full_response_vector(full_rv, full_sv)
+display_full_response_vector(full_rv, full_sv, "Full")
 # display_full_response_vector(prey_rv, prey_sv, "Prey Stimuli")
 # display_full_response_vector(pred_rv, pred_sv, "Predator Stimuli")
 # show_full_vector_simple(simple_rv, simple_sv, "Simplified")

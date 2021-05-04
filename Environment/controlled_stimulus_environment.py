@@ -114,6 +114,10 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5)/255.)
                     plt.pause(0.0001)
 
+        self.fish.body.position = (self.env_variables['width'] / 2, self.env_variables['height'] / 2)  # TODO: Remove this if doesnt help.
+        self.fish.body.angle = 0
+        self.fish.body.velocity = (0, 0)
+
         self.num_steps += 1
         self.board.erase()
         self.draw_shapes()
@@ -245,62 +249,70 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     def update_unset_stimuli(self):
         # TODO: Still need to update so that can have multiple, sequential stimuli. Will require adding in onset into stimulus, as well as changing the baseline phase. Not useful for current requirements.
         stimuli_to_delete = []
+        init_period = 100
+
         for stimulus in self.unset_stimuli.keys():
             i = int(stimulus.split()[1]) - 1
-            if self.num_steps % self.unset_stimuli[stimulus]["interval"] == 0:
-                self.stimuli_information[stimulus]["Initialisation"] = self.num_steps
+            if self.num_steps < init_period:
                 if "prey" in stimulus:
                     self.prey_bodies[i].position = (10, 10)
                 elif "predator" in stimulus:
                     self.predator_bodies[i].position = (10, 10)
-            elif self.num_steps % self.unset_stimuli[stimulus]["interval"] == round(self.unset_stimuli[stimulus]["interval"]/3):
-                self.stimuli_information[stimulus]["Pre-onset"] = self.num_steps
-                if "prey" in stimulus:
-                    self.prey_bodies[i].position = (10, 10)
-                elif "predator" in stimulus:
-                    self.predator_bodies[i].position = (10, 10)
-            elif self.num_steps % self.unset_stimuli[stimulus]["interval"] == round(2 * self.unset_stimuli[stimulus]["interval"]/3):
-                if self.unset_stimuli[stimulus]["steps"] > self.num_steps:
-                    d = self.get_distance_for_size(stimulus, self.unset_stimuli[stimulus]["size"])
-                    theta = self.get_new_angle(self.unset_stimuli[stimulus]["steps"], self.num_steps)
-                    self.place_on_curve(stimulus, i, d, theta)
-                    self.stimuli_information[stimulus]["Onset"] = self.num_steps
-                    self.stimuli_information[stimulus]["Angle"] = theta
-                    self.stimuli_information[stimulus]["Size"] = self.unset_stimuli[stimulus]["size"]
+            else:
+                if (self.num_steps-init_period) % self.unset_stimuli[stimulus]["interval"] == 0:
+                    self.stimuli_information[stimulus]["Initialisation"] = self.num_steps - init_period
+                    if "prey" in stimulus:
+                        self.prey_bodies[i].position = (10, 10)
+                    elif "predator" in stimulus:
+                        self.predator_bodies[i].position = (10, 10)
+                elif (self.num_steps-init_period) % self.unset_stimuli[stimulus]["interval"] == round(self.unset_stimuli[stimulus]["interval"]/3):
+                    self.stimuli_information[stimulus]["Pre-onset"] = self.num_steps - init_period
+                    if "prey" in stimulus:
+                        self.prey_bodies[i].position = (10, 10)
+                    elif "predator" in stimulus:
+                        self.predator_bodies[i].position = (10, 10)
+                elif (self.num_steps-init_period) % self.unset_stimuli[stimulus]["interval"] == round(2 * self.unset_stimuli[stimulus]["interval"]/3):
+                    if self.unset_stimuli[stimulus]["steps"]-init_period > (self.num_steps-init_period):
+                        d = self.get_distance_for_size(stimulus, self.unset_stimuli[stimulus]["size"])
+                        theta = self.get_new_angle(self.unset_stimuli[stimulus]["steps"]-init_period, (self.num_steps-init_period))
+                        self.place_on_curve(stimulus, i, d, theta)
+                        self.stimuli_information[stimulus]["Onset"] = (self.num_steps-init_period)
+                        self.stimuli_information[stimulus]["Angle"] = theta
+                        self.stimuli_information[stimulus]["Size"] = self.unset_stimuli[stimulus]["size"]
 
-                    if self.moving_stimuli:
+                        if self.moving_stimuli:
+                            if self.moving_stimuli == "Left" or self.moving_stimuli == "Right":
+                                self.stimuli_information[stimulus]["Direction"] = self.moving_stimuli
+                                time = self.unset_stimuli[stimulus]["interval"]/3
+                                theta2 = self.get_new_angle(self.unset_stimuli[stimulus]["steps"]-init_period, (self.num_steps-init_period) + self.unset_stimuli[stimulus]["interval"]/3)
+                                d_moved = self.get_distance_moved_on_arc(theta, theta2, d)
+                                self.stimuli_information[stimulus]["Velocity"] = d_moved/time
+                            elif self.moving_stimuli == "Towards" or self.moving_stimuli == "Away":
+                                self.stimuli_information[stimulus]["Direction"] = self.moving_stimuli
+                                time = self.unset_stimuli[stimulus]["interval"] / 3
+                                d2 = self.get_new_distance(stimulus, self.unset_stimuli[stimulus]["interval"], round((self.num_steps-init_period) + self.unset_stimuli[stimulus]["interval"]/3))
+                                d_moved = abs(d2 - d)
+                                self.stimuli_information[stimulus]["Velocity"] = d_moved/time
+                            else:
+                                print("Invalid *moving* parameter given")
+                    else:
+                        self.stimuli_information[stimulus]["Finish"] = (self.num_steps-init_period)
+                        stimuli_to_delete.append(stimulus)
+                else:
+                    if self.moving_stimuli and self.unset_stimuli[stimulus]["interval"] * 2/3 < (self.num_steps-init_period) % self.unset_stimuli[stimulus]["interval"]:
                         if self.moving_stimuli == "Left" or self.moving_stimuli == "Right":
-                            self.stimuli_information[stimulus]["Direction"] = self.moving_stimuli
-                            time = self.unset_stimuli[stimulus]["interval"]/3
-                            theta2 = self.get_new_angle(self.unset_stimuli[stimulus]["steps"], self.num_steps + self.unset_stimuli[stimulus]["interval"]/3)
-                            d_moved = self.get_distance_moved_on_arc(theta, theta2, d)
-                            self.stimuli_information[stimulus]["Velocity"] = d_moved/time
+                            d = self.get_distance_for_size(stimulus, self.unset_stimuli[stimulus]["size"])
+                            theta = self.get_new_angle(self.unset_stimuli[stimulus]["steps"]-init_period, (self.num_steps-init_period))
+                            self.place_on_curve(stimulus, i, d, theta)
                         elif self.moving_stimuli == "Towards" or self.moving_stimuli == "Away":
-                            self.stimuli_information[stimulus]["Direction"] = self.moving_stimuli
-                            time = self.unset_stimuli[stimulus]["interval"] / 3
-                            d2 = self.get_new_distance(stimulus, self.unset_stimuli[stimulus]["interval"], round(self.num_steps + self.unset_stimuli[stimulus]["interval"]/3))
-                            d_moved = abs(d2 - d)
-                            self.stimuli_information[stimulus]["Velocity"] = d_moved/time
+                            d = self.get_new_distance(stimulus, self.unset_stimuli[stimulus]["interval"], (self.num_steps-init_period))
+                            steps_for_angle = round(((self.num_steps-init_period)//self.unset_stimuli[stimulus]["interval"] * self.unset_stimuli[stimulus]["interval"]) + (2 * self.unset_stimuli[stimulus]["interval"] / 3))
+                            theta = self.get_new_angle(self.unset_stimuli[stimulus]["steps"]-100, steps_for_angle)
+                            self.place_on_curve(stimulus, i, d, theta)
                         else:
                             print("Invalid *moving* parameter given")
-                else:
-                    self.stimuli_information[stimulus]["Finish"] = self.num_steps
-                    stimuli_to_delete.append(stimulus)
-            else:
-                if self.moving_stimuli and self.unset_stimuli[stimulus]["interval"] * 2/3 < self.num_steps % self.unset_stimuli[stimulus]["interval"]:
-                    if self.moving_stimuli == "Left" or self.moving_stimuli == "Right":
-                        d = self.get_distance_for_size(stimulus, self.unset_stimuli[stimulus]["size"])
-                        theta = self.get_new_angle(self.unset_stimuli[stimulus]["steps"], self.num_steps)
-                        self.place_on_curve(stimulus, i, d, theta)
-                    elif self.moving_stimuli == "Towards" or self.moving_stimuli == "Away":
-                        d = self.get_new_distance(stimulus, self.unset_stimuli[stimulus]["interval"], self.num_steps)
-                        steps_for_angle = round((self.num_steps//self.unset_stimuli[stimulus]["interval"] * self.unset_stimuli[stimulus]["interval"]) + (2 * self.unset_stimuli[stimulus]["interval"] / 3))
-                        theta = self.get_new_angle(self.unset_stimuli[stimulus]["steps"], steps_for_angle)
-                        self.place_on_curve(stimulus, i, d, theta)
-                    else:
-                        print("Invalid *moving* parameter given")
 
-                self.stimuli_information[stimulus] = {}
+                    self.stimuli_information[stimulus] = {}
         for stimulus in stimuli_to_delete:
             del self.unset_stimuli[stimulus]
 

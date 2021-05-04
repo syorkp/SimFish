@@ -8,9 +8,16 @@ from Analysis.load_data import load_data
 def get_stimulus_vector(stimulus_data, stimulus):
     """Returns a list of all the stimulus features presented"""
     angles = []
+    if stimulus_data[0][list(stimulus_data[0].keys())[0]]['Angle'] < 0:
+        reverse = True
+    else:
+        reverse = False
+
     for period in stimulus_data:
         angles.append(period[stimulus]["Angle"])
 
+    if reverse:
+        angles.reverse()
     return angles
 
 
@@ -34,12 +41,20 @@ def get_conv_neuron_vectors(all_data, stimulus, stimulus_data, neuron_type):
     return vectors
 
 
-def get_neuron_vector(neural_data, stimulus_data, stimulus):
+def get_neuron_vector(neural_data, stimulus_data, stimulus, reverse=False):
     vector = []
+    if stimulus_data[0][list(stimulus_data[0].keys())[0]]['Angle'] < 0:
+        reverse = True
+    else:
+        reverse = False
+
     for period in stimulus_data:
         interval = period[stimulus]["Onset"] - period[stimulus]["Pre-onset"]
         vector.append(calculate_scalar_value(neural_data, period[stimulus]["Pre-onset"], period[stimulus]["Onset"],
                                              period[stimulus]["Onset"] + interval))
+
+    if reverse:
+        vector.reverse()
     return vector
 
 
@@ -105,7 +120,6 @@ def create_full_stimulus_vector(model_name, background=False):
 def create_full_response_vector(model_name, background=False):
     # Creates the full 484 dimensional response vector.
     response_vectors = [[] for i in range(512)]
-    file_precursors = ["Prey", "Predator", "Background-Prey", "Background-Predator"]
     if background:
         file_precursors = ["Prey", "Predator", "Background-Prey", "Background-Predator"]
     else:
@@ -136,7 +150,7 @@ def create_full_response_vector(model_name, background=False):
     return response_vectors
 
 
-# full_rv = create_full_response_vector("even_prey_ref-5")
+full_rv = create_full_response_vector("even_prey_ref-5")
 # x = True
 
 

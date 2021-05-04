@@ -1,0 +1,43 @@
+[
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "test_square",
+        "Trial Number": 5,
+        "Assay Configuration Name": "TEST",
+        "Run Mode": "Assay",
+        "Realistic Bouts": true,
+        "Using GPU": false,
+        "monitor gpu": false,
+        "set random seed": false,
+        "Priority": 1,
+        "Assays": [
+            {
+                "assay id": "Prey-Static-5",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": false,
+                "reset": false,
+                "background": null,
+                "reset interval": 100,
+                "duration": 650,
+                "save frames": true,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "predator 1": {
+                        "steps": 650,
+                        "size": 40,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            }
+        ]
+    }
+]
