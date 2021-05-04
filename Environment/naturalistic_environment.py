@@ -64,6 +64,16 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.fish.body.angle = np.random.random() * 2 * np.pi
         self.fish.body.velocity = (0, 0)
         if self.env_variables["differential_prey"]:
+            self.prey_cloud_locations = [
+                [np.random.randint(low=120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
+                                   high=self.env_variables['width'] - (
+                                           self.env_variables['prey_size'] + self.env_variables[
+                                       'fish_mouth_size']) - 120),
+                 np.random.randint(low=120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
+                                   high=self.env_variables['height'] - (
+                                           self.env_variables['prey_size'] + self.env_variables[
+                                       'fish_mouth_size']) - 120)]
+                for cloud in range(self.env_variables["prey_cloud_num"])]
             self.build_prey_cloud_walls()
 
         for i in range(self.env_variables['prey_num']):

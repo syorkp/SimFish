@@ -1615,15 +1615,15 @@ current_training_configuration = [
     {
         "Model Name": "new_differential_prey_ref",
         "Environment Name": "differential_prey",
-        "Trial Number": 1,
+        "Trial Number": 3,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
             "Prey Caught": {
-                "2": 10,
-                "3": 15,
-                "4": 20,
+                "2": 2,
+                "3": 3,
+                "4": 4,
             },
             "Predators Avoided": {
             },
@@ -1640,15 +1640,40 @@ current_training_configuration = [
     {
         "Model Name": "new_differential_prey_ref",
         "Environment Name": "differential_prey",
-        "Trial Number": 2,
+        "Trial Number": 4,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
             "Prey Caught": {
-                "2": 10,
-                "3": 15,
-                "4": 20,
+                "2": 2,
+                "3": 3,
+                "4": 4,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "new_differential_prey_ref",
+        "Environment Name": "differential_prey",
+        "Trial Number": 5,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 2,
+                "3": 3,
+                "4": 4,
             },
             "Predators Avoided": {
             },
@@ -1666,5 +1691,5 @@ current_training_configuration = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(empty_environment_config)
+manager = TrialManager(current_training_configuration)
 manager.run_priority_loop()
