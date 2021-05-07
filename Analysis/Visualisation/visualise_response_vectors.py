@@ -1,7 +1,14 @@
 import matplotlib.pyplot as plt
-import numpy
 from matplotlib import colors
 import numpy as np
+import json
+from collections import Counter
+import seaborn as sns
+import pandas as pd
+
+from sklearn.cluster import KMeans, AgglomerativeClustering
+import scipy.cluster.hierarchy as sch
+from sklearn.metrics import silhouette_score
 
 from Analysis.Neural.calculate_vrv import create_full_response_vector, create_full_stimulus_vector
 from Analysis.Neural.label_neurons import normalise_response_vectors
@@ -56,6 +63,20 @@ def pairwise_distances_sort(response_vector):
     return response_vector[idx, :]
 
 
+def show_full_vector_simple_abs(response_vector, stimulus_vector, title):
+    fig, ax = plt.subplots()
+    fig.set_size_inches(18.5, 20)
+    # idex = np.lexsort([response_vector[:, 0], response_vector[:, 11]])
+    # response_vector = response_vector[idex, :]
+    #response_vector = sorted(response_vector, key=lambda x: sum(x[:]))
+    # response_vector = pairwise_distances_sort(response_vector)
+    ax.set_title(title, fontsize=45)
+    ax.pcolor(response_vector, cmap='OrRd')
+    ax.set_xticks(np.linspace(0.5, len(stimulus_vector)-0.5, len(stimulus_vector)))
+    ax.set_xticklabels(stimulus_vector, rotation='vertical')
+    plt.show()
+
+
 def show_full_vector_simple(response_vector, stimulus_vector, title):
     fig, ax = plt.subplots()
     fig.set_size_inches(18.5, 20)
@@ -70,8 +91,9 @@ def show_full_vector_simple(response_vector, stimulus_vector, title):
     plt.show()
 
 
-def display_full_response_vector(response_vector, stimulus_vector, title):
+def display_full_response_vector(response_vector, stimulus_vector, title, transition_points=None):
     fig, ax = plt.subplots()
+    # fig.set_size_inches(18.5, 80)
     fig.set_size_inches(18.5, 20)
     # response_vector = sorted(response_vector, key=lambda x: sum(x[:]))
     ax.set_title(title, fontsize=45)
@@ -86,6 +108,22 @@ def display_full_response_vector(response_vector, stimulus_vector, title):
 
     ax.tick_params(labelsize=15)
     ax.set_xticks(range(0, len(stimulus_vector), 11), minor=True)
+    if transition_points:
+        transition_points = [0] + transition_points
+        # cluster_labels = [i for i in range(len(transition_points))]
+
+        def format_func_cluster(value, tick):
+            for i, tp in enumerate(transition_points):
+                if value < tp:
+                    return i-1
+            return len(transition_points) - 1
+
+        ax.set_yticks(transition_points, minor=True)
+        ax2 = ax.secondary_yaxis("right")
+        ax2.yaxis.set_major_locator(plt.FixedLocator(transition_points))
+        ax2.yaxis.set_major_formatter(plt.FuncFormatter(format_func_cluster))
+        ax2.set_ylabel("Cluster")
+
     ax.set_xlabel("Stimulus and Position", fontsize=35)
     ax.set_ylabel("Neuron", fontsize=35)
     ax.xaxis.grid(linewidth=1, color="black")
@@ -95,7 +133,6 @@ def display_full_response_vector(response_vector, stimulus_vector, title):
 
 def get_central_vectors(response_vector, stimulus_vector):
     new_response_vector = []
-
     for n, neuron in enumerate(response_vector):
         new_stimulus_vector = []
         new_neuron_vector = []
@@ -111,33 +148,170 @@ def get_central_vectors(response_vector, stimulus_vector):
     return np.array(new_response_vector), new_stimulus_vector
 
 
-from sklearn.cluster import KMeans
+def reduce_vector_dimensionality(response_vector, stimulus_vector):
+    """
+    Uses the sum of the absolute value of each point in vector to compute a responsiveness measure to each stimulus.
+    """
+    new_response_vector = []
+    for n, neuron in enumerate(response_vector):
+        new_stimulus_vector = []
+        new_neuron_vector = []
+        for i, stimulus in enumerate(stimulus_vector):
+            if i % 11 == 5:
+                stimulus = stimulus.split("-")[:-1]
+                new_name = ""
+                for s in stimulus:
+                    new_name = new_name + "-" + s
+                new_stimulus_vector.append(new_name)
+                new_neuron_vector.append(sum([abs(v) for v in response_vector[n][i: i+11]]))
+        new_response_vector.append(new_neuron_vector)
+    return np.array(new_response_vector), new_stimulus_vector
 
-def order_vectors_by_kmeans(vectors):
-    ordered_vectors = []
-    kmeans = KMeans(n_clusters=30).fit(vectors)
+
+def get_small_size_selectivity(response_vector):
+    new_response_vector = []
+    for neuron in response_vector:
+        if sum(neuron[0:11] + neuron[33:44] + neuron[77:88]) > 1:
+            new_response_vector.append(neuron)
+    return new_response_vector
+
+
+def order_vectors_by_kmeans(vectors, optimal_num=None):
+    # Clustering
+    sil = []
+    if optimal_num is None:
+        for i in range(10, 50):
+            kmeans = KMeans(n_clusters=i).fit(vectors)
+            lab = kmeans.labels_
+            sil.append(silhouette_score(vectors, lab, metric='euclidean'))
+        optimal_num = sil.index(min(sil)) + 1
+    kmeans = KMeans(n_clusters=optimal_num).fit(vectors)
     lab = kmeans.labels_
-    for cluster in set(lab):
+
+    # Reordering
+    ordered_vectors = []
+    all_clusters = set(lab)
+    transition_points = []
+    for cluster in all_clusters:
         for i, neuron in enumerate(vectors):
             if lab[i] == cluster:
                 ordered_vectors.append(neuron)
-    return np.array(ordered_vectors)
+        transition_points.append(len(ordered_vectors))
+    return np.array(ordered_vectors), transition_points, lab
 
-#
+
+def order_vectors_by_agglomerative(vectors, optimal_num=None):
+    # Clustering
+    # dendrogram = sch.dendrogram(sch.linkage(vectors, method='ward'))
+    sil = []
+    if optimal_num is None:
+        for i in range(10, 50):
+            hc = AgglomerativeClustering(n_clusters=i, affinity = 'euclidean', linkage = 'ward')
+            y_hc = hc.fit_predict(vectors)
+            sil.append(silhouette_score(vectors, y_hc, metric='euclidean'))
+        optimal_num = sil.index(min(sil)) + 1
+    hc = AgglomerativeClustering(n_clusters=optimal_num, affinity='euclidean', linkage='ward')
+    y_hc = hc.fit_predict(vectors)
+
+    # Ordering
+    ordered_vectors = []
+    all_clusters = set(y_hc)
+    transition_points = []
+    for cluster in all_clusters:
+        for i, neuron in enumerate(vectors):
+            if y_hc[i] == cluster:
+                ordered_vectors.append(neuron)
+        transition_points.append(len(ordered_vectors))
+    return np.array(ordered_vectors), transition_points[:-1], y_hc
+
+
+def knn_clustering_assign_categories(response_vectors, stimulus_vector, optimal_num):
+    all_vectors = []
+
+    for vector in response_vectors:
+        all_vectors += vector
+    all_vectors = normalise_response_vectors(all_vectors)
+
+    kmeans = KMeans(n_clusters=optimal_num).fit(all_vectors)
+    lab = kmeans.labels_
+    model_labels = []
+    for i in range(0, len(all_vectors), len(response_vectors[0])):
+        labels = lab[i:i+len(response_vectors[0])]
+        model_labels.append(labels)
+
+    # Reordering
+    ordered_vectors = []
+    all_clusters = set(lab)
+    transition_points = []
+    for cluster in all_clusters:
+        for i, neuron in enumerate(all_vectors):
+            if lab[i] == cluster:
+                ordered_vectors.append(neuron)
+        transition_points.append(len(ordered_vectors))
+    display_full_response_vector(ordered_vectors, stimulus_vector, "Prey Stimuli", transition_points)
+
+    return model_labels
+
+
+def save_neuron_groups(model_names, neuron_groups, group_number):
+    data = {model: {str(i): [] for i in range(group_number)} for model in model_names}
+    for i, model in enumerate(model_names):
+        for j, neuron in enumerate(neuron_groups[i]):
+            data[model][str(neuron)].append(j)
+    with open(f"neuron_groups.json", 'w') as f:
+        json.dump(data, f, indent=4)
+
+
+def display_class_counts(model_names, neuron_groups, group_number):
+    data = [Counter(group) for group in neuron_groups]
+    tallies = [[data[j][i] for j in range(4)] for i in range(21)]
+    d_tallies = pd.DataFrame({str(i): tal for i, tal in enumerate(tallies)})
+    plt.boxplot(tallies)
+    plt.show()
+    sns.stripplot(data=d_tallies)
+    plt.axhline(0, ls="--")
+    plt.show()
+
+# Do clustering over many models:
 full_rv = create_full_response_vector("even_prey_ref-5")
-full_rv = normalise_response_vectors(full_rv)
+full_rv2 = create_full_response_vector("even_prey_ref-6")
+full_rv3 = create_full_response_vector("even_prey_ref-7")
+full_rv4 = create_full_response_vector("even_prey_ref-4")
+
 full_sv = create_full_stimulus_vector("even_prey_ref-5")
-full_rv = remove_initialisation_effects(full_rv)
-full_rv = order_vectors_by_kmeans(full_rv)
-#
-# prey_rv = order_vectors_by_kmeans(full_rv[:, :121])
-# prey_sv = full_sv[:121]
+
+model_l = knn_clustering_assign_categories([full_rv, full_rv2, full_rv3, full_rv4], full_sv, 21)
+save_neuron_groups(["even_prey_ref-5", "even_prey_ref-6", "even_prey_ref-7", "even_prey_ref-4",], model_l, 21)
+display_class_counts(["even_prey_ref-5", "even_prey_ref-6", "even_prey_ref-7", "even_prey_ref-4",], model_l, 21)
+prey_sv = full_sv[:121]
+
+many_rv = np.array(full_rv + full_rv2 + full_rv3 + full_rv4)
+many_rv = normalise_response_vectors(many_rv)
+many_rv, transition_points, neuron_labels = order_vectors_by_kmeans(many_rv, 21)
+display_full_response_vector(many_rv, full_sv, "Prey Stimuli", transition_points)
+
+# Single model:
+full_rv = normalise_response_vectors(full_rv)
+
+
+# full_rv = remove_initialisation_effects(full_rv)
+# full_rv = order_vectors_by_kmeans(full_rv)
+# display_full_response_vector(full_rv, full_sv, "Full")
+prey_rv, transition_points, neuron_labels = order_vectors_by_agglomerative(full_rv[:, :121], 21)
+display_full_response_vector(prey_rv, prey_sv, "Prey Stimuli", transition_points)
+
+prey_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv[:, :121], 21)
+display_full_response_vector(prey_rv, prey_sv, "Prey Stimuli", transition_points)
+
+# prey_rv, transition_points, neuron_labels = order_vectors_by_agglomerative(full_rv[:, :121])
+# prey_rv = get_small_size_selectivity(prey_rv)
 # pred_rv = order_vectors_by_kmeans(full_rv[:, 121:])
 # pred_sv = full_sv[121:]
 #
 # simple_rv, simple_sv = get_central_vectors(full_rv, full_sv)
+# simple_rv, simple_sv = reduce_vector_dimensionality(full_rv, full_sv)
 # simple_rv = order_vectors_by_kmeans(simple_rv)
-display_full_response_vector(full_rv, full_sv, "Full")
-# display_full_response_vector(prey_rv, prey_sv, "Prey Stimuli")
+# display_full_response_vector(full_rv, full_sv, "Full")
+display_full_response_vector(prey_rv, prey_sv, "Prey Stimuli", transition_points)
 # display_full_response_vector(pred_rv, pred_sv, "Predator Stimuli")
-# show_full_vector_simple(simple_rv, simple_sv, "Simplified")
+# show_full_vector_simple_abs(simple_rv, simple_sv, "Simplified")

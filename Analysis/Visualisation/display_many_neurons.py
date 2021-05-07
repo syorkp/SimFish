@@ -124,6 +124,9 @@ def plot_multiple_traces(neuron_data_list, stimulus_data_list=None, trace_names=
         create_plot_multiple_traces(neuron_subset_data, i + 1, len(neuron_subset_data[0]), i * n_per_plot,
                                     stimulus_data_list, trace_names=trace_names)
 
+data1 = load_data("even_prey_ref-5", "Empty-Environment", "Empty-1")
+unit_activity1 = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
+plot_traces(unit_activity1)
 
 # data1 = load_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
 # data2 = load_data("even_prey_ref-5", "For-Traces", "Predator-Static-40")

@@ -1,0 +1,947 @@
+[
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "non_env",
+        "Trial Number": 5,
+        "Assay Configuration Name": "Ablation-Test-['test']",
+        "Run Mode": "Assay",
+        "Realistic Bouts": true,
+        "Using GPU": false,
+        "monitor gpu": false,
+        "Priority": 1,
+        "set random seed": true,
+        "Assays": [
+            {
+                "assay id": "Ablated-10-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": []
+            },
+            {
+                "assay id": "Ablated-10-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": []
+            },
+            {
+                "assay id": "Ablated-10-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": []
+            }
+        ]
+    },
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "non_env",
+        "Trial Number": 5,
+        "Assay Configuration Name": "Ablation-Test-['test']",
+        "Run Mode": "Assay",
+        "Realistic Bouts": true,
+        "Using GPU": false,
+        "monitor gpu": false,
+        "Priority": 1,
+        "set random seed": true,
+        "Assays": [
+            {
+                "assay id": "Ablated-20-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": []
+            },
+            {
+                "assay id": "Ablated-20-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": []
+            },
+            {
+                "assay id": "Ablated-20-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": []
+            }
+        ]
+    },
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "non_env",
+        "Trial Number": 5,
+        "Assay Configuration Name": "Ablation-Test-['test']",
+        "Run Mode": "Assay",
+        "Realistic Bouts": true,
+        "Using GPU": false,
+        "monitor gpu": false,
+        "Priority": 1,
+        "set random seed": true,
+        "Assays": [
+            {
+                "assay id": "Ablated-30-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0
+                ]
+            },
+            {
+                "assay id": "Ablated-30-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0
+                ]
+            },
+            {
+                "assay id": "Ablated-30-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "non_env",
+        "Trial Number": 5,
+        "Assay Configuration Name": "Ablation-Test-['test']",
+        "Run Mode": "Assay",
+        "Realistic Bouts": true,
+        "Using GPU": false,
+        "monitor gpu": false,
+        "Priority": 1,
+        "set random seed": true,
+        "Assays": [
+            {
+                "assay id": "Ablated-40-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0
+                ]
+            },
+            {
+                "assay id": "Ablated-40-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0
+                ]
+            },
+            {
+                "assay id": "Ablated-40-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0
+                ]
+            }
+        ]
+    },
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "non_env",
+        "Trial Number": 5,
+        "Assay Configuration Name": "Ablation-Test-['test']",
+        "Run Mode": "Assay",
+        "Realistic Bouts": true,
+        "Using GPU": false,
+        "monitor gpu": false,
+        "Priority": 1,
+        "set random seed": true,
+        "Assays": [
+            {
+                "assay id": "Ablated-50-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "assay id": "Ablated-50-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "assay id": "Ablated-50-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "non_env",
+        "Trial Number": 5,
+        "Assay Configuration Name": "Ablation-Test-['test']",
+        "Run Mode": "Assay",
+        "Realistic Bouts": true,
+        "Using GPU": false,
+        "monitor gpu": false,
+        "Priority": 1,
+        "set random seed": true,
+        "Assays": [
+            {
+                "assay id": "Ablated-60-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "assay id": "Ablated-60-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "assay id": "Ablated-60-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "non_env",
+        "Trial Number": 5,
+        "Assay Configuration Name": "Ablation-Test-['test']",
+        "Run Mode": "Assay",
+        "Realistic Bouts": true,
+        "Using GPU": false,
+        "monitor gpu": false,
+        "Priority": 1,
+        "set random seed": true,
+        "Assays": [
+            {
+                "assay id": "Ablated-70-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "assay id": "Ablated-70-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "assay id": "Ablated-70-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1
+                ]
+            }
+        ]
+    },
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "non_env",
+        "Trial Number": 5,
+        "Assay Configuration Name": "Ablation-Test-['test']",
+        "Run Mode": "Assay",
+        "Realistic Bouts": true,
+        "Using GPU": false,
+        "monitor gpu": false,
+        "Priority": 1,
+        "set random seed": true,
+        "Assays": [
+            {
+                "assay id": "Ablated-80-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1,
+                    2
+                ]
+            },
+            {
+                "assay id": "Ablated-80-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1,
+                    2
+                ]
+            },
+            {
+                "assay id": "Ablated-80-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1,
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "non_env",
+        "Trial Number": 5,
+        "Assay Configuration Name": "Ablation-Test-['test']",
+        "Run Mode": "Assay",
+        "Realistic Bouts": true,
+        "Using GPU": false,
+        "monitor gpu": false,
+        "Priority": 1,
+        "set random seed": true,
+        "Assays": [
+            {
+                "assay id": "Ablated-90-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1,
+                    2
+                ]
+            },
+            {
+                "assay id": "Ablated-90-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1,
+                    2
+                ]
+            },
+            {
+                "assay id": "Ablated-90-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1,
+                    2
+                ]
+            }
+        ]
+    },
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "non_env",
+        "Trial Number": 5,
+        "Assay Configuration Name": "Ablation-Test-['test']",
+        "Run Mode": "Assay",
+        "Realistic Bouts": true,
+        "Using GPU": false,
+        "monitor gpu": false,
+        "Priority": 1,
+        "set random seed": true,
+        "Assays": [
+            {
+                "assay id": "Ablated-100-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1,
+                    2,
+                    3
+                ]
+            },
+            {
+                "assay id": "Ablated-100-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1,
+                    2,
+                    3
+                ]
+            },
+            {
+                "assay id": "Ablated-100-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    0,
+                    1,
+                    2,
+                    3
+                ]
+            }
+        ]
+    },
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "non_env",
+        "Trial Number": 5,
+        "Assay Configuration Name": "Ablation-Test-['test']",
+        "Run Mode": "Assay",
+        "Realistic Bouts": true,
+        "Using GPU": false,
+        "monitor gpu": false,
+        "Priority": 1,
+        "set random seed": true,
+        "Assays": [
+            {
+                "assay id": "Control-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": null
+            },
+            {
+                "assay id": "Control-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": null
+            },
+            {
+                "assay id": "Control-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": null
+            }
+        ]
+    },
+    {
+        "Model Name": "even_prey_ref",
+        "Environment Name": "non_env",
+        "Trial Number": 5,
+        "Assay Configuration Name": "Ablation-Test-['test']",
+        "Run Mode": "Assay",
+        "Realistic Bouts": true,
+        "Using GPU": false,
+        "monitor gpu": false,
+        "Priority": 1,
+        "set random seed": true,
+        "Assays": [
+            {
+                "assay id": "Random-Control-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    266,
+                    467,
+                    182,
+                    421
+                ]
+            },
+            {
+                "assay id": "Random-Control-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    421,
+                    182,
+                    239,
+                    22
+                ]
+            },
+            {
+                "assay id": "Random-Control-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": false,
+                "save frames": true,
+                "random positions": false,
+                "background": null,
+                "moving": false,
+                "save stimuli": false,
+                "reset": false,
+                "collisions": true,
+                "recordings": [
+                    "consumed",
+                    "predator",
+                    "behavioural choice"
+                ],
+                "ablations": [
+                    79,
+                    285,
+                    141,
+                    28
+                ]
+            }
+        ]
+    }
+]

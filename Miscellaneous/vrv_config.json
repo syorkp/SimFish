@@ -21,7 +21,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -31,7 +31,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 5,
                         "interval": 50
                     }
@@ -48,7 +48,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -58,7 +58,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 10,
                         "interval": 50
                     }
@@ -75,7 +75,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -85,7 +85,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 15,
                         "interval": 50
                     }
@@ -102,7 +102,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -112,7 +112,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 5,
                         "interval": 50
                     }
@@ -129,7 +129,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -139,7 +139,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 10,
                         "interval": 50
                     }
@@ -156,7 +156,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -166,7 +166,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 15,
                         "interval": 50
                     }
@@ -183,7 +183,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -193,7 +193,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 5,
                         "interval": 50
                     }
@@ -210,7 +210,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -220,7 +220,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 10,
                         "interval": 50
                     }
@@ -237,7 +237,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -247,7 +247,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 15,
                         "interval": 50
                     }
@@ -264,7 +264,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -274,7 +274,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 15,
                         "interval": 50
                     }
@@ -291,7 +291,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -301,7 +301,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 5,
                         "interval": 50
                     }
@@ -318,7 +318,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -328,7 +328,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 5,
                         "interval": 50
                     }
@@ -345,7 +345,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -355,7 +355,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 10,
                         "interval": 50
                     }
@@ -372,7 +372,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -382,7 +382,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 15,
                         "interval": 50
                     }
@@ -399,7 +399,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -409,7 +409,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 5,
                         "interval": 50
                     }
@@ -426,7 +426,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -436,7 +436,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 10,
                         "interval": 50
                     }
@@ -453,7 +453,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -463,7 +463,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 15,
                         "interval": 50
                     }
@@ -480,7 +480,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -490,7 +490,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 5,
                         "interval": 50
                     }
@@ -507,7 +507,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -517,7 +517,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 15,
                         "interval": 50
                     }
@@ -534,7 +534,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -544,7 +544,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 15,
                         "interval": 50
                     }
@@ -561,7 +561,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -571,7 +571,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 15,
                         "interval": 50
                     }
@@ -588,7 +588,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -598,7 +598,7 @@
                 ],
                 "stimuli": {
                     "prey 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 5,
                         "interval": 50
                     }
@@ -629,7 +629,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -639,7 +639,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 40,
                         "interval": 50
                     }
@@ -656,7 +656,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -666,7 +666,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 60,
                         "interval": 50
                     }
@@ -683,7 +683,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -693,7 +693,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 80,
                         "interval": 50
                     }
@@ -710,7 +710,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -720,7 +720,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 40,
                         "interval": 50
                     }
@@ -737,7 +737,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -747,7 +747,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 60,
                         "interval": 50
                     }
@@ -764,7 +764,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -774,7 +774,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 80,
                         "interval": 50
                     }
@@ -791,7 +791,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -801,7 +801,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 40,
                         "interval": 50
                     }
@@ -818,7 +818,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -828,7 +828,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 60,
                         "interval": 50
                     }
@@ -845,7 +845,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -855,7 +855,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 80,
                         "interval": 50
                     }
@@ -872,7 +872,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -882,7 +882,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 80,
                         "interval": 50
                     }
@@ -899,7 +899,7 @@
                 "reset": false,
                 "background": null,
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -909,7 +909,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 40,
                         "interval": 50
                     }
@@ -926,7 +926,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -936,7 +936,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 40,
                         "interval": 50
                     }
@@ -953,7 +953,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -963,7 +963,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 60,
                         "interval": 50
                     }
@@ -980,7 +980,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -990,7 +990,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 80,
                         "interval": 50
                     }
@@ -1007,7 +1007,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -1017,7 +1017,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 40,
                         "interval": 50
                     }
@@ -1034,7 +1034,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -1044,7 +1044,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 60,
                         "interval": 50
                     }
@@ -1061,7 +1061,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -1071,7 +1071,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 80,
                         "interval": 50
                     }
@@ -1088,7 +1088,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -1098,7 +1098,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 40,
                         "interval": 50
                     }
@@ -1115,7 +1115,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -1125,7 +1125,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 60,
                         "interval": 50
                     }
@@ -1142,7 +1142,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -1152,7 +1152,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 80,
                         "interval": 50
                     }
@@ -1169,7 +1169,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -1179,7 +1179,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 80,
                         "interval": 50
                     }
@@ -1196,7 +1196,7 @@
                 "reset": false,
                 "background": "Red",
                 "reset interval": 100,
-                "duration": 550,
+                "duration": 750,
                 "save frames": false,
                 "save stimuli": true,
                 "collisions": false,
@@ -1206,7 +1206,7 @@
                 ],
                 "stimuli": {
                     "predator 1": {
-                        "steps": 550,
+                        "steps": 750,
                         "size": 40,
                         "interval": 50
                     }

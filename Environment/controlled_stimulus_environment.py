@@ -114,7 +114,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5)/255.)
                     plt.pause(0.0001)
 
-        self.fish.body.position = (self.env_variables['width'] / 2, self.env_variables['height'] / 2)  # TODO: Remove this if doesnt help.
+        self.fish.body.position = (self.env_variables['width'] / 2, self.env_variables['height'] / 2)
         self.fish.body.angle = 0
         self.fish.body.velocity = (0, 0)
 
@@ -249,34 +249,41 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     def update_unset_stimuli(self):
         # TODO: Still need to update so that can have multiple, sequential stimuli. Will require adding in onset into stimulus, as well as changing the baseline phase. Not useful for current requirements.
         stimuli_to_delete = []
-        init_period = 100
+        init_period = 200
 
         for stimulus in self.unset_stimuli.keys():
             i = int(stimulus.split()[1]) - 1
-            if self.num_steps < init_period:
+            if self.num_steps <= init_period:
+                # Network initialisation period
                 if "prey" in stimulus:
                     self.prey_bodies[i].position = (10, 10)
                 elif "predator" in stimulus:
                     self.predator_bodies[i].position = (10, 10)
             else:
+
                 if (self.num_steps-init_period) % self.unset_stimuli[stimulus]["interval"] == 0:
-                    self.stimuli_information[stimulus]["Initialisation"] = self.num_steps - init_period
+                    # Initialisation period
+                    self.stimuli_information[stimulus]["Initialisation"] = self.num_steps
                     if "prey" in stimulus:
                         self.prey_bodies[i].position = (10, 10)
                     elif "predator" in stimulus:
                         self.predator_bodies[i].position = (10, 10)
+
                 elif (self.num_steps-init_period) % self.unset_stimuli[stimulus]["interval"] == round(self.unset_stimuli[stimulus]["interval"]/3):
-                    self.stimuli_information[stimulus]["Pre-onset"] = self.num_steps - init_period
+                    # Pre onset period
+                    self.stimuli_information[stimulus]["Pre-onset"] = self.num_steps
                     if "prey" in stimulus:
                         self.prey_bodies[i].position = (10, 10)
                     elif "predator" in stimulus:
                         self.predator_bodies[i].position = (10, 10)
+
                 elif (self.num_steps-init_period) % self.unset_stimuli[stimulus]["interval"] == round(2 * self.unset_stimuli[stimulus]["interval"]/3):
+                    # Appearance period
                     if self.unset_stimuli[stimulus]["steps"]-init_period > (self.num_steps-init_period):
                         d = self.get_distance_for_size(stimulus, self.unset_stimuli[stimulus]["size"])
                         theta = self.get_new_angle(self.unset_stimuli[stimulus]["steps"]-init_period, (self.num_steps-init_period))
                         self.place_on_curve(stimulus, i, d, theta)
-                        self.stimuli_information[stimulus]["Onset"] = (self.num_steps-init_period)
+                        self.stimuli_information[stimulus]["Onset"] = self.num_steps
                         self.stimuli_information[stimulus]["Angle"] = theta
                         self.stimuli_information[stimulus]["Size"] = self.unset_stimuli[stimulus]["size"]
 
@@ -296,8 +303,9 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                             else:
                                 print("Invalid *moving* parameter given")
                     else:
-                        self.stimuli_information[stimulus]["Finish"] = (self.num_steps-init_period)
+                        self.stimuli_information[stimulus]["Finish"] = self.num_steps
                         stimuli_to_delete.append(stimulus)
+
                 else:
                     if self.moving_stimuli and self.unset_stimuli[stimulus]["interval"] * 2/3 < (self.num_steps-init_period) % self.unset_stimuli[stimulus]["interval"]:
                         if self.moving_stimuli == "Left" or self.moving_stimuli == "Right":

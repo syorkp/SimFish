@@ -1491,7 +1491,7 @@ empty_environment_config = [
             {
                 "assay id": "Empty-1",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 100,
+                "duration": 1000,
                 "Tethered": False,
                 "save frames": True,
                 "random positions": False,
@@ -1500,7 +1500,7 @@ empty_environment_config = [
                 "save stimuli": False,
                 "reset": False,
                 "collisions": False,
-                "recordings": ["behavioural choice", "position", "fish_angle", "predator", "prey_positions"],
+                "recordings": ["behavioural choice", "position", "fish_angle", "predator", "prey_positions", "rnn state"],
                 "ablations": []
             },
             ]
@@ -1587,5 +1587,5 @@ current_training_configuration = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(cst_test)
+manager = TrialManager(empty_environment_config)
 manager.run_priority_loop()

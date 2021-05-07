@@ -51,6 +51,6 @@ def load_network_variables(model_name, conf_name):
         return sorted_vars
 
 
-v = load_network_variables("even_prey_ref-5", "1")
+# v = load_network_variables("even_prey_ref-5", "1")
 
 x = True

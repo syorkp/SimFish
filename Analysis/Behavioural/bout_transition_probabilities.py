@@ -308,9 +308,9 @@ def get_modal_sequences(transition_probabilities, order=3, number=10):
     return ordered_sequences
 
 
-tp = get_transition_probabilities("changed_penalties-1", "Naturalistic", "Naturalistic", 2, order=1)
-ms = get_modal_sequences(tp, order=5)
-x = True
+# tp = get_transition_probabilities("changed_penalties-1", "Naturalistic", "Naturalistic", 2, order=1)
+# ms = get_modal_sequences(tp, order=5)
+# x = True
 # # visualisation_method_2(tp)
 #
 # test = get_second_order_transition_counts("changed_penalties-1", "Naturalistic", "Naturalistic", 2)

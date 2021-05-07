@@ -3,7 +3,7 @@
         "Model Name": "even_prey_ref",
         "Environment Name": "test_square",
         "Trial Number": 5,
-        "Assay Configuration Name": "TEST",
+        "Assay Configuration Name": "Prey-Full-Response-Vector",
         "Run Mode": "Assay",
         "Realistic Bouts": true,
         "Using GPU": false,
@@ -30,9 +30,9 @@
                     "behavioural choice"
                 ],
                 "stimuli": {
-                    "predator 1": {
+                    "prey 1": {
                         "steps": 650,
-                        "size": 40,
+                        "size": 5,
                         "interval": 50
                     }
                 },

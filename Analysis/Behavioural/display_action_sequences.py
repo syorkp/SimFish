@@ -8,7 +8,7 @@ from Analysis.Behavioural.extract_event_action_sequence import get_escape_sequen
 
 def display_sequences(sequences):
     plot_dim = len(sequences[0])
-    color_set = ['b', 'g', 'g', 'r', 'y', 'y', "k", "m", "m", "k"]
+    color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'y', "k", "m", "m", "k"]
     plt.figure(figsize=(5, 15))
     for i, seq in enumerate(reversed(sequences)):
         for j, a in enumerate(reversed(seq)):
@@ -102,8 +102,8 @@ def display_relative_probabilities(transition_probabilities):
 # cs = get_capture_sequences("even_prey_ref-7", "Ablation-Test-Predator-Only", "Prey-Only", 3)
 # display_all_sequences_capture(cs)
 
-tp = get_transition_probabilities("changed_penalties-1", "Naturalistic", "Naturalistic", 2, order=1)
-display_relative_probabilities(tp)
-ms = get_modal_sequences(tp, order=5, number=40)
-display_sequences(ms)
+# tp = get_transition_probabilities("changed_penalties-1", "Naturalistic", "Naturalistic", 2, order=1)
+# display_relative_probabilities(tp)
+# ms = get_modal_sequences(tp, order=5, number=40)
+# display_sequences(ms)
 
