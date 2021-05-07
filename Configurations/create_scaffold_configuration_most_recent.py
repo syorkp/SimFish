@@ -31,14 +31,14 @@ env = {'width': 1500,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 16,
+       'prey_num': 30,
        'prey_impulse': 0.1,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
        'prey_max_turning_angle': 0.3,
        'prey_jump': True,
-       'differential_prey': True,
+       'differential_prey': False,
        'prey_cloud_num': 2,
 
        'sand_grain_mass': 1.,
@@ -114,7 +114,7 @@ params = {'num_actions': 10,  # size of action space
           'learning_rate': 0.0001}
 
 
-directory_name = "differential_prey"
+directory_name = "even_prey"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):
@@ -124,10 +124,10 @@ if not os.path.exists(f"Configurations/{directory_name}/"):
 # Equal to that given in the file name.
 def save_files(n):
     with open(f"Configurations/{directory_name}/{str(n)}_env.json", 'w') as f:
-        json.dump(env, f)
+        json.dump(env, f, indent=4)
 
     with open(f"Configurations/{directory_name}/{str(n)}_learning.json", 'w') as f:
-        json.dump(params, f)
+        json.dump(params, f, indent=4)
 
 
 # A. Learn Predator avoidance and prey capture #
@@ -145,6 +145,12 @@ number += 1
 
 # 3. Reduce mouth size
 env["fish_mouth_size"] = 3
+save_files(number)
+number += 1
+
+
+# 4. Reduce mouth size
+env["fish_mouth_size"] = 2
 save_files(number)
 number += 1
 

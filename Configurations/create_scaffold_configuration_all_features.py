@@ -123,10 +123,10 @@ if not os.path.exists(f"Configurations/{directory_name}/"):
 # Equal to that given in the file name.
 def save_files(n):
     with open(f"Configurations/{directory_name}/{str(n)}_env.json", 'w') as f:
-        json.dump(env, f)
+        json.dump(env, f, indent=4)
 
     with open(f"Configurations/{directory_name}/{str(n)}_learning.json", 'w') as f:
-        json.dump(params, f)
+        json.dump(params, f, indent=4)
 
 
 # A. Learn Predator avoidance #

@@ -114,7 +114,7 @@ params = {'num_actions': 10,  # size of action space
 environment_name = "prey_low_density"
 # environment_name = "prey_only"
 with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
-    json.dump(env, f)
+    json.dump(env, f, indent=4)
 
 with open(f"Configurations/Assay-Configs/{environment_name}_learning.json", 'w') as f:
-    json.dump(params, f)
+    json.dump(params, f, indent=4)
