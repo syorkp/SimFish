@@ -2942,7 +2942,7 @@ indescriminate_ablation_gradient = [
 ]
 
 
-def build_vrv_configuration(model_names, background=False):
+def build_vrv_configuration(model_names, background=False, name="vrv_config"):
     configuration = []
     for model in model_names:
         pred_config = predator_response_vector.copy()
@@ -2951,9 +2951,16 @@ def build_vrv_configuration(model_names, background=False):
         pred_config["Trial Number"] = int(model[-1])
         prey_config["Model Name"] = model[:-2]
         prey_config["Trial Number"] = int(model[-1])
-        configuration.append(prey_config)
-        configuration.append(pred_config)
-    with open(f"vrv_config.json", 'w') as f:
+        if background:
+            for i, assay in enumerate(prey_config["Assays"]):
+                assay["background"] = "Red"
+                prey_config["Assays"][i] = assay
+            for i, assay in enumerate(pred_config["Assays"]):
+                assay["background"] = "Red"
+                pred_config["Assays"][i] = assay
+        configuration.append(prey_config.copy())
+        configuration.append(pred_config.copy())
+    with open(f"{name}.json", 'w') as f:
         json.dump(configuration, f, indent=4)
 
 
@@ -2979,6 +2986,7 @@ def build_naturalistic_configuration(model_names, naturalistic_config_name, pred
         configuration.append(nat_config)
         configuration.append(prey_config)
         configuration.append(pred_config)
+
     with open(f"behavioural_conf.json", 'w') as f:
         json.dump(configuration, f, indent=4)
 
@@ -3011,7 +3019,7 @@ def build_ablation_gradient_configuration(model_names, ablation_group, environme
         json.dump(configuration, f, indent=4)
 
 
-build_indescriminate_ablation_gradient_configuration(["even_prey_ref-5"], ["test"], "non_env", "all_ablation")
+# build_indescriminate_ablation_gradient_configuration(["even_prey_ref-5"], ["test"], "non_env", "all_ablation")
 
 
-build_vrv_configuration(["even_prey_ref-5"])
+build_vrv_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5"], True)
