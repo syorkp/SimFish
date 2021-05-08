@@ -273,35 +273,48 @@ def display_class_counts(model_names, neuron_groups, group_number):
     plt.show()
 
 # Do clustering over many models:
-full_rv = create_full_response_vector("even_prey_ref-5")
-full_rv2 = create_full_response_vector("even_prey_ref-6")
-full_rv3 = create_full_response_vector("even_prey_ref-7")
-full_rv4 = create_full_response_vector("even_prey_ref-4")
-
-full_sv = create_full_stimulus_vector("even_prey_ref-5")
-
-model_l = knn_clustering_assign_categories([full_rv, full_rv2, full_rv3, full_rv4], full_sv, 21)
-save_neuron_groups(["even_prey_ref-5", "even_prey_ref-6", "even_prey_ref-7", "even_prey_ref-4",], model_l, 21)
-display_class_counts(["even_prey_ref-5", "even_prey_ref-6", "even_prey_ref-7", "even_prey_ref-4",], model_l, 21)
-prey_sv = full_sv[:121]
-
-many_rv = np.array(full_rv + full_rv2 + full_rv3 + full_rv4)
-many_rv = normalise_response_vectors(many_rv)
-many_rv, transition_points, neuron_labels = order_vectors_by_kmeans(many_rv, 21)
-display_full_response_vector(many_rv, full_sv, "Prey Stimuli", transition_points)
+# full_rv = create_full_response_vector("even_prey_ref-5")
+# full_rv2 = create_full_response_vector("even_prey_ref-6")
+# full_rv3 = create_full_response_vector("even_prey_ref-7")
+# full_rv4 = create_full_response_vector("even_prey_ref-4")
+#
+# full_sv = create_full_stimulus_vector("even_prey_ref-5")
+#
+# model_l = knn_clustering_assign_categories([full_rv, full_rv2, full_rv3, full_rv4], full_sv, 21)
+# save_neuron_groups(["even_prey_ref-5", "even_prey_ref-6", "even_prey_ref-7", "even_prey_ref-4",], model_l, 21)
+# display_class_counts(["even_prey_ref-5", "even_prey_ref-6", "even_prey_ref-7", "even_prey_ref-4",], model_l, 21)
+# prey_sv = full_sv[:121]
+#
+# many_rv = np.array(full_rv + full_rv2 + full_rv3 + full_rv4)
+# many_rv = normalise_response_vectors(many_rv)
+# many_rv, transition_points, neuron_labels = order_vectors_by_kmeans(many_rv, 21)
+# display_full_response_vector(many_rv, full_sv, "Prey Stimuli", transition_points)
 
 # Single model:
+full_rv = create_full_response_vector("even_prey_ref-5")
 full_rv = normalise_response_vectors(full_rv)
+full_sv = create_full_stimulus_vector("even_prey_ref-5")
+
+full_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv, 21)
+display_full_response_vector(full_rv, full_sv, "Prey Stimuli", transition_points)
+
+
+full_rv = create_full_response_vector("new_differential_prey_ref-4")
+full_rv = normalise_response_vectors(full_rv)
+full_sv = create_full_stimulus_vector("new_differential_prey_ref-4")
+
+full_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv, 21)
+display_full_response_vector(full_rv, full_sv, "Prey Stimuli", transition_points)
 
 
 # full_rv = remove_initialisation_effects(full_rv)
 # full_rv = order_vectors_by_kmeans(full_rv)
 # display_full_response_vector(full_rv, full_sv, "Full")
-prey_rv, transition_points, neuron_labels = order_vectors_by_agglomerative(full_rv[:, :121], 21)
-display_full_response_vector(prey_rv, prey_sv, "Prey Stimuli", transition_points)
+# prey_rv, transition_points, neuron_labels = order_vectors_by_agglomerative(full_rv[:, :121], 21)
+# display_full_response_vector(prey_rv, prey_sv, "Prey Stimuli", transition_points)
 
-prey_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv[:, :121], 21)
-display_full_response_vector(prey_rv, prey_sv, "Prey Stimuli", transition_points)
+# prey_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv[:, :121], 21)
+# display_full_response_vector(prey_rv, prey_sv, "Prey Stimuli", transition_points)
 
 # prey_rv, transition_points, neuron_labels = order_vectors_by_agglomerative(full_rv[:, :121])
 # prey_rv = get_small_size_selectivity(prey_rv)
@@ -312,6 +325,6 @@ display_full_response_vector(prey_rv, prey_sv, "Prey Stimuli", transition_points
 # simple_rv, simple_sv = reduce_vector_dimensionality(full_rv, full_sv)
 # simple_rv = order_vectors_by_kmeans(simple_rv)
 # display_full_response_vector(full_rv, full_sv, "Full")
-display_full_response_vector(prey_rv, prey_sv, "Prey Stimuli", transition_points)
+# display_full_response_vector(prey_rv, prey_sv, "Prey Stimuli", transition_points)
 # display_full_response_vector(pred_rv, pred_sv, "Predator Stimuli")
 # show_full_vector_simple_abs(simple_rv, simple_sv, "Simplified")

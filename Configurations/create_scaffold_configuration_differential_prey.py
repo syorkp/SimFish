@@ -6,8 +6,11 @@ Created on Mon Oct  5 07:52:17 2020
 @author: asaph
 """
 import json
+import os
 
 # all distances in pixels
+
+
 env = {'width': 1500,  # arena size
        'height': 1500,
        'drag': 0.7,  # water drag
@@ -15,7 +18,7 @@ env = {'width': 1500,  # arena size
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step
 
        'fish_mass': 140.,
-       'fish_mouth_size': 3.,
+       'fish_mouth_size': 5.,
        'fish_head_size': 10.,
        'fish_tail_length': 70.,
        'eyes_verg_angle': 77.,  # in deg
@@ -111,10 +114,43 @@ params = {'num_actions': 10,  # size of action space
           'learning_rate': 0.0001}
 
 
-environment_name = "differential_prey_low_predator"
+directory_name = "differential_prey_low_predator"
 
-with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
-    json.dump(env, f)
+# Ensure Output File Exists
+if not os.path.exists(f"Configurations/{directory_name}/"):
+    os.makedirs(f"Configurations/{directory_name}/")
 
-with open(f"Configurations/Assay-Configs/{environment_name}_learning.json", 'w') as f:
-    json.dump(params, f)
+
+# Equal to that given in the file name.
+def save_files(n):
+    with open(f"Configurations/{directory_name}/{str(n)}_env.json", 'w') as f:
+        json.dump(env, f, indent=4)
+
+    with open(f"Configurations/{directory_name}/{str(n)}_learning.json", 'w') as f:
+        json.dump(params, f, indent=4)
+
+
+# A. Learn Predator avoidance and prey capture #
+
+# 1 Initial config
+number = 1
+save_files(number)
+number += 1
+
+# 2. Reduce mouth size
+env["fish_mouth_size"] = 4
+save_files(number)
+number += 1
+
+
+# 3. Reduce mouth size
+env["fish_mouth_size"] = 3
+save_files(number)
+number += 1
+
+
+# 4. Reduce mouth size
+env["fish_mouth_size"] = 2
+save_files(number)
+number += 1
+

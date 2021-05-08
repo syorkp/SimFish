@@ -1068,7 +1068,7 @@ naturalistic_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": True,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle", "rnn state"],
             "ablations": []
         },
@@ -1084,7 +1084,7 @@ naturalistic_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": True,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle", "rnn state"],
             "ablations": []
         },
@@ -1100,7 +1100,7 @@ naturalistic_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": True,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle", "rnn state"],
             "ablations": []
         },
@@ -1116,7 +1116,7 @@ naturalistic_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": True,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle", "rnn state"],
             "ablations": []
         },
@@ -1132,7 +1132,7 @@ naturalistic_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": True,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle", "rnn state"],
             "ablations": []
         },
@@ -1148,7 +1148,7 @@ naturalistic_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": True,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle", "rnn state"],
             "ablations": []
         },
@@ -1164,7 +1164,7 @@ naturalistic_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": True,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle", "rnn state"],
             "ablations": []
         },
@@ -1180,7 +1180,7 @@ naturalistic_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": True,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle", "rnn state"],
             "ablations": []
         },
@@ -1196,7 +1196,7 @@ naturalistic_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": True,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle", "rnn state"],
             "ablations": []
         },
@@ -1212,7 +1212,7 @@ naturalistic_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": True,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle", "rnn state"],
             "ablations": []
         },
@@ -1245,7 +1245,7 @@ predator_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1261,7 +1261,7 @@ predator_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1277,7 +1277,7 @@ predator_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1293,7 +1293,7 @@ predator_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1309,7 +1309,7 @@ predator_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1325,7 +1325,7 @@ predator_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1341,7 +1341,7 @@ predator_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1357,7 +1357,7 @@ predator_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1373,7 +1373,7 @@ predator_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1389,7 +1389,7 @@ predator_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1421,7 +1421,7 @@ prey_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1437,7 +1437,7 @@ prey_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1453,7 +1453,7 @@ prey_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1469,7 +1469,7 @@ prey_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1485,7 +1485,7 @@ prey_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1501,7 +1501,7 @@ prey_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1517,7 +1517,7 @@ prey_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1533,7 +1533,7 @@ prey_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1549,7 +1549,7 @@ prey_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -1565,7 +1565,7 @@ prey_behaviour_configuration = {
             "save stimuli": False,
             "reset": False,
             "collisions": False,
-            "recordings": ["behavioural choice", "consumed", "predator", "observation", "position",
+            "recordings": ["behavioural choice", "consumed", "predator", "position",
                            "prey_positions", "predator_position", "fish_angle"],
             "ablations": []
         },
@@ -2964,6 +2964,22 @@ def build_vrv_configuration(model_names, background=False, name="vrv_config"):
         json.dump(configuration, f, indent=4)
 
 
+def build_differential_configuration(model_names, environment, name):
+    configuration = []
+    for model in model_names:
+        for i in range(1, 4):
+            nat_config = naturalistic_configuration.copy()
+
+            nat_config["Model Name"] = model[:-2]
+            nat_config["Trial Number"] = int(model[-1])
+            nat_config["Environment Name"] = environment
+            nat_config["Assay Configuration Name"] = f"Behavioural-Data-Free-{i}"
+            configuration.append(nat_config)
+
+    with open(f"{name}.json", 'w') as f:
+        json.dump(configuration, f, indent=4)
+
+
 def build_naturalistic_configuration(model_names, naturalistic_config_name, predator_config_name, prey_config_name):
     configuration = []
     for model in model_names:
@@ -3020,6 +3036,7 @@ def build_ablation_gradient_configuration(model_names, ablation_group, environme
 
 
 # build_indescriminate_ablation_gradient_configuration(["even_prey_ref-5"], ["test"], "non_env", "all_ablation")
+build_differential_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], "differential_prey_low_predator", "differential_naturalistic")
 
-
-build_vrv_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5"], True)
+# build_vrv_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], True, "vrv_background_config")
+# build_vrv_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], False, "vrv_config")

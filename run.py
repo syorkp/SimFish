@@ -38,7 +38,11 @@ with open(f"vrv_background.json", 'r') as f:
 with open(f"vrv_no_background.json", 'r') as f:
     cst2 = json.load(f)
 
-cse = cst1 + cst2
+with open(f"differential_naturalistic.json", 'r') as f:
+    diff = json.load(f)
+
+
+configfull = cst1 + cst2 + diff
 
 prey_in_front_5 = pred_only_7
 
@@ -1616,5 +1620,5 @@ current_training_configuration = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(cse)
+manager = TrialManager(configfull)
 manager.run_priority_loop()
