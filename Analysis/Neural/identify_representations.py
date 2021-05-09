@@ -16,5 +16,7 @@ def identify_representations(response_vector, stimulus_vector, leeway=0.1):
     return representations
 
 
-full_rv = create_full_response_vector("even_prey_ref-5", background=True)
-full_sv = create_full_stimulus_vector("even_prey_ref-5",  background=False)  # False because only need half to compute.
+full_rv = create_full_response_vector("new_differential_prey_ref-5", background=True)
+full_sv = create_full_stimulus_vector("new_differential_prey_ref-5",  background=False)  # False because only need half to compute.
+reps = identify_representations(full_rv, full_sv)
+x = True

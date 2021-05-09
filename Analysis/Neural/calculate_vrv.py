@@ -84,10 +84,7 @@ def normalise_vrvs(vectors):
 
 def create_full_stimulus_vector(model_name, background=False):
     full_stimulus_vector = []
-    if background:
-        file_precursors = ["Prey", "Predator", "Background-Prey", "Background-Predator"]
-    else:
-        file_precursors = ["Prey", "Predator"]
+    file_precursors = ["Prey", "Predator"]
     prey_assay_ids = ["Prey-Static-5", "Prey-Static-10", "Prey-Static-15",
                       "Prey-Left-5", "Prey-Left-10", "Prey-Left-15",
                       "Prey-Right-5", "Prey-Right-10", "Prey-Right-15",
@@ -96,6 +93,9 @@ def create_full_stimulus_vector(model_name, background=False):
                           "Predator-Left-40", "Predator-Left-60", "Predator-Left-80",
                           "Predator-Right-40", "Predator-Right-60", "Predator-Right-80",
                           "Predator-Away", "Predator-Towards"]
+    if background:
+        prey_assay_ids += ["Background-" + i for i in prey_assay_ids]
+        predator_assay_ids += ["Background-" + i for i in predator_assay_ids]
     for file_p in file_precursors:
         if "Prey" in file_p:
             for aid in prey_assay_ids:
@@ -117,10 +117,7 @@ def create_full_stimulus_vector(model_name, background=False):
 def create_full_response_vector(model_name, background=False):
     # Creates the full 484 dimensional response vector.
     response_vectors = [[] for i in range(512)]
-    if background:
-        file_precursors = ["Prey", "Predator", "Background-Prey", "Background-Predator"]
-    else:
-        file_precursors = ["Prey", "Predator"]
+    file_precursors = ["Prey", "Predator"]
     prey_assay_ids = ["Prey-Static-5", "Prey-Static-10", "Prey-Static-15",
                       "Prey-Left-5", "Prey-Left-10", "Prey-Left-15",
                       "Prey-Right-5", "Prey-Right-10", "Prey-Right-15",
@@ -129,9 +126,13 @@ def create_full_response_vector(model_name, background=False):
                           "Predator-Left-40", "Predator-Left-60", "Predator-Left-80",
                           "Predator-Right-40", "Predator-Right-60", "Predator-Right-80",
                           "Predator-Away", "Predator-Towards"]
+    if background:
+        prey_assay_ids += ["Background-" + i for i in prey_assay_ids]
+        predator_assay_ids += ["Background-" + i for i in predator_assay_ids]
     for file_p in file_precursors:
         if "Prey" in file_p:
             for aid in prey_assay_ids:
+                print(aid)
                 data = load_data(model_name, f"{file_p}-Full-Response-Vector", aid)
                 stimulus_data = load_stimulus_data(model_name, f"{file_p}-Full-Response-Vector", aid)
                 # stimulus_data = new_load_stimulus_data(model_name, f"{file_p}-Full-Response-Vector", aid)
