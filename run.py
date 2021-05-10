@@ -47,7 +47,7 @@ prey_in_front_5 = pred_only_7
 configuration = "-Spatial-Density"
 model_tested = 7
 
-with open(f"missing_vrv_diff.json", 'r') as f:
+with open(f"missing_vrv.json", 'r') as f:
     testc = json.load(f)
 
 

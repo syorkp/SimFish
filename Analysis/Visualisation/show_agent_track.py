@@ -26,7 +26,8 @@ def colored_2d_track(position, action_choice):
 
 def colored_2d_track_turns(position, action_choice):
     # Note that due to the inverse scale in the environment, should be rotated in y axis.
-    data  = {}
+    data = {}
+    # sns.set()
     turn_stamps = [i for i, a in enumerate(action_choice) if a == 1 or a == 2]
     data["x"] = [p[0] for i, p in enumerate(position) if i in turn_stamps]
     data["y"] = [p[1] for i, p in enumerate(position) if i in turn_stamps]
@@ -38,6 +39,10 @@ def colored_2d_track_turns(position, action_choice):
 
     plt.figure(figsize=(10, 10))
     sns.scatterplot(x="x", y="y", hue="a", data=data, palette=colors, s=100, alpha=1)
+    # g = sns.legend(["RT Left", "RT Right"])
+    # leg = g.axes.flat[0].get_legend()
+    # for t, l in zip(leg.texts, ["RT Left", "RT Right"]): t.set_text(l)
+    plt.legend([1, 2], ["RT Left", "RT Right"])
     plt.xlim(0, 1500)
     plt.ylim(0, 1500)
     plt.show()
