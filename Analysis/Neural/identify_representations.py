@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from Analysis.Neural.calculate_vrv import create_full_response_vector, create_full_stimulus_vector
-from Analysis.Visualisation.visualise_response_vectors import display_full_response_vector, normalise_response_vectors, format_func_prey, format_func_pred
+from Analysis.Visualisation.visualise_response_vectors import display_full_response_vector, normalise_response_vectors, format_func_prey, format_func_pred, order_vectors_by_kmeans
 
 
 def identify_representations(response_vector, stimulus_vector, leeway=0.1):
@@ -22,15 +22,15 @@ def identify_representations(response_vector, stimulus_vector, leeway=0.1):
 
 def compute_relative_vrv(response_vector):
     response_vector = np.array(response_vector)
-    basic_response, background_response = response_vector[:, :int(len(response_vector)/2)], response_vector[:, int(len(response_vector)/2):]  # TODO: Correct to use proper dimensions
+    basic_response, background_response = response_vector[:, :int(len(response_vector[0])/2)], response_vector[:, int(len(response_vector[0])/2):]  # TODO: Correct to use proper dimensions
     relative_rv = []
     for i, neuron in enumerate(basic_response):
         neuron_vector = []
         for j, value in enumerate(neuron):
             if value > 0.5 or value <-0.5:
-                neuron_vector.append(value-background_response[i, j])
+                neuron_vector.append(abs(value-background_response[i, j]))
             else:
-                neuron_vector.append(1)
+                neuron_vector.append(2)
         relative_rv.append(neuron_vector)
     return relative_rv
 
@@ -40,7 +40,7 @@ def display_full_response_vector_relative(response_vector, stimulus_vector, titl
     # fig.set_size_inches(18.5, 80)
     fig.set_size_inches(18.5, 20)
     ax.set_title(title, fontsize=45)
-    ax.pcolor(response_vector, cmap='RdYlBu')
+    ax.pcolor(response_vector, cmap='afmhot')
     ax.grid(True, which='minor', axis='both', linestyle='-', color='k')
     ax.set_xlim(0, 121)
     ax.xaxis.set_major_locator(plt.MultipleLocator(11))
@@ -74,13 +74,16 @@ def display_full_response_vector_relative(response_vector, stimulus_vector, titl
     plt.show()
 
 
-full_rv = create_full_response_vector("new_differential_prey_ref-5", background=True)
-full_sv = create_full_stimulus_vector("new_differential_prey_ref-5",  background=False)
+full_rv = create_full_response_vector("new_differential_prey_ref-6", background=True)
+full_sv = create_full_stimulus_vector("new_differential_prey_ref-6",  background=False)
 full_rv = normalise_response_vectors(full_rv)
+full_rv, threshold, categories = order_vectors_by_kmeans(full_rv, 21)
 # False because only need half to compute.
 reps = identify_representations(full_rv, full_sv)
 display_full_response_vector(full_rv, full_sv, "real vector")
 
 full_rv = compute_relative_vrv(full_rv)
+full_rv, threshold, categories = order_vectors_by_kmeans(full_rv, 21)
 display_full_response_vector_relative(full_rv, full_sv, "relative vector")
+full_rv = np.array(full_rv)
 x = True

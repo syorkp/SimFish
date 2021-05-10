@@ -272,6 +272,19 @@ def display_class_counts(model_names, neuron_groups, group_number):
     plt.axhline(0, ls="--")
     plt.show()
 
+
+full_rv = create_full_response_vector("new_differential_prey_ref-6", background=True)
+full_rv = np.array(full_rv)
+full_rv, full_rv2 = list(full_rv[:, :int(len(full_rv[0])/2)]), list(full_rv[:, int(len(full_rv[0])/2):])
+full_sv = create_full_stimulus_vector("new_differential_prey_ref-6")
+full_rv = normalise_response_vectors(full_rv)
+full_rv2 = normalise_response_vectors(full_rv2)
+full_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv, 21)
+display_full_response_vector(full_rv, full_sv, "Prey Stimuli", transition_points)
+full_rv2, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv2, 21)
+display_full_response_vector(full_rv2, full_sv, "Prey Stimuli", transition_points)
+
+#
 # Do clustering over many models:
 # full_rv = create_full_response_vector("even_prey_ref-5")
 # full_rv2 = create_full_response_vector("even_prey_ref-6")
