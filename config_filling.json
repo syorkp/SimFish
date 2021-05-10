@@ -1,0 +1,70 @@
+[
+    {
+        "Model Name": "new_differential_prey_ref",
+        "Environment Name": "test_square",
+        "Trial Number": 3,
+        "Assay Configuration Name": "Prey-Full-Response-Vector",
+        "Run Mode": "Assay",
+        "Realistic Bouts": true,
+        "Using GPU": false,
+        "monitor gpu": false,
+        "set random seed": false,
+        "Priority": 1,
+        "Assays": [
+            {
+                "assay id": "Prey-Right-10",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Right",
+                "reset": false,
+                "background": null,
+                "reset interval": 100,
+                "duration": 750,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 750,
+                        "size": 10,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            },
+            {
+                "assay id": "Background-Prey-Right-10",
+                "stimulus paradigm": "Projection",
+                "Tethered": true,
+                "set positions": false,
+                "random positions": false,
+                "moving": "Right",
+                "reset": false,
+                "background": "Red",
+                "reset interval": 100,
+                "duration": 750,
+                "save frames": false,
+                "save stimuli": true,
+                "collisions": false,
+                "recordings": [
+                    "rnn state",
+                    "behavioural choice"
+                ],
+                "stimuli": {
+                    "prey 1": {
+                        "steps": 750,
+                        "size": 10,
+                        "interval": 50
+                    }
+                },
+                "ablations": []
+            }
+        ]
+    }
+]

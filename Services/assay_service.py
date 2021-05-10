@@ -1,6 +1,7 @@
 import json
 import h5py
 from datetime import datetime
+import os
 
 import numpy as np
 import tensorflow.compat.v1 as tf
@@ -279,7 +280,11 @@ class AssayService:
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
         self.frame_buffer = []
 
-        hdf5_file = h5py.File(f"{self.data_save_location}/{self.assay_configuration_id}.h5", "a")
+        absolute_path = '/home/sam/PycharmProjects/SimFish/Assay-Output/new_differential_prey_ref-3' + f'/{self.assay_configuration_id}.h5'
+        hdf5_file = h5py.File(absolute_path, "a")
+        # hdf5_file = h5py.File(f"{self.data_save_location}/{self.assay_configuration_id}.h5", "a")
+        # TODO: Test
+
         try:
             assay_group = hdf5_file.create_group(assay['assay id'])
         except ValueError:

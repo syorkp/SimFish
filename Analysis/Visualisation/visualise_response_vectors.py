@@ -273,15 +273,15 @@ def display_class_counts(model_names, neuron_groups, group_number):
     plt.show()
 
 
-for i in range(5, 7):
-    full_rv = create_full_response_vector(f"new_differential_prey_ref-{str(i)}", background=True)
-    full_rv = np.array(full_rv)
-    full_rv, full_rv2 = list(full_rv[:, :int(len(full_rv[0])/2)]), list(full_rv[:, int(len(full_rv[0])/2):])
-    full_sv = create_full_stimulus_vector(f"new_differential_prey_ref-{str(i)}")
-    full_rv = normalise_response_vectors(full_rv)
-    # full_rv2 = normalise_response_vectors(full_rv2)
-    full_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv)
-    print(len(transition_points))
+# for i in range(4, 7):
+#     full_rv = create_full_response_vector(f"new_differential_prey_ref-{str(i)}", background=True)
+#     full_rv = np.array(full_rv)
+#     full_rv, full_rv2 = list(full_rv[:, :int(len(full_rv[0])/2)]), list(full_rv[:, int(len(full_rv[0])/2):])
+#     full_sv = create_full_stimulus_vector(f"new_differential_prey_ref-{str(i)}")
+#     full_rv = normalise_response_vectors(full_rv)
+#     # full_rv2 = normalise_response_vectors(full_rv2)
+#     full_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv)
+#     print(len(transition_points))
 
 
 # full_rv2, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv2, 21)
@@ -289,22 +289,21 @@ for i in range(5, 7):
 
 #
 # Do clustering over many models:
-# full_rv = create_full_response_vector("even_prey_ref-5")
-# full_rv2 = create_full_response_vector("even_prey_ref-6")
-# full_rv3 = create_full_response_vector("even_prey_ref-7")
-# full_rv4 = create_full_response_vector("even_prey_ref-4")
+full_rv = create_full_response_vector("new_differential_prey_ref-4")
+full_rv2 = create_full_response_vector("new_differential_prey_ref-5")
+full_rv3 = create_full_response_vector("new_differential_prey_ref-6")
 #
-# full_sv = create_full_stimulus_vector("even_prey_ref-5")
+full_sv = create_full_stimulus_vector("new_differential_prey_ref-4")
 #
-# model_l = knn_clustering_assign_categories([full_rv, full_rv2, full_rv3, full_rv4], full_sv, 21)
+model_l = knn_clustering_assign_categories([full_rv, full_rv2, full_rv3], full_sv, 30)
 # save_neuron_groups(["even_prey_ref-5", "even_prey_ref-6", "even_prey_ref-7", "even_prey_ref-4",], model_l, 21)
 # display_class_counts(["even_prey_ref-5", "even_prey_ref-6", "even_prey_ref-7", "even_prey_ref-4",], model_l, 21)
-# prey_sv = full_sv[:121]
+prey_sv = full_sv[:121]
 #
-# many_rv = np.array(full_rv + full_rv2 + full_rv3 + full_rv4)
-# many_rv = normalise_response_vectors(many_rv)
-# many_rv, transition_points, neuron_labels = order_vectors_by_kmeans(many_rv, 21)
-# display_full_response_vector(many_rv, full_sv, "Prey Stimuli", transition_points)
+many_rv = np.array(full_rv + full_rv2 + full_rv3)
+many_rv = normalise_response_vectors(many_rv)
+many_rv, transition_points, neuron_labels = order_vectors_by_kmeans(many_rv, 30)
+display_full_response_vector(many_rv, full_sv, "Prey Stimuli", transition_points)
 
 # Single model:
 # full_rv = create_full_response_vector("even_prey_ref-5")

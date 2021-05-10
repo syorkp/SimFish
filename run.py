@@ -47,7 +47,7 @@ prey_in_front_5 = pred_only_7
 configuration = "-Spatial-Density"
 model_tested = 7
 
-with open(f"test_config.json", 'r') as f:
+with open(f"missing_vrv_diff.json", 'r') as f:
     testc = json.load(f)
 
 
@@ -157,5 +157,5 @@ current_training_configuration = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(configfull)
+manager = TrialManager(testc)
 manager.run_priority_loop()
