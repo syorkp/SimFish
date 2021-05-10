@@ -132,7 +132,6 @@ def create_full_response_vector(model_name, background=False):
     for file_p in file_precursors:
         if "Prey" in file_p:
             for aid in prey_assay_ids:
-                print(aid)
                 data = load_data(model_name, f"{file_p}-Full-Response-Vector", aid)
                 stimulus_data = load_stimulus_data(model_name, f"{file_p}-Full-Response-Vector", aid)
                 # stimulus_data = new_load_stimulus_data(model_name, f"{file_p}-Full-Response-Vector", aid)

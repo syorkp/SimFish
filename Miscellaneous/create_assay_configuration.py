@@ -3003,7 +3003,7 @@ def build_differential_configuration(model_names, environment, name):
         json.dump(configuration, f, indent=4)
 
 
-def build_naturalistic_configuration(model_names, naturalistic_config_name, predator_config_name, prey_config_name):
+def build_naturalistic_configuration(model_names, naturalistic_config_name, predator_config_name, prey_config_name, filename):
     configuration = []
     for model in model_names:
         nat_config = naturalistic_configuration.copy()
@@ -3026,7 +3026,7 @@ def build_naturalistic_configuration(model_names, naturalistic_config_name, pred
         configuration.append(prey_config)
         configuration.append(pred_config)
 
-    with open(f"behavioural_conf.json", 'w') as f:
+    with open(f"{filename}.json", 'w') as f:
         json.dump(configuration, f, indent=4)
 
 
@@ -3061,5 +3061,8 @@ def build_ablation_gradient_configuration(model_names, ablation_group, environme
 # build_indescriminate_ablation_gradient_configuration(["even_prey_ref-5"], ["test"], "non_env", "all_ablation")
 build_differential_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], "differential_prey_low_predator", "differential_naturalistic")
 
-build_vrv_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], False, "vrv_full_config")
+# build_vrv_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], False, "vrv_full_config")
 # build_vrv_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], False, "vrv_config")
+
+build_vrv_configuration(["new_even_prey_ref-1", "new_even_prey_ref-2", "new_even_prey_ref-3", "new_even_prey_ref-4"], False, "vrv_full_config_even")
+build_naturalistic_configuration(["new_even_prey_ref-1", "new_even_prey_ref-2", "new_even_prey_ref-3", "new_even_prey_ref-4"], "even_naturalistic", "even_predator", "even_prey_only", "even_behavioural")

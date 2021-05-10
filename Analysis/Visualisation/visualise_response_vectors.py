@@ -291,20 +291,20 @@ def display_class_counts(model_names, neuron_groups, group_number):
 # display_full_response_vector(many_rv, full_sv, "Prey Stimuli", transition_points)
 
 # Single model:
-full_rv = create_full_response_vector("even_prey_ref-5")
-full_rv = normalise_response_vectors(full_rv)
-full_sv = create_full_stimulus_vector("even_prey_ref-5")
-
-full_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv, 21)
-display_full_response_vector(full_rv, full_sv, "Prey Stimuli", transition_points)
-
-
-full_rv = create_full_response_vector("new_differential_prey_ref-4")
-full_rv = normalise_response_vectors(full_rv)
-full_sv = create_full_stimulus_vector("new_differential_prey_ref-4")
-
-full_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv, 21)
-display_full_response_vector(full_rv, full_sv, "Prey Stimuli", transition_points)
+# full_rv = create_full_response_vector("even_prey_ref-5")
+# full_rv = normalise_response_vectors(full_rv)
+# full_sv = create_full_stimulus_vector("even_prey_ref-5")
+#
+# full_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv, 21)
+# display_full_response_vector(full_rv, full_sv, "Prey Stimuli", transition_points)
+#
+#
+# full_rv = create_full_response_vector("new_differential_prey_ref-4")
+# full_rv = normalise_response_vectors(full_rv)
+# full_sv = create_full_stimulus_vector("new_differential_prey_ref-4")
+#
+# full_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv, 21)
+# display_full_response_vector(full_rv, full_sv, "Prey Stimuli", transition_points)
 
 
 # full_rv = remove_initialisation_effects(full_rv)
