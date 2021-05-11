@@ -280,10 +280,9 @@ class AssayService:
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
         self.frame_buffer = []
 
-        absolute_path = '/home/sam/PycharmProjects/SimFish/Assay-Output/new_differential_prey_ref-3' + f'/{self.assay_configuration_id}.h5'
-        hdf5_file = h5py.File(absolute_path, "a")
-        # hdf5_file = h5py.File(f"{self.data_save_location}/{self.assay_configuration_id}.h5", "a")
-        # TODO: Test
+        # absolute_path = '/home/sam/PycharmProjects/SimFish/Assay-Output/new_differential_prey_ref-3' + f'/{self.assay_configuration_id}.h5'
+        # hdf5_file = h5py.File(absolute_path, "a")
+        hdf5_file = h5py.File(f"{self.data_save_location}/{self.assay_configuration_id}.h5", "a")
 
         try:
             assay_group = hdf5_file.create_group(assay['assay id'])
