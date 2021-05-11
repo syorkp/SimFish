@@ -1596,7 +1596,19 @@ prey_behaviour_configuration = {
 }
 
 
-placeholder_list = [1, 2, 3]
+with open(f"neuron_groups.json", 'r') as f:
+    data = json.load(f)
+
+# Of interest: prey_sighted=21, 30, 27, 34, 33, 32,
+# placeholder_list = data["new_differential_prey_ref-4"]["21"] + data["new_differential_prey_ref-4"]["30"] +\
+#                    data["new_differential_prey_ref-4"]["34"] + data["new_differential_prey_ref-4"]["33"] + \
+#                    data["new_differential_prey_ref-4"]["27"] + data["new_differential_prey_ref-4"]["32"]
+#
+# random.shuffle(placeholder_list)
+
+#  no_selectivity: 15
+placeholder_list = data["new_differential_prey_ref-4"]["15"]
+random.shuffle(placeholder_list)
 
 
 ablation_gradient = [
@@ -2311,8 +2323,8 @@ ablation_gradient = [
 ]
 
 
-placeholder_list = [i for i in range(512)]
-random.shuffle(placeholder_list)
+# placeholder_list = [i for i in range(512)]
+# random.shuffle(placeholder_list)
 
 indiscriminate_ablation_gradient = [
     {
@@ -3585,7 +3597,7 @@ def build_ablation_gradient_configuration(model_names, ablation_group, environme
             conf["Model Name"] = model[:-2]
             conf["Trial Number"] = int(model[-1])
             conf["Environment Name"] = environment
-            conf["Assay Configuration Name"] = f"Ablation-Test-{ablation_group}"
+            conf["Assay Configuration Name"] = f"Ablation-Test-{ablation_group}-{environment}"
             configuration.append(conf)
     with open(f"{configuration_name}.json", 'w') as f:
         json.dump(configuration, f, indent=4)
@@ -3605,9 +3617,15 @@ def build_ablation_gradient_configuration(model_names, ablation_group, environme
 # build_vrv_configuration(["new_even_prey_ref-1", "new_even_prey_ref-2", "new_even_prey_ref-3", "new_even_prey_ref-4"], False, "vrv_full_config_even")
 # build_naturalistic_configuration(["new_even_prey_ref-1", "new_even_prey_ref-2", "new_even_prey_ref-3", "new_even_prey_ref-4"], "even_naturalistic", "even_predator", "even_prey_only", "even_behavioural")
 
+build_ablation_gradient_configuration(["new_differential_prey_ref-4"], "No-Response", "differential_prey_only", "diff_prey_only_targeted-No-Response")
+build_ablation_gradient_configuration(["new_differential_prey_ref-4"], "No-Response", "differential_prey_low_predator", "diff_naturalistic_targeted-No-Response")
 
-build_indiscriminate_ablation_gradient_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5"], "differential_prey_only", "diff_prey_only_indiscriminate")
-build_indiscriminate_ablation_gradient_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], "differential_prey_low_predator", "diff_naturalistic_indiscriminate")
+# build_indiscriminate_ablation_gradient_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5"], "differential_prey_only", "diff_prey_only_indiscriminate")
+# build_indiscriminate_ablation_gradient_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], "differential_prey_low_predator", "diff_naturalistic_indiscriminate")
+#
+# build_indiscriminate_ablation_gradient_configuration(["new_even_prey_ref-1", "new_even_prey_ref-2", "new_even_prey_ref-3", "new_even_prey_ref-4"], "even_prey_only", "even_prey_only_indiscriminate")
+# build_indiscriminate_ablation_gradient_configuration(["new_even_prey_ref-1", "new_even_prey_ref-2", "new_even_prey_ref-3", "new_even_prey_ref-4"], "even_naturalistic", "even_naturalistic_indiscriminate")
+#
 
-build_indiscriminate_ablation_gradient_configuration(["new_even_prey_ref-1", "new_even_prey_ref-2", "new_even_prey_ref-3", "new_even_prey_ref-4"], "even_prey_only", "even_prey_only_indiscriminate")
-build_indiscriminate_ablation_gradient_configuration(["new_even_prey_ref-1", "new_even_prey_ref-2", "new_even_prey_ref-3", "new_even_prey_ref-4"], "even_naturalistic", "even_naturalistic_indiscriminate")
+
+

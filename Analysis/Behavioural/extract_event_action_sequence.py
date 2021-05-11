@@ -26,7 +26,7 @@ def extract_predator_action_sequences(data):
     for sequence in predator_sequence_timestamps:
         action_sequence = [data["behavioural choice"][i] for i in sequence]
         action_sequences.append(action_sequence)
-    return action_sequences, predator_sequence_timestamps
+    return action_sequences#, predator_sequence_timestamps
 
 
 def extract_consumption_action_sequences(data, n=20):

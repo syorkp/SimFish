@@ -82,14 +82,14 @@ def display_average_sequence(sequences):
     # plt.show()
 
 
-def display_relative_probabilities(transition_probabilities):
-    transition_probabilities = transition_probabilities.reshape((10, 10))
-    x = False
 
-# # capture_sequences = get_capture_sequences("even_prey_ref-3", "Behavioural-Data-Free", "Prey", 1)
-# # display_all_sequences_capture(capture_sequences[:70])
+# tp = get_transition_probabilities("changed_penalties-1", "Naturalistic", "Naturalistic", 2, order=1)
+# ms = get_modal_sequences(tp, order=5)
+
+# capture_sequences = get_capture_sequences("even_prey_ref-3", "Behavioural-Data-Free", "Prey", 1)
+# display_all_sequences_capture(capture_sequences[:70])
 # escape_sequences = get_escape_sequences("even_prey_ref-3", "Behavioural-Data-Free", "Predator", 1)
-# # display_all_sequences_escape(escape_sequences[:70])
+# display_all_sequences_escape(escape_sequences[:70])
 #
 # escape_sequences = escape_sequences + get_escape_sequences("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 1)
 # # display_all_sequences_escape(escape_sequences[:70])
@@ -99,11 +99,20 @@ def display_relative_probabilities(transition_probabilities):
 # cs = get_capture_sequences("even_prey_ref-7", "Ablation-Test-Predator-Only", "Prey-Only-Ablated-100", 3)
 # display_all_sequences_capture(cs)
 #
-# cs = get_capture_sequences("even_prey_ref-7", "Ablation-Test-Predator-Only", "Prey-Only", 3)
-# display_all_sequences_capture(cs)
 
-# tp = get_transition_probabilities("changed_penalties-1", "Naturalistic", "Naturalistic", 2, order=1)
-# display_relative_probabilities(tp)
-# ms = get_modal_sequences(tp, order=5, number=40)
+# tp = get_transition_probabilities("new_differential_prey_ref-5", "Behavioural-Data-Free-1", "Naturalistic", 10, order=4)
+
+
+# cs = get_capture_sequences("new_differential_prey_ref-6", "Behavioural-Data-Free-1", "Naturalistic", 10)
+# display_all_sequences_capture(cs)
+# es = get_escape_sequences("new_differential_prey_ref-6", "Behavioural-Data-Free-1", "Naturalistic", 10)
+# display_all_sequences_capture(es)
+# cs = get_capture_sequences("new_even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
+# display_all_sequences_capture(cs)
+# es = get_escape_sequences("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
+# display_all_sequences_capture(es)
+
+# tp = get_transition_probabilities("new_even_prey_ref-1", "Behavioural-Data-Free", "Predator", 10, order=4)
+# ms = get_modal_sequences(tp, order=4, number=40)
 # display_sequences(ms)
 

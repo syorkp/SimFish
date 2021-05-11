@@ -243,7 +243,7 @@ def get_sequences_fifth_order():
     sequences = []
     a, b, c, d, e, f = "0", "0", "0", "0", "0", "0"
     sequences.append(a + b + c + d + e + f)
-    for i in range(1, 100000):
+    for i in range(1, 1000000):
         f = str(int(f) + 1)
         if i % 10 == 0:
             f = "0"
@@ -308,9 +308,9 @@ def get_modal_sequences(transition_probabilities, order=3, number=10):
     return ordered_sequences
 
 
-# tp = get_transition_probabilities("changed_penalties-1", "Naturalistic", "Naturalistic", 2, order=1)
-# ms = get_modal_sequences(tp, order=5)
-# x = True
+
+
+x = True
 # # visualisation_method_2(tp)
 #
 # test = get_second_order_transition_counts("changed_penalties-1", "Naturalistic", "Naturalistic", 2)

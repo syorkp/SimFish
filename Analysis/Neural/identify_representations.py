@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from Analysis.Neural.calculate_vrv import create_full_response_vector, create_full_stimulus_vector
-from Analysis.Visualisation.visualise_response_vectors import display_full_response_vector, normalise_response_vectors, format_func_prey, format_func_pred, order_vectors_by_kmeans
+from Analysis.Visualisation.visualise_response_vectors import display_half_response_vector, normalise_response_vectors, format_func_prey, format_func_pred, order_vectors_by_kmeans
 
 
 def identify_representations(response_vector, stimulus_vector, leeway=0.1):
@@ -80,7 +80,7 @@ full_rv = normalise_response_vectors(full_rv)
 full_rv, threshold, categories = order_vectors_by_kmeans(full_rv, 21)
 # False because only need half to compute.
 reps = identify_representations(full_rv, full_sv)
-display_full_response_vector(full_rv, full_sv, "real vector")
+display_half_response_vector(full_rv, full_sv, "real vector")
 
 full_rv = compute_relative_vrv(full_rv)
 full_rv, threshold, categories = order_vectors_by_kmeans(full_rv, 21)

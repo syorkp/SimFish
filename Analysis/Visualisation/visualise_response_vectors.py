@@ -17,12 +17,12 @@ from Analysis.Neural.label_neurons import normalise_response_vectors
 def remove_initialisation_effects(vector):
     for i, neuron in enumerate(vector):
         for j, value in enumerate(neuron):
-            if j%11 == 0:
-                if value == max(neuron[j: j+11]):
-                    vector[i][j] = np.mean(neuron[j: j+11])
-            elif j%11 == 1:
-                if value == max(neuron[j-1: j+10]):
-                    vector[i][j] = np.mean(neuron[j-1: j+10])
+            if j % 11 == 0:
+                if value == max(neuron[j: j + 11]):
+                    vector[i][j] = np.mean(neuron[j: j + 11])
+            elif j % 11 == 1:
+                if value == max(neuron[j - 1: j + 10]):
+                    vector[i][j] = np.mean(neuron[j - 1: j + 10])
     return vector
 
 
@@ -50,6 +50,21 @@ def format_func_pred(value, tick_number):
         return ""
 
 
+def format_func_both(value, tick_number):
+    N = int(np.round(value / 11))
+    categories = ["Static-5", "Static-10", "Static-15",
+                  "Left-5", "Left-10", "Left-15",
+                  "Right-5", "Right-10", "Right-15",
+                  "Away", "Towards", "Static-40", "Static-60", "Static-80",
+                  "Left-40", "Left-60", "Left-80",
+                  "Right-40", "Right-60", "Right-80",
+                  "Away", "Towards"]
+    if 0 <= N < 22:
+        return "                  " + categories[N]
+    else:
+        return ""
+
+
 def pairwise_distances_sort(response_vector):
     # D = np.zeros((len(response_vector), len(response_vector)))
     # for i in range(len(response_vector)):
@@ -58,7 +73,7 @@ def pairwise_distances_sort(response_vector):
     # _ = np.lexsort(response_vector.T)
     # return response_vector[_, :]
     rv = response_vector.copy()
-    r = np.sum(rv**2, axis=1)
+    r = np.sum(rv ** 2, axis=1)
     idx = np.argsort(r)
     return response_vector[idx, :]
 
@@ -68,11 +83,11 @@ def show_full_vector_simple_abs(response_vector, stimulus_vector, title):
     fig.set_size_inches(18.5, 20)
     # idex = np.lexsort([response_vector[:, 0], response_vector[:, 11]])
     # response_vector = response_vector[idex, :]
-    #response_vector = sorted(response_vector, key=lambda x: sum(x[:]))
+    # response_vector = sorted(response_vector, key=lambda x: sum(x[:]))
     # response_vector = pairwise_distances_sort(response_vector)
     ax.set_title(title, fontsize=45)
     ax.pcolor(response_vector, cmap='OrRd')
-    ax.set_xticks(np.linspace(0.5, len(stimulus_vector)-0.5, len(stimulus_vector)))
+    ax.set_xticks(np.linspace(0.5, len(stimulus_vector) - 0.5, len(stimulus_vector)))
     ax.set_xticklabels(stimulus_vector, rotation='vertical')
     plt.show()
 
@@ -82,16 +97,16 @@ def show_full_vector_simple(response_vector, stimulus_vector, title):
     fig.set_size_inches(18.5, 20)
     # idex = np.lexsort([response_vector[:, 0], response_vector[:, 11]])
     # response_vector = response_vector[idex, :]
-    #response_vector = sorted(response_vector, key=lambda x: sum(x[:]))
+    # response_vector = sorted(response_vector, key=lambda x: sum(x[:]))
     # response_vector = pairwise_distances_sort(response_vector)
     ax.set_title(title, fontsize=45)
     ax.pcolor(response_vector, cmap='coolwarm')
-    ax.set_xticks(np.linspace(0.5, len(stimulus_vector)-0.5, len(stimulus_vector)))
+    ax.set_xticks(np.linspace(0.5, len(stimulus_vector) - 0.5, len(stimulus_vector)))
     ax.set_xticklabels(stimulus_vector, rotation='vertical')
     plt.show()
 
 
-def display_full_response_vector(response_vector, stimulus_vector, title, transition_points=None):
+def display_half_response_vector(response_vector, stimulus_vector, title, transition_points=None):
     fig, ax = plt.subplots()
     # fig.set_size_inches(18.5, 80)
     fig.set_size_inches(18.5, 20)
@@ -110,12 +125,51 @@ def display_full_response_vector(response_vector, stimulus_vector, title, transi
     ax.set_xticks(range(0, len(stimulus_vector), 11), minor=True)
     if transition_points:
         transition_points = [0] + transition_points
+
         # cluster_labels = [i for i in range(len(transition_points))]
 
         def format_func_cluster(value, tick):
             for i, tp in enumerate(transition_points):
                 if value < tp:
-                    return i-1
+                    return i - 1
+            return len(transition_points) - 1
+
+        ax.set_yticks(transition_points, minor=True)
+        ax2 = ax.secondary_yaxis("right")
+        ax2.yaxis.set_major_locator(plt.FixedLocator(transition_points))
+        ax2.yaxis.set_major_formatter(plt.FuncFormatter(format_func_cluster))
+        ax2.set_ylabel("Cluster")
+
+    ax.set_xlabel("Stimulus and Position", fontsize=35)
+    ax.set_ylabel("Neuron", fontsize=35)
+    ax.xaxis.grid(linewidth=1, color="black")
+    # ax.xaxis._axinfo["grid"]['linewidth'] = 3.
+    plt.show()
+
+
+def display_full_response_vector(response_vector, stimulus_vector, title, transition_points=None):
+    fig, ax = plt.subplots()
+    # fig.set_size_inches(18.5, 80)
+    fig.set_size_inches(37, 20)
+    # response_vector = sorted(response_vector, key=lambda x: sum(x[:]))
+    ax.set_title(title, fontsize=45)
+    ax.pcolor(response_vector, cmap='coolwarm')
+    ax.grid(True, which='minor', axis='both', linestyle='-', color='k')
+    ax.set_xlim(0, 242)
+    ax.xaxis.set_major_locator(plt.MultipleLocator(11))
+    ax.xaxis.set_major_formatter(plt.FuncFormatter(format_func_both))
+
+    ax.tick_params(labelsize=15)
+    ax.set_xticks(range(0, len(stimulus_vector), 11), minor=True)
+    if transition_points:
+        transition_points = [0] + transition_points
+
+        # cluster_labels = [i for i in range(len(transition_points))]
+
+        def format_func_cluster(value, tick):
+            for i, tp in enumerate(transition_points):
+                if value < tp:
+                    return i - 1
             return len(transition_points) - 1
 
         ax.set_yticks(transition_points, minor=True)
@@ -163,7 +217,7 @@ def reduce_vector_dimensionality(response_vector, stimulus_vector):
                 for s in stimulus:
                     new_name = new_name + "-" + s
                 new_stimulus_vector.append(new_name)
-                new_neuron_vector.append(sum([abs(v) for v in response_vector[n][i: i+11]]))
+                new_neuron_vector.append(sum([abs(v) for v in response_vector[n][i: i + 11]]))
         new_response_vector.append(new_neuron_vector)
     return np.array(new_response_vector), new_stimulus_vector
 
@@ -206,7 +260,7 @@ def order_vectors_by_agglomerative(vectors, optimal_num=None):
     sil = []
     if optimal_num is None:
         for i in range(10, 50):
-            hc = AgglomerativeClustering(n_clusters=i, affinity = 'euclidean', linkage = 'ward')
+            hc = AgglomerativeClustering(n_clusters=i, affinity='euclidean', linkage='ward')
             y_hc = hc.fit_predict(vectors)
             sil.append(silhouette_score(vectors, y_hc, metric='euclidean'))
         optimal_num = sil.index(min(sil)) + 1
@@ -236,7 +290,7 @@ def knn_clustering_assign_categories(response_vectors, stimulus_vector, optimal_
     lab = kmeans.labels_
     model_labels = []
     for i in range(0, len(all_vectors), len(response_vectors[0])):
-        labels = lab[i:i+len(response_vectors[0])]
+        labels = lab[i:i + len(response_vectors[0])]
         model_labels.append(labels)
 
     # Reordering
@@ -248,7 +302,7 @@ def knn_clustering_assign_categories(response_vectors, stimulus_vector, optimal_
             if lab[i] == cluster:
                 ordered_vectors.append(neuron)
         transition_points.append(len(ordered_vectors))
-    display_full_response_vector(ordered_vectors, stimulus_vector, "Prey Stimuli", transition_points)
+    display_full_response_vector(ordered_vectors, stimulus_vector, "All Stimuli", transition_points)
 
     return model_labels
 
@@ -273,7 +327,7 @@ def display_class_counts(model_names, neuron_groups, group_number):
     plt.show()
 
 
-# for i in range(4, 7):
+# for i in range(3, 7):
 #     full_rv = create_full_response_vector(f"new_differential_prey_ref-{str(i)}", background=True)
 #     full_rv = np.array(full_rv)
 #     full_rv, full_rv2 = list(full_rv[:, :int(len(full_rv[0])/2)]), list(full_rv[:, int(len(full_rv[0])/2):])
@@ -283,27 +337,36 @@ def display_class_counts(model_names, neuron_groups, group_number):
 #     full_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv)
 #     print(len(transition_points))
 
+# for i in range(2, 5):
+#     full_rv = create_full_response_vector(f"new_even_prey_ref-{str(i)}", background=True)
+#     full_rv = np.array(full_rv)
+#     full_rv, full_rv2 = list(full_rv[:, :int(len(full_rv[0])/2)]), list(full_rv[:, int(len(full_rv[0])/2):])
+#     full_sv = create_full_stimulus_vector(f"new_even_prey_ref-{str(i)}")
+#     full_rv = normalise_response_vectors(full_rv)
+#     # full_rv2 = normalise_response_vectors(full_rv2)
+#     full_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv)
+#     print(len(transition_points))
 
 # full_rv2, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv2, 21)
 # display_full_response_vector(full_rv2, full_sv, "Prey Stimuli", transition_points)
 
 #
 # Do clustering over many models:
-full_rv = create_full_response_vector("new_differential_prey_ref-4")
-full_rv2 = create_full_response_vector("new_differential_prey_ref-5")
-full_rv3 = create_full_response_vector("new_differential_prey_ref-6")
-#
+full_rv1 = create_full_response_vector("new_differential_prey_ref-3")
+full_rv2 = create_full_response_vector("new_differential_prey_ref-4")
+full_rv3 = create_full_response_vector("new_differential_prey_ref-5")
+full_rv4 = create_full_response_vector("new_differential_prey_ref-6")
+
 full_sv = create_full_stimulus_vector("new_differential_prey_ref-4")
-#
-model_l = knn_clustering_assign_categories([full_rv, full_rv2, full_rv3], full_sv, 30)
-# save_neuron_groups(["even_prey_ref-5", "even_prey_ref-6", "even_prey_ref-7", "even_prey_ref-4",], model_l, 21)
+
+model_l = knn_clustering_assign_categories([full_rv1, full_rv2, full_rv3, full_rv4], full_sv, 35)
+save_neuron_groups(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5",
+                    "new_differential_prey_ref-6"], model_l, 35)
 # display_class_counts(["even_prey_ref-5", "even_prey_ref-6", "even_prey_ref-7", "even_prey_ref-4",], model_l, 21)
-prey_sv = full_sv[:121]
 #
-many_rv = np.array(full_rv + full_rv2 + full_rv3)
-many_rv = normalise_response_vectors(many_rv)
-many_rv, transition_points, neuron_labels = order_vectors_by_kmeans(many_rv, 30)
-display_full_response_vector(many_rv, full_sv, "Prey Stimuli", transition_points)
+# many_rv = normalise_response_vectors(many_rv)
+# many_rv, transition_points, neuron_labels = order_vectors_by_kmeans(many_rv, 30)
+# display_full_response_vector(many_rv, full_sv, "Prey Stimuli", transition_points)
 
 # Single model:
 # full_rv = create_full_response_vector("even_prey_ref-5")
