@@ -45,8 +45,10 @@ with open(f"diff_naturalistic_targeted-No-Response.json", 'r') as f:
 with open(f"diff_prey_only_targeted-Prey-Sighted.json", 'r') as f:
     c4 = json.load(f)
 
+with open(f"even_missing_vrv.json", 'r') as f:
+    c5 = json.load(f)
 
-target_ablation = c1 + c2 + c3 + c4
+target_ablation = c1 + c2 + c3 + c4 + c5
 
 with open(f"missing_vrv_diff.json", 'r') as f:
     conf = json.load(f)

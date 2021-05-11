@@ -3614,11 +3614,11 @@ def build_ablation_gradient_configuration(model_names, ablation_group, environme
 # build_vrv_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], False, "vrv_full_config")
 # build_vrv_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], False, "vrv_config")
 
-# build_vrv_configuration(["new_even_prey_ref-1", "new_even_prey_ref-2", "new_even_prey_ref-3", "new_even_prey_ref-4"], False, "vrv_full_config_even")
+build_vrv_configuration(["new_even_prey_ref-1"], False, "even_missing_vrv")
 # build_naturalistic_configuration(["new_even_prey_ref-1", "new_even_prey_ref-2", "new_even_prey_ref-3", "new_even_prey_ref-4"], "even_naturalistic", "even_predator", "even_prey_only", "even_behavioural")
 
-build_ablation_gradient_configuration(["new_differential_prey_ref-4"], "No-Response", "differential_prey_only", "diff_prey_only_targeted-No-Response")
-build_ablation_gradient_configuration(["new_differential_prey_ref-4"], "No-Response", "differential_prey_low_predator", "diff_naturalistic_targeted-No-Response")
+# build_ablation_gradient_configuration(["new_differential_prey_ref-4"], "No-Response", "differential_prey_only", "diff_prey_only_targeted-No-Response")
+# build_ablation_gradient_configuration(["new_differential_prey_ref-4"], "No-Response", "differential_prey_low_predator", "diff_naturalistic_targeted-No-Response")
 
 # build_indiscriminate_ablation_gradient_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5"], "differential_prey_only", "diff_prey_only_indiscriminate")
 # build_indiscriminate_ablation_gradient_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], "differential_prey_low_predator", "diff_naturalistic_indiscriminate")
