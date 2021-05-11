@@ -48,7 +48,8 @@ with open(f"even_naturalistic_indiscriminate.json", 'r') as f:
 
 ind_ablation = c1 + c2 + c3 + c4
 
-
+with open(f"missing_vrv_diff.json", 'r') as f:
+    conf = json.load(f)
 current_training_configuration = [
     {
         "Model Name": "new_even_prey_ref",
@@ -154,5 +155,5 @@ current_training_configuration = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ind_ablation)
+manager = TrialManager(conf)
 manager.run_priority_loop()
