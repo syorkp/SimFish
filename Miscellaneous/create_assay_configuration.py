@@ -3571,8 +3571,8 @@ def build_indiscriminate_ablation_gradient_configuration(model_names, environmen
             conf["Model Name"] = model[:-2]
             conf["Trial Number"] = int(model[-1])
             conf["Environment Name"] = environment
-            conf["Assay Configuration Name"] = f"Ablation-Indiscriminate"
-            configuration.append(conf)
+            conf["Assay Configuration Name"] = f"Ablation-Indiscriminate-{environment}"
+            configuration.append(conf.copy())
     with open(f"{configuration_name}.json", 'w') as f:
         json.dump(configuration, f, indent=4)
 
@@ -3597,7 +3597,7 @@ def build_ablation_gradient_configuration(model_names, ablation_group, environme
 # build_differential_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], "differential_prey_low_predator", "differential_naturalistic")
 # build_differential_configuration(["new_differential_prey_ref-4", "new_differential_prey_ref-5"], "differential_prey_low_predator", "missing_nat_diff")
 
-build_vrv_configuration(["new_differential_prey_ref-3", "new_even_prey_ref-1", "new_even_prey_ref-2"], False, "missing_vrv")
+# build_vrv_configuration(["new_differential_prey_ref-3", "new_even_prey_ref-1", "new_even_prey_ref-2"], False, "missing_vrv")
 
 # build_vrv_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], False, "vrv_full_config")
 # build_vrv_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], False, "vrv_config")
@@ -3606,7 +3606,7 @@ build_vrv_configuration(["new_differential_prey_ref-3", "new_even_prey_ref-1", "
 # build_naturalistic_configuration(["new_even_prey_ref-1", "new_even_prey_ref-2", "new_even_prey_ref-3", "new_even_prey_ref-4"], "even_naturalistic", "even_predator", "even_prey_only", "even_behavioural")
 
 
-build_indiscriminate_ablation_gradient_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], "differential_prey_only", "diff_prey_only_indiscriminate")
+build_indiscriminate_ablation_gradient_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5"], "differential_prey_only", "diff_prey_only_indiscriminate")
 build_indiscriminate_ablation_gradient_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], "differential_prey_low_predator", "diff_naturalistic_indiscriminate")
 
 build_indiscriminate_ablation_gradient_configuration(["new_even_prey_ref-1", "new_even_prey_ref-2", "new_even_prey_ref-3", "new_even_prey_ref-4"], "even_prey_only", "even_prey_only_indiscriminate")
