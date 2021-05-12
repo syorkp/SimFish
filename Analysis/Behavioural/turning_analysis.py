@@ -111,16 +111,22 @@ def plot_switching_distribution(left_durs, right_durs):
     plt.plot(x, f(x)/len(right_durs))
     plt.show()
 
+# data = load_data("new_even_prey_ref-2", "Behavioural-Data-Free", f"Prey-1")
+# colored_2d_track_turns(data["position"][300:425], data["behavioural choice"][300:425])
+#
+# for i in range(1, 10):
+#     data = load_data("new_even_prey_ref-2", "Behavioural-Data-Free", f"Prey-{i}")
+#     colored_2d_track_turns(data["position"][100:500], data["behavioural choice"][100:500])
 
-
-data = load_data("new_differential_prey_ref-4", "Behavioural-Data-Free-2", "Naturalistic-1")
 action_sequences = []
 for j in range(1, 4):
     for i in range(1, 11):
-        data = load_data("new_differential_prey_ref-4", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}")
+        data = load_data("new_differential_prey_ref-3", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}")
         action_sequences += get_free_swimming_sequences(data)
-l, r, sl, sr = model_of_action_switching(action_sequences)
-plot_switching_distribution(sl, sr)
+        colored_2d_track_turns(data["position"][-200:], data["behavioural choice"][-200:])
+
+# l, r, sl, sr = model_of_action_switching(action_sequences)
+# plot_switching_distribution(sl, sr)
 
 # plot_turning_sequences(data["fish_angle"])
 # colored_2d_track_turns(data["position"][-200:], data["behavioural choice"][-200:])

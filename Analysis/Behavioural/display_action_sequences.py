@@ -100,7 +100,11 @@ def display_average_sequence(sequences):
 # display_all_sequences_capture(cs)
 #
 
-# tp = get_transition_probabilities("new_differential_prey_ref-5", "Behavioural-Data-Free-1", "Naturalistic", 10, order=4)
+# tp = get_transition_probabilities("even_prey_ref-3", "Behavioural-Data-Free", "Prey", 10, order=4)
+# ms = get_modal_sequences(tp, order=4, number=40)
+# display_sequences(ms)
+#
+# x = True
 
 
 # cs = get_capture_sequences("new_differential_prey_ref-6", "Behavioural-Data-Free-1", "Naturalistic", 10)

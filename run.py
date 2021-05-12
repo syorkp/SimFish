@@ -33,22 +33,25 @@ pred_only_7 = [1, 23, 25, 31, 37, 38, 39, 44, 45, 50, 57, 60, 67, 70, 71, 73, 78
 prey_in_front_7 =[4, 5, 14, 15, 17, 21, 22, 30, 35, 48, 55, 58, 63, 64, 66, 74, 75, 82, 92, 95, 97, 99, 111, 113, 116, 118, 123, 136, 137, 140, 142, 147, 148, 149, 156, 158, 167, 170, 182, 184, 194, 197, 201, 205, 207, 209, 215, 225, 226, 235, 238, 248, 252, 266, 279, 292, 294, 301, 305, 311, 316, 323, 328, 331, 333, 336, 337, 338, 339, 346, 351, 363, 366, 369, 375, 388, 390, 397, 404, 405, 410, 411, 418, 420, 425, 428, 432, 435, 436, 440, 442, 444, 450, 451, 458, 466, 469, 470, 479, 480, 484, 485, 488, 500, 502, 510]
 
 
-with open(f"diff_naturalistic_targeted-Prey-Sighted.json", 'r') as f:
+with open(f"even_naturalistic_targeted-Prey-Full-Field.json", 'r') as f:
     c1 = json.load(f)
 
-with open(f"diff_prey_only_targeted-No-Response.json", 'r') as f:
+with open(f"even_naturalistic_targeted-Prey-Large-Central.json", 'r') as f:
     c2 = json.load(f)
 
-with open(f"diff_naturalistic_targeted-No-Response.json", 'r') as f:
+with open(f"even_naturalistic_targeted-Prey-Predator-Full-Field.json", 'r') as f:
     c3 = json.load(f)
 
-with open(f"diff_prey_only_targeted-Prey-Sighted.json", 'r') as f:
+with open(f"even_prey_only_targeted-Prey-Full-Field.json", 'r') as f:
     c4 = json.load(f)
 
-with open(f"even_missing_vrv.json", 'r') as f:
+with open(f"even_prey_only_targeted-Prey-Large-Central.json", 'r') as f:
     c5 = json.load(f)
 
-target_ablation = c1 + c2 + c3 + c4 + c5
+with open(f"even_prey_only_targeted-Prey-Predator-Full-Field.json", 'r') as f:
+    c6 = json.load(f)
+
+target_ablation = c1 + c2 + c3 + c4 + c5 + c6
 
 with open(f"missing_vrv_diff.json", 'r') as f:
     conf = json.load(f)
