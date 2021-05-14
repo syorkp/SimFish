@@ -1618,7 +1618,7 @@ with open(f"../Analysis/Categorisation-Data/even_prey_neuron_groups.json", 'r') 
 
 #                     Even
 
-# Prey central and large: 30, 25, 2, 9 -1 from all
+# Prey central and large: 29, 24, 1, 8
 # placeholder_list = data2["new_even_prey_ref-4"]["1"] + data2["new_even_prey_ref-4"]["8"] +\
 #                    data2["new_even_prey_ref-4"]["24"] + data2["new_even_prey_ref-4"]["29"]
 
@@ -1627,11 +1627,11 @@ with open(f"../Analysis/Categorisation-Data/even_prey_neuron_groups.json", 'r') 
 #                    data2["new_even_prey_ref-4"]["12"] + data2["new_even_prey_ref-4"]["13"] + \
 #                    data2["new_even_prey_ref-4"]["14"] + data2["new_even_prey_ref-4"]["15"] + \
 #                    data2["new_even_prey_ref-4"]["27"]
-# #
+
 # Predator-Prey full field (positive negative): 4, 5, 15, 20, 28
-placeholder_list = data2["new_even_prey_ref-4"]["3"] + data2["new_even_prey_ref-4"]["4"] +\
-                   data2["new_even_prey_ref-4"]["14"] + data2["new_even_prey_ref-4"]["19"] + \
-                   data2["new_even_prey_ref-4"]["27"]
+# placeholder_list = data2["new_even_prey_ref-4"]["3"] + data2["new_even_prey_ref-4"]["4"] +\
+#                    data2["new_even_prey_ref-4"]["14"] + data2["new_even_prey_ref-4"]["19"] + \
+#                    data2["new_even_prey_ref-4"]["27"]
 
 random.shuffle(placeholder_list)
 

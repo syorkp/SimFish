@@ -9,7 +9,7 @@ import pandas as pd
 import transitionMatrix as tm
 from transitionMatrix import source_path
 from transitionMatrix.estimators import cohort_estimator as es
-from MarkovChain.markovchain import MarkovChain
+# from Analysis.Behavioural.Legacy.MarkovChain.markovchain import MarkovChain
 
 
 from Analysis.load_data import load_data
@@ -112,10 +112,10 @@ def compute_transition_probabilities(transition_counts):
     return transition_probabilities.ravel()
 
 
-def visualise_first_order_transitions(transition_probabilities):
-    matrix_tran = transition_probabilities[:4, :4]
-    mc = MarkovChain(matrix_tran, [str(i) for i in range(0, 4)])
-    mc.draw()
+# def visualise_first_order_transitions(transition_probabilities):
+#     matrix_tran = transition_probabilities[:4, :4]
+#     mc = MarkovChain(matrix_tran, [str(i) for i in range(0, 4)])
+#     mc.draw()
 
 
 def visualisation_method_2(transition_probabilities):

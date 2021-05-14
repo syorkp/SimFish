@@ -1,4 +1,5 @@
 import numpy as np
+import json
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -7,6 +8,18 @@ import math
 
 from Analysis.load_data import load_data
 from Analysis.Behavioural.show_spatial_density import get_action_name
+
+
+def get_full_action_triggered_average(model_name, configuration, assay_id, number_of_trials):
+    action_triggered_averages = {str(i): [0 for i in range(512)] for i in range(10)}
+    for i in range(1, number_of_trials+1):
+        data = load_data(model_name, configuration, f"{assay_id}-{i}")
+        new_ata = get_action_triggered_average(data)
+        for key in new_ata.keys():
+            action_triggered_averages[key] = [n+new_ata[key][i] for i, n in enumerate(action_triggered_averages[key])]
+    for key in action_triggered_averages.keys():
+        action_triggered_averages[key] = [action_triggered_averages[key][n]/number_of_trials for n in range(len(action_triggered_averages[key]))]
+    return action_triggered_averages
 
 
 def get_event_triggered_average(data, event_name):
@@ -53,6 +66,19 @@ def get_for_specific_neurons(atas, neuron_list):
 
 # Timeseries versions
 
+def get_full_ata_timeseries(model_name, configuration, assay_id, number_of_trials, window=5):
+    ata_timeseries = {str(i): [[0 for j in range(2*window)] for k in range(512)] for i in range(10)}
+    for i in range(1, number_of_trials+1):
+        data = load_data(model_name, configuration, f"{assay_id}-{i}")
+        new_ata_t = get_ata_timeseries(data, window)
+        for key in new_ata_t.keys():
+            ata_timeseries[key] = [[m+new_ata_t[key][i][j] for j, m in enumerate(n)] for i, n in enumerate(ata_timeseries[key])]
+    for key in ata_timeseries.keys():
+        for i, neuron in enumerate(ata_timeseries[key]):
+            ata_timeseries[key][i] = [neuron[n]/number_of_trials for n in range(len(neuron))]
+    return ata_timeseries
+
+
 def get_ata_timeseries(data, window=5):
     ata_timeseries = {str(i): [[0 for j in range(2*window)] for k in range(len(data["rnn state"][0][0]))] for i in range(10)}
     action_counts = {str(i): 0 for i in range(10)}
@@ -70,13 +96,27 @@ def get_ata_timeseries(data, window=5):
     return ata_timeseries
 
 
+def get_full_eta_timeseries(model_name, configuration, assay_id, number_of_trials, event="consumed", window=5):
+    if event == "predator":
+        return get_full_predator_eta_timeseries(model_name, configuration, assay_id, number_of_trials, window=5)
+    eta_timeseries = [[0 for j in range(2*window)] for k in range(512)]
+    for i in range(1, number_of_trials+1):
+        data = load_data(model_name, configuration, f"{assay_id}-{i}")
+        new_ata_t = get_eta_timeseries(data, event, window)
+        eta_timeseries = [[m+new_ata_t[i][j] for j, m in enumerate(n)] for i, n in enumerate(eta_timeseries)]
+    for i, neuron in enumerate(eta_timeseries):
+        eta_timeseries[i] = [neuron[n]/number_of_trials for n in range(len(neuron))]
+    return eta_timeseries
+
+
 def get_eta_timeseries(data, event="consumed", window=5):
     eta_timeseries = [[0 for j in range(2*window)] for k in range(len(data["rnn state"][0][0]))]
     neuron_baseline = [np.mean(data["rnn state"][:, :, i]) for i in range(len(data["rnn state"][0][0]))]
     indexes = [i for i, m in enumerate(data[event]) if m > 0]
     for evi in indexes:
         for n, neuron in enumerate(eta_timeseries):
-            eta_timeseries[n] = eta_timeseries[n] + data["rnn state"][evi - window: evi + window, 0, n]
+            if len(neuron) == window * 2 and len(data["rnn state"][evi - window: evi + window, 0, n])== 2*window:
+                eta_timeseries[n] = eta_timeseries[n] + data["rnn state"][evi - window: evi + window, 0, n]
     if len(indexes) > 1:
         for i, n in enumerate(eta_timeseries):
             eta_timeseries[i] = (((n / len(indexes)) - neuron_baseline[i]) / neuron_baseline[i]) * 100
@@ -86,9 +126,24 @@ def get_eta_timeseries(data, event="consumed", window=5):
     return eta_timeseries
 
 
+def get_full_predator_eta_timeseries(model_name, configuration, assay_id, number_of_trials, window=5):
+    eta_timeseries = [[0 for j in range(2 * window)] for k in range(512)]
+    used_trials = 0
+    for i in range(1, number_of_trials + 1):
+        print(i)
+        data = load_data(model_name, configuration, f"{assay_id}-{i}")
+        new_ata_t = get_predator_eta_timeseries(data, window)
+        if new_ata_t is not None:
+            used_trials += 1
+            eta_timeseries = [[m + new_ata_t[i][j] for j, m in enumerate(n)] for i, n in enumerate(eta_timeseries)]
+    for i, neuron in enumerate(eta_timeseries):
+        eta_timeseries[i] = [neuron[n] / used_trials for n in range(len(neuron))]
+    return eta_timeseries
+
+
 def get_predator_eta_timeseries(data, window=5):
     predator_timestamps = [i for i, a in enumerate(data["predator"]) if a == 1]
-    if len(predator_timestamps) == 0:
+    if len(predator_timestamps) < 8:
         print("No predator data")
         return
     predator_sequence_timestamps = []
@@ -129,8 +184,18 @@ def get_average_timeseries(timeseries_array, subset=None):
     return av
 
 
-data = load_data("even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
+# data = load_data("even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
+data = load_data("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
+ata = get_eta(data, "actions")
 
+
+with open(f"../Categorisation-Data/even_prey_neuron_groups.json", 'r') as f:
+    data2 = json.load(f)
+
+placeholder_list = data2["new_even_prey_ref-4"]["1"] + data2["new_even_prey_ref-4"]["8"] +\
+                   data2["new_even_prey_ref-4"]["24"] + data2["new_even_prey_ref-4"]["29"]
+
+ata_subset_1 = get_for_specific_neurons(ata, placeholder_list)
 
 # ata = get_eta(data, "actions")
 #

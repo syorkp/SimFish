@@ -55,7 +55,8 @@ target_ablation = c1 + c2 + c3 + c4 + c5 + c6
 
 with open(f"Run-Configurations/missing_vrv_diff.json", 'r') as f:
     conf = json.load(f)
-current_training_configuration = [
+
+even_training_configuration = [
     {
         "Model Name": "new_even_prey_ref",
         "Environment Name": "even_prey",
@@ -158,7 +159,109 @@ current_training_configuration = [
     },
 ]
 
+differential_training_configuration = [
+    {
+        "Model Name": "new_differential_prey_ref",
+        "Environment Name": "differential_prey",
+        "Trial Number": 3,
+        "Total Configurations": 4,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 8,
+                "4": 10,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "new_differential_prey_ref",
+        "Environment Name": "differential_prey",
+        "Trial Number": 4,
+        "Total Configurations": 4,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 8,
+                "4": 10,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "new_differential_prey_ref",
+        "Environment Name": "differential_prey",
+        "Trial Number": 5,
+        "Total Configurations": 4,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 8,
+                "4": 10,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "new_differential_prey_ref",
+        "Environment Name": "differential_prey",
+        "Trial Number": 6,
+        "Total Configurations": 4,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 8,
+                "4": 10,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(current_training_configuration)
+manager = TrialManager(differential_training_configuration)
 manager.run_priority_loop()

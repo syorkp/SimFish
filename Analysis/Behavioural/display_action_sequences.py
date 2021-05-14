@@ -83,13 +83,13 @@ def display_average_sequence(sequences):
 
 
 
-# tp = get_transition_probabilities("changed_penalties-1", "Naturalistic", "Naturalistic", 2, order=1)
+tp = get_transition_probabilities("changed_penalties-1", "Naturalistic", "Naturalistic", 2, order=1)
 # ms = get_modal_sequences(tp, order=5)
 
-# capture_sequences = get_capture_sequences("even_prey_ref-3", "Behavioural-Data-Free", "Prey", 1)
-# display_all_sequences_capture(capture_sequences[:70])
-# escape_sequences = get_escape_sequences("even_prey_ref-3", "Behavioural-Data-Free", "Predator", 1)
-# display_all_sequences_escape(escape_sequences[:70])
+capture_sequences = get_capture_sequences("new_even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
+display_all_sequences_capture(capture_sequences[:70])
+escape_sequences = get_escape_sequences("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
+display_all_sequences_escape(escape_sequences[:70])
 #
 # escape_sequences = escape_sequences + get_escape_sequences("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 1)
 # # display_all_sequences_escape(escape_sequences[:70])

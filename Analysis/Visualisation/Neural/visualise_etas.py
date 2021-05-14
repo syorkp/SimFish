@@ -3,11 +3,12 @@ import pandas as pd
 import numpy as np
 import math
 import seaborn as sns
+import json
 
 from Analysis.load_data import load_data
-from Analysis.Neural.event_triggered_averages import get_eta, get_eta_timeseries, get_ata_timeseries, get_average_timeseries, get_predator_eta_timeseries
+from Analysis.Neural.event_triggered_averages import get_eta, get_action_triggered_average, get_eta_timeseries, get_ata_timeseries, get_full_eta_timeseries, get_average_timeseries, get_predator_eta_timeseries, get_full_action_triggered_average, get_full_ata_timeseries
 from Analysis.Neural.calculate_vrv import normalise_vrvs
-from Analysis.Visualisation.visualise_response_vectors import order_vectors_by_kmeans
+from Analysis.Visualisation.Neural.visualise_response_vectors import order_vectors_by_kmeans
 from Analysis.Behavioural.show_spatial_density import get_action_name
 
 
@@ -22,7 +23,7 @@ def display_all_atas(atas):
                 atas[i][j] = 1000
     # atas = sorted(atas, key=lambda x: x[3])
     atas = normalise_vrvs(atas)
-    atas = order_vectors_by_kmeans(atas)
+    atas, t, cat = order_vectors_by_kmeans(atas)
     ax.pcolor(atas, cmap='coolwarm')
     # ax.grid(True, which='minor', axis='both', linestyle='-', color='k')
     plt.xticks(range(10), ["                    " + get_action_name(i) for i in range(10)], fontsize=15)
@@ -52,7 +53,6 @@ def boxplot_of_etas(atas):
     ax.boxplot(data, labels=labels)
     ax.set_ylim([-1000, 1000])
     plt.show()
-
 
 
 def neuron_action_scores(event_triggered_averages):
@@ -154,6 +154,28 @@ def display_average_eta_timeseries(eta_timeseries):
 def display_ata_timeseries(ata_timeseries, subset=None):
     for a in ata_timeseries.keys():
         display_eta_timeseries(ata_timeseries[a], subset, f"Action: {a} ")
+
+
+ata = get_full_action_triggered_average("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
+# ata = get_ata_timeseries(data)
+# display_all_atas(ata)
+eta = get_full_eta_timeseries("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
+
+
+with open(f"../Categorisation-Data/even_prey_neuron_groups.json", 'r') as f:
+    data2 = json.load(f)
+
+placeholder_list = data2["new_even_prey_ref-4"]["1"] + data2["new_even_prey_ref-4"]["8"] +\
+                   data2["new_even_prey_ref-4"]["24"] + data2["new_even_prey_ref-4"]["29"]
+
+# display_ata_timeseries(ata, placeholder_list)
+av = get_average_timeseries(eta, placeholder_list)
+pred = get_full_eta_timeseries("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "predator")
+
+av2 = get_average_timeseries(pred, placeholder_list)
+
+display_average_eta_timeseries(av)
+display_average_eta_timeseries(av2)
 
 
 # # 5
