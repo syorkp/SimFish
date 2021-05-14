@@ -58,7 +58,7 @@ env = {'width': 1500,  # arena size
        'predator_impulse': 1.0,
        'immunity_steps': 65,
        # number of steps in the beginning of an episode where the fish is immune from predation
-       'distance_from_fish': 200,  # Distance from the fish at which the predator appears.
+       'distance_from_fish': 300,  # Distance from the fish at which the predator appears.
        'probability_of_predator': 0.05,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.,  # fraction of arena in the dark

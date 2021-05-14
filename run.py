@@ -160,5 +160,5 @@ current_training_configuration = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(target_ablation)
+manager = TrialManager(current_training_configuration)
 manager.run_priority_loop()

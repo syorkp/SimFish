@@ -13,7 +13,7 @@ Due to PyCharm plots error, currently needs to be run in terminal"""
 try:
     arg = sys.argv[1]
 except IndexError:
-    arg = "dif_prey_test"  # Default arg
+    arg = "example"  # Default arg
 
 stimuli = {"prey 1": [
                         {"step": 0,

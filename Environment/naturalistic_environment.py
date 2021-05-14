@@ -27,7 +27,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.col.begin = self.touch_prey
 
         if collisions:
-            self.pred_col = self.space.add_collision_handler(5, 3)
+            self.pred_col = self.space.add_collision_handler(5, 6)
             self.pred_col.begin = self.touch_predator
 
         self.edge_col = self.space.add_collision_handler(1, 3)

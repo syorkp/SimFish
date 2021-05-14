@@ -3,7 +3,16 @@ import seaborn as sns
 from pylab import boxplot, setp
 
 
-from Analysis.Interventions.compare_behavioural_measures import get_both_measures
+from Analysis.Interventions.compare_behavioural_measures import get_both_measures, get_both_measures_random_gradient
+
+
+def plot_gradients_random(ablations, measure):
+    percentages = range(0, 105, 5)
+    plt.plot(percentages, ablations)
+    plt.xlabel("Percentage ablated")
+    plt.ylabel(measure)
+    plt.legend()
+    plt.show()
 
 
 def plot_gradients(ablations, controls, ablation_group, measure):
@@ -48,13 +57,36 @@ def show_gross_changes(full_ablations_prey, control_ablations_prey, no_ablations
     plt.show()
 
 
-predator_control = [23, 22, 20.5, 21, 20, 21, 21, 21, 20, 20]
-pre_control = [23, 23, 23, 22, 23, 21, 23, 22, 22, 23]
-preon_control = [23, 22, 20.5, 20, 22, 21, 21, 20, 19, 20]
-control = pre_control
-
-gradient_results, control_abl, control_no_abl = get_both_measures("even_prey_ref-7", "Prey-in-Front", 3)
-
-plot_gradients([control_no_abl] + gradient_results, [control_no_abl]+control, "Prey-in-Front", "Prey Caught")
-
 # show_gross_changes([22, 22], [30, 30], [30, 30], [10, 10], [10, 10], [10, 10])
+
+# Random
+prey_gradient_random, pred_gradient_random = get_both_measures_random_gradient("new_even_prey_ref-4", "Indiscriminate-even_prey_only", 3)
+plot_gradients_random(prey_gradient_random[:7] + [prey_gradient_random[7]] + prey_gradient_random[7:], "Prey Caught")
+print("\n")
+
+prey_gradient_random, pred_gradient_random = get_both_measures_random_gradient("new_even_prey_ref-1", "Indiscriminate-even_naturalistic", 3)
+plot_gradients_random(prey_gradient_random[:7] + [prey_gradient_random[7]] + prey_gradient_random[7:], "Prey Caught")
+plot_gradients_random(pred_gradient_random[:7] + [pred_gradient_random[7]] + pred_gradient_random[7:], "Predators Avoided")
+pred_gradient_random = [2, 2, 2, 2, 2, 2.66, 2.66, 2.66, 2.66, 2.66, 2.66] # Subsets for 13.6 percent
+prey_gradient_random = [3, 3, 3, 3, 3, 2.66, 2.66, 2.66, 2.66, 2.66, 2.66]
+
+#Prey-Large Central
+# prey_gradient, pred_gradient = get_both_measures("new_even_prey_ref-4", "Prey-Large-Central-even_prey_only", 3)
+# plot_gradients(prey_gradient, prey_gradient_random, "Prey-Large-Central", "Prey Caught")
+# plot_gradients(pred_gradient, pred_gradient_random, "Prey-Large-Central", "Predators Avoided")
+# print("\n")
+#
+# prey_gradient, pred_gradient = get_both_measures("new_even_prey_ref-4", "Prey-Large-Central-even_naturalistic", 3)
+# plot_gradients(prey_gradient, prey_gradient_random, "Prey-Large-Central", "Prey Caught")
+# plot_gradients(pred_gradient, pred_gradient_random, "Prey-Large-Central", "Predators Avoided")
+
+
+prey_gradient, pred_gradient = get_both_measures("new_even_prey_ref-4", "Prey-Full-Field-even_prey_only", 3)
+plot_gradients(prey_gradient, prey_gradient_random, "Prey-Large-Central", "Prey Caught")
+plot_gradients(pred_gradient, pred_gradient_random, "Prey-Large-Central", "Predators Avoided")
+print("\n")
+
+prey_gradient, pred_gradient = get_both_measures("new_even_prey_ref-4", "Prey-Full-Field-even_naturalistic", 3)
+plot_gradients(prey_gradient, prey_gradient_random, "Prey-Large-Central", "Prey Caught")
+plot_gradients(pred_gradient, pred_gradient_random, "Prey-Large-Central", "Predators Avoided")
+
