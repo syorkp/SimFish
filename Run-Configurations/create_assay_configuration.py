@@ -1596,10 +1596,10 @@ prey_behaviour_configuration = {
 }
 
 
-with open(f"neuron_groups.json", 'r') as f:
+with open(f"../Analysis/Categorisation-Data/neuron_groups.json", 'r') as f:
     data = json.load(f)
 
-with open(f"even_prey_neuron_groups.json", 'r') as f:
+with open(f"../Analysis/Categorisation-Data/even_prey_neuron_groups.json", 'r') as f:
     data2 = json.load(f)
 
 
@@ -2704,7 +2704,7 @@ indiscriminate_ablation_gradient = [
                 "recordings": ["consumed", "predator", "behavioural choice"],
                 "ablations": placeholder_list[:int(len(placeholder_list) / 4)],
             },
-]
+        ]
     },
     {
         "Model Nae": "even_prey_ref",
@@ -2765,6 +2765,66 @@ indiscriminate_ablation_gradient = [
             },
             ]
     },
+    {
+        "Model Nae": "even_prey_ref",
+        "Environment Name": "prey_only",
+        "Trial Number": 7,
+        "Assay Configuration Name": f"Ablation-Test-Configuration",
+        "Run Mode": "Assay",
+        "Realistic Bouts": True,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Priority": 1,
+        "set random seed": True,
+        "Assays": [
+            {
+                "assay id": "Ablated-35-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": True,
+                "recordings": ["consumed", "predator", "behavioural choice"],
+                "ablations": placeholder_list[:int(3.5 * len(placeholder_list) / 10)],
+            },
+            {
+                "assay id": "Ablated-35-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": True,
+                "recordings": ["consumed", "predator", "behavioural choice"],
+                "ablations": placeholder_list[:int(3.5 * len(placeholder_list) / 10)],
+            },
+            {
+                "assay id": "Ablated-35-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": True,
+                "recordings": ["consumed", "predator", "behavioural choice"],
+                "ablations": placeholder_list[:int(3.5 * len(placeholder_list) / 10)],
+            },
+        ]
+    },
+
     {
         "Model Name": "even_prey_ref",
         "Environment Name": "prey_only",
