@@ -11,7 +11,6 @@ import scipy.cluster.hierarchy as sch
 from sklearn.metrics import silhouette_score
 
 from Analysis.Neural.calculate_vrv import create_full_response_vector, create_full_stimulus_vector
-from Analysis.Neural.vrv_clustering import knn_clustering_assign_categories, save_neuron_groups
 from Analysis.Neural.label_neurons import normalise_response_vectors
 
 

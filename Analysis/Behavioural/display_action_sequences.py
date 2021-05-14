@@ -2,8 +2,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 
+from Analysis.load_data import load_data
+
 from Analysis.Behavioural.bout_transition_probabilities import get_modal_sequences, get_transition_probabilities, get_third_order_transition_counts, compute_transition_probabilities
 from Analysis.Behavioural.extract_event_action_sequence import get_escape_sequences, get_capture_sequences, create_density_matrix
+from Analysis.Behavioural.turning_analysis import get_free_swimming_sequences
 
 
 def display_sequences(sequences):
@@ -35,7 +38,7 @@ def display_all_sequences_capture(sequences):
 def display_all_sequences_escape(sequences):
     sequences.sort(key=len)
     plot_dim = max([len(seq) for seq in sequences])
-    color_set = ['b', 'g', 'g', 'r', 'y', 'y', "k", "m", "m", "b"]
+    color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'y', "k", "m", "m", "b"]
     plt.figure(figsize=(5, 15))
     for i, seq in enumerate(sequences):
         for j, a in enumerate(reversed(seq)):
@@ -83,13 +86,16 @@ def display_average_sequence(sequences):
 
 
 
-tp = get_transition_probabilities("changed_penalties-1", "Naturalistic", "Naturalistic", 2, order=1)
+# tp = get_transition_probabilities("changed_penalties-1", "Naturalistic", "Naturalistic", 2, order=1)
 # ms = get_modal_sequences(tp, order=5)
+data = load_data("new_differential_prey_ref-4", "Behavioural-Data-Free-1", "Naturalistic-1")
+fs_sequences = get_free_swimming_sequences(data)
+display_all_sequences_escape(fs_sequences)
 
-capture_sequences = get_capture_sequences("new_even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
-display_all_sequences_capture(capture_sequences[:70])
-escape_sequences = get_escape_sequences("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
-display_all_sequences_escape(escape_sequences[:70])
+# capture_sequences = get_capture_sequences("new_even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
+# display_all_sequences_capture(capture_sequences[:70])
+# escape_sequences = get_escape_sequences("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
+# display_all_sequences_escape(escape_sequences[:70])
 #
 # escape_sequences = escape_sequences + get_escape_sequences("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 1)
 # # display_all_sequences_escape(escape_sequences[:70])
@@ -100,7 +106,7 @@ display_all_sequences_escape(escape_sequences[:70])
 # display_all_sequences_capture(cs)
 #
 
-# tp = get_transition_probabilities("even_prey_ref-3", "Behavioural-Data-Free", "Prey", 10, order=4)
+# tp = get_transition_probabilities("new_even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10, order=4)
 # ms = get_modal_sequences(tp, order=4, number=40)
 # display_sequences(ms)
 #

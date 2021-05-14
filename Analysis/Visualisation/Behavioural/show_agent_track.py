@@ -61,22 +61,22 @@ def colored_2d_track_turns(position, action_choice):
 # action_choice = data["behavioural choice"]
 
 # data = load_data("new_even_prey_ref-4", "Behavioural-Data-Free", "Predator-3")
-data = load_data("even_prey_ref-4", "Behavioural-Data-Free", "Predator-10")
-
-position = data["position"]
-action_choice = data["behavioural choice"]
-ac, timestamps = extract_predator_action_sequences(data)
-timestamps = random.sample(timestamps, 20)
-capture_timestamps = [i[-1] for i in timestamps]
-capture_positions = [p for i, p in enumerate(position) if i in capture_timestamps]
-
-ts = []
-for i, t in enumerate(timestamps):
-    if 8 in ac[i] or 7 in ac[i]:
-        ts += t
-position = [p for i, p in enumerate(position) if i in ts]
-action_choice = [a for i, a in enumerate(action_choice) if i in ts]
-colored_2d_track(position, action_choice)
+# data = load_data("even_prey_ref-4", "Behavioural-Data-Free", "Predator-10")
+#
+# position = data["position"]
+# action_choice = data["behavioural choice"]
+# ac, timestamps = extract_predator_action_sequences(data)
+# timestamps = random.sample(timestamps, 20)
+# capture_timestamps = [i[-1] for i in timestamps]
+# capture_positions = [p for i, p in enumerate(position) if i in capture_timestamps]
+#
+# ts = []
+# for i, t in enumerate(timestamps):
+#     if 8 in ac[i] or 7 in ac[i]:
+#         ts += t
+# position = [p for i, p in enumerate(position) if i in ts]
+# action_choice = [a for i, a in enumerate(action_choice) if i in ts]
+# colored_2d_track(position, action_choice)
 
 
 # # data = load_data("new_even_prey_ref-1", "Behavioural-Data-Free", "Naturalistic-2")

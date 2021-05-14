@@ -56,7 +56,7 @@ def get_capture_sequences(model_name, assay_config, assay_id, n):
     all_capture_sequences = []
     for i in range(1, n+1):
         data = load_data(model_name, assay_config, f"{assay_id}-{i}")
-        all_capture_sequences = all_capture_sequences + extract_consumption_action_sequences(data)
+        all_capture_sequences = all_capture_sequences + extract_consumption_action_sequences(data)[0]
     return all_capture_sequences
 
 
@@ -64,7 +64,7 @@ def get_escape_sequences(model_name, assay_config, assay_id, n):
     all_escape_sequences = []
     for i in range(1, n+1):
         data = load_data(model_name, assay_config, f"{assay_id}-{i}")
-        all_escape_sequences = all_escape_sequences + extract_predator_action_sequences(data)
+        all_escape_sequences = all_escape_sequences + extract_predator_action_sequences(data)[0]
     return all_escape_sequences
 
 # capture_sequences = get_capture_sequences("large_all_features-1", "Naturalistic", "Naturalistic", 2)

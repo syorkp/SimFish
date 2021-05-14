@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from Analysis.load_data import load_data
-from Analysis.Visualisation.show_agent_track import colored_2d_track_turns
+from Analysis.Visualisation.Behavioural.show_agent_track import colored_2d_track_turns
 
 
 def plot_turning_sequences(fish_angle):
@@ -118,12 +118,12 @@ def plot_switching_distribution(left_durs, right_durs):
 #     data = load_data("new_even_prey_ref-2", "Behavioural-Data-Free", f"Prey-{i}")
 #     colored_2d_track_turns(data["position"][100:500], data["behavioural choice"][100:500])
 
-action_sequences = []
-for j in range(1, 4):
-    for i in range(1, 11):
-        data = load_data("new_differential_prey_ref-3", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}")
-        action_sequences += get_free_swimming_sequences(data)
-        colored_2d_track_turns(data["position"][-200:], data["behavioural choice"][-200:])
+# action_sequences = []
+# for j in range(1, 4):
+#     for i in range(1, 11):
+#         data = load_data("new_differential_prey_ref-3", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}")
+#         action_sequences += get_free_swimming_sequences(data)
+#         colored_2d_track_turns(data["position"][-200:], data["behavioural choice"][-200:])
 
 # l, r, sl, sr = model_of_action_switching(action_sequences)
 # plot_switching_distribution(sl, sr)
