@@ -101,7 +101,7 @@ params = {'num_actions': 10,  # size of action space
           'startE': 0.2,  # Starting chance of random action
           'endE': 0.01,  # Final chance of random action
           'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
-          'num_episodes': 50000,  # How many episodes of game environment to train network with.
+          'num_episodes': 99999999,  # How many episodes of game environment to train network with.
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
           'max_epLength': 1000,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
