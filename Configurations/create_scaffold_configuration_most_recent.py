@@ -18,7 +18,7 @@ env = {'width': 1500,  # arena size
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step
 
        'fish_mass': 140.,
-       'fish_mouth_size': 5.,
+       'fish_mouth_size': 4.,
        'fish_head_size': 10.,
        'fish_tail_length': 70.,
        'eyes_verg_angle': 77.,  # in deg
@@ -138,19 +138,19 @@ save_files(number)
 number += 1
 
 # 2. Reduce mouth size
-env["fish_mouth_size"] = 4
-save_files(number)
-number += 1
-
-
-# 3. Reduce mouth size
 env["fish_mouth_size"] = 3
 save_files(number)
 number += 1
 
 
-# 4. Reduce mouth size
+# 3. Reduce mouth size
 env["fish_mouth_size"] = 2
+save_files(number)
+number += 1
+
+
+# 4. Reduce mouth size
+env["fish_mouth_size"] = 1
 save_files(number)
 number += 1
 

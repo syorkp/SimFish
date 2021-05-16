@@ -5,7 +5,7 @@
     "phys_dt": 0.1,
     "phys_steps_per_sim_step": 100,
     "fish_mass": 140.0,
-    "fish_mouth_size": 4,
+    "fish_mouth_size": 3,
     "fish_head_size": 10.0,
     "fish_tail_length": 70.0,
     "eyes_verg_angle": 77.0,

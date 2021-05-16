@@ -60,7 +60,7 @@ even_training_configuration = [
     {
         "Model Name": "new_even_prey_ref",
         "Environment Name": "even_prey",
-        "Trial Number": 1,
+        "Trial Number": 5,
         "Total Configurations": 4,
         "Episode Transitions": {
         },
@@ -85,7 +85,7 @@ even_training_configuration = [
     {
         "Model Name": "new_even_prey_ref",
         "Environment Name": "even_prey",
-        "Trial Number": 2,
+        "Trial Number": 6,
         "Total Configurations": 4,
         "Episode Transitions": {
         },
@@ -110,7 +110,7 @@ even_training_configuration = [
     {
         "Model Name": "new_even_prey_ref",
         "Environment Name": "even_prey",
-        "Trial Number": 3,
+        "Trial Number": 7,
         "Total Configurations": 4,
         "Episode Transitions": {
         },
@@ -135,7 +135,7 @@ even_training_configuration = [
     {
         "Model Name": "new_even_prey_ref",
         "Environment Name": "even_prey",
-        "Trial Number": 4,
+        "Trial Number": 8,
         "Total Configurations": 4,
         "Episode Transitions": {
         },
@@ -263,5 +263,5 @@ differential_training_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(differential_training_configuration)
+manager = TrialManager(even_training_configuration)
 manager.run_priority_loop()
