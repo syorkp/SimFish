@@ -15,6 +15,21 @@ def plot_gradients_random(ablations, measure):
     plt.show()
 
 
+def plot_multiple_gradients_random(ablations, measure):
+    percentages = range(0, 105, 5)
+    sns.set()
+    average = [0 for i in percentages]
+    for ablation in ablations:
+        plt.plot(percentages, ablation)
+        average = [average[i] + abl for i, abl in enumerate(ablation)]
+    for i, av in enumerate(average):
+        average[i] = av/len(ablations)
+    plt.plot(percentages, average, color="orange")
+    plt.xlabel("Percentage ablated")
+    plt.ylabel(measure)
+    plt.legend()
+    plt.show()
+
 def plot_gradients(ablations, controls, ablation_group, measure):
     percentages = range(0, 110, 10)
     plt.plot(percentages, controls, label="Control (Random Ablations)")
@@ -57,18 +72,30 @@ def show_gross_changes(full_ablations_prey, control_ablations_prey, no_ablations
     plt.show()
 
 
+
+
 # show_gross_changes([22, 22], [30, 30], [30, 30], [10, 10], [10, 10], [10, 10])
 
-# Random
-prey_gradient_random, pred_gradient_random = get_both_measures_random_gradient("new_even_prey_ref-4", "Indiscriminate-even_prey_only", 3)
-plot_gradients_random(prey_gradient_random[:7] + [prey_gradient_random[7]] + prey_gradient_random[7:], "Prey Caught")
+# Random (all)
+prey_gradient_random1, pred_gradient_random1 = get_both_measures_random_gradient("new_even_prey_ref-1", "Indiscriminate-even_prey_only", 3)
+prey_gradient_random2, pred_gradient_random2 = get_both_measures_random_gradient("new_even_prey_ref-2", "Indiscriminate-even_prey_only", 3)
+prey_gradient_random3, pred_gradient_random3 = get_both_measures_random_gradient("new_even_prey_ref-2", "Indiscriminate-even_prey_only", 3)
+prey_gradient_random4, pred_gradient_random4 = get_both_measures_random_gradient("new_even_prey_ref-4", "Indiscriminate-even_prey_only", 3)
+
+
+plot_multiple_gradients_random([prey_gradient_random[:7] + [prey_gradient_random[7]] + prey_gradient_random[7:] for prey_gradient_random in [prey_gradient_random1,
+prey_gradient_random2,
+prey_gradient_random3,
+prey_gradient_random4]], "Prey Caught")
+# plot_gradients_random(prey_gradient_random[:7] + [prey_gradient_random[7]] + prey_gradient_random[7:], "Prey Caught")
 print("\n")
 
-prey_gradient_random, pred_gradient_random = get_both_measures_random_gradient("new_even_prey_ref-1", "Indiscriminate-even_naturalistic", 3)
+prey_gradient_random, pred_gradient_random = get_both_measures_random_gradient("new_even_prey_ref-1", "Indiscriminate-even_prey_only", 3)
 plot_gradients_random(prey_gradient_random[:7] + [prey_gradient_random[7]] + prey_gradient_random[7:], "Prey Caught")
 plot_gradients_random(pred_gradient_random[:7] + [pred_gradient_random[7]] + pred_gradient_random[7:], "Predators Avoided")
-pred_gradient_random = [2, 2, 2, 2, 2, 2.66, 2.66, 2.66, 2.66, 2.66, 2.66] # Subsets for 13.6 percent
-prey_gradient_random = [3, 3, 3, 3, 3, 2.66, 2.66, 2.66, 2.66, 2.66, 2.66]
+
+# pred_gradient_random = [2, 2, 2, 2, 2, 2.66, 2.66, 2.66, 2.66, 2.66, 2.66] # Subsets for 13.6 percent
+# prey_gradient_random = [3, 3, 3, 3, 3, 2.66, 2.66, 2.66, 2.66, 2.66, 2.66]
 
 #Prey-Large Central
 # prey_gradient, pred_gradient = get_both_measures("new_even_prey_ref-4", "Prey-Large-Central-even_prey_only", 3)

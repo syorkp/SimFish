@@ -180,16 +180,16 @@ def display_selectivity_tally(selectivities, stimulus_vector):
     plt.xticks(rotation=90)
     plt.show()
 
-cats = []
-#
-for i in range(3, 7):
-    full_rv = create_full_response_vector(f"new_differential_prey_ref-{i}")
-    full_sv = create_full_stimulus_vector(f"new_differential_prey_ref-{i}")
-    sel = label_all_units_selectivities(full_rv, full_sv)
-    # display_selectivity_tally(sel, full_sv)
-    cat = assign_neuron_names(sel)
-    cats.append(cat)
-display_categories_counts(cats)
+# cats = []
+# #
+# for i in range(3, 7):
+#     full_rv = create_full_response_vector(f"new_differential_prey_ref-{i}")
+#     full_sv = create_full_stimulus_vector(f"new_differential_prey_ref-{i}")
+#     sel = label_all_units_selectivities(full_rv, full_sv)
+#     # display_selectivity_tally(sel, full_sv)
+#     cat = assign_neuron_names(sel)
+#     cats.append(cat)
+# display_categories_counts(cats)
 
 
 

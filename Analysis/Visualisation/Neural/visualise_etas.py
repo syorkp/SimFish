@@ -6,7 +6,7 @@ import seaborn as sns
 import json
 
 from Analysis.load_data import load_data
-from Analysis.Neural.event_triggered_averages import get_eta, get_action_triggered_average, get_eta_timeseries, get_ata_timeseries, get_full_eta_timeseries, get_average_timeseries, get_predator_eta_timeseries, get_full_action_triggered_average, get_full_ata_timeseries
+from Analysis.Neural.event_triggered_averages import get_eta, get_for_specific_neurons, get_action_triggered_average, get_eta_timeseries, get_ata_timeseries, get_full_eta_timeseries, get_average_timeseries, get_predator_eta_timeseries, get_full_action_triggered_average, get_full_ata_timeseries
 from Analysis.Neural.calculate_vrv import normalise_vrvs
 from Analysis.Visualisation.Neural.visualise_response_vectors import order_vectors_by_kmeans
 from Analysis.Behavioural.show_spatial_density import get_action_name
@@ -83,12 +83,11 @@ def plot_average_action_scores_comparison(atas, labels):
             mean_scores.append(m)
         atas2.append(mean_scores)
 
-    plt.figure(figsize=(15, 5))
     df = pd.DataFrame({label: data for data, label in zip(atas2, labels)})
-
-    df.plot.bar(rot=0, figsize=(15, 5))  # , color={labels[0]: "blue", labels[1]: "blue", labels[2]: "red"}
-    plt.xlabel("Action-Triggered Average")
-    plt.ylabel("Action")
+    sns.set()
+    df.plot.bar(rot=0, figsize=(10, 4.7))  # , color={labels[0]: "blue", labels[1]: "blue", labels[2]: "red"}
+    plt.ylabel("Action-Triggered Average", fontsize=15)
+    plt.xlabel("Bout", fontsize=15)
     plt.xticks([a for a in range(10)], [get_action_name(a) for a in range(10)])
     plt.show()
 
@@ -146,6 +145,7 @@ def display_eta_timeseries(eta_timeseries, subset=None, title="No Title"):
 
 
 def display_average_eta_timeseries(eta_timeseries):
+    sns.set()
     plt.plot(eta_timeseries)
     plt.axvline(x=(len(eta_timeseries) / 2), c="r")
     plt.show()
@@ -156,24 +156,39 @@ def display_ata_timeseries(ata_timeseries, subset=None):
         display_eta_timeseries(ata_timeseries[a], subset, f"Action: {a} ")
 
 
+def display_eta_timeseries_overlay(timeseries_list):
+    sns.set()
+    for eta_time in timeseries_list:
+        # plt.plot([np.log(e) if e > 0 else -np.log(e) for e in eta_time], alpha=0.3, color="r")
+        plt.plot(np.log(eta_time), alpha=0.2, color="r")
+    plt.axvline(x=(len(timeseries_list[0]) / 2), c="r")
+    plt.show()
+
 ata = get_full_action_triggered_average("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
 # ata = get_ata_timeseries(data)
+
 # display_all_atas(ata)
 eta = get_full_eta_timeseries("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
 
 
-with open(f"../Categorisation-Data/even_prey_neuron_groups.json", 'r') as f:
+with open(f"../../Categorisation-Data/even_prey_neuron_groups.json", 'r') as f:
     data2 = json.load(f)
 
 placeholder_list = data2["new_even_prey_ref-4"]["1"] + data2["new_even_prey_ref-4"]["8"] +\
                    data2["new_even_prey_ref-4"]["24"] + data2["new_even_prey_ref-4"]["29"]
 
+prey_in_front = get_for_specific_neurons(ata, placeholder_list)
+
+plot_average_action_scores_comparison([prey_in_front, ata], ["Prey-In-Front", "All"])
+
 # display_ata_timeseries(ata, placeholder_list)
 av = get_average_timeseries(eta, placeholder_list)
 pred = get_full_eta_timeseries("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "predator")
+eta = np.absolute(eta)
+display_eta_timeseries_overlay([eta[i] for i in placeholder_list])# if -1000 < min(eta[i])  and max(eta[i]) < 1000])
+display_eta_timeseries_overlay([e for i, e in enumerate(eta) if -1000 < min(e) and max(e) < 1000 and i not in placeholder_list])
 
 av2 = get_average_timeseries(pred, placeholder_list)
-
 display_average_eta_timeseries(av)
 display_average_eta_timeseries(av2)
 

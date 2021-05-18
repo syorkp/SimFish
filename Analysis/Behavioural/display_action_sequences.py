@@ -4,7 +4,7 @@ import seaborn as sns
 
 from Analysis.load_data import load_data
 
-from Analysis.Behavioural.bout_transition_probabilities import get_modal_sequences, get_transition_probabilities, get_third_order_transition_counts, compute_transition_probabilities
+from Analysis.Behavioural.bout_transition_probabilities import get_modal_sequences, get_fourth_order_transition_counts_from_sequences, get_fifth_order_transition_counts_from_sequences, get_transition_probabilities, get_third_order_transition_counts, compute_transition_probabilities
 from Analysis.Behavioural.extract_event_action_sequence import get_escape_sequences, get_capture_sequences, create_density_matrix
 from Analysis.Behavioural.turning_analysis import get_free_swimming_sequences
 
@@ -88,11 +88,23 @@ def display_average_sequence(sequences):
 
 # tp = get_transition_probabilities("changed_penalties-1", "Naturalistic", "Naturalistic", 2, order=1)
 # ms = get_modal_sequences(tp, order=5)
-data = load_data("new_differential_prey_ref-4", "Behavioural-Data-Free-1", "Naturalistic-1")
-fs_sequences = get_free_swimming_sequences(data)
-display_all_sequences_escape(fs_sequences)
+fs_sequences = []
+for j in range(1, 4):
+    for i in range(1, 11):
+        data = load_data("new_differential_prey_ref-3", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}")
+        fs_sequences += get_free_swimming_sequences(data)
+from Analysis.Behavioural.turning_analysis import divide_sequences
+fs_sequences = divide_sequences(fs_sequences)
+fs_sequences.sort(key=len)
 
-# capture_sequences = get_capture_sequences("new_even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
+display_all_sequences_escape(fs_sequences[-50:])
+
+
+# capture_sequences = get_capture_sequences("new_even_prey_ref-1", "Behavioural-Data-Free", "Prey", 10)
+# transition_counts = get_fourth_order_transition_counts_from_sequences(capture_sequences)
+# tp = compute_transition_probabilities(transition_counts)
+# ms = get_modal_sequences(tp, 4)
+# display_sequences(ms)
 # display_all_sequences_capture(capture_sequences[:70])
 # escape_sequences = get_escape_sequences("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
 # display_all_sequences_escape(escape_sequences[:70])

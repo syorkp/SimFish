@@ -185,17 +185,17 @@ def get_average_timeseries(timeseries_array, subset=None):
 
 
 # data = load_data("even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
-data = load_data("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
-ata = get_eta(data, "actions")
-
-
-with open(f"../Categorisation-Data/even_prey_neuron_groups.json", 'r') as f:
-    data2 = json.load(f)
-
-placeholder_list = data2["new_even_prey_ref-4"]["1"] + data2["new_even_prey_ref-4"]["8"] +\
-                   data2["new_even_prey_ref-4"]["24"] + data2["new_even_prey_ref-4"]["29"]
-
-ata_subset_1 = get_for_specific_neurons(ata, placeholder_list)
+# data = load_data("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
+# ata = get_eta(data, "actions")
+#
+#
+# with open(f"../Categorisation-Data/even_prey_neuron_groups.json", 'r') as f:
+#     data2 = json.load(f)
+#
+# placeholder_list = data2["new_even_prey_ref-4"]["1"] + data2["new_even_prey_ref-4"]["8"] +\
+#                    data2["new_even_prey_ref-4"]["24"] + data2["new_even_prey_ref-4"]["29"]
+#
+# ata_subset_1 = get_for_specific_neurons(ata, placeholder_list)
 
 # ata = get_eta(data, "actions")
 #

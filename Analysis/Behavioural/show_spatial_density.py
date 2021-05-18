@@ -78,19 +78,19 @@ def get_action_name(action_num):
     elif action_num == 2:
         action_name = "RT Left"
     elif action_num == 3:
-        action_name = "Capture Swim"
+        action_name = "sCS"
     elif action_num == 4:
-        action_name = "j-turn Right"
+        action_name = "J-turn Right"
     elif action_num == 5:
-        action_name = "j-turn Left"
+        action_name = "J-turn Left"
     elif action_num == 6:
-        action_name = "Do Nothing"
+        action_name = "Rest"
     elif action_num == 7:
-        action_name = "C-Start Right"
+        action_name = "SLC Right"
     elif action_num == 8:
-        action_name = "C-Start Left"
+        action_name = "SLC Left"
     elif action_num == 9:
-        action_name = "Approach Swim"
+        action_name = "AS"
     else:
         action_name = "None"
     return action_name

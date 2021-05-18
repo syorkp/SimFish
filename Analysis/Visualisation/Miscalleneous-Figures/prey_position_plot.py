@@ -3,6 +3,7 @@ import seaborn as sns
 import numpy as np
 
 from Analysis.load_stimuli_data import load_stimulus_data
+from Analysis.load_data import load_data
 
 
 def prey_position():
@@ -33,5 +34,13 @@ def prey_position():
     plt.show()
 
 
-prey_position()
+def real_prey_position():
+    data = load_data("new_even_prey_ref-3", f"Behavioural-Data-Free", "Prey-1")
+    sns.set()
+    chosen_prey_position = [step[5] for step in data["prey_positions"]][:100]
+    plt.plot([i[0] for i in chosen_prey_position], [i[1] for i in chosen_prey_position])
+    plt.show()
+    x = True
+
+real_prey_position()
 

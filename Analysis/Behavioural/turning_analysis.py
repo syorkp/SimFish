@@ -117,7 +117,11 @@ def plot_switching_distribution(left_durs, right_durs):
     p, x = np.histogram(seq_lengths, bins=10)  # bin it into n = N//10 bins
     x = x[:-1] + (x[1] - x[0]) / 2  # convert bin edges to centers
     f = UnivariateSpline(x, p, s=10)
-    plt.plot(x, f(x)/len(seq_lengths))
+    pdf = f(x)/len(seq_lengths)
+    cdf = [sum(pdf[:i]) for i in range(len(pdf))]
+    plt.plot(x, cdf)
+    plt.xlabel("Turn Streak Length")
+    plt.ylabel("Cumulative Probability")
     plt.show()
 
     # p, x = np.histogram(left_durs, bins=10)  # bin it into n = N//10 bins
@@ -148,20 +152,23 @@ def new_switching_plot(action_sequences):
         for i, action in enumerate(sequence):
             average[i] += action
     for i, av in enumerate(average):
-        average[i] = av/len(transformed_sequences)
+        average[i] = av/(len(transformed_sequences)*2)
     cum_average = [sum(average[:i]) for i, a in enumerate(average)]
     # spl = make_interp_spline(range(len(cum_average)), cum_average, k=2)  # type: BSpline
     # power_smooth = spl(np.linspace(0, 20, 10))
+    sns.set()
     plt.plot(cum_average)
+    plt.xlabel("Number of Turns")
+    plt.ylabel("Cumulative Turn Direction")
     plt.show()
 
 
 def divide_sequences(action_sequences):
     new_action_sequences = []
     for seq in action_sequences:
-        while len(seq) > 10:
-            new_action_sequences.append(seq[:10])
-            seq = seq[10:]
+        while len(seq) > 20:
+            new_action_sequences.append(seq[:20])
+            seq = seq[20:]
         new_action_sequences.append(seq)
     return new_action_sequences
 
@@ -182,31 +189,32 @@ def get_frameshift_sequences(action_sequences):
 #     data = load_data("new_even_prey_ref-2", "Behavioural-Data-Free", f"Prey-{i}")
 #     colored_2d_track_turns(data["position"][100:500], data["behavioural choice"][100:500])
 
-orientation_log = []
+# orientation_log = []
 action_sequences = []
-for j in range(1, 4):
-    for i in range(1, 11):
-        data = load_data("new_differential_prey_ref-4", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}")
-        new_as = get_free_swimming_sequences(data)
-        action_sequences += [[a for a in seq if a == 1 or a == 2] for seq in new_as]
-        orientation_changes = [data["fish_angle"][i]-data["fish_angle"][i-1] for i, angle in enumerate(data["fish_angle"]) if i!=0]
-        orientation_log = orientation_log + orientation_changes
-        # colored_2d_track_turns(data["position"][-200:], data["behavioural choice"][-200:], orientation_changes[-200:])
-        # plot_turning_sequences(data["fish_angle"])
-
 # for j in range(1, 4):
 #     for i in range(1, 11):
-#         data = load_data("new_differential_prey_ref-3", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}")
+#         data = load_data("new_differential_prey_ref-4", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}")
 #         new_as = get_free_swimming_sequences(data)
 #         action_sequences += [[a for a in seq if a == 1 or a == 2] for seq in new_as]
 #         orientation_changes = [data["fish_angle"][i]-data["fish_angle"][i-1] for i, angle in enumerate(data["fish_angle"]) if i!=0]
 #         orientation_log = orientation_log + orientation_changes
+#         # colored_2d_track_turns(data["position"][-200:], data["behavioural choice"][-200:], orientation_changes[-200:])
+#         # plot_turning_sequences(data["fish_angle"])
 
-action_sequences = get_frameshift_sequences(action_sequences)
-action_sequences = divide_sequences(action_sequences)
-new_switching_plot(action_sequences)
-l, r, sl, sr = model_of_action_switching(action_sequences)
-plot_switching_distribution(sl, sr)
+# for j in range(1, 4):
+#     for i in range(1, 11):
+#         data = load_data("new_differential_prey_ref-4", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}")
+#         new_as = get_free_swimming_sequences(data)
+#         action_sequences += [[a for a in seq if a == 1 or a == 2] for seq in new_as]
+# #         orientation_changes = [data["fish_angle"][i]-data["fish_angle"][i-1] for i, angle in enumerate(data["fish_angle"]) if i!=0]
+# #         orientation_log = orientation_log + orientation_changes
+#
+# # action_sequences = get_frameshift_sequences(action_sequences)
+# action_sequences = divide_sequences(action_sequences)
+#
+# new_switching_plot(action_sequences)
+# l, r, sl, sr = model_of_action_switching(action_sequences)
+# plot_switching_distribution(sl, sr)
 
 # plot_turning_sequences(data["fish_angle"])
 # colored_2d_track_turns(data["position"][-200:], data["behavioural choice"][-200:])

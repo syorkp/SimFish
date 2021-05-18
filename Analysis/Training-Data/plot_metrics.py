@@ -18,6 +18,7 @@ def plot_metrics(prey_capture, pred_avoidance, window):
     sns.set()
     plt.figure(figsize=(8,6))
     plt.plot(prey_steps, prey_index_ra)
+    plt.hlines(0.2, 0, 10000,  linestyles={'dashed'}, colors=["y"])
     plt.xlabel("Episode", fontsize=20)
     plt.ylabel("Prey Caught (proportion)", fontsize=20)
     plt.show()
@@ -27,6 +28,7 @@ def plot_metrics(prey_capture, pred_avoidance, window):
 
     plt.figure(figsize=(8,6))
     plt.plot(pred_steps, pred_index_ra)
+    plt.hlines(100, 0, 10000, linestyles={'dashed'}, colors=["y"])
     plt.xlabel("Episode", fontsize=20)
     plt.ylabel("Predator Avoidance Index", fontsize=20)
     plt.show()

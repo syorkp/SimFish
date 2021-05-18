@@ -3,6 +3,7 @@ import matplotlib as mpl
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 from matplotlib.sankey import Sankey
+import seaborn as sns
 import numpy as np
 import pandas as pd
 
@@ -13,6 +14,8 @@ from transitionMatrix.estimators import cohort_estimator as es
 
 
 from Analysis.load_data import load_data
+from Analysis.Behavioural.extract_event_action_sequence import get_escape_sequences, get_capture_sequences
+from Analysis.Behavioural.turning_analysis import get_free_swimming_sequences
 
 
 def get_first_order_transition_counts(p1, p2, p3, n):
@@ -87,6 +90,17 @@ def create_third_order_transition_count_matrix(actions):
     return transition_counts
 
 
+def get_first_order_transition_counts_from_sequences(sequences):
+    transition_counts = np.zeros((10, 10))
+    for sequence in sequences:
+        for i, a in enumerate(sequence):
+            if i == 0:
+                pass
+            else:
+                transition_counts[sequence[i-1]][a] += 1
+    return transition_counts
+
+
 def get_third_order_transition_counts_from_sequences(sequences):
     transition_counts = np.zeros((10, 10, 10, 10))
     for sequence in sequences:
@@ -95,6 +109,27 @@ def get_third_order_transition_counts_from_sequences(sequences):
                 pass
             else:
                 transition_counts[sequence[i-3]][sequence[i-2]][sequence[i-1]][a] += 1
+    return transition_counts
+
+
+def get_fourth_order_transition_counts_from_sequences(sequences):
+    transition_counts = np.zeros((10, 10, 10, 10, 10))
+    for sequence in sequences:
+        for i, a in enumerate(sequence):
+            if i == 0 or i == 1 or i == 2 or i == 3:
+                pass
+            else:
+                transition_counts[sequence[i-4]][sequence[i-3]][sequence[i-2]][sequence[i-1]][a] += 1
+    return transition_counts
+
+def get_fifth_order_transition_counts_from_sequences(sequences):
+    transition_counts = np.zeros((10, 10, 10, 10, 10, 19))
+    for sequence in sequences:
+        for i, a in enumerate(sequence):
+            if i == 0 or i == 1 or i == 2 or i == 3 or i == 4:
+                pass
+            else:
+                transition_counts[sequence[i-5]][sequence[i-4]][sequence[i-3]][sequence[i-2]][sequence[i-1]][a] += 1
     return transition_counts
 
 
@@ -118,15 +153,43 @@ def compute_transition_probabilities(transition_counts):
 #     mc.draw()
 
 
+def get_action_name(action_num):
+    if action_num == 0:
+        action_name = "Slow2"
+    elif action_num == 1:
+        action_name = "RT Right"
+    elif action_num == 2:
+        action_name = "RT Left"
+    elif action_num == 3:
+        action_name = "sCS"
+    elif action_num == 4:
+        action_name = "JT Right"
+    elif action_num == 5:
+        action_name = "JT Left"
+    elif action_num == 6:
+        action_name = "Rest"
+    elif action_num == 7:
+        action_name = "SLC Right"
+    elif action_num == 8:
+        action_name = "SLC Left"
+    elif action_num == 9:
+        action_name = "AS"
+    else:
+        action_name = "None"
+    return action_name
+
+
 def visualisation_method_2(transition_probabilities):
-    fig = plt.figure()
+    sns.set()
+    fig = plt.figure(figsize=(10, 10))
     ax = fig.add_subplot(111, aspect='equal')
+    transition_probabilities = transition_probabilities.reshape((10, 10))
 
     plt.style.use(['ggplot'])
-    plt.ylabel('From State')
-    plt.xlabel('To State')
-    mymap = plt.get_cmap("RdYlGn")
-    mymap = plt.get_cmap("Reds")
+    plt.ylabel('Bout 1', fontsize=15)
+    plt.xlabel('Bout 2', fontsize=15)
+    mymap = plt.get_cmap("YlOrRd")
+    # mymap = plt.get_cmap("Reds")
     # mymap = plt.get_cmap("Greys")
     normalize = mpl.colors.LogNorm(vmin=0.0001, vmax=1)
 
@@ -136,8 +199,8 @@ def visualisation_method_2(transition_probabilities):
     diagonal = transition_probabilities.diagonal()
     # colors = []
 
-    ax.set_xticklabels(range(0, matrix_size))
-    ax.set_yticklabels(range(0, matrix_size))
+    ax.set_xticklabels([get_action_name(i) for i in range(10)])
+    ax.set_yticklabels([get_action_name(i) for i in range(10)])
     ax.xaxis.set_ticks(np.arange(0 + 0.5 * square_size, 1 + 0.5 * square_size, square_size))
     ax.yaxis.set_ticks(np.arange(0 + 0.5 * square_size, 1 + 0.5 * square_size, square_size))
 
@@ -161,9 +224,9 @@ def visualisation_method_2(transition_probabilities):
             )
             ax.add_patch(p)
 
-    cbax = fig.add_axes([0.85, 0.12, 0.05, 0.78])
-    cb = mpl.colorbar.ColorbarBase(cbax, cmap=mymap, norm=normalize, orientation='vertical')
-    cb.set_label("Transition Probability", rotation=270, labelpad=15)
+    # cbax = fig.add_axes([0.85, 0.12, 0.05, 0.78])
+    # cb = mpl.colorbar.ColorbarBase(cbax, cmap=mymap, norm=normalize, orientation='vertical')
+    # cb.set_label("Transition Probability", rotation=270, labelpad=15)
 
     plt.show(block=True)
     plt.interactive(False)
@@ -307,9 +370,14 @@ def get_modal_sequences(transition_probabilities, order=3, number=10):
         ordered_sequences[i] = [int(l) for l in seq]
     return ordered_sequences
 
-
-
-
+# free_swimiming = []
+# for i in range(1, 11):
+#     for j in range(1, 4):
+#         cs = get_free_swimming_sequences(load_data("new_differential_prey_ref-3", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}"))
+#         free_swimiming += cs
+# transition_counts = get_first_order_transition_counts_from_sequences(free_swimiming)
+# tp = compute_transition_probabilities(transition_counts)
+# visualisation_method_2(tp)
 x = True
 # # visualisation_method_2(tp)
 #

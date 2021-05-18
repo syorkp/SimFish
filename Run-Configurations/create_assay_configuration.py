@@ -1619,8 +1619,8 @@ with open(f"../Analysis/Categorisation-Data/even_prey_neuron_groups.json", 'r') 
 #                     Even
 
 # Prey central and large: 29, 24, 1, 8
-# placeholder_list = data2["new_even_prey_ref-4"]["1"] + data2["new_even_prey_ref-4"]["8"] +\
-#                    data2["new_even_prey_ref-4"]["24"] + data2["new_even_prey_ref-4"]["29"]
+placeholder_list = data2["new_even_prey_ref-3"]["1"] + data2["new_even_prey_ref-3"]["8"] +\
+                   data2["new_even_prey_ref-3"]["24"] + data2["new_even_prey_ref-3"]["29"]
 
 # Prey full field: 12, 13, 14, 15, 16, 28, 5
 # placeholder_list = data2["new_even_prey_ref-4"]["4"] + data2["new_even_prey_ref-4"]["11"] +\
@@ -3696,15 +3696,15 @@ def build_ablation_gradient_configuration(model_names, ablation_group, environme
 # build_naturalistic_configuration(["new_even_prey_ref-1", "new_even_prey_ref-2", "new_even_prey_ref-3", "new_even_prey_ref-4"], "even_naturalistic", "even_predator", "even_prey_only", "even_behavioural")
 
 
-#
-# build_ablation_gradient_configuration(["new_even_prey_ref-4"], "Prey-Large-Central", "even_prey_only", "even_prey_only_targeted-Prey-Large-Central")
-# build_ablation_gradient_configuration(["new_even_prey_ref-4"], "Prey-Large-Central", "even_naturalistic", "even_naturalistic_targeted-Prey-Large-Central")
-#
+
+build_ablation_gradient_configuration(["new_even_prey_ref-3"], "Prey-Large-Central", "even_prey_only", "3-even_prey_only_targeted-Prey-Large-Central")
+build_ablation_gradient_configuration(["new_even_prey_ref-3"], "Prey-Large-Central", "even_naturalistic", "3-even_naturalistic_targeted-Prey-Large-Central")
+
 # build_ablation_gradient_configuration(["new_even_prey_ref-4"], "Prey-Full-Field", "even_prey_only", "even_prey_only_targeted-Prey-Full-Field")
 # build_ablation_gradient_configuration(["new_even_prey_ref-4"], "Prey-Full-Field", "even_naturalistic", "even_naturalistic_targeted-Prey-Full-Field")
 
-build_ablation_gradient_configuration(["new_even_prey_ref-4"], "Prey-Predator-Full-Field", "even_prey_only", "even_prey_only_targeted-Prey-Predator-Full-Field")
-build_ablation_gradient_configuration(["new_even_prey_ref-4"], "Prey-Predator-Full-Field", "even_naturalistic", "even_naturalistic_targeted-Prey-Predator-Full-Field")
+# build_ablation_gradient_configuration(["new_even_prey_ref-1"], "Prey-Predator-Full-Field", "even_prey_only", "even_prey_only_targeted-Prey-Predator-Full-Field")
+# build_ablation_gradient_configuration(["new_even_prey_ref-1"], "Prey-Predator-Full-Field", "even_naturalistic", "even_naturalistic_targeted-Prey-Predator-Full-Field")
 
 
 
