@@ -61,6 +61,14 @@ with open(f"Run-Configurations/differential_naturalistic_exploration.json", 'r')
 
 target_ablation = c1 + c2
 
+with open(f"Run-Configurations/even_behavioural.json", 'r') as f:
+    c1 = json.load(f)
+
+with open(f"Run-Configurations/vrv_full_config.json", 'r') as f:
+    c2 = json.load(f)
+
+final_configs = c1 + c2
+
 even_training_configuration = [
     {
         "Model Name": "new_even_prey_ref",
@@ -268,5 +276,5 @@ differential_training_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(target_ablation)
+manager = TrialManager(final_configs)
 manager.run_priority_loop()
