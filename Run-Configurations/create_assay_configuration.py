@@ -1619,8 +1619,8 @@ with open(f"../Analysis/Categorisation-Data/even_prey_neuron_groups.json", 'r') 
 #                     Even
 
 # Prey central and large: 29, 24, 1, 8
-placeholder_list = data2["new_even_prey_ref-3"]["1"] + data2["new_even_prey_ref-3"]["8"] +\
-                   data2["new_even_prey_ref-3"]["24"] + data2["new_even_prey_ref-3"]["29"]
+# placeholder_list = data2["new_even_prey_ref-3"]["1"] + data2["new_even_prey_ref-3"]["8"] +\
+#                    data2["new_even_prey_ref-3"]["24"] + data2["new_even_prey_ref-3"]["29"]
 
 # Prey full field: 12, 13, 14, 15, 16, 28, 5
 # placeholder_list = data2["new_even_prey_ref-4"]["4"] + data2["new_even_prey_ref-4"]["11"] +\
@@ -1632,6 +1632,9 @@ placeholder_list = data2["new_even_prey_ref-3"]["1"] + data2["new_even_prey_ref-
 # placeholder_list = data2["new_even_prey_ref-4"]["3"] + data2["new_even_prey_ref-4"]["4"] +\
 #                    data2["new_even_prey_ref-4"]["14"] + data2["new_even_prey_ref-4"]["19"] + \
 #                    data2["new_even_prey_ref-4"]["27"]
+
+# Exploration diff 4:
+placeholder_list = [240, 292, 411, 352, 242, 187, 279, 321, 100, 204, 203, 164, 435, 58, 20, 389, 104, 432, 343, 229, 409, 64, 475, 231, 253, 132, 490, 76, 318, 459, 347, 447, 374, 337, 430, 169, 35, 233, 454, 200, 155, 114, 24, 147, 59, 381, 192, 405, 179, 458, 97, 201, 29, 191, 182, 228, 362, 281, 69, 45, 83, 456, 366, 43, 238, 185, 273, 270, 1, 95, 299, 210, 312, 304, 424, 499, 48, 221, 78, 149, 216, 417, 477, 212, 158, 379, 303, 361, 61, 368, 474, 473, 462, 190, 316, 452, 178, 101, 119, 481]
 
 random.shuffle(placeholder_list)
 
@@ -3697,8 +3700,8 @@ def build_ablation_gradient_configuration(model_names, ablation_group, environme
 
 
 
-build_ablation_gradient_configuration(["new_even_prey_ref-3"], "Prey-Large-Central", "even_prey_only", "3-even_prey_only_targeted-Prey-Large-Central")
-build_ablation_gradient_configuration(["new_even_prey_ref-3"], "Prey-Large-Central", "even_naturalistic", "3-even_naturalistic_targeted-Prey-Large-Central")
+build_ablation_gradient_configuration(["new_differential_prey_ref-4"], "Exploration", "differential_naturalistic", "differential_naturalistic_exploration")
+build_ablation_gradient_configuration(["new_differential_prey_ref-4"], "Exploration", "differential_prey_low_predator", "differential_prey_low_predator_exploration")
 
 # build_ablation_gradient_configuration(["new_even_prey_ref-4"], "Prey-Full-Field", "even_prey_only", "even_prey_only_targeted-Prey-Full-Field")
 # build_ablation_gradient_configuration(["new_even_prey_ref-4"], "Prey-Full-Field", "even_naturalistic", "even_naturalistic_targeted-Prey-Full-Field")

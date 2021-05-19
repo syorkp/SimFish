@@ -50,9 +50,47 @@ def get_action_triggered_average(data):
     return action_triggered_averages
 
 
+def get_free_swimming_indexes(data):
+    predator_timestamps = [i for i, a in enumerate(data["predator"]) if a == 1]
+    wall_timestamps = [i for i, p in enumerate(data["position"]) if 200 < p[0] < 1300 and 200 < p[1] < 1300]
+    prey_timestamps = []
+    sensing_distance = 200
+    for i, p in enumerate(data["position"]):
+        for prey in data["prey_positions"][i]:
+            sensing_area = [[p[0] - sensing_distance,
+                             p[0] + sensing_distance],
+                            [p[1] - sensing_distance,
+                             p[1] + sensing_distance]]
+            near_prey = sensing_area[0][0] <= prey[0] <= sensing_area[0][1] and \
+                        sensing_area[1][0] <= prey[1] <= sensing_area[1][1]
+            if near_prey:
+                prey_timestamps.append(i)
+                break
+    # Check prey near at each step and add to timestamps.
+    null_timestamps = predator_timestamps + wall_timestamps + prey_timestamps
+    null_timestamps = set(null_timestamps)
+    desired_timestamps = [i for i in range(len(data["behavioural choice"])) if i not in null_timestamps]
+    return desired_timestamps
+
+
+def get_exploration_triggered_average(data):
+    indexes = get_free_swimming_indexes(data)
+    neuron_averages = [0 for i in range(len(data["rnn state"][0][0]))]
+    neural_data = np.squeeze(data["rnn state"])
+    neuron_baseline = [np.mean(data["rnn state"][:, :, i]) for i in range(len(data["rnn state"][0][0]))]
+    for i in indexes:
+        for j, n in enumerate(neuron_averages):
+            neuron_averages[j] += neural_data[i][j]
+    for s, n in enumerate(neuron_averages):
+        neuron_averages[s] = 100 * ((n/len(indexes))-neuron_baseline[s])/neuron_baseline[s]
+    return neuron_averages
+
+
 def get_eta(data, event_name):
     if event_name == "actions":
         return get_action_triggered_average(data)
+    elif event_name == "exploration":
+        return get_exploration_triggered_average(data)
     else:
         return get_event_triggered_average(data, event_name)
 
@@ -184,6 +222,24 @@ def get_average_timeseries(timeseries_array, subset=None):
     return av
 
 
+def get_indexes_of_max(ex, total=100):
+    ex = np.absolute(ex)
+    ex = list(ex)
+    hundred_most_associated = []
+    while len(hundred_most_associated) < total:
+        max_index = ex.index(max(ex))
+        hundred_most_associated.append(max_index)
+        ex[max_index] = 0
+    plt.scatter([0 for i in range(512)], ex, alpha=0.2)
+    plt.show()
+    return hundred_most_associated
+
+
+data = load_data("new_differential_prey_ref-4", "Behavioural-Data-Free-1", "Naturalistic-1")
+ex = get_eta(data, "exploration")
+ind = get_indexes_of_max(ex, 100)
+print(ind)
+x = True
 # data = load_data("even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
 # data = load_data("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
 # ata = get_eta(data, "actions")
