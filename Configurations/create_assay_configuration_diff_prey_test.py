@@ -111,7 +111,7 @@ params = {'num_actions': 10,  # size of action space
           'learning_rate': 0.0001}
 
 
-environment_name = "differential_prey_only"
+environment_name = "differential_naturalistic"
 
 with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)
