@@ -27,6 +27,8 @@ def get_event_triggered_average(data, event_name):
     neuron_averages = [0 for i in range(len(data["rnn state"][0][0]))]
     neural_data = np.squeeze(data["rnn state"])
     neuron_baseline = [np.mean(data["rnn state"][:, :, i]) for i in range(len(data["rnn state"][0][0]))]
+    if len(indexes) == 0:
+        return neuron_averages
     for i in indexes:
         for j, n in enumerate(neuron_averages):
             neuron_averages[j] += neural_data[i][j]
@@ -76,6 +78,8 @@ def get_free_swimming_indexes(data):
 def get_exploration_triggered_average(data):
     indexes = get_free_swimming_indexes(data)
     neuron_averages = [0 for i in range(len(data["rnn state"][0][0]))]
+    if len(indexes) == 0:
+        return neuron_averages
     neural_data = np.squeeze(data["rnn state"])
     neuron_baseline = [np.mean(data["rnn state"][:, :, i]) for i in range(len(data["rnn state"][0][0]))]
     for i in indexes:
@@ -100,6 +104,17 @@ def get_for_specific_neurons(atas, neuron_list):
     for key in atas.keys():
         subset[key] = [atas[key][i] for i in neuron_list]
     return subset
+
+
+def get_full_eta(model_name, configuration, assay_id, number_of_trials, event):
+    etas = [0 for i in range(0, 512)]
+    for i in range(1, number_of_trials+1):
+        data = load_data(model_name, configuration, f"{assay_id}-{i}")
+        eta = get_eta(data, event)
+        etas = [new+etas[i] for i, new in enumerate(eta)]
+    for i, et in enumerate(etas):
+        etas[i] = et/number_of_trials
+    return etas
 
 
 # Timeseries versions
@@ -235,11 +250,11 @@ def get_indexes_of_max(ex, total=100):
     return hundred_most_associated
 
 
-data = load_data("new_differential_prey_ref-4", "Behavioural-Data-Free-1", "Naturalistic-1")
-ex = get_eta(data, "exploration")
-ind = get_indexes_of_max(ex, 100)
-print(ind)
-x = True
+# data = load_data("new_differential_prey_ref-4", "Behavioural-Data-Free-1", "Naturalistic-1")
+# ex = get_eta(data, "exploration")
+# ind = get_indexes_of_max(ex, 100)
+# print(ind)
+# x = True
 # data = load_data("even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
 # data = load_data("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
 # ata = get_eta(data, "actions")

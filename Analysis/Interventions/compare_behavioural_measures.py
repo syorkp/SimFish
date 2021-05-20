@@ -19,6 +19,7 @@ def get_measures_targeted(model, targeted_neurons, percentage, number_of_trials)
     prey_caught = 0
     predators_avoided = 0
     for i in range(1, number_of_trials+1):
+        print(percentage)
         data1 = load_data(model, f"Ablation-Test-{targeted_neurons}", f"Ablated-{percentage}-{i}")
         prey_caught = prey_caught + sum(data1['consumed'])
         predators_avoided = predators_avoided + get_predator_num(data1)

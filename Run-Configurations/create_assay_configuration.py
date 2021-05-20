@@ -1,6 +1,6 @@
 import json
 import random
-
+import copy
 
 predator_response_vector = {
         "Model Name": "even_prey_ref",
@@ -3638,6 +3638,23 @@ def build_differential_configuration(model_names, environment, name):
         json.dump(configuration, f, indent=4)
 
 
+def build_missing_predator_configuration(model_names, predator_config_name, filename):
+    configuration = []
+    for model in model_names:
+        for i in range(1, 4):
+            pred_config = copy.deepcopy(predator_behaviour_configuration)
+
+            pred_config["Model Name"] = model[:-2]
+            pred_config["Trial Number"] = int(model[-1])
+            pred_config["Environment Name"] = predator_config_name
+            for j, assay in enumerate(pred_config["Assays"]):
+                pred_config["Assays"][j]["assay id"] = f"Predator {i*10 + (j+1)}"
+            configuration.append(pred_config)
+
+    with open(f"{filename}.json", 'w') as f:
+        json.dump(configuration, f, indent=4)
+
+
 def build_naturalistic_configuration(model_names, naturalistic_config_name, predator_config_name, prey_config_name, filename):
     configuration = []
     for model in model_names:
@@ -3699,14 +3716,8 @@ def build_ablation_gradient_configuration(model_names, ablation_group, environme
 # build_differential_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], "differential_prey_low_predator", "differential_naturalistic")
 # build_vrv_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], False, "vrv_full_config")
 # build_naturalistic_configuration(["new_even_prey_ref-1", "new_even_prey_ref-2", "new_even_prey_ref-3", "new_even_prey_ref-4"], "even_naturalistic", "even_predator", "even_prey_only", "even_behavioural")
-build_vrv_configuration(["new_even_prey_ref-4",
-                         "new_even_prey_ref-5",
-                         "new_even_prey_ref-6",
-                         "new_even_prey_ref-7"], False, "vrv_full_config")
-build_naturalistic_configuration(["new_even_prey_ref-4",
-                                  "new_even_prey_ref-5",
-                                  "new_even_prey_ref-6",
-                                  "new_even_prey_ref-8"], "even_naturalistic", "even_predator", "even_prey_only", "even_behavioural")
+build_vrv_configuration(["new_even_prey_ref-8"], False, "vrv_missing_config")
+build_missing_predator_configuration(["even_prey_ref-4"], "even_predator", "extra_predator")
 
 
 #

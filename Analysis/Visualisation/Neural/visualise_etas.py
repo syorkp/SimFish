@@ -6,27 +6,62 @@ import seaborn as sns
 import json
 
 from Analysis.load_data import load_data
-from Analysis.Neural.event_triggered_averages import get_eta, get_for_specific_neurons, get_action_triggered_average, get_eta_timeseries, get_ata_timeseries, get_full_eta_timeseries, get_average_timeseries, get_predator_eta_timeseries, get_full_action_triggered_average, get_full_ata_timeseries
+from Analysis.Neural.event_triggered_averages import get_eta, get_full_eta, get_for_specific_neurons, get_action_triggered_average, get_eta_timeseries, get_ata_timeseries, get_full_eta_timeseries, get_average_timeseries, get_predator_eta_timeseries, get_full_action_triggered_average, get_full_ata_timeseries
 from Analysis.Neural.calculate_vrv import normalise_vrvs
 from Analysis.Visualisation.Neural.visualise_response_vectors import order_vectors_by_kmeans
 from Analysis.Behavioural.show_spatial_density import get_action_name
 
 
-def display_all_atas(atas):
-    fig, ax = plt.subplots()
-    fig.set_size_inches(18.5, 20)
-    atas = [atas[key] for key in atas.keys()]
+def display_all_atas(atas, groups=None):
+
+    used_indexes = [int(key) for key in atas.keys() if sum(atas[key]) !=0]
+    atas = [atas[key] for key in atas.keys() if sum(atas[key]) !=0]
     atas = [[atas[action][neuron] for action in range(len(atas))] for neuron in range(len(atas[0]))]
     for i, neuron in enumerate(atas):
         for j, action in enumerate(neuron):
             if action >1000:
                 atas[i][j] = 1000
-    # atas = sorted(atas, key=lambda x: x[3])
     atas = normalise_vrvs(atas)
-    atas, t, cat = order_vectors_by_kmeans(atas)
-    ax.pcolor(atas, cmap='coolwarm')
+    fig, ax = plt.subplots()
+    fig.set_size_inches(1.85*len(used_indexes), 20)
+    if groups:
+        ordered_atas = []
+        indexes = [j for sub in [groups[i] for i in groups.keys()] for j in sub]
+        for i in indexes:
+            ordered_atas.append(atas[i])
+        ax.pcolor(ordered_atas, cmap='coolwarm')
+
+    else:
+        # atas, t, cat = order_vectors_by_kmeans(atas)
+        ax.pcolor(atas, cmap='coolwarm')
     # ax.grid(True, which='minor', axis='both', linestyle='-', color='k')
-    plt.xticks(range(10), ["                    " + get_action_name(i) for i in range(10)], fontsize=15)
+    plt.xticks(range(len(used_indexes)), ["                    " + get_action_name(i) for i in used_indexes], fontsize=15)
+    # ax.set_yticks(lat_grid, minor=True)
+
+    plt.show()
+
+
+def display_all_etas(etas, event_names, groups=None):
+    for i, event in enumerate(etas):
+        for j, neuron in enumerate(event):
+            if neuron > 1000:
+                etas[i][j] = 1000
+    etas = [[etas[i][n] for i in range(len(etas))] for n in range(len(etas[0]))]
+    etas = normalise_vrvs(etas)
+    fig, ax = plt.subplots()
+    fig.set_size_inches(1.85*len(event_names), 20)
+    if groups:
+        ordered_atas = []
+        indexes = [j for sub in [groups[i] for i in groups.keys()] for j in sub]
+        for i in indexes:
+            ordered_atas.append(etas[i])
+        ax.pcolor(ordered_atas, cmap='coolwarm')
+
+    else:
+        # atas, t, cat = order_vectors_by_kmeans(atas)
+        ax.pcolor(etas, cmap='coolwarm')
+    # ax.grid(True, which='minor', axis='both', linestyle='-', color='k')
+    plt.xticks(range(len(event_names)), ["                    " + i for i in event_names], fontsize=15)
     # ax.set_yticks(lat_grid, minor=True)
 
     plt.show()
@@ -76,19 +111,23 @@ def plot_average_action_scores(event_triggered_averages):
 
 def plot_average_action_scores_comparison(atas, labels):
     atas2 = []
+    used_actions = []
     for ata in atas:
         mean_scores = []
         for a in range(10):
             m = np.mean(ata[str(a)])
-            mean_scores.append(m)
-        atas2.append(mean_scores)
+            if m != 0:
+                mean_scores.append(m)
+                used_actions.append(a)
 
+        atas2.append(mean_scores)
+    used_actions = list(set(used_actions))
     df = pd.DataFrame({label: data for data, label in zip(atas2, labels)})
     sns.set()
     df.plot.bar(rot=0, figsize=(10, 4.7))  # , color={labels[0]: "blue", labels[1]: "blue", labels[2]: "red"}
     plt.ylabel("Action-Triggered Average", fontsize=15)
     plt.xlabel("Bout", fontsize=15)
-    plt.xticks([a for a in range(10)], [get_action_name(a) for a in range(10)])
+    plt.xticks([a for a in range(len(used_actions))], [get_action_name(a) for a in used_actions])
     plt.show()
 
 
@@ -166,13 +205,21 @@ def display_eta_timeseries_overlay(timeseries_list):
 
 ata = get_full_action_triggered_average("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
 # ata = get_ata_timeseries(data)
-
-# display_all_atas(ata)
-eta = get_full_eta_timeseries("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
-
-
 with open(f"../../Categorisation-Data/even_prey_neuron_groups.json", 'r') as f:
     data2 = json.load(f)
+
+# display_all_atas(ata)
+#
+# display_all_atas(ata, data2["new_even_prey_ref-4"])
+# eta = get_full_eta_timeseries("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
+
+data = load_data("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
+ex1 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "exploration")
+ex2 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "consumed")
+ex3 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "predator")
+display_all_etas([ex1, ex2, ex3], ["exploration", "consumption", "predator"], data2["new_even_prey_ref-4"])
+
+
 
 placeholder_list = data2["new_even_prey_ref-4"]["1"] + data2["new_even_prey_ref-4"]["8"] +\
                    data2["new_even_prey_ref-4"]["24"] + data2["new_even_prey_ref-4"]["29"]

@@ -27,7 +27,7 @@ def new_load_stimulus_data(model_name, assay_name, assay_id):
 def load_stimulus_data(model_name, assay_name, assay_id):
     path = f"{model_name}/{assay_name}-{assay_id}-stimuli_data.json"
 
-    with open(f"../../Assay-Output/{path}") as file:
+    with open(f"../../../Assay-Output/{path}") as file:
         data = json.load(file)
 
     to_delete = []

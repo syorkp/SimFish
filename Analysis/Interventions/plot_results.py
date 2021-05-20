@@ -98,12 +98,22 @@ pred_gradient_random = [2, 2, 2, 2, 2, 2.66, 2.66, 2.66, 2.66, 2.66, 2.66] # Sub
 prey_gradient_random = [3, 3, 3, 3, 3, 2.66, 2.66, 2.66, 2.66, 2.66, 2.66]
 
 #Prey-Large Central
-prey_gradient, pred_gradient = get_both_measures("new_even_prey_ref-3", "Prey-Large-Central-even_prey_only", 3)
+# prey_gradient, pred_gradient = get_both_measures("new_even_prey_ref-3", "Prey-Large-Central-even_prey_only", 3)
+# plot_gradients(prey_gradient, prey_gradient_random, "Prey-Large-Central", "Prey Caught")
+# plot_gradients(pred_gradient, pred_gradient_random, "Prey-Large-Central", "Predators Avoided")
+# print("\n")
+#
+# prey_gradient, pred_gradient = get_both_measures("new_even_prey_ref-3", "Prey-Large-Central-even_naturalistic", 3)
+# plot_gradients(prey_gradient, prey_gradient_random, "Prey-Large-Central", "Prey Caught")
+# plot_gradients(pred_gradient, pred_gradient_random, "Prey-Large-Central", "Predators Avoided")
+
+# Exploration
+prey_gradient, pred_gradient = get_both_measures("new_differential_prey_ref-4", "Exploration-differential_naturalistic", 3)
 plot_gradients(prey_gradient, prey_gradient_random, "Prey-Large-Central", "Prey Caught")
 plot_gradients(pred_gradient, pred_gradient_random, "Prey-Large-Central", "Predators Avoided")
 print("\n")
 
-prey_gradient, pred_gradient = get_both_measures("new_even_prey_ref-3", "Prey-Large-Central-even_naturalistic", 3)
+prey_gradient, pred_gradient = get_both_measures("new_differential_prey_ref-4", "Exploration-differential_prey_low_predator", 3)
 plot_gradients(prey_gradient, prey_gradient_random, "Prey-Large-Central", "Prey Caught")
 plot_gradients(pred_gradient, pred_gradient_random, "Prey-Large-Central", "Predators Avoided")
 
