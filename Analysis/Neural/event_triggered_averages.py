@@ -7,7 +7,7 @@ import math
 
 
 from Analysis.load_data import load_data
-from Analysis.Behavioural.show_spatial_density import get_action_name
+from Analysis.Behavioural.New.show_spatial_density import get_action_name
 
 
 def get_full_action_triggered_average(model_name, configuration, assay_id, number_of_trials):
@@ -149,10 +149,10 @@ def get_ata_timeseries(data, window=5):
     return ata_timeseries
 
 
-def get_full_eta_timeseries(model_name, configuration, assay_id, number_of_trials, event="consumed", window=5):
+def get_full_eta_timeseries(model_name, configuration, assay_id, number_of_trials, event="consumed", window=10):
     if event == "predator":
         return get_full_predator_eta_timeseries(model_name, configuration, assay_id, number_of_trials, window=5)
-    eta_timeseries = [[0 for j in range(2*window)] for k in range(512)]
+    eta_timeseries = [[0 for j in range(2*window+1)] for k in range(512)]
     for i in range(1, number_of_trials+1):
         data = load_data(model_name, configuration, f"{assay_id}-{i}")
         new_ata_t = get_eta_timeseries(data, event, window)
@@ -162,14 +162,14 @@ def get_full_eta_timeseries(model_name, configuration, assay_id, number_of_trial
     return eta_timeseries
 
 
-def get_eta_timeseries(data, event="consumed", window=5):
-    eta_timeseries = [[0 for j in range(2*window)] for k in range(len(data["rnn state"][0][0]))]
+def get_eta_timeseries(data, event="consumed", window=10):
+    eta_timeseries = [[0 for j in range(2*window+1)] for k in range(len(data["rnn state"][0][0]))]
     neuron_baseline = [np.mean(data["rnn state"][:, :, i]) for i in range(len(data["rnn state"][0][0]))]
     indexes = [i for i, m in enumerate(data[event]) if m > 0]
     for evi in indexes:
         for n, neuron in enumerate(eta_timeseries):
-            if len(neuron) == window * 2 and len(data["rnn state"][evi - window: evi + window, 0, n])== 2*window:
-                eta_timeseries[n] = eta_timeseries[n] + data["rnn state"][evi - window: evi + window, 0, n]
+            if len(neuron) == (window * 2)+1 and len(data["rnn state"][evi - window: evi + window+1, 0, n])== 2*window+1:
+                eta_timeseries[n] = eta_timeseries[n] + data["rnn state"][evi - window: evi + window+1, 0, n]
     if len(indexes) > 1:
         for i, n in enumerate(eta_timeseries):
             eta_timeseries[i] = (((n / len(indexes)) - neuron_baseline[i]) / neuron_baseline[i]) * 100

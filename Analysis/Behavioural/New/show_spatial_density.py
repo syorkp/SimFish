@@ -263,8 +263,9 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
 # create_j_turn_overlap_plot("even_prey_ref-7", "Behavioural-Data-Free", "Prey", 10)
 # create_j_turn_overlap_plot("even_prey_ref-7", "Ablation-Test-Spatial-Density", "Prey-Only-Ablated-100", 3)
 
-get_all_density_plots_all_subsets("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 10)
-create_cstart_overlap_plot("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 10)
+#THESE ONES:
+# get_all_density_plots_all_subsets("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 10)
+# create_cstart_overlap_plot("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 10)
 #
 # # create_routine_turn_overlap_plot("even_prey_ref-5", "Behavioural-Data-Free", "Prey", 10)
 #

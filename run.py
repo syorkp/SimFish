@@ -276,5 +276,5 @@ differential_training_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(final_configs)
+manager = TrialManager(c1)
 manager.run_priority_loop()

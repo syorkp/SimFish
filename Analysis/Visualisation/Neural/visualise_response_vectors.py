@@ -301,15 +301,15 @@ def display_class_counts(model_names, neuron_groups, group_number):
 #     full_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv)
 #     print(len(transition_points))
 
-for i in [4, 5, 6, 8]:
-    full_rv = create_full_response_vector(f"new_even_prey_ref-{str(i)}", background=True)
-    full_rv = np.array(full_rv)
-    full_rv, full_rv2 = list(full_rv[:, :int(len(full_rv[0])/2)]), list(full_rv[:, int(len(full_rv[0])/2):])
-    full_sv = create_full_stimulus_vector(f"new_even_prey_ref-{str(i)}")
-    full_rv = normalise_response_vectors(full_rv)
-    full_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv)
-    print(len(transition_points))
-    display_full_response_vector(full_rv, full_sv, "Prey Stimuli", transition_points)
+# for i in [4, 5, 6, 8]:
+#     full_rv = create_full_response_vector(f"new_even_prey_ref-{str(i)}", background=True)
+#     full_rv = np.array(full_rv)
+#     full_rv, full_rv2 = list(full_rv[:, :int(len(full_rv[0])/2)]), list(full_rv[:, int(len(full_rv[0])/2):])
+#     full_sv = create_full_stimulus_vector(f"new_even_prey_ref-{str(i)}")
+#     full_rv = normalise_response_vectors(full_rv)
+#     full_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv)
+#     print(len(transition_points))
+#     display_full_response_vector(full_rv, full_sv, "Prey Stimuli", transition_points)
 
 # Single model:
 # full_rv = create_full_response_vector("even_prey_ref-5")

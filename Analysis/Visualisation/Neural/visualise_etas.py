@@ -9,7 +9,7 @@ from Analysis.load_data import load_data
 from Analysis.Neural.event_triggered_averages import get_eta, get_full_eta, get_for_specific_neurons, get_action_triggered_average, get_eta_timeseries, get_ata_timeseries, get_full_eta_timeseries, get_average_timeseries, get_predator_eta_timeseries, get_full_action_triggered_average, get_full_ata_timeseries
 from Analysis.Neural.calculate_vrv import normalise_vrvs
 from Analysis.Visualisation.Neural.visualise_response_vectors import order_vectors_by_kmeans
-from Analysis.Behavioural.show_spatial_density import get_action_name
+from Analysis.Behavioural.New.show_spatial_density import get_action_name
 
 
 def display_all_atas(atas, groups=None):
@@ -185,8 +185,22 @@ def display_eta_timeseries(eta_timeseries, subset=None, title="No Title"):
 
 def display_average_eta_timeseries(eta_timeseries):
     sns.set()
-    plt.plot(eta_timeseries)
-    plt.axvline(x=(len(eta_timeseries) / 2), c="r")
+    duration = len(eta_timeseries)
+    plt.plot(range(-int(duration/2), int(duration/2), 1), eta_timeseries)
+    plt.axvline(x=0, c="r")
+    plt.show()
+
+
+def display_multiple_average_eta_timeseries(eta_timeseries_list, group_labels):
+    sns.set()
+    duration = len(eta_timeseries_list[0])
+    plt.figure(figsize=(8, 8))
+    for label, eta_timeseries in zip(group_labels, eta_timeseries_list):
+        plt.plot(range(-int(duration/2), int(duration/2)+1, 1), eta_timeseries, label=label)
+    plt.axvline(x=0, c="r")
+    plt.legend()
+    plt.xlabel("Time to Prey Consumption (steps)")
+    plt.ylabel("Normalised Event-Associated Activity")
     plt.show()
 
 
@@ -200,10 +214,11 @@ def display_eta_timeseries_overlay(timeseries_list):
     for eta_time in timeseries_list:
         # plt.plot([np.log(e) if e > 0 else -np.log(e) for e in eta_time], alpha=0.3, color="r")
         plt.plot(np.log(eta_time), alpha=0.2, color="r")
-    plt.axvline(x=(len(timeseries_list[0]) / 2), c="r")
+    plt.axvline(x=0, c="r")
     plt.show()
 
-ata = get_full_action_triggered_average("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
+# Single-point
+# ata = get_full_action_triggered_average("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
 # ata = get_ata_timeseries(data)
 with open(f"../../Categorisation-Data/even_prey_neuron_groups.json", 'r') as f:
     data2 = json.load(f)
@@ -211,32 +226,38 @@ with open(f"../../Categorisation-Data/even_prey_neuron_groups.json", 'r') as f:
 # display_all_atas(ata)
 #
 # display_all_atas(ata, data2["new_even_prey_ref-4"])
-# eta = get_full_eta_timeseries("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
 
-data = load_data("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
-ex1 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "exploration")
-ex2 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "consumed")
-ex3 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "predator")
-display_all_etas([ex1, ex2, ex3], ["exploration", "consumption", "predator"], data2["new_even_prey_ref-4"])
-
-
+# data = load_data("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
+# ex1 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "exploration")
+# ex2 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "consumed")
+# ex3 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "predator")
+# display_all_etas([ex1, ex2, ex3], ["exploration", "consumption", "predator"], data2["new_even_prey_ref-4"])
 
 placeholder_list = data2["new_even_prey_ref-4"]["1"] + data2["new_even_prey_ref-4"]["8"] +\
                    data2["new_even_prey_ref-4"]["24"] + data2["new_even_prey_ref-4"]["29"]
 
-prey_in_front = get_for_specific_neurons(ata, placeholder_list)
+# prey_in_front = get_for_specific_neurons(ata, placeholder_list)
+# plot_average_action_scores_comparison([prey_in_front, ata], ["Prey-In-Front", "All Neurons"])
 
-plot_average_action_scores_comparison([prey_in_front, ata], ["Prey-In-Front", "All"])
 
-# display_ata_timeseries(ata, placeholder_list)
-av = get_average_timeseries(eta, placeholder_list)
-pred = get_full_eta_timeseries("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "predator")
+# Timeseries:
+
+eta = get_full_eta_timeseries("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
 eta = np.absolute(eta)
+prey_in_front_capture_average = get_average_timeseries(eta, placeholder_list)
+other_capture_average = get_average_timeseries(eta, [i for i in range(512) if i not in placeholder_list])
+
+display_multiple_average_eta_timeseries([prey_in_front_capture_average, other_capture_average], ["Prey in Front", "All Neurons"])
+
+pred = get_full_eta_timeseries("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "predator")
+av2 = get_average_timeseries(pred, placeholder_list)
+
+# Overlay plots
+# eta = normalise_vrvs(eta)
+# eta = np.absolute(eta)
 display_eta_timeseries_overlay([eta[i] for i in placeholder_list])# if -1000 < min(eta[i])  and max(eta[i]) < 1000])
 display_eta_timeseries_overlay([e for i, e in enumerate(eta) if -1000 < min(e) and max(e) < 1000 and i not in placeholder_list])
 
-av2 = get_average_timeseries(pred, placeholder_list)
-display_average_eta_timeseries(av)
 display_average_eta_timeseries(av2)
 
 
