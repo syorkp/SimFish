@@ -131,7 +131,11 @@ def get_all_density_plots_all_subsets(p1, p2, p3, n):
         prey_cloud = []
         pred_cloud = []
         for i in range(1, n+1):
-            data = load_data(p1, p2, f"{p3}-{i}")
+            if i > 10:
+                data = load_data(p1, f"{p2}-2", f"{p3} {i}")
+            else:
+                data = load_data(p1, p2, f"{p3}-{i}")
+
             prey_1, pred_1 = get_clouds_with_action(data, action_num)
             prey_cloud = prey_cloud + prey_1
             pred_cloud = pred_cloud + pred_1
@@ -222,12 +226,18 @@ def create_routine_turn_overlap_plot(p1, p2, p3, n):
 def create_cstart_overlap_plot(p1, p2, p3, n):
     prey_cloud_left = []
     for i in range(1, n+1):
-        data = load_data(p1, p2, f"{p3}-{i}")
+        if i > 10:
+            data = load_data(p1, f"{p2}-2", f"{p3} {i}")
+        else:
+            data = load_data(p1, p2, f"{p3}-{i}")
         prey_1, pred_1 = get_clouds_with_action(data, 7)
         prey_cloud_left = prey_cloud_left + prey_1
     prey_cloud_right = []
     for i in range(1, n+1):
-        data = load_data(p1, p2, f"{p3}-{i}")
+        if i > 10:
+            data = load_data(p1, f"{p2}-2", f"{p3} {i}")
+        else:
+            data = load_data(p1, p2, f"{p3}-{i}")
         prey_1, pred_1 = get_clouds_with_action(data, 8)
         prey_cloud_right = prey_cloud_right + prey_1
     n_samples = len(prey_cloud_left) + len(prey_cloud_right)
@@ -264,8 +274,8 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
 # create_j_turn_overlap_plot("even_prey_ref-7", "Ablation-Test-Spatial-Density", "Prey-Only-Ablated-100", 3)
 
 #THESE ONES:
-# get_all_density_plots_all_subsets("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 10)
-# create_cstart_overlap_plot("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 10)
+# get_all_density_plots_all_subsets("new_even_prey_ref-8", "Behavioural-Data-Free", "Predator", 10)
+# create_cstart_overlap_plot("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 40)
 #
 # # create_routine_turn_overlap_plot("even_prey_ref-5", "Behavioural-Data-Free", "Prey", 10)
 #

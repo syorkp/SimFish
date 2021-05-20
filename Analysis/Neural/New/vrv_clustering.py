@@ -1,17 +1,9 @@
-import matplotlib.pyplot as plt
-from matplotlib import colors
-import numpy as np
 import json
-from collections import Counter
-import seaborn as sns
-import pandas as pd
 
-from sklearn.cluster import KMeans, AgglomerativeClustering
-import scipy.cluster.hierarchy as sch
-from sklearn.metrics import silhouette_score
+from sklearn.cluster import KMeans
 
-from Analysis.Neural.calculate_vrv import create_full_response_vector, create_full_stimulus_vector
-from Analysis.Neural.label_neurons import normalise_response_vectors
+from Analysis.Neural.New.calculate_vrv import create_full_response_vector, create_full_stimulus_vector
+from Analysis.Neural.New.label_neurons import normalise_response_vectors
 from Analysis.Visualisation.Neural.visualise_response_vectors import display_full_response_vector
 
 
@@ -22,7 +14,7 @@ def knn_clustering_assign_categories(response_vectors, stimulus_vector, optimal_
         all_vectors += vector
     all_vectors = normalise_response_vectors(all_vectors)
 
-    kmeans = KMeans(n_clusters=optimal_num).fit(all_vectors)
+    kmeans = KMeans(n_clusters=optimal_num, n_init=20).fit(all_vectors)
     lab = kmeans.labels_
     model_labels = []
     for i in range(0, len(all_vectors), len(response_vectors[0])):
@@ -40,7 +32,7 @@ def knn_clustering_assign_categories(response_vectors, stimulus_vector, optimal_
         transition_points.append(len(ordered_vectors))
     display_full_response_vector(ordered_vectors, stimulus_vector, "All Stimuli", transition_points)
 
-    return model_labels
+    return model_labels, transition_points
 
 
 def save_neuron_groups(model_names, neuron_groups, group_number, group_name):
@@ -53,18 +45,18 @@ def save_neuron_groups(model_names, neuron_groups, group_number, group_name):
 
 
 # Full vector
-full_rv1 = create_full_response_vector("new_even_prey_ref-1")
-full_rv2 = create_full_response_vector("new_even_prey_ref-2")
-full_rv3 = create_full_response_vector("new_even_prey_ref-3")
-full_rv4 = create_full_response_vector("new_even_prey_ref-4")
+full_rv1 = create_full_response_vector("new_even_prey_ref-4")
+full_rv2 = create_full_response_vector("new_even_prey_ref-5")
+full_rv3 = create_full_response_vector("new_even_prey_ref-6")
+full_rv4 = create_full_response_vector("new_even_prey_ref-8")
 
 full_sv = create_full_stimulus_vector("new_even_prey_ref-4")
 
-model_l = knn_clustering_assign_categories([full_rv1, full_rv2, full_rv3, full_rv4], full_sv, 30)
-save_neuron_groups(["new_even_prey_ref-1",
-                    "new_even_prey_ref-2",
-                    "new_even_prey_ref-3",
-                    "new_even_prey_ref-4"], model_l, 30, "test")
+model_l, transition_points = knn_clustering_assign_categories([full_rv1, full_rv2, full_rv3, full_rv4], full_sv, 30)
+# save_neuron_groups(["new_even_prey_ref-1",
+#                     "new_even_prey_ref-2",
+#                     "new_even_prey_ref-3",
+#                     "new_even_prey_ref-4"], model_l, 30, "test")
 
 
 # Do clustering over many models:

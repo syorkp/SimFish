@@ -5,10 +5,8 @@ import math
 import seaborn as sns
 import json
 
-from Analysis.load_data import load_data
-from Analysis.Neural.event_triggered_averages import get_eta, get_full_eta, get_for_specific_neurons, get_action_triggered_average, get_eta_timeseries, get_ata_timeseries, get_full_eta_timeseries, get_average_timeseries, get_predator_eta_timeseries, get_full_action_triggered_average, get_full_ata_timeseries
-from Analysis.Neural.calculate_vrv import normalise_vrvs
-from Analysis.Visualisation.Neural.visualise_response_vectors import order_vectors_by_kmeans
+from Analysis.Neural.New.event_triggered_averages import get_full_eta_timeseries, get_average_timeseries
+from Analysis.Neural.New.calculate_vrv import normalise_vrvs
 from Analysis.Behavioural.New.show_spatial_density import get_action_name
 
 

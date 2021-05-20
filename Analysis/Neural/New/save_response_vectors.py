@@ -1,13 +1,8 @@
 import csv
-import numpy as np
-from sklearn.manifold import TSNE
-import matplotlib.pyplot as plt
-import seaborn as sns
-
 
 from Analysis.load_stimuli_data import load_stimulus_data
 from Analysis.load_data import load_data
-from Analysis.Neural.calculate_vrv import get_all_neuron_vectors, get_stimulus_vector
+from Analysis.Neural.New.calculate_vrv import get_all_neuron_vectors, get_stimulus_vector
 
 
 data = load_data("large_all_features-1", "Controlled_Visual_Stimuli", "Curved_prey")

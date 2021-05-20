@@ -1,9 +1,6 @@
 import numpy as np
 
-
-from Analysis.load_stimuli_data import load_stimulus_data
 from Analysis.load_data import load_data
-from Analysis.Neural.calculate_vrv import get_all_neuron_vectors, get_stimulus_vector, get_conv_neuron_vectors
 from Analysis.Behavioural.circle_maths import make_circle
 
 def calculate_circle_diameter_for_points(data):

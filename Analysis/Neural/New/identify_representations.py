@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Analysis.Neural.calculate_vrv import create_full_response_vector, create_full_stimulus_vector
+from Analysis.Neural.New.calculate_vrv import create_full_response_vector, create_full_stimulus_vector
 from Analysis.Visualisation.visualise_response_vectors import display_half_response_vector, normalise_response_vectors, format_func_prey, format_func_pred, order_vectors_by_kmeans
 
 

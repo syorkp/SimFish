@@ -1,9 +1,9 @@
 import json
 
 from Analysis.load_data import load_data
-from Analysis.Neural.event_triggered_averages import get_eta, get_for_specific_neurons
-from Analysis.Neural.label_neurons import label_all_units_selectivities, get_with_selectivity, assign_neuron_names
-from Analysis.Neural.calculate_vrv import create_full_response_vector, create_full_stimulus_vector
+from Analysis.Neural.New.event_triggered_averages import get_eta
+from Analysis.Neural.New.label_neurons import label_all_units_selectivities, assign_neuron_names
+from Analysis.Neural.New.calculate_vrv import create_full_response_vector, create_full_stimulus_vector
 
 
 def get_formatted_data(broad_categories, atas, sel, threshold=10):

@@ -2,8 +2,9 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from Analysis.Neural.calculate_vrv import create_full_response_vector, create_full_stimulus_vector
+import pandas as pd
 
+from Analysis.Neural.New.calculate_vrv import create_full_response_vector, create_full_stimulus_vector
 
 def check_boring_unit(vector):
     if all(r <= 0 for r in vector):# and abs(max(vector)) - abs(min(vector)) < abs(np.mean(vector)):
@@ -129,13 +130,6 @@ def get_with_selectivity(features, selectivities):
     return list(set(ns))
 
 
-def label_all_units_tsne(response_vectors, archetypes):
-    """Based on the archetypes, clusters the nearest units and assigns this manual category to them."""
-    ...
-
-import pandas as pd
-
-
 def display_categories_counts(category_list):
     pap = []
     pred = []
@@ -147,10 +141,12 @@ def display_categories_counts(category_list):
         prey.append(categories.count("Prey-Only"))
         neither.append(categories.count("Neither"))
     data = pd.DataFrame([pap, pred, prey, neither])
+    sns.set()
     df = pd.DataFrame(data).T
     df = df.rename(columns={k: f'Data{k + 1}' for k in range(len(data))}).reset_index()
     df = pd.wide_to_long(df, stubnames=['Data'], i='index', j='ID').reset_index()[['ID', 'Data']]
-    sns.boxplot(x='ID', y='Data', data=df)
+    ax = sns.boxplot(x='ID', y='Data', data=df, fliersize=0)
+    ax = sns.stripplot(y="Data", x="ID", data=df, color=".3")
     plt.xticks([0, 1, 2, 3], ["Prey-and-Predator", "Predator", "Prey", "Neither"])
     plt.xlabel("Selectivity")
     plt.ylabel("Number of Neurons")
@@ -180,9 +176,23 @@ def display_selectivity_tally(selectivities, stimulus_vector):
     plt.xticks(rotation=90)
     plt.show()
 
-# cats = []
+cats = []
 # #
-# for i in range(3, 7):
+for i in [4, 5, 6, 8]:
+    full_rv = create_full_response_vector(f"new_even_prey_ref-{i}")
+    full_sv = create_full_stimulus_vector(f"new_even_prey_ref-{i}")
+    sel = label_all_units_selectivities(full_rv, full_sv)
+    # display_selectivity_tally(sel, full_sv)
+    cat = assign_neuron_names(sel)
+    predator_ns = [j for j, c in enumerate(cat) if c == "Predator-Only"]
+    print(i)
+    print(predator_ns)
+    cats.append(cat)
+display_categories_counts(cats)
+
+cats = []
+
+# for i in [3, 4, 5, 6]:
 #     full_rv = create_full_response_vector(f"new_differential_prey_ref-{i}")
 #     full_sv = create_full_stimulus_vector(f"new_differential_prey_ref-{i}")
 #     sel = label_all_units_selectivities(full_rv, full_sv)
@@ -190,8 +200,6 @@ def display_selectivity_tally(selectivities, stimulus_vector):
 #     cat = assign_neuron_names(sel)
 #     cats.append(cat)
 # display_categories_counts(cats)
-
-
 
 # x = True
 # # neurons_to_ablate = get_with_selectivity(["Prey-Static-15", "Prey-Left-15", "Prey-Right-15"], sel)

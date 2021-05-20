@@ -1,12 +1,9 @@
-import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
 import math
 
 from Analysis.load_stimuli_data import load_stimulus_data
 from Analysis.load_data import load_data
-from Analysis.Neural.calculate_vrv import get_all_neuron_vectors, get_stimulus_vector, get_conv_neuron_vectors
+from Analysis.Neural.New.calculate_vrv import get_all_neuron_vectors, get_stimulus_vector
 
 
 def create_figure(neuron_data, plot_number, n_subplots, n_prev_subplots, s_vector):

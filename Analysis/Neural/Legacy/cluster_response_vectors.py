@@ -4,12 +4,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 from sklearn.cluster import KMeans
-from sklearn.neighbors import NearestNeighbors, KNeighborsClassifier
+from sklearn.neighbors import NearestNeighbors
 
-from Analysis.load_stimuli_data import load_stimulus_data
-from Analysis.load_data import load_data
-from Analysis.Neural.calculate_vrv import get_all_neuron_vectors, get_stimulus_vector, normalise_vrvs, create_full_response_vector
-from Analysis.Neural.label_neurons import create_full_stimulus_vector, label_all_units_selectivities, assign_neuron_names
+from Analysis.Neural.New.calculate_vrv import create_full_response_vector
+from Analysis.Neural.New.label_neurons import create_full_stimulus_vector, label_all_units_selectivities, assign_neuron_names
 
 
 def plot_tsne_results(vectors, title="None", labels=None):

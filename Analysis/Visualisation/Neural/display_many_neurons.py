@@ -1,9 +1,6 @@
-import numpy as np
 import math
 from matplotlib import pyplot as plt
 from Analysis.load_data import load_data
-from Analysis.load_stimuli_data import load_stimulus_data
-from Analysis.Neural.calculate_vrv import get_stimulus_vector
 
 
 def create_plot(neuron_data, plot_number, n_subplots, n_prev_subplots, stimulus_data=None):

@@ -2,7 +2,7 @@ from Analysis.load_data import load_data
 from Analysis.load_stimuli_data import load_stimulus_data
 from Analysis.Behavioural.bout_transition_probabilities import get_third_order_transition_counts_from_sequences, get_modal_sequences, compute_transition_probabilities
 from Analysis.Behavioural.display_action_sequences import display_sequences
-from Analysis.Neural.calculate_vrv import create_full_stimulus_vector
+from Analysis.Neural.New.calculate_vrv import create_full_stimulus_vector
 
 
 def get_behavioural_vector(all_data, stimulus, stimulus_data):

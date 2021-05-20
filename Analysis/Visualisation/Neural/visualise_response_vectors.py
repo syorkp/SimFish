@@ -1,17 +1,14 @@
 import matplotlib.pyplot as plt
-from matplotlib import colors
 import numpy as np
-import json
 from collections import Counter
 import seaborn as sns
 import pandas as pd
 
 from sklearn.cluster import KMeans, AgglomerativeClustering
-import scipy.cluster.hierarchy as sch
 from sklearn.metrics import silhouette_score
 
-from Analysis.Neural.calculate_vrv import create_full_response_vector, create_full_stimulus_vector
-from Analysis.Neural.label_neurons import normalise_response_vectors
+from Analysis.Neural.New.calculate_vrv import create_full_response_vector, create_full_stimulus_vector
+from Analysis.Neural.New.label_neurons import normalise_response_vectors
 
 
 def remove_initialisation_effects(vector):
@@ -300,7 +297,7 @@ def display_class_counts(model_names, neuron_groups, group_number):
 #     # full_rv2 = normalise_response_vectors(full_rv2)
 #     full_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv)
 #     print(len(transition_points))
-
+#
 # for i in [4, 5, 6, 8]:
 #     full_rv = create_full_response_vector(f"new_even_prey_ref-{str(i)}", background=True)
 #     full_rv = np.array(full_rv)
@@ -309,7 +306,7 @@ def display_class_counts(model_names, neuron_groups, group_number):
 #     full_rv = normalise_response_vectors(full_rv)
 #     full_rv, transition_points, neuron_labels = order_vectors_by_kmeans(full_rv)
 #     print(len(transition_points))
-#     display_full_response_vector(full_rv, full_sv, "Prey Stimuli", transition_points)
+#     display_full_response_vector(full_rv, full_sv, "All Stimuli", transition_points)
 
 # Single model:
 # full_rv = create_full_response_vector("even_prey_ref-5")

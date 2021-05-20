@@ -14,8 +14,8 @@ from transitionMatrix.estimators import cohort_estimator as es
 
 
 from Analysis.load_data import load_data
-from Analysis.Behavioural.extract_event_action_sequence import get_escape_sequences, get_capture_sequences
-from Analysis.Behavioural.turning_analysis import get_free_swimming_sequences
+from Analysis.Behavioural.New.extract_event_action_sequence import get_escape_sequences, get_capture_sequences
+from Analysis.Behavioural.New.turning_analysis import get_free_swimming_sequences
 
 
 def get_first_order_transition_counts(p1, p2, p3, n):
