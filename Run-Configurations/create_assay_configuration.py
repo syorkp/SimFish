@@ -1604,11 +1604,20 @@ with open(f"../Analysis/Categorisation-Data/neuron_groups.json", 'r') as f:
 with open(f"../Analysis/Categorisation-Data/even_prey_neuron_groups.json", 'r') as f:
     data2 = json.load(f)
 
+with open(f"../Analysis/Categorisation-Data/latest_even.json", 'r') as f:
+    data3 = json.load(f)
+
+
+# Predator-Selective
+placeholder_list = data3["new_even_prey_ref-8"]["4"] + data3["new_even_prey_ref-8"]["15"] +\
+                   data3["new_even_prey_ref-8"]["20"] + data3["new_even_prey_ref-8"]["26"] + \
+                   data3["new_even_prey_ref-8"]["27"] + data3["new_even_prey_ref-8"]["28"]
+
 #                    Predator_only
 # placeholder_list = [2, 13, 19, 23, 27, 29, 34, 36, 46, 50, 60, 66, 81, 82, 93, 94, 95, 99, 100, 106, 110, 113, 117, 119, 122, 135, 145, 150, 156, 163, 165, 169, 171, 174, 182, 185, 186, 201, 203, 217, 218, 219, 220, 225, 226, 227, 238, 244, 259, 261, 264, 269, 280, 290, 302, 308, 310, 317, 322, 324, 339, 341, 345, 350, 366, 373, 402, 411, 450, 464, 469, 471, 477, 493]
 # placeholder_list = [1, 5, 16, 27, 33, 35, 36, 40, 68, 79, 81, 102, 105, 109, 110, 111, 118, 139, 142, 147, 154, 156, 159, 161, 162, 167, 186, 191, 196, 213, 216, 231, 233, 236, 255, 264, 275, 281, 283, 295, 297, 303, 313, 319, 342, 359, 362, 367, 371, 384, 400, 409, 416, 442, 457, 492, 503, 506]
 # placeholder_list = [10, 20, 21, 30, 33, 34, 36, 53, 60, 69, 96, 98, 143, 149, 151, 153, 154, 156, 164, 187, 192, 194, 201, 214, 233, 239, 241, 267, 276, 298, 308, 312, 315, 316, 317, 328, 338, 342, 347, 356, 363, 396, 412, 417, 418, 426]
-placeholder_list = [4, 5, 9, 12, 18, 24, 36, 40, 55, 66, 68, 84, 92, 106, 118, 122, 135, 153, 171, 178, 183, 193, 203, 206, 246, 251, 255, 260, 267, 313, 314, 335, 340, 373, 374, 378, 395, 400, 419, 440, 451, 457, 460, 464, 486, 493, 496]
+# placeholder_list = [4, 5, 9, 12, 18, 24, 36, 40, 55, 66, 68, 84, 92, 106, 118, 122, 135, 153, 171, 178, 183, 193, 203, 206, 246, 251, 255, 260, 267, 313, 314, 335, 340, 373, 374, 378, 395, 400, 419, 440, 451, 457, 460, 464, 486, 493, 496]
 
 #                    Differential
 # Of interest: prey_sighted=21, 30, 27, 34, 33, 32,
@@ -3725,9 +3734,13 @@ def build_ablation_gradient_configuration(model_names, ablation_group, environme
 # build_missing_predator_configuration(["even_prey_ref-4"], "even_predator", "extra_predator")
 
 
+# Predator-selective from VRV
+build_ablation_gradient_configuration(["new_even_prey_ref-8"], "Predator_Selective", "even_prey_only", "even_8_ps_prey_only")
+build_ablation_gradient_configuration(["new_even_prey_ref-8"], "Predator_Selective", "even_predator", "even_8_ps_predator")
+
 # Predator only
-build_ablation_gradient_configuration(["new_even_prey_ref-8"], "Predator_Only", "even_prey_only", "even_8_po_prey_only")
-build_ablation_gradient_configuration(["new_even_prey_ref-8"], "Predator_Only", "even_predator", "even_8_po_predator")
+# build_ablation_gradient_configuration(["new_even_prey_ref-8"], "Predator_Only", "even_prey_only", "even_8_po_prey_only")
+# build_ablation_gradient_configuration(["new_even_prey_ref-8"], "Predator_Only", "even_predator", "even_8_po_predator")
 
 # build_ablation_gradient_configuration(["new_even_prey_ref-4"], "Prey-Full-Field", "even_prey_only", "even_prey_only_targeted-Prey-Full-Field")
 # build_ablation_gradient_configuration(["new_even_prey_ref-4"], "Prey-Full-Field", "even_naturalistic", "even_naturalistic_targeted-Prey-Full-Field")
