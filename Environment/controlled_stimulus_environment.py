@@ -10,7 +10,7 @@ from Environment.Fish.tethered_fish import TetheredFish
 class ControlledStimulusEnvironment(BaseEnvironment):
     """
     This version is made with only the fixed projection configuration in mind.
-    As a result, doesnt have walls, and fish appears directly in the centre of the environment.
+    As a result, doesnt have walls, and fish appears directly in the centfre of the environment.
     For this environment, the following stimuli are available: prey, predators.
     """
 
@@ -249,7 +249,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     def update_unset_stimuli(self):
         # TODO: Still need to update so that can have multiple, sequential stimuli. Will require adding in onset into stimulus, as well as changing the baseline phase. Not useful for current requirements.
         stimuli_to_delete = []
-        init_period = 400
+        init_period = 1
 
         for stimulus in self.unset_stimuli.keys():
             i = int(stimulus.split()[1]) - 1

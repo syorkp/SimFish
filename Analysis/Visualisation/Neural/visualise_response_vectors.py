@@ -168,12 +168,13 @@ def display_full_response_vector(response_vector, stimulus_vector, title, transi
                 if value < tp:
                     return i - 1
             return len(transition_points) - 1
-
+        for t in transition_points:
+            ax.axhline(t, color="black", linewidth=1)
         ax.set_yticks(transition_points, minor=True)
         ax2 = ax.secondary_yaxis("right")
         ax2.yaxis.set_major_locator(plt.FixedLocator(transition_points))
         ax2.yaxis.set_major_formatter(plt.FuncFormatter(format_func_cluster))
-        ax2.set_ylabel("Cluster")
+        ax2.set_ylabel("Cluster", fontsize=35)
 
     ax.set_xlabel("Stimulus and Position", fontsize=35)
     ax.set_ylabel("Neuron", fontsize=35)

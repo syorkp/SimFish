@@ -5,9 +5,10 @@ import math
 import seaborn as sns
 import json
 
-from Analysis.Neural.New.event_triggered_averages import get_full_eta_timeseries, get_average_timeseries
+from Analysis.Neural.New.event_triggered_averages import get_full_eta_timeseries, get_ata_timeseries, get_for_specific_neurons, get_full_eta, get_average_timeseries, get_full_action_triggered_average
 from Analysis.Neural.New.calculate_vrv import normalise_vrvs
 from Analysis.Behavioural.New.show_spatial_density import get_action_name
+from Analysis.load_data import load_data
 
 
 def display_all_atas(atas, groups=None):
@@ -22,6 +23,7 @@ def display_all_atas(atas, groups=None):
     atas = normalise_vrvs(atas)
     fig, ax = plt.subplots()
     fig.set_size_inches(1.85*len(used_indexes), 20)
+    ax.tick_params(labelsize=15)
     if groups:
         ordered_atas = []
         indexes = [j for sub in [groups[i] for i in groups.keys()] for j in sub]
@@ -29,13 +31,34 @@ def display_all_atas(atas, groups=None):
             ordered_atas.append(atas[i])
         ax.pcolor(ordered_atas, cmap='coolwarm')
 
+        transition_points = [len(groups[key]) for i, key in enumerate(groups.keys())]
+        cumulative_tps = []
+        for i, t in enumerate(transition_points):
+            cumulative_tps.append(sum(transition_points[:i]))
+        transition_points = cumulative_tps
+
+        # cluster_labels = [i for i in range(len(transition_points))]
+
+        def format_func_cluster(value, tick):
+            for i, tp in enumerate(transition_points):
+                if value < tp:
+                    return i - 1
+            return len(transition_points) - 1
+        for t in transition_points:
+            ax.axhline(t, color="black", linewidth=1)
+        ax.set_yticks(transition_points, minor=True)
+        ax2 = ax.secondary_yaxis("right")
+        # ax2.yaxis.grid(True, which='minor', linewidth=20, linestyle='-', color="b")
+        ax2.yaxis.set_major_locator(plt.FixedLocator(transition_points))
+        ax2.yaxis.set_major_formatter(plt.FuncFormatter(format_func_cluster))
+        ax2.set_ylabel("Cluster", fontsize=20)
     else:
         # atas, t, cat = order_vectors_by_kmeans(atas)
         ax.pcolor(atas, cmap='coolwarm')
     # ax.grid(True, which='minor', axis='both', linestyle='-', color='k')
     plt.xticks(range(len(used_indexes)), ["                    " + get_action_name(i) for i in used_indexes], fontsize=15)
-    # ax.set_yticks(lat_grid, minor=True)
-
+    ax.set_ylabel("Neuron", fontsize=20)
+    ax.set_xlabel("Bout Choice", fontsize=20)
     plt.show()
 
 
@@ -55,13 +78,35 @@ def display_all_etas(etas, event_names, groups=None):
             ordered_atas.append(etas[i])
         ax.pcolor(ordered_atas, cmap='coolwarm')
 
+        transition_points = [len(groups[key]) for i, key in enumerate(groups.keys())]
+        cumulative_tps = []
+        for i, t in enumerate(transition_points):
+            cumulative_tps.append(sum(transition_points[:i]))
+        transition_points = cumulative_tps
+
+        # cluster_labels = [i for i in range(len(transition_points))]
+
+        def format_func_cluster(value, tick):
+            for i, tp in enumerate(transition_points):
+                if value < tp:
+                    return i - 1
+            return len(transition_points) - 1
+        for t in transition_points:
+            ax.axhline(t, color="black", linewidth=1)
+        ax.set_yticks(transition_points, minor=True)
+        ax2 = ax.secondary_yaxis("right")
+        # ax2.yaxis.grid(True, which='minor', linewidth=20, linestyle='-', color="b")
+        ax2.yaxis.set_major_locator(plt.FixedLocator(transition_points))
+        ax2.yaxis.set_major_formatter(plt.FuncFormatter(format_func_cluster))
+        ax2.set_ylabel("Cluster", fontsize=20)
     else:
         # atas, t, cat = order_vectors_by_kmeans(atas)
         ax.pcolor(etas, cmap='coolwarm')
     # ax.grid(True, which='minor', axis='both', linestyle='-', color='k')
     plt.xticks(range(len(event_names)), ["                    " + i for i in event_names], fontsize=15)
     # ax.set_yticks(lat_grid, minor=True)
-
+    ax.set_ylabel("Neuron", fontsize=20)
+    ax.set_xlabel("Event", fontsize=20)
     plt.show()
 
 
@@ -216,26 +261,26 @@ def display_eta_timeseries_overlay(timeseries_list):
     plt.show()
 
 # Single-point
-# ata = get_full_action_triggered_average("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
-# ata = get_ata_timeseries(data)
+ata = get_full_action_triggered_average("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
+
 with open(f"../../Categorisation-Data/even_prey_neuron_groups.json", 'r') as f:
     data2 = json.load(f)
 
-# display_all_atas(ata)
-#
-# display_all_atas(ata, data2["new_even_prey_ref-4"])
+display_all_atas(ata)
 
-# data = load_data("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
-# ex1 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "exploration")
-# ex2 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "consumed")
-# ex3 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "predator")
-# display_all_etas([ex1, ex2, ex3], ["exploration", "consumption", "predator"], data2["new_even_prey_ref-4"])
+display_all_atas(ata, data2["new_even_prey_ref-4"])
+
+data = load_data("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
+ex1 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "exploration")
+ex2 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "consumed")
+ex3 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "predator")
+display_all_etas([ex1, ex2, ex3], ["Exploration", "Consumption", "Predator"], data2["new_even_prey_ref-4"])
 
 placeholder_list = data2["new_even_prey_ref-4"]["1"] + data2["new_even_prey_ref-4"]["8"] +\
                    data2["new_even_prey_ref-4"]["24"] + data2["new_even_prey_ref-4"]["29"]
 
-# prey_in_front = get_for_specific_neurons(ata, placeholder_list)
-# plot_average_action_scores_comparison([prey_in_front, ata], ["Prey-In-Front", "All Neurons"])
+prey_in_front = get_for_specific_neurons(ata, placeholder_list)
+plot_average_action_scores_comparison([prey_in_front, ata], ["Prey-in-Front", "All Neurons"])
 
 
 # Timeseries:
@@ -244,8 +289,10 @@ eta = get_full_eta_timeseries("new_even_prey_ref-4", "Behavioural-Data-Free", "N
 eta = np.absolute(eta)
 prey_in_front_capture_average = get_average_timeseries(eta, placeholder_list)
 other_capture_average = get_average_timeseries(eta, [i for i in range(512) if i not in placeholder_list])
+predator_only = [2, 13, 19, 23, 27, 29, 34, 36, 46, 50, 60, 66, 81, 82, 93, 94, 95, 99, 100, 106, 110, 113, 117, 119, 122, 135, 145, 150, 156, 163, 165, 169, 171, 174, 182, 185, 186, 201, 203, 217, 218, 219, 220, 225, 226, 227, 238, 244, 259, 261, 264, 269, 280, 290, 302, 308, 310, 317, 322, 324, 339, 341, 345, 350, 366, 373, 402, 411, 450, 464, 469, 471, 477, 493]
+predator_only_capture_average = get_average_timeseries(eta, predator_only)
 
-display_multiple_average_eta_timeseries([prey_in_front_capture_average, other_capture_average], ["Prey in Front", "All Neurons"])
+display_multiple_average_eta_timeseries([prey_in_front_capture_average, other_capture_average, predator_only_capture_average], ["Prey in Front", "All Neurons", "Predator-Only"])
 
 pred = get_full_eta_timeseries("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "predator")
 av2 = get_average_timeseries(pred, placeholder_list)
