@@ -278,19 +278,22 @@ display_all_etas([ex1, ex2, ex3], ["Exploration", "Consumption", "Predator"], da
 
 placeholder_list = data2["new_even_prey_ref-4"]["1"] + data2["new_even_prey_ref-4"]["8"] +\
                    data2["new_even_prey_ref-4"]["24"] + data2["new_even_prey_ref-4"]["29"]
+predator_only_ns = [2, 13, 19, 23, 27, 29, 34, 36, 46, 50, 60, 66, 81, 82, 93, 94, 95, 99, 100, 106, 110, 113, 117, 119, 122, 135, 145, 150, 156, 163, 165, 169, 171, 174, 182, 185, 186, 201, 203, 217, 218, 219, 220, 225, 226, 227, 238, 244, 259, 261, 264, 269, 280, 290, 302, 308, 310, 317, 322, 324, 339, 341, 345, 350, 366, 373, 402, 411, 450, 464, 469, 471, 477, 493]
+prey_only_ns = [72, 77, 82, 138, 222, 232, 253, 268, 279, 318, 369, 382, 385, 388, 410, 433, 461, 481]
 
 prey_in_front = get_for_specific_neurons(ata, placeholder_list)
+predator_only = get_for_specific_neurons(ata, predator_only_ns)
+prey_only = get_for_specific_neurons(ata, prey_only_ns)
 plot_average_action_scores_comparison([prey_in_front, ata], ["Prey-in-Front", "All Neurons"])
 
-
+plot_average_action_scores_comparison([predator_only, prey_only, ata], ["Predator-Only","Prey-Only", "All"])
 # Timeseries:
 
 eta = get_full_eta_timeseries("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
 eta = np.absolute(eta)
 prey_in_front_capture_average = get_average_timeseries(eta, placeholder_list)
-other_capture_average = get_average_timeseries(eta, [i for i in range(512) if i not in placeholder_list])
-predator_only = [2, 13, 19, 23, 27, 29, 34, 36, 46, 50, 60, 66, 81, 82, 93, 94, 95, 99, 100, 106, 110, 113, 117, 119, 122, 135, 145, 150, 156, 163, 165, 169, 171, 174, 182, 185, 186, 201, 203, 217, 218, 219, 220, 225, 226, 227, 238, 244, 259, 261, 264, 269, 280, 290, 302, 308, 310, 317, 322, 324, 339, 341, 345, 350, 366, 373, 402, 411, 450, 464, 469, 471, 477, 493]
-predator_only_capture_average = get_average_timeseries(eta, predator_only)
+other_capture_average = get_average_timeseries(eta, [i for i in range(512) if i not in placeholder_list and i not in predator_only_ns])
+predator_only_capture_average = get_average_timeseries(eta, predator_only_ns)
 
 display_multiple_average_eta_timeseries([prey_in_front_capture_average, other_capture_average, predator_only_capture_average], ["Prey in Front", "All Neurons", "Predator-Only"])
 

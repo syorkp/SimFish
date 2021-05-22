@@ -311,11 +311,11 @@ unit_activity2 = [[data2["rnn state"][i - 1][0][j] for i in data2["step"]] for j
 #                      ["Prey", "Predator"])
 
 
-data1 = load_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Static-5")
-data2 = load_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Static-10")
+data1 = load_data("even_prey_ref-5", "For-Traces", "Prey-Static-5")
+data2 = load_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
 data3 = load_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Static-15")
-stimulus_data3 = load_stimulus_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Static-5")
-stimulus_data4 = load_stimulus_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Static-10")
+stimulus_data3 = load_stimulus_data("even_prey_ref-5", "For-Traces", "Prey-Static-5")
+stimulus_data4 = load_stimulus_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
 stimulus_data5 = load_stimulus_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Static-15")
 
 unit_activity3 = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
@@ -325,10 +325,10 @@ unit_activity5 = [[data3["rnn state"][i - 1][0][j] for i in data3["step"]] for j
 #                      [stimulus_data3, stimulus_data4, stimulus_data5],
 #                      ["5", "10", "15"])
 
-data1 = load_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Left-10")
-data2 = load_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Right-10")
-stimulus_data6 = load_stimulus_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Static-5")
-stimulus_data7 = load_stimulus_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Static-10")
+data1 = load_data("even_prey_ref-5", "For-Traces", "Prey-Left-10")
+data2 = load_data("even_prey_ref-5", "For-Traces", "Prey-Right-10")
+stimulus_data6 = load_stimulus_data("even_prey_ref-5", "For-Traces", "Prey-Static-5")
+stimulus_data7 = load_stimulus_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
 unit_activity6 = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
 unit_activity7 = [[data2["rnn state"][i - 1][0][j] for i in data2["step"]] for j in range(512)]
 # plot_multiple_traces([unit_activity6, unit_activity7],

@@ -2,7 +2,7 @@
     {
         "Model Name": "even_prey_ref",
         "Environment Name": "test_square",
-        "Trial Number": 4,
+        "Trial Number": 5,
         "Assay Configuration Name": "For-Traces",
         "Run Mode": "Assay",
         "Realistic Bouts": true,

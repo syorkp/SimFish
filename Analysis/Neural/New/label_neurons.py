@@ -184,7 +184,7 @@ for i in [4, 5, 6, 8]:
     sel = label_all_units_selectivities(full_rv, full_sv)
     # display_selectivity_tally(sel, full_sv)
     cat = assign_neuron_names(sel)
-    predator_ns = [j for j, c in enumerate(cat) if c == "Predator-Only"]
+    predator_ns = [j for j, c in enumerate(cat) if c == "Prey-Only"]
     print(i)
     print(predator_ns)
     cats.append(cat)
