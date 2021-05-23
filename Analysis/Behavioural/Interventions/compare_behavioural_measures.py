@@ -64,7 +64,7 @@ def get_both_measures_random_gradient(model, targeted_neurons, number_of_trials)
     prey_caught_gradient = []
     predators_avoided_gradient = []
     for per in range(0, 105, 5):
-        if per == 35: continue
+        if per == 35: continue  # Remove later.
         prey_caught, predators_avoided = get_measures_random_gradient(model, targeted_neurons, per, number_of_trials)
         print(f"Ablations: {per}%, Prey caught: {prey_caught}, Predators avoided: {predators_avoided}")
         prey_caught_gradient.append(prey_caught)

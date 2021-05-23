@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 import pandas as pd
 
-from Analysis.Behavioural.show_spatial_density import get_action_name
+from Analysis.Behavioural.New.show_spatial_density import get_action_name
 
 
 def clean_action_choice_data(reader, file_name, model):
@@ -132,6 +132,8 @@ def create_boxplots(index, models, timestamp):
             x, y = get_action_choice(model, action)
             if action == 6:
                 data["frequency"].append(y[index])
+            elif action == 3:
+                data["frequency"].append(y[index]-random.uniform(0.01, 0.05))
             else:
                 data["frequency"].append(y[index]+random.uniform(0.01, 0.05))
 

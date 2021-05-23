@@ -266,6 +266,11 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
     plt.arrow(300, 220, 0, 40, width=10, color="red")
     plt.show()
 
+#
+# get_all_density_plots_all_subsets("new_even_prey_ref-1", "Ablation-Indiscriminate-even_prey_only", "Ablated-0", 3)
+# get_all_density_plots_all_subsets("new_even_prey_ref-1", "Ablation-Indiscriminate-even_prey_only", "Ablated-100", 3)
+
+
 # get_all_density_plots_all_subsets("new_even_prey_ref-8", "Behavioural-Data-Free", "Naturalistic", 10)
 
 # get_all_density_plots_all_subsets("even_prey_ref-7", "Behavioural-Data-Free", "Prey", 10)

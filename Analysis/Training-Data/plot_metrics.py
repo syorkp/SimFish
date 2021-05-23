@@ -28,7 +28,7 @@ def plot_metrics(prey_capture, pred_avoidance, window):
 
     plt.figure(figsize=(8,6))
     plt.plot(pred_steps, pred_index_ra)
-    plt.hlines(100, 0, 10000, linestyles={'dashed'}, colors=["y"])
+    plt.hlines(100, 0, 10000, linestyles={'dashed'}, colors=["r"])
     plt.xlabel("Episode", fontsize=20)
     plt.ylabel("Predator Avoidance Index", fontsize=20)
     plt.show()

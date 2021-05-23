@@ -1652,7 +1652,7 @@ placeholder_list = data3["new_even_prey_ref-8"]["4"] + data3["new_even_prey_ref-
 # Exploration diff 4:
 # placeholder_list = [240, 292, 411, 352, 242, 187, 279, 321, 100, 204, 203, 164, 435, 58, 20, 389, 104, 432, 343, 229, 409, 64, 475, 231, 253, 132, 490, 76, 318, 459, 347, 447, 374, 337, 430, 169, 35, 233, 454, 200, 155, 114, 24, 147, 59, 381, 192, 405, 179, 458, 97, 201, 29, 191, 182, 228, 362, 281, 69, 45, 83, 456, 366, 43, 238, 185, 273, 270, 1, 95, 299, 210, 312, 304, 424, 499, 48, 221, 78, 149, 216, 417, 477, 212, 158, 379, 303, 361, 61, 368, 474, 473, 462, 190, 316, 452, 178, 101, 119, 481]
 
-random.shuffle(placeholder_list)
+# random.shuffle(placeholder_list)
 
 
 ablation_gradient = [
@@ -2367,8 +2367,8 @@ ablation_gradient = [
 ]
 
 
-# placeholder_list = [i for i in range(512)]
-# random.shuffle(placeholder_list)
+placeholder_list = [i for i in range(512)]
+random.shuffle(placeholder_list)
 
 indiscriminate_ablation_gradient = [
     {
@@ -3734,9 +3734,14 @@ def build_ablation_gradient_configuration(model_names, ablation_group, environme
 # build_missing_predator_configuration(["even_prey_ref-4"], "even_predator", "extra_predator")
 
 
+build_indiscriminate_ablation_gradient_configuration(["new_even_prey_ref-4", "new_even_prey_ref-5", "new_even_prey_ref-6", "new_even_prey_ref-8"],
+                                                     "even_predator", "new_ind_ablations_1")
+build_indiscriminate_ablation_gradient_configuration(["new_even_prey_ref-4", "new_even_prey_ref-5", "new_even_prey_ref-6", "new_even_prey_ref-8"],
+                                                     "even_prey", "new_ind_ablations_2")
+
 # Predator-selective from VRV
-build_ablation_gradient_configuration(["new_even_prey_ref-8"], "Predator_Selective", "even_prey_only", "even_8_ps_prey_only")
-build_ablation_gradient_configuration(["new_even_prey_ref-8"], "Predator_Selective", "even_predator", "even_8_ps_predator")
+# build_ablation_gradient_configuration(["new_even_prey_ref-8"], "Predator_Selective", "even_prey_only", "even_8_ps_prey_only")
+# build_ablation_gradient_configuration(["new_even_prey_ref-8"], "Predator_Selective", "even_predator", "even_8_ps_predator")
 
 # Predator only
 # build_ablation_gradient_configuration(["new_even_prey_ref-8"], "Predator_Only", "even_prey_only", "even_8_po_prey_only")

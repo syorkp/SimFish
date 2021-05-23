@@ -100,11 +100,26 @@ def display_average_sequence(sequences):
 # fs_sequences.sort(key=len)
 #
 # display_all_sequences_escape(fs_sequences[-50:])
-capture_sequences = get_capture_sequences("even_prey_ref-3", "Behavioural-Data-Free", "Prey", 10)
-display_all_sequences_capture(capture_sequences[:100])
 
-escape_sequences = get_escape_sequences("even_prey_ref-3", "Behavioural-Data-Free", "Predator", 10)
-display_all_sequences_escape(escape_sequences[:100])
+# capture_sequences = get_capture_sequences("even_prey_ref-3", "Behavioural-Data-Free", "Prey", 10)
+# display_all_sequences_capture(capture_sequences[:100])
+#
+# escape_sequences = get_escape_sequences("even_prey_ref-3", "Behavioural-Data-Free", "Predator", 10)
+# display_all_sequences_escape(escape_sequences[:100])
+
+
+# Ablation groups:
+capture_sequences1 = get_capture_sequences("new_even_prey_ref-1", "Ablation-Indiscriminate-even_prey_only", "Ablated-0", 3)
+capture_sequences2 = get_capture_sequences("new_even_prey_ref-1", "Ablation-Indiscriminate-even_prey_only", "Ablated-100", 3)
+escape_sequences1 = get_escape_sequences("new_even_prey_ref-1", "Ablation-Indiscriminate-even_naturalistic", "Ablated-0", 3)
+escape_sequences2 = get_escape_sequences("new_even_prey_ref-1", "Ablation-Indiscriminate-even_naturalistic", "Ablated-100", 3)
+
+display_all_sequences_escape(capture_sequences1)
+display_all_sequences_escape(capture_sequences2)
+display_all_sequences_escape(escape_sequences1)
+display_all_sequences_escape(escape_sequences2)
+
+
 
 # transition_counts = get_fourth_order_transition_counts_from_sequences(capture_sequences)
 # tp = compute_transition_probabilities(transition_counts)

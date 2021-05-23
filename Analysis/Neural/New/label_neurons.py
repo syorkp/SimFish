@@ -15,6 +15,14 @@ def check_boring_unit(vector):
         return None
 
 
+def simple_check_feature_selectivity(vector, selectivity, threshold=0.5):
+    max_resp = max(vector)
+    min_resp = min(vector)
+    if max_resp > threshold or min_resp < -threshold:
+        return selectivity
+    else:
+        return None
+
 def check_feature_selectivity(vector, selectivity, threshold=0.5):
     """Check responsiveness to prey or predator."""
     max_resp = max(vector)
@@ -61,42 +69,42 @@ def label_all_units_selectivities(response_vectors, stimulus_vectors, background
             continue
         prey_subset = unit[:121]
         stimulus_vectors_subset = stimulus_vectors[:121]
-        prey = check_feature_selectivity(prey_subset, "Prey")
+        prey = simple_check_feature_selectivity(prey_subset, "Prey")
         if prey is not None:
             selectivities[i]["Prey"] = []
             for j, stim in enumerate(stimulus_vectors_subset):
-                sel = check_feature_selectivity([prey_subset[j]], stim)
+                sel = simple_check_feature_selectivity([prey_subset[j]], stim)
                 if sel is not None:
                     selectivities[i]["Prey"].append(sel)
 
         predator_subset = unit[121:242]
         stimulus_vectors_subset = stimulus_vectors[121:242]
-        predator = check_feature_selectivity(predator_subset, "Predator")
+        predator = simple_check_feature_selectivity(predator_subset, "Predator")
         if predator is not None:
             selectivities[i]["Predator"] = []
             for j, stim in enumerate(stimulus_vectors_subset):
-                sel = check_feature_selectivity([predator_subset[j]], stim)
+                sel = simple_check_feature_selectivity([predator_subset[j]], stim)
                 if sel is not None:
                     selectivities[i]["Predator"].append(sel)
 
         if background:
             red_prey_subset = unit[242:363]
             stimulus_vectors_subset = stimulus_vectors[242:363]
-            red_prey = check_feature_selectivity(red_prey_subset, "Prey")
+            red_prey = simple_check_feature_selectivity(red_prey_subset, "Prey")
             if red_prey is not None:
                 selectivities[i]["Background-Prey"] = []
                 for j, stim in enumerate(stimulus_vectors_subset):
-                    sel = check_feature_selectivity([red_prey_subset[j]], stim)
+                    sel = simple_check_feature_selectivity([red_prey_subset[j]], stim)
                     if sel is not None:
                         selectivities[i]["Background-Prey"].append(sel)
 
             red_predator_subset = unit[363:]
             stimulus_vectors_subset = stimulus_vectors[363:]
-            red_predator = check_feature_selectivity(red_predator_subset, "Predator")
+            red_predator = simple_check_feature_selectivity(red_predator_subset, "Predator")
             if red_predator is not None:
                 selectivities[i]["Background-Predator"] = []
                 for j, stim in enumerate(stimulus_vectors_subset):
-                    sel = check_feature_selectivity([red_predator_subset[j]], stim)
+                    sel = simple_check_feature_selectivity([red_predator_subset[j]], stim)
                     if sel is not None:
                         selectivities[i]["Background-Predator"].append(sel)
     return selectivities
@@ -162,18 +170,39 @@ def display_selectivity_tally(selectivities, stimulus_vector):
                 new_sel = new_sel + neuron[key]
             else:
                 new_sel.append(neuron[key])
+        for j, sel in enumerate(new_sel):
+            sel = sel.split("-")[:-1]
+            n = ""
+            for cc in sel:
+                n = n + "-" + cc
+            if n != "":
+                new_sel[j] = n
+        for i, count in enumerate(new_sel):
+            if count[0] == "-":
+                new_sel[i] = count[1:]
+            if count[-1] == "-":
+                new_sel[i] = count[:-1]
+        for i, count in enumerate(new_sel):
+            if count[0] == "-":
+                new_sel[i] = count[1:]
+            if count[-1] == "-":
+                new_sel[i] = count[:-1]
+        new_sel = list(set(new_sel))
         counts = counts + new_sel
-    for i, c in enumerate(counts):
-        c = c.split("-")[:-2]
-        n = ""
-        for cc in c:
-            n = n + "-" + cc
-        counts[i] = n
-    fig, ax = plt.subplots(figsize=(30,10))
 
-    g = sns.countplot(counts)
-    # g.set_xticklabels(lables=g.labels, rotation=90)
+    fig, ax = plt.subplots(figsize=(15,8))
+
+    sl = [ 'Prey-Static-5','Prey-Static-10', 'Prey-Static-15','Prey-Left-5','Prey-Left-10','Prey-Left-15',
+           'Prey-Right-5','Prey-Right-10','Prey-Right-15','Prey-Towards','Prey-Away','Predator-Static-40',
+           'Predator-Static-60',  'Predator-Static-80','Predator-Left-40', 'Predator-Left-60',   'Predator-Left-80',
+           'Predator-Right-40',  'Predator-Right-60',  'Predator-Right-80', 'Predator-Towards', 'Predator-Away', 'Neither', ]
+    print(set(counts))
+    g = sns.countplot(counts, color="blue", order=sl)
+    plt.xlabel("Stimulus", fontsize=30)
+    plt.ylabel("Neurons Selective", fontsize=30)
     plt.xticks(rotation=90)
+    fig.tight_layout()
+
     plt.show()
 
 cats = []
@@ -182,7 +211,7 @@ for i in [4, 5, 6, 8]:
     full_rv = create_full_response_vector(f"new_even_prey_ref-{i}")
     full_sv = create_full_stimulus_vector(f"new_even_prey_ref-{i}")
     sel = label_all_units_selectivities(full_rv, full_sv)
-    # display_selectivity_tally(sel, full_sv)
+    display_selectivity_tally(sel, full_sv)
     cat = assign_neuron_names(sel)
     predator_ns = [j for j, c in enumerate(cat) if c == "Prey-Only"]
     print(i)

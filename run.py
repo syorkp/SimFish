@@ -67,10 +67,10 @@ target_ablation = c1 + c2 + c3 + c4 + c5 + c6 + c7 + c8
 #
 # target_ablation = c1 + c2
 
-with open(f"Run-Configurations/vrv_full_config.json", 'r') as f:
+with open(f"Run-Configurations/new_ind_ablations_1.json", 'r') as f:
     c1 = json.load(f)
 
-with open(f"Run-Configurations/extra_predator.json", 'r') as f:
+with open(f"Run-Configurations/new_ind_ablations_2.json", 'r') as f:
     c2 = json.load(f)
 
 final_configs = c1 + c2
@@ -282,5 +282,5 @@ differential_training_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(c1)
+manager = TrialManager(final_configs)
 manager.run_priority_loop()

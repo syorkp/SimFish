@@ -105,12 +105,10 @@ def show_full_vector_simple(response_vector, stimulus_vector, title):
 
 def display_half_response_vector(response_vector, stimulus_vector, title, transition_points=None):
     fig, ax = plt.subplots()
-    # fig.set_size_inches(18.5, 80)
     fig.set_size_inches(18.5, 20)
-    # response_vector = sorted(response_vector, key=lambda x: sum(x[:]))
     ax.set_title(title, fontsize=45)
     ax.pcolor(response_vector, cmap='coolwarm')
-    ax.grid(True, which='minor', axis='both', linestyle='-', color='k')
+    ax.grid(True, which='minor', axis='both', linestyle='-')#, color='k')
     ax.set_xlim(0, 121)
     ax.xaxis.set_major_locator(plt.MultipleLocator(11))
     if "Prey" in title:
@@ -178,7 +176,6 @@ def display_full_response_vector(response_vector, stimulus_vector, title, transi
 
     ax.set_xlabel("Stimulus and Position", fontsize=35)
     ax.set_ylabel("Neuron", fontsize=35)
-    ax.xaxis.grid(linewidth=1, color="black")
     # ax.xaxis._axinfo["grid"]['linewidth'] = 3.
     plt.show()
 

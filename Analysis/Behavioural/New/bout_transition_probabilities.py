@@ -227,7 +227,8 @@ def visualisation_method_2(transition_probabilities):
     # cbax = fig.add_axes([0.85, 0.12, 0.05, 0.78])
     # cb = mpl.colorbar.ColorbarBase(cbax, cmap=mymap, norm=normalize, orientation='vertical')
     # cb.set_label("Transition Probability", rotation=270, labelpad=15)
-
+    # plt.ylim(0, 0.4)
+    # plt.xlim(0, 0.4)
     plt.show(block=True)
     plt.interactive(False)
 
@@ -370,14 +371,14 @@ def get_modal_sequences(transition_probabilities, order=3, number=10):
         ordered_sequences[i] = [int(l) for l in seq]
     return ordered_sequences
 
-# free_swimiming = []
-# for i in range(1, 11):
-#     for j in range(1, 4):
-#         cs = get_free_swimming_sequences(load_data("new_differential_prey_ref-3", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}"))
-#         free_swimiming += cs
-# transition_counts = get_first_order_transition_counts_from_sequences(free_swimiming)
-# tp = compute_transition_probabilities(transition_counts)
-# visualisation_method_2(tp)
+free_swimiming = []
+for i in range(1, 11):
+    for j in range(1, 4):
+        cs = get_free_swimming_sequences(load_data("new_differential_prey_ref-3", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}"))
+        free_swimiming += cs
+transition_counts = get_first_order_transition_counts_from_sequences(free_swimiming)
+tp = compute_transition_probabilities(transition_counts)
+visualisation_method_2(tp)
 x = True
 # # visualisation_method_2(tp)
 #
