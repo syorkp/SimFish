@@ -3699,12 +3699,18 @@ def build_naturalistic_configuration(model_names, naturalistic_config_name, pred
 def build_indiscriminate_ablation_gradient_configuration(model_names, environment, configuration_name):
     configuration = []
     for model in model_names:
-        gradient_conf_list = indiscriminate_ablation_gradient.copy()
+        gradient_conf_list = copy.deepcopy(indiscriminate_ablation_gradient)
         for conf in gradient_conf_list:
             conf["Model Name"] = model[:-2]
             conf["Trial Number"] = int(model[-1])
             conf["Environment Name"] = environment
             conf["Assay Configuration Name"] = f"Ablation-Indiscriminate-{environment}"
+            new_assays = []
+            for assay in conf["Assays"]:
+                new_assay = assay.copy()
+                new_assay['assay id'] = new_assay['assay id'][:-1] + str(int(new_assay['assay id'][-1]) + 3)
+                new_assays.append(new_assay)
+            conf["Assays"] += new_assays
             configuration.append(conf.copy())
     with open(f"{configuration_name}.json", 'w') as f:
         json.dump(configuration, f, indent=4)
