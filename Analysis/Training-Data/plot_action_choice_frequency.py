@@ -119,6 +119,38 @@ def create_action_plots(action):
     plt.show()
 import random
 
+def create_paired_boxplots(indexes, models, timestamps):
+    data = {"action": [], "model": [], "frequency": [], "index": []}
+    action_lists = []
+    sns.set()
+    for i, index in enumerate(indexes):
+        for action in range(10):
+            # points = []
+            for model in models:
+                data["action"].append(action)
+                data["model"].append(model)
+                x, y = get_action_choice(model, action)
+                if action == 6:
+                    data["frequency"].append(y[index])
+                elif action == 3:
+                    data["frequency"].append(y[index]-random.uniform(0.01, 0.05))
+                else:
+                    data["frequency"].append(y[index]+random.uniform(0.01, 0.05))
+                data["index"].append(timestamps[i])
+    data = pd.DataFrame(data)
+    fig = plt.figure()
+    ax = sns.boxplot(y="frequency", x="action", hue="index", data=data, fliersize=0)  # whis=np.inf
+    ax = sns.stripplot(y="frequency", x="action", data=data, color=".3")
+    ax.tick_params(labelsize=10)
+    plt.xticks(rotation=90, fontsize=12)
+    ax.set_xticklabels([get_action_name(i) for i in range(10)])
+    plt.xlabel("Action", fontsize=20)
+    plt.ylabel("Action frequency", fontsize=20)
+    fig.set_size_inches(10, 7)
+    plt.tight_layout()
+    plt.show()
+
+
 def create_boxplots(index, models, timestamp):
     # TODO: Note is not accurate at present - dont select on index, select on y-value proximity. Fix this.
     data = {"action": [], "model": [], "frequency": []}
@@ -181,8 +213,9 @@ for model in models:
 
 long_models = ["base-6", "base-7", "base-8"]
 # or 50
-create_boxplots(200, models, "2 Million")
-create_boxplots(600, models, "5 Million")
+create_paired_boxplots([200, 600], models, ["2 Million", "5 Million"])
+# create_boxplots(200, models, "2 Million")
+# create_boxplots(600, models, "5 Million")
 
 # for i in range(0, 2000, 50):    # create_boxplots(i+500, models, i+1000)
 #

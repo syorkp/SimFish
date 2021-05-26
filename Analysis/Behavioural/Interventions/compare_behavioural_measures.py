@@ -64,7 +64,7 @@ def get_both_measures_random_gradient(model, targeted_neurons, number_of_trials)
     prey_caught_gradient = []
     predators_avoided_gradient = []
     for per in range(0, 105, 5):
-        if per == 35: continue  # Remove later.
+        # if per == 35: continue  # Remove later.
         prey_caught, predators_avoided = get_measures_random_gradient(model, targeted_neurons, per, number_of_trials)
         print(f"Ablations: {per}%, Prey caught: {prey_caught}, Predators avoided: {predators_avoided}")
         prey_caught_gradient.append(prey_caught)
@@ -74,10 +74,13 @@ def get_both_measures_random_gradient(model, targeted_neurons, number_of_trials)
     # print(f"Control (random ablation): Prey caught: {prey_caught_cont_abl}, Predators avoided: {predators_avoided}")
     return prey_caught_gradient, predators_avoided_gradient
 
+for i in range(1,13):
+    data1 = load_data("new_even_prey_ref-4", "Ablation-Test-Predator_Only-behavioural_data", f"Random-Control-{i}")
+    print(sum(data1["consumed"]))
 
-get_both_measures_random_gradient("new_even_prey_ref-1", "Indiscriminate-even_prey_only", 3)
-print("\n")
-get_both_measures_random_gradient("new_even_prey_ref-1", "Indiscriminate-even_naturalistic", 3)
+# get_both_measures_random_gradient("new_even_prey_ref-1", "Indiscriminate-even_prey_only", 3)
+# print("\n")
+# get_both_measures_random_gradient("new_even_prey_ref-1", "Indiscriminate-even_naturalistic", 3)
 
 # get_both_measures("new_differential_prey_ref-4", "Prey-Sighted-differential_prey_low_predator", 3)
 # get_both_measures("new_differential_prey_ref-4", "No-Response-differential_prey_low_predator", 3)

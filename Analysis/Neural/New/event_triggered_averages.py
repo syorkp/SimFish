@@ -233,8 +233,10 @@ def get_predator_eta_timeseries(data, window=5):
 def get_average_timeseries(timeseries_array, subset=None):
     if subset:
         timeseries_array = [timeseries_array[i] for i in subset]
+
+    std = [np.std([timeseries_array[m][i] for m in range(len(timeseries_array))]) for i in range(len(timeseries_array[0]))]
     av = np.average(timeseries_array, axis=0)
-    return av
+    return av, std
 
 
 def get_indexes_of_max(ex, total=100):

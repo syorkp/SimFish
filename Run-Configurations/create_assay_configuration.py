@@ -1635,8 +1635,8 @@ placeholder_list = data3["new_even_prey_ref-8"]["4"] + data3["new_even_prey_ref-
 #                     Even
 
 # Prey central and large: 29, 24, 1, 8
-# placeholder_list = data2["new_even_prey_ref-3"]["1"] + data2["new_even_prey_ref-3"]["8"] +\
-#                    data2["new_even_prey_ref-3"]["24"] + data2["new_even_prey_ref-3"]["29"]
+placeholder_list = data2["new_even_prey_ref-3"]["1"] + data2["new_even_prey_ref-3"]["8"] +\
+                   data2["new_even_prey_ref-3"]["24"] + data2["new_even_prey_ref-3"]["29"]
 
 # Prey full field: 12, 13, 14, 15, 16, 28, 5
 # placeholder_list = data2["new_even_prey_ref-4"]["4"] + data2["new_even_prey_ref-4"]["11"] +\
@@ -3736,14 +3736,14 @@ def build_ablation_gradient_configuration(model_names, ablation_group, environme
 # build_differential_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], "differential_prey_low_predator", "differential_naturalistic")
 # build_vrv_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], False, "vrv_full_config")
 # build_naturalistic_configuration(["new_even_prey_ref-1", "new_even_prey_ref-2", "new_even_prey_ref-3", "new_even_prey_ref-4"], "even_naturalistic", "even_predator", "even_prey_only", "even_behavioural")
-# build_vrv_configuration(["new_even_prey_ref-8"], False, "vrv_missing_config")
+build_vrv_configuration(["new_even_prey_ref-4", "new_even_prey_ref-5", "new_even_prey_ref-6", "new_even_prey_ref-8"], False, "vrv_full_config")
 # build_missing_predator_configuration(["even_prey_ref-4"], "even_predator", "extra_predator")
 
 
-build_indiscriminate_ablation_gradient_configuration(["new_even_prey_ref-4", "new_even_prey_ref-5", "new_even_prey_ref-6", "new_even_prey_ref-8"],
-                                                     "even_predator", "new_ind_ablations_1")
-build_indiscriminate_ablation_gradient_configuration(["new_even_prey_ref-4", "new_even_prey_ref-5", "new_even_prey_ref-6", "new_even_prey_ref-8"],
-                                                     "even_prey", "new_ind_ablations_2")
+# build_indiscriminate_ablation_gradient_configuration(["new_even_prey_ref-4", "new_even_prey_ref-5", "new_even_prey_ref-6", "new_even_prey_ref-8"],
+#                                                      "even_predator", "new_ind_ablations_1")
+# build_indiscriminate_ablation_gradient_configuration(["new_even_prey_ref-4", "new_even_prey_ref-5", "new_even_prey_ref-6", "new_even_prey_ref-8"],
+#                                                      "even_prey", "new_ind_ablations_2")
 
 # Predator-selective from VRV
 # build_ablation_gradient_configuration(["new_even_prey_ref-8"], "Predator_Selective", "even_prey_only", "even_8_ps_prey_only")

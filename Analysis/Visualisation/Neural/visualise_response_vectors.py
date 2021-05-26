@@ -129,7 +129,7 @@ def display_half_response_vector(response_vector, stimulus_vector, title, transi
                     return i - 1
             return len(transition_points) - 1
 
-        ax.set_yticks(transition_points, minor=True)
+        ax.set_yticks(transition_points, minor=True, fontsize=20)
         ax2 = ax.secondary_yaxis("right")
         ax2.yaxis.set_major_locator(plt.FixedLocator(transition_points))
         ax2.yaxis.set_major_formatter(plt.FuncFormatter(format_func_cluster))
@@ -170,10 +170,12 @@ def display_full_response_vector(response_vector, stimulus_vector, title, transi
             ax.axhline(t, color="black", linewidth=1)
         ax.set_yticks(transition_points, minor=True)
         ax2 = ax.secondary_yaxis("right")
+        ax2.tick_params(axis='y', labelsize=20)
         ax2.yaxis.set_major_locator(plt.FixedLocator(transition_points))
         ax2.yaxis.set_major_formatter(plt.FuncFormatter(format_func_cluster))
         ax2.set_ylabel("Cluster", fontsize=35)
-
+    for t in range(0, len(response_vector[0]), 11):
+        ax.axvline(t, color="black", linewidth=1)
     ax.set_xlabel("Stimulus and Position", fontsize=35)
     ax.set_ylabel("Neuron", fontsize=35)
     # ax.xaxis._axinfo["grid"]['linewidth'] = 3.
@@ -284,6 +286,36 @@ def display_class_counts(model_names, neuron_groups, group_number):
     sns.stripplot(data=d_tallies)
     plt.axhline(0, ls="--")
     plt.show()
+
+
+import json
+
+def get_transition_points_and_order(groups, vectors):
+    ordered_atas = []
+    indexes = [j for sub in [groups[i] for i in groups.keys()] for j in sub]
+    for i in indexes:
+        ordered_atas.append(vectors[i])
+    transition_points = [len(groups[key]) for i, key in enumerate(groups.keys())]
+    cumulative_tps = []
+    for i, t in enumerate(transition_points):
+        cumulative_tps.append(sum(transition_points[:i]))
+    transition_points = cumulative_tps
+    return transition_points, ordered_atas
+
+
+with open(f"../../Categorisation-Data/latest_even.json", 'r') as f:
+    data2 = json.load(f)
+
+
+full_rv = create_full_response_vector("new_even_prey_ref-4", background=True)
+full_rv = np.array(full_rv)
+full_rv, full_rv2 = list(full_rv[:, :int(len(full_rv[0])/2)]), list(full_rv[:, int(len(full_rv[0])/2):])
+full_sv = create_full_stimulus_vector("new_even_prey_ref-4")
+full_rv = normalise_response_vectors(full_rv)
+
+tps, full_rv = get_transition_points_and_order(data2["new_even_prey_ref-4"], full_rv)
+
+display_full_response_vector(full_rv, full_sv, "All Stimuli", tps)
 
 
 # for i in range(3, 7):

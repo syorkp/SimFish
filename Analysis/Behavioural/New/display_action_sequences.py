@@ -22,7 +22,7 @@ def display_sequences(sequences):
 
 
 def display_all_sequences_capture(sequences):
-    sns.set()
+    # sns.set()
     sequences.sort(key=len)
     plot_dim = max([len(seq) for seq in sequences])
 
@@ -109,15 +109,15 @@ def display_average_sequence(sequences):
 
 
 # Ablation groups:
-capture_sequences1 = get_capture_sequences("new_even_prey_ref-1", "Ablation-Indiscriminate-even_prey_only", "Ablated-0", 3)
-capture_sequences2 = get_capture_sequences("new_even_prey_ref-1", "Ablation-Indiscriminate-even_prey_only", "Ablated-100", 3)
-escape_sequences1 = get_escape_sequences("new_even_prey_ref-1", "Ablation-Indiscriminate-even_naturalistic", "Ablated-0", 3)
-escape_sequences2 = get_escape_sequences("new_even_prey_ref-1", "Ablation-Indiscriminate-even_naturalistic", "Ablated-100", 3)
-
+capture_sequences1 = get_capture_sequences("new_even_prey_ref-4", "Ablation-Indiscriminate-even_prey_only", "Ablated-0", 3)
+# capture_sequences2 = get_capture_sequences("new_even_prey_ref-1", "Ablation-Indiscriminate-even_prey_only", "Ablated-100", 3)
+# escape_sequences1 = get_escape_sequences("new_even_prey_ref-1", "Ablation-Indiscriminate-even_naturalistic", "Ablated-0", 3)
+# escape_sequences2 = get_escape_sequences("new_even_prey_ref-1", "Ablation-Indiscriminate-even_naturalistic", "Ablated-100", 3)
+#
 display_all_sequences_escape(capture_sequences1)
-display_all_sequences_escape(capture_sequences2)
-display_all_sequences_escape(escape_sequences1)
-display_all_sequences_escape(escape_sequences2)
+# display_all_sequences_escape(capture_sequences2)
+# display_all_sequences_escape(escape_sequences1)
+# display_all_sequences_escape(escape_sequences2)
 
 
 

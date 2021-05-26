@@ -265,6 +265,8 @@ def plot_certain_neurons(data, duration, neuron_list):
     plt.show()
 
 
+import pylab
+
 def plot_artificial_traces(prey_pred_data, prey_size_data, directional_data, prey_pred_neurons, prey_size_neurons, directional_neurons,
                            labels1, labels2, labels3, stimulus_data):
     sns.set()
@@ -272,26 +274,28 @@ def plot_artificial_traces(prey_pred_data, prey_size_data, directional_data, pre
     current_i = 0
     minimum_vals = []
     for neuron in prey_pred_neurons:
-        axs[current_i].plot(prey_pred_data[0][neuron])
-        axs[current_i].plot(prey_pred_data[1][neuron])
+        axs[current_i].plot(prey_pred_data[0][neuron], color="b", label=labels1[0])
+        axs[current_i].plot(prey_pred_data[1][neuron], color="r", label=labels1[1])
         minimum_vals.append(min(prey_pred_data[0][neuron] + prey_pred_data[1][neuron]))
         axs[current_i].set_yticks([])
         current_i += 1
     for neuron in prey_size_neurons:
-        axs[current_i].plot(prey_size_data[0][neuron])
-        axs[current_i].plot(prey_size_data[1][neuron])
-        axs[current_i].plot(prey_size_data[2][neuron])
+        axs[current_i].plot(prey_size_data[0][neuron], color="k", label=labels2[0])
+        axs[current_i].plot(prey_size_data[1][neuron], color="b", label=labels2[1])
+        axs[current_i].plot(prey_size_data[2][neuron], color="green", label=labels2[2])
         minimum_vals.append(min(prey_size_data[0][neuron] + prey_size_data[1][neuron] + prey_size_data[2][neuron]))
 
         axs[current_i].set_yticks([])
         current_i += 1
     for neuron in directional_neurons:
-        axs[current_i].plot(directional_data[0][neuron])
-        axs[current_i].plot(directional_data[1][neuron])
+        axs[current_i].plot(directional_data[0][neuron], color="yellow", label=labels3[0])
+        axs[current_i].plot(directional_data[1][neuron], color="m", label=labels3[1])
         minimum_vals.append(min(directional_data[0][neuron] + directional_data[1][neuron]))
-
         axs[current_i].set_yticks([])
         current_i += 1
+    handles, labels = axs[0].get_legend_handles_labels()
+    handles2, labels2 = axs[3].get_legend_handles_labels()
+    handles3, labels3 = axs[-1].get_legend_handles_labels()
     for i in range(len(prey_pred_neurons+prey_size_neurons+directional_neurons)):
         if stimulus_data[0]:
             for period in stimulus_data[0]:
@@ -300,11 +304,28 @@ def plot_artificial_traces(prey_pred_data, prey_size_data, directional_data, pre
                                      xmin=period[key]["Onset"],
                                      xmax=period[key]["Onset"] + (period[key]["Onset"] - period[key]["Pre-onset"]),
                                      color="r")
+    # fig.legend([prey_pred_data[0][0], prey_pred_data[1][0], prey_size_data[0][0],
+    #             prey_size_data[2][0], directional_data[0][0], directional_data[1][0]],
+    #             labels=labels1 + [labels2[0], labels2[2]] +labels3)
     fig.set_size_inches((12, 12))
     axs[-1].set_xlabel("Time (steps)")
+
     plt.show()
 
+    legendFig = plt.figure("Legend plot")
 
+    legendFig.legend(handles[1:]+handles2+handles3, labels[1:]+labels2+labels3, loc='upper right',  fontsize=20)
+
+    legendFig.savefig('legend.png')
+    # plt.legend([prey_pred_data[0][0], prey_pred_data[1][0], prey_size_data[0][0],
+    #             prey_size_data[2][0], directional_data[0][0], directional_data[1][0]],
+    #             labels=labels1 + [labels2[0], labels2[2]] +labels3)
+    # fig = plt.figure(figsize=(2, 1.25))
+    # patches = [
+    #     mpatches.Patch(color=color, label=label)
+    #     for label, color in zip(labels, colors)]
+    # fig.legend(patches, labels, loc='center', frameon=False)
+    # plt.show()
 
 # data1 = load_data("new_differential_prey_ref-4", "Behavioural-Data-Free-1", "Naturalistic-8")
 # plot_certain_neurons(data1, 200, [20, 21, 139, 156, 161, 135, 133, 196])
@@ -312,7 +333,6 @@ def plot_artificial_traces(prey_pred_data, prey_size_data, directional_data, pre
 # # Get exploraiton timeseries and add to that
 # unit_activity1 = [[data1["rnn state"][i - 1][0][j] for i in range(200)] for j in range(512)]
 # plot_traces(unit_activity1)
-
 
 
 
@@ -356,7 +376,7 @@ unit_activity7 = [[data2["rnn state"][i - 1][0][j] for i in data2["step"]] for j
 
 
 plot_artificial_traces([unit_activity1, unit_activity2], [unit_activity3, unit_activity4, unit_activity5], [unit_activity6, unit_activity7],
-                       [158, 315, 319], [21, 152, 315, 302], [335, 302, 315],
+                       [158, 315, 319], [21, 152, 315, 302], [335, 315],
                        ["Prey-10", "Predator-40"], ["Prey-5", "Prey-10", "Prey-15"], ["Prey-10-Left", "Prey-10-Right"],
                        [stimulus_data1, stimulus_data2, stimulus_data3, stimulus_data4, stimulus_data5, stimulus_data6, stimulus_data7])
 

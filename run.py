@@ -73,7 +73,12 @@ with open(f"Run-Configurations/new_ind_ablations_1.json", 'r') as f:
 with open(f"Run-Configurations/new_ind_ablations_2.json", 'r') as f:
     c2 = json.load(f)
 
+with open(f"Run-Configurations/even_4_po_prey_only.json", 'r') as f:
+    sss = json.load(f)
+
 final_configs = c1 + c2
+with open(f"Run-Configurations/vrv_full_config.json", 'r') as f:
+    sss = json.load(f)
 
 even_training_configuration = [
     {
@@ -282,5 +287,5 @@ differential_training_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(final_configs)
+manager = TrialManager(sss)
 manager.run_priority_loop()

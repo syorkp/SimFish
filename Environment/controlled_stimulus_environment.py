@@ -204,7 +204,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                 progression = current_steps / duration
                 return ((1.5 * progression) - 0.75) * np.pi
         else:
-            if self.moving_stimuli is "Right":
+            if self.moving_stimuli == "Right":
                 if current_steps < 1:
                     return 0.75 * np.pi
                 else:

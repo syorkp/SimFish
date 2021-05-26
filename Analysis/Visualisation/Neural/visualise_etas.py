@@ -52,6 +52,7 @@ def display_all_atas(atas, groups=None):
         ax2.yaxis.set_major_locator(plt.FixedLocator(transition_points))
         ax2.yaxis.set_major_formatter(plt.FuncFormatter(format_func_cluster))
         ax2.set_ylabel("Cluster", fontsize=20)
+        ax2.tick_params(axis='y', labelsize=20)
     else:
         # atas, t, cat = order_vectors_by_kmeans(atas)
         ax.pcolor(atas, cmap='coolwarm')
@@ -99,6 +100,7 @@ def display_all_etas(etas, event_names, groups=None):
         ax2.yaxis.set_major_locator(plt.FixedLocator(transition_points))
         ax2.yaxis.set_major_formatter(plt.FuncFormatter(format_func_cluster))
         ax2.set_ylabel("Cluster", fontsize=20)
+        ax2.tick_params(axis='y', labelsize=20)
     else:
         # atas, t, cat = order_vectors_by_kmeans(atas)
         ax.pcolor(etas, cmap='coolwarm')
@@ -234,13 +236,14 @@ def display_average_eta_timeseries(eta_timeseries):
     plt.show()
 
 
-def display_multiple_average_eta_timeseries(eta_timeseries_list, group_labels):
+def display_multiple_average_eta_timeseries(eta_timeseries_list, group_labels, std=None):
     sns.set()
     duration = len(eta_timeseries_list[0])
     plt.figure(figsize=(8, 8))
     for label, eta_timeseries in zip(group_labels, eta_timeseries_list):
         plt.plot(range(-int(duration/2), int(duration/2)+1, 1), eta_timeseries, label=label)
     plt.axvline(x=0, c="r")
+    plt.fill_between(range(-10, 11), [eta_timeseries_list[0][i]-stdi for i, stdi in enumerate(std)], [eta_timeseries_list[0][i]+stdi for i, stdi in enumerate(std)])
     plt.legend()
     plt.xlabel("Time to Prey Consumption (steps)")
     plt.ylabel("Normalised Event-Associated Activity")
@@ -263,10 +266,8 @@ def display_eta_timeseries_overlay(timeseries_list):
 # Single-point
 ata = get_full_action_triggered_average("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
 
-with open(f"../../Categorisation-Data/even_prey_neuron_groups.json", 'r') as f:
+with open(f"../../Categorisation-Data/latest_even.json", 'r') as f:
     data2 = json.load(f)
-
-display_all_atas(ata)
 
 display_all_atas(ata, data2["new_even_prey_ref-4"])
 
@@ -278,6 +279,7 @@ display_all_etas([ex1, ex2, ex3], ["Exploration", "Consumption", "Predator"], da
 
 placeholder_list = data2["new_even_prey_ref-4"]["1"] + data2["new_even_prey_ref-4"]["8"] +\
                    data2["new_even_prey_ref-4"]["24"] + data2["new_even_prey_ref-4"]["29"]
+placeholder_list = data2["new_even_prey_ref-4"]["0"]
 predator_only_ns = [2, 13, 19, 23, 27, 29, 34, 36, 46, 50, 60, 66, 81, 82, 93, 94, 95, 99, 100, 106, 110, 113, 117, 119, 122, 135, 145, 150, 156, 163, 165, 169, 171, 174, 182, 185, 186, 201, 203, 217, 218, 219, 220, 225, 226, 227, 238, 244, 259, 261, 264, 269, 280, 290, 302, 308, 310, 317, 322, 324, 339, 341, 345, 350, 366, 373, 402, 411, 450, 464, 469, 471, 477, 493]
 prey_only_ns = [72, 77, 82, 138, 222, 232, 253, 268, 279, 318, 369, 382, 385, 388, 410, 433, 461, 481]
 
@@ -291,9 +293,10 @@ plot_average_action_scores_comparison([predator_only, prey_only, ata], ["Predato
 
 eta = get_full_eta_timeseries("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
 eta = np.absolute(eta)
-prey_in_front_capture_average = get_average_timeseries(eta, placeholder_list)
-other_capture_average = get_average_timeseries(eta, [i for i in range(512) if i not in placeholder_list and i not in predator_only_ns])
-predator_only_capture_average = get_average_timeseries(eta, predator_only_ns)
+prey_in_front_capture_average, std = get_average_timeseries(eta, placeholder_list)
+other_capture_average, std2 = get_average_timeseries(eta, [i for i in range(512) if i not in placeholder_list and i not in predator_only_ns])
+predator_only_capture_average, std3  = get_average_timeseries(eta, predator_only_ns)
+display_multiple_average_eta_timeseries([prey_in_front_capture_average, other_capture_average], ["Prey in Front", "All Neurons"], std)
 
 display_multiple_average_eta_timeseries([prey_in_front_capture_average, other_capture_average, predator_only_capture_average], ["Prey in Front", "All Neurons", "Predator-Only"])
 
