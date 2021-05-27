@@ -249,7 +249,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     def update_unset_stimuli(self):
         # TODO: Still need to update so that can have multiple, sequential stimuli. Will require adding in onset into stimulus, as well as changing the baseline phase. Not useful for current requirements.
         stimuli_to_delete = []
-        init_period = 1
+        init_period = 400
 
         for stimulus in self.unset_stimuli.keys():
             i = int(stimulus.split()[1]) - 1

@@ -278,5 +278,5 @@ differential_training_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(target_ablation)
+manager = TrialManager(sss)
 manager.run_priority_loop()
