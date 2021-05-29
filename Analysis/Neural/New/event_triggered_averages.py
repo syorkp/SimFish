@@ -8,6 +8,7 @@ import math
 
 from Analysis.load_data import load_data
 from Analysis.Behavioural.New.show_spatial_density import get_action_name
+from Analysis.Neural.New.calculate_vrv import normalise_vrvs
 
 
 def get_full_action_triggered_average(model_name, configuration, assay_id, number_of_trials):
@@ -33,7 +34,7 @@ def get_event_triggered_average(data, event_name):
         for j, n in enumerate(neuron_averages):
             neuron_averages[j] += neural_data[i][j]
     for s, n in enumerate(neuron_averages):
-        neuron_averages[s] = 100 * ((n/len(indexes))-neuron_baseline[s])/neuron_baseline[s]
+        neuron_averages[s] = 100*((n/len(indexes))-neuron_baseline[s])/neuron_baseline[s]
     return neuron_averages
 
 
@@ -48,7 +49,7 @@ def get_action_triggered_average(data):
     for a in action_counts.keys():
         if action_counts[a] > 2:
             for i, n in enumerate(action_triggered_averages[a]):
-                action_triggered_averages[a][i] = (((n/action_counts[a]) - neuron_baseline[i])/neuron_baseline[i]) * 100
+                action_triggered_averages[a][i] = 100*(((n/action_counts[a]) - neuron_baseline[i])/neuron_baseline[i])
     return action_triggered_averages
 
 
@@ -86,7 +87,7 @@ def get_exploration_triggered_average(data):
         for j, n in enumerate(neuron_averages):
             neuron_averages[j] += neural_data[i][j]
     for s, n in enumerate(neuron_averages):
-        neuron_averages[s] = 100 * ((n/len(indexes))-neuron_baseline[s])/neuron_baseline[s]
+        neuron_averages[s] = 100* ((n/len(indexes))-neuron_baseline[s])/neuron_baseline[s]
     return neuron_averages
 
 
@@ -145,7 +146,7 @@ def get_ata_timeseries(data, window=5):
     for a in action_counts.keys():
         if action_counts[a] > 2:
             for i, n in enumerate(ata_timeseries[a]):
-                ata_timeseries[str(a)][i] = (((n/action_counts[a]) - neuron_baseline[i])/neuron_baseline[i]) * 100
+                ata_timeseries[str(a)][i] = (((n/action_counts[a]) - neuron_baseline[i])/neuron_baseline[i])
     return ata_timeseries
 
 
@@ -172,10 +173,11 @@ def get_eta_timeseries(data, event="consumed", window=10):
                 eta_timeseries[n] = eta_timeseries[n] + data["rnn state"][evi - window: evi + window+1, 0, n]
     if len(indexes) > 1:
         for i, n in enumerate(eta_timeseries):
-            eta_timeseries[i] = (((n / len(indexes)) - neuron_baseline[i]) / neuron_baseline[i]) * 100
+            eta_timeseries[i] = (((n / len(indexes)) - neuron_baseline[i]) / neuron_baseline[i])
     elif len(indexes) == 1:
         for i, n in enumerate(eta_timeseries):
-            eta_timeseries[i] = ((n - neuron_baseline[i]) / neuron_baseline[i]) * 100
+            eta_timeseries[i] = ((n - neuron_baseline[i]) / neuron_baseline[i])
+    eta_timeseries = normalise_vrvs(eta_timeseries)
     return eta_timeseries
 
 
@@ -223,10 +225,10 @@ def get_predator_eta_timeseries(data, window=5):
             eta_timeseries[n] = eta_timeseries[n] + data["rnn state"][evi[0]: evi[-1]+1, 0, n]
     if len(predator_sequence_timestamps) > 1:
         for i, n in enumerate(eta_timeseries):
-            eta_timeseries[i] = (((n / len(predator_sequence_timestamps)) - neuron_baseline[i]) / neuron_baseline[i]) * 100
+            eta_timeseries[i] = (((n / len(predator_sequence_timestamps)) - neuron_baseline[i]) / neuron_baseline[i])
     elif len(predator_sequence_timestamps) == 1:
         for i, n in enumerate(eta_timeseries):
-            eta_timeseries[i] = ((n - neuron_baseline[i]) / neuron_baseline[i]) * 100
+            eta_timeseries[i] = ((n - neuron_baseline[i]) / neuron_baseline[i])
     return eta_timeseries
 
 
@@ -234,7 +236,7 @@ def get_average_timeseries(timeseries_array, subset=None):
     if subset:
         timeseries_array = [timeseries_array[i] for i in subset]
 
-    std = [np.std([timeseries_array[m][i] for m in range(len(timeseries_array))]) for i in range(len(timeseries_array[0]))]
+    std = [np.std([timeseries_array[m][i] for m in range(len(timeseries_array))])/2 for i in range(len(timeseries_array[0]))]
     av = np.average(timeseries_array, axis=0)
     return av, std
 

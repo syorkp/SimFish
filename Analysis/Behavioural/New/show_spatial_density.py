@@ -96,6 +96,32 @@ def get_action_name(action_num):
     return action_name
 
 
+from matplotlib.lines import Line2D
+import matplotlib
+class AnchoredHScaleBar(matplotlib.offsetbox.AnchoredOffsetbox):
+    """ size: length of bar in data units
+        extent : height of bar ends in axes units """
+    def __init__(self, size=1, extent = 0.03, label="", loc=2, ax=None,
+                 pad=0.4, borderpad=0.5, ppad = 0, sep=2, prop=None,
+                 frameon=True, linekw={}, **kwargs):
+        if not ax:
+            ax = plt.gca()
+        trans = ax.get_xaxis_transform()
+        size_bar = matplotlib.offsetbox.AuxTransformBox(trans)
+        line = Line2D([0,size],[0,0], **linekw)
+        vline1 = Line2D([0,0],[-extent/2.,extent/2.], **linekw)
+        vline2 = Line2D([size,size],[-extent/2.,extent/2.], **linekw)
+        size_bar.add_artist(line)
+        size_bar.add_artist(vline1)
+        size_bar.add_artist(vline2)
+        txt = matplotlib.offsetbox.TextArea(label, minimumdescent=False)
+        self.vpac = matplotlib.offsetbox.VPacker(children=[size_bar,txt],
+                                 align="center", pad=ppad, sep=sep)
+        matplotlib.offsetbox.AnchoredOffsetbox.__init__(self, loc, pad=pad,
+                 borderpad=borderpad, child=self.vpac, prop=prop, frameon=frameon,
+                 **kwargs)
+
+
 def create_density_cloud(density_list, action_num, stimulus_name):
     n_samples = len(density_list)
     x = np.array([i[0] for i in density_list])
@@ -107,11 +133,19 @@ def create_density_cloud(density_list, action_num, stimulus_name):
     yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
 
     zi = k(np.vstack([xi.flatten(), yi.flatten()]))
-    plt.title(f"Feature: {stimulus_name}, Action: {get_action_name(action_num)}")
 
     # Make the plot
-    plt.pcolormesh(xi, yi, zi.reshape(xi.shape))
+    fig, ax = plt.subplots()
+
+    ax.pcolormesh(xi, yi, zi.reshape(xi.shape))
+
+    ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
+                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
+    ax.add_artist(ob)
     plt.arrow(-300, 220, 0, 40, width=10, color="red")
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+    plt.title(f"Feature: {stimulus_name}, Action: {get_action_name(action_num)}")
     plt.show()
 
 
@@ -176,13 +210,23 @@ def create_j_turn_overlap_plot(p1, p2, p3, n):
     nbins = 300
     k = kde.gaussian_kde([y, x])
     zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
-    plt.title(f"Feature: Prey, Action: J-turns")
-
     zi = zi - zi2
+
     # Make the plot
-    plt.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
+    fig, ax = plt.subplots()
+
+    ax.pcolormesh(xi, yi, zi.reshape(xi.shape),  cmap='RdBu')
+
+    ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
+                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
+    ax.add_artist(ob)
     plt.arrow(300, 220, 0, 40, width=10, color="red")
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+    plt.title(f"Feature: Prey, Action: J-turns")
     plt.show()
+
+
 
 
 def create_routine_turn_overlap_plot(p1, p2, p3, n):
@@ -214,12 +258,20 @@ def create_routine_turn_overlap_plot(p1, p2, p3, n):
     nbins = 300
     k = kde.gaussian_kde([y, x])
     zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
-    plt.title(f"Feature: Prey, Action: Routine turns")
 
     zi = zi2 - zi
-    # Make the plot
-    plt.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
+
+    fig, ax = plt.subplots()
+
+    ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
+
+    ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
+                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
+    ax.add_artist(ob)
     plt.arrow(300, 220, 0, 40, width=10, color="red")
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+    plt.title(f"Feature: Prey, Action: Routine turns")
     plt.show()
 
 
@@ -261,24 +313,32 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
     nbins = 300
     k = kde.gaussian_kde([y, x])
     zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
-    plt.title(f"Feature: Predator, Action: C-Starts")
 
     zi = zi - zi2
     # Make the plot
-    plt.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
-    plt.colorbar()
+    fig, ax = plt.subplots()
+
+    ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
+
+    ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
+                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
+    ax.add_artist(ob)
     plt.arrow(300, 220, 0, 40, width=10, color="red")
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+    plt.title(f"Feature: Predator, Action: C-Starts")
     plt.show()
 
 #
 # get_all_density_plots_all_subsets("new_even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
+# get_all_density_plots_all_subsets("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
+
 #
 # get_all_density_plots_all_subsets("new_even_prey_ref-4", "Ablation-Test-Predator_Only-behavioural_data", "Random-Control", 12)
 
 # get_all_density_plots_all_subsets("new_even_prey_ref-4", "Ablation-Test-Prey-Large-Central-even_naturalistic", "Random-Control", 12)
 
 # get_all_density_plots_all_subsets("new_even_prey_ref-4", "Ablation-Test-Predator_Only-behavioural_data", "Random-Control", 12)
-# get_all_density_plots_all_subsets("new_even_prey_ref-1", "Ablation-Indiscriminate-even_prey_only", "Ablated-100", 3)
 
 
 # get_all_density_plots_all_subsets("new_even_prey_ref-8", "Behavioural-Data-Free", "Naturalistic", 10)
@@ -291,12 +351,20 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
 #THESE ONES:
 # get_all_density_plots_all_subsets("new_even_prey_ref-8", "Behavioural-Data-Free", "Predator", 10)
 # create_cstart_overlap_plot("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 40)
+
+# create_routine_turn_overlap_plot("even_prey_ref-5", "Behavioural-Data-Free", "Prey", 10)
+
+# get_all_density_plots_all_subsets("even_prey_ref-5", "Behavioural-Data-Free", "Predator", 10)
+# get_all_density_plots_all_subsets("even_prey_ref-6", "Behavioural-Data-Free", "Predator", 10)
+# get_all_density_plots_all_subsets("even_prey_ref-7", "Behavioural-Data-Free", "Predator", 10)
 #
-# # create_routine_turn_overlap_plot("even_prey_ref-5", "Behavioural-Data-Free", "Prey", 10)
 #
-# # create_j_turn_overlap_plot("even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
-# get_all_density_plots_all_subsets("even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
-# get_all_density_plots_all_subsets("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 10)
+#
+# get_all_density_plots_all_subsets("new_even_prey_ref-6", "Behavioural-Data-Free", "Prey", 10)
+# get_all_density_plots_all_subsets("new_even_prey_ref-6", "Behavioural-Data-Free", "Naturalistic", 10)
+# get_all_density_plots_all_subsets("new_even_prey_ref-6", "Behavioural-Data-Free", "Predator", 10)
+#
+# # get_all_density_plots_all_subsets("even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
 
 # create_cstart_overlap_plot("even_prey_ref-7", "Behavioural-Data-Free", "Predator", 10)
 # create_j_turn_overlap_plot("even_prey_ref-7", "Behavioural-Data-Free", "Prey", 10)

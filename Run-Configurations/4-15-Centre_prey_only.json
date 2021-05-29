@@ -25,6 +25,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -44,6 +46,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -63,6 +67,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -82,6 +88,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -101,6 +109,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -120,6 +130,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -153,6 +165,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -182,6 +196,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -211,6 +227,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -240,6 +258,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -269,6 +289,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -298,6 +320,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -341,6 +365,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -379,6 +405,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -417,6 +445,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -455,6 +485,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -493,6 +525,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -531,6 +565,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -583,6 +619,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -630,6 +668,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -677,6 +717,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -724,6 +766,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -771,6 +815,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -818,6 +864,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -879,6 +927,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -935,6 +985,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -991,6 +1043,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -1047,6 +1101,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -1103,6 +1159,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -1159,6 +1217,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -1229,6 +1289,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -1294,6 +1356,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -1359,6 +1423,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -1424,6 +1490,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -1489,6 +1557,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -1554,6 +1624,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -1633,6 +1705,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -1707,6 +1781,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -1781,6 +1857,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -1855,6 +1933,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -1929,6 +2009,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -2003,6 +2085,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -2091,6 +2175,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -2174,6 +2260,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -2257,6 +2345,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -2340,6 +2430,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -2423,6 +2515,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -2506,6 +2600,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -2603,6 +2699,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -2695,6 +2793,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -2787,6 +2887,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -2879,6 +2981,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -2971,6 +3075,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -3063,6 +3169,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -3169,6 +3277,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -3270,6 +3380,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -3371,6 +3483,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -3472,6 +3586,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -3573,6 +3689,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -3674,6 +3792,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -3789,6 +3909,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -3899,6 +4021,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -4009,6 +4133,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -4119,6 +4245,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -4229,6 +4357,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -4339,6 +4469,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -4463,6 +4595,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -4573,6 +4707,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -4683,6 +4819,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -4793,6 +4931,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -4903,6 +5043,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],
@@ -5013,6 +5155,8 @@
                 "collisions": true,
                 "recordings": [
                     "consumed",
+                    "prey_positions",
+                    "position",
                     "predator",
                     "behavioural choice"
                 ],

@@ -4,7 +4,7 @@ from pylab import setp
 import numpy as np
 
 from Analysis.Behavioural.Interventions.compare_behavioural_measures import get_both_measures, \
-    get_both_measures_random_gradient
+    get_both_measures_random_gradient, get_both_measures_random_gradient_extended
 
 
 def plot_gradients_random(ablations, measure):
@@ -13,6 +13,33 @@ def plot_gradients_random(ablations, measure):
     plt.xlabel("Percentage ablated")
     plt.ylabel(measure)
     plt.legend()
+    plt.show()
+
+
+def plot_multiple_gradients_extended(ablations, measure):
+    percentages = list(range(0, 100, 5)) + list(range(96, 100, 1))
+    sns.set()
+    average = [0 for i in percentages]
+    std = [np.std([a[i] for a in ablations]) for i, point in enumerate(ablations[0])]
+    for ablation in ablations:
+        # plt.plot(percentages, ablation)
+        average = [average[i] + abl for i, abl in enumerate(ablation)]
+    for i, av in enumerate(average):
+        average[i] = av / len(ablations)
+    plt.plot(percentages, average, color="orange")
+    stdlow = [a - s for a, s in zip(average, std)]
+    stdhigh = [a + s for a, s in zip(average, std)]
+
+    high_v = [max([a[i] for a in ablations]) for i, point in enumerate(ablations[0])]
+    low_v = [min([a[i] for a in ablations]) for i, point in enumerate(ablations[0])]
+
+    # plt.fill_between(percentages, stdlow, stdhigh)
+
+    plt.fill_between(percentages, low_v, high_v)
+    plt.hlines(1, 0, 100, color="r")
+    plt.xlabel("Percentage ablated")
+    plt.ylabel(measure)
+    # plt.legend()
     plt.show()
 
 
@@ -129,15 +156,15 @@ def get_random_control_average(gradients, dimensions, max_percentage):
 # show_gross_changes([22, 22], [30, 30], [30, 30], [10, 10], [10, 10], [10, 10])
 
 # Random (all)
-# prey_gradient_random1, pred_gradient_random1 = get_both_measures_random_gradient("new_even_prey_ref-1",
+# prey_gradient_random1, pred_gradient_randomx = get_both_measures_random_gradient("new_even_prey_ref-4",
 #                                                                                  "Indiscriminate-even_prey_only", 3)
-# prey_gradient_random2, pred_gradient_random2 = get_both_measures_random_gradient("new_even_prey_ref-2",
+# prey_gradient_random2, pred_gradient_randomx = get_both_measures_random_gradient("new_even_prey_ref-4",
 #                                                                                  "Indiscriminate-even_prey_only", 3)
-# prey_gradient_random3, pred_gradient_random3 = get_both_measures_random_gradient("new_even_prey_ref-2",
+# prey_gradient_random3, pred_gradient_randomx = get_both_measures_random_gradient("new_even_prey_ref-6",
 #                                                                                  "Indiscriminate-even_prey_only", 3)
-# prey_gradient_random4, pred_gradient_random4 = get_both_measures_random_gradient("new_even_prey_ref-4",
+# prey_gradient_random4, pred_gradient_randomx = get_both_measures_random_gradient("new_even_prey_ref-8",
 #                                                                                  "Indiscriminate-even_prey_only", 3)
-
+#
 # random_prey_gradient = get_random_control_average([prey_gradient_random1,
 #                                                    prey_gradient_random2,
 #                                                    prey_gradient_random3,
@@ -145,9 +172,9 @@ def get_random_control_average(gradients, dimensions, max_percentage):
 
 prey_gradient_randomx, pred_gradient_random1 = get_both_measures_random_gradient("new_even_prey_ref-4",
                                                                                  "Indiscriminate-even_predator", 6)
-prey_gradient_randomx, pred_gradient_random2 = get_both_measures_random_gradient("new_even_prey_ref-5",
+prey_gradient_randomx, pred_gradient_random2 = get_both_measures_random_gradient("new_even_prey_ref-4",
                                                                                  "Indiscriminate-even_predator", 6)
-prey_gradient_randomx, pred_gradient_random3 = get_both_measures_random_gradient("new_even_prey_ref-5",
+prey_gradient_randomx, pred_gradient_random3 = get_both_measures_random_gradient("new_even_prey_ref-6",
                                                                                  "Indiscriminate-even_predator", 6)
 prey_gradient_randomx, pred_gradient_random4 = get_both_measures_random_gradient("new_even_prey_ref-8",
                                                                                  "Indiscriminate-even_predator", 6)
@@ -173,6 +200,7 @@ x = True
 # plot_gradients_random(prey_gradient_random[:7] + [prey_gradient_random[7]] + prey_gradient_random[7:], "Prey Caught")
 # plot_gradients_random(pred_gradient_random[:7] + [pred_gradient_random[7]] + pred_gradient_random[7:], "Predators Avoided")
 
+prey_random_gradient = [8 for i in range(11)]
 pred_random_gradient = [3 for i in range(11)]
 # Prey-Large Central
 prey_gradient1, pred_gradient = get_both_measures("new_even_prey_ref-1", "Prey-Large-Central-even_prey_only", 3)
@@ -180,15 +208,17 @@ prey_gradient2, pred_gradient = get_both_measures("new_even_prey_ref-2", "Prey-L
 prey_gradient3, pred_gradient = get_both_measures("new_even_prey_ref-3", "Prey-Large-Central-even_prey_only", 3)
 prey_gradient4, pred_gradient = get_both_measures("new_even_prey_ref-4", "Prey-Large-Central-even_prey_only", 3)
 #
-# plot_multiple_gradients([prey_gradient1,
-#                          prey_gradient2,
-#                          prey_gradient3,
-#                          prey_gradient4], random_prey_gradient, "Prey-in-Front", "Prey Caught")
+plot_multiple_gradients([prey_gradient1,
+                         prey_gradient2,
+                         prey_gradient3,
+                         prey_gradient4], prey_random_gradient, "Prey-in-Front", "Prey Caught")
 
 prey_gradient1, pred_gradient1 = get_both_measures("new_even_prey_ref-4", "Prey-Large-Central-even_naturalistic", 3)
 prey_gradient2, pred_gradient2 = get_both_measures("new_even_prey_ref-2", "Prey-Large-Central-even_naturalistic", 3)
 prey_gradient3, pred_gradient3 = get_both_measures("new_even_prey_ref-3", "Prey-Large-Central-even_naturalistic", 3)
 prey_gradient4, pred_gradient4 = get_both_measures("new_even_prey_ref-4", "Prey-Large-Central-even_naturalistic", 3)
+
+
 
 plot_multiple_gradients([pred_gradient1,
                          pred_gradient2,

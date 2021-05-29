@@ -153,11 +153,76 @@ def display_categories_counts(category_list):
     df = pd.DataFrame(data).T
     df = df.rename(columns={k: f'Data{k + 1}' for k in range(len(data))}).reset_index()
     df = pd.wide_to_long(df, stubnames=['Data'], i='index', j='ID').reset_index()[['ID', 'Data']]
+    plt.figure(figsize=(7, 6))
     ax = sns.boxplot(x='ID', y='Data', data=df, fliersize=0)
     ax = sns.stripplot(y="Data", x="ID", data=df, color=".3")
     plt.xticks([0, 1, 2, 3], ["Prey-and-Predator", "Predator", "Prey", "Neither"])
-    plt.xlabel("Selectivity")
-    plt.ylabel("Number of Neurons")
+    plt.xlabel("Ethological categories", fontsize=15)
+    plt.ylabel("Number of Neurons", fontsize=15)
+    plt.show()
+
+
+def display_selectivity_tally2(selectivities_list):
+    model_counts = []
+    for selectivities in selectivities_list:
+        counts = []
+        for i, neuron in enumerate(selectivities):
+            new_sel = []
+            for key in neuron.keys():
+                if type(neuron[key]) is list:
+                    new_sel = new_sel + neuron[key]
+                else:
+                    new_sel.append(neuron[key])
+            for j, sel in enumerate(new_sel):
+                sel = sel.split("-")[:-1]
+                n = ""
+                for cc in sel:
+                    n = n + "-" + cc
+                if n != "":
+                    new_sel[j] = n
+            for i, count in enumerate(new_sel):
+                if count[0] == "-":
+                    new_sel[i] = count[1:]
+                if count[-1] == "-":
+                    new_sel[i] = count[:-1]
+            for i, count in enumerate(new_sel):
+                if count[0] == "-":
+                    new_sel[i] = count[1:]
+                if count[-1] == "-":
+                    new_sel[i] = count[:-1]
+            new_sel = list(set(new_sel))
+            counts = counts + new_sel
+        model_counts.append(counts)
+
+    sl = ['Prey-Static-5', 'Prey-Static-10', 'Prey-Static-15','Prey-Left-5','Prey-Left-10','Prey-Left-15',
+           'Prey-Right-5', 'Prey-Right-10','Prey-Right-15','Prey-Towards','Prey-Away','Predator-Static-40',
+           'Predator-Static-60',  'Predator-Static-80','Predator-Left-40', 'Predator-Left-60',   'Predator-Left-80',
+           'Predator-Right-40',  'Predator-Right-60',  'Predator-Right-80', 'Predator-Towards', 'Predator-Away', 'Neither', ]
+    selectivity_counts_for_models = []
+    for stim in sl:
+        selectivity_counts_for_models.append([model_counts[i].count(stim) for i in range(len(model_counts))])
+    means = []
+    sds = []
+    for s in selectivity_counts_for_models:
+        means.append(np.mean(s))
+        sds.append(np.std(s))
+
+
+    ticks = ['Static-5', 'Static-10', 'Static-15','Left-5','Left-10','Left-15',
+           'Right-5', 'Right-10','Right-15','Prey-Towards','Prey-Away','Static-40',
+           'Static-60',  'Static-80','Left-40', 'Left-60',   'Left-80',
+           'Right-40',  'Right-60',  'Right-80', 'Predator-Towards', 'Predator-Away', 'Neither', ]
+
+    sns.set()
+    fig, ax = plt.subplots()
+    ax.bar(ticks, means, yerr=sds, align='center', alpha=0.5, ecolor='black', capsize=10)
+    ax.set_xticklabels(ticks, fontsize=13)
+    ax.yaxis.grid(True)
+    plt.xlabel("Stimulus", fontsize=30)
+    plt.ylabel("Neurons Responsive", fontsize=25)
+    fig.set_size_inches((14, 8))
+    plt.xticks(rotation=90)
+    fig.tight_layout()
     plt.show()
 
 
@@ -192,31 +257,35 @@ def display_selectivity_tally(selectivities, stimulus_vector):
 
     fig, ax = plt.subplots(figsize=(15,8))
 
-    sl = [ 'Prey-Static-5','Prey-Static-10', 'Prey-Static-15','Prey-Left-5','Prey-Left-10','Prey-Left-15',
-           'Prey-Right-5','Prey-Right-10','Prey-Right-15','Prey-Towards','Prey-Away','Predator-Static-40',
+    sl = ['Prey-Static-5', 'Prey-Static-10', 'Prey-Static-15','Prey-Left-5','Prey-Left-10','Prey-Left-15',
+           'Prey-Right-5', 'Prey-Right-10','Prey-Right-15','Prey-Towards','Prey-Away','Predator-Static-40',
            'Predator-Static-60',  'Predator-Static-80','Predator-Left-40', 'Predator-Left-60',   'Predator-Left-80',
            'Predator-Right-40',  'Predator-Right-60',  'Predator-Right-80', 'Predator-Towards', 'Predator-Away', 'Neither', ]
-    print(set(counts))
+    ticks = ['Static-5', 'Static-10', 'Static-15','Left-5','Left-10','Left-15',
+           'Right-5', 'Right-10','Right-15','Prey-Towards','Prey-Away','Static-40',
+           'Static-60',  'Static-80','Left-40', 'Left-60',   'Left-80',
+           'Right-40',  'Right-60',  'Right-80', 'Predator-Towards', 'Predator-Away', 'Neither', ]
     g = sns.countplot(counts, color="blue", order=sl)
     plt.xlabel("Stimulus", fontsize=30)
     plt.ylabel("Neurons Selective", fontsize=30)
     plt.xticks(rotation=90)
+    ax.set_xticklabels(ticks)
     fig.tight_layout()
 
     plt.show()
 
 # cats = []
-# # #
+# sels = []
 # for i in [4, 5, 6, 8]:
 #     full_rv = create_full_response_vector(f"new_even_prey_ref-{i}")
 #     full_sv = create_full_stimulus_vector(f"new_even_prey_ref-{i}")
 #     sel = label_all_units_selectivities(full_rv, full_sv)
-#     display_selectivity_tally(sel, full_sv)
+#     sels.append(sel)
+#     # display_selectivity_tally(sel, full_sv)
 #     cat = assign_neuron_names(sel)
 #     predator_ns = [j for j, c in enumerate(cat) if c == "Prey-Only"]
-#     print(i)
-#     print(predator_ns)
 #     cats.append(cat)
+# display_selectivity_tally2(sels)
 # display_categories_counts(cats)
 #
 # cats = []

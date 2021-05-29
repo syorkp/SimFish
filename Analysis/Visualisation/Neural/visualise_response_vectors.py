@@ -30,7 +30,7 @@ def format_func_prey(value, tick_number):
                   "Right-5", "Right-10", "Right-15",
                   "Away", "Towards"]
     if 0 <= N < 11:
-        return "                  " + categories[N]
+        return categories[N]
     else:
         return ""
 
@@ -40,9 +40,9 @@ def format_func_pred(value, tick_number):
     categories = ["Static-40", "Static-60", "Static-80",
                   "Left-40", "Left-60", "Left-80",
                   "Right-40", "Right-60", "Right-80",
-                  "Away", "Towards"]
+                  "Predator-Sized-Away", "Predator-Sized-Towards"]
     if 0 <= N < 11:
-        return "                  " + categories[N]
+        return categories[N]
     else:
         return ""
 
@@ -52,12 +52,12 @@ def format_func_both(value, tick_number):
     categories = ["Static-5", "Static-10", "Static-15",
                   "Left-5", "Left-10", "Left-15",
                   "Right-5", "Right-10", "Right-15",
-                  "Away", "Towards", "Static-40", "Static-60", "Static-80",
+                  "Prey-Away", "Prey-Towards", "Static-40", "Static-60", "Static-80",
                   "Left-40", "Left-60", "Left-80",
                   "Right-40", "Right-60", "Right-80",
-                  "Away", "Towards"]
+                  "Predator-Away", "Predator-Towards"]
     if 0 <= N < 22:
-        return "                  " + categories[N]
+        return "   " + categories[N]
     else:
         return ""
 
@@ -133,9 +133,9 @@ def display_half_response_vector(response_vector, stimulus_vector, title, transi
         ax2 = ax.secondary_yaxis("right")
         ax2.yaxis.set_major_locator(plt.FixedLocator(transition_points))
         ax2.yaxis.set_major_formatter(plt.FuncFormatter(format_func_cluster))
-        ax2.set_ylabel("Cluster")
+        ax2.set_ylabel("Cluster ID")
 
-    ax.set_xlabel("Stimulus and Position", fontsize=35)
+    ax.set_xlabel("Stimulus and Position", fontsize=25)
     ax.set_ylabel("Neuron", fontsize=35)
     ax.xaxis.grid(linewidth=1, color="black")
     # ax.xaxis._axinfo["grid"]['linewidth'] = 3.
@@ -147,25 +147,26 @@ def display_full_response_vector(response_vector, stimulus_vector, title, transi
     # fig.set_size_inches(18.5, 80)
     fig.set_size_inches(37, 20)
     # response_vector = sorted(response_vector, key=lambda x: sum(x[:]))
-    ax.set_title(title, fontsize=45)
+    # ax.set_title(title, fontsize=45)
     ax.pcolor(response_vector, cmap='coolwarm')
     ax.grid(True, which='minor', axis='both', linestyle='-', color='k')
     ax.set_xlim(0, 242)
     ax.xaxis.set_major_locator(plt.MultipleLocator(11))
     ax.xaxis.set_major_formatter(plt.FuncFormatter(format_func_both))
 
-    ax.tick_params(labelsize=15)
+    ax.tick_params(labelsize=35)
+    ax.tick_params(axis="x", labelrotation=45)
     ax.set_xticks(range(0, len(stimulus_vector), 11), minor=True)
     if transition_points:
-        transition_points = [0] + transition_points
+        transition_points = transition_points
 
         # cluster_labels = [i for i in range(len(transition_points))]
 
         def format_func_cluster(value, tick):
             for i, tp in enumerate(transition_points):
                 if value < tp:
-                    return i - 1
-            return len(transition_points) - 1
+                    return i
+            return len(transition_points)
         for t in transition_points:
             ax.axhline(t, color="black", linewidth=1)
         ax.set_yticks(transition_points, minor=True)
@@ -173,11 +174,12 @@ def display_full_response_vector(response_vector, stimulus_vector, title, transi
         ax2.tick_params(axis='y', labelsize=20)
         ax2.yaxis.set_major_locator(plt.FixedLocator(transition_points))
         ax2.yaxis.set_major_formatter(plt.FuncFormatter(format_func_cluster))
-        ax2.set_ylabel("Cluster", fontsize=35)
+        ax2.set_ylabel("Cluster ID", fontsize=50)
     for t in range(0, len(response_vector[0]), 11):
         ax.axvline(t, color="black", linewidth=1)
-    ax.set_xlabel("Stimulus and Position", fontsize=35)
-    ax.set_ylabel("Neuron", fontsize=35)
+    ax.set_xlabel("Stimulus and Position", fontsize=50)
+    ax.set_ylabel("Neuron", fontsize=50)
+    fig.tight_layout()
     # ax.xaxis._axinfo["grid"]['linewidth'] = 3.
     plt.show()
 
@@ -303,19 +305,21 @@ def get_transition_points_and_order(groups, vectors):
     return transition_points, ordered_atas
 
 
-with open(f"../../Categorisation-Data/latest_even.json", 'r') as f:
-    data2 = json.load(f)
-
-
-full_rv = create_full_response_vector("new_even_prey_ref-4", background=True)
-full_rv = np.array(full_rv)
-full_rv, full_rv2 = list(full_rv[:, :int(len(full_rv[0])/2)]), list(full_rv[:, int(len(full_rv[0])/2):])
-full_sv = create_full_stimulus_vector("new_even_prey_ref-4")
-full_rv = normalise_response_vectors(full_rv)
-
-tps, full_rv = get_transition_points_and_order(data2["new_even_prey_ref-4"], full_rv)
-
-display_full_response_vector(full_rv, full_sv, "All Stimuli", tps)
+# with open(f"../../Categorisation-Data/latest_even.json", 'r') as f:
+#     data2 = json.load(f)
+# with open(f"../../Categorisation-Data/final_even.json", 'r') as f:
+#     data2 = json.load(f)
+#
+# for i in [4, 5, 6, 8]:
+#     full_rv = create_full_response_vector(f"new_even_prey_ref-{i}", background=True)
+#     full_rv = np.array(full_rv)
+#     full_rv, full_rv2 = list(full_rv[:, :int(len(full_rv[0])/2)]), list(full_rv[:, int(len(full_rv[0])/2):])
+#     full_sv = create_full_stimulus_vector(f"new_even_prey_ref-{i}")
+#     full_rv = normalise_response_vectors(full_rv)
+#
+#     tps, full_rv = get_transition_points_and_order(data2[f"new_even_prey_ref-{i}"], full_rv)
+#
+#     display_full_response_vector(full_rv, full_sv, "All Stimuli", tps)
 
 
 # for i in range(3, 7):

@@ -122,6 +122,7 @@ def get_fourth_order_transition_counts_from_sequences(sequences):
                 transition_counts[sequence[i-4]][sequence[i-3]][sequence[i-2]][sequence[i-1]][a] += 1
     return transition_counts
 
+
 def get_fifth_order_transition_counts_from_sequences(sequences):
     transition_counts = np.zeros((10, 10, 10, 10, 10, 19))
     for sequence in sequences:
@@ -186,8 +187,8 @@ def visualisation_method_2(transition_probabilities):
     transition_probabilities = transition_probabilities.reshape((10, 10))
 
     plt.style.use(['ggplot'])
-    plt.ylabel('Bout 1', fontsize=15)
-    plt.xlabel('Bout 2', fontsize=15)
+    plt.ylabel('Bout 1', fontsize=25)
+    plt.xlabel('Bout 2', fontsize=25)
     mymap = plt.get_cmap("YlOrRd")
     # mymap = plt.get_cmap("Reds")
     # mymap = plt.get_cmap("Greys")
@@ -199,8 +200,8 @@ def visualisation_method_2(transition_probabilities):
     diagonal = transition_probabilities.diagonal()
     # colors = []
 
-    ax.set_xticklabels([get_action_name(i) for i in range(10)])
-    ax.set_yticklabels([get_action_name(i) for i in range(10)])
+    ax.set_xticklabels([get_action_name(i) for i in range(10)], fontsize=20, rotation=90)
+    ax.set_yticklabels([get_action_name(i) for i in range(10)], fontsize=20)
     ax.xaxis.set_ticks(np.arange(0 + 0.5 * square_size, 1 + 0.5 * square_size, square_size))
     ax.yaxis.set_ticks(np.arange(0 + 0.5 * square_size, 1 + 0.5 * square_size, square_size))
 
@@ -229,6 +230,7 @@ def visualisation_method_2(transition_probabilities):
     # cb.set_label("Transition Probability", rotation=270, labelpad=15)
     # plt.ylim(0, 0.4)
     # plt.xlim(0, 0.4)
+    fig.tight_layout()
     plt.show(block=True)
     plt.interactive(False)
 
@@ -371,16 +373,25 @@ def get_modal_sequences(transition_probabilities, order=3, number=10):
         ordered_sequences[i] = [int(l) for l in seq]
     return ordered_sequences
 
-free_swimiming = []
-for i in range(1, 11):
-    for j in range(1, 4):
-        cs = get_free_swimming_sequences(load_data("new_differential_prey_ref-3", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}"))
-        free_swimiming += cs
-transition_counts = get_first_order_transition_counts_from_sequences(free_swimiming)
-tp = compute_transition_probabilities(transition_counts)
-visualisation_method_2(tp)
-x = True
-# # visualisation_method_2(tp)
+
+# free_swimiming = []
+# for i in range(1, 11):
+#     cs = list(load_data("new_even_prey_ref-1", f"Behavioural-Data-Free", f"Naturalistic-{i}")["behavioural choice"])
+#     free_swimiming.append(cs)
+# transition_counts = get_first_order_transition_counts_from_sequences(free_swimiming)
+# tp = compute_transition_probabilities(transition_counts)
+# visualisation_method_2(tp)
+#
+# free_swimiming = []
+# for i in range(1, 11):
+#     for j in range(1, 4):
+#         cs = get_free_swimming_sequences(load_data("new_differential_prey_ref-3", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}"))
+#         free_swimiming += cs
+# transition_counts = get_first_order_transition_counts_from_sequences(free_swimiming)
+# tp = compute_transition_probabilities(transition_counts)
+# visualisation_method_2(tp)
+# x = True
+# # # visualisation_method_2(tp)
 #
 # test = get_second_order_transition_counts("changed_penalties-1", "Naturalistic", "Naturalistic", 2)
 # testp = get_transition_probabilities(test)

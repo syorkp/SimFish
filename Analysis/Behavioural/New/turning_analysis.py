@@ -17,6 +17,7 @@ def plot_turning_sequences(fish_angle):
     angles["Time (Step)"] = [i for i in range(len(angle_changes))]
     angles["Turn Amplitude (pi radians)"] = angle_changes
     angles["Color"] = ["r" if angle < 0 else "b" for angle in angle_changes]
+    fig = plt.figure()
     ax = sns.barplot(x="Time (Step)", y="Turn Amplitude (pi radians)", hue="Color", data=angles)
     ax.get_legend().remove()
     for ind, label in enumerate(ax.get_xticklabels()):
@@ -24,8 +25,9 @@ def plot_turning_sequences(fish_angle):
             label.set_visible(True)
         else:
             label.set_visible(False)
-    plt.xlabel("Time (Step)")
-    plt.ylabel("Turn Amplitude (pi radians)")
+    plt.xlabel("Time (Step)", fontsize=18)
+    plt.ylabel("Turn Amplitude (pi radians)", fontsize=18)
+    fig.tight_layout()
     plt.show()
 
 
@@ -130,12 +132,14 @@ def plot_switching_distribution(left_durs, right_durs, left_durs2, right_durs2):
     pdf2 = f2(x2)/len(seq_lengths2)
     cdf2 = [sum(pdf2[:i]) for i in range(len(pdf2))]
     plt.show()
+    fig = plt.figure()
 
     plt.plot(x, cdf, label="Agent")
     plt.plot(x2, cdf2, label="Random Switching")
-    plt.xlabel("Turn Streak Length")
-    plt.ylabel("Cumulative Probability")
+    plt.xlabel("Turn Streak Length", fontsize=18)
+    plt.ylabel("Cumulative Probability", fontsize=18)
     plt.legend()
+    fig.tight_layout()
     plt.show()
 
     # p, x = np.histogram(left_durs, bins=10)  # bin it into n = N//10 bins
@@ -176,12 +180,14 @@ def new_switching_plot2(mactino_seqeunces):
     ermax = [max([cum_averages[m][i] for m, model in enumerate(cum_averages)]) for i, s in enumerate(cum_averages[0])]
     mean = [np.mean([cum_averages[m][i] for m, model in enumerate(cum_averages)]) for i, s in enumerate(cum_averages[0])]
 
+    fig = plt.figure()
     sns.set()
     plt.plot(mean, color="orange")
-    plt.xlabel("Number of Turns")
-    plt.ylabel("Cumulative Turn Direction")
+    plt.xlabel("Number of Turns", fontsize=18)
+    plt.ylabel("Cumulative Turn Direction", fontsize=18)
     plt.hlines(0, 0, 10, color="r")
     plt.fill_between(range(11), ermin, ermax, color="b", alpha=0.5)
+    fig.tight_layout()
     plt.show()
 
 
@@ -207,8 +213,8 @@ def new_switching_plot(action_sequences):
     # power_smooth = spl(np.linspace(0, 20, 10))
     sns.set()
     plt.plot(cum_average)
-    plt.xlabel("Number of Turns")
-    plt.ylabel("Cumulative Turn Direction")
+    plt.xlabel("Number of Turns", fontsize=20)
+    plt.ylabel("Cumulative Turn Direction", fontsize=20)
     plt.hlines(0, 0, 10, color="r")
     # plt.fill_between(range(11), err_min, err_max)
     plt.show()
@@ -250,8 +256,8 @@ def randomly_switching_fish(n_sequences=100):
 #     data = load_data("new_even_prey_ref-2", "Behavioural-Data-Free", f"Prey-{i}")
 #     colored_2d_track_turns(data["position"][100:500], data["behavioural choice"][100:500])
 #
-orientation_log = []
-action_sequences = []
+# orientation_log = []
+# action_sequences = []
 # for j in range(1, 4):
 #     for i in range(1, 11):
 #         data = load_data("new_differential_prey_ref-3", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}")
@@ -260,26 +266,26 @@ action_sequences = []
 #         orientation_changes = [data["fish_angle"][i]-data["fish_angle"][i-1] for i, angle in enumerate(data["fish_angle"]) if i!=0]
 #         orientation_log = orientation_log + orientation_changes
 #         # colored_2d_track_turns(data["position"][-200:], data["behavioural choice"][-200:], orientation_changes[-200:])
-#         # plot_turning_sequences(data["fish_angle"])
+#         plot_turning_sequences(data["fish_angle"])
 
-all_action_sequences = []
-for x in [3, 4]:
-    action_sequences = []
-    for j in range(1, 4):
-        for i in range(1, 11):
-            data = load_data(f"new_differential_prey_ref-{x}", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}")
-            new_as = get_free_swimming_sequences(data)
-            action_sequences += [[a for a in seq if a == 1 or a == 2] for seq in new_as]
-            orientation_changes = [data["fish_angle"][i]-data["fish_angle"][i-1] for i, angle in enumerate(data["fish_angle"]) if i!=0]
-            orientation_log = orientation_log + orientation_changes
-    action_sequences = divide_sequences(action_sequences)
-    all_action_sequences.append(action_sequences)
-    l, r, sl, sr = model_of_action_switching(action_sequences)
-    l2, r2, sl2, sr2 = randomly_switching_fish()
-    plot_switching_distribution(sl, sr, sl2, sr2)
-# action_sequences = get_frameshift_sequences(action_sequences)
-
-new_switching_plot2(all_action_sequences)
+# all_action_sequences = []
+# for x in [3, 4]:
+#     action_sequences = []
+#     for j in range(1, 4):
+#         for i in range(1, 11):
+#             data = load_data(f"new_differential_prey_ref-{x}", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}")
+#             new_as = get_free_swimming_sequences(data)
+#             action_sequences += [[a for a in seq if a == 1 or a == 2] for seq in new_as]
+#             orientation_changes = [data["fish_angle"][i]-data["fish_angle"][i-1] for i, angle in enumerate(data["fish_angle"]) if i!=0]
+#             orientation_log = orientation_log + orientation_changes
+#     action_sequences = divide_sequences(action_sequences)
+#     all_action_sequences.append(action_sequences)
+#     l, r, sl, sr = model_of_action_switching(action_sequences)
+#     l2, r2, sl2, sr2 = randomly_switching_fish()
+#     plot_switching_distribution(sl, sr, sl2, sr2)
+# # action_sequences = get_frameshift_sequences(action_sequences)
+#
+# new_switching_plot2(all_action_sequences)
 
 
 # plot_turning_sequences(data["fish_angle"])

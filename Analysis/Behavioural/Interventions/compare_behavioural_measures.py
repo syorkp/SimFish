@@ -30,6 +30,7 @@ def get_measures_random_gradient(model, targeted_neurons, percentage, number_of_
     prey_caught = 0
     predators_avoided = 0
     for i in range(1, number_of_trials+1):
+        print(i)
         data1 = load_data(model, f"Ablation-{targeted_neurons}", f"Ablated-{percentage}-{i}")
         prey_caught = prey_caught + sum(data1['consumed'])
         predators_avoided = predators_avoided + get_predator_num(data1)
@@ -66,6 +67,21 @@ def get_both_measures_random_gradient(model, targeted_neurons, number_of_trials)
     for per in range(0, 105, 5):
         # if per == 35: continue  # Remove later.
         prey_caught, predators_avoided = get_measures_random_gradient(model, targeted_neurons, per, number_of_trials)
+        print(f"Ablations: {per}%, Prey caught: {prey_caught}, Predators avoided: {predators_avoided}")
+        prey_caught_gradient.append(prey_caught)
+        predators_avoided_gradient.append(predators_avoided)
+    return prey_caught_gradient, predators_avoided_gradient
+
+
+def get_both_measures_random_gradient_extended(model, targeted_neurons, number_of_trials):
+    prey_caught_gradient = []
+    predators_avoided_gradient = []
+    percentages = list(range(0, 100, 5)) + list(range(96, 100, 1))
+
+    for per in percentages:
+        # if per == 35: continue  # Remove later.
+        prey_caught, predators_avoided = get_measures_random_gradient(model, targeted_neurons, per,
+                                                                      number_of_trials)
         print(f"Ablations: {per}%, Prey caught: {prey_caught}, Predators avoided: {predators_avoided}")
         prey_caught_gradient.append(prey_caught)
         predators_avoided_gradient.append(predators_avoided)

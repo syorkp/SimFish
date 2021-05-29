@@ -124,22 +124,39 @@ def plot_rnn_vectors(s_vector, r_vector):
             neuron_subset_data = r_vector[(i * n_per_plot): (i * n_per_plot) + n_per_plot]
         create_rnn_figure(neuron_subset_data, i + 1, len(neuron_subset_data), i * n_per_plot, s_vector)
 
+import seaborn as sns
+
+def display_rfs(stimulus_vector, response_v_1, response_v_2, labels, neurons):
+    sns.set()
+    fig, axs = plt.subplots(len(neurons), 1, sharex=True)
+    for n, neuron in enumerate(neurons):
+        axs[n].plot(stimulus_vector, response_v_1[neuron], color="g", label=labels[0])
+        axs[n].plot(stimulus_vector, response_v_2[neuron], color="b", label=labels[1])
+        axs[n].set_yticks([])
+        # axs[n].set_ylabel("Normalised Response", fontsize=20)
+    axs[0].legend(bbox_to_anchor=(1, 2), loc='upper right', prop={'size': 24})
+
+    axs[len(neurons)-1].set_xlabel("Stimulus Angle (pi radians)", fontsize=20)
+    fig.set_size_inches(8, 12)
+    plt.plot()
 
 
-data1 = load_data("even_prey_ref-5", "For-Traces", "Predator-Static-40")
-data2 = load_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
-
-stimulus_data1 = load_stimulus_data("even_prey_ref-5", "For-Traces", "Predator-Static-40")
-stimulus_data2 = load_stimulus_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
-
-stimulus_vector1 = get_stimulus_vector(stimulus_data1, "predator 1")
-stimulus_vector2 = get_stimulus_vector(stimulus_data2, "prey 1")
-
-
-all_vectors1 = get_all_neuron_vectors(data1, "predator 1", stimulus_data1, "rnn state")
-all_vectors2 = get_all_neuron_vectors(data2, "prey 1", stimulus_data2, "rnn state")
-
-# plot_rnn_vectors_overlaid(stimulus_vector1, all_vectors2, all_vectors1, ["Prey", "Predator"])
+# data1 = load_data("new_even_prey_ref-4", "Prey-Full-Response-Vector", "Prey-Static-15")
+# data2 = load_data("new_even_prey_ref-4", "Predator-Full-Response-Vector", "Predator-Static-40")
+#
+# stimulus_data1 = load_stimulus_data("new_even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Static-15")
+# stimulus_data2 = load_stimulus_data("new_even_prey_ref-5", "Predator-Full-Response-Vector", "Predator-Static-40")
+#
+# stimulus_vector1 = get_stimulus_vector(stimulus_data1, "prey 1")
+# stimulus_vector2 = get_stimulus_vector(stimulus_data2, "predator 1")
+#
+#
+# all_vectors1 = get_all_neuron_vectors(data1, "prey 1", stimulus_data1, "rnn state")
+# all_vectors2 = get_all_neuron_vectors(data2, "predator 1", stimulus_data2, "rnn state")
+#
+# display_rfs(stimulus_vector1, all_vectors1, all_vectors2, ["15-Static", "40-Static"], [7, 133, 286, 407, 440, 455])
+#
+# plot_rnn_vectors_overlaid(stimulus_vector1, all_vectors1, all_vectors2, ["15-Static", "40-Static"])
 
 # plot_rnn_vectors(stimulus_vector1, all_vectors1)
 #plot_rnn_vectors(stimulus_vector2, all_vectors2)

@@ -45,10 +45,8 @@ with open(f"Run-Configurations/6-15-Centre_prey_only.json", 'r') as f:
 with open(f"Run-Configurations/8-15-Centre_prey_only.json", 'r') as f:
     c4 = json.load(f)
 
-with open(f"Run-Configurations/new_ind_ablations_2.json", 'r') as f:
-    c5 = json.load(f)
 
-target_ablation = c1 + c2 + c3 + c4 + c5
+target_ablation = c1 + c2 + c3 + c4
 
 # with open(f"Run-Configurations/differential_prey_low_predator_exploration.json", 'r') as f:
 #     missing = json.load(f)
@@ -278,5 +276,5 @@ differential_training_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(sss)
+manager = TrialManager(target_ablation)
 manager.run_priority_loop()

@@ -74,16 +74,16 @@ def display_full_response_vector_relative(response_vector, stimulus_vector, titl
     plt.show()
 
 
-full_rv = create_full_response_vector("new_differential_prey_ref-6", background=True)
-full_sv = create_full_stimulus_vector("new_differential_prey_ref-6",  background=False)
-full_rv = normalise_response_vectors(full_rv)
-full_rv, threshold, categories = order_vectors_by_kmeans(full_rv, 21)
-# False because only need half to compute.
-reps = identify_representations(full_rv, full_sv)
-display_half_response_vector(full_rv, full_sv, "real vector")
-
-full_rv = compute_relative_vrv(full_rv)
-full_rv, threshold, categories = order_vectors_by_kmeans(full_rv, 21)
-display_full_response_vector_relative(full_rv, full_sv, "relative vector")
-full_rv = np.array(full_rv)
+# full_rv = create_full_response_vector("new_differential_prey_ref-6", background=True)
+# full_sv = create_full_stimulus_vector("new_differential_prey_ref-6",  background=False)
+# full_rv = normalise_response_vectors(full_rv)
+# full_rv, threshold, categories = order_vectors_by_kmeans(full_rv, 21)
+# # False because only need half to compute.
+# reps = identify_representations(full_rv, full_sv)
+# display_half_response_vector(full_rv, full_sv, "real vector")
+#
+# full_rv = compute_relative_vrv(full_rv)
+# full_rv, threshold, categories = order_vectors_by_kmeans(full_rv, 21)
+# display_full_response_vector_relative(full_rv, full_sv, "relative vector")
+# full_rv = np.array(full_rv)
 x = True
