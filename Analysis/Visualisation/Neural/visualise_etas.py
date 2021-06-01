@@ -369,28 +369,5 @@ predator_only_capture_average, std33 = get_average_timeseries(eta, predator_only
 display_multiple_average_eta_timeseries([prey_in_front_capture_average, other_capture_average, prey_full_field, predator_cs], ["15o-in-Front", "All Neurons", "Prey-Full-Field", "Predator-RW"], std, std2, std3)
 
 
-# # 5
-# prey_only_5 = [8, 13, 29, 44, 51, 52, 53, 59, 60, 65, 69, 76, 86, 90, 98, 116, 121, 122, 129, 134, 138, 142, 149, 157, 171, 173, 176, 182, 184, 188, 191, 201, 205, 217, 221, 232, 239, 250, 260, 289, 315, 328, 329, 332, 347, 362, 385, 390, 395, 399, 402, 406, 411, 415, 419, 429, 436, 446, 469, 481, 488, 497, 504]
-# pred_only_5 = [5, 9, 15, 16, 17, 22, 41, 42, 46, 47, 56, 57, 70, 73, 77, 85, 89, 93, 95, 99, 100, 101, 106, 118, 120, 123, 127, 133, 136, 139, 145, 158, 163, 166, 172, 174, 178, 179, 181, 183, 190, 193, 194, 199, 200, 204, 208, 213, 220, 234, 236, 249, 251, 253, 255, 261, 263, 266, 269, 271, 277, 295, 296, 303, 307, 321, 338, 342, 364, 372, 381, 382, 383, 409, 424, 449, 450, 454, 456, 461, 462, 470, 474, 483, 495, 496, 501, 503, 505, 509, 511]
-# prey_in_front_5 = [0, 6, 11, 21, 26, 27, 29, 31, 44, 48, 63, 71, 82, 87, 102, 105, 107, 109, 113, 115, 117, 121, 128, 137, 140, 141, 143, 144, 147, 153, 155, 159, 160, 165, 180, 182, 185, 197, 203, 205, 207, 209, 210, 215, 218, 227, 228, 240, 242, 243, 246, 247, 254, 268, 270, 273, 274, 278, 280, 283, 286, 287, 297, 298, 306, 308, 310, 311, 313, 322, 323, 324, 325, 332, 333, 334, 335, 341, 343, 344, 350, 351, 352, 354, 355, 361, 362, 366, 368, 374, 376, 397, 400, 402, 403, 412, 413, 416, 419, 423, 425, 426, 427, 428, 429, 430, 433, 435, 437, 439, 440, 441, 442, 446, 447, 448, 455, 459, 464, 466, 472, 473, 475, 476, 477, 482, 485, 486, 491, 493, 499, 500, 510]
-#
-#
-# data = load_data("even_prey_ref-5", "Behavioural-Data-Free", "Naturalistic-1")
-# # ata = get_ata_timeseries(data)
-# # display_ata_timeseries(ata, [1, 2, 3])
-#
-# pred = get_predator_eta_timeseries(data)
-# av = get_average_timeseries(pred, pred_only_5)
-# display_average_eta_timeseries(av)
-# av = get_average_timeseries(pred, prey_only_5)
-# display_average_eta_timeseries(av)
-# # display_eta_timeseries(pred, [1, 2, 3], "Predator ")
-#
-# eta = get_eta_timeseries(data)
-# av = get_average_timeseries(eta, prey_only_5)
-# display_average_eta_timeseries(av)
-# av = get_average_timeseries(eta, pred_only_5)
-# display_average_eta_timeseries(av)
-# display_eta_timeseries(eta, [1, 2, 3], "Consumed ")
 
 

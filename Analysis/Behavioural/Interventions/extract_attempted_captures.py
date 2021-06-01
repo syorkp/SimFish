@@ -73,3 +73,4 @@ def plot_attempted_captures(model_name, assay_name, n=6):
     plt.show()
 
 
+plot_attempted_captures("even_prey_ref-4", "15-in-front")

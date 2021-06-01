@@ -275,32 +275,10 @@ def clean_metrics_data(reader, file_name, model):
 
 
 models = ["even_5", "even_6", "even_7","even_8"]
-# models2 = ["even_4", "even_6", "even_8"]
-# models2 = ["even_4", "even_5", "even_8"]
+
 models2 = ["even_1", "even_2", "even_3", "even_4"]
 filenames = ["run-.-tag-predator avoidance index (avoided_p_pred)",
              "run-.-tag-prey capture index (fraction caught)"]
 
-# for model in models:
-#     for i in filenames:
-#         with open(f"Metrics/{model}/{i}.csv") as original_file:
-#             csv_reader = csv.reader(original_file, delimiter=',')
-#             clean_metrics_data(csv_reader, i, model)
-
 plot_multiple_model_metrics_two_trace(models, models2, 50)
-# for i in range(10, 200, 10):
-#     plot_multiple_model_metrics_two_trace(models, models2, i)
-
-#
-# prey, pred = get_metrics_for_model("even_4")
-# plot_metrics(prey, pred, 100)
-# #
-#
-# prey, pred = get_metrics_for_model("even_5")
-# plot_metrics(prey, pred, 20)
-#
-# prey, pred = get_metrics_for_model("even_6")
-# plot_metrics(prey, pred, 20)
-# prey, pred = get_metrics_for_model("even_8")
-# plot_metrics(prey, pred, 20)
 

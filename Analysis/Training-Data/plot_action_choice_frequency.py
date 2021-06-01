@@ -189,8 +189,7 @@ filenames = ["run-.-tag-action 0",
              "run-.-tag-action 8",
              "run-.-tag-action 9",
              ]
-models = ["base-1", "base-2", "base-3", "base-4",
-          "base-5", "base-6", "base-7", "base-8"]
+
 
 models = ["even_4", "even_5", "even_6", "even_8"]
 
