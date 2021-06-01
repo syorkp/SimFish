@@ -211,7 +211,7 @@ def display_selectivity_tally2(selectivities_list):
     ticks = ['Static-5', 'Static-10', 'Static-15','Left-5','Left-10','Left-15',
            'Right-5', 'Right-10','Right-15','Prey-Towards','Prey-Away','Static-40',
            'Static-60',  'Static-80','Left-40', 'Left-60',   'Left-80',
-           'Right-40',  'Right-60',  'Right-80', 'Predator-Towards', 'Predator-Away', 'Neither', ]
+           'Right-40',  'Right-60',  'Right-80', 'Predator-Towards', 'Predator-Away', 'None', ]
 
     sns.set()
     fig, ax = plt.subplots()
@@ -264,7 +264,7 @@ def display_selectivity_tally(selectivities, stimulus_vector):
     ticks = ['Static-5', 'Static-10', 'Static-15','Left-5','Left-10','Left-15',
            'Right-5', 'Right-10','Right-15','Prey-Towards','Prey-Away','Static-40',
            'Static-60',  'Static-80','Left-40', 'Left-60',   'Left-80',
-           'Right-40',  'Right-60',  'Right-80', 'Predator-Towards', 'Predator-Away', 'Neither', ]
+           'Right-40',  'Right-60',  'Right-80', 'Predator-Towards', 'Predator-Away', 'None', ]
     g = sns.countplot(counts, color="blue", order=sl)
     plt.xlabel("Stimulus", fontsize=30)
     plt.ylabel("Neurons Selective", fontsize=30)
@@ -274,19 +274,19 @@ def display_selectivity_tally(selectivities, stimulus_vector):
 
     plt.show()
 
-# cats = []
-# sels = []
-# for i in [4, 5, 6, 8]:
-#     full_rv = create_full_response_vector(f"new_even_prey_ref-{i}")
-#     full_sv = create_full_stimulus_vector(f"new_even_prey_ref-{i}")
-#     sel = label_all_units_selectivities(full_rv, full_sv)
-#     sels.append(sel)
-#     # display_selectivity_tally(sel, full_sv)
-#     cat = assign_neuron_names(sel)
-#     predator_ns = [j for j, c in enumerate(cat) if c == "Prey-Only"]
-#     cats.append(cat)
-# display_selectivity_tally2(sels)
-# display_categories_counts(cats)
+cats = []
+sels = []
+for i in [4, 5, 6, 8]:
+    full_rv = create_full_response_vector(f"new_even_prey_ref-{i}")
+    full_sv = create_full_stimulus_vector(f"new_even_prey_ref-{i}")
+    sel = label_all_units_selectivities(full_rv, full_sv)
+    sels.append(sel)
+    # display_selectivity_tally(sel, full_sv)
+    cat = assign_neuron_names(sel)
+    predator_ns = [j for j, c in enumerate(cat) if c == "Prey-Only"]
+    cats.append(cat)
+display_selectivity_tally2(sels)
+display_categories_counts(cats)
 #
 # cats = []
 

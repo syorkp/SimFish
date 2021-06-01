@@ -61,7 +61,7 @@ prey_full_field_ns = group_names["new_even_prey_ref-4"]["7"] + group_names["new_
 
 # display_specific_cluster_counts(group_names, [29, 25, 1, 8], [12, 13, 14, 15, 16, 28, 5], ["Prey-in-front", "Prey-Full-Field"])
 display_specific_cluster_counts(group_names, [[3, 16], [5, 8, 9, 12], [3, 9], [15, 11]],
-                                ["15o-in-front", "Prey-Full-Field", "Valence", "Predator-RL"])
+                                ["15o-in-front", "Prey-Full-Field", "Valence", "Predator-RW"])
 
 
 

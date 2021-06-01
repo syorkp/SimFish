@@ -212,7 +212,7 @@ def plot_certain_neurons(data, duration, neuron_list):
         print(i)
         axs[i].plot(data["rnn state"][:duration, 0, n])
         axs[i].set_xlim(0, duration)
-        axs[i].set_yticks([])
+        # axs[i].set_yticks([])
 
     predator_steps = [step for step, predator in zip(data["step"], data["predator"]) if predator == 1]
     free_steps = get_free_swimming_timestamps(data)
@@ -253,13 +253,13 @@ def plot_certain_neurons(data, duration, neuron_list):
             if consumed:
                 axs[-1].axvline(step, -1, 1, color="r")
     axs[-1].set_xlim(0, duration)
-    axs[-1].set_yticks([])
+    # axs[-1].set_yticks([])
 
-    for steps in separated_predator_steps:
-        axs[-1].hlines(y=0, xmin=steps[0], xmax=steps[-1], color="r")
-
-    for steps in separated_free_steps:
-        axs[-1].hlines(y=0, xmin=steps[0], xmax=steps[-1], color="g")
+    # for steps in separated_predator_steps:
+    #     axs[-1].hlines(y=0, xmin=steps[0], xmax=steps[-1], color="r")
+    #
+    # for steps in separated_free_steps:
+    #     axs[-1].hlines(y=0, xmin=steps[0], xmax=steps[-1], color="g")
     fig.set_size_inches((8, 8))
     axs[-1].set_xlabel("Time (steps)")
     plt.show()
@@ -325,6 +325,17 @@ def plot_artificial_traces(prey_pred_data, prey_size_data, directional_data, pre
     # fig.legend(patches, labels, loc='center', frameon=False)
     # plt.show()
 
+import json
+#
+with open(f"../../Categorisation-Data/final_even2.json", 'r') as f:
+    data2 = json.load(f)
+placeholder_list = data2["new_even_prey_ref-4"]["3"] + data2["new_even_prey_ref-4"]["16"]
+
+data1 = load_data("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-8")
+plot_certain_neurons(data1, 200, placeholder_list[:10])
+
+
+## Naturalistic traces
 # data1 = load_data("new_differential_prey_ref-4", "Behavioural-Data-Free-1", "Naturalistic-8")
 # plot_certain_neurons(data1, 200, [20, 21, 139, 156, 161, 135, 133, 196])
 # plot_behavioural_events(data1, 200)

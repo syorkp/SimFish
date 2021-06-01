@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
+from scipy.interpolate import UnivariateSpline
+import numpy as np
 
 from Analysis.load_data import load_data
 from Analysis.Visualisation.Behavioural.show_agent_track import colored_2d_track_turns
-from scipy.interpolate import make_interp_spline, BSpline
 
 
 def plot_turning_sequences(fish_angle):
@@ -106,9 +107,6 @@ def model_of_action_switching(sequences):
     switch_left_p = switch_left_count/total_right
     return switch_left_p, switch_right_p, left_durations, right_durations
 
-from scipy.interpolate import UnivariateSpline
-import numpy as np
-
 
 def plot_switching_distribution(left_durs, right_durs, left_durs2, right_durs2):
     left_durs = [i for i in left_durs if i>1]
@@ -142,17 +140,6 @@ def plot_switching_distribution(left_durs, right_durs, left_durs2, right_durs2):
     fig.tight_layout()
     plt.show()
 
-    # p, x = np.histogram(left_durs, bins=10)  # bin it into n = N//10 bins
-    # x = x[:-1] + (x[1] - x[0]) / 2  # convert bin edges to centers
-    # f = UnivariateSpline(x, p, s=10)
-    # plt.plot(x, f(x)/len(left_durs))
-    # plt.show()
-    #
-    # p, x = np.histogram(right_durs, bins=10)  # bin it into n = N//10 bins
-    # x = x[:-1] + (x[1] - x[0]) / 2  # convert bin edges to centers
-    # f = UnivariateSpline(x, p, s=10)
-    # plt.plot(x, f(x)/len(right_durs))
-    # plt.show()
 
 def new_switching_plot2(mactino_seqeunces):
     cum_averages = []

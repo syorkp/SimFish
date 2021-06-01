@@ -10,3 +10,5 @@ Training-Output
 /Services/__pycache__/
 /Tools/__pycache__/
 Archived-Models
+Analysis/Training-Data/Action-Use-Data/
+Analysis/Training-Data/Metrics

@@ -56,8 +56,8 @@ def plot_action_use_multiple_models(models, ablation_config, number_of_trials, a
         ax.fill_between(ablation_groups, low_v_x, high_v_x, alpha=0.2)
 
     ax.legend()
-    plt.xlabel("Percentage Ablated")
-    plt.ylabel("Action Counts")
+    plt.xlabel("Percentage ablated", fontsize=15)
+    plt.ylabel("Bout Counts", fontsize=15)
     plt.show()
 
 
@@ -76,8 +76,8 @@ def plot_action_use(model, ablation_config, number_of_trials, ablation_groups=ra
 
     ax.legend()
 
-    plt.xlabel("Percentage Ablated")
-    plt.ylabel("Action Counts")
+    plt.xlabel("Percentage ablated", fontsize=15)
+    plt.ylabel("Bout Counts", fontsize=15)
     plt.show()
 
 
@@ -111,12 +111,13 @@ def plot_action_use_multiple_models_predator_sequences(models, ablation_config, 
 
     ax.legend()
 
-    plt.xlabel("Percentage Ablated")
-    plt.ylabel("Action Counts")
+    plt.xlabel("Percentage of neurons ablated", fontsize=15)
+    plt.ylabel("Bout Counts", fontsize=15)
     plt.show()
 
 
-plot_action_use_multiple_models_predator_sequences(["new_even_prey_ref-4", "new_even_prey_ref-5", "new_even_prey_ref-8"], "Indiscriminate-even_predator", 6, range(0, 105, 5))
+# plot_action_use_multiple_models_predator_sequences(["new_even_prey_ref-4", "new_even_prey_ref-5", "new_even_prey_ref-8"], "Indiscriminate-even_predator", 6, range(0, 105, 5))
+plot_action_use_multiple_models(["new_even_prey_ref-1", "new_even_prey_ref-2", "new_even_prey_ref-3", "new_even_prey_ref-4"], "Indiscriminate-even_prey_only", 3, range(0, 105, 5))
 # plot_action_use("new_even_prey_ref-1", "Test-Prey-Large-Central-even_prey_only", 3)
 # plot_action_use("new_even_prey_ref-4", "Test-Predator_Only-even_prey_only", 3)
 

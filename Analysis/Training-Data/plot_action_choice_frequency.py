@@ -117,10 +117,10 @@ def create_action_plots(action):
     plt.xlabel("Step", fontsize=12)
     plt.ylabel("Action frequency", fontsize=12)
     plt.show()
-import random
+
 
 def create_paired_boxplots(indexes, models, timestamps):
-    data = {"action": [], "model": [], "frequency": [], "index": []}
+    data = {"action": [], "model": [], "frequency": [], "Step": []}
     action_lists = []
     sns.set()
     for i, index in enumerate(indexes):
@@ -130,16 +130,12 @@ def create_paired_boxplots(indexes, models, timestamps):
                 data["action"].append(action)
                 data["model"].append(model)
                 x, y = get_action_choice(model, action)
-                if action == 6:
-                    data["frequency"].append(y[index])
-                elif action == 3:
-                    data["frequency"].append(y[index]-random.uniform(0.01, 0.05))
-                else:
-                    data["frequency"].append(y[index]+random.uniform(0.01, 0.05))
-                data["index"].append(timestamps[i])
+                data["frequency"].append(y[index])
+
+                data["Step"].append(timestamps[i])
     data = pd.DataFrame(data)
     fig = plt.figure()
-    ax = sns.boxplot(y="frequency", x="action", hue="index", data=data, fliersize=0)  # whis=np.inf
+    ax = sns.boxplot(y="frequency", x="action", hue="Step", data=data, fliersize=0)  # whis=np.inf
     ax = sns.stripplot(y="frequency", x="action", data=data, color=".3")
     ax.tick_params(labelsize=10)
     plt.xticks(rotation=90, fontsize=12)
@@ -162,12 +158,7 @@ def create_boxplots(index, models, timestamp):
             data["action"].append(action)
             data["model"].append(model)
             x, y = get_action_choice(model, action)
-            if action == 6:
-                data["frequency"].append(y[index])
-            elif action == 3:
-                data["frequency"].append(y[index]-random.uniform(0.01, 0.05))
-            else:
-                data["frequency"].append(y[index]+random.uniform(0.01, 0.05))
+            data["frequency"].append(y[index])
 
         # action_lists.append(points)
     # data["values"] = action_lists
@@ -211,25 +202,7 @@ for model in models:
 
 # Produce box plots for action choice frequency
 
-long_models = ["base-6", "base-7", "base-8"]
-# or 50
 create_paired_boxplots([200, 600], models, ["2 Million", "5 Million"])
-# create_boxplots(200, models, "2 Million")
-# create_boxplots(600, models, "5 Million")
-
-# for i in range(0, 2000, 50):    # create_boxplots(i+500, models, i+1000)
-#
-#     create_boxplots(i, models, i)
-
-# Produce running average action frequency graphs
-# create_action_plots(0)
-# create_action_plots(1)
-# create_action_plots(6)
-
-# create_action_plots_unrestricted(0, long_models)
-# create_action_plots_unrestricted(1, long_models)
-# create_action_plots_unrestricted(6, long_models)
-
 
 
 

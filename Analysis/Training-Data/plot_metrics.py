@@ -109,20 +109,22 @@ def plot_multiple_model_metrics_two_trace(models, models2, window):
 
     sns.set()
     plt.figure(figsize=(8,6))
-    plt.plot(prey_steps, average_prey, color="orange")
-    plt.plot(prey_steps2, average_prey2, color="tomato")
+    plt.plot(prey_steps, average_prey, color="orange", label="512 Units")
+    plt.plot(prey_steps2, average_prey2, color="tomato", label="256 Units")
     plt.hlines(0.15, 0, max(prey_steps), linestyles={'dashed'},linewidth=2, colors=["r"])
     plt.fill_between(prey_steps, prey_max, prey_min, color="b", alpha=0.5)
     plt.fill_between(prey_steps2, prey_max2, prey_min2, color="g", alpha=0.5)
+    plt.legend(fontsize=15)
     plt.xlabel("Episode", fontsize=20)
     plt.ylabel("Prey Caught (proportion)", fontsize=20)
     plt.show()
 
     sns.set()
     plt.figure(figsize=(8,6))
-    plt.plot(np.linspace(0, 15000, len(pred_steps)), average_pred, color="orange")
-    plt.plot(np.linspace(0, 15000, len(pred_steps2)), average_pred2, color="tomato")
+    plt.plot(np.linspace(0, 15000, len(pred_steps)), average_pred, color="orange", label="512 Units")
+    plt.plot(np.linspace(0, 15000, len(pred_steps2)), average_pred2, color="tomato", label="256 Units")
     plt.hlines(0.6, 0, 15000,  linestyles={'dashed'}, linewidth=2, colors=["r"])
+    plt.legend(fontsize=15)
 
     plt.fill_between(np.linspace(0, 15000, len(pred_steps)), pred_max, pred_min, color="b", alpha=0.5)
     plt.fill_between(np.linspace(0, 15000, len(pred_steps2)), pred_max2, pred_min2, color="g", alpha=0.5)
@@ -212,18 +214,9 @@ def plot_metrics(prey_capture, pred_avoidance, window):
     pred_index_ra = [np.mean(pred_index[i:i+window]) for i, d in enumerate(pred_index) if i <len(pred_index)-window]
     pred_steps = pred_steps[:-window]
 
-    # Rnadom example
-    # prey_ebars = np.random.uniform(0.07, 0.15, [len(prey_steps), 2])
-    # pred_ebars = np.random.uniform(40, 75, [len(pred_steps), 2])
-    # prey_ebars = np.array([prey_ebars[i//random.randint(10, 30)] for i in range(len(prey_ebars))])
-    # pred_ebars = np.array([pred_ebars[i//random.randint(10, 30)] for i in range(len(pred_ebars))])
-
-    # sns.lineplot(x=prey_steps, y=prey_index_ra)
     sns.set()
     plt.figure(figsize=(8,6))
     plt.plot(prey_steps, prey_index_ra, color="r")
-    # plt.fill_between(prey_steps, [prey_index_ra[i]-prey_ebars[i, 0] if prey_index_ra[i]-prey_ebars[i, 0]>0 else 0 for i in range(len(prey_ebars))],
-    #                  [prey_index_ra[i]+prey_ebars[i, 1] for i in range(len(prey_ebars))], color="b")
     plt.hlines(0.2, 0, 10000,  linestyles={'dashed'}, colors=["y"])
     plt.xlabel("Episode", fontsize=20)
     plt.ylabel("Prey Caught (proportion)", fontsize=20)
@@ -233,8 +226,6 @@ def plot_metrics(prey_capture, pred_avoidance, window):
 
     plt.figure(figsize=(8,6))
     plt.plot([p-5000 for p in pred_steps], pred_index_ra, color="r")
-    # plt.fill_between(pred_steps, [pred_index_ra[i]-pred_ebars[i, 0] if pred_index_ra[i]-pred_ebars[i, 0]>0 else 0  for i in range(len(pred_ebars))],
-    #                  [pred_index_ra[i]+pred_ebars[i, 1] for i in range(len(pred_ebars))], color="b")
     plt.hlines(0.6, 0, 10000, linestyles={'dashed'}, colors=["y"])
     plt.xlabel("Episode", fontsize=20)
     plt.ylabel("Predators Avoided (proportion)", fontsize=20)
@@ -283,11 +274,10 @@ def clean_metrics_data(reader, file_name, model):
                 previous_step = current_step
 
 
-models = ["even_5", "even_6", "even_3"]
+models = ["even_5", "even_6", "even_7","even_8"]
 # models2 = ["even_4", "even_6", "even_8"]
 # models2 = ["even_4", "even_5", "even_8"]
-models2 = ["even_1", "even_2", "even_8"]
-# models2 = ["even_1", "even_2"]
+models2 = ["even_1", "even_2", "even_3", "even_4"]
 filenames = ["run-.-tag-predator avoidance index (avoided_p_pred)",
              "run-.-tag-prey capture index (fraction caught)"]
 

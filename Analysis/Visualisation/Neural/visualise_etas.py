@@ -184,10 +184,9 @@ def plot_average_action_scores_comparison(atas, labels, stds=None):
     atas2 = normalise_vrvs(atas2)
     used_actions = list(set(used_actions))
     df = pd.DataFrame({label: data for data, label in zip(atas2, labels)})
-    a = [[0.2, 0.2, 0.2, 0.2], [0.2, 0.2, 0.2, 0.2], [0.2, 0.2, 0.2, 0.2], [0.2, 0.2, 0.2, 0.2]]
     sns.set()
     df.plot.bar(rot=0, figsize=(10, 6), yerr=stds)  # , color={labels[0]: "blue", labels[1]: "blue", labels[2]: "red"}
-    plt.ylabel("Action-Triggered Average", fontsize=20)
+    plt.ylabel("Normalised Action-Triggered Average", fontsize=20)
     plt.xlabel("Bout", fontsize=20)
     plt.xticks([a for a in range(len(used_actions))], [get_action_name(a) for a in used_actions], fontsize=15)
     plt.show()
@@ -339,10 +338,10 @@ predator_cs = get_for_specific_neurons(ata, predator_cs_ns)
 valence = get_for_specific_neurons(ata, valence_ns)
 prey_full_field = get_for_specific_neurons(ata, prey_full_field_ns)
 
-prey_in_front_std = [np.std([n/5000 for i, n in enumerate(ata[a]) if i in placeholder_list]) for a in ata.keys()]
-prey_full_field_std = [np.std([n/5000 for i, n in enumerate(ata[a]) if i in prey_full_field_ns]) for a in ata.keys()]
-valence_std = [np.std([n/5000 for i, n in enumerate(ata[a]) if i in valence_ns]) for a in ata.keys()]
-all_std = [np.std([n/5000 for i, n in enumerate(ata[a])]) for a in ata.keys()]
+prey_in_front_std = [np.std([n for i, n in enumerate(ata[a]) if i in placeholder_list]) for a in ata.keys()]
+prey_full_field_std = [np.std([n for i, n in enumerate(ata[a]) if i in prey_full_field_ns]) for a in ata.keys()]
+valence_std = [np.std([n for i, n in enumerate(ata[a]) if i in valence_ns]) for a in ata.keys()]
+all_std = [np.std([n for i, n in enumerate(ata[a])]) for a in ata.keys()]
 used_actions = [0, 3, 4, 5]
 
 stdss = []

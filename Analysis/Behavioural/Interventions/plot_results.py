@@ -10,7 +10,7 @@ from Analysis.Behavioural.Interventions.compare_behavioural_measures import get_
 def plot_gradients_random(ablations, measure):
     percentages = range(0, 105, 5)
     plt.plot(percentages, ablations)
-    plt.xlabel("Percentage ablated")
+    plt.xlabel("Percentage of neurons ablated")
     plt.ylabel(measure)
     plt.legend()
     plt.show()
@@ -37,7 +37,7 @@ def plot_multiple_gradients_extended(ablations, measure):
 
     plt.fill_between(percentages, low_v, high_v)
     plt.hlines(1, 0, 100, color="r")
-    plt.xlabel("Percentage ablated")
+    plt.xlabel("Percentage of neurons ablated")
     plt.ylabel(measure)
     # plt.legend()
     plt.show()
@@ -64,7 +64,7 @@ def plot_multiple_gradients_random(ablations, measure):
 
     plt.fill_between(percentages, low_v, high_v)
     plt.hlines(1, 0, 100, color="r")
-    plt.xlabel("Percentage ablated")
+    plt.xlabel("Percentage of neurons ablated")
     plt.ylabel(measure)
     # plt.legend()
     plt.show()
@@ -90,7 +90,7 @@ def plot_multiple_gradients(ablations, controls, ablation_group, measure):
     plt.fill_between(percentages, low_v, high_v)
     plt.plot(percentages, controls, label="Control (Random Ablations)", color="r")
     plt.plot(percentages, [1 for i in percentages], label="Baseline Predator Avoidance", color="g")
-    plt.xlabel("Percentage ablated")
+    plt.xlabel("Percentage of neurons ablated")
     plt.legend()
 
     plt.ylabel(measure)
@@ -102,7 +102,7 @@ def plot_gradients(ablations, controls, ablation_group, measure):
     percentages = range(0, 110, 10)
     plt.plot(percentages, controls, label="Control (Random Ablations)")
     plt.plot(percentages, ablations, color="r", label=ablation_group)
-    plt.xlabel("Percentage ablated")
+    plt.xlabel("Percentage of neurons ablated")
     plt.ylabel(measure)
     plt.legend()
     plt.title(f"Ablations in {ablation_group} Neurons")
@@ -203,11 +203,17 @@ x = True
 prey_random_gradient = [8 for i in range(11)]
 pred_random_gradient = [3 for i in range(11)]
 # Prey-Large Central
-prey_gradient1, pred_gradient = get_both_measures("new_even_prey_ref-1", "Prey-Large-Central-even_prey_only", 3)
-prey_gradient2, pred_gradient = get_both_measures("new_even_prey_ref-2", "Prey-Large-Central-even_prey_only", 3)
-prey_gradient3, pred_gradient = get_both_measures("new_even_prey_ref-3", "Prey-Large-Central-even_prey_only", 3)
-prey_gradient4, pred_gradient = get_both_measures("new_even_prey_ref-4", "Prey-Large-Central-even_prey_only", 3)
-#
+# prey_gradient1, pred_gradient = get_both_measures("new_even_prey_ref-1", "Prey-Large-Central-even_prey_only", 3)
+# prey_gradient2, pred_gradient = get_both_measures("new_even_prey_ref-2", "Prey-Large-Central-even_prey_only", 3)
+# prey_gradient3, pred_gradient = get_both_measures("new_even_prey_ref-3", "Prey-Large-Central-even_prey_only", 3)
+# prey_gradient4, pred_gradient = get_both_measures("new_even_prey_ref-4", "Prey-Large-Central-even_prey_only", 3)
+
+
+
+prey_gradient1, pred_gradient = get_both_measures("new_even_prey_ref-4", "15-Centre-even_prey_only", 6)
+prey_gradient2, pred_gradient = get_both_measures("new_even_prey_ref-5", "15-Centre-even_prey_only", 6)
+prey_gradient3, pred_gradient = get_both_measures("new_even_prey_ref-6", "15-Centre-even_prey_only", 6)
+prey_gradient4, pred_gradient = get_both_measures("new_even_prey_ref-8", "15-Centre-even_prey_only", 6)
 plot_multiple_gradients([prey_gradient1,
                          prey_gradient2,
                          prey_gradient3,
