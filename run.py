@@ -69,6 +69,33 @@ final_configs = c1 + c2
 with open(f"Run-Configurations/vrv_full_config.json", 'r') as f:
     sss = json.load(f)
 
+
+test_continuous_training_configuration = [
+    {
+        "Model Name": "continuous_test",
+        "Environment Name": "simple_continuous",
+        "Trial Number": 1,
+        "Total Configurations": 1,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    }
+]
+
 even_training_configuration = [
     {
         "Model Name": "new_even_prey_ref",
@@ -276,5 +303,5 @@ differential_training_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(target_ablation)
+manager = TrialManager(test_continuous_training_configuration)
 manager.run_priority_loop()

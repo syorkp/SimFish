@@ -6,6 +6,7 @@ import numpy as np
 
 from Environment.naturalistic_environment import NaturalisticEnvironment
 from Environment.controlled_stimulus_environment import ControlledStimulusEnvironment
+from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 
 """
 Due to PyCharm plots error, currently needs to be run in terminal"""
@@ -34,25 +35,27 @@ with open(file_path, 'r') as f:
     env = json.load(f)
 
 # sim_state = ProjectionEnvironment(env, stimuli, tethered=True, draw_screen=True)
-sim_state = NaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True)
+# sim_state = NaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True)
+sim_state = ContinuousNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True)
 
 q = False
 d = False
 sim_state.reset()
 while not q:
     # action = None
-    key = input()
-    action_input = int(key)
+    # key = input()
+    # action_input = int(key)
+
+    impulse = input()
+    angle = input()
+    impulse = float(impulse)
+    angle = float(angle)
 
     previous_position = sim_state.fish.body.position
 
-    if action_input < 10:
-        s, r, internal, d, fb = sim_state.simulation_step(action_input)
+    s, r, internal, d, fb = sim_state.simulation_step([impulse, angle])
 
-    if action_input == 10:
-        q = True
-
-    if action_input == 11:
+    if angle > 1.0:
         sim_state.reset()
 
     if d:

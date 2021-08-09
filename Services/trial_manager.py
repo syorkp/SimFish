@@ -4,6 +4,7 @@ import multiprocessing
 
 import Services.training_service as training
 import Services.assay_service as assay
+import Services.a2c_training_service as a2c_training
 
 
 class TrialManager:
@@ -118,7 +119,10 @@ class TrialManager:
                 to_delete = None
             epsilon, total_steps, episode_number = self.get_saved_parameters(trial)
             if trial["Run Mode"] == "Training":
-                running_jobs[str(index)] = multiprocessing.Process(target=training.training_target, args=(trial, epsilon, total_steps, episode_number, memory_fraction))
+                if trial["Continuous Actions"]:
+                    running_jobs[str(index)] = multiprocessing.Process(target=a2c_training.a2c_training_target, args=(trial, total_steps, episode_number, memory_fraction))
+                else:
+                    running_jobs[str(index)] = multiprocessing.Process(target=training.training_target, args=(trial, epsilon, total_steps, episode_number, memory_fraction))
             elif trial["Run Mode"] == "Assay":
                 learning_params, environment_params = self.load_configuration_files(trial["Environment Name"])
                 running_jobs[str(index)] = multiprocessing.Process(target=assay.assay_target, args=(trial, learning_params, environment_params, total_steps, episode_number, memory_fraction))

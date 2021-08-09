@@ -140,7 +140,9 @@ class Fish:
         cost = 0.05(angle change) + 1.5(distance moved)
         :return:
         """
-        return 0.05 * abs(angle) + 1.5 * distance
+        # TODO: Change back
+        # return 0.05 * abs(angle) + 1.5 * distance
+        return 0
 
     def take_realistic_action(self, action):
         if action == 0:  # Slow2
