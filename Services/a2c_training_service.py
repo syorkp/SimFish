@@ -214,7 +214,7 @@ class A2CTrainingService:
         internal_states = sum([1 for x in [self.env['hunger'], self.env['stress']] if x is True]) + 1
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim'], state_is_tuple=True)
         a2c_network = A2CNetwork(self.simulation, self.params['rnn_dim'], cell, 'main', internal_states=internal_states,
-                                 actor_learning_rate=0.00001, critic_learning_rate=0.00056)
+                                 actor_learning_rate_impulse=0.00001, actor_learning_rate_angle=0.001, critic_learning_rate=0.00056)
         return a2c_network
 
     def episode_loop(self):
@@ -441,8 +441,9 @@ class A2CTrainingService:
         target = reward + self.gamma * np.squeeze(V_of_next_state)
         td_error = target - np.squeeze(V1)
 
-        _, loss_actor_val, test, test1, test2 = self.sess.run(
-            [self.a2c_network.training_op_actor, self.a2c_network.loss_actor, self.a2c_network.test_value, self.a2c_network.action_placeholder, self.a2c_network.imp],
+        # Loss function actor (impulse)
+        _, loss_actor_val_impulse = self.sess.run(
+            [self.a2c_network.training_op_actor_impulse, self.a2c_network.loss_actor_impulse],
             feed_dict={self.a2c_network.action_placeholder: np.reshape(action, (1, 2)),
                        self.a2c_network.observation: observation_1,
                        self.a2c_network.delta_placeholder: td_error,
@@ -452,7 +453,20 @@ class A2CTrainingService:
                        self.a2c_network.state_in: state_train,
                        self.a2c_network.batch_size: 1,
                        })
-        x = True
+
+        # Loss function actor (angle)
+        _, loss_actor_val_angle = self.sess.run(
+            [self.a2c_network.training_op_actor_angle, self.a2c_network.loss_actor_angle],
+            feed_dict={self.a2c_network.action_placeholder: np.reshape(action, (1, 2)),
+                       self.a2c_network.observation: observation_1,
+                       self.a2c_network.delta_placeholder: td_error,
+                       self.a2c_network.prev_actions: np.reshape(previous_actions, (1, 2)),
+                       self.a2c_network.trainLength: 1,
+                       self.a2c_network.internal_state: internal_state_1,
+                       self.a2c_network.state_in: state_train,
+                       self.a2c_network.batch_size: 1,
+                       })
+
         # Update critic by minimizing loss  (Critic training)
         _, loss_critic_val = self.sess.run(
             [self.a2c_network.training_op_critic, self.a2c_network.loss_critic],
