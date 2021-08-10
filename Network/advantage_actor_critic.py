@@ -17,7 +17,7 @@ class A2CNetwork:
         self.trainLength = tf.placeholder(dtype=tf.int32)
         self.batch_size = tf.placeholder(dtype=tf.int32, shape=[], name='batch_size')
         self.state_in = rnn_cell.zero_state(self.batch_size, tf.float32)
-        self.init_xavier = tf.compat.v1.keras.initializers.glorot_normal()
+        self.init_xavier = tf.keras.initializers.glorot_normal()
 
         # Network Inputs
         # self.actions = tf.placeholder(shape=[None, 2], dtype=tf.float32, name='actions')

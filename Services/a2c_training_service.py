@@ -214,7 +214,7 @@ class A2CTrainingService:
         internal_states = sum([1 for x in [self.env['hunger'], self.env['stress']] if x is True]) + 1
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim'], state_is_tuple=True)
         a2c_network = A2CNetwork(self.simulation, self.params['rnn_dim'], cell, 'main', internal_states=internal_states,
-                                 actor_learning_rate=0.000001, critic_learning_rate=0.000056)
+                                 actor_learning_rate=0.00001, critic_learning_rate=0.00056)
         return a2c_network
 
     def episode_loop(self):
@@ -255,9 +255,9 @@ class A2CTrainingService:
             if d:
                 break
         print(total_episode_reward)
+        print("\n")
         print(f"Mean Impulse: {np.mean([i[0][0] for i in all_actions])}")
         print(f"Mean Angle {np.mean([i[0][1] for i in all_actions])}")
-        print("\n")
         # Add the episode to the experience buffer
         self.save_episode(episode_start_t=t0,
                           all_actions=all_actions,
@@ -302,6 +302,17 @@ class A2CTrainingService:
         # Add Summary to Logs
         episode_summary = tf.Summary(value=[tf.Summary.Value(tag="episode reward", simple_value=total_episode_reward)])
         self.writer.add_summary(episode_summary, self.total_steps)
+
+        # Action Summary
+        impulses = [action[0][0] for action in all_actions]
+        for step, impulse in enumerate(impulses):
+            impulse_summary = tf.Summary(value=[tf.Summary.Value(tag="impulse magnitude", simple_value=impulse)])
+            self.writer.add_summary(impulse_summary, self.total_steps-len(impulses)+step)
+
+        angles = [action[0][1] for action in all_actions]
+        for step, angle in enumerate(angles):
+            angles_summary = tf.Summary(value=[tf.Summary.Value(tag="angle magnitude", simple_value=angle)])
+            self.writer.add_summary(angles_summary, self.total_steps-len(angles)+step)
 
         # Raw logs
         prey_caught_summary = tf.Summary(value=[tf.Summary.Value(tag="prey caught", simple_value=prey_caught)])
@@ -352,11 +363,6 @@ class A2CTrainingService:
                 value=[tf.Summary.Value(tag="Configuration change", simple_value=self.configuration_index)]
             )
             self.writer.add_summary(configuration_summary, self.episode_number)
-
-        for act in range(self.params['num_actions']):
-            action_freq = np.sum(np.array(all_actions) == act) / len(all_actions)
-            a_freq = tf.Summary(value=[tf.Summary.Value(tag="action " + str(act), simple_value=action_freq)])
-            self.writer.add_summary(a_freq, self.total_steps)
 
         # Save the parameters to be carried over.
         output_data = {"episode_number": self.episode_number, "total_steps": self.total_steps}
