@@ -7,7 +7,8 @@ tf.disable_v2_behavior()
 
 class A2CNetwork:
 
-    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states=2, actor_learning_rate_impulse=0.00001, actor_learning_rate_angle=0.00001, critic_learning_rate=0.00056):
+    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states=2, actor_learning_rate_impulse=0.00001,
+                 actor_learning_rate_angle=0.00001, critic_learning_rate=0.00056, max_impulse=80, max_angle_change=1):
 
         # Variables
         self.num_arms = len(simulation.fish.left_eye.vis_angles)  # Rays for each eye
@@ -79,7 +80,8 @@ class A2CNetwork:
         self.norm_dist_impulse = tf.distributions.Normal(self.mu_impulse, self.sigma_impulse)
         self.action_tf_var_impulse = tf.squeeze(self.norm_dist_impulse.sample(1), axis=0)
         self.action_tf_var_impulse = tf.math.abs(self.action_tf_var_impulse)
-        self.action_tf_var_impulse = tf.clip_by_value(self.action_tf_var_impulse, 0, 10)  # TODO: Decide how to do this.
+        self.action_tf_var_impulse = tf.clip_by_value(self.action_tf_var_impulse, 0, 1)
+        self.action_tf_var_impulse = tf.math.multiply(self.action_tf_var_impulse, max_impulse)
 
         # Actor angle output
         self.mu_angle = tf.layers.dense(self.rnn_output, 1, None, self.init_xavier)
@@ -87,22 +89,23 @@ class A2CNetwork:
         self.sigma_angle = tf.math.abs(self.sigma_angle)
         self.norm_dist_angle = tf.distributions.Normal(self.mu_angle, self.sigma_angle)
         self.action_tf_var_angle = tf.squeeze(self.norm_dist_angle.sample(1), axis=0)
-        self.action_tf_var_angle = tf.clip_by_value(self.action_tf_var_angle, -0.5, 0.5)  # TODO: Decide how to do this.
+        self.action_tf_var_angle = tf.clip_by_value(self.action_tf_var_angle, -1, 1)
+        self.action_tf_var_angle = tf.math.multiply(self.action_tf_var_angle, max_angle_change)
 
         self.action_placeholder = tf.placeholder(shape=[None, 2], dtype=tf.float32, name='action_placeholder')
-        self.delta_placeholder = tf.placeholder(tf.float32, name='delta')
-        self.target_placeholder = tf.placeholder(tf.float32, name='target')
+        self.delta_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='delta')
+        self.target_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='target')
 
         # Actor (policy) loss function - Impulse
-        self.loss_actor_impulse = -tf.log(self.norm_dist_impulse.prob(self.action_placeholder[0][0]) + 1e-5) * self.delta_placeholder
+        self.loss_actor_impulse = -tf.log(self.norm_dist_impulse.prob(tf.math.divide(self.action_placeholder[0][0], max_impulse)) + 1e-5) * self.delta_placeholder
         self.training_op_actor_impulse = tf.train.AdamOptimizer(actor_learning_rate_impulse, name='actor_optimizer_impulse').minimize(self.loss_actor_impulse)
 
         # Actor (policy) loss function - Angle
-        self.loss_actor_angle = -tf.log(self.norm_dist_impulse.prob(self.action_placeholder[0][1]) + 1e-5) * self.delta_placeholder
+        self.loss_actor_angle = -tf.log(self.norm_dist_impulse.prob(tf.math.divide(self.action_placeholder[0][1], max_angle_change)) + 1e-5) * self.delta_placeholder
         self.training_op_actor_angle = tf.train.AdamOptimizer(actor_learning_rate_angle, name='actor_optimizer_angle').minimize(self.loss_actor_angle)
 
         # Critic (state-value) loss function
         self.loss_critic = tf.reduce_mean(tf.squared_difference(tf.squeeze(self.Value), self.target_placeholder))
         self.training_op_critic = tf.train.AdamOptimizer(critic_learning_rate, name='critic_optimizer').minimize(self.loss_critic)
 
-        # TODO: Add previously used gradient masking.
+

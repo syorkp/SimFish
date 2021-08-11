@@ -105,6 +105,15 @@ class A2CTrainingService:
 
         self.gamma = 0.99  # Discount factor
 
+        # Training buffers
+        # Buffers for batch training
+        self.action_buffer = []
+        self.observation_buffer = []
+        self.reward_buffer = []
+        self.internal_state_buffer = []
+        self.value_buffer = []
+
+
     def load_configuration_files(self):
         """
         Called by create_trials method, should return the learning and environment configurations in JSON format.
@@ -214,7 +223,11 @@ class A2CTrainingService:
         internal_states = sum([1 for x in [self.env['hunger'], self.env['stress']] if x is True]) + 1
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim'], state_is_tuple=True)
         a2c_network = A2CNetwork(self.simulation, self.params['rnn_dim'], cell, 'main', internal_states=internal_states,
-                                 actor_learning_rate_impulse=0.00001, actor_learning_rate_angle=0.001, critic_learning_rate=0.00056)
+                                 actor_learning_rate_impulse=self.params['learning_rate_impulse'],
+                                 actor_learning_rate_angle=self.params['learning_rate_angle'],
+                                 critic_learning_rate=self.params['learning_rate_critic'],
+                                 max_impulse=self.env['max_impulse'],
+                                 max_angle_change=self.env['max_angle_change'])
         return a2c_network
 
     def episode_loop(self):
@@ -227,8 +240,7 @@ class A2CTrainingService:
         rnn_state = (
             np.zeros([1, self.a2c_network.rnn_dim]), np.zeros([1, self.a2c_network.rnn_dim]))  # Reset RNN hidden state
         self.simulation.reset()
-        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
-        sv = np.zeros((1, 128))  # Placeholder for the state value stream
+        sa = np.zeros((1, 128))  # Kept for GIFs.
 
         # Take the first simulation step, with a capture action. Assigns observation, reward, internal state, done, and
         o, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=[4.0, 0.0],
@@ -243,21 +255,47 @@ class A2CTrainingService:
         step_number = 0  # To allow exit after maximum steps.
         a = [4.0, 0.0]  # Initialise action for episode.
         all_actions.append([a])
+
+        # Reset buffers
+        self.action_buffer = []
+        self.observation_buffer = []
+        self.reward_buffer = []
+        self.internal_state_buffer = []
+        self.value_buffer = []
+
         while step_number < self.params["max_epLength"]:
+            if step_number != 0 and step_number % self.params["batch_size"] == 0:
+                self.train_network_batches()
+
+                # Reset buffers
+                self.action_buffer = []
+                self.observation_buffer = []
+                self.reward_buffer = []
+                self.internal_state_buffer = []
+                self.value_buffer = []
+
             step_number += 1
             o, a, r, internal_state, o1, d, rnn_state, V = self.step_loop(o=o, internal_state=internal_state,
                                                                           a=a, rnn_state=rnn_state)
-            # print(r)
+
+            # Update buffer
+            self.action_buffer.append(a)
+            self.observation_buffer.append(o)
+            self.reward_buffer.append(r)
+            self.internal_state_buffer.append(internal_state)
+            self.value_buffer.append(V)
+
             total_episode_reward += r
-            self.train_network(o, o1, r, V, a, all_actions[-1], internal_state)
+            # self.train_network(o, o1, r, V, a, all_actions[-1], internal_state)
             all_actions.append([a])
             o = o1
+
             if d:
                 break
-        print(total_episode_reward)
         print("\n")
         print(f"Mean Impulse: {np.mean([i[0][0] for i in all_actions])}")
         print(f"Mean Angle {np.mean([i[0][1] for i in all_actions])}")
+        print(f"Total episode reward: {total_episode_reward}")
         # Add the episode to the experience buffer
         self.save_episode(episode_start_t=t0,
                           all_actions=all_actions,
@@ -270,6 +308,167 @@ class A2CTrainingService:
         # Print saved metrics
         # print(f"Total training time: {sum(self.training_times)}")
         # print(f"Total reward: {sum(self.reward_list)}")
+
+    def step_loop(self, o, internal_state, a, rnn_state):
+        # Generate actions and corresponding steps.
+        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
+        a = [a[0]/10, a[1]]  # Set impulse to scale. TODO: Change 10 when systematic impulse given
+        impulse, angle, updated_rnn_state, V, test = self.sess.run(
+            [self.a2c_network.action_tf_var_impulse, self.a2c_network.action_tf_var_angle, self.a2c_network.rnn_state,
+             self.a2c_network.Value, self.a2c_network.conv4l_flat],
+            feed_dict={self.a2c_network.observation: o,
+                       self.a2c_network.internal_state: internal_state,
+                       self.a2c_network.prev_actions: np.reshape(a, (1, 2)),
+                       self.a2c_network.trainLength: 1,
+                       self.a2c_network.state_in: rnn_state,
+                       self.a2c_network.batch_size: 1})
+        # print(impulse)
+        impulse = impulse[0][0]
+        angle = angle[0][0]
+        action = [impulse, angle]
+
+        # Simulation step
+        o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+            action=action,
+            frame_buffer=self.frame_buffer,
+            save_frames=self.save_frames,
+            activations=sa)
+
+        self.total_steps += 1
+        return o, action, given_reward, internal_state, o1, d, updated_rnn_state, V
+
+    def train_network(self, observation_1, observation_2, reward, V, action, previous_actions, internal_state_1):
+        """
+        For training without batches (not currently used).
+        """
+        # Reset the recurrent layer's hidden state
+        state_train = (np.zeros([1, self.a2c_network.rnn_dim]),
+                       np.zeros([1, self.a2c_network.rnn_dim]))
+
+        V1, internal_state_2 = self.sess.run([self.a2c_network.Value, self.a2c_network.internal_state],
+                                             feed_dict={self.a2c_network.observation: observation_1,
+                                                        self.a2c_network.trainLength: 1,
+                                                        self.a2c_network.batch_size: 1,
+                                                        self.a2c_network.prev_actions: np.reshape(previous_actions, (1, 2)),
+                                                        self.a2c_network.internal_state: internal_state_1,
+                                                        })
+        V_of_next_state = self.sess.run(self.a2c_network.Value,
+                                        feed_dict={self.a2c_network.observation: observation_2,
+                                                   self.a2c_network.trainLength: 1,
+                                                   self.a2c_network.batch_size: 1,
+                                                   self.a2c_network.prev_actions: np.reshape(action, (1, 2)),
+                                                   self.a2c_network.internal_state: internal_state_2,
+                                                   })
+
+        target = reward + self.gamma * np.squeeze(V_of_next_state)
+        td_error = target - np.squeeze(V1)  # The advantage.
+
+        # Loss function actor (impulse)
+        _, loss_actor_val_impulse = self.sess.run(
+            [self.a2c_network.training_op_actor_impulse, self.a2c_network.loss_actor_impulse],
+            feed_dict={self.a2c_network.action_placeholder: np.reshape(action, (1, 2)),
+                       self.a2c_network.observation: observation_1,
+                       self.a2c_network.delta_placeholder: td_error,
+                       self.a2c_network.prev_actions: np.reshape(previous_actions, (1, 2)),
+                       self.a2c_network.trainLength: 1,
+                       self.a2c_network.internal_state: internal_state_1,
+                       self.a2c_network.state_in: state_train,
+                       self.a2c_network.batch_size: 1,
+                       })
+
+        # Loss function actor (angle)
+        _, loss_actor_val_angle = self.sess.run(
+            [self.a2c_network.training_op_actor_angle, self.a2c_network.loss_actor_angle],
+            feed_dict={self.a2c_network.action_placeholder: np.reshape(action, (1, 2)),
+                       self.a2c_network.observation: observation_1,
+                       self.a2c_network.delta_placeholder: td_error,
+                       self.a2c_network.prev_actions: np.reshape(previous_actions, (1, 2)),
+                       self.a2c_network.trainLength: 1,
+                       self.a2c_network.internal_state: internal_state_1,
+                       self.a2c_network.state_in: state_train,
+                       self.a2c_network.batch_size: 1,
+                       })
+
+        # Update critic by minimizing loss  (Critic training)
+        _, loss_critic_val = self.sess.run(
+            [self.a2c_network.training_op_critic, self.a2c_network.loss_critic],
+            feed_dict={self.a2c_network.observation: observation_1,
+                       self.a2c_network.target_placeholder: target,
+                       self.a2c_network.prev_actions: np.reshape(previous_actions, (1, 2)),
+                       self.a2c_network.trainLength: 1,
+                       self.a2c_network.internal_state: internal_state_1,
+                       self.a2c_network.state_in: state_train,
+                       self.a2c_network.batch_size: 1,
+                       })
+
+    def train_network_batches(self):
+        self.observation_buffer = np.array(self.observation_buffer)
+        self.action_buffer = np.array(self.action_buffer)
+        self.reward_buffer = np.array(self.reward_buffer)
+        self.value_buffer = np.array(self.value_buffer)
+        self.internal_state_buffer = np.array(self.internal_state_buffer)
+
+        advantages = self.reward_buffer - self.value_buffer  # TODO: Implement
+        state_train = (np.zeros([self.params["batch_size"]-1, self.a2c_network.rnn_dim]),
+                       np.zeros([self.params["batch_size"]-1, self.a2c_network.rnn_dim]))
+
+        V1, internal_state_2 = self.sess.run([self.a2c_network.Value, self.a2c_network.internal_state],
+                                             feed_dict={self.a2c_network.observation: np.vstack(self.observation_buffer[:-1, :]),
+                                                        self.a2c_network.trainLength: 1,
+                                                        self.a2c_network.batch_size: self.params["batch_size"] -1,
+                                                        self.a2c_network.prev_actions: np.vstack(self.action_buffer[:-1, :]),
+                                                        self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[:-1, :]),
+                                                        })
+        V_of_next_state = self.sess.run(self.a2c_network.Value,
+                                        feed_dict={self.a2c_network.observation: np.vstack(self.observation_buffer[1:, :]),
+                                                   self.a2c_network.trainLength: 1,
+                                                   self.a2c_network.batch_size: self.params["batch_size"] -1,
+                                                   self.a2c_network.prev_actions: np.vstack(self.action_buffer[1:, :]),
+                                                   self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[1:, :]),
+                                                   })
+
+        target = self.reward_buffer[1:] + self.gamma * np.squeeze(V_of_next_state)
+        td_error = target - np.squeeze(V1)
+
+        # Loss function actor (impulse)
+        _, loss_actor_val_impulse = self.sess.run(
+            [self.a2c_network.training_op_actor_impulse, self.a2c_network.loss_actor_impulse],
+            feed_dict={self.a2c_network.action_placeholder: np.vstack(self.action_buffer[1:, :]),
+                       self.a2c_network.observation: np.vstack(self.observation_buffer[:-1, :]),
+                       self.a2c_network.delta_placeholder: td_error,
+                       self.a2c_network.prev_actions: np.vstack(self.action_buffer[:-1, :]),
+                       self.a2c_network.trainLength: 1,
+                       self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[:-1, :]),
+                       self.a2c_network.state_in: state_train,
+                       self.a2c_network.batch_size: self.params["batch_size"] -1,
+                       })
+
+        # Loss function actor (angle)
+        _, loss_actor_val_angle = self.sess.run(
+            [self.a2c_network.training_op_actor_angle, self.a2c_network.loss_actor_angle],
+            feed_dict={self.a2c_network.action_placeholder: np.vstack(self.action_buffer[1:, :]),
+                       self.a2c_network.observation: np.vstack(self.observation_buffer[:-1, :]),
+                       self.a2c_network.delta_placeholder: td_error,
+                       self.a2c_network.prev_actions:  np.vstack(self.action_buffer[:-1, :]),
+                       self.a2c_network.trainLength: 1,
+                       self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[:-1, :]),
+                       self.a2c_network.state_in: state_train,
+                       self.a2c_network.batch_size: self.params["batch_size"] -1,
+                       })
+
+        # Update critic by minimizing loss  (Critic training)
+        _, loss_critic_val = self.sess.run(
+            [self.a2c_network.training_op_critic, self.a2c_network.loss_critic],
+            feed_dict={self.a2c_network.action_placeholder: np.vstack(self.action_buffer[1:, :]),
+                       self.a2c_network.observation: np.vstack(self.observation_buffer[:-1, :]),
+                       self.a2c_network.delta_placeholder: td_error,
+                       self.a2c_network.target_placeholder: target,
+                       self.a2c_network.prev_actions:  np.vstack(self.action_buffer[:-1, :]),
+                       self.a2c_network.trainLength: 1,
+                       self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[:-1, :]),
+                       self.a2c_network.state_in: state_train,
+                       self.a2c_network.batch_size: self.params["batch_size"] -1,
+                       })
 
     def save_episode(self, episode_start_t, all_actions, total_episode_reward, prey_caught,
                      predators_avoided, sand_grains_bumped, steps_near_vegetation):
@@ -389,92 +588,3 @@ class A2CTrainingService:
             self.save_frames = True
         if self.monitor_gpu:
             print(f"GPU usage {os.system('gpustat -cp')}")
-
-    def step_loop(self, o, internal_state, a, rnn_state):
-        # Generate actions and corresponding steps.
-        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
-        a = [a[0]/10, a[1]]  # Set impulse to scale. TODO: Change 10 when systematic impulse given
-        impulse, angle, updated_rnn_state, V, test = self.sess.run(
-            [self.a2c_network.action_tf_var_impulse, self.a2c_network.action_tf_var_angle, self.a2c_network.rnn_state,
-             self.a2c_network.Value, self.a2c_network.conv4l_flat],
-            feed_dict={self.a2c_network.observation: o,
-                       self.a2c_network.internal_state: internal_state,
-                       self.a2c_network.prev_actions: np.reshape(a, (1, 2)),
-                       self.a2c_network.trainLength: 1,
-                       self.a2c_network.state_in: rnn_state,
-                       self.a2c_network.batch_size: 1})
-        # print(impulse)
-        impulse = impulse[0][0]
-        angle = angle[0][0]
-        action = [impulse, angle]
-
-        # Simulation step
-        o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(
-            action=action,
-            frame_buffer=self.frame_buffer,
-            save_frames=self.save_frames,
-            activations=sa)
-
-        self.total_steps += 1
-        return o, action, given_reward, internal_state, o1, d, updated_rnn_state, V
-
-    def train_network(self, observation_1, observation_2, reward, V, action, previous_actions, internal_state_1):
-        # Reset the recurrent layer's hidden state
-        state_train = (np.zeros([1, self.a2c_network.rnn_dim]),
-                       np.zeros([1, self.a2c_network.rnn_dim]))
-
-        V1, internal_state_2 = self.sess.run([self.a2c_network.Value, self.a2c_network.internal_state],
-                                             feed_dict={self.a2c_network.observation: observation_1,
-                                                        self.a2c_network.trainLength: 1,
-                                                        self.a2c_network.batch_size: 1,
-                                                        self.a2c_network.prev_actions: np.reshape(previous_actions, (1, 2)),
-                                                        self.a2c_network.internal_state: internal_state_1,
-                                                        })
-        V_of_next_state = self.sess.run(self.a2c_network.Value,
-                                        feed_dict={self.a2c_network.observation: observation_2,
-                                                   self.a2c_network.trainLength: 1,
-                                                   self.a2c_network.batch_size: 1,
-                                                   self.a2c_network.prev_actions: np.reshape(action, (1, 2)),
-                                                   self.a2c_network.internal_state: internal_state_2,
-                                                   })
-
-        target = reward + self.gamma * np.squeeze(V_of_next_state)
-        td_error = target - np.squeeze(V1)
-
-        # Loss function actor (impulse)
-        _, loss_actor_val_impulse = self.sess.run(
-            [self.a2c_network.training_op_actor_impulse, self.a2c_network.loss_actor_impulse],
-            feed_dict={self.a2c_network.action_placeholder: np.reshape(action, (1, 2)),
-                       self.a2c_network.observation: observation_1,
-                       self.a2c_network.delta_placeholder: td_error,
-                       self.a2c_network.prev_actions: np.reshape(previous_actions, (1, 2)),
-                       self.a2c_network.trainLength: 1,
-                       self.a2c_network.internal_state: internal_state_1,
-                       self.a2c_network.state_in: state_train,
-                       self.a2c_network.batch_size: 1,
-                       })
-
-        # Loss function actor (angle)
-        _, loss_actor_val_angle = self.sess.run(
-            [self.a2c_network.training_op_actor_angle, self.a2c_network.loss_actor_angle],
-            feed_dict={self.a2c_network.action_placeholder: np.reshape(action, (1, 2)),
-                       self.a2c_network.observation: observation_1,
-                       self.a2c_network.delta_placeholder: td_error,
-                       self.a2c_network.prev_actions: np.reshape(previous_actions, (1, 2)),
-                       self.a2c_network.trainLength: 1,
-                       self.a2c_network.internal_state: internal_state_1,
-                       self.a2c_network.state_in: state_train,
-                       self.a2c_network.batch_size: 1,
-                       })
-
-        # Update critic by minimizing loss  (Critic training)
-        _, loss_critic_val = self.sess.run(
-            [self.a2c_network.training_op_critic, self.a2c_network.loss_critic],
-            feed_dict={self.a2c_network.observation: observation_1,
-                       self.a2c_network.target_placeholder: target,
-                       self.a2c_network.prev_actions: np.reshape(previous_actions, (1, 2)),
-                       self.a2c_network.trainLength: 1,
-                       self.a2c_network.internal_state: internal_state_1,
-                       self.a2c_network.state_in: state_train,
-                       self.a2c_network.batch_size: 1,
-                       })

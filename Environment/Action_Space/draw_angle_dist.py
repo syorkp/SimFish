@@ -71,10 +71,10 @@ def draw_angle_dist(bout_id):
 
 
 # for i in range(0, 13):
-#     # display_pdf_and_cdf(i)
+#     display_pdf_and_cdf(i)
 #     print(i)
-#     angle, dist = draw_angle_dist(i)
-#     print(angle, dist)
+    # angle, dist = draw_angle_dist(i)
+    # print(angle, dist)
 
 # display_pdf_and_cdf(5)
 # display_pdf_and_cdf(9)
