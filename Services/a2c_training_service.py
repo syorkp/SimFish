@@ -504,13 +504,13 @@ class A2CTrainingService:
 
         # Action Summary
         impulses = [action[0][0] for action in all_actions]
-        for step, impulse in enumerate(impulses):
-            impulse_summary = tf.Summary(value=[tf.Summary.Value(tag="impulse magnitude", simple_value=impulse)])
+        for step in range(0, len(impulses), 5):
+            impulse_summary = tf.Summary(value=[tf.Summary.Value(tag="impulse magnitude", simple_value=impulses[step])])
             self.writer.add_summary(impulse_summary, self.total_steps-len(impulses)+step)
 
         angles = [action[0][1] for action in all_actions]
-        for step, angle in enumerate(angles):
-            angles_summary = tf.Summary(value=[tf.Summary.Value(tag="angle magnitude", simple_value=angle)])
+        for step in range(0, len(angles), 5):
+            angles_summary = tf.Summary(value=[tf.Summary.Value(tag="angle magnitude", simple_value=angles[step])])
             self.writer.add_summary(angles_summary, self.total_steps-len(angles)+step)
 
         # Raw logs
