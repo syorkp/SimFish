@@ -314,7 +314,7 @@ class A2CTrainingService:
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0]/10, a[1]]  # Set impulse to scale. TODO: Change 10 when systematic impulse given
         impulse, angle, updated_rnn_state, V, test = self.sess.run(
-            [self.a2c_network.action_tf_var_impulse, self.a2c_network.action_tf_var_angle, self.a2c_network.rnn_state,
+            [self.a2c_network.impulse_output, self.a2c_network.angle_output, self.a2c_network.rnn_state,
              self.a2c_network.Value, self.a2c_network.conv4l_flat],
             feed_dict={self.a2c_network.observation: o,
                        self.a2c_network.internal_state: internal_state,
