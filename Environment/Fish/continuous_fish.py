@@ -15,7 +15,7 @@ class ContinuousFish(Fish):
         impulse = action[0]
         angle = action[1]
         distance = self.calculate_distance(impulse)
-        reward = - self.calculate_angle_cost(angle, distance) - self.env_variables['rest_cost']
+        reward = - self.calculate_action_cost(angle, distance) - self.env_variables['rest_cost']
         self.prev_action_impulse = impulse
         self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
         self.body.angle += angle

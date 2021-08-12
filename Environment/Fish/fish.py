@@ -34,7 +34,7 @@ class Fish:
         self.head = pymunk.Circle(self.body, env_variables['fish_head_size'], offset=(-env_variables['fish_head_size'], 0))
         self.head.color = (0, 1, 0)
         self.head.elasticity = 1.0
-        self.head.collision_type = 6
+        self.head.collision_type = 3
 
         # # Tail
         tail_coordinates = ((-env_variables['fish_head_size'], 0),
@@ -133,21 +133,18 @@ class Fish:
         """
         return (distance*10 - (0.004644*self.env_variables['fish_mass'] + 0.081417))/1.771548
 
-    @staticmethod
-    def calculate_angle_cost(angle, distance):
+    def calculate_action_cost(self, angle, distance):
         """
         So far, a fairly arbitrary equation to calculate action cost from distance moved and angle changed.
         cost = 0.05(angle change) + 1.5(distance moved)
         :return:
         """
-        # TODO: Change back
-        # return 0.05 * abs(angle) + 1.5 * distance
-        return 0
+        return abs(angle) * self.env_variables['angle_penalty_scaling_factor'] + (distance**2) * self.env_variables['distance_penalty_scaling_factor']
 
     def take_realistic_action(self, action):
         if action == 0:  # Slow2
             angle_change, distance = draw_angle_dist(8)
-            reward = -self.calculate_angle_cost(angle_change, distance)
+            reward = -self.calculate_action_cost(angle_change, distance)
             self.body.angle += np.random.choice([-angle_change, angle_change])
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -155,7 +152,7 @@ class Fish:
 
         elif action == 1:  # RT right
             angle_change, distance = draw_angle_dist(7)
-            reward = -self.calculate_angle_cost(angle_change, distance)
+            reward = -self.calculate_action_cost(angle_change, distance)
             self.body.angle += angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -163,7 +160,7 @@ class Fish:
 
         elif action == 2:  # RT left
             angle_change, distance = draw_angle_dist(7)
-            reward = -self.calculate_angle_cost(angle_change, distance)
+            reward = -self.calculate_action_cost(angle_change, distance)
             self.body.angle -= angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -171,7 +168,7 @@ class Fish:
 
         elif action == 3:  # Short capture swim
             angle_change, distance = draw_angle_dist(0)
-            reward = -self.calculate_angle_cost(angle_change, distance) - self.env_variables['capture_swim_extra_cost']
+            reward = -self.calculate_action_cost(angle_change, distance) - self.env_variables['capture_swim_extra_cost']
             self.body.angle += np.random.choice([-angle_change, angle_change])
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -180,7 +177,7 @@ class Fish:
 
         elif action == 4:  # j turn right
             angle_change, distance = draw_angle_dist(4)
-            reward = -self.calculate_angle_cost(angle_change, distance)
+            reward = -self.calculate_action_cost(angle_change, distance)
             self.body.angle += angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -188,7 +185,7 @@ class Fish:
 
         elif action == 5:  # j turn left
             angle_change, distance = draw_angle_dist(4)
-            reward = -self.calculate_angle_cost(angle_change, distance)
+            reward = -self.calculate_action_cost(angle_change, distance)
             self.body.angle -= angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -200,7 +197,7 @@ class Fish:
 
         elif action == 7:  # c start right
             angle_change, distance = draw_angle_dist(5)
-            reward = -self.calculate_angle_cost(angle_change, distance)
+            reward = -self.calculate_action_cost(angle_change, distance)
             self.body.angle += angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -208,7 +205,7 @@ class Fish:
 
         elif action == 8:  # c start left
             angle_change, distance = draw_angle_dist(5)
-            reward = -self.calculate_angle_cost(angle_change, distance)
+            reward = -self.calculate_action_cost(angle_change, distance)
             self.body.angle -= angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -216,7 +213,7 @@ class Fish:
 
         elif action == 9:  # Approach swim.
             angle_change, distance = draw_angle_dist(10)
-            reward = -self.calculate_angle_cost(angle_change, distance)
+            reward = -self.calculate_action_cost(angle_change, distance)
             self.body.angle -= angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -238,6 +235,7 @@ class Fish:
         if self.env_variables['read_noise_sigma'] > 0:
             noise = np.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
             photons += noise.astype(int)
+            photons = photons.clip(0, 255)
         return photons
 
     def get_visual_inputs(self):

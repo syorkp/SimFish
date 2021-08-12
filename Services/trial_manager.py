@@ -94,7 +94,10 @@ class TrialManager:
             output_directory_location = f"./Training-Output/{trial['Model Name']}-{trial['Trial Number']}"
             with open(f"{output_directory_location}/saved_parameters.json", "r") as file:
                 data = json.load(file)
-                epsilon = data["epsilon"]
+                if trial["Continuous Actions"]:
+                    epsilon = None
+                else:
+                    epsilon = data["epsilon"]
                 total_steps = data["total_steps"]
                 episode_number = data["episode_number"]
         else:

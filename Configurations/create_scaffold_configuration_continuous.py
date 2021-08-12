@@ -11,8 +11,8 @@ import os
 # all distances in pixels
 import numpy as np
 
-env = {'width': 750,  # arena size
-       'height': 750,
+env = {'width': 1500,  # arena size
+       'height': 1500,
        'drag': 0.7,  # water drag
        'phys_dt': 0.1,  # physics time step
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step
@@ -31,7 +31,7 @@ env = {'width': 750,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 30,
+       'prey_num': 10,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
@@ -93,13 +93,16 @@ env = {'width': 750,  # arena size
 
        # For continuous Actions space:
        'max_angle_change': np.pi,
-       'max_impulse': 80
+       'max_impulse': 80,
+
+       'distance_penalty_scaling_factor': 0.75,
+       'angle_penalty_scaling_factor': 0.1
 
        }
 
 
 params = {'num_actions': 10,  # size of action space
-          'batch_size': 50,  # How many experience traces to use for each training step.
+          'batch_size': 25,  # How many experience traces to use for each training step.
           'trace_length': 64,  # How long each experience trace will be when training
           'update_freq': 100,  # How often to perform a training step.
           'y': .99,  # Discount factor on the target Q-values

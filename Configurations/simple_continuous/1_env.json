@@ -1,6 +1,6 @@
 {
-    "width": 750,
-    "height": 750,
+    "width": 1500,
+    "height": 1500,
     "drag": 0.7,
     "phys_dt": 0.1,
     "phys_steps_per_sim_step": 100,
@@ -17,7 +17,7 @@
     "prey_mass": 1.0,
     "prey_inertia": 40.0,
     "prey_size": 4.0,
-    "prey_num": 30,
+    "prey_num": 10,
     "prey_impulse": 0.0,
     "prey_impulse_rate": 0.25,
     "prey_escape_impulse": 2,
@@ -69,5 +69,7 @@
     "stress": false,
     "stress_compound": 0.9,
     "max_angle_change": 3.141592653589793,
-    "max_impulse": 80
+    "max_impulse": 80,
+    "distance_penalty_scaling_factor": 0.75,
+    "angle_penalty_scaling_factor": 0.1
 }

@@ -26,11 +26,15 @@ class A2CNetwork:
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
 
         self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
-        self.reshaped_observation = tf.reshape(self.observation, shape=[-1, self.num_arms, 3, 2])
-        self.left_eye = self.reshaped_observation[:, :, :, 0]
-        self.right_eye = self.reshaped_observation[:, :, :, 1]
+        self.scaler = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='scaler')
+        self.scaled_obs = tf.divide(self.observation, self.scaler)
+
+        self.reshaped_observation = tf.reshape(self.scaled_obs, shape=[-1, self.num_arms, 3, 2])
 
         #            ----------        Non-Reflected       ---------            #
+
+        self.left_eye = self.reshaped_observation[:, :, :, 0]
+        self.right_eye = self.reshaped_observation[:, :, :, 1]
 
         # Convolutional Layers
         self.conv1l = tf.layers.conv1d(inputs=self.left_eye, filters=16, kernel_size=16, strides=4, padding='valid',

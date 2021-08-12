@@ -313,15 +313,16 @@ class A2CTrainingService:
         # Generate actions and corresponding steps.
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0]/10, a[1]]  # Set impulse to scale. TODO: Change 10 when systematic impulse given
-        impulse, angle, updated_rnn_state, V, test = self.sess.run(
+        impulse, angle, updated_rnn_state, V = self.sess.run(
             [self.a2c_network.impulse_output, self.a2c_network.angle_output, self.a2c_network.rnn_state,
-             self.a2c_network.Value, self.a2c_network.conv4l_flat],
+             self.a2c_network.Value],
             feed_dict={self.a2c_network.observation: o,
                        self.a2c_network.internal_state: internal_state,
                        self.a2c_network.prev_actions: np.reshape(a, (1, 2)),
                        self.a2c_network.trainLength: 1,
                        self.a2c_network.state_in: rnn_state,
-                       self.a2c_network.batch_size: 1})
+                       self.a2c_network.batch_size: 1,
+                       self.a2c_network.scaler: np.full(o.shape, 255)})
         # print(impulse)
         impulse = impulse[0][0]
         angle = angle[0][0]
@@ -418,13 +419,18 @@ class A2CTrainingService:
                                                         self.a2c_network.batch_size: self.params["batch_size"] -1,
                                                         self.a2c_network.prev_actions: np.vstack(self.action_buffer[:-1, :]),
                                                         self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[:-1, :]),
-                                                        })
+                                                        self.a2c_network.scaler: np.full(np.vstack(self.observation_buffer[:-1, :]).shape, 255),
+
+        })
         V_of_next_state = self.sess.run(self.a2c_network.Value,
                                         feed_dict={self.a2c_network.observation: np.vstack(self.observation_buffer[1:, :]),
                                                    self.a2c_network.trainLength: 1,
                                                    self.a2c_network.batch_size: self.params["batch_size"] -1,
                                                    self.a2c_network.prev_actions: np.vstack(self.action_buffer[1:, :]),
                                                    self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[1:, :]),
+                                                   self.a2c_network.scaler: np.full(
+                                                       np.vstack(self.observation_buffer[1:, :]).shape, 255),
+
                                                    })
 
         target = self.reward_buffer[1:] + self.gamma * np.squeeze(V_of_next_state)
@@ -441,6 +447,7 @@ class A2CTrainingService:
                        self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[:-1, :]),
                        self.a2c_network.state_in: state_train,
                        self.a2c_network.batch_size: self.params["batch_size"] -1,
+                       self.a2c_network.scaler: np.full(np.vstack(self.observation_buffer[:-1, :]).shape, 255),
                        })
 
         # Loss function actor (angle)
@@ -454,6 +461,8 @@ class A2CTrainingService:
                        self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[:-1, :]),
                        self.a2c_network.state_in: state_train,
                        self.a2c_network.batch_size: self.params["batch_size"] -1,
+                       self.a2c_network.scaler: np.full(np.vstack(self.observation_buffer[:-1, :]).shape, 255),
+
                        })
 
         # Update critic by minimizing loss  (Critic training)
@@ -468,6 +477,7 @@ class A2CTrainingService:
                        self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[:-1, :]),
                        self.a2c_network.state_in: state_train,
                        self.a2c_network.batch_size: self.params["batch_size"] -1,
+                       self.a2c_network.scaler: np.full(np.vstack(self.observation_buffer[:-1, :]).shape, 255),
                        })
 
     def save_episode(self, episode_start_t, all_actions, total_episode_reward, prey_caught,
