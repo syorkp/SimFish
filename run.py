@@ -74,7 +74,7 @@ test_continuous_training_configuration = [
     {
         "Model Name": "continuous_test",
         "Environment Name": "simple_continuous",
-        "Trial Number": 6,
+        "Trial Number": 7,
         "Total Configurations": 1,
         "Episode Transitions": {
         },

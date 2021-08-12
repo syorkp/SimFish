@@ -74,19 +74,19 @@ class A2CNetwork:
         self.rnn_state2 = self.rnn_state
 
         # Critic (value) output
-        self.Value = tf.layers.dense(self.rnn_output, 1, None, self.init_xavier)
+        self.Value = tf.layers.dense(self.rnn_output, 1, None, self.init_xavier, name = my_scope + '_Value')
 
         # Actor impulse output
-        self.mu_impulse = tf.layers.dense(self.rnn_output, 1, None, self.init_xavier)
+        self.mu_impulse = tf.layers.dense(self.rnn_output, 1, None, self.init_xavier, name = my_scope + '_mu_impulse')
         self.mu_impulse = tf.math.abs(self.mu_impulse)
 
-        self.sigma_impulse = tf.layers.dense(self.rnn_output, 1, None, self.init_xavier)
+        self.sigma_impulse = tf.layers.dense(self.rnn_output, 1, None, self.init_xavier, name = my_scope + '_sigma_impulse')
         self.sigma_impulse = tf.math.abs(self.sigma_impulse)
 
         # Actor angle output
-        self.mu_angle = tf.layers.dense(self.rnn_output, 1, None, self.init_xavier)
+        self.mu_angle = tf.layers.dense(self.rnn_output, 1, None, self.init_xavier, name = my_scope + '_mu_angle')
 
-        self.sigma_angle = tf.layers.dense(self.rnn_output, 1, None, self.init_xavier)
+        self.sigma_angle = tf.layers.dense(self.rnn_output, 1, None, self.init_xavier, name = my_scope + '_sigma_angle')
         self.sigma_angle = tf.math.abs(self.sigma_angle)
 
         #            ----------        Reflected       ---------            #
@@ -135,19 +135,19 @@ class A2CNetwork:
         self.rnn_output_ref = self.rnn_ref
 
         # Critic (value) output
-        self.Value_ref = tf.layers.dense(self.rnn_output_ref, 1, None, self.init_xavier)
+        self.Value_ref = tf.layers.dense(self.rnn_output_ref, 1, None, self.init_xavier, name=my_scope + '_Value', reuse=True)
 
         # Actor impulse output
-        self.mu_impulse_ref = tf.layers.dense(self.rnn_output_ref, 1, None, self.init_xavier)
+        self.mu_impulse_ref = tf.layers.dense(self.rnn_output_ref, 1, None, self.init_xavier, name=my_scope + '_mu_impulse', reuse=True)
         self.mu_impulse_ref = tf.math.abs(self.mu_impulse_ref)
 
-        self.sigma_impulse_ref = tf.layers.dense(self.rnn_output_ref, 1, None, self.init_xavier)
+        self.sigma_impulse_ref = tf.layers.dense(self.rnn_output_ref, 1, None, self.init_xavier, name=my_scope + '_sigma_impulse', reuse=True)
         self.sigma_impulse_ref = tf.math.abs(self.sigma_impulse_ref)
 
         # Actor angle output
-        self.mu_angle_ref = tf.layers.dense(self.rnn_output_ref, 1, None, self.init_xavier)
+        self.mu_angle_ref = tf.layers.dense(self.rnn_output_ref, 1, None, self.init_xavier, name=my_scope + '_mu_angle', reuse=True)
 
-        self.sigma_angle_ref = tf.layers.dense(self.rnn_output_ref, 1, None, self.init_xavier)
+        self.sigma_angle_ref = tf.layers.dense(self.rnn_output_ref, 1, None, self.init_xavier, name=my_scope + '_sigma_angle', reuse=True)
         self.sigma_angle_ref = tf.math.abs(self.sigma_angle_ref)
 
         #            ----------        Combined       ---------            #
