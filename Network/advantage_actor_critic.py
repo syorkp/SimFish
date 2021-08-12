@@ -83,20 +83,11 @@ class A2CNetwork:
         self.sigma_impulse = tf.layers.dense(self.rnn_output, 1, None, self.init_xavier)
         self.sigma_impulse = tf.math.abs(self.sigma_impulse)
 
-        self.norm_dist_impulse = tf.distributions.Normal(self.mu_impulse, self.sigma_impulse)
-        self.action_tf_var_impulse = tf.squeeze(self.norm_dist_impulse.sample(1), axis=0)
-        self.action_tf_var_impulse = tf.math.abs(self.action_tf_var_impulse)
-        self.action_tf_var_impulse = tf.clip_by_value(self.action_tf_var_impulse, 0, 1)
-        self.action_tf_var_impulse = tf.math.multiply(self.action_tf_var_impulse, max_impulse)
-
         # Actor angle output
         self.mu_angle = tf.layers.dense(self.rnn_output, 1, None, self.init_xavier)
+
         self.sigma_angle = tf.layers.dense(self.rnn_output, 1, None, self.init_xavier)
         self.sigma_angle = tf.math.abs(self.sigma_angle)
-        self.norm_dist_angle = tf.distributions.Normal(self.mu_angle, self.sigma_angle)
-        self.action_tf_var_angle = tf.squeeze(self.norm_dist_angle.sample(1), axis=0)
-        self.action_tf_var_angle = tf.clip_by_value(self.action_tf_var_angle, -1, 1)
-        self.action_tf_var_angle = tf.math.multiply(self.action_tf_var_angle, max_angle_change)
 
         #            ----------        Reflected       ---------            #
 
@@ -153,25 +144,32 @@ class A2CNetwork:
         self.sigma_impulse_ref = tf.layers.dense(self.rnn_output_ref, 1, None, self.init_xavier)
         self.sigma_impulse_ref = tf.math.abs(self.sigma_impulse_ref)
 
-        self.norm_dist_impulse_ref = tf.distributions.Normal(self.mu_impulse_ref, self.sigma_impulse_ref)
-        self.action_tf_var_impulse_ref = tf.squeeze(self.norm_dist_impulse_ref.sample(1), axis=0)
-        self.action_tf_var_impulse_ref = tf.math.abs(self.action_tf_var_impulse_ref)
-        self.action_tf_var_impulse_ref = tf.clip_by_value(self.action_tf_var_impulse_ref, 0, 1)
-        self.action_tf_var_impulse_ref = tf.math.multiply(self.action_tf_var_impulse_ref, max_impulse)
-
         # Actor angle output
         self.mu_angle_ref = tf.layers.dense(self.rnn_output_ref, 1, None, self.init_xavier)
+
         self.sigma_angle_ref = tf.layers.dense(self.rnn_output_ref, 1, None, self.init_xavier)
         self.sigma_angle_ref = tf.math.abs(self.sigma_angle_ref)
-        self.norm_dist_angle_ref = tf.distributions.Normal(self.mu_angle_ref, self.sigma_angle_ref)
-        self.action_tf_var_angle_ref = tf.squeeze(self.norm_dist_angle_ref.sample(1), axis=0)
-        self.action_tf_var_angle_ref = tf.clip_by_value(self.action_tf_var_angle_ref, -1, 1)
-        self.action_tf_var_angle_ref = tf.math.multiply(self.action_tf_var_angle_ref, max_angle_change)
 
         #            ----------        Combined       ---------            #
 
-        self.impulse_output = tf.math.divide(tf.math.add(self.action_tf_var_impulse, self.action_tf_var_impulse_ref), 2)
-        self.angle_output = tf.math.divide(tf.math.subtract(self.action_tf_var_angle, self.action_tf_var_angle_ref), 2)
+        # Combined Actor impulse output
+        self.mu_impulse_combined = tf.math.divide(tf.math.add(self.mu_impulse, self.mu_impulse_ref), 2)
+        self.sigma_impulse_combined = tf.math.divide(tf.math.add(self.sigma_impulse, self.sigma_impulse_ref), 2)
+        self.norm_dist_impulse = tf.distributions.Normal(self.mu_impulse_combined, self.sigma_impulse_combined)
+        self.action_tf_var_impulse = tf.squeeze(self.norm_dist_impulse.sample(1), axis=0)
+        self.action_tf_var_impulse = tf.math.abs(self.action_tf_var_impulse)
+        self.action_tf_var_impulse = tf.clip_by_value(self.action_tf_var_impulse, 0, 1)
+        self.impulse_output = tf.math.multiply(self.action_tf_var_impulse, max_impulse)
+
+        # Combined Actor angle output
+        self.mu_angle_combined = tf.math.divide(tf.math.subtract(self.mu_angle, self.mu_angle_ref), 2)
+        self.sigma_angle_combined = tf.math.divide(tf.math.add(self.sigma_angle, self.sigma_angle_ref), 2)
+        self.norm_dist_angle = tf.distributions.Normal(self.mu_angle_combined, self.sigma_angle_combined)
+        self.action_tf_var_angle = tf.squeeze(self.norm_dist_angle.sample(1), axis=0)
+        self.action_tf_var_angle = tf.clip_by_value(self.action_tf_var_angle, -1, 1)
+        self.angle_output = tf.math.multiply(self.action_tf_var_angle, max_angle_change)
+
+        self.Value_output = tf.math.divide(tf.math.add(self.Value, self.Value_ref), 2)
 
         #            ----------        Loss functions       ---------            #
 
@@ -184,11 +182,9 @@ class A2CNetwork:
         self.training_op_actor_impulse = tf.train.AdamOptimizer(actor_learning_rate_impulse, name='actor_optimizer_impulse').minimize(self.loss_actor_impulse)
 
         # Actor (policy) loss function - Angle
-        self.loss_actor_angle = -tf.log(self.norm_dist_impulse.prob(tf.math.divide(self.action_placeholder[0][1], max_angle_change)) + 1e-5) * self.delta_placeholder
+        self.loss_actor_angle = -tf.log(self.norm_dist_angle.prob(tf.math.divide(self.action_placeholder[0][1], max_angle_change)) + 1e-5) * self.delta_placeholder
         self.training_op_actor_angle = tf.train.AdamOptimizer(actor_learning_rate_angle, name='actor_optimizer_angle').minimize(self.loss_actor_angle)
 
         # Critic (state-value) loss function
-        self.loss_critic = tf.reduce_mean(tf.squared_difference(tf.squeeze(self.Value), self.target_placeholder))
+        self.loss_critic = tf.reduce_mean(tf.squared_difference(tf.squeeze(self.Value_output), self.target_placeholder))
         self.training_op_critic = tf.train.AdamOptimizer(critic_learning_rate, name='critic_optimizer').minimize(self.loss_critic)
-
-

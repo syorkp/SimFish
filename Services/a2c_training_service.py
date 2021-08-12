@@ -315,7 +315,7 @@ class A2CTrainingService:
         a = [a[0]/10, a[1]]  # Set impulse to scale. TODO: Change 10 when systematic impulse given
         impulse, angle, updated_rnn_state, V = self.sess.run(
             [self.a2c_network.impulse_output, self.a2c_network.angle_output, self.a2c_network.rnn_state,
-             self.a2c_network.Value],
+             self.a2c_network.Value_output],
             feed_dict={self.a2c_network.observation: o,
                        self.a2c_network.internal_state: internal_state,
                        self.a2c_network.prev_actions: np.reshape(a, (1, 2)),
@@ -346,14 +346,14 @@ class A2CTrainingService:
         state_train = (np.zeros([1, self.a2c_network.rnn_dim]),
                        np.zeros([1, self.a2c_network.rnn_dim]))
 
-        V1, internal_state_2 = self.sess.run([self.a2c_network.Value, self.a2c_network.internal_state],
+        V1, internal_state_2 = self.sess.run([self.a2c_network.Value_output, self.a2c_network.internal_state],
                                              feed_dict={self.a2c_network.observation: observation_1,
                                                         self.a2c_network.trainLength: 1,
                                                         self.a2c_network.batch_size: 1,
                                                         self.a2c_network.prev_actions: np.reshape(previous_actions, (1, 2)),
                                                         self.a2c_network.internal_state: internal_state_1,
                                                         })
-        V_of_next_state = self.sess.run(self.a2c_network.Value,
+        V_of_next_state = self.sess.run(self.a2c_network.Value_output,
                                         feed_dict={self.a2c_network.observation: observation_2,
                                                    self.a2c_network.trainLength: 1,
                                                    self.a2c_network.batch_size: 1,
@@ -409,11 +409,10 @@ class A2CTrainingService:
         self.value_buffer = np.array(self.value_buffer)
         self.internal_state_buffer = np.array(self.internal_state_buffer)
 
-        advantages = self.reward_buffer - self.value_buffer  # TODO: Implement
         state_train = (np.zeros([self.params["batch_size"]-1, self.a2c_network.rnn_dim]),
                        np.zeros([self.params["batch_size"]-1, self.a2c_network.rnn_dim]))
 
-        V1, internal_state_2 = self.sess.run([self.a2c_network.Value, self.a2c_network.internal_state],
+        V1, internal_state_2 = self.sess.run([self.a2c_network.Value_output, self.a2c_network.internal_state],
                                              feed_dict={self.a2c_network.observation: np.vstack(self.observation_buffer[:-1, :]),
                                                         self.a2c_network.trainLength: 1,
                                                         self.a2c_network.batch_size: self.params["batch_size"] -1,
@@ -422,7 +421,7 @@ class A2CTrainingService:
                                                         self.a2c_network.scaler: np.full(np.vstack(self.observation_buffer[:-1, :]).shape, 255),
 
         })
-        V_of_next_state = self.sess.run(self.a2c_network.Value,
+        V_of_next_state = self.sess.run(self.a2c_network.Value_output,
                                         feed_dict={self.a2c_network.observation: np.vstack(self.observation_buffer[1:, :]),
                                                    self.a2c_network.trainLength: 1,
                                                    self.a2c_network.batch_size: self.params["batch_size"] -1,
@@ -430,7 +429,6 @@ class A2CTrainingService:
                                                    self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[1:, :]),
                                                    self.a2c_network.scaler: np.full(
                                                        np.vstack(self.observation_buffer[1:, :]).shape, 255),
-
                                                    })
 
         target = self.reward_buffer[1:] + self.gamma * np.squeeze(V_of_next_state)
@@ -460,7 +458,7 @@ class A2CTrainingService:
                        self.a2c_network.trainLength: 1,
                        self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[:-1, :]),
                        self.a2c_network.state_in: state_train,
-                       self.a2c_network.batch_size: self.params["batch_size"] -1,
+                       self.a2c_network.batch_size: self.params["batch_size"] - 1,
                        self.a2c_network.scaler: np.full(np.vstack(self.observation_buffer[:-1, :]).shape, 255),
 
                        })
@@ -476,7 +474,7 @@ class A2CTrainingService:
                        self.a2c_network.trainLength: 1,
                        self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[:-1, :]),
                        self.a2c_network.state_in: state_train,
-                       self.a2c_network.batch_size: self.params["batch_size"] -1,
+                       self.a2c_network.batch_size: self.params["batch_size"] - 1,
                        self.a2c_network.scaler: np.full(np.vstack(self.observation_buffer[:-1, :]).shape, 255),
                        })
 
