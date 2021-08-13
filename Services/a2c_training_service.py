@@ -435,8 +435,36 @@ class A2CTrainingService:
         td_error = target - np.squeeze(V1)
 
         # Loss function actor (impulse)
-        _, loss_actor_val_impulse = self.sess.run(
-            [self.a2c_network.training_op_actor_impulse, self.a2c_network.loss_actor_impulse],
+        # _, loss_actor_val_impulse = self.sess.run(
+        #     [self.a2c_network.training_op_actor_impulse, self.a2c_network.loss_actor_impulse],
+        #     feed_dict={self.a2c_network.action_placeholder: np.vstack(self.action_buffer[1:, :]),
+        #                self.a2c_network.observation: np.vstack(self.observation_buffer[:-1, :]),
+        #                self.a2c_network.delta_placeholder: td_error,
+        #                self.a2c_network.prev_actions: np.vstack(self.action_buffer[:-1, :]),
+        #                self.a2c_network.trainLength: 1,
+        #                self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[:-1, :]),
+        #                self.a2c_network.state_in: state_train,
+        #                self.a2c_network.batch_size: self.params["batch_size"] -1,
+        #                self.a2c_network.scaler: np.full(np.vstack(self.observation_buffer[:-1, :]).shape, 255),
+        #                })
+        #
+        # # Loss function actor (angle)
+        # _, loss_actor_val_angle = self.sess.run(
+        #     [self.a2c_network.training_op_actor_angle, self.a2c_network.loss_actor_angle],
+        #     feed_dict={self.a2c_network.action_placeholder: np.vstack(self.action_buffer[1:, :]),
+        #                self.a2c_network.observation: np.vstack(self.observation_buffer[:-1, :]),
+        #                self.a2c_network.delta_placeholder: td_error,
+        #                self.a2c_network.prev_actions:  np.vstack(self.action_buffer[:-1, :]),
+        #                self.a2c_network.trainLength: 1,
+        #                self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[:-1, :]),
+        #                self.a2c_network.state_in: state_train,
+        #                self.a2c_network.batch_size: self.params["batch_size"] - 1,
+        #                self.a2c_network.scaler: np.full(np.vstack(self.observation_buffer[:-1, :]).shape, 255),
+        #                })
+
+        # Loss function actor (full action)
+        loss_actor_val_impulse, loss_actor_val_angle, _ = self.sess.run(
+            [self.a2c_network.loss_actor_impulse, self.a2c_network.loss_actor_angle, self.a2c_network.action_op],
             feed_dict={self.a2c_network.action_placeholder: np.vstack(self.action_buffer[1:, :]),
                        self.a2c_network.observation: np.vstack(self.observation_buffer[:-1, :]),
                        self.a2c_network.delta_placeholder: td_error,
@@ -446,21 +474,6 @@ class A2CTrainingService:
                        self.a2c_network.state_in: state_train,
                        self.a2c_network.batch_size: self.params["batch_size"] -1,
                        self.a2c_network.scaler: np.full(np.vstack(self.observation_buffer[:-1, :]).shape, 255),
-                       })
-
-        # Loss function actor (angle)
-        _, loss_actor_val_angle = self.sess.run(
-            [self.a2c_network.training_op_actor_angle, self.a2c_network.loss_actor_angle],
-            feed_dict={self.a2c_network.action_placeholder: np.vstack(self.action_buffer[1:, :]),
-                       self.a2c_network.observation: np.vstack(self.observation_buffer[:-1, :]),
-                       self.a2c_network.delta_placeholder: td_error,
-                       self.a2c_network.prev_actions:  np.vstack(self.action_buffer[:-1, :]),
-                       self.a2c_network.trainLength: 1,
-                       self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[:-1, :]),
-                       self.a2c_network.state_in: state_train,
-                       self.a2c_network.batch_size: self.params["batch_size"] - 1,
-                       self.a2c_network.scaler: np.full(np.vstack(self.observation_buffer[:-1, :]).shape, 255),
-
                        })
 
         # Update critic by minimizing loss  (Critic training)
@@ -477,6 +490,7 @@ class A2CTrainingService:
                        self.a2c_network.batch_size: self.params["batch_size"] - 1,
                        self.a2c_network.scaler: np.full(np.vstack(self.observation_buffer[:-1, :]).shape, 255),
                        })
+        x = True
 
     def save_episode(self, episode_start_t, all_actions, total_episode_reward, prey_caught,
                      predators_avoided, sand_grains_bumped, steps_near_vegetation):

@@ -112,7 +112,7 @@ class TrialManager:
         Executes the trials in the required order.
         :return:
         """
-        parallel_jobs = 1
+        parallel_jobs = 2
         memory_fraction = 0.99/parallel_jobs
         running_jobs = {}
         to_delete = None

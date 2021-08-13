@@ -72,9 +72,32 @@ with open(f"Run-Configurations/vrv_full_config.json", 'r') as f:
 
 test_continuous_training_configuration = [
     {
-        "Model Name": "continuous_test",
-        "Environment Name": "simple_continuous",
-        "Trial Number": 7,
+        "Model Name": "continuous_fast_learning",
+        "Environment Name": "continuous_fast_learning",
+        "Trial Number": 1,
+        "Total Configurations": 1,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "continuous_slow_learning",
+        "Environment Name": "continuous_slow_learning",
+        "Trial Number": 1,
         "Total Configurations": 1,
         "Episode Transitions": {
         },

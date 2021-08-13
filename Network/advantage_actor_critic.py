@@ -119,7 +119,7 @@ class A2CNetwork:
 
         self.conv4l_flat_ref = tf.layers.flatten(self.conv4l_ref)
         self.conv4r_flat_ref = tf.layers.flatten(self.conv4r_ref)
-        self.prev_actions_ref = tf.reverse(self.prev_actions, [1]) # TODO: Check isnt mirroring impulse and angle change
+        self.prev_actions_ref = tf.reverse(self.prev_actions, [1])
         self.internal_state_ref = tf.reverse(self.internal_state, [1])
 
         self.conv_with_states_ref = tf.concat(
@@ -184,6 +184,8 @@ class A2CNetwork:
         # Actor (policy) loss function - Angle
         self.loss_actor_angle = -tf.log(self.norm_dist_angle.prob(tf.math.divide(self.action_placeholder[0][1], max_angle_change)) + 1e-5) * self.delta_placeholder
         self.training_op_actor_angle = tf.train.AdamOptimizer(actor_learning_rate_angle, name='actor_optimizer_angle').minimize(self.loss_actor_angle)
+
+        self.action_op = tf.group(self.training_op_actor_impulse, self.training_op_actor_angle)
 
         # Critic (state-value) loss function
         self.loss_critic = tf.reduce_mean(tf.squared_difference(tf.squeeze(self.Value_output), self.target_placeholder))

@@ -120,13 +120,13 @@ params = {'num_actions': 10,  # size of action space
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
           'learning_rate': 0.0001,
 
-          'learning_rate_impulse': 0.000001,
-          'learning_rate_angle': 0.00001,
-          'learning_rate_critic': 0.0056
+          'learning_rate_impulse': 0.00001,
+          'learning_rate_angle': 0.0001,
+          'learning_rate_critic': 0.056
           }
 
 
-directory_name = "simple_continuous"
+directory_name = "continuous_fast_learning"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):
