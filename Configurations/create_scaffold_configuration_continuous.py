@@ -95,8 +95,8 @@ env = {'width': 1500,  # arena size
        'max_angle_change': np.pi/2,
        'max_impulse': 10,
 
-       'distance_penalty_scaling_factor': 5,
-       'angle_penalty_scaling_factor': 5,
+       'distance_penalty_scaling_factor': 1,
+       'angle_penalty_scaling_factor': 1,
        'baseline_penalty': 2
        }
 

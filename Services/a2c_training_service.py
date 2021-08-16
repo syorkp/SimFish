@@ -222,12 +222,15 @@ class A2CTrainingService:
         print("Creating network...")
         internal_states = sum([1 for x in [self.env['hunger'], self.env['stress']] if x is True]) + 1
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim'], state_is_tuple=True)
-        a2c_network = A2CNetwork(self.simulation, self.params['rnn_dim'], cell, 'main', internal_states=internal_states,
+        cell2 = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim'], state_is_tuple=True) # TODO: Add to config
+
+        a2c_network = A2CNetwork(self.simulation, self.params['rnn_dim'], cell, cell2, 'main', internal_states=internal_states,
                                  actor_learning_rate_impulse=self.params['learning_rate_impulse'],
                                  actor_learning_rate_angle=self.params['learning_rate_angle'],
                                  critic_learning_rate=self.params['learning_rate_critic'],
                                  max_impulse=self.env['max_impulse'],
-                                 max_angle_change=self.env['max_angle_change'])
+                                 max_angle_change=self.env['max_angle_change'],
+                                 extra_rnn_dim=self.params['rnn_dim'])
         return a2c_network
 
     def episode_loop(self):

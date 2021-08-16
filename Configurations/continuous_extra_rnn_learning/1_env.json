@@ -70,7 +70,7 @@
     "stress_compound": 0.9,
     "max_angle_change": 1.5707963267948966,
     "max_impulse": 10,
-    "distance_penalty_scaling_factor": 5,
-    "angle_penalty_scaling_factor": 5,
+    "distance_penalty_scaling_factor": 1,
+    "angle_penalty_scaling_factor": 1,
     "baseline_penalty": 2
 }

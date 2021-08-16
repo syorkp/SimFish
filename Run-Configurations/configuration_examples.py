@@ -1598,4 +1598,208 @@ controlled_assay_configuration_2 = [
     },
 ]
 
+even_training_configuration = [
+    {
+        "Model Name": "new_even_prey_ref",
+        "Environment Name": "even_prey",
+        "Trial Number": 5,
+        "Total Configurations": 4,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 8,
+                "4": 10,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "new_even_prey_ref",
+        "Environment Name": "even_prey",
+        "Trial Number": 6,
+        "Total Configurations": 4,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 8,
+                "4": 10,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "new_even_prey_ref",
+        "Environment Name": "even_prey",
+        "Trial Number": 7,
+        "Total Configurations": 4,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 8,
+                "4": 10,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "new_even_prey_ref",
+        "Environment Name": "even_prey",
+        "Trial Number": 8,
+        "Total Configurations": 4,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 8,
+                "4": 10,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+]
 
+differential_training_configuration = [
+    {
+        "Model Name": "new_differential_prey_ref",
+        "Environment Name": "differential_prey",
+        "Trial Number": 3,
+        "Total Configurations": 4,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 8,
+                "4": 10,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "new_differential_prey_ref",
+        "Environment Name": "differential_prey",
+        "Trial Number": 4,
+        "Total Configurations": 4,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 8,
+                "4": 10,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "new_differential_prey_ref",
+        "Environment Name": "differential_prey",
+        "Trial Number": 5,
+        "Total Configurations": 4,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 8,
+                "4": 10,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "new_differential_prey_ref",
+        "Environment Name": "differential_prey",
+        "Trial Number": 6,
+        "Total Configurations": 4,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 8,
+                "4": 10,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+]
