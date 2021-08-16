@@ -130,7 +130,7 @@ class A2CNetwork:
         self.convFlat_ref = tf.reshape(self.rnn_in_ref, [self.batch_size, self.trainLength, self.rnn_dim])
 
         self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell, dtype=tf.float32,
-                                                             initial_state=self.state_in, scope=my_scope + '_rnn')
+                                                             initial_state=self.state_in, scope=my_scope + '_rnn')  # No need to reuse as takes rnn_cell as argument for both.
         self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim])
         self.rnn_output_ref = self.rnn_ref
 

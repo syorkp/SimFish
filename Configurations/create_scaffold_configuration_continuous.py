@@ -96,7 +96,8 @@ env = {'width': 1500,  # arena size
        'max_impulse': 10,
 
        'distance_penalty_scaling_factor': 5,
-       'angle_penalty_scaling_factor': 5
+       'angle_penalty_scaling_factor': 5,
+       'baseline_penalty': 2
        }
 
 
@@ -112,7 +113,7 @@ params = {'num_actions': 10,  # size of action space
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
           'max_epLength': 1000,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
-          'summaryLength': 50,  # Number of epidoes to periodically save for analysis
+          'summaryLength': 100,  # Number of epidoes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
           'rnn_dim': 512,  # number of rnn cells
           'extra_rnn': False,
@@ -120,13 +121,13 @@ params = {'num_actions': 10,  # size of action space
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
           'learning_rate': 0.0001,
 
-          'learning_rate_impulse': 0.00001,
-          'learning_rate_angle': 0.0001,
-          'learning_rate_critic': 0.056
+          'learning_rate_impulse': 0.000001,
+          'learning_rate_angle': 0.00001,
+          'learning_rate_critic': 0.0056
           }
 
 
-directory_name = "continuous_fast_learning"
+directory_name = "continuous_extra_rnn_learning"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):
