@@ -6,10 +6,9 @@ Created on Mon Oct  5 07:52:17 2020
 @author: asaph
 """
 import json
-import os
+import numpy as np
 
 # all distances in pixels
-import numpy as np
 
 env = {'width': 1500,  # arena size
        'height': 1500,
@@ -32,7 +31,7 @@ env = {'width': 1500,  # arena size
        'prey_inertia': 40.,
        'prey_size': 4.,
        'prey_num': 20,
-       'prey_impulse': 0.0,  # impulse each prey receives per step
+       'prey_impulse': 0.1,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
@@ -129,35 +128,10 @@ params = {'num_actions': 10,  # size of action space
           }
 
 
-directory_name = "continuous_learning_scaffold"
-
-# Ensure Output File Exists
-if not os.path.exists(f"Configurations/{directory_name}/"):
-    os.makedirs(f"Configurations/{directory_name}/")
-
-
 # Equal to that given in the file name.
-def save_files(n):
-    with open(f"Configurations/{directory_name}/{str(n)}_env.json", 'w') as f:
-        json.dump(env, f, indent=4)
+environment_name = "continuous_assay"
+with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
+    json.dump(env, f)
 
-    with open(f"Configurations/{directory_name}/{str(n)}_learning.json", 'w') as f:
-        json.dump(params, f, indent=4)
-
-
-# A. Learn Predator avoidance and prey capture #
-
-# 1 Initial config
-number = 1
-save_files(number)
-number += 1
-
-env['prey_impulse'] = 0.05
-save_files(number)
-number += 1
-
-env['prey_impulse'] = 0.1
-save_files(number)
-number += 1
-
-
+with open(f"Configurations/Assay-Configs/{environment_name}_learning.json", 'w') as f:
+    json.dump(params, f)

@@ -1,21 +1,20 @@
 import json
 import h5py
 from datetime import datetime
-import os
 
 import numpy as np
 import tensorflow.compat.v1 as tf
 
-from Environment.naturalistic_environment import NaturalisticEnvironment
+from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Environment.controlled_stimulus_environment import ControlledStimulusEnvironment
-from Network.q_network import QNetwork
+from Network.advantage_actor_critic import A2CNetwork
 from Tools.make_gif import make_gif
 
 tf.logging.set_verbosity(tf.logging.ERROR)
 
 
-def assay_target(trial, learning_params, environment_params, total_steps, episode_number, memory_fraction):
-    service = AssayService(model_name=trial["Model Name"],
+def a2c_assay_target(trial, learning_params, environment_params, total_steps, episode_number, memory_fraction):
+    service = A2CAssayService(model_name=trial["Model Name"],
                            trial_number=trial["Trial Number"],
                            assay_config_name=trial["Assay Configuration Name"],
                            learning_params=learning_params,
@@ -28,11 +27,10 @@ def assay_target(trial, learning_params, environment_params, total_steps, episod
                            using_gpu=trial["Using GPU"],
                            set_random_seed=trial["set random seed"]
                            )
-
     service.run()
 
 
-class AssayService:
+class A2CAssayService:
 
     def __init__(self, model_name, trial_number, assay_config_name, learning_params, environment_params, total_steps,
                  episode_number, assays, realistic_bouts, memory_fraction, using_gpu, set_random_seed):
@@ -62,12 +60,12 @@ class AssayService:
 
         # Network Parameters
         self.saver = None
-        self.network = None
+        self.a2c_network = None
         self.init = None
         self.sess = None
 
         # Simulation
-        self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
+        self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts)
         self.step_number = 0
 
         # Data
@@ -81,23 +79,36 @@ class AssayService:
         self.output_data = {}
         self.episode_summary_data = None
 
+        self.save_frames = False
+
         # Hacky fix for h5py problem:
         self.last_position_dim = self.environment_params["prey_num"]
         self.stimuli_data = []
 
     def create_network(self):
-        internal_states = sum([1 for x in [self.environment_params['hunger'], self.environment_params['stress']] if x is True]) + 1
+        print("Creating network...")
+        internal_states = sum(
+            [1 for x in [self.environment_params['hunger'], self.environment_params['stress']] if x is True]) + 1
+        shared_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
+        critic_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_critic'], state_is_tuple=True)
+        actor_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_actor'], state_is_tuple=True)
 
-        cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim'], state_is_tuple=True)
-        network = QNetwork(simulation=self.simulation,
-                           rnn_dim=self.learning_params['rnn_dim'],
-                           rnn_cell=cell,
-                           my_scope='main',
-                           num_actions=self.learning_params['num_actions'],
-                           internal_states=internal_states,
-                           learning_rate=self.learning_params['learning_rate'],
-                           extra_layer=self.learning_params['extra_rnn'])
-        return network
+        a2c_network = A2CNetwork(simulation=self.simulation,
+                                 rnn_dim_shared=self.learning_params['rnn_dim_shared'],
+                                 rnn_dim_critic=self.learning_params['rnn_dim_critic'],
+                                 rnn_dim_actor=self.learning_params['rnn_dim_actor'],
+                                 rnn_cell_shared=shared_cell,
+                                 rnn_cell_critic=critic_cell,
+                                 rnn_cell_actor=actor_cell,
+                                 my_scope='main',
+                                 internal_states=internal_states,
+                                 actor_learning_rate_impulse=self.learning_params['learning_rate_impulse'],
+                                 actor_learning_rate_angle=self.learning_params['learning_rate_angle'],
+                                 critic_learning_rate=self.learning_params['learning_rate_critic'],
+                                 max_impulse=self.environment_params['max_impulse'],
+                                 max_angle_change=self.environment_params['max_angle_change'],
+                                 )
+        return a2c_network
 
     def create_testing_environment(self, assay):
         """
@@ -116,9 +127,10 @@ class AssayService:
                                                             background=assay["background"]
                                                             )
         elif assay["stimulus paradigm"] == "Naturalistic":
-            self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts, collisions=assay["collisions"])
+            self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
+                                                                collisions=assay["collisions"])
         else:
-            self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
+            self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts)
 
     def run(self):
         if self.using_gpu:
@@ -134,7 +146,7 @@ class AssayService:
                 self._run()
 
     def _run(self):
-        self.network = self.create_network()
+        self.a2c_network = self.create_network()
         self.saver = tf.train.Saver(max_to_keep=5)
         self.init = tf.global_variables_initializer()
         checkpoint = tf.train.get_checkpoint_state(self.model_location)
@@ -143,6 +155,7 @@ class AssayService:
         for assay in self.assays:
             if assay["ablations"]:
                 self.ablate_units(assay["ablations"])
+            self.save_frames = assay["save frames"]
             self.create_output_data_storage(assay)
             self.create_testing_environment(assay)
             self.perform_assay(assay)
@@ -167,51 +180,76 @@ class AssayService:
             else:
                 output = self.sess.graph.get_tensor_by_name('mainvw:0')
                 new_tensor = output.eval()
-                new_tensor[unit-256] = np.array([0])
+                new_tensor[unit - 256] = np.array([0])
                 self.sess.run(tf.assign(output, new_tensor))
 
     def perform_assay(self, assay):
         self.assay_output_data_format = {key: None for key in assay["recordings"]}
 
+        rnn_state_shared = (
+            np.zeros([1, self.a2c_network.rnn_dim_shared]), np.zeros([1, self.a2c_network.rnn_dim_shared]))  # Reset RNN hidden state
+        rnn_state_critic = (
+            np.zeros([1, self.a2c_network.rnn_dim_critic]), np.zeros([1, self.a2c_network.rnn_dim_critic]))
+        rnn_state_actor = (
+            np.zeros([1, self.a2c_network.rnn_dim_actor]), np.zeros([1, self.a2c_network.rnn_dim_actor]))
+
         self.simulation.reset()
+        sa = np.zeros((1, 128))  # Kept for GIFs.
 
-        sa = np.zeros((1, 128))
-
-        o, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=3,
+        # Take the first simulation step, with a capture action. Assigns observation, reward, internal state, done, and
+        o, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=[4.0, 0.0],
                                                                                      frame_buffer=self.frame_buffer,
-                                                                                     save_frames=True,
+                                                                                     save_frames=self.save_frames,
                                                                                      activations=(sa,))
-        a = 0
+
+        # For benchmarking each episode.
+        all_actions = []
+        total_episode_reward = 0  # Total reward over episode
+
+        step_number = 0  # To allow exit after maximum steps.
+        a = [4.0, 0.0]  # Initialise action for episode.
+        all_actions.append([a])
         self.step_number = 0
         while self.step_number < assay["duration"]:
             if assay["reset"] and self.step_number % assay["reset interval"] == 0:
-                rnn_state = (np.zeros([1, self.network.rnn_dim]), np.zeros([1, self.network.rnn_dim]))  # Reset RNN hidden state
+                rnn_state = (np.zeros([1, self.a2c_network.rnn_dim]),
+                             np.zeros([1, self.a2c_network.rnn_dim]))  # Reset RNN hidden state
+
             self.step_number += 1
 
-            o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
-                                                                       a=a, rnn_state=rnn_state)
+            o, a, r, internal_state, o1, d, rnn_state_shared, rnn_state_critic, rnn_state_actor = self.step_loop(o=o, internal_state=internal_state,
+                                                                       a=a, rnn_state_shared=rnn_state_shared,
+                                                                                 rnn_state_critic=rnn_state_critic,
+                                                                                 rnn_state_actor=rnn_state_actor)
             o = o1
 
             if d:
                 break
 
-    def step_loop(self, o, internal_state, a, rnn_state):
-        chosen_a, updated_rnn_state, rnn2_state, sa, sv, conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r, o2 = \
+    def step_loop(self, o, internal_state, a, rnn_state_shared, rnn_state_critic, rnn_state_actor):
+        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
+
+        impulse, angle, updated_rnn_state_shared, updated_rnn_state_critic, updated_rnn_state_actor, rnn2_state, conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r, o2 = \
             self.sess.run(
-                [self.network.predict, self.network.rnn_state_shared, self.network.rnn_state2, self.network.streamA, self.network.streamV,
-                 self.network.conv1l, self.network.conv2l, self.network.conv3l, self.network.conv4l,
-                 self.network.conv1r, self.network.conv2r, self.network.conv3r, self.network.conv4r,
-                 [self.network.ref_left_eye, self.network.ref_right_eye],
+                [self.a2c_network.impulse_output, self.a2c_network.angle_output, self.a2c_network.rnn_state_shared,
+             self.a2c_network.value_rnn_state, self.a2c_network.actor_rnn_state, self.a2c_network.rnn_state2,
+                 self.a2c_network.conv1l, self.a2c_network.conv2l, self.a2c_network.conv3l, self.a2c_network.conv4l,
+                 self.a2c_network.conv1r, self.a2c_network.conv2r, self.a2c_network.conv3r, self.a2c_network.conv4r,
+                 [self.a2c_network.ref_left_eye, self.a2c_network.ref_right_eye],
                  ],
-                feed_dict={self.network.observation: o,
-                           self.network.internal_state: internal_state,
-                           self.network.prev_actions: [a],
-                           self.network.trainLength: 1,
-                           self.network.shared_state_in: rnn_state,
-                           self.network.batch_size: 1,
-                           self.network.exp_keep: 1.0})
-        chosen_a = chosen_a[0]
-        o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=chosen_a,
+                feed_dict={self.a2c_network.observation: o,
+                           self.a2c_network.internal_state: internal_state,
+                           self.a2c_network.prev_actions: np.reshape(a, (1, 2)),
+                           self.a2c_network.trainLength: 1,
+                           self.a2c_network.shared_state_in: rnn_state_shared,
+                           self.a2c_network.critic_state_in: rnn_state_critic,
+                           self.a2c_network.actor_state_in: rnn_state_actor,
+                           self.a2c_network.batch_size: 1,
+                           self.a2c_network.scaler: np.full(o.shape, 255)})
+        impulse = impulse[0][0]
+        angle = angle[0][0]
+        action = [impulse, angle]
+        o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=action,
                                                                                                  frame_buffer=self.frame_buffer,
                                                                                                  save_frames=True,
                                                                                                  activations=(sa,))
@@ -246,7 +284,8 @@ class AssayService:
             predator_position = np.array([10000, 10000])
 
         if self.simulation.vegetation_bodies is not None:
-            vegetation_positions = [self.simulation.vegetation_bodies[i].position for i, b in enumerate(self.simulation.vegetation_bodies)]
+            vegetation_positions = [self.simulation.vegetation_bodies[i].position for i, b in
+                                    enumerate(self.simulation.vegetation_bodies)]
             vegetation_positions = [[i[0], i[1]] for i in vegetation_positions]
         else:
             vegetation_positions = [[10000, 10000]]
@@ -255,7 +294,7 @@ class AssayService:
             rnn2_state = [0.0]
 
         # Saving step data
-        possible_data_to_save = self.package_output_data(o1, o2, chosen_a, sa, updated_rnn_state,
+        possible_data_to_save = self.package_output_data(o1, o2, action, sa, updated_rnn_state_shared,
                                                          rnn2_state,
                                                          self.simulation.fish.body.position,
                                                          self.simulation.prey_consumed_this_step,
@@ -266,12 +305,12 @@ class AssayService:
                                                          sand_grain_positions,
                                                          vegetation_positions,
                                                          fish_angle,
-                                                         )
+                                                         )  # TODO: Add ability to save other RNN layers.
         for key in self.assay_output_data_format:
             self.output_data[key].append(possible_data_to_save[key])
         self.output_data["step"].append(self.step_number)
 
-        return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
+        return o, action, given_reward, internal_state, o1, d, updated_rnn_state_shared, updated_rnn_state_critic, updated_rnn_state_actor,
 
     def save_hdf5_data(self, assay):
         if assay["save frames"]:
@@ -313,7 +352,8 @@ class AssayService:
         self.episode_summary_data = None
 
     def save_stimuli_data(self, assay):
-        with open(f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}-stimuli_data.json", "w") as output_file:
+        with open(f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}-stimuli_data.json",
+                  "w") as output_file:
             json.dump(self.stimuli_data, output_file)
         self.stimuli_data = []
 
@@ -322,7 +362,8 @@ class AssayService:
         with open(f"{self.data_save_location}/{self.assay_configuration_id}.json", "w") as output_file:
             json.dump(self.metadata, output_file)
 
-    def package_output_data(self, observation, rev_observation, action, advantage_stream, rnn_state, rnn2_state, position, prey_consumed, predator_body,
+    def package_output_data(self, observation, rev_observation, action, advantage_stream, rnn_state, rnn2_state,
+                            position, prey_consumed, predator_body,
                             conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r,
                             prey_positions, predator_position, sand_grain_positions, vegetation_positions, fish_angle):
         """
@@ -348,14 +389,16 @@ class AssayService:
         :return:
         """
         # Make output data JSON serializable
-        action = int(action)
+        impulse = action[0]
+        angle = action[1]
         advantage_stream = advantage_stream.tolist()
         rnn_state = rnn_state.c.tolist()
         position = list(position)
         # observation = observation.tolist()
 
         data = {
-            "behavioural choice": action,
+            "impulse": impulse,
+            "angle": angle,
             "rnn state": rnn_state,
             "rnn 2 state": rnn2_state,
             "advantage stream": advantage_stream,

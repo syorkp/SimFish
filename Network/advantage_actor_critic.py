@@ -1,5 +1,3 @@
-import sklearn.preprocessing
-import numpy as np
 import tensorflow.compat.v1 as tf
 
 tf.disable_v2_behavior()
@@ -7,20 +5,25 @@ tf.disable_v2_behavior()
 
 class A2CNetwork:
 
-    def __init__(self, simulation, rnn_dim, rnn_cell, rnn_cell2, my_scope, internal_states=2,
+    def __init__(self, simulation, rnn_dim_shared, rnn_dim_critic, rnn_dim_actor, rnn_cell_shared, rnn_cell_critic,
+                 rnn_cell_actor, my_scope,
+                 internal_states=2,
                  actor_learning_rate_impulse=0.00001,
-                 actor_learning_rate_angle=0.00001, critic_learning_rate=0.00056, max_impulse=80, max_angle_change=1,
-                 extra_rnn_dim=100):
+                 actor_learning_rate_angle=0.00001, critic_learning_rate=0.00056, max_impulse=80, max_angle_change=1):
         # Variables
         self.num_arms = len(simulation.fish.left_eye.vis_angles)  # Rays for each eye
-        self.rnn_dim = rnn_dim
-        self.extra_rnn_dim = extra_rnn_dim
-        self.rnn_output_size = self.rnn_dim
+        self.rnn_dim_shared = rnn_dim_shared
+        self.rnn_dim_critic = rnn_dim_critic
+        self.rnn_dim_actor = rnn_dim_actor
+
+        self.rnn_output_size_shared = self.rnn_dim_shared
 
         self.trainLength = tf.placeholder(dtype=tf.int32)
         self.batch_size = tf.placeholder(dtype=tf.int32, shape=[], name='batch_size')
-        self.state_in = rnn_cell.zero_state(self.batch_size, tf.float32)
-        self.state_in2 = rnn_cell.zero_state(self.batch_size, tf.float32)
+
+        self.shared_state_in = rnn_cell_shared.zero_state(self.batch_size, tf.float32)
+        self.critic_state_in = rnn_cell_critic.zero_state(self.batch_size, tf.float32)
+        self.actor_state_in = rnn_cell_actor.zero_state(self.batch_size, tf.float32)
 
         self.init_xavier = tf.keras.initializers.glorot_normal()
 
@@ -66,41 +69,42 @@ class A2CNetwork:
             [self.conv4l_flat, self.conv4r_flat, self.prev_actions, self.internal_state], 1)
 
         # Recurrent Layer
-        self.rnn_in = tf.layers.dense(self.conv_with_states, self.rnn_dim, activation=tf.nn.relu,
+        self.rnn_in = tf.layers.dense(self.conv_with_states, self.rnn_dim_shared, activation=tf.nn.relu,
                                       kernel_initializer=tf.orthogonal_initializer,
                                       trainable=True, name=my_scope + '_rnn_in')
-        self.convFlat = tf.reshape(self.rnn_in, [self.batch_size, self.trainLength, self.rnn_dim])
+        self.convFlat = tf.reshape(self.rnn_in, [self.batch_size, self.trainLength, self.rnn_dim_shared])
 
-        self.rnn, self.rnn_state = tf.nn.dynamic_rnn(inputs=self.convFlat, cell=rnn_cell, dtype=tf.float32,
-                                                     initial_state=self.state_in, scope=my_scope + '_rnn', )
-        self.rnn = tf.reshape(self.rnn, shape=[-1, self.rnn_dim])
+        self.rnn, self.rnn_state_shared = tf.nn.dynamic_rnn(inputs=self.convFlat, cell=rnn_cell_shared, dtype=tf.float32,
+                                                            initial_state=self.shared_state_in, scope=my_scope + '_rnn', )
+        self.rnn = tf.reshape(self.rnn, shape=[-1, self.rnn_dim_shared])
         self.rnn_output = self.rnn
-        self.rnn_state2 = self.rnn_state
+        self.rnn_state2 = self.rnn_state_shared
 
         # Critic (value) output
-        self.value_rnn_in = tf.layers.dense(self.rnn_output, self.extra_rnn_dim, None, self.init_xavier,
+        self.value_rnn_in = tf.layers.dense(self.rnn_output, self.rnn_dim_critic, None, self.init_xavier,
                                             name=my_scope + '_rnn_value_in',
                                             trainable=True)
-        self.flat_value_rnn_in = tf.reshape(self.value_rnn_in, [self.batch_size, self.trainLength, self.extra_rnn_dim])
-        self.value_rnn, self.value_rnn_state = tf.nn.dynamic_rnn(inputs=self.flat_value_rnn_in, cell=rnn_cell2,
+        self.flat_value_rnn_in = tf.reshape(self.value_rnn_in, [self.batch_size, self.trainLength, self.rnn_dim_critic])
+        self.value_rnn, self.value_rnn_state = tf.nn.dynamic_rnn(inputs=self.flat_value_rnn_in, cell=rnn_cell_critic,
                                                                  dtype=tf.float32,
-                                                                 initial_state=self.state_in2,
+                                                                 initial_state=self.critic_state_in,
                                                                  scope=my_scope + '_rnn_value')
-        self.value_rnn = tf.reshape(self.value_rnn, shape=[-1, self.extra_rnn_dim])
+        self.value_rnn = tf.reshape(self.value_rnn, shape=[-1, self.rnn_dim_critic])
         self.value_rnn_output = self.value_rnn
-        self.Value = tf.layers.dense(self.value_rnn_output, 1, None, self.init_xavier, name=my_scope + '_Value', trainable=True)
+        self.Value = tf.layers.dense(self.value_rnn_output, 1, None, self.init_xavier, name=my_scope + '_Value',
+                                     trainable=True)
 
         # Policy RNN
-        self.actor_rnn_in = tf.layers.dense(self.rnn_output, self.extra_rnn_dim, None, self.init_xavier,
-                                              name=my_scope + '_rnn_actor_in',
-                                              trainable=True)
+        self.actor_rnn_in = tf.layers.dense(self.rnn_output, self.rnn_dim_actor, None, self.init_xavier,
+                                            name=my_scope + '_rnn_actor_in',
+                                            trainable=True)
         self.flat_actor_rnn_in = tf.reshape(self.actor_rnn_in,
-                                              [self.batch_size, self.trainLength, self.extra_rnn_dim])
-        self.actor_rnn, self.actor_rnn_state = tf.nn.dynamic_rnn(inputs=self.flat_actor_rnn_in, cell=rnn_cell2,
-                                                                     dtype=tf.float32,
-                                                                     initial_state=self.state_in2,
-                                                                     scope=my_scope + '_rnn_actor')
-        self.actor_rnn = tf.reshape(self.actor_rnn, shape=[-1, self.extra_rnn_dim])
+                                            [self.batch_size, self.trainLength, self.rnn_dim_actor])
+        self.actor_rnn, self.actor_rnn_state = tf.nn.dynamic_rnn(inputs=self.flat_actor_rnn_in, cell=rnn_cell_actor,
+                                                                 dtype=tf.float32,
+                                                                 initial_state=self.actor_state_in,
+                                                                 scope=my_scope + '_rnn_actor')
+        self.actor_rnn = tf.reshape(self.actor_rnn, shape=[-1, self.rnn_dim_actor])
         self.actor_rnn_output = self.actor_rnn
 
         # Actor impulse output
@@ -113,7 +117,8 @@ class A2CNetwork:
         self.sigma_impulse = tf.math.abs(self.sigma_impulse)
 
         # Actor angle output
-        self.mu_angle = tf.layers.dense(self.actor_rnn_output, 1, None, self.init_xavier, name=my_scope + '_mu_angle', trainable=True)
+        self.mu_angle = tf.layers.dense(self.actor_rnn_output, 1, None, self.init_xavier, name=my_scope + '_mu_angle',
+                                        trainable=True)
 
         self.sigma_angle = tf.layers.dense(self.actor_rnn_output, 1, None, self.init_xavier,
                                            name=my_scope + '_sigma_angle')
@@ -154,42 +159,46 @@ class A2CNetwork:
 
         self.conv_with_states_ref = tf.concat(
             [self.conv4l_flat_ref, self.conv4r_flat_ref, self.prev_actions_ref, self.internal_state_ref], 1)
-        self.rnn_in_ref = tf.layers.dense(self.conv_with_states_ref, self.rnn_dim, activation=tf.nn.relu,
+        self.rnn_in_ref = tf.layers.dense(self.conv_with_states_ref, self.rnn_dim_shared, activation=tf.nn.relu,
                                           kernel_initializer=tf.orthogonal_initializer,
                                           trainable=True, name=my_scope + '_rnn_in', reuse=True)
-        self.convFlat_ref = tf.reshape(self.rnn_in_ref, [self.batch_size, self.trainLength, self.rnn_dim])
+        self.convFlat_ref = tf.reshape(self.rnn_in_ref, [self.batch_size, self.trainLength, self.rnn_dim_shared])
 
-        self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell, dtype=tf.float32,
-                                                             initial_state=self.state_in,
+        self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell_shared,
+                                                             dtype=tf.float32,
+                                                             initial_state=self.shared_state_in,
                                                              scope=my_scope + '_rnn')  # No need to reuse as takes rnn_cell as argument for both.
-        self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim])
+        self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim_shared])
         self.rnn_output_ref = self.rnn_ref
 
         # Critic (value) output
-        self.value_rnn_in_ref = tf.layers.dense(self.rnn_output_ref, self.extra_rnn_dim, None, self.init_xavier,
+        self.value_rnn_in_ref = tf.layers.dense(self.rnn_output_ref, self.rnn_dim_critic, None, self.init_xavier,
                                                 name=my_scope + '_rnn_value_in',
                                                 trainable=True, reuse=True)
-        self.flat_value_rnn_in_ref = tf.reshape(self.value_rnn_in_ref, [self.batch_size, self.trainLength, self.extra_rnn_dim])
-        self.value_rnn_ref, self.value_rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.flat_value_rnn_in_ref, cell=rnn_cell2,
+        self.flat_value_rnn_in_ref = tf.reshape(self.value_rnn_in_ref,
+                                                [self.batch_size, self.trainLength, self.rnn_dim_critic])
+        self.value_rnn_ref, self.value_rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.flat_value_rnn_in_ref,
+                                                                         cell=rnn_cell_critic,
                                                                          dtype=tf.float32,
-                                                                         initial_state=self.state_in2,
+                                                                         initial_state=self.critic_state_in,
                                                                          scope=my_scope + '_rnn_value')
-        self.value_rnn_ref = tf.reshape(self.value_rnn_ref, shape=[-1, self.extra_rnn_dim])
+        self.value_rnn_ref = tf.reshape(self.value_rnn_ref, shape=[-1, self.rnn_dim_critic])
         self.value_rnn_output_ref = self.value_rnn_ref
         self.Value_ref = tf.layers.dense(self.value_rnn_output_ref, 1, None, self.init_xavier, name=my_scope + '_Value',
                                          reuse=True, trainable=True)
 
         # Policy RNN
-        self.actor_rnn_in_ref = tf.layers.dense(self.rnn_output_ref, self.extra_rnn_dim, None, self.init_xavier,
-                                              name=my_scope + '_rnn_actor_in', reuse=True,
-                                              trainable=True)
+        self.actor_rnn_in_ref = tf.layers.dense(self.rnn_output_ref, self.rnn_dim_actor, None, self.init_xavier,
+                                                name=my_scope + '_rnn_actor_in', reuse=True,
+                                                trainable=True)
         self.flat_actor_rnn_in_ref = tf.reshape(self.actor_rnn_in_ref,
-                                              [self.batch_size, self.trainLength, self.extra_rnn_dim])
-        self.actor_rnn_ref, self.actor_rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.flat_actor_rnn_in_ref, cell=rnn_cell2,
-                                                                     dtype=tf.float32,
-                                                                     initial_state=self.state_in2,
-                                                                     scope=my_scope + '_rnn_actor')
-        self.actor_rnn_ref = tf.reshape(self.actor_rnn_ref, shape=[-1, self.extra_rnn_dim])
+                                                [self.batch_size, self.trainLength, self.rnn_dim_actor])
+        self.actor_rnn_ref, self.actor_rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.flat_actor_rnn_in_ref,
+                                                                         cell=rnn_cell_actor,
+                                                                         dtype=tf.float32,
+                                                                         initial_state=self.actor_state_in,
+                                                                         scope=my_scope + '_rnn_actor')
+        self.actor_rnn_ref = tf.reshape(self.actor_rnn_ref, shape=[-1, self.rnn_dim_actor])
         self.actor_rnn_output_ref = self.actor_rnn_ref
 
         # Actor impulse output
