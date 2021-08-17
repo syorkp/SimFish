@@ -18,7 +18,7 @@ class A2CNetwork:
 
         self.rnn_output_size_shared = self.rnn_dim_shared
 
-        self.trainLength = tf.placeholder(dtype=tf.int32)
+        self.trainLength = tf.placeholder(dtype=tf.int32, name="train_length")
         self.batch_size = tf.placeholder(dtype=tf.int32, shape=[], name='batch_size')
 
         self.shared_state_in = rnn_cell_shared.zero_state(self.batch_size, tf.float32)
@@ -28,15 +28,15 @@ class A2CNetwork:
         self.init_xavier = tf.keras.initializers.glorot_normal()
 
         # Network Inputs
-        # self.actions = tf.placeholder(shape=[None, 2], dtype=tf.float32, name='actions')
         self.prev_actions = tf.placeholder(shape=[None, 2], dtype=tf.float32, name='prev_actions')
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
 
         self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
         self.scaler = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='scaler')
-        self.scaled_obs = tf.divide(self.observation, self.scaler)
+        self.scaled_obs = tf.divide(self.observation, self.scaler, name="scaled_observation")
 
-        self.reshaped_observation = tf.reshape(self.scaled_obs, shape=[-1, self.num_arms, 3, 2])
+        self.reshaped_observation = tf.reshape(self.scaled_obs, shape=[-1, self.num_arms, 3, 2],
+                                               name="reshaped_observation")
 
         #            ----------        Non-Reflected       ---------            #
 
@@ -66,17 +66,18 @@ class A2CNetwork:
         self.conv4r_flat = tf.layers.flatten(self.conv4r)
 
         self.conv_with_states = tf.concat(
-            [self.conv4l_flat, self.conv4r_flat, self.prev_actions, self.internal_state], 1)
+            [self.conv4l_flat, self.conv4r_flat, self.prev_actions, self.internal_state], 1, name="flattened_conv")
 
         # Recurrent Layer
         self.rnn_in = tf.layers.dense(self.conv_with_states, self.rnn_dim_shared, activation=tf.nn.relu,
                                       kernel_initializer=tf.orthogonal_initializer,
                                       trainable=True, name=my_scope + '_rnn_in')
-        self.convFlat = tf.reshape(self.rnn_in, [self.batch_size, self.trainLength, self.rnn_dim_shared])
+        self.convFlat = tf.reshape(self.rnn_in, [self.batch_size, self.trainLength, self.rnn_dim_shared],
+                                   name="flattened_shared_rnn_input")
 
         self.rnn, self.rnn_state_shared = tf.nn.dynamic_rnn(inputs=self.convFlat, cell=rnn_cell_shared, dtype=tf.float32,
-                                                            initial_state=self.shared_state_in, scope=my_scope + '_rnn', )
-        self.rnn = tf.reshape(self.rnn, shape=[-1, self.rnn_dim_shared])
+                                                            initial_state=self.shared_state_in, scope=my_scope + '_rnn')
+        self.rnn = tf.reshape(self.rnn, shape=[-1, self.rnn_dim_shared], name="shared_rnn_output")
         self.rnn_output = self.rnn
         self.rnn_state2 = self.rnn_state_shared
 
@@ -84,20 +85,20 @@ class A2CNetwork:
         self.value_rnn_in = tf.layers.dense(self.rnn_output, self.rnn_dim_critic, None, self.init_xavier,
                                             name=my_scope + '_rnn_value_in',
                                             trainable=True)
-        self.flat_value_rnn_in = tf.reshape(self.value_rnn_in, [self.batch_size, self.trainLength, self.rnn_dim_critic])
+        self.flat_value_rnn_in = tf.reshape(self.value_rnn_in, [self.batch_size, self.trainLength, self.rnn_dim_critic],
+                                            name="flattened_value_rnn_input")
         self.value_rnn, self.value_rnn_state = tf.nn.dynamic_rnn(inputs=self.flat_value_rnn_in, cell=rnn_cell_critic,
                                                                  dtype=tf.float32,
                                                                  initial_state=self.critic_state_in,
                                                                  scope=my_scope + '_rnn_value')
-        self.value_rnn = tf.reshape(self.value_rnn, shape=[-1, self.rnn_dim_critic])
+        self.value_rnn = tf.reshape(self.value_rnn, shape=[-1, self.rnn_dim_critic], name="value_rnn_output")
         self.value_rnn_output = self.value_rnn
         self.Value = tf.layers.dense(self.value_rnn_output, 1, None, self.init_xavier, name=my_scope + '_Value',
                                      trainable=True)
 
         # Policy RNN
         self.actor_rnn_in = tf.layers.dense(self.rnn_output, self.rnn_dim_actor, None, self.init_xavier,
-                                            name=my_scope + '_rnn_actor_in',
-                                            trainable=True)
+                                            name=my_scope + '_rnn_actor_in', trainable=True)
         self.flat_actor_rnn_in = tf.reshape(self.actor_rnn_in,
                                             [self.batch_size, self.trainLength, self.rnn_dim_actor])
         self.actor_rnn, self.actor_rnn_state = tf.nn.dynamic_rnn(inputs=self.flat_actor_rnn_in, cell=rnn_cell_actor,
@@ -221,23 +222,26 @@ class A2CNetwork:
         #            ----------        Combined       ---------            #
 
         # Combined Actor impulse output
-        self.mu_impulse_combined = tf.math.divide(tf.math.add(self.mu_impulse, self.mu_impulse_ref), 2)
-        self.sigma_impulse_combined = tf.math.divide(tf.math.add(self.sigma_impulse, self.sigma_impulse_ref), 2)
-        self.norm_dist_impulse = tf.distributions.Normal(self.mu_impulse_combined, self.sigma_impulse_combined)
+        self.mu_impulse_combined = tf.math.divide(tf.math.add(self.mu_impulse, self.mu_impulse_ref), 2,
+                                                  name="mu_impulse_combined")
+        self.sigma_impulse_combined = tf.math.divide(tf.math.add(self.sigma_impulse, self.sigma_impulse_ref), 2,
+                                                     name="sigma_impulse_combined")
+        self.norm_dist_impulse = tf.distributions.Normal(self.mu_impulse_combined, self.sigma_impulse_combined,
+                                                         name="norm_dist_impulse")
         self.action_tf_var_impulse = tf.squeeze(self.norm_dist_impulse.sample(1), axis=0)
-        self.action_tf_var_impulse = tf.math.abs(self.action_tf_var_impulse)
+        # self.action_tf_var_impulse = tf.math.abs(self.action_tf_var_impulse)  TODO: Trying without
         self.action_tf_var_impulse = tf.clip_by_value(self.action_tf_var_impulse, 0, 1)
-        self.impulse_output = tf.math.multiply(self.action_tf_var_impulse, max_impulse)
+        self.impulse_output = tf.math.multiply(self.action_tf_var_impulse, max_impulse, name="impulse_output")
 
         # Combined Actor angle output
-        self.mu_angle_combined = tf.math.divide(tf.math.subtract(self.mu_angle, self.mu_angle_ref), 2)
-        self.sigma_angle_combined = tf.math.divide(tf.math.add(self.sigma_angle, self.sigma_angle_ref), 2)
-        self.norm_dist_angle = tf.distributions.Normal(self.mu_angle_combined, self.sigma_angle_combined)
+        self.mu_angle_combined = tf.math.divide(tf.math.subtract(self.mu_angle, self.mu_angle_ref), 2, name="mu_angle_combined")
+        self.sigma_angle_combined = tf.math.divide(tf.math.add(self.sigma_angle, self.sigma_angle_ref), 2, name="sigma_angle_combined")
+        self.norm_dist_angle = tf.distributions.Normal(self.mu_angle_combined, self.sigma_angle_combined, name="norm_dist_angle")
         self.action_tf_var_angle = tf.squeeze(self.norm_dist_angle.sample(1), axis=0)
         self.action_tf_var_angle = tf.clip_by_value(self.action_tf_var_angle, -1, 1)
-        self.angle_output = tf.math.multiply(self.action_tf_var_angle, max_angle_change)
+        self.angle_output = tf.math.multiply(self.action_tf_var_angle, max_angle_change, name="angle_output")
 
-        self.Value_output = tf.math.divide(tf.math.add(self.Value, self.Value_ref), 2)
+        self.Value_output = tf.math.divide(tf.math.add(self.Value, self.Value_ref), 2, name="value_output")
 
         #            ----------        Loss functions       ---------            #
 
@@ -245,23 +249,58 @@ class A2CNetwork:
         self.delta_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='delta')
         self.target_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='target')
 
+        # # Actor (policy) loss function - Impulse
+        # self.loss_actor_impulse = -tf.log(self.norm_dist_impulse.prob(
+        #     tf.math.divide(self.action_placeholder[0][0], max_impulse)) + 1e-5) * self.delta_placeholder
+        # self.training_op_actor_impulse = tf.train.AdamOptimizer(actor_learning_rate_impulse,
+        #                                                         name='actor_optimizer_impulse').minimize(self.loss_actor_impulse)
+        #
+        # # Actor (policy) loss function - Angle
+        # self.loss_actor_angle = -tf.log(self.norm_dist_angle.prob(
+        #     tf.math.divide(self.action_placeholder[0][1], max_angle_change)) + 1e-5) * self.delta_placeholder
+        # self.training_op_actor_angle = tf.train.AdamOptimizer(actor_learning_rate_angle,
+        #                                                       name='actor_optimizer_angle').minimize(self.loss_actor_angle)
+        #
+        # self.action_op = tf.group(self.training_op_actor_impulse, self.training_op_actor_angle)
+        #
+        # # Critic (state-value) loss function
+        # self.loss_critic = tf.reduce_mean(tf.squared_difference(tf.squeeze(self.Value_output), self.target_placeholder))
+        # self.training_op_critic = tf.train.AdamOptimizer(critic_learning_rate, name='critic_optimizer').minimize(
+        #     self.loss_critic)
+
         # Actor (policy) loss function - Impulse
         self.loss_actor_impulse = -tf.log(self.norm_dist_impulse.prob(
             tf.math.divide(self.action_placeholder[0][0], max_impulse)) + 1e-5) * self.delta_placeholder
-        self.training_op_actor_impulse = tf.train.AdamOptimizer(actor_learning_rate_impulse,
-                                                                name='actor_optimizer_impulse').minimize(
-            self.loss_actor_impulse)
+        self.training_op_actor_impulse = tf.train.AdamOptimizer(actor_learning_rate_impulse, name='actor_optimizer_impulse')
+        self.actor_impulse_gradients, self.actor_impulse_variables = zip(*self.training_op_actor_impulse.compute_gradients(self.loss_actor_impulse))
+        self.actor_impulse_gradients, _ = tf.clip_by_global_norm(self.actor_impulse_gradients, 5.0)
+        self.clipped_training_op_actor_impulse = self.training_op_actor_impulse.apply_gradients(zip(self.actor_impulse_gradients, self.actor_impulse_variables))
+
+        # self.impulse_gvs = self.training_op_actor_impulse.compute_gradients(self.loss_actor_impulse)
+        # self.capped_impulse_gvs = [(tf.clip_by_value(grad, -10., 10.), var) for grad, var in self.impulse_gvs]
+        # self.clipped_training_op_actor_impulse = self.training_op_actor_impulse.apply_gradients(self.capped_impulse_gvs)
 
         # Actor (policy) loss function - Angle
         self.loss_actor_angle = -tf.log(self.norm_dist_angle.prob(
             tf.math.divide(self.action_placeholder[0][1], max_angle_change)) + 1e-5) * self.delta_placeholder
-        self.training_op_actor_angle = tf.train.AdamOptimizer(actor_learning_rate_angle,
-                                                              name='actor_optimizer_angle').minimize(
-            self.loss_actor_angle)
+        self.training_op_actor_angle = tf.train.AdamOptimizer(actor_learning_rate_angle, name='actor_optimizer_angle')
+        self.actor_angle_gradients, self.actor_angle_variables = zip(*self.training_op_actor_angle.compute_gradients(self.loss_actor_angle))
+        self.actor_angle_gradients, _ = tf.clip_by_global_norm(self.actor_angle_gradients, 5.0)
+        self.clipped_training_op_actor_angle = self.training_op_actor_angle.apply_gradients(zip(self.actor_angle_gradients, self.actor_angle_variables))
 
-        self.action_op = tf.group(self.training_op_actor_impulse, self.training_op_actor_angle)
+        # self.angle_gvs = self.training_op_actor_angle.compute_gradients(self.loss_actor_angle)
+        # self.capped_angle_gvs = [(tf.clip_by_value(grad, -10., 10.), var) for grad, var in self.angle_gvs]
+        # self.clipped_training_op_actor_angle = self.training_op_actor_angle.apply_gradients(self.capped_angle_gvs)
+
+        self.action_op = tf.group(self.clipped_training_op_actor_impulse, self.clipped_training_op_actor_angle)
 
         # Critic (state-value) loss function
         self.loss_critic = tf.reduce_mean(tf.squared_difference(tf.squeeze(self.Value_output), self.target_placeholder))
-        self.training_op_critic = tf.train.AdamOptimizer(critic_learning_rate, name='critic_optimizer').minimize(
-            self.loss_critic)
+        self.training_op_critic = tf.train.AdamOptimizer(critic_learning_rate, name='critic_optimizer')
+        self.critic_gradients, self.critic_variables = zip(*self.training_op_critic.compute_gradients(self.loss_critic))
+        self.critic_gradients, _ = tf.clip_by_global_norm(self.critic_gradients, 5.0)
+        self.clipped_training_op_critic = self.training_op_critic.apply_gradients(zip(self.critic_gradients, self.critic_variables))
+
+        # self.critic_gvs = self.training_op_critic.compute_gradients(self.loss_critic)
+        # self.capped_critic_gvs = [(tf.clip_by_value(grad, -10., 10.), var) for grad, var in self.critic_gvs]
+        # self.clipped_training_op_critic = self.training_op_critic.apply_gradients(self.capped_critic_gvs)
