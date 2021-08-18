@@ -14,9 +14,9 @@ if not os.path.exists("./Assay-Output/"):
 
 test_continuous_training_configuration = [
     {
-        "Model Name": "scaffold_test_high_learning_rate",
+        "Model Name": "scaffold_test",
         "Environment Name": "continuous_learning_scaffold",
-        "Trial Number": 1,
+        "Trial Number": 3,
         "Total Configurations": 3,
         "Episode Transitions": {
         },

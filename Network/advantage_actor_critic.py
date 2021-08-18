@@ -100,7 +100,7 @@ class A2CNetwork:
         self.actor_rnn_in = tf.layers.dense(self.rnn_output, self.rnn_dim_actor, None, self.init_xavier,
                                             name=my_scope + '_rnn_actor_in', trainable=True)
         self.flat_actor_rnn_in = tf.reshape(self.actor_rnn_in,
-                                            [self.batch_size, self.trainLength, self.rnn_dim_actor])
+                                            [self.batch_size, self.trainLength, self.rnn_dim_actor], name=my_scope + '_rnn_actor_in_reshaped')
         self.actor_rnn, self.actor_rnn_state = tf.nn.dynamic_rnn(inputs=self.flat_actor_rnn_in, cell=rnn_cell_actor,
                                                                  dtype=tf.float32,
                                                                  initial_state=self.actor_state_in,
@@ -122,7 +122,7 @@ class A2CNetwork:
                                         trainable=True)
 
         self.sigma_angle = tf.layers.dense(self.actor_rnn_output, 1, None, self.init_xavier,
-                                           name=my_scope + '_sigma_angle')
+                                           name=my_scope + '_sigma_angle', trainable=True)
         self.sigma_angle = tf.math.abs(self.sigma_angle)
 
         #            ----------        Reflected       ---------            #
@@ -193,7 +193,7 @@ class A2CNetwork:
                                                 name=my_scope + '_rnn_actor_in', reuse=True,
                                                 trainable=True)
         self.flat_actor_rnn_in_ref = tf.reshape(self.actor_rnn_in_ref,
-                                                [self.batch_size, self.trainLength, self.rnn_dim_actor])
+                                                [self.batch_size, self.trainLength, self.rnn_dim_actor], name=my_scope + '_rnn_actor_in_reshaped')
         self.actor_rnn_ref, self.actor_rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.flat_actor_rnn_in_ref,
                                                                          cell=rnn_cell_actor,
                                                                          dtype=tf.float32,

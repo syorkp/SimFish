@@ -301,10 +301,13 @@ class A2CTrainingService:
                 angle_loss_buffer.append(angle_loss)
 
             step_number += 1
-            o, a, r, internal_state, o1, d, rnn_state_shared, rnn_state_critic, rnn_state_actor, V = self.step_loop(o=o, internal_state=internal_state,
-                                                      a=a, rnn_state_shared=rnn_state_shared,
-                                                      rnn_state_critic=rnn_state_critic,
-                                                      rnn_state_actor=rnn_state_actor)
+            o, a, r, internal_state, o1, d, rnn_state_shared, \
+                        rnn_state_critic, rnn_state_actor, V = self.step_loop(o=o,
+                                                                              internal_state=internal_state,
+                                                                              a=a,
+                                                                              rnn_state_shared=rnn_state_shared,
+                                                                              rnn_state_critic=rnn_state_critic,
+                                                                              rnn_state_actor=rnn_state_actor)
 
             # Update buffer
             self.action_buffer.append(a)
@@ -446,7 +449,8 @@ class A2CTrainingService:
         return loss_critic_val, loss_actor_val_impulse, loss_actor_val_angle
 
     def save_episode(self, episode_start_t, all_actions, total_episode_reward, prey_caught,
-                     predators_avoided, sand_grains_bumped, steps_near_vegetation, critic_loss, impulse_loss, angle_loss):
+                     predators_avoided, sand_grains_bumped, steps_near_vegetation, critic_loss, impulse_loss,
+                     angle_loss):
         """
         Saves the episode the the experience buffer. Also creates a gif if at interval.
         """
@@ -485,11 +489,13 @@ class A2CTrainingService:
 
         # Save Loss
         for step in range(0, len(critic_loss)):
-            critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="critic loss", simple_value=critic_loss[step])])
+            critic_loss_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="critic loss", simple_value=critic_loss[step])])
             self.writer.add_summary(critic_loss_summary, self.total_steps - len(critic_loss) + step)
 
         for step in range(0, len(impulse_loss)):
-            impulse_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="impulse loss", simple_value=impulse_loss[step])])
+            impulse_loss_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="impulse loss", simple_value=impulse_loss[step])])
             self.writer.add_summary(impulse_loss_summary, self.total_steps - len(impulse_loss) + step)
 
         for step in range(0, len(angle_loss)):
