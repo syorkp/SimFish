@@ -9,7 +9,7 @@ class A2CNetwork:
                  rnn_cell_actor, my_scope,
                  internal_states=2,
                  actor_learning_rate_impulse=0.00001,
-                 actor_learning_rate_angle=0.00001, critic_learning_rate=0.00056, max_impulse=80, max_angle_change=1):
+                 actor_learning_rate_angle=0.00001, critic_learning_rate=0.00056, max_impulse=80.0, max_angle_change=1.0, gradient_clip=100.0):
         # Variables
         self.num_arms = len(simulation.fish.left_eye.vis_angles)  # Rays for each eye
         self.rnn_dim_shared = rnn_dim_shared
@@ -273,7 +273,7 @@ class A2CNetwork:
             tf.math.divide(self.action_placeholder[0][0], max_impulse)) + 1e-5) * self.delta_placeholder
         self.training_op_actor_impulse = tf.train.AdamOptimizer(actor_learning_rate_impulse, name='actor_optimizer_impulse')
         self.actor_impulse_gradients, self.actor_impulse_variables = zip(*self.training_op_actor_impulse.compute_gradients(self.loss_actor_impulse))
-        self.actor_impulse_gradients, _ = tf.clip_by_global_norm(self.actor_impulse_gradients, 5.0)
+        self.actor_impulse_gradients, _ = tf.clip_by_global_norm(self.actor_impulse_gradients, gradient_clip)
         self.clipped_training_op_actor_impulse = self.training_op_actor_impulse.apply_gradients(zip(self.actor_impulse_gradients, self.actor_impulse_variables))
 
         # self.impulse_gvs = self.training_op_actor_impulse.compute_gradients(self.loss_actor_impulse)
@@ -285,7 +285,7 @@ class A2CNetwork:
             tf.math.divide(self.action_placeholder[0][1], max_angle_change)) + 1e-5) * self.delta_placeholder
         self.training_op_actor_angle = tf.train.AdamOptimizer(actor_learning_rate_angle, name='actor_optimizer_angle')
         self.actor_angle_gradients, self.actor_angle_variables = zip(*self.training_op_actor_angle.compute_gradients(self.loss_actor_angle))
-        self.actor_angle_gradients, _ = tf.clip_by_global_norm(self.actor_angle_gradients, 5.0)
+        self.actor_angle_gradients, _ = tf.clip_by_global_norm(self.actor_angle_gradients, gradient_clip)
         self.clipped_training_op_actor_angle = self.training_op_actor_angle.apply_gradients(zip(self.actor_angle_gradients, self.actor_angle_variables))
 
         # self.angle_gvs = self.training_op_actor_angle.compute_gradients(self.loss_actor_angle)
@@ -298,7 +298,7 @@ class A2CNetwork:
         self.loss_critic = tf.reduce_mean(tf.squared_difference(tf.squeeze(self.Value_output), self.target_placeholder))
         self.training_op_critic = tf.train.AdamOptimizer(critic_learning_rate, name='critic_optimizer')
         self.critic_gradients, self.critic_variables = zip(*self.training_op_critic.compute_gradients(self.loss_critic))
-        self.critic_gradients, _ = tf.clip_by_global_norm(self.critic_gradients, 5.0)
+        self.critic_gradients, _ = tf.clip_by_global_norm(self.critic_gradients, gradient_clip)
         self.clipped_training_op_critic = self.training_op_critic.apply_gradients(zip(self.critic_gradients, self.critic_variables))
 
         # self.critic_gvs = self.training_op_critic.compute_gradients(self.loss_critic)
