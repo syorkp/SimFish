@@ -16,7 +16,7 @@ test_continuous_training_configuration = [
     {
         "Model Name": "scaffold_test",
         "Environment Name": "continuous_learning_scaffold",
-        "Trial Number": 3,
+        "Trial Number": 6,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -45,8 +45,8 @@ test_continuous_assay_configuration = [
     {
         "Model Name": "scaffold_test",
         "Environment Name": "continuous_assay",
-        "Trial Number": 1,
-        "Assay Configuration Name": "Continuous_Action_Mapping",
+        "Trial Number": 5,
+        "Assay Configuration Name": "Checking_Observation",
         "Total Configurations": 3,
         "Run Mode": "Assay",
         "Tethered": False,
@@ -60,7 +60,7 @@ test_continuous_assay_configuration = [
             {
                 "assay id": "Environment-1",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
+                "duration": 200,
                 "Tethered": False,
                 "save frames": True,
                 "random positions": False,
@@ -70,8 +70,7 @@ test_continuous_assay_configuration = [
                 "reset": False,
                 "collisions": True,
 
-                "recordings": ["impulse", "angle", "position", "fish_angle", "predator", "prey_positions",
-                               "rnn state"],
+                "recordings": ["left_conv_4", "rnn state", "consumed"],
                 "ablations": []
             },
         ]

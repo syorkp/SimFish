@@ -35,5 +35,6 @@ def create_photoreceptor_input_graph(model, config, assay_id):
     plt.show()
 
 
-create_photoreceptor_input_graph("even_prey_ref-5", "Vis-Test", "Prey-Left-10")
-create_photoreceptor_input_graph("even_prey_ref-5", "Vis-Test", "Naturalistic")
+# create_photoreceptor_input_graph("even_prey_ref-5", "Vis-Test", "Prey-Left-10")
+# create_photoreceptor_input_graph("even_prey_ref-5", "Vis-Test", "Naturalistic")
+create_photoreceptor_input_graph("scaffold_test-5", "Checking_Observation", "Environment-1")

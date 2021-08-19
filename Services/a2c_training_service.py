@@ -113,6 +113,12 @@ class A2CTrainingService:
         self.internal_state_buffer = []
         self.value_buffer = []
 
+        # Buffers for checking up on estimates
+        self.mu_i_buffer = []
+        self.si_i_buffer = []
+        self.mu_a_buffer = []
+        self.si_a_buffer = []
+
     def load_configuration_files(self):
         """
         Called by create_trials method, should return the learning and environment configurations in JSON format.
@@ -283,6 +289,11 @@ class A2CTrainingService:
         impulse_loss_buffer = []
         angle_loss_buffer = []
 
+        self.mu_i_buffer = []
+        self.si_i_buffer = []
+        self.mu_a_buffer = []
+        self.si_a_buffer = []
+
         while step_number < self.params["max_epLength"]:
             if step_number != 0 and step_number % self.params["batch_size"] == 0:
                 critic_loss, impulse_loss, angle_loss = self.train_network_batches()
@@ -311,7 +322,7 @@ class A2CTrainingService:
 
             # Update buffer
             self.action_buffer.append(a)
-            self.observation_buffer.append(o)
+            self.observation_buffer.append(o1)
             self.reward_buffer.append(r)
             self.internal_state_buffer.append(internal_state)
             self.value_buffer.append(V)
@@ -344,9 +355,12 @@ class A2CTrainingService:
         # Generate actions and corresponding steps.
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / 10, a[1]]  # Set impulse to scale. TODO: Change 10 when systematic impulse given
-        impulse, angle, updated_rnn_state_shared, updated_rnn_state_critic, updated_rnn_state_actor, V = self.sess.run(
+        impulse, angle, updated_rnn_state_shared, updated_rnn_state_critic, updated_rnn_state_actor, V, mu_i, si_i, mu_a, si_a = self.sess.run(
             [self.a2c_network.impulse_output, self.a2c_network.angle_output, self.a2c_network.rnn_state_shared,
-             self.a2c_network.value_rnn_state, self.a2c_network.actor_rnn_state, self.a2c_network.Value_output],
+             self.a2c_network.value_rnn_state, self.a2c_network.actor_rnn_state, self.a2c_network.Value_output,
+             self.a2c_network.mu_impulse_combined, self.a2c_network.sigma_impulse_combined, self.a2c_network.mu_angle_combined,
+             self.a2c_network.sigma_angle_combined
+             ],
             feed_dict={self.a2c_network.observation: o,
                        self.a2c_network.internal_state: internal_state,
                        self.a2c_network.prev_actions: np.reshape(a, (1, 2)),
@@ -360,6 +374,12 @@ class A2CTrainingService:
         impulse = impulse[0][0]
         angle = angle[0][0]
         action = [impulse, angle]
+
+        self.mu_i_buffer.append(mu_i)
+        self.si_i_buffer.append(si_i)
+        self.mu_a_buffer.append(mu_a)
+        self.si_a_buffer.append(si_a)
+
 
         # Simulation step
         o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(
@@ -446,6 +466,9 @@ class A2CTrainingService:
                        self.a2c_network.batch_size: self.params["batch_size"] - 1,
                        self.a2c_network.scaler: np.full(np.vstack(self.observation_buffer[:-1, :]).shape, 255),
                        })
+        if loss_critic_val == 20:
+            x = True
+
         return loss_critic_val, loss_actor_val_impulse, loss_actor_val_angle
 
     def save_episode(self, episode_start_t, all_actions, total_episode_reward, prey_caught,
@@ -491,16 +514,33 @@ class A2CTrainingService:
         for step in range(0, len(critic_loss)):
             critic_loss_summary = tf.Summary(
                 value=[tf.Summary.Value(tag="critic loss", simple_value=critic_loss[step])])
-            self.writer.add_summary(critic_loss_summary, self.total_steps - len(critic_loss) + step)
+            self.writer.add_summary(critic_loss_summary, self.total_steps - len(angles) + step*self.params["batch_size"])
 
         for step in range(0, len(impulse_loss)):
             impulse_loss_summary = tf.Summary(
                 value=[tf.Summary.Value(tag="impulse loss", simple_value=impulse_loss[step])])
-            self.writer.add_summary(impulse_loss_summary, self.total_steps - len(impulse_loss) + step)
+            self.writer.add_summary(impulse_loss_summary, self.total_steps - len(angles) + step*self.params["batch_size"])
 
         for step in range(0, len(angle_loss)):
             angle_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="angle loss", simple_value=angle_loss[step])])
-            self.writer.add_summary(angle_loss_summary, self.total_steps - len(angle_loss) + step)
+            self.writer.add_summary(angle_loss_summary, self.total_steps - len(angles) + step*self.params["batch_size"])
+
+        # Saving Parameters for Testing
+        for step in range(0, len(self.mu_i_buffer)):
+            mu_i_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mu_impulse", simple_value=self.mu_i_buffer[step])])
+            self.writer.add_summary(mu_i_loss_summary, self.total_steps - len(self.mu_i_buffer) + step)
+
+        for step in range(0, len(self.si_i_buffer)):
+            si_i_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="sigma_impulse", simple_value=self.si_i_buffer[step])])
+            self.writer.add_summary(si_i_loss_summary, self.total_steps - len(self.si_i_buffer) + step)
+
+        for step in range(0, len(self.mu_a_buffer)):
+            mu_a_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mu_angle", simple_value=self.mu_a_buffer[step])])
+            self.writer.add_summary(mu_a_loss_summary, self.total_steps - len(self.mu_a_buffer) + step)
+
+        for step in range(0, len(self.si_a_buffer)):
+            si_a_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="sigma_angle", simple_value=self.si_a_buffer[step])])
+            self.writer.add_summary(si_a_loss_summary, self.total_steps - len(self.si_a_buffer) + step)
 
         # Raw logs
         prey_caught_summary = tf.Summary(value=[tf.Summary.Value(tag="prey caught", simple_value=prey_caught)])

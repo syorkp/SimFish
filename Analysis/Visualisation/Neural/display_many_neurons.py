@@ -325,6 +325,12 @@ def plot_artificial_traces(prey_pred_data, prey_size_data, directional_data, pre
     # fig.legend(patches, labels, loc='center', frameon=False)
     # plt.show()
 
+
+data1 = load_data("scaffold_test-5", "Checking_Observation", "Environment-1")
+unit_activity1a = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
+plot_traces(unit_activity1a)
+
+
 import json
 #
 with open(f"../../Categorisation-Data/final_even2.json", 'r') as f:
@@ -390,6 +396,9 @@ plot_artificial_traces([unit_activity1, unit_activity2], [unit_activity3, unit_a
                        [198, 3], [26, 2], [109, 131],
                        ["10-Static", "40-Static"], ["5-Static", "10-Static", "15-Static"], ["10-Left", "10-Right"],
                        [stimulus_data1, stimulus_data2, stimulus_data3, stimulus_data4, stimulus_data5, stimulus_data6, stimulus_data7])
+
+
+
 
 # data1a = load_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Static-5")
 # data2b = load_data("even_prey_ref-5", "Predator-Full-Response-Vector", "Predator-Static-40")

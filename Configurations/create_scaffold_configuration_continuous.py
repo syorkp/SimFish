@@ -81,7 +81,7 @@ env = {'width': 1500,  # arena size
        'rest_cost': 2,
 
        'capture_swim_extra_cost': 25,
-       'capture_basic_reward': 10000,
+       'capture_basic_reward': 500,
        'predator_cost': 100,
 
        'hunger': True,
@@ -113,7 +113,7 @@ params = {'num_actions': 10,  # size of action space
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
           'max_epLength': 1000,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
-          'summaryLength': 100,  # Number of epidoes to periodically save for analysis
+          'summaryLength': 50,  # Number of epidoes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
           'rnn_dim_shared': 512,  # number of rnn cells
           'rnn_dim_actor': 100,

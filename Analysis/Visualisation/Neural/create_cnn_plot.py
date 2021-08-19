@@ -41,17 +41,17 @@ def plot_multiple_traces(neuron_data):
         create_plot(neuron_subset_data, i + 1, len(neuron_subset_data), i * n_per_plot)
 
 
-data1 = load_data("even_prey_ref-5", "For-Traces", "Predator-Static-40")
-data2 = load_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
+data1 = load_data("scaffold_test-5", "Checking_Observation", "Environment-1")
+# data2 = load_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
 n_c_neurons = data1["left_conv_4"].shape[-1]
 
 # a_neuron = [data["left_conv_4"][i, 0, :, 0] for i in range(len(data["left_conv_4"]))]
 
 left_neurons = [[data1["left_conv_4"][i, 0, :, j] for i in range(len(data1["left_conv_4"]))] for j in range(n_c_neurons)]
-right_neurons = [[data2["right_conv_4"][i, 0, :, j] for i in range(len(data2["right_conv_4"]))] for j in range(n_c_neurons)]
+# right_neurons = [[data2["right_conv_4"][i, 0, :, j] for i in range(len(data2["right_conv_4"]))] for j in range(n_c_neurons)]
 
 plot_multiple_traces(left_neurons)
-plot_multiple_traces(right_neurons)
+# plot_multiple_traces(right_neurons)
 
 x = True
 
