@@ -16,7 +16,7 @@ test_continuous_training_configuration = [
     {
         "Model Name": "scaffold_test",
         "Environment Name": "continuous_learning_scaffold",
-        "Trial Number": 10,
+        "Trial Number": 12,
         "Total Configurations": 3,
         "Episode Transitions": {
         },

@@ -31,8 +31,8 @@ env = {'width': 1500,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 40,
-       'prey_impulse': 0.0,  # impulse each prey receives per step
+       'prey_num': 8,
+       'prey_impulse': 0.05,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
@@ -97,7 +97,11 @@ env = {'width': 1500,  # arena size
 
        'distance_penalty_scaling_factor': 0,
        'angle_penalty_scaling_factor': 0,
-       'baseline_penalty': 0.2
+       'baseline_penalty': 0.2,
+
+       # Policy scaffolding
+       'reward_distance': 100,
+       'proximity_reward': 1,
        }
 
 
@@ -152,11 +156,11 @@ number = 1
 save_files(number)
 number += 1
 
-env['prey_impulse'] = 0.05
+env['prey_impulse'] = 0.02
 save_files(number)
 number += 1
 
-env['prey_impulse'] = 0.1
+env['prey_impulse'] = 0.05
 save_files(number)
 number += 1
 

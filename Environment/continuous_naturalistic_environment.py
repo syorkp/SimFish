@@ -100,6 +100,13 @@ class ContinuousNaturalisticEnvironment(BaseEnvironment):
         else:
             reward = self.fish.take_action(action)
 
+
+        # Add policy helper reward to encourage proximity to prey.
+        for ii in range(len(self.prey_bodies)):
+            if self.check_proximity(self.prey_bodies[ii].position, self.env_variables['reward_distance']):
+                reward += self.env_variables['proximity_reward']
+
+
         done = False
 
         self.fish.hungry += (1 - self.fish.hungry) * self.env_variables['hunger_inc_tau']

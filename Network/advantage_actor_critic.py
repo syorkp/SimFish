@@ -30,10 +30,9 @@ class A2CNetwork:
 
         self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
 
-        # self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
+        self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
         self.scaler = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='scaler')
-        # self.scaled_obs = tf.divide(self.observation, self.scaler, name="scaled_observation")
-        self.scaled_obs = self.observation
+        self.scaled_obs = tf.divide(self.observation, self.scaler, name="scaled_observation")
 
         self.reshaped_observation = tf.reshape(self.scaled_obs, shape=[-1, self.num_arms, 3, 2],
                                                name="reshaped_observation")
@@ -121,12 +120,10 @@ class A2CNetwork:
         self.mu_impulse = tf.layers.dense(self.rnn_output, 1, activation=tf.nn.sigmoid,
                                           kernel_initializer=tf.orthogonal_initializer,
                                           name=my_scope + '_mu_impulse', trainable=True)
-        # self.mu_impulse = tf.math.abs(self.mu_impulse)
 
         self.sigma_impulse = tf.layers.dense(self.rnn_output, 1, activation=tf.nn.sigmoid,
                                              kernel_initializer=tf.orthogonal_initializer,
                                              name=my_scope + '_sigma_impulse', trainable=True)
-        # self.sigma_impulse = tf.math.abs(self.sigma_impulse)
 
         # Actor angle output
         self.mu_angle = tf.layers.dense(self.rnn_output, 1, activation=tf.nn.tanh,
@@ -136,7 +133,6 @@ class A2CNetwork:
         self.sigma_angle = tf.layers.dense(self.rnn_output, 1, activation=tf.nn.sigmoid,
                                            kernel_initializer=tf.orthogonal_initializer,
                                            name=my_scope + '_sigma_angle', trainable=True)
-        # self.sigma_angle = tf.math.abs(self.sigma_angle)
 
         #            ----------        Reflected       ---------            #
 
