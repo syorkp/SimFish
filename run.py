@@ -16,14 +16,14 @@ test_continuous_training_configuration = [
     {
         "Model Name": "scaffold_test",
         "Environment Name": "continuous_learning_scaffold",
-        "Trial Number": 9,
+        "Trial Number": 10,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
             "Prey Caught": {
-                "2": 5,
-                "3": 8,
+                "2": 10,
+                "3": 15,
             },
             "Predators Avoided": {
             },
@@ -40,12 +40,11 @@ test_continuous_training_configuration = [
     }
 ]
 
-
 test_continuous_assay_configuration = [
     {
         "Model Name": "scaffold_test",
         "Environment Name": "continuous_assay",
-        "Trial Number": 6,
+        "Trial Number": 9,
         "Assay Configuration Name": "Checking_Observation",
         "Total Configurations": 3,
         "Run Mode": "Assay",

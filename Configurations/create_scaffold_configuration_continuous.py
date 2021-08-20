@@ -123,9 +123,9 @@ params = {'num_actions': 10,  # size of action space
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
           'learning_rate': 0.0001,
 
-          'learning_rate_impulse': 0.00001,
-          'learning_rate_angle': 0.00001,
-          'learning_rate_critic': 0.00056
+          'learning_rate_impulse': 0.0001,
+          'learning_rate_angle': 0.0001,
+          'learning_rate_critic': 0.0056
           }
 
 

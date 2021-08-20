@@ -326,8 +326,8 @@ def plot_artificial_traces(prey_pred_data, prey_size_data, directional_data, pre
     # plt.show()
 
 
-data1 = load_data("scaffold_test-6", "Checking_Observation", "Environment-1")
-unit_activity1a = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(100)]
+data1 = load_data("scaffold_test-9", "Checking_Observation", "Environment-1")
+unit_activity1a = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
 plot_traces(unit_activity1a)
 
 import json

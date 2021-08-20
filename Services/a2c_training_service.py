@@ -450,7 +450,7 @@ class A2CTrainingService:
 
         # Update critic by minimizing loss  (Critic training)
         _, loss_critic_val = self.sess.run(
-            [self.a2c_network.clipped_training_op_critic, self.a2c_network.loss_critic],
+            [self.a2c_network.training_op_critic, self.a2c_network.loss_critic],
             feed_dict={self.a2c_network.action_placeholder: np.vstack(self.action_buffer[1:, :]),
                        self.a2c_network.observation: np.vstack(self.observation_buffer[:-1, :]),
                        self.a2c_network.delta_placeholder: td_error,
