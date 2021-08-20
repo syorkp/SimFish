@@ -1,6 +1,6 @@
 {
     "num_actions": 10,
-    "batch_size": 50,
+    "batch_size": 200,
     "trace_length": 64,
     "update_freq": 100,
     "y": 0.99,

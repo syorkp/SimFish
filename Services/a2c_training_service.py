@@ -257,10 +257,10 @@ class A2CTrainingService:
         rnn_state_shared = (
             np.zeros([1, self.a2c_network.rnn_dim_shared]),
             np.zeros([1, self.a2c_network.rnn_dim_shared]))  # Reset RNN hidden state
-        rnn_state_critic = (
-            np.zeros([1, self.a2c_network.rnn_dim_critic]), np.zeros([1, self.a2c_network.rnn_dim_critic]))
-        rnn_state_actor = (
-            np.zeros([1, self.a2c_network.rnn_dim_actor]), np.zeros([1, self.a2c_network.rnn_dim_actor]))
+        # rnn_state_critic = (
+        #     np.zeros([1, self.a2c_network.rnn_dim_critic]), np.zeros([1, self.a2c_network.rnn_dim_critic]))
+        # rnn_state_actor = (
+        #     np.zeros([1, self.a2c_network.rnn_dim_actor]), np.zeros([1, self.a2c_network.rnn_dim_actor]))
         self.simulation.reset()
         sa = np.zeros((1, 128))  # Kept for GIFs.
 
@@ -312,13 +312,11 @@ class A2CTrainingService:
                 angle_loss_buffer.append(angle_loss)
 
             step_number += 1
-            o, a, r, internal_state, o1, d, rnn_state_shared, \
-                        rnn_state_critic, rnn_state_actor, V = self.step_loop(o=o,
+            o, a, r, internal_state, o1, d, rnn_state_shared, V = self.step_loop(o=o,
                                                                               internal_state=internal_state,
                                                                               a=a,
                                                                               rnn_state_shared=rnn_state_shared,
-                                                                              rnn_state_critic=rnn_state_critic,
-                                                                              rnn_state_actor=rnn_state_actor)
+                                                                                 )
 
             # Update buffer
             self.action_buffer.append(a)
@@ -351,13 +349,14 @@ class A2CTrainingService:
                           angle_loss=angle_loss_buffer,
                           )
 
-    def step_loop(self, o, internal_state, a, rnn_state_shared, rnn_state_critic, rnn_state_actor):
+    def step_loop(self, o, internal_state, a, rnn_state_shared):
         # Generate actions and corresponding steps.
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / 10, a[1]]  # Set impulse to scale. TODO: Change 10 when systematic impulse given
-        impulse, angle, updated_rnn_state_shared, updated_rnn_state_critic, updated_rnn_state_actor, V, mu_i, si_i, mu_a, si_a = self.sess.run(
+        impulse, angle, updated_rnn_state_shared, V, mu_i, si_i, mu_a, si_a = self.sess.run(
             [self.a2c_network.impulse_output, self.a2c_network.angle_output, self.a2c_network.rnn_state_shared,
-             self.a2c_network.value_rnn_state, self.a2c_network.actor_rnn_state, self.a2c_network.Value_output,
+             # self.a2c_network.value_rnn_state, self.a2c_network.actor_rnn_state,
+             self.a2c_network.Value_output,
              self.a2c_network.mu_impulse_combined, self.a2c_network.sigma_impulse_combined, self.a2c_network.mu_angle_combined,
              self.a2c_network.sigma_angle_combined
              ],
@@ -366,8 +365,8 @@ class A2CTrainingService:
                        self.a2c_network.prev_actions: np.reshape(a, (1, 2)),
                        self.a2c_network.trainLength: 1,
                        self.a2c_network.shared_state_in: rnn_state_shared,
-                       self.a2c_network.critic_state_in: rnn_state_critic,
-                       self.a2c_network.actor_state_in: rnn_state_actor,
+                       # self.a2c_network.critic_state_in: rnn_state_critic,
+                       # self.a2c_network.actor_state_in: rnn_state_actor,
                        self.a2c_network.batch_size: 1,
                        self.a2c_network.scaler: np.full(o.shape, 255)})
         # print(impulse)
@@ -389,8 +388,7 @@ class A2CTrainingService:
             activations=sa)
 
         self.total_steps += 1
-        return o, action, given_reward, internal_state, o1, d, updated_rnn_state_shared, updated_rnn_state_critic, \
-               updated_rnn_state_actor, V
+        return o, action, given_reward, internal_state, o1, d, updated_rnn_state_shared, V
 
     def train_network_batches(self):
         self.observation_buffer = np.array(self.observation_buffer)
@@ -401,10 +399,10 @@ class A2CTrainingService:
 
         shared_state_train = (np.zeros([self.params["batch_size"] - 1, self.a2c_network.rnn_dim_shared]),
                               np.zeros([self.params["batch_size"] - 1, self.a2c_network.rnn_dim_shared]))
-        critic_state_train = (np.zeros([self.params["batch_size"] - 1, self.a2c_network.rnn_dim_critic]),
-                              np.zeros([self.params["batch_size"] - 1, self.a2c_network.rnn_dim_critic]))
-        actor_state_train = (np.zeros([self.params["batch_size"] - 1, self.a2c_network.rnn_dim_actor]),
-                             np.zeros([self.params["batch_size"] - 1, self.a2c_network.rnn_dim_actor]))
+        # critic_state_train = (np.zeros([self.params["batch_size"] - 1, self.a2c_network.rnn_dim_critic]),
+        #                       np.zeros([self.params["batch_size"] - 1, self.a2c_network.rnn_dim_critic]))
+        # actor_state_train = (np.zeros([self.params["batch_size"] - 1, self.a2c_network.rnn_dim_actor]),
+        #                      np.zeros([self.params["batch_size"] - 1, self.a2c_network.rnn_dim_actor]))
 
         V1, internal_state_2 = self.sess.run([self.a2c_network.Value_output, self.a2c_network.internal_state],
                                              feed_dict={self.a2c_network.observation: np.vstack(
@@ -444,8 +442,8 @@ class A2CTrainingService:
                        self.a2c_network.trainLength: 1,
                        self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[:-1, :]),
                        self.a2c_network.shared_state_in: shared_state_train,
-                       self.a2c_network.critic_state_in: critic_state_train,
-                       self.a2c_network.actor_state_in: actor_state_train,
+                       # self.a2c_network.critic_state_in: critic_state_train,
+                       # self.a2c_network.actor_state_in: actor_state_train,
                        self.a2c_network.batch_size: self.params["batch_size"] - 1,
                        self.a2c_network.scaler: np.full(np.vstack(self.observation_buffer[:-1, :]).shape, 255),
                        })
@@ -461,8 +459,8 @@ class A2CTrainingService:
                        self.a2c_network.trainLength: 1,
                        self.a2c_network.internal_state: np.vstack(self.internal_state_buffer[:-1, :]),
                        self.a2c_network.shared_state_in: shared_state_train,
-                       self.a2c_network.critic_state_in: critic_state_train,
-                       self.a2c_network.actor_state_in: actor_state_train,
+                       # self.a2c_network.critic_state_in: critic_state_train,
+                       # self.a2c_network.actor_state_in: actor_state_train,
                        self.a2c_network.batch_size: self.params["batch_size"] - 1,
                        self.a2c_network.scaler: np.full(np.vstack(self.observation_buffer[:-1, :]).shape, 255),
                        })

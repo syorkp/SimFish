@@ -217,7 +217,7 @@ class A2CAssayService:
 
             self.step_number += 1
 
-            o, a, r, internal_state, o1, d, rnn_state_shared, rnn_state_critic, rnn_state_actor = self.step_loop(o=o, internal_state=internal_state,
+            o, a, r, internal_state, o1, d, rnn_state_shared  = self.step_loop(o=o, internal_state=internal_state,
                                                                        a=a, rnn_state_shared=rnn_state_shared,
                                                                                  rnn_state_critic=rnn_state_critic,
                                                                                  rnn_state_actor=rnn_state_actor)
@@ -229,13 +229,15 @@ class A2CAssayService:
     def step_loop(self, o, internal_state, a, rnn_state_shared, rnn_state_critic, rnn_state_actor):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
 
-        impulse, angle, updated_rnn_state_shared, updated_rnn_state_critic, updated_rnn_state_actor, rnn2_state, conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r, o2 = \
+        impulse, angle, updated_rnn_state_shared, rnn2_state, conv1l, \
+        conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r, o2 = \
             self.sess.run(
                 [self.a2c_network.impulse_output, self.a2c_network.angle_output, self.a2c_network.rnn_state_shared,
-             self.a2c_network.value_rnn_state, self.a2c_network.actor_rnn_state, self.a2c_network.rnn_state2,
+                 # self.a2c_network.value_rnn_state, self.a2c_network.actor_rnn_state,
+                 self.a2c_network.rnn_state2,
                  self.a2c_network.conv1l, self.a2c_network.conv2l, self.a2c_network.conv3l, self.a2c_network.conv4l,
                  self.a2c_network.conv1r, self.a2c_network.conv2r, self.a2c_network.conv3r, self.a2c_network.conv4r,
-                 [self.a2c_network.ref_left_eye, self.a2c_network.ref_right_eye],
+                 [self.a2c_network.ref_left_eye, self.a2c_network.ref_right_eye]
                  ],
                 feed_dict={self.a2c_network.observation: o,
                            self.a2c_network.internal_state: internal_state,
@@ -310,7 +312,7 @@ class A2CAssayService:
             self.output_data[key].append(possible_data_to_save[key])
         self.output_data["step"].append(self.step_number)
 
-        return o, action, given_reward, internal_state, o1, d, updated_rnn_state_shared, updated_rnn_state_critic, updated_rnn_state_actor,
+        return o, action, given_reward, internal_state, o1, d, updated_rnn_state_shared,# updated_rnn_state_critic, updated_rnn_state_actor,
 
     def save_hdf5_data(self, assay):
         if assay["save frames"]:
@@ -393,6 +395,9 @@ class A2CAssayService:
         angle = action[1]
         advantage_stream = advantage_stream.tolist()
         rnn_state = rnn_state.c.tolist()
+        # action_layer = action_layer.c.tolist()
+        # value_layer = value_layer.c.tolist()
+
         position = list(position)
         # observation = observation.tolist()
 
@@ -420,6 +425,8 @@ class A2CAssayService:
             "fish_angle": fish_angle,
             "hunger": self.simulation.fish.hungry,
             "stress": self.simulation.fish.stress,
+            # "action_layer": action_layer,
+            # "value_layer": value_layer
         }
 
         if prey_consumed:

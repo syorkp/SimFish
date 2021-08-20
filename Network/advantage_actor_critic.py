@@ -6,7 +6,8 @@ tf.disable_v2_behavior()
 class A2CNetwork:
 
     def __init__(self, simulation, rnn_dim_shared, rnn_dim_critic, rnn_dim_actor, rnn_cell_shared, rnn_cell_critic,
-                 rnn_cell_actor, my_scope, internal_states=2, actor_learning_rate_impulse=0.00001, actor_learning_rate_angle=0.00001,
+                 rnn_cell_actor, my_scope, internal_states=2, actor_learning_rate_impulse=0.00001,
+                 actor_learning_rate_angle=0.00001,
                  critic_learning_rate=0.00056, max_impulse=80.0, max_angle_change=1.0, gradient_clip=1.0):
         # Variables
         self.num_arms = len(simulation.fish.left_eye.vis_angles)  # Rays for each eye
@@ -74,62 +75,68 @@ class A2CNetwork:
         self.convFlat = tf.reshape(self.rnn_in, [self.batch_size, self.trainLength, self.rnn_dim_shared],
                                    name="flattened_shared_rnn_input")
 
-        self.rnn, self.rnn_state_shared = tf.nn.dynamic_rnn(inputs=self.convFlat, cell=rnn_cell_shared, dtype=tf.float32,
+        self.rnn, self.rnn_state_shared = tf.nn.dynamic_rnn(inputs=self.convFlat, cell=rnn_cell_shared,
+                                                            dtype=tf.float32,
                                                             initial_state=self.shared_state_in, scope=my_scope + '_rnn')
         self.rnn = tf.reshape(self.rnn, shape=[-1, self.rnn_dim_shared], name="shared_rnn_output")
         self.rnn_output = self.rnn
         self.rnn_state2 = self.rnn_state_shared
 
         # Critic (value) output
-        self.value_rnn_in = tf.layers.dense(self.rnn_output, self.rnn_dim_critic, None,
-                                            kernel_initializer=tf.orthogonal_initializer,
-                                            name=my_scope + '_rnn_value_in',
-                                            trainable=True)
-        self.flat_value_rnn_in = tf.reshape(self.value_rnn_in, [self.batch_size, self.trainLength, self.rnn_dim_critic],
-                                            name="flattened_value_rnn_input")
-        self.value_rnn, self.value_rnn_state = tf.nn.dynamic_rnn(inputs=self.flat_value_rnn_in, cell=rnn_cell_critic,
-                                                                 dtype=tf.float32,
-                                                                 initial_state=self.critic_state_in,
-                                                                 scope=my_scope + '_rnn_value')
-        self.value_rnn = tf.reshape(self.value_rnn, shape=[-1, self.rnn_dim_critic], name="value_rnn_output")
-        self.value_rnn_output = self.value_rnn
-        self.Value = tf.layers.dense(self.value_rnn_output, 1, None,
-                                      kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_Value',
+        # self.value_rnn_in = tf.layers.dense(self.rnn_output, self.rnn_dim_critic, None,
+        #                                     kernel_initializer=tf.orthogonal_initializer,
+        #                                     name=my_scope + '_rnn_value_in',
+        #                                     trainable=True)
+        # self.flat_value_rnn_in = tf.reshape(self.value_rnn_in, [self.batch_size, self.trainLength, self.rnn_dim_critic],
+        #                                     name="flattened_value_rnn_input")
+        # self.value_rnn, self.value_rnn_state = tf.nn.dynamic_rnn(inputs=self.flat_value_rnn_in, cell=rnn_cell_critic,
+        #                                                          dtype=tf.float32,
+        #                                                          initial_state=self.critic_state_in,
+        #                                                          scope=my_scope + '_rnn_value')
+        # self.value_rnn = tf.reshape(self.value_rnn, shape=[-1, self.rnn_dim_critic], name="value_rnn_output")
+        # self.value_rnn_output = self.value_rnn
+        # self.Value = tf.layers.dense(self.value_rnn_output, 1, None,
+        #                              kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_Value',
+        #                              trainable=True)
+
+        self.Value = tf.layers.dense(self.rnn_output, 1, None,
+                                     kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_Value',
                                      trainable=True)
 
-        # Policy RNN
-        self.actor_rnn_in = tf.layers.dense(self.rnn_output, self.rnn_dim_actor, None,
-                                      kernel_initializer=tf.orthogonal_initializer,
-                                            name=my_scope + '_rnn_actor_in', trainable=True)
-        self.flat_actor_rnn_in = tf.reshape(self.actor_rnn_in,
-                                            [self.batch_size, self.trainLength, self.rnn_dim_actor], name=my_scope + '_rnn_actor_in_reshaped')
-        self.actor_rnn, self.actor_rnn_state = tf.nn.dynamic_rnn(inputs=self.flat_actor_rnn_in, cell=rnn_cell_actor,
-                                                                 dtype=tf.float32,
-                                                                 initial_state=self.actor_state_in,
-                                                                 scope=my_scope + '_rnn_actor')
-        self.actor_rnn = tf.reshape(self.actor_rnn, shape=[-1, self.rnn_dim_actor])
-        self.actor_rnn_output = self.actor_rnn
+        # # Policy RNN
+        # self.actor_rnn_in = tf.layers.dense(self.rnn_output, self.rnn_dim_actor, None,
+        #                                     kernel_initializer=tf.orthogonal_initializer,
+        #                                     name=my_scope + '_rnn_actor_in', trainable=True)
+        # self.flat_actor_rnn_in = tf.reshape(self.actor_rnn_in,
+        #                                     [self.batch_size, self.trainLength, self.rnn_dim_actor],
+        #                                     name=my_scope + '_rnn_actor_in_reshaped')
+        # self.actor_rnn, self.actor_rnn_state = tf.nn.dynamic_rnn(inputs=self.flat_actor_rnn_in, cell=rnn_cell_actor,
+        #                                                          dtype=tf.float32,
+        #                                                          initial_state=self.actor_state_in,
+        #                                                          scope=my_scope + '_rnn_actor')
+        # self.actor_rnn = tf.reshape(self.actor_rnn, shape=[-1, self.rnn_dim_actor])
+        # self.actor_rnn_output = self.actor_rnn
 
         # Actor impulse output
-        self.mu_impulse = tf.layers.dense(self.actor_rnn_output, 1, None,
-                                      kernel_initializer=tf.orthogonal_initializer,
+        self.mu_impulse = tf.layers.dense(self.rnn_output, 1, activation=tf.nn.sigmoid,
+                                          kernel_initializer=tf.orthogonal_initializer,
                                           name=my_scope + '_mu_impulse', trainable=True)
-        self.mu_impulse = tf.math.abs(self.mu_impulse)
+        # self.mu_impulse = tf.math.abs(self.mu_impulse)
 
-        self.sigma_impulse = tf.layers.dense(self.actor_rnn_output, 1, None,
-                                      kernel_initializer=tf.orthogonal_initializer,
+        self.sigma_impulse = tf.layers.dense(self.rnn_output, 1, activation=tf.nn.sigmoid,
+                                             kernel_initializer=tf.orthogonal_initializer,
                                              name=my_scope + '_sigma_impulse', trainable=True)
-        self.sigma_impulse = tf.math.abs(self.sigma_impulse)
+        # self.sigma_impulse = tf.math.abs(self.sigma_impulse)
 
         # Actor angle output
-        self.mu_angle = tf.layers.dense(self.actor_rnn_output, 1, None,
-                                      kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_mu_angle',
+        self.mu_angle = tf.layers.dense(self.rnn_output, 1, activation=tf.nn.tanh,
+                                        kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_mu_angle',
                                         trainable=True)
 
-        self.sigma_angle = tf.layers.dense(self.actor_rnn_output, 1, None,
-                                      kernel_initializer=tf.orthogonal_initializer,
+        self.sigma_angle = tf.layers.dense(self.rnn_output, 1, activation=tf.nn.sigmoid,
+                                           kernel_initializer=tf.orthogonal_initializer,
                                            name=my_scope + '_sigma_angle', trainable=True)
-        self.sigma_angle = tf.math.abs(self.sigma_angle)
+        # self.sigma_angle = tf.math.abs(self.sigma_angle)
 
         #            ----------        Reflected       ---------            #
 
@@ -179,65 +186,70 @@ class A2CNetwork:
         self.rnn_output_ref = self.rnn_ref
 
         # Critic RNN
-        self.value_rnn_in_ref = tf.layers.dense(self.rnn_output_ref, self.rnn_dim_critic, None,
-                                      kernel_initializer=tf.orthogonal_initializer,
-                                                name=my_scope + '_rnn_value_in',
-                                                trainable=True, reuse=True)
-        self.flat_value_rnn_in_ref = tf.reshape(self.value_rnn_in_ref,
-                                                [self.batch_size, self.trainLength, self.rnn_dim_critic])
-        self.value_rnn_ref, self.value_rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.flat_value_rnn_in_ref,
-                                                                         cell=rnn_cell_critic,
-                                                                         dtype=tf.float32,
-                                                                         initial_state=self.critic_state_in,
-                                                                         scope=my_scope + '_rnn_value')
-        self.value_rnn_ref = tf.reshape(self.value_rnn_ref, shape=[-1, self.rnn_dim_critic])
-        self.value_rnn_output_ref = self.value_rnn_ref
-        self.Value_ref = tf.layers.dense(self.value_rnn_output_ref, 1, None,
-                                      kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_Value',
+        # self.value_rnn_in_ref = tf.layers.dense(self.rnn_output_ref, self.rnn_dim_critic, None,
+        #                                         kernel_initializer=tf.orthogonal_initializer,
+        #                                         name=my_scope + '_rnn_value_in',
+        #                                         trainable=True, reuse=True)
+        # self.flat_value_rnn_in_ref = tf.reshape(self.value_rnn_in_ref,
+        #                                         [self.batch_size, self.trainLength, self.rnn_dim_critic])
+        # self.value_rnn_ref, self.value_rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.flat_value_rnn_in_ref,
+        #                                                                  cell=rnn_cell_critic,
+        #                                                                  dtype=tf.float32,
+        #                                                                  initial_state=self.critic_state_in,
+        #                                                                  scope=my_scope + '_rnn_value')
+        # self.value_rnn_ref = tf.reshape(self.value_rnn_ref, shape=[-1, self.rnn_dim_critic])
+        # self.value_rnn_output_ref = self.value_rnn_ref
+        # self.Value_ref = tf.layers.dense(self.value_rnn_output_ref, 1, None,
+        #                                  kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_Value',
+        #                                  reuse=True, trainable=True)
+        self.Value_ref = tf.layers.dense(self.rnn_output_ref, 1, None,
+                                         kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_Value',
                                          reuse=True, trainable=True)
-
-        # Policy RNN
-        self.actor_rnn_in_ref = tf.layers.dense(self.rnn_output_ref, self.rnn_dim_actor, None,
-                                      kernel_initializer=tf.orthogonal_initializer,
-                                                name=my_scope + '_rnn_actor_in', reuse=True,
-                                                trainable=True)
-        self.flat_actor_rnn_in_ref = tf.reshape(self.actor_rnn_in_ref,
-                                                [self.batch_size, self.trainLength, self.rnn_dim_actor], name=my_scope + '_rnn_actor_in_reshaped')
-        self.actor_rnn_ref, self.actor_rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.flat_actor_rnn_in_ref,
-                                                                         cell=rnn_cell_actor,
-                                                                         dtype=tf.float32,
-                                                                         initial_state=self.actor_state_in,
-                                                                         scope=my_scope + '_rnn_actor')
-        self.actor_rnn_ref = tf.reshape(self.actor_rnn_ref, shape=[-1, self.rnn_dim_actor])
-        self.actor_rnn_output_ref = self.actor_rnn_ref
+        #
+        # # Policy RNN
+        # self.actor_rnn_in_ref = tf.layers.dense(self.rnn_output_ref, self.rnn_dim_actor, None,
+        #                                         kernel_initializer=tf.orthogonal_initializer,
+        #                                         name=my_scope + '_rnn_actor_in', reuse=True,
+        #                                         trainable=True)
+        # self.flat_actor_rnn_in_ref = tf.reshape(self.actor_rnn_in_ref,
+        #                                         [self.batch_size, self.trainLength, self.rnn_dim_actor],
+        #                                         name=my_scope + '_rnn_actor_in_reshaped')
+        # self.actor_rnn_ref, self.actor_rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.flat_actor_rnn_in_ref,
+        #                                                                  cell=rnn_cell_actor,
+        #                                                                  dtype=tf.float32,
+        #                                                                  initial_state=self.actor_state_in,
+        #                                                                  scope=my_scope + '_rnn_actor')
+        # self.actor_rnn_ref = tf.reshape(self.actor_rnn_ref, shape=[-1, self.rnn_dim_actor])
+        # self.actor_rnn_output_ref = self.actor_rnn_ref
 
         # Actor impulse output
-        self.mu_impulse_ref = tf.layers.dense(self.actor_rnn_output_ref, 1, None,
-                                      kernel_initializer=tf.orthogonal_initializer,
+        self.mu_impulse_ref = tf.layers.dense(self.rnn_output_ref, 1, activation=tf.nn.sigmoid,
+                                              kernel_initializer=tf.orthogonal_initializer,
                                               name=my_scope + '_mu_impulse', reuse=True, trainable=True)
-        self.mu_impulse_ref = tf.math.abs(self.mu_impulse)
+        # self.mu_impulse_ref = tf.math.abs(self.mu_impulse)
 
-        self.sigma_impulse_ref = tf.layers.dense(self.actor_rnn_output_ref, 1, None,
-                                      kernel_initializer=tf.orthogonal_initializer,
+        self.sigma_impulse_ref = tf.layers.dense(self.rnn_output_ref, 1, activation=tf.nn.sigmoid,
+                                                 kernel_initializer=tf.orthogonal_initializer,
                                                  name=my_scope + '_sigma_impulse', reuse=True, trainable=True)
-        self.sigma_impulse_ref = tf.math.abs(self.sigma_impulse_ref)
+        # self.sigma_impulse_ref = tf.math.abs(self.sigma_impulse_ref)
 
         # Actor angle output
-        self.mu_angle_ref = tf.layers.dense(self.actor_rnn_output_ref, 1, None,
-                                      kernel_initializer=tf.orthogonal_initializer,
+        self.mu_angle_ref = tf.layers.dense(self.rnn_output_ref, 1, activation=tf.nn.tanh,
+                                            kernel_initializer=tf.orthogonal_initializer,
                                             name=my_scope + '_mu_angle', reuse=True, trainable=True)
 
-        self.sigma_angle_ref = tf.layers.dense(self.actor_rnn_output_ref, 1, None,
-                                      kernel_initializer=tf.orthogonal_initializer,
+        self.sigma_angle_ref = tf.layers.dense(self.rnn_output_ref, 1, activation=tf.nn.sigmoid,
+                                               kernel_initializer=tf.orthogonal_initializer,
                                                name=my_scope + '_sigma_angle', reuse=True, trainable=True)
-        self.sigma_angle_ref = tf.math.abs(self.sigma_angle_ref)
+        # self.sigma_angle_ref = tf.math.abs(self.sigma_angle_ref)
+
 
         #            ----------        Combined       ---------            #
 
         # Combined Actor impulse output
-        self.mu_impulse_combined = tf.math.divide(tf.math.add(self.mu_impulse, self.mu_impulse_ref), 2,
+        self.mu_impulse_combined = tf.math.divide(tf.math.add(self.mu_impulse, self.mu_impulse_ref), 2.0,
                                                   name="mu_impulse_combined")
-        self.sigma_impulse_combined = tf.math.divide(tf.math.add(self.sigma_impulse, self.sigma_impulse_ref), 2,
+        self.sigma_impulse_combined = tf.math.divide(tf.math.add(self.sigma_impulse, self.sigma_impulse_ref), 2.0,
                                                      name="sigma_impulse_combined")
         self.norm_dist_impulse = tf.distributions.Normal(self.mu_impulse_combined, self.sigma_impulse_combined,
                                                          name="norm_dist_impulse")
@@ -247,9 +259,12 @@ class A2CNetwork:
         self.impulse_output = tf.math.multiply(self.action_tf_var_impulse, max_impulse, name="impulse_output")
 
         # Combined Actor angle output
-        self.mu_angle_combined = tf.math.divide(tf.math.subtract(self.mu_angle, self.mu_angle_ref), 2, name="mu_angle_combined")
-        self.sigma_angle_combined = tf.math.divide(tf.math.add(self.sigma_angle, self.sigma_angle_ref), 2, name="sigma_angle_combined")
-        self.norm_dist_angle = tf.distributions.Normal(self.mu_angle_combined, self.sigma_angle_combined, name="norm_dist_angle")
+        self.mu_angle_combined = tf.math.divide(tf.math.subtract(self.mu_angle, self.mu_angle_ref), 2,
+                                                name="mu_angle_combined")
+        self.sigma_angle_combined = tf.math.divide(tf.math.add(self.sigma_angle, self.sigma_angle_ref), 2,
+                                                   name="sigma_angle_combined")
+        self.norm_dist_angle = tf.distributions.Normal(self.mu_angle_combined, self.sigma_angle_combined,
+                                                       name="norm_dist_angle")
         self.action_tf_var_angle = tf.squeeze(self.norm_dist_angle.sample(1), axis=0)
         self.action_tf_var_angle = tf.clip_by_value(self.action_tf_var_angle, -1, 1)
         self.angle_output = tf.math.multiply(self.action_tf_var_angle, max_angle_change, name="angle_output")
@@ -285,27 +300,24 @@ class A2CNetwork:
         self.loss_actor_impulse = -tf.log(self.norm_dist_impulse.prob(
             tf.math.divide(self.action_placeholder[0][0], max_impulse)) + 1e-1) * self.delta_placeholder
         self.loss_actor_impulse = tf.clip_by_value(self.loss_actor_impulse, -20, 20)
-        self.training_op_actor_impulse = tf.train.AdamOptimizer(actor_learning_rate_impulse, name='actor_optimizer_impulse')
-        self.actor_impulse_gradients, self.actor_impulse_variables = zip(*self.training_op_actor_impulse.compute_gradients(self.loss_actor_impulse))
+        self.training_op_actor_impulse = tf.train.AdamOptimizer(actor_learning_rate_impulse,
+                                                                name='actor_optimizer_impulse')
+        self.actor_impulse_gradients, self.actor_impulse_variables = zip(
+            *self.training_op_actor_impulse.compute_gradients(self.loss_actor_impulse))
         self.actor_impulse_gradients, _ = tf.clip_by_global_norm(self.actor_impulse_gradients, gradient_clip)
-        self.clipped_training_op_actor_impulse = self.training_op_actor_impulse.apply_gradients(zip(self.actor_impulse_gradients, self.actor_impulse_variables))
-
-        # self.impulse_gvs = self.training_op_actor_impulse.compute_gradients(self.loss_actor_impulse)
-        # self.capped_impulse_gvs = [(tf.clip_by_value(grad, -10., 10.), var) for grad, var in self.impulse_gvs]
-        # self.clipped_training_op_actor_impulse = self.training_op_actor_impulse.apply_gradients(self.capped_impulse_gvs)
+        self.clipped_training_op_actor_impulse = self.training_op_actor_impulse.apply_gradients(
+            zip(self.actor_impulse_gradients, self.actor_impulse_variables))
 
         # Actor (policy) loss function - Angle
         self.loss_actor_angle = -tf.log(self.norm_dist_angle.prob(
             tf.math.divide(self.action_placeholder[0][1], max_angle_change)) + 1e-1) * self.delta_placeholder
         self.loss_actor_angle = tf.clip_by_value(self.loss_actor_angle, -20, 20)
         self.training_op_actor_angle = tf.train.AdamOptimizer(actor_learning_rate_angle, name='actor_optimizer_angle')
-        self.actor_angle_gradients, self.actor_angle_variables = zip(*self.training_op_actor_angle.compute_gradients(self.loss_actor_angle))
+        self.actor_angle_gradients, self.actor_angle_variables = zip(
+            *self.training_op_actor_angle.compute_gradients(self.loss_actor_angle))
         self.actor_angle_gradients, _ = tf.clip_by_global_norm(self.actor_angle_gradients, gradient_clip)
-        self.clipped_training_op_actor_angle = self.training_op_actor_angle.apply_gradients(zip(self.actor_angle_gradients, self.actor_angle_variables))
-
-        # self.angle_gvs = self.training_op_actor_angle.compute_gradients(self.loss_actor_angle)
-        # self.capped_angle_gvs = [(tf.clip_by_value(grad, -10., 10.), var) for grad, var in self.angle_gvs]
-        # self.clipped_training_op_actor_angle = self.training_op_actor_angle.apply_gradients(self.capped_angle_gvs)
+        self.clipped_training_op_actor_angle = self.training_op_actor_angle.apply_gradients(
+            zip(self.actor_angle_gradients, self.actor_angle_variables))
 
         self.action_op = tf.group(self.clipped_training_op_actor_impulse, self.clipped_training_op_actor_angle)
 
@@ -315,8 +327,5 @@ class A2CNetwork:
         self.training_op_critic = tf.train.AdamOptimizer(critic_learning_rate, name='critic_optimizer')
         self.critic_gradients, self.critic_variables = zip(*self.training_op_critic.compute_gradients(self.loss_critic))
         self.critic_gradients, _ = tf.clip_by_global_norm(self.critic_gradients, gradient_clip)
-        self.clipped_training_op_critic = self.training_op_critic.apply_gradients(zip(self.critic_gradients, self.critic_variables))
-
-        # self.critic_gvs = self.training_op_critic.compute_gradients(self.loss_critic)
-        # self.capped_critic_gvs = [(tf.clip_by_value(grad, -10., 10.), var) for grad, var in self.critic_gvs]
-        # self.clipped_training_op_critic = self.training_op_critic.apply_gradients(self.capped_critic_gvs)
+        self.clipped_training_op_critic = self.training_op_critic.apply_gradients(
+            zip(self.critic_gradients, self.critic_variables))

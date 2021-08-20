@@ -81,7 +81,7 @@ env = {'width': 1500,  # arena size
        'rest_cost': 2,
 
        'capture_swim_extra_cost': 25,
-       'capture_basic_reward': 500,
+       'capture_basic_reward': 50,
        'predator_cost': 100,
 
        'hunger': True,
@@ -95,14 +95,14 @@ env = {'width': 1500,  # arena size
        'max_angle_change': np.pi/2,
        'max_impulse': 10.0,  # Up to 50ish
 
-       'distance_penalty_scaling_factor': 1,
-       'angle_penalty_scaling_factor': 1,
-       'baseline_penalty': 2
+       'distance_penalty_scaling_factor': 0,
+       'angle_penalty_scaling_factor': 0,
+       'baseline_penalty': 0.2
        }
 
 
 params = {'num_actions': 10,  # size of action space
-          'batch_size': 50,  # How many experience traces to use for each training step.
+          'batch_size': 200,  # How many experience traces to use for each training step.
           'trace_length': 64,  # How long each experience trace will be when training
           'update_freq': 100,  # How often to perform a training step.
           'y': .99,  # Discount factor on the target Q-values
