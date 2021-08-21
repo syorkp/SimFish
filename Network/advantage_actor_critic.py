@@ -265,7 +265,7 @@ class A2CNetwork:
         self.action_tf_var_angle = tf.clip_by_value(self.action_tf_var_angle, -1, 1)
         self.angle_output = tf.math.multiply(self.action_tf_var_angle, max_angle_change, name="angle_output")
 
-        self.Value_output = tf.math.divide(tf.math.add(self.Value, self.Value_ref), 2, name="value_output")
+        self.Value_output = tf.math.divide(tf.math.add(self.Value, self.Value_ref), 2.0, name="value_output")
 
         #            ----------        Loss functions       ---------            #
 
