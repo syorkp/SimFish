@@ -16,7 +16,7 @@ test_continuous_training_configuration = [
     {
         "Model Name": "scaffold_test",
         "Environment Name": "continuous_learning_scaffold",
-        "Trial Number": 16,
+        "Trial Number": 19,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -38,63 +38,63 @@ test_continuous_training_configuration = [
         "Using GPU": True,
         "monitor gpu": False,
     },
-    {
-        "Model Name": "scaffold_test",
-        "Environment Name": "continuous_learning_scaffold",
-        "Trial Number": 17,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 10,
-                "3": 15,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-    },
-    {
-        "Model Name": "scaffold_test",
-        "Environment Name": "continuous_learning_scaffold",
-        "Trial Number": 18,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 10,
-                "3": 15,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-    }
+    # {
+    #     "Model Name": "scaffold_test",
+    #     "Environment Name": "continuous_learning_scaffold",
+    #     "Trial Number": 17,
+    #     "Total Configurations": 3,
+    #     "Episode Transitions": {
+    #     },
+    #     "Conditional Transitions": {
+    #         "Prey Caught": {
+    #             "2": 10,
+    #             "3": 15,
+    #         },
+    #         "Predators Avoided": {
+    #         },
+    #         "Sand Grains Bumped": {
+    #         }
+    #     },
+    #     "Run Mode": "Training",
+    #     "Tethered": False,
+    #     "Realistic Bouts": True,
+    #     "Continuous Actions": True,
+    #     "Priority": 2,
+    #     "Using GPU": True,
+    #     "monitor gpu": False,
+    # },
+    # {
+    #     "Model Name": "scaffold_test",
+    #     "Environment Name": "continuous_learning_scaffold",
+    #     "Trial Number": 18,
+    #     "Total Configurations": 3,
+    #     "Episode Transitions": {
+    #     },
+    #     "Conditional Transitions": {
+    #         "Prey Caught": {
+    #             "2": 10,
+    #             "3": 15,
+    #         },
+    #         "Predators Avoided": {
+    #         },
+    #         "Sand Grains Bumped": {
+    #         }
+    #     },
+    #     "Run Mode": "Training",
+    #     "Tethered": False,
+    #     "Realistic Bouts": True,
+    #     "Continuous Actions": True,
+    #     "Priority": 2,
+    #     "Using GPU": True,
+    #     "monitor gpu": False,
+    # }
 ]
 
 test_continuous_assay_configuration = [
     {
         "Model Name": "scaffold_test",
         "Environment Name": "continuous_assay",
-        "Trial Number": 12,
+        "Trial Number": 19,
         "Assay Configuration Name": "Checking_Observation",
         "Total Configurations": 3,
         "Run Mode": "Assay",
@@ -109,7 +109,7 @@ test_continuous_assay_configuration = [
             {
                 "assay id": "Environment-1",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 200,
+                "duration": 1000,
                 "Tethered": False,
                 "save frames": True,
                 "random positions": False,
@@ -119,7 +119,7 @@ test_continuous_assay_configuration = [
                 "reset": False,
                 "collisions": True,
 
-                "recordings": ["left_conv_4", "rnn state", "consumed"],
+                "recordings": ["left_conv_4", "rnn state", "consumed", "impulse", "angle", "position"],
                 "ablations": []
             },
         ]
@@ -127,5 +127,5 @@ test_continuous_assay_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(test_continuous_training_configuration)
+manager = TrialManager(test_continuous_assay_configuration)
 manager.run_priority_loop()
