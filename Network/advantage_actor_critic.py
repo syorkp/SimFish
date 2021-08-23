@@ -21,6 +21,7 @@ class A2CNetwork:
         self.batch_size = tf.placeholder(dtype=tf.int32, shape=[], name='batch_size')
 
         self.shared_state_in = rnn_cell_shared.zero_state(self.batch_size, tf.float32)
+        self.shared_state_in_ref = rnn_cell_shared.zero_state(self.batch_size, tf.float32)
         self.critic_state_in = rnn_cell_critic.zero_state(self.batch_size, tf.float32)
         self.actor_state_in = rnn_cell_actor.zero_state(self.batch_size, tf.float32)
 
@@ -178,7 +179,7 @@ class A2CNetwork:
 
         self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell_shared,
                                                              dtype=tf.float32,
-                                                             initial_state=self.shared_state_in,
+                                                             initial_state=self.shared_state_in_ref,
                                                              scope=my_scope + '_rnn_ref')  # No need to reuse as takes rnn_cell as argument for both.
         self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim_shared])
         self.rnn_output_ref = self.rnn_ref

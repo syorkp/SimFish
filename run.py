@@ -16,7 +16,57 @@ test_continuous_training_configuration = [
     {
         "Model Name": "scaffold_test",
         "Environment Name": "continuous_learning_scaffold",
-        "Trial Number": 15,
+        "Trial Number": 16,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 10,
+                "3": 15,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "scaffold_test",
+        "Environment Name": "continuous_learning_scaffold",
+        "Trial Number": 17,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 10,
+                "3": 15,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "scaffold_test",
+        "Environment Name": "continuous_learning_scaffold",
+        "Trial Number": 18,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
