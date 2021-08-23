@@ -58,6 +58,6 @@ def load_network_variables(model_name, conf_name):
         return sorted_vars
 
 
-v = load_network_variables("scaffold_test-9", "1")
+v = load_network_variables("scaffold_test-12", "1")
 
 x = True

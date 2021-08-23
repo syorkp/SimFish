@@ -80,6 +80,8 @@ class A2CNetwork:
         self.rnn = tf.reshape(self.rnn, shape=[-1, self.rnn_dim_shared], name="shared_rnn_output")
         self.rnn_output = self.rnn
         self.rnn_state2 = self.rnn_state_shared
+        self.value_stream, self.actor_stream = tf.split(self.rnn_output, 2, 1)
+        self.mu_impulse_stream, self.sigma_impulse_stream, self.mu_angle_stream, self.sigma_angle_stream = tf.split(self.actor_stream, 4, 1)
 
         # Critic (value) output
         # self.value_rnn_in = tf.layers.dense(self.rnn_output, self.rnn_dim_critic, None,
@@ -98,7 +100,7 @@ class A2CNetwork:
         #                              kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_Value',
         #                              trainable=True)
 
-        self.Value = tf.layers.dense(self.rnn_output, 1, None,
+        self.Value = tf.layers.dense(self.value_stream, 1, None,
                                      kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_Value',
                                      trainable=True)
 
@@ -117,20 +119,20 @@ class A2CNetwork:
         # self.actor_rnn_output = self.actor_rnn
 
         # Actor impulse output
-        self.mu_impulse = tf.layers.dense(self.rnn_output, 1, activation=tf.nn.sigmoid,
+        self.mu_impulse = tf.layers.dense(self.mu_impulse_stream, 1, activation=tf.nn.sigmoid,
                                           kernel_initializer=tf.orthogonal_initializer,
                                           name=my_scope + '_mu_impulse', trainable=True)
 
-        self.sigma_impulse = tf.layers.dense(self.rnn_output, 1, activation=tf.nn.sigmoid,
+        self.sigma_impulse = tf.layers.dense(self.sigma_impulse_stream, 1, activation=tf.nn.sigmoid,
                                              kernel_initializer=tf.orthogonal_initializer,
                                              name=my_scope + '_sigma_impulse', trainable=True)
 
         # Actor angle output
-        self.mu_angle = tf.layers.dense(self.rnn_output, 1, activation=tf.nn.tanh,
+        self.mu_angle = tf.layers.dense(self.mu_angle_stream, 1, activation=tf.nn.tanh,
                                         kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_mu_angle',
                                         trainable=True)
 
-        self.sigma_angle = tf.layers.dense(self.rnn_output, 1, activation=tf.nn.sigmoid,
+        self.sigma_angle = tf.layers.dense(self.sigma_angle_stream, 1, activation=tf.nn.sigmoid,
                                            kernel_initializer=tf.orthogonal_initializer,
                                            name=my_scope + '_sigma_angle', trainable=True)
 
@@ -180,6 +182,8 @@ class A2CNetwork:
                                                              scope=my_scope + '_rnn_ref')  # No need to reuse as takes rnn_cell as argument for both.
         self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim_shared])
         self.rnn_output_ref = self.rnn_ref
+        self.value_stream_ref, self.actor_stream_ref = tf.split(self.rnn_output_ref, 2, 1)
+        self.mu_impulse_stream_ref, self.sigma_impulse_stream_ref, self.mu_angle_stream_ref, self.sigma_angle_stream_ref = tf.split(self.actor_stream_ref, 4, 1)
 
         # Critic RNN
         # self.value_rnn_in_ref = tf.layers.dense(self.rnn_output_ref, self.rnn_dim_critic, None,
@@ -198,7 +202,7 @@ class A2CNetwork:
         # self.Value_ref = tf.layers.dense(self.value_rnn_output_ref, 1, None,
         #                                  kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_Value',
         #                                  reuse=True, trainable=True)
-        self.Value_ref = tf.layers.dense(self.rnn_output_ref, 1, None,
+        self.Value_ref = tf.layers.dense(self.value_stream_ref, 1, None,
                                          kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_Value',
                                          reuse=True, trainable=True)
         #
@@ -219,26 +223,22 @@ class A2CNetwork:
         # self.actor_rnn_output_ref = self.actor_rnn_ref
 
         # Actor impulse output
-        self.mu_impulse_ref = tf.layers.dense(self.rnn_output_ref, 1, activation=tf.nn.sigmoid,
+        self.mu_impulse_ref = tf.layers.dense(self.mu_impulse_stream_ref, 1, activation=tf.nn.sigmoid,
                                               kernel_initializer=tf.orthogonal_initializer,
                                               name=my_scope + '_mu_impulse', reuse=True, trainable=True)
-        # self.mu_impulse_ref = tf.math.abs(self.mu_impulse)
 
-        self.sigma_impulse_ref = tf.layers.dense(self.rnn_output_ref, 1, activation=tf.nn.sigmoid,
+        self.sigma_impulse_ref = tf.layers.dense(self.sigma_impulse_stream_ref, 1, activation=tf.nn.sigmoid,
                                                  kernel_initializer=tf.orthogonal_initializer,
                                                  name=my_scope + '_sigma_impulse', reuse=True, trainable=True)
-        # self.sigma_impulse_ref = tf.math.abs(self.sigma_impulse_ref)
 
         # Actor angle output
-        self.mu_angle_ref = tf.layers.dense(self.rnn_output_ref, 1, activation=tf.nn.tanh,
+        self.mu_angle_ref = tf.layers.dense(self.mu_angle_stream_ref, 1, activation=tf.nn.tanh,
                                             kernel_initializer=tf.orthogonal_initializer,
                                             name=my_scope + '_mu_angle', reuse=True, trainable=True)
 
-        self.sigma_angle_ref = tf.layers.dense(self.rnn_output_ref, 1, activation=tf.nn.sigmoid,
+        self.sigma_angle_ref = tf.layers.dense(self.sigma_angle_stream_ref, 1, activation=tf.nn.sigmoid,
                                                kernel_initializer=tf.orthogonal_initializer,
                                                name=my_scope + '_sigma_angle', reuse=True, trainable=True)
-        # self.sigma_angle_ref = tf.math.abs(self.sigma_angle_ref)
-
 
         #            ----------        Combined       ---------            #
 
@@ -250,7 +250,6 @@ class A2CNetwork:
         self.norm_dist_impulse = tf.distributions.Normal(self.mu_impulse_combined, self.sigma_impulse_combined,
                                                          name="norm_dist_impulse")
         self.action_tf_var_impulse = tf.squeeze(self.norm_dist_impulse.sample(1), axis=0)
-        # self.action_tf_var_impulse = tf.math.abs(self.action_tf_var_impulse)  TODO: Trying without
         self.action_tf_var_impulse = tf.clip_by_value(self.action_tf_var_impulse, 0, 1)
         self.impulse_output = tf.math.multiply(self.action_tf_var_impulse, max_impulse, name="impulse_output")
 

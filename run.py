@@ -16,7 +16,7 @@ test_continuous_training_configuration = [
     {
         "Model Name": "scaffold_test",
         "Environment Name": "continuous_learning_scaffold",
-        "Trial Number": 12,
+        "Trial Number": 15,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -44,7 +44,7 @@ test_continuous_assay_configuration = [
     {
         "Model Name": "scaffold_test",
         "Environment Name": "continuous_assay",
-        "Trial Number": 9,
+        "Trial Number": 12,
         "Assay Configuration Name": "Checking_Observation",
         "Total Configurations": 3,
         "Run Mode": "Assay",

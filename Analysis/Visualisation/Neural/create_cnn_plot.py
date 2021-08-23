@@ -41,7 +41,7 @@ def plot_multiple_traces(neuron_data):
         create_plot(neuron_subset_data, i + 1, len(neuron_subset_data), i * n_per_plot)
 
 
-data1 = load_data("scaffold_test-9", "Checking_Observation", "Environment-1")
+data1 = load_data("scaffold_test-12", "Checking_Observation", "Environment-1")
 # data2 = load_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
 n_c_neurons = data1["left_conv_4"].shape[-1]
 
