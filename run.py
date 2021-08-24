@@ -155,5 +155,5 @@ test_continuous_assay_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(scaled_sigmas_configuration)
+manager = TrialManager(reward_penalties_configuration)
 manager.run_priority_loop()
