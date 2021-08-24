@@ -16,7 +16,7 @@ scaled_sigmas_configuration = [
     {
         "Model Name": "scaled_sigmas_configuration",
         "Environment Name": "continuous_learning_scaffold",
-        "Trial Number": 1,
+        "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
         },

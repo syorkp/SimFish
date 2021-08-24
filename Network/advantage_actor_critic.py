@@ -282,12 +282,15 @@ class A2CNetwork:
         # Actor (policy) loss function - Impulse
         self.loss_actor_impulse = -tf.log(self.norm_dist_impulse.prob(
             tf.math.divide(self.action_placeholder[0][0], max_impulse)) + 1e-5) * self.delta_placeholder
+        self.loss_actor_impulse = tf.clip_by_value(self.loss_actor_impulse, -10, 10)
         self.training_op_actor_impulse = tf.train.AdamOptimizer(actor_learning_rate_impulse,
                                                                 name='actor_optimizer_impulse').minimize(self.loss_actor_impulse)
 
         # Actor (policy) loss function - Angle
         self.loss_actor_angle = -tf.log(self.norm_dist_angle.prob(
             tf.math.divide(self.action_placeholder[0][1], max_angle_change)) + 1e-5) * self.delta_placeholder
+        self.loss_actor_angle = tf.clip_by_value(self.loss_actor_angle, -10, 10)
+
         self.training_op_actor_angle = tf.train.AdamOptimizer(actor_learning_rate_angle,
                                                               name='actor_optimizer_angle').minimize(self.loss_actor_angle)
 
@@ -295,6 +298,8 @@ class A2CNetwork:
 
         # Critic (state-value) loss function
         self.loss_critic = tf.reduce_mean(tf.squared_difference(tf.squeeze(self.Value_output), self.target_placeholder))
+        self.loss_critic = tf.clip_by_value(self.loss_critic, -10, 10)
+
         self.training_op_critic = tf.train.AdamOptimizer(critic_learning_rate, name='critic_optimizer').minimize(
             self.loss_critic)
 
