@@ -15,18 +15,18 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 def a2c_assay_target(trial, learning_params, environment_params, total_steps, episode_number, memory_fraction):
     service = A2CAssayService(model_name=trial["Model Name"],
-                           trial_number=trial["Trial Number"],
-                           assay_config_name=trial["Assay Configuration Name"],
-                           learning_params=learning_params,
-                           environment_params=environment_params,
-                           total_steps=total_steps,
-                           episode_number=episode_number,
-                           assays=trial["Assays"],
-                           realistic_bouts=trial["Realistic Bouts"],
-                           memory_fraction=memory_fraction,
-                           using_gpu=trial["Using GPU"],
-                           set_random_seed=trial["set random seed"]
-                           )
+                              trial_number=trial["Trial Number"],
+                              assay_config_name=trial["Assay Configuration Name"],
+                              learning_params=learning_params,
+                              environment_params=environment_params,
+                              total_steps=total_steps,
+                              episode_number=episode_number,
+                              assays=trial["Assays"],
+                              realistic_bouts=trial["Realistic Bouts"],
+                              memory_fraction=memory_fraction,
+                              using_gpu=trial["Using GPU"],
+                              set_random_seed=trial["set random seed"]
+                              )
     service.run()
 
 
@@ -187,7 +187,11 @@ class A2CAssayService:
         self.assay_output_data_format = {key: None for key in assay["recordings"]}
 
         rnn_state_shared = (
-            np.zeros([1, self.a2c_network.rnn_dim_shared]), np.zeros([1, self.a2c_network.rnn_dim_shared]))  # Reset RNN hidden state
+            np.zeros([1, self.a2c_network.rnn_dim_shared]),
+            np.zeros([1, self.a2c_network.rnn_dim_shared]))  # Reset RNN hidden state
+        rnn_state_shared_ref = (
+            np.zeros([1, self.a2c_network.rnn_dim_shared]),
+            np.zeros([1, self.a2c_network.rnn_dim_shared]))  # Reset RNN hidden state
         rnn_state_critic = (
             np.zeros([1, self.a2c_network.rnn_dim_critic]), np.zeros([1, self.a2c_network.rnn_dim_critic]))
         rnn_state_actor = (
@@ -217,22 +221,28 @@ class A2CAssayService:
 
             self.step_number += 1
 
-            o, a, r, internal_state, o1, d, rnn_state_shared  = self.step_loop(o=o, internal_state=internal_state,
-                                                                       a=a, rnn_state_shared=rnn_state_shared,
-                                                                                 rnn_state_critic=rnn_state_critic,
-                                                                                 rnn_state_actor=rnn_state_actor)
+            o, a, r, internal_state, o1, d, rnn_state_shared, rnn_state_shared_ref = self.step_loop(o=o,
+                                                                                                    internal_state=internal_state,
+                                                                                                    a=a,
+                                                                                                    rnn_state_shared=rnn_state_shared,
+                                                                                                    rnn_state_critic=rnn_state_critic,
+                                                                                                    rnn_state_actor=rnn_state_actor,
+                                                                                                    rnn_state_shared_ref=rnn_state_shared_ref)
             o = o1
 
             if d:
                 break
 
-    def step_loop(self, o, internal_state, a, rnn_state_shared, rnn_state_critic, rnn_state_actor):
+    def step_loop(self, o, internal_state, a, rnn_state_shared, rnn_state_critic, rnn_state_actor,
+                  rnn_state_shared_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
 
-        impulse, angle, updated_rnn_state_shared, rnn2_state, conv1l, \
+        impulse, angle, updated_rnn_state_shared, updated_rnn_state_shared_ref, rnn2_state, conv1l, \
         conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r, o2 = \
             self.sess.run(
                 [self.a2c_network.impulse_output, self.a2c_network.angle_output, self.a2c_network.rnn_state_shared,
+                 self.a2c_network.rnn_state_ref,
+
                  # self.a2c_network.value_rnn_state, self.a2c_network.actor_rnn_state,
                  self.a2c_network.rnn_state2,
                  self.a2c_network.conv1l, self.a2c_network.conv2l, self.a2c_network.conv3l, self.a2c_network.conv4l,
@@ -244,6 +254,8 @@ class A2CAssayService:
                            self.a2c_network.prev_actions: np.reshape(a, (1, 2)),
                            self.a2c_network.trainLength: 1,
                            self.a2c_network.shared_state_in: rnn_state_shared,
+                           self.a2c_network.shared_state_in_ref: rnn_state_shared_ref,
+
                            self.a2c_network.critic_state_in: rnn_state_critic,
                            self.a2c_network.actor_state_in: rnn_state_actor,
                            self.a2c_network.batch_size: 1,
@@ -312,7 +324,7 @@ class A2CAssayService:
             self.output_data[key].append(possible_data_to_save[key])
         self.output_data["step"].append(self.step_number)
 
-        return o, action, given_reward, internal_state, o1, d, updated_rnn_state_shared,# updated_rnn_state_critic, updated_rnn_state_actor,
+        return o, action, given_reward, internal_state, o1, d, updated_rnn_state_shared, updated_rnn_state_shared_ref  # updated_rnn_state_critic, updated_rnn_state_actor,
 
     def save_hdf5_data(self, assay):
         if assay["save frames"]:

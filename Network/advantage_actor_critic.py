@@ -8,7 +8,8 @@ class A2CNetwork:
     def __init__(self, simulation, rnn_dim_shared, rnn_dim_critic, rnn_dim_actor, rnn_cell_shared, rnn_cell_critic,
                  rnn_cell_actor, my_scope, internal_states=2, actor_learning_rate_impulse=0.00001,
                  actor_learning_rate_angle=0.00001,
-                 critic_learning_rate=0.00056, max_impulse=80.0, max_angle_change=1.0, gradient_clip=1.0):
+                 critic_learning_rate=0.00056, max_impulse=80.0, max_angle_change=1.0,
+                 sigma_impulse_min=0.0, sigma_impulse_max=0.2, sigma_angle_min=0.0, sigma_angle_max=0.2):
         # Variables
         self.num_arms = len(simulation.fish.left_eye.vis_angles)  # Rays for each eye
         self.rnn_dim_shared = rnn_dim_shared
@@ -127,6 +128,7 @@ class A2CNetwork:
         self.sigma_impulse = tf.layers.dense(self.sigma_impulse_stream, 1, activation=tf.nn.sigmoid,
                                              kernel_initializer=tf.orthogonal_initializer,
                                              name=my_scope + '_sigma_impulse', trainable=True)
+        self.sigma_impulse = self.bounded_output(self.sigma_impulse, sigma_impulse_min, sigma_impulse_max)
 
         # Actor angle output
         self.mu_angle = tf.layers.dense(self.mu_angle_stream, 1, activation=tf.nn.tanh,
@@ -136,6 +138,7 @@ class A2CNetwork:
         self.sigma_angle = tf.layers.dense(self.sigma_angle_stream, 1, activation=tf.nn.sigmoid,
                                            kernel_initializer=tf.orthogonal_initializer,
                                            name=my_scope + '_sigma_angle', trainable=True)
+        self.sigma_angle = self.bounded_output(self.sigma_angle, sigma_angle_min, sigma_angle_max)
 
         #            ----------        Reflected       ---------            #
 
@@ -231,6 +234,8 @@ class A2CNetwork:
         self.sigma_impulse_ref = tf.layers.dense(self.sigma_impulse_stream_ref, 1, activation=tf.nn.sigmoid,
                                                  kernel_initializer=tf.orthogonal_initializer,
                                                  name=my_scope + '_sigma_impulse', reuse=True, trainable=True)
+        self.sigma_impulse_ref = self.bounded_output(self.sigma_impulse_ref, sigma_impulse_min, sigma_impulse_max)
+
 
         # Actor angle output
         self.mu_angle_ref = tf.layers.dense(self.mu_angle_stream_ref, 1, activation=tf.nn.tanh,
@@ -240,6 +245,7 @@ class A2CNetwork:
         self.sigma_angle_ref = tf.layers.dense(self.sigma_angle_stream_ref, 1, activation=tf.nn.sigmoid,
                                                kernel_initializer=tf.orthogonal_initializer,
                                                name=my_scope + '_sigma_angle', reuse=True, trainable=True)
+        self.sigma_angle_ref = self.bounded_output(self.sigma_angle_ref, sigma_angle_min, sigma_angle_max)
 
         #            ----------        Combined       ---------            #
 
@@ -292,3 +298,7 @@ class A2CNetwork:
         self.training_op_critic = tf.train.AdamOptimizer(critic_learning_rate, name='critic_optimizer').minimize(
             self.loss_critic)
 
+    @staticmethod
+    def bounded_output(x, lower, upper):
+        scale = upper - lower
+        return scale * tf.nn.sigmoid(x) + lower

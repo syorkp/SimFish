@@ -12,7 +12,35 @@ if not os.path.exists("./Assay-Output/"):
     os.makedirs("./Assay-Output/")
 
 
-test_continuous_training_configuration = [
+scaled_sigmas_configuration = [
+    {
+        "Model Name": "scaled_sigmas_configuration",
+        "Environment Name": "continuous_learning_scaffold",
+        "Trial Number": 1,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 10,
+                "3": 15,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+]
+
+reward_penalties_configuration = [
     {
         "Model Name": "reward_penalties_test",
         "Environment Name": "continuous_with_reward_penalties",
@@ -109,7 +137,7 @@ test_continuous_assay_configuration = [
             {
                 "assay id": "Environment-1",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
+                "duration": 2000,
                 "Tethered": False,
                 "save frames": True,
                 "random positions": False,
@@ -127,5 +155,5 @@ test_continuous_assay_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(test_continuous_training_configuration)
+manager = TrialManager(scaled_sigmas_configuration)
 manager.run_priority_loop()
