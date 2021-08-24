@@ -95,8 +95,8 @@ env = {'width': 1500,  # arena size
        'max_angle_change': np.pi/2,
        'max_impulse': 10.0,  # Up to 50ish
 
-       'distance_penalty_scaling_factor': 0,
-       'angle_penalty_scaling_factor': 0,
+       'distance_penalty_scaling_factor': 0.1,
+       'angle_penalty_scaling_factor': 0.1,
        'baseline_penalty': 0.2,
 
        # Policy scaffolding
@@ -133,7 +133,7 @@ params = {'num_actions': 10,  # size of action space
           }
 
 
-directory_name = "continuous_learning_scaffold"
+directory_name = "continuous_with_reward_penalties"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):

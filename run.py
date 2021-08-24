@@ -14,9 +14,9 @@ if not os.path.exists("./Assay-Output/"):
 
 test_continuous_training_configuration = [
     {
-        "Model Name": "scaffold_test",
-        "Environment Name": "continuous_learning_scaffold",
-        "Trial Number": 19,
+        "Model Name": "reward_penalties_test",
+        "Environment Name": "continuous_with_reward_penalties",
+        "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -38,56 +38,56 @@ test_continuous_training_configuration = [
         "Using GPU": True,
         "monitor gpu": False,
     },
-    # {
-    #     "Model Name": "scaffold_test",
-    #     "Environment Name": "continuous_learning_scaffold",
-    #     "Trial Number": 17,
-    #     "Total Configurations": 3,
-    #     "Episode Transitions": {
-    #     },
-    #     "Conditional Transitions": {
-    #         "Prey Caught": {
-    #             "2": 10,
-    #             "3": 15,
-    #         },
-    #         "Predators Avoided": {
-    #         },
-    #         "Sand Grains Bumped": {
-    #         }
-    #     },
-    #     "Run Mode": "Training",
-    #     "Tethered": False,
-    #     "Realistic Bouts": True,
-    #     "Continuous Actions": True,
-    #     "Priority": 2,
-    #     "Using GPU": True,
-    #     "monitor gpu": False,
-    # },
-    # {
-    #     "Model Name": "scaffold_test",
-    #     "Environment Name": "continuous_learning_scaffold",
-    #     "Trial Number": 18,
-    #     "Total Configurations": 3,
-    #     "Episode Transitions": {
-    #     },
-    #     "Conditional Transitions": {
-    #         "Prey Caught": {
-    #             "2": 10,
-    #             "3": 15,
-    #         },
-    #         "Predators Avoided": {
-    #         },
-    #         "Sand Grains Bumped": {
-    #         }
-    #     },
-    #     "Run Mode": "Training",
-    #     "Tethered": False,
-    #     "Realistic Bouts": True,
-    #     "Continuous Actions": True,
-    #     "Priority": 2,
-    #     "Using GPU": True,
-    #     "monitor gpu": False,
-    # }
+    {
+        "Model Name": "reward_penalties_test",
+        "Environment Name": "continuous_with_reward_penalties",
+        "Trial Number": 2,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 10,
+                "3": 15,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
+    {
+        "Model Name": "reward_penalties_test",
+        "Environment Name": "continuous_with_reward_penalties",
+        "Trial Number": 3,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 10,
+                "3": 15,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+    },
 ]
 
 test_continuous_assay_configuration = [
@@ -127,5 +127,5 @@ test_continuous_assay_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(test_continuous_assay_configuration)
+manager = TrialManager(test_continuous_training_configuration)
 manager.run_priority_loop()
