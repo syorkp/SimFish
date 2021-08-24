@@ -21,5 +21,6 @@
     "learning_rate": 0.0001,
     "learning_rate_impulse": 0.0001,
     "learning_rate_angle": 0.0001,
-    "learning_rate_critic": 0.0056
+    "learning_rate_critic": 0.0056,
+    "n_updates_per_iteration": 5
 }

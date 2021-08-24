@@ -81,7 +81,7 @@ env = {'width': 1500,  # arena size
        'rest_cost': 2,
 
        'capture_swim_extra_cost': 25,
-       'capture_basic_reward': 50,
+       'capture_basic_reward': 00.5,
        'predator_cost': 100,
 
        'hunger': True,
@@ -95,13 +95,13 @@ env = {'width': 1500,  # arena size
        'max_angle_change': np.pi/2,
        'max_impulse': 10.0,  # Up to 50ish
 
-       'distance_penalty_scaling_factor': 0.1,
-       'angle_penalty_scaling_factor': 0.1,
-       'baseline_penalty': 0.2,
+       'distance_penalty_scaling_factor': 0.001,
+       'angle_penalty_scaling_factor': 0.001,
+       'baseline_penalty': 0.002,
 
        # Policy scaffolding
        'reward_distance': 100,
-       'proximity_reward': 1,
+       'proximity_reward': 0.01,
        }
 
 
@@ -129,11 +129,13 @@ params = {'num_actions': 10,  # size of action space
 
           'learning_rate_impulse': 0.0001,
           'learning_rate_angle': 0.0001,
-          'learning_rate_critic': 0.0056
+          'learning_rate_critic': 0.0056,
+
+          'n_updates_per_iteration': 5
           }
 
 
-directory_name = "continuous_learning_scaffold"
+directory_name = "ppo_test"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):

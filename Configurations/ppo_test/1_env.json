@@ -60,7 +60,7 @@
     "j_turn_dir_change": 0.07,
     "rest_cost": 2,
     "capture_swim_extra_cost": 25,
-    "capture_basic_reward": 50,
+    "capture_basic_reward": 0.5,
     "predator_cost": 100,
     "hunger": true,
     "hunger_inc_tau": 0.1,
@@ -70,9 +70,9 @@
     "stress_compound": 0.9,
     "max_angle_change": 1.5707963267948966,
     "max_impulse": 10.0,
-    "distance_penalty_scaling_factor": 0.1,
-    "angle_penalty_scaling_factor": 0.1,
-    "baseline_penalty": 0.2,
+    "distance_penalty_scaling_factor": 0.001,
+    "angle_penalty_scaling_factor": 0.001,
+    "baseline_penalty": 0.002,
     "reward_distance": 100,
-    "proximity_reward": 1
+    "proximity_reward": 0.01
 }
