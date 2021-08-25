@@ -17,7 +17,7 @@
     "prey_mass": 1.0,
     "prey_inertia": 40.0,
     "prey_size": 4.0,
-    "prey_num": 15,
+    "prey_num": 30,
     "prey_impulse": 0.05,
     "prey_impulse_rate": 0.25,
     "prey_escape_impulse": 2,
@@ -60,7 +60,7 @@
     "j_turn_dir_change": 0.07,
     "rest_cost": 2,
     "capture_swim_extra_cost": 25,
-    "capture_basic_reward": 0.5,
+    "capture_basic_reward": 0.02,
     "predator_cost": 100,
     "hunger": true,
     "hunger_inc_tau": 0.1,
@@ -74,5 +74,5 @@
     "angle_penalty_scaling_factor": 0.001,
     "baseline_penalty": 0.002,
     "reward_distance": 100,
-    "proximity_reward": 0.01
+    "proximity_reward": 0.005
 }

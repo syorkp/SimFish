@@ -16,7 +16,7 @@ ppo_training_config = [
     {
         "Model Name": "ppo_test",
         "Environment Name": "ppo_test",
-        "Trial Number": 6,
+        "Trial Number": 8,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -151,13 +151,14 @@ ppo_assay_configuration = [
     {
         "Model Name": "ppo_test",
         "Environment Name": "ppo_assay",
-        "Trial Number": 3,
+        "Trial Number": 6,
         "Assay Configuration Name": "Checking_Observation",
         "Total Configurations": 3,
         "Run Mode": "Assay",
         "Tethered": False,
         "Realistic Bouts": True,
         "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
         "Priority": 2,
         "Using GPU": True,
         "monitor gpu": False,
@@ -166,7 +167,7 @@ ppo_assay_configuration = [
             {
                 "assay id": "Environment-1",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
+                "duration": 100,
                 "Tethered": False,
                 "save frames": True,
                 "random positions": False,

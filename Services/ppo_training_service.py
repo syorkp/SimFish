@@ -311,9 +311,6 @@ class PPOTrainingService:
             if step_number != 0 and step_number % self.params["batch_size"] == 0:
                 critic_loss, impulse_loss, angle_loss = self.train_network_batches()
 
-                impulse_loss = np.mean(impulse_loss)
-                angle_loss = np.mean(angle_loss)
-
                 # Reset buffers
                 self.action_buffer = []
                 self.observation_buffer = []
@@ -453,21 +450,25 @@ class PPOTrainingService:
                                                      np.vstack(self.observation_buffer[:-1, :]).shape, 255),
 
                                              })
-        V_of_next_state = self.sess.run(self.ppo_network.Value_output,
-                                        feed_dict={
-                                            self.ppo_network.observation: np.vstack(self.observation_buffer[1:, :]),
-                                            self.ppo_network.trainLength: 1,
-                                            self.ppo_network.batch_size: self.params["batch_size"] - 1,
-                                            self.ppo_network.prev_actions: np.vstack(self.action_buffer[1:, :]),
-                                            self.ppo_network.internal_state: np.vstack(
-                                                self.internal_state_buffer[1:, :]),
-                                            self.ppo_network.scaler: np.full(
-                                                np.vstack(self.observation_buffer[1:, :]).shape, 255),
-                                        })
+        # V_of_next_state = self.sess.run(self.ppo_network.Value_output,
+        #                                 feed_dict={
+        #                                     self.ppo_network.observation: np.vstack(self.observation_buffer[1:, :]),
+        #                                     self.ppo_network.trainLength: 1,
+        #                                     self.ppo_network.batch_size: self.params["batch_size"] - 1,
+        #                                     self.ppo_network.prev_actions: np.vstack(self.action_buffer[1:, :]),
+        #                                     self.ppo_network.internal_state: np.vstack(
+        #                                         self.internal_state_buffer[1:, :]),
+        #                                     self.ppo_network.scaler: np.full(
+        #                                         np.vstack(self.observation_buffer[1:, :]).shape, 255),
+        #                                 })
 
         rewards_to_go = self.compute_rewards_to_go()
         A_k = rewards_to_go[:-1] - np.squeeze(V1)
-        A_k = (A_k - A_k.mean()) / (A_k.std() + 1e-10)
+        # A_k_normalised = (A_k - A_k.mean()) / (A_k.std() + 1e-10)
+
+        average_loss_value = 0
+        average_loss_impulse = 0
+        average_loss_angle = 0
 
         for i in range(self.params["n_updates_per_iteration"]):
             new_impulse_log_prob, new_angle_log_prob, V = self.get_new_log_probs()
@@ -514,8 +515,11 @@ class PPOTrainingService:
                            self.ppo_network.rewards_to_go_placeholder: rewards_to_go[:-1],
 
                            })
+            average_loss_impulse += np.mean(np.abs(loss_actor_val_impulse))
+            average_loss_angle += np.mean(np.abs(loss_actor_val_angle))
+            average_loss_value += np.abs(loss_critic_val)
 
-        return loss_critic_val, loss_actor_val_impulse, loss_actor_val_angle
+        return average_loss_value/self.params["n_updates_per_iteration"], average_loss_impulse/self.params["n_updates_per_iteration"], average_loss_angle/self.params["n_updates_per_iteration"]
 
     def get_new_log_probs(self):
         shared_state_train = (np.zeros([self.params["batch_size"] - 1, self.ppo_network.rnn_dim_shared]),

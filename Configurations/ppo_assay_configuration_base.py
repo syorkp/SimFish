@@ -30,7 +30,7 @@ env = {'width': 1500,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 15,
+       'prey_num': 40,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,

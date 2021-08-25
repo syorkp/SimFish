@@ -128,7 +128,7 @@ class A2CNetwork:
         self.sigma_impulse = tf.layers.dense(self.sigma_impulse_stream, 1, activation=tf.nn.sigmoid,
                                              kernel_initializer=tf.orthogonal_initializer,
                                              name=my_scope + '_sigma_impulse', trainable=True)
-        self.sigma_impulse = self.bounded_output(self.sigma_impulse, sigma_impulse_min, sigma_impulse_max)
+        self.sigma_impulse = self.bounded_output(self.sigma_impulse, 0, sigma_impulse_max)
 
         # Actor angle output
         self.mu_angle = tf.layers.dense(self.mu_angle_stream, 1, activation=tf.nn.tanh,
@@ -234,7 +234,7 @@ class A2CNetwork:
         self.sigma_impulse_ref = tf.layers.dense(self.sigma_impulse_stream_ref, 1, activation=tf.nn.sigmoid,
                                                  kernel_initializer=tf.orthogonal_initializer,
                                                  name=my_scope + '_sigma_impulse', reuse=True, trainable=True)
-        self.sigma_impulse_ref = self.bounded_output(self.sigma_impulse_ref, sigma_impulse_min, sigma_impulse_max)
+        self.sigma_impulse_ref = self.bounded_output(self.sigma_impulse_ref, 0, sigma_impulse_max)
 
 
         # Actor angle output

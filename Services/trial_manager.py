@@ -6,6 +6,7 @@ import Services.training_service as training
 import Services.assay_service as assay
 import Services.ppo_training_service as ppo_training
 import Services.a2c_training_service as a2c_training
+import Services.ppo_assay_service as ppo_assay
 import Services.a2c_assay_service as a2c_assay
 
 
@@ -135,7 +136,10 @@ class TrialManager:
             elif trial["Run Mode"] == "Assay":
                 learning_params, environment_params = self.load_configuration_files(trial["Environment Name"])
                 if trial["Continuous Actions"]:
-                    running_jobs[str(index)] = multiprocessing.Process(target=a2c_assay.a2c_assay_target, args=(trial, learning_params, environment_params, total_steps, episode_number, memory_fraction))
+                    if trial["Learning Algorithm"] == "PPO":
+                        running_jobs[str(index)] = multiprocessing.Process(target=ppo_assay.ppo_assay_target, args=(trial, learning_params, environment_params, total_steps, episode_number, memory_fraction))
+                    else:
+                        running_jobs[str(index)] = multiprocessing.Process(target=a2c_assay.a2c_assay_target, args=(trial, learning_params, environment_params, total_steps, episode_number, memory_fraction))
                 else:
                     running_jobs[str(index)] = multiprocessing.Process(target=assay.assay_target, args=(trial, learning_params, environment_params, total_steps, episode_number, memory_fraction))
             running_jobs[str(index)].start()
