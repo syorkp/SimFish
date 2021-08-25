@@ -326,137 +326,137 @@ def plot_artificial_traces(prey_pred_data, prey_size_data, directional_data, pre
     # plt.show()
 
 
-data1 = load_data("scaffold_test-12", "Checking_Observation", "Environment-1")
+data1 = load_data("ppo_test-3", "Checking_Observation", "Environment-1")
 unit_activity1a = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
 plot_traces(unit_activity1a)
-
-import json
 #
-with open(f"../../Categorisation-Data/final_even2.json", 'r') as f:
-    data2 = json.load(f)
-placeholder_list = data2["new_even_prey_ref-4"]["3"] + data2["new_even_prey_ref-4"]["16"]
-
-data1 = load_data("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-8")
-plot_certain_neurons(data1, 200, placeholder_list[:10])
-
-
-## Naturalistic traces
-# data1 = load_data("new_differential_prey_ref-4", "Behavioural-Data-Free-1", "Naturalistic-8")
-# plot_certain_neurons(data1, 200, [20, 21, 139, 156, 161, 135, 133, 196])
-# plot_behavioural_events(data1, 200)
-# # Get exploraiton timeseries and add to that
-# unit_activity1 = [[data1["rnn state"][i - 1][0][j] for i in range(200)] for j in range(512)]
-# plot_traces(unit_activity1)
-
-
-
-data1 = load_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
-data2 = load_data("even_prey_ref-5", "For-Traces", "Predator-Static-40")
-stimulus_data1 = load_stimulus_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
-stimulus_data2 = load_stimulus_data("even_prey_ref-5", "For-Traces", "Predator-Static-40")
-
-unit_activity1 = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
-unit_activity2 = [[data2["rnn state"][i - 1][0][j] for i in data2["step"]] for j in range(512)]
-
+# import json
+# #
+# with open(f"../../Categorisation-Data/final_even2.json", 'r') as f:
+#     data2 = json.load(f)
+# placeholder_list = data2["new_even_prey_ref-4"]["3"] + data2["new_even_prey_ref-4"]["16"]
 #
-# plot_multiple_traces([unit_activity1, unit_activity2],
-#                      [stimulus_data1, stimulus_data2],
-#                      ["Prey", "Predator"])
-
-
-data1 = load_data("even_prey_ref-50", "For-Traces", "Prey-Static-5")
-data2 = load_data("even_prey_ref-50", "For-Traces", "Prey-Static-10")
-data3 = load_data("even_prey_ref-50", "For-Traces", "Prey-Static-15")
-stimulus_data3 = load_stimulus_data("even_prey_ref-50", "For-Traces", "Prey-Static-5")
-stimulus_data4 = load_stimulus_data("even_prey_ref-50", "For-Traces", "Prey-Static-10")
-stimulus_data5 = load_stimulus_data("even_prey_ref-50", "For-Traces", "Prey-Static-15")
-
-unit_activity3 = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
-unit_activity4 = [[data2["rnn state"][i - 1][0][j] for i in data2["step"]] for j in range(512)]
-unit_activity5 = [[data3["rnn state"][i - 1][0][j] for i in data3["step"]] for j in range(512)]
-# plot_multiple_traces([unit_activity3, unit_activity4, unit_activity5],
-#                      [stimulus_data3, stimulus_data4, stimulus_data5],
-#                      ["5", "10", "15"])
-
-data1 = load_data("even_prey_ref-50", "For-Traces", "Prey-Left-10")
-data2 = load_data("even_prey_ref-50", "For-Traces", "Prey-Right-10")
-stimulus_data6 = load_stimulus_data("even_prey_ref-50", "For-Traces", "Prey-Left-10")
-stimulus_data7 = load_stimulus_data("even_prey_ref-50", "For-Traces", "Prey-Right-10")
-unit_activity6 = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
-unit_activity7 = [[data2["rnn state"][i - 1][0][j] for i in data2["step"]] for j in range(512)]
-# plot_multiple_traces([unit_activity6, unit_activity7],
-#                      [stimulus_data1, stimulus_data2],
-#                      ["Left", "Right"])
-
-
+# data1 = load_data("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-8")
+# plot_certain_neurons(data1, 200, placeholder_list[:10])
+#
+#
+# ## Naturalistic traces
+# # data1 = load_data("new_differential_prey_ref-4", "Behavioural-Data-Free-1", "Naturalistic-8")
+# # plot_certain_neurons(data1, 200, [20, 21, 139, 156, 161, 135, 133, 196])
+# # plot_behavioural_events(data1, 200)
+# # # Get exploraiton timeseries and add to that
+# # unit_activity1 = [[data1["rnn state"][i - 1][0][j] for i in range(200)] for j in range(512)]
+# # plot_traces(unit_activity1)
+#
+#
+#
+# data1 = load_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
+# data2 = load_data("even_prey_ref-5", "For-Traces", "Predator-Static-40")
+# stimulus_data1 = load_stimulus_data("even_prey_ref-5", "For-Traces", "Prey-Static-10")
+# stimulus_data2 = load_stimulus_data("even_prey_ref-5", "For-Traces", "Predator-Static-40")
+#
+# unit_activity1 = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
+# unit_activity2 = [[data2["rnn state"][i - 1][0][j] for i in data2["step"]] for j in range(512)]
+#
+# #
+# # plot_multiple_traces([unit_activity1, unit_activity2],
+# #                      [stimulus_data1, stimulus_data2],
+# #                      ["Prey", "Predator"])
+#
+#
+# data1 = load_data("even_prey_ref-50", "For-Traces", "Prey-Static-5")
+# data2 = load_data("even_prey_ref-50", "For-Traces", "Prey-Static-10")
+# data3 = load_data("even_prey_ref-50", "For-Traces", "Prey-Static-15")
+# stimulus_data3 = load_stimulus_data("even_prey_ref-50", "For-Traces", "Prey-Static-5")
+# stimulus_data4 = load_stimulus_data("even_prey_ref-50", "For-Traces", "Prey-Static-10")
+# stimulus_data5 = load_stimulus_data("even_prey_ref-50", "For-Traces", "Prey-Static-15")
+#
+# unit_activity3 = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
+# unit_activity4 = [[data2["rnn state"][i - 1][0][j] for i in data2["step"]] for j in range(512)]
+# unit_activity5 = [[data3["rnn state"][i - 1][0][j] for i in data3["step"]] for j in range(512)]
+# # plot_multiple_traces([unit_activity3, unit_activity4, unit_activity5],
+# #                      [stimulus_data3, stimulus_data4, stimulus_data5],
+# #                      ["5", "10", "15"])
+#
+# data1 = load_data("even_prey_ref-50", "For-Traces", "Prey-Left-10")
+# data2 = load_data("even_prey_ref-50", "For-Traces", "Prey-Right-10")
+# stimulus_data6 = load_stimulus_data("even_prey_ref-50", "For-Traces", "Prey-Left-10")
+# stimulus_data7 = load_stimulus_data("even_prey_ref-50", "For-Traces", "Prey-Right-10")
+# unit_activity6 = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
+# unit_activity7 = [[data2["rnn state"][i - 1][0][j] for i in data2["step"]] for j in range(512)]
+# # plot_multiple_traces([unit_activity6, unit_activity7],
+# #                      [stimulus_data1, stimulus_data2],
+# #                      ["Left", "Right"])
+#
+#
+# # plot_artificial_traces([unit_activity1, unit_activity2], [unit_activity3, unit_activity4, unit_activity5], [unit_activity6, unit_activity7],
+#                        # [158, 315, 319], [21, 152, 315, 302], [335, 315],
 # plot_artificial_traces([unit_activity1, unit_activity2], [unit_activity3, unit_activity4, unit_activity5], [unit_activity6, unit_activity7],
-                       # [158, 315, 319], [21, 152, 315, 302], [335, 315],
-plot_artificial_traces([unit_activity1, unit_activity2], [unit_activity3, unit_activity4, unit_activity5], [unit_activity6, unit_activity7],
-                       [198, 3], [26, 2], [109, 131],
-                       ["10-Static", "40-Static"], ["5-Static", "10-Static", "15-Static"], ["10-Left", "10-Right"],
-                       [stimulus_data1, stimulus_data2, stimulus_data3, stimulus_data4, stimulus_data5, stimulus_data6, stimulus_data7])
-
-
-
-
-# data1a = load_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Static-5")
-# data2b = load_data("even_prey_ref-5", "Predator-Full-Response-Vector", "Predator-Static-40")
-# data1a = load_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Towards")
-# data1b = load_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Away")
-# data2a = load_data("even_prey_ref-5", "Predator-Full-Response-Vector", "Predator-Towards")
-# data2b = load_data("even_prey_ref-5", "Predator-Full-Response-Vector", "Predator-Away")
-#
-# # stimulus_data1a = load_stimulus_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Static-5")
-# # stimulus_data2a = load_stimulus_data("even_prey_ref-5", "Predator-Full-Response-Vector", "Predator-Static-40")
-# stimulus_data1a = load_stimulus_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Towards")
-# stimulus_data1b = load_stimulus_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Away")
-# stimulus_data2a = load_stimulus_data("even_prey_ref-5", "Predator-Full-Response-Vector", "Predator-Towards")
-# stimulus_data2b = load_stimulus_data("even_prey_ref-5", "Predator-Full-Response-Vector", "Predator-Away")
-
-
-# unit_activity1a = [[data1a["rnn state"][i - 1][0][j] for i in data1a["step"]] for j in range(512)]
-# unit_activity1b = [[data1b["rnn state"][i - 1][0][j] for i in data2b["step"]] for j in range(512)]
-# unit_activity2a = [[data2a["rnn state"][i - 1][0][j] for i in data1a["step"]] for j in range(512)]
-# unit_activity2b = [[data2b["rnn state"][i - 1][0][j] for i in data2b["step"]] for j in range(512)]
-
-# Many presentations for RF mapping (Prey)
-# plot_multiple_traces([unit_activity1a, unit_activity1b, unit_activity2a, unit_activity2b],
-#                      [stimulus_data1a, stimulus_data1b, stimulus_data2a, stimulus_data2b],
-#                      ["Prey-Towards", "Prey-Away", "Predator-Towards", "Predator-Away"])
-
-
-# No vs red background
-# plot_multiple_traces([unit_activity1a, unit_activity1],
-#                      [stimulus_data1a, stimulus_data1],
-#                      ["No Background", "Red Background"])
-
-# Left vs right predators
-# plot_multiple_traces([unit_activity2, unit_activity3],
-#                      [stimulus_data2, stimulus_data3],
-#                      ["Predator-Moving-Left", "Predator-Moving-Right"])
-
-# Left vs right prey
-# plot_multiple_traces([unit_activity5, unit_activity6],
-#                      [stimulus_data5, stimulus_data6],
-#                      ["Prey-Moving-Left", "Prey-Moving-Right"])
-
-# # Static prey vs predators
-# plot_multiple_traces([unit_activity1, unit_activity4],
-#                      [stimulus_data1, stimulus_data4],
-#                      ["Predator-Static", "Prey-Static"])
+#                        [198, 3], [26, 2], [109, 131],
+#                        ["10-Static", "40-Static"], ["5-Static", "10-Static", "15-Static"], ["10-Left", "10-Right"],
+#                        [stimulus_data1, stimulus_data2, stimulus_data3, stimulus_data4, stimulus_data5, stimulus_data6, stimulus_data7])
 #
 #
-# Right prey vs static
-# plot_multiple_traces([unit_activity4, unit_activity6],
-#                      [stimulus_data4, stimulus_data6],
-#                      ["Prey-Static", "Prey-Moving-Right"])
-
-# # Prey of different sizes
-# plot_multiple_traces([unit_activity7, unit_activity8, unit_activity9],
-#                      [stimulus_data7, stimulus_data8, stimulus_data9],
-#                      ["Prey-Size-5", "Prey-Size-10", "Prey-Size-15"])
-
-# All
-# plot_multiple_traces([unit_activity1, unit_activity2, unit_activity3, unit_activity4, unit_activity5, unit_activity6],
-#                      [stimulus_data1, stimulus_data2, stimulus_data3, stimulus_data4, stimulus_data5, stimulus_data6],
-#                      ["Predator-Static", "Predator-Moving-Left", "Predator-Moving-Right", "Prey-Static", "Prey-Moving-Left", "Prey-Moving-Right"])
+#
+#
+# # data1a = load_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Static-5")
+# # data2b = load_data("even_prey_ref-5", "Predator-Full-Response-Vector", "Predator-Static-40")
+# # data1a = load_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Towards")
+# # data1b = load_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Away")
+# # data2a = load_data("even_prey_ref-5", "Predator-Full-Response-Vector", "Predator-Towards")
+# # data2b = load_data("even_prey_ref-5", "Predator-Full-Response-Vector", "Predator-Away")
+# #
+# # # stimulus_data1a = load_stimulus_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Static-5")
+# # # stimulus_data2a = load_stimulus_data("even_prey_ref-5", "Predator-Full-Response-Vector", "Predator-Static-40")
+# # stimulus_data1a = load_stimulus_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Towards")
+# # stimulus_data1b = load_stimulus_data("even_prey_ref-5", "Prey-Full-Response-Vector", "Prey-Away")
+# # stimulus_data2a = load_stimulus_data("even_prey_ref-5", "Predator-Full-Response-Vector", "Predator-Towards")
+# # stimulus_data2b = load_stimulus_data("even_prey_ref-5", "Predator-Full-Response-Vector", "Predator-Away")
+#
+#
+# # unit_activity1a = [[data1a["rnn state"][i - 1][0][j] for i in data1a["step"]] for j in range(512)]
+# # unit_activity1b = [[data1b["rnn state"][i - 1][0][j] for i in data2b["step"]] for j in range(512)]
+# # unit_activity2a = [[data2a["rnn state"][i - 1][0][j] for i in data1a["step"]] for j in range(512)]
+# # unit_activity2b = [[data2b["rnn state"][i - 1][0][j] for i in data2b["step"]] for j in range(512)]
+#
+# # Many presentations for RF mapping (Prey)
+# # plot_multiple_traces([unit_activity1a, unit_activity1b, unit_activity2a, unit_activity2b],
+# #                      [stimulus_data1a, stimulus_data1b, stimulus_data2a, stimulus_data2b],
+# #                      ["Prey-Towards", "Prey-Away", "Predator-Towards", "Predator-Away"])
+#
+#
+# # No vs red background
+# # plot_multiple_traces([unit_activity1a, unit_activity1],
+# #                      [stimulus_data1a, stimulus_data1],
+# #                      ["No Background", "Red Background"])
+#
+# # Left vs right predators
+# # plot_multiple_traces([unit_activity2, unit_activity3],
+# #                      [stimulus_data2, stimulus_data3],
+# #                      ["Predator-Moving-Left", "Predator-Moving-Right"])
+#
+# # Left vs right prey
+# # plot_multiple_traces([unit_activity5, unit_activity6],
+# #                      [stimulus_data5, stimulus_data6],
+# #                      ["Prey-Moving-Left", "Prey-Moving-Right"])
+#
+# # # Static prey vs predators
+# # plot_multiple_traces([unit_activity1, unit_activity4],
+# #                      [stimulus_data1, stimulus_data4],
+# #                      ["Predator-Static", "Prey-Static"])
+# #
+# #
+# # Right prey vs static
+# # plot_multiple_traces([unit_activity4, unit_activity6],
+# #                      [stimulus_data4, stimulus_data6],
+# #                      ["Prey-Static", "Prey-Moving-Right"])
+#
+# # # Prey of different sizes
+# # plot_multiple_traces([unit_activity7, unit_activity8, unit_activity9],
+# #                      [stimulus_data7, stimulus_data8, stimulus_data9],
+# #                      ["Prey-Size-5", "Prey-Size-10", "Prey-Size-15"])
+#
+# # All
+# # plot_multiple_traces([unit_activity1, unit_activity2, unit_activity3, unit_activity4, unit_activity5, unit_activity6],
+# #                      [stimulus_data1, stimulus_data2, stimulus_data3, stimulus_data4, stimulus_data5, stimulus_data6],
+# #                      ["Predator-Static", "Predator-Moving-Left", "Predator-Moving-Right", "Prey-Static", "Prey-Moving-Left", "Prey-Moving-Right"])

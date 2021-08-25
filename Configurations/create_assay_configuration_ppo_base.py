@@ -6,10 +6,9 @@ Created on Mon Oct  5 07:52:17 2020
 @author: asaph
 """
 import json
-import os
+import numpy as np
 
 # all distances in pixels
-import numpy as np
 
 env = {'width': 1500,  # arena size
        'height': 1500,
@@ -127,43 +126,18 @@ params = {'num_actions': 10,  # size of action space
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
           'learning_rate': 0.0001,
 
-          'learning_rate_impulse': 0.00001,
-          'learning_rate_angle': 0.00001,
-          'learning_rate_critic': 0.00056,
+          'learning_rate_impulse': 0.0001,
+          'learning_rate_angle': 0.0001,
+          'learning_rate_critic': 0.0056,
 
           'n_updates_per_iteration': 5
           }
 
 
-directory_name = "ppo_test"
-
-# Ensure Output File Exists
-if not os.path.exists(f"Configurations/{directory_name}/"):
-    os.makedirs(f"Configurations/{directory_name}/")
-
-
 # Equal to that given in the file name.
-def save_files(n):
-    with open(f"Configurations/{directory_name}/{str(n)}_env.json", 'w') as f:
-        json.dump(env, f, indent=4)
+environment_name = "ppo_assay"
+with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
+    json.dump(env, f)
 
-    with open(f"Configurations/{directory_name}/{str(n)}_learning.json", 'w') as f:
-        json.dump(params, f, indent=4)
-
-
-# A. Learn Predator avoidance and prey capture #
-
-# 1 Initial config
-number = 1
-save_files(number)
-number += 1
-
-env['prey_impulse'] = 0.02
-save_files(number)
-number += 1
-
-env['prey_impulse'] = 0.05
-save_files(number)
-number += 1
-
-
+with open(f"Configurations/Assay-Configs/{environment_name}_learning.json", 'w') as f:
+    json.dump(params, f)

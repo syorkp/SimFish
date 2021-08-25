@@ -275,15 +275,6 @@ class PPONetwork:
 
         self.Value_output = tf.math.divide(tf.math.add(self.Value, self.Value_ref), 2.0, name="value_output")
 
-        #            ----------        Getting New Log Probabilities       ---------            #
-
-        # self.action_placeholder_log_probs = tf.placeholder(shape=[None, 2], dtype=tf.float32, name='action_placeholder_log_probs')
-        #
-        # self.new_log_prob_impulse = tf.log(self.norm_dist_impulse.prob(
-        #                             tf.math.divide(self.action_placeholder_log_probs[0][0], max_impulse)) + 1e-5)
-        # self.new_log_prob_angle = tf.log(self.norm_dist_angle.prob(
-        #                           tf.math.divide(self.action_placeholder_log_probs[0][1], max_angle_change)) + 1e-5)
-
         #            ----------        Loss functions       ---------            #
 
         # Placeholders
@@ -304,26 +295,45 @@ class PPONetwork:
         self.impulse_surrogate_loss_2 = tf.where(self.scaled_advantage_placeholder > 0,
                                         (1+clip_param)*self.scaled_advantage_placeholder, (1-clip_param)*self.scaled_advantage_placeholder)
         # self.impulse_surrogate_loss_2 = tf.clip_by_value(self.impulse_ratio, 1-clip_param, 1+clip_param)
-        # self.impulse_loss = -tf.reduce_mean(tf.minimum(self.impulse_surrogate_loss_1, self.impulse_surrogate_loss_2))
         self.impulse_loss = -tf.reduce_mean(tf.minimum(self.impulse_surrogate_loss_1, self.impulse_surrogate_loss_2))
-        self.training_op_actor_impulse = tf.train.AdamOptimizer(actor_learning_rate_impulse,
-                                                                name='actor_optimizer_impulse').minimize(self.impulse_loss)
+        # self.impulse_loss = tf.clip_by_value(self.impulse_loss, -5, 5)
+        # self.training_op_actor_impulse = tf.train.AdamOptimizer(actor_learning_rate_impulse,
+        #                                                         name='actor_optimizer_impulse').minimize(self.impulse_loss)
+        self.impulse_optimiser = tf.train.AdamOptimizer(actor_learning_rate_impulse,
+                                                                 name='actor_optimizer_impulse')
+        self.impulse_gradients, self.impulse_variables = zip(*self.impulse_optimiser.compute_gradients(self.impulse_loss))
+        self.impulse_gradients, _ = tf.clip_by_global_norm(self.impulse_gradients, 5.0)
+        self.training_op_actor_impulse = self.impulse_optimiser.apply_gradients(zip(self.impulse_gradients, self.impulse_variables))
+
         # Angle
         self.angle_ratio = tf.exp(self.log_prob_angle_placeholder - self.old_log_prob_angle_placeholder)
         self.angle_surrogate_loss_1 = tf.math.multiply(self.angle_ratio, self.scaled_advantage_placeholder)
         self.angle_surrogate_loss_2 = tf.clip_by_value(self.angle_ratio, 1-clip_param, 1+clip_param)
         self.angle_loss = -tf.reduce_mean(tf.minimum(self.angle_surrogate_loss_1, self.angle_surrogate_loss_2))
-        self.training_op_actor_angle = tf.train.AdamOptimizer(actor_learning_rate_angle,
-                                                              name='actor_optimizer_angle').minimize(self.angle_loss)
+        # self.angle_ratio = tf.clip_by_value(self.angle_loss, -5, 5)
+        # self.training_op_actor_angle = tf.train.AdamOptimizer(actor_learning_rate_angle,
+        #                                                       name='actor_optimizer_angle').minimize(self.angle_loss)
+        # self.action_op = tf.group(self.training_op_actor_impulse, self.training_op_actor_angle)
+        self.angle_optimiser = tf.train.AdamOptimizer(actor_learning_rate_angle,
+                                                                 name='actor_optimizer_impulse')
+        self.angle_gradients, self.angle_variables = zip(*self.angle_optimiser.compute_gradients(self.angle_loss))
+        self.angle_gradients, _ = tf.clip_by_global_norm(self.angle_gradients, 5.0)
+        self.training_op_actor_angle = self.angle_optimiser.apply_gradients(zip(self.angle_gradients, self.angle_variables))
 
         self.action_op = tf.group(self.training_op_actor_impulse, self.training_op_actor_angle)
 
         # Critic (state-value) loss function
         self.critic_loss = tf.reduce_mean(tf.squared_difference(tf.squeeze(self.Value_output), self.rewards_to_go_placeholder))
-        # self.critic_loss = tf.clip_by_value(self.critic_loss, -10, 10)
+        # self.critic_loss = tf.clip_by_value(self.critic_loss, -5, 5)
+        # self.training_op_critic = tf.train.AdamOptimizer(critic_learning_rate, name='critic_optimizer').minimize(
+        #     self.critic_loss)
 
-        self.training_op_critic = tf.train.AdamOptimizer(critic_learning_rate, name='critic_optimizer').minimize(
-            self.critic_loss)
+        self.critic_optimiser = tf.train.AdamOptimizer(critic_learning_rate,
+                                                                 name='actor_optimizer_impulse')
+        self.critic_gradients, self.critic_variables = zip(*self.critic_optimiser.compute_gradients(self.critic_loss))
+        self.critic_gradients, _ = tf.clip_by_global_norm(self.critic_gradients, 5.0)
+        self.training_op_critic = self.critic_optimiser.apply_gradients(zip(self.critic_gradients, self.critic_variables))
+
 
     @staticmethod
     def bounded_output(x, lower, upper):

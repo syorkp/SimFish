@@ -9,7 +9,7 @@ class A2CNetwork:
                  rnn_cell_actor, my_scope, internal_states=2, actor_learning_rate_impulse=0.00001,
                  actor_learning_rate_angle=0.00001,
                  critic_learning_rate=0.00056, max_impulse=80.0, max_angle_change=1.0,
-                 sigma_impulse_min=0.0, sigma_impulse_max=0.2, sigma_angle_min=0.0, sigma_angle_max=0.2):
+                 sigma_impulse_max=0.2, sigma_angle_max=0.2):
         # Variables
         self.num_arms = len(simulation.fish.left_eye.vis_angles)  # Rays for each eye
         self.rnn_dim_shared = rnn_dim_shared
@@ -138,7 +138,7 @@ class A2CNetwork:
         self.sigma_angle = tf.layers.dense(self.sigma_angle_stream, 1, activation=tf.nn.sigmoid,
                                            kernel_initializer=tf.orthogonal_initializer,
                                            name=my_scope + '_sigma_angle', trainable=True)
-        self.sigma_angle = self.bounded_output(self.sigma_angle, sigma_angle_min, sigma_angle_max)
+        self.sigma_angle = self.bounded_output(self.sigma_angle, 0, sigma_angle_max)
 
         #            ----------        Reflected       ---------            #
 
@@ -245,7 +245,7 @@ class A2CNetwork:
         self.sigma_angle_ref = tf.layers.dense(self.sigma_angle_stream_ref, 1, activation=tf.nn.sigmoid,
                                                kernel_initializer=tf.orthogonal_initializer,
                                                name=my_scope + '_sigma_angle', reuse=True, trainable=True)
-        self.sigma_angle_ref = self.bounded_output(self.sigma_angle_ref, sigma_angle_min, sigma_angle_max)
+        self.sigma_angle_ref = self.bounded_output(self.sigma_angle_ref, 0, sigma_angle_max)
 
         #            ----------        Combined       ---------            #
 
