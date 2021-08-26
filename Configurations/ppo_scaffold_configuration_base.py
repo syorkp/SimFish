@@ -102,6 +102,10 @@ env = {'width': 1500,  # arena size
        # Policy scaffolding
        'reward_distance': 100,
        'proximity_reward': 0.005,
+
+       'max_sigma_value_impulse': 0.4,
+       'max_sigma_value_angle': 0.4,
+       'clip_param': 0.2
        }
 
 
@@ -117,19 +121,16 @@ params = {'num_actions': 10,  # size of action space
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
           'max_epLength': 1000,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
-          'summaryLength': 200,  # Number of episodes to periodically save for analysis
+          'summaryLength': 50,  # Number of episodes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
           'rnn_dim_shared': 512,  # number of rnn cells
           'rnn_dim_actor': 100,
           'rnn_dim_critic': 100,
           'extra_rnn': False,
 
-          'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
-          'learning_rate': 0.0001,
-
           'learning_rate_impulse': 0.00001,
           'learning_rate_angle': 0.00001,
-          'learning_rate_critic': 0.00056,
+          'learning_rate_critic': 0.000056,
 
           'n_updates_per_iteration': 5
           }

@@ -101,6 +101,10 @@ env = {'width': 1500,  # arena size
        # Policy scaffolding
        'reward_distance': 100,
        'proximity_reward': 0.01,
+       'max_sigma_value_impulse': 0.4,
+       'max_sigma_value_angle': 0.4,
+       'clip_param': 0.2
+
        }
 
 

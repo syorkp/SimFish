@@ -95,7 +95,6 @@ def load_network_variables_ppo(model_name, conf_name):
         return sorted_vars
 
 
-
-v = load_network_variables_ppo("ppo_test-3", "1")
+v = load_network_variables_ppo("updated_ppo-4", "1")
 
 x = True

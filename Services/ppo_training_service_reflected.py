@@ -6,8 +6,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
-# from Network.proximal_policy_optimizer import PPONetwork
-from Network.proximal_policy_optimizer_unreflected import PPONetwork
+from Network.proximal_policy_optimizer import PPONetwork
 from Tools.make_gif import make_gif
 
 tf.disable_v2_behavior()
@@ -330,11 +329,12 @@ class PPOTrainingService:
                 angle_loss_buffer.append(angle_loss)
 
             step_number += 1
-            o, a, r, internal_state, o1, d, rnn_state_shared, V, impulse_probability, angle_probability = self.step_loop(
+            o, a, r, internal_state, o1, d, rnn_state_shared, rnn_state_shared_ref, V, impulse_probability, angle_probability = self.step_loop(
                 o=o,
                 internal_state=internal_state,
                 a=a,
                 rnn_state_shared=rnn_state_shared,
+                rnn_state_shared_ref=rnn_state_shared_ref
             )
 
             # Update buffer
@@ -371,25 +371,27 @@ class PPOTrainingService:
                           value_buffer=full_value_buffer
                           )
 
-    def step_loop(self, o, internal_state, a, rnn_state_shared):
+    def step_loop(self, o, internal_state, a, rnn_state_shared, rnn_state_shared_ref):
         # Generate actions and corresponding steps.
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.env['max_impulse'], a[1]/self.env['max_angle_change']]  # Set impulse to scale to be inputted to network
-        impulse, angle, updated_rnn_state_shared, V, impulse_probability, angle_probability, \
-        mu_i, si_i, mu_a, si_a, mu1 = self.sess.run(
+        impulse, angle, updated_rnn_state_shared, updated_rnn_state_shared_ref, V, impulse_probability, angle_probability, \
+        mu_i, si_i, mu_a, si_a, mu1, mu1_ref = self.sess.run(
             [self.ppo_network.impulse_output, self.ppo_network.angle_output, self.ppo_network.rnn_state_shared,
+             self.ppo_network.rnn_state_ref,
              # self.a2c_network.value_rnn_state, self.a2c_network.actor_rnn_state,
              self.ppo_network.Value_output,
              self.ppo_network.log_prob_impulse, self.ppo_network.log_prob_angle,
              self.ppo_network.mu_impulse_combined, self.ppo_network.sigma_impulse_combined,
              self.ppo_network.mu_angle_combined,
-             self.ppo_network.sigma_angle_combined, self.ppo_network.mu_impulse
+             self.ppo_network.sigma_angle_combined, self.ppo_network.mu_impulse, self.ppo_network.mu_impulse_ref
              ],
             feed_dict={self.ppo_network.observation: o,
                        self.ppo_network.scaler: np.full(o.shape, 255),
                        self.ppo_network.internal_state: internal_state,
                        self.ppo_network.prev_actions: np.reshape(a, (1, 2)),
                        self.ppo_network.shared_state_in: rnn_state_shared,
+                       self.ppo_network.shared_state_in_ref: rnn_state_shared_ref,
                        # self.a2c_network.critic_state_in: rnn_state_critic,
                        # self.a2c_network.actor_state_in: rnn_state_actor,
                        self.ppo_network.batch_size: 1,
@@ -407,6 +409,7 @@ class PPOTrainingService:
         self.mu_a_buffer.append(mu_a)
         self.si_a_buffer.append(si_a)
         self.mu1_buffer.append(mu1)
+        self.mu1_ref_buffer.append(mu1_ref)
 
         # Simulation step
         o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(
@@ -416,7 +419,7 @@ class PPOTrainingService:
             activations=sa)
 
         self.total_steps += 1
-        return o, action, given_reward, internal_state, o1, d, updated_rnn_state_shared, V, impulse_probability, angle_probability
+        return o, action, given_reward, internal_state, o1, d, updated_rnn_state_shared, updated_rnn_state_shared_ref, V, impulse_probability, angle_probability
 
     def compute_rewards_to_go(self):
         rewards_to_go = []

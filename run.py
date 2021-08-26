@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-import json
 
 from Services.trial_manager import TrialManager
 
@@ -14,61 +13,9 @@ if not os.path.exists("./Assay-Output/"):
 
 ppo_training_config = [
     {
-        "Model Name": "ppo_test",
+        "Model Name": "ppo_no_reflection",
         "Environment Name": "ppo_test",
-        "Trial Number": 9,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 10,
-                "3": 15,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-    },
-    {
-        "Model Name": "ppo_test",
-        "Environment Name": "ppo_test",
-        "Trial Number": 10,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 10,
-                "3": 15,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-    },
-    {
-        "Model Name": "ppo_test",
-        "Environment Name": "ppo_test",
-        "Trial Number": 11,
+        "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -201,9 +148,9 @@ reward_penalties_configuration = [
 
 ppo_assay_configuration = [
     {
-        "Model Name": "ppo_test",
+        "Model Name": "updated_ppo",
         "Environment Name": "ppo_assay",
-        "Trial Number": 6,
+        "Trial Number": 5,
         "Assay Configuration Name": "Checking_Observation",
         "Total Configurations": 3,
         "Run Mode": "Assay",

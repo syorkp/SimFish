@@ -314,7 +314,6 @@ def plot_artificial_traces(prey_pred_data, prey_size_data, directional_data, pre
 
     legendFig.legend(handles[1:]+handles2+handles3, labels[1:]+labels2+labels3, loc='upper right',  fontsize=20)
 
-    legendFig.savefig('legend.png')
     # plt.legend([prey_pred_data[0][0], prey_pred_data[1][0], prey_size_data[0][0],
     #             prey_size_data[2][0], directional_data[0][0], directional_data[1][0]],
     #             labels=labels1 + [labels2[0], labels2[2]] +labels3)
@@ -326,7 +325,7 @@ def plot_artificial_traces(prey_pred_data, prey_size_data, directional_data, pre
     # plt.show()
 
 
-data1 = load_data("ppo_test-6", "Checking_Observation", "Environment-1")
+data1 = load_data("updated_ppo-5", "Checking_Observation", "Environment-1")
 unit_activity1a = [[data1["rnn state"][i - 1][0][j] for i in data1["step"]] for j in range(512)]
 plot_traces(unit_activity1a)
 #
