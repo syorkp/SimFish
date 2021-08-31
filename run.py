@@ -13,9 +13,9 @@ if not os.path.exists("./Assay-Output/"):
 
 ppo_training_config = [
     {
-        "Model Name": "ppo_no_reflection",
+        "Model Name": "ppo_two_networks",
         "Environment Name": "ppo_test",
-        "Trial Number": 1,
+        "Trial Number": 3,
         "Total Configurations": 3,
         "Episode Transitions": {
         },

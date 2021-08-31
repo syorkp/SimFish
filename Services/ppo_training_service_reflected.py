@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
-from Network.proximal_policy_optimizer import PPONetwork
+from Network.proximal_policy_optimizer import PPONetworkActor
 from Tools.make_gif import make_gif
 
 tf.disable_v2_behavior()
@@ -235,24 +235,24 @@ class PPOTrainingService:
         critic_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim_critic'], state_is_tuple=True)
         actor_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim_actor'], state_is_tuple=True)
 
-        ppo_network = PPONetwork(simulation=self.simulation,
-                                 rnn_dim_shared=self.params['rnn_dim_shared'],
-                                 rnn_dim_critic=self.params['rnn_dim_critic'],
-                                 rnn_dim_actor=self.params['rnn_dim_actor'],
-                                 rnn_cell_shared=shared_cell,
-                                 rnn_cell_critic=critic_cell,
-                                 rnn_cell_actor=actor_cell,
-                                 my_scope='main',
-                                 internal_states=internal_states,
-                                 actor_learning_rate_impulse=self.params['learning_rate_impulse'],
-                                 actor_learning_rate_angle=self.params['learning_rate_angle'],
-                                 critic_learning_rate=self.params['learning_rate_critic'],
-                                 max_impulse=self.env['max_impulse'],
-                                 max_angle_change=self.env['max_angle_change'],
-                                 sigma_impulse_max=self.env['max_sigma_value_impulse'],
-                                 sigma_angle_max=self.env['max_sigma_value_angle'],
-                                 clip_param=self.env['clip_param']
-                                 )
+        ppo_network = PPONetworkActor(simulation=self.simulation,
+                                      rnn_dim_shared=self.params['rnn_dim_shared'],
+                                      rnn_dim_critic=self.params['rnn_dim_critic'],
+                                      rnn_dim_actor=self.params['rnn_dim_actor'],
+                                      rnn_cell_shared=shared_cell,
+                                      rnn_cell_critic=critic_cell,
+                                      rnn_cell_actor=actor_cell,
+                                      my_scope='main',
+                                      internal_states=internal_states,
+                                      actor_learning_rate_impulse=self.params['learning_rate_impulse'],
+                                      actor_learning_rate_angle=self.params['learning_rate_angle'],
+                                      critic_learning_rate=self.params['learning_rate_critic'],
+                                      max_impulse=self.env['max_impulse'],
+                                      max_angle_change=self.env['max_angle_change'],
+                                      sigma_impulse_max=self.env['max_sigma_value_impulse'],
+                                      sigma_angle_max=self.env['max_sigma_value_angle'],
+                                      clip_param=self.env['clip_param']
+                                      )
         return ppo_network
 
     def episode_loop(self):
@@ -498,7 +498,7 @@ class PPOTrainingService:
                            self.ppo_network.shared_state_in_ref: shared_state_train,
 
                            self.ppo_network.action_placeholder: np.vstack(self.action_buffer[1:, ]),
-                           self.ppo_network.rewards_to_go_placeholder: rewards_to_go[1:],
+                           self.ppo_network.returns_placeholder: rewards_to_go[1:],
 
                            self.ppo_network.trainLength: 1,
                            self.ppo_network.batch_size: self.params["batch_size"] - 1,

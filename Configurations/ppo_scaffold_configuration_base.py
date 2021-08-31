@@ -31,7 +31,7 @@ env = {'width': 1500,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 30,
+       'prey_num': 15,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
@@ -103,8 +103,8 @@ env = {'width': 1500,  # arena size
        'reward_distance': 100,
        'proximity_reward': 0.005,
 
-       'max_sigma_value_impulse': 0.4,
-       'max_sigma_value_angle': 0.4,
+       'max_sigma_value_impulse': 1,
+       'max_sigma_value_angle': 1,
        'clip_param': 0.2
        }
 
@@ -130,7 +130,7 @@ params = {'num_actions': 10,  # size of action space
 
           'learning_rate_impulse': 0.00001,
           'learning_rate_angle': 0.00001,
-          'learning_rate_critic': 0.000056,
+          'learning_rate_critic': 0.00001,
 
           'n_updates_per_iteration': 5
           }

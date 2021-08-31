@@ -5,7 +5,7 @@ from Environment.naturalistic_environment import NaturalisticEnvironment
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Network.q_network import QNetwork
 from Network.advantage_actor_critic import A2CNetwork
-from Network.proximal_policy_optimizer import PPONetwork
+from Network.proximal_policy_optimizer import PPONetworkActor
 
 tf.disable_v2_behavior()
 
@@ -68,20 +68,20 @@ def load_network_variables_ppo(model_name, conf_name):
     with tf.Session() as sess:
         cell = tf.nn.rnn_cell.LSTMCell(num_units=learning["rnn_dim"], state_is_tuple=True)
         internal_states = sum([1 for x in [env['hunger'], env['stress']] if x is True]) + 1
-        network = PPONetwork(simulation=simulation,
-                             rnn_dim_shared=learning['rnn_dim'],
-                             rnn_dim_critic=learning['rnn_dim'],
-                             rnn_dim_actor=learning['rnn_dim'],
-                             rnn_cell_shared=cell,
-                             rnn_cell_critic=cell,
-                             rnn_cell_actor=cell,
-                             my_scope='main',
-                             internal_states=internal_states,
-                             actor_learning_rate_impulse=0.00001,
-                             actor_learning_rate_angle=0.00001,
-                             critic_learning_rate=0.00001,
-                             max_impulse=10.0,
-                             max_angle_change=3.0)
+        network = PPONetworkActor(simulation=simulation,
+                                  rnn_dim_shared=learning['rnn_dim'],
+                                  rnn_dim_critic=learning['rnn_dim'],
+                                  rnn_dim_actor=learning['rnn_dim'],
+                                  rnn_cell_shared=cell,
+                                  rnn_cell_critic=cell,
+                                  rnn_cell_actor=cell,
+                                  my_scope='main',
+                                  internal_states=internal_states,
+                                  actor_learning_rate_impulse=0.00001,
+                                  actor_learning_rate_angle=0.00001,
+                                  critic_learning_rate=0.00001,
+                                  max_impulse=10.0,
+                                  max_angle_change=3.0)
 
         saver = tf.train.Saver(max_to_keep=5)
         init = tf.global_variables_initializer()

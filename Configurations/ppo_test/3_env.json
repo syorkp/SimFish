@@ -17,7 +17,7 @@
     "prey_mass": 1.0,
     "prey_inertia": 40.0,
     "prey_size": 4.0,
-    "prey_num": 30,
+    "prey_num": 15,
     "prey_impulse": 0.05,
     "prey_impulse_rate": 0.25,
     "prey_escape_impulse": 2,
@@ -75,7 +75,7 @@
     "baseline_penalty": 0.002,
     "reward_distance": 100,
     "proximity_reward": 0.005,
-    "max_sigma_value_impulse": 0.4,
-    "max_sigma_value_angle": 0.4,
+    "max_sigma_value_impulse": 1,
+    "max_sigma_value_angle": 1,
     "clip_param": 0.2
 }
