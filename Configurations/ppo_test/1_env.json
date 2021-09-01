@@ -68,7 +68,7 @@
     "reafference": false,
     "stress": false,
     "stress_compound": 0.9,
-    "max_angle_change": 1.5707963267948966,
+    "max_angle_change": 0.3141592653589793,
     "max_impulse": 10.0,
     "distance_penalty_scaling_factor": 0.001,
     "angle_penalty_scaling_factor": 0.001,

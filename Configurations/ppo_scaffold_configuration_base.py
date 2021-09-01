@@ -92,7 +92,7 @@ env = {'width': 1500,  # arena size
        'stress_compound': 0.9,
 
        # For continuous Actions space:
-       'max_angle_change': np.pi/2,
+       'max_angle_change': np.pi/10,
        'max_impulse': 10.0,  # Up to 50ish
 
        'distance_penalty_scaling_factor': 0.001,
