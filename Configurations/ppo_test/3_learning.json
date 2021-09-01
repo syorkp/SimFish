@@ -17,8 +17,8 @@
     "rnn_dim_actor": 100,
     "rnn_dim_critic": 100,
     "extra_rnn": false,
-    "learning_rate_impulse": 1e-05,
-    "learning_rate_angle": 1e-05,
-    "learning_rate_critic": 1e-05,
+    "learning_rate_impulse": 1e-06,
+    "learning_rate_angle": 1e-06,
+    "learning_rate_critic": 1e-06,
     "n_updates_per_iteration": 5
 }

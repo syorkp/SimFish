@@ -128,9 +128,9 @@ params = {'num_actions': 10,  # size of action space
           'rnn_dim_critic': 100,
           'extra_rnn': False,
 
-          'learning_rate_impulse': 0.00001,
-          'learning_rate_angle': 0.00001,
-          'learning_rate_critic': 0.00001,
+          'learning_rate_impulse': 0.000001,
+          'learning_rate_angle': 0.000001,
+          'learning_rate_critic': 0.000001,
 
           'n_updates_per_iteration': 5
           }

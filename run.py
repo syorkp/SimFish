@@ -15,7 +15,7 @@ ppo_training_config = [
     {
         "Model Name": "ppo_new_buffer",
         "Environment Name": "ppo_test",
-        "Trial Number": 1,
+        "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
