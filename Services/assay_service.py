@@ -207,7 +207,7 @@ class AssayService:
                            self.network.internal_state: internal_state,
                            self.network.prev_actions: [a],
                            self.network.trainLength: 1,
-                           self.network.shared_state_in: rnn_state,
+                           self.network.rnn_state_in: rnn_state,
                            self.network.batch_size: 1,
                            self.network.exp_keep: 1.0})
         chosen_a = chosen_a[0]

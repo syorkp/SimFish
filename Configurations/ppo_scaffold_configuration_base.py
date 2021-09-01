@@ -92,7 +92,7 @@ env = {'width': 1500,  # arena size
        'stress_compound': 0.9,
 
        # For continuous Actions space:
-       'max_angle_change': np.pi/10,
+       'max_angle_change': np.pi/5,
        'max_impulse': 10.0,  # Up to 50ish
 
        'distance_penalty_scaling_factor': 0.001,
@@ -103,8 +103,8 @@ env = {'width': 1500,  # arena size
        'reward_distance': 100,
        'proximity_reward': 0.005,
 
-       'max_sigma_value_impulse': 1,
-       'max_sigma_value_angle': 1,
+       'max_sigma_value_impulse': 0.3,
+       'max_sigma_value_angle': 0.3,
        'clip_param': 0.2
        }
 
@@ -124,12 +124,9 @@ params = {'num_actions': 10,  # size of action space
           'summaryLength': 50,  # Number of episodes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
           'rnn_dim_shared': 512,  # number of rnn cells
-          'rnn_dim_actor': 100,
-          'rnn_dim_critic': 100,
           'extra_rnn': False,
 
-          'learning_rate_impulse': 0.000001,
-          'learning_rate_angle': 0.000001,
+          'learning_rate_actor': 0.000001,
           'learning_rate_critic': 0.000001,
 
           'n_updates_per_iteration': 5

@@ -230,39 +230,29 @@ class PPOTrainingService:
         """
         print("Creating networks...")
         internal_states = sum([1 for x in [self.env['hunger'], self.env['stress']] if x is True]) + 1
-        critic_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim_shared'], state_is_tuple=True)
-        actor_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim_shared'], state_is_tuple=True)
 
-        ppo_network_critic = PPONetworkCritic(simulation=self.simulation,
-                                              rnn_dim_shared=self.params['rnn_dim_shared'],
-                                              rnn_dim_critic=self.params['rnn_dim_critic'],
-                                              rnn_dim_actor=self.params['rnn_dim_actor'],
-                                              rnn_cell_shared=critic_cell,
-                                              rnn_cell_critic=critic_cell,
-                                              rnn_cell_actor=critic_cell,
-                                              my_scope='critic',
-                                              internal_states=internal_states,
-                                              critic_learning_rate=self.params['learning_rate_critic'],
-                                              )
+        actor_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim_shared'], state_is_tuple=True)
+        critic_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim_shared'], state_is_tuple=True)
 
         ppo_network_actor = PPONetworkActor(simulation=self.simulation,
-                                            rnn_dim_shared=self.params['rnn_dim_shared'],
-                                            rnn_dim_critic=self.params['rnn_dim_critic'],
-                                            rnn_dim_actor=self.params['rnn_dim_actor'],
-                                            rnn_cell_shared=actor_cell,
-                                            rnn_cell_critic=actor_cell,
-                                            rnn_cell_actor=actor_cell,
+                                            rnn_dim=self.params['rnn_dim_shared'],
+                                            rnn_cell=actor_cell,
                                             my_scope='actor',
                                             internal_states=internal_states,
-                                            actor_learning_rate_impulse=self.params['learning_rate_impulse'],
-                                            actor_learning_rate_angle=self.params['learning_rate_angle'],
-                                            critic_learning_rate=self.params['learning_rate_critic'],
+                                            learning_rate=self.params['learning_rate_actor'],
                                             max_impulse=self.env['max_impulse'],
                                             max_angle_change=self.env['max_angle_change'],
                                             sigma_impulse_max=self.env['max_sigma_value_impulse'],
                                             sigma_angle_max=self.env['max_sigma_value_angle'],
                                             clip_param=self.env['clip_param']
                                             )
+        ppo_network_critic = PPONetworkCritic(simulation=self.simulation,
+                                              rnn_dim=self.params['rnn_dim_shared'],
+                                              rnn_cell=critic_cell,
+                                              my_scope='critic',
+                                              internal_states=internal_states,
+                                              learning_rate=self.params['learning_rate_critic'],
+                                              )
         return ppo_network_actor, ppo_network_critic
 
     def episode_loop(self):
@@ -272,19 +262,19 @@ class PPOTrainingService:
         """
         t0 = time()
 
-        rnn_state_shared = (
-            np.zeros([1, self.actor_network.rnn_dim_shared]),
-            np.zeros([1, self.actor_network.rnn_dim_shared]))  # Reset RNN hidden state
-        rnn_state_shared_ref = (
-            np.zeros([1, self.actor_network.rnn_dim_shared]),
-            np.zeros([1, self.actor_network.rnn_dim_shared]))  # Reset RNN hidden state
+        rnn_state_actor = (
+            np.zeros([1, self.actor_network.rnn_dim]),
+            np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
+        rnn_state_actor_ref = (
+            np.zeros([1, self.actor_network.rnn_dim]),
+            np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
 
         rnn_state_critic = (
-            np.zeros([1, self.actor_network.rnn_dim_shared]),
-            np.zeros([1, self.actor_network.rnn_dim_shared]))  # Reset RNN hidden state
+            np.zeros([1, self.actor_network.rnn_dim]),
+            np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
         rnn_state_critic_ref = (
-            np.zeros([1, self.actor_network.rnn_dim_shared]),
-            np.zeros([1, self.actor_network.rnn_dim_shared]))
+            np.zeros([1, self.actor_network.rnn_dim]),
+            np.zeros([1, self.actor_network.rnn_dim]))
 
         self.simulation.reset()
         sa = np.zeros((1, 128))  # Kept for GIFs.
@@ -305,7 +295,7 @@ class PPOTrainingService:
 
         # Reset buffers
         self.buffer.reset()
-        self.buffer.action_buffer.append(a)
+        self.buffer.action_buffer.append(a)  # Add to buffer for loading of previous actions
 
         # For logging
         full_value_buffer = []  # For logging
@@ -325,12 +315,12 @@ class PPOTrainingService:
 
         while step_number < self.params["max_epLength"]:
             step_number += 1
-            o, a, r, internal_state, o1, d, rnn_state_shared, rnn_state_shared_ref, V, impulse_probability, angle_probability, rnn_state_critic, rnn_state_critic_ref = self.step_loop(
+            o, a, r, updated_internal_state, o1, d, updated_rnn_state_shared, updated_rnn_state_shared_ref, V, impulse_probability, angle_probability, updated_rnn_state_critic, updated_rnn_state_critic_ref = self.step_loop(
                 o=o,
                 internal_state=internal_state,
                 a=a,
-                rnn_state_shared_actor=rnn_state_shared,
-                rnn_state_shared_actor_ref=rnn_state_shared_ref,
+                rnn_state_shared_actor=rnn_state_actor,
+                rnn_state_shared_actor_ref=rnn_state_actor_ref,
                 rnn_state_shared_critic=rnn_state_critic,
                 rnn_state_shared_critic_ref=rnn_state_critic_ref
             )
@@ -342,13 +332,24 @@ class PPOTrainingService:
                             reward=r,
                             value=V,
                             l_p_impulse=impulse_probability,
-                            l_p_angle=angle_probability)
+                            l_p_angle=angle_probability,
+                            actor_rnn_state=rnn_state_actor,
+                            actor_rnn_state_ref=rnn_state_actor_ref,
+                            critic_rnn_state=rnn_state_critic,
+                            critic_rnn_state_ref=rnn_state_critic_ref,
+                            )
+
+            rnn_state_actor = updated_rnn_state_shared
+            rnn_state_actor_ref = updated_rnn_state_shared_ref
+            rnn_state_critic = updated_rnn_state_critic
+            rnn_state_critic_ref = updated_rnn_state_critic_ref
+            o = o1
+            internal_state = updated_internal_state
 
             # Can get rid of these as my buffer does this anyway
             full_value_buffer.append(V)
             total_episode_reward += r
             all_actions.append([a])
-            o = o1
 
             if d:
                 break
@@ -363,6 +364,9 @@ class PPOTrainingService:
         self.train_network()
 
         print("\n")
+        print(f"Mean Impulse: {np.mean([i[0][0] for i in all_actions])}")
+        print(f"Mean Angle {np.mean([i[0][1] for i in all_actions])}")
+        print(f"Total episode reward: {total_episode_reward}")
 
         # Add the episode to tensorflow logs
         self.save_episode(episode_start_t=t0,
@@ -377,9 +381,6 @@ class PPOTrainingService:
                           angle_loss=angle_loss_buffer,
                           value_buffer=full_value_buffer
                           )
-        print(f"Mean Impulse: {np.mean([i[0][0] for i in all_actions])}")
-        print(f"Mean Angle {np.mean([i[0][1] for i in all_actions])}")
-        print(f"Total episode reward: {total_episode_reward}")
 
     def step_loop(self, o, internal_state, a, rnn_state_shared_actor, rnn_state_shared_actor_ref,
                   rnn_state_shared_critic, rnn_state_shared_critic_ref):
@@ -401,8 +402,8 @@ class PPOTrainingService:
                        self.actor_network.scaler: np.full(o.shape, 255),
                        self.actor_network.internal_state: internal_state,
                        self.actor_network.prev_actions: np.reshape(a, (1, 2)),
-                       self.actor_network.shared_state_in: rnn_state_shared_actor,
-                       self.actor_network.shared_state_in_ref: rnn_state_shared_actor_ref,
+                       self.actor_network.rnn_state_in: rnn_state_shared_actor,
+                       self.actor_network.rnn_state_in_ref: rnn_state_shared_actor_ref,
                        self.actor_network.batch_size: 1,
                        self.actor_network.trainLength: 1,
                        }
@@ -415,8 +416,8 @@ class PPOTrainingService:
                        self.critic_network.scaler: np.full(o.shape, 255),
                        self.critic_network.internal_state: internal_state,
                        self.critic_network.prev_actions: np.reshape(a, (1, 2)),
-                       self.critic_network.shared_state_in: rnn_state_shared_critic,
-                       self.critic_network.shared_state_in_ref: rnn_state_shared_critic_ref,
+                       self.critic_network.rnn_state_in: rnn_state_shared_critic,
+                       self.critic_network.rnn_state_in_ref: rnn_state_shared_critic_ref,
                        self.critic_network.batch_size: 1,
                        self.critic_network.trainLength: 1,
 
@@ -447,35 +448,43 @@ class PPOTrainingService:
         return o, action, given_reward, internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, V, impulse_probability, angle_probability, updated_rnn_state_critic, updated_rnn_state_critic_ref
 
     def train_network(self):
-        shared_state_train = (np.zeros([self.params["batch_size"], self.actor_network.rnn_dim_shared]),
-                              np.zeros([self.params["batch_size"], self.actor_network.rnn_dim_shared]))
-
         number_of_batches = (len(self.buffer.return_buffer) // self.params["batch_size"]) + 1
         for batch in range(number_of_batches):
             if batch == number_of_batches - 1:
                 final_batch = True
                 current_batch_size = len(self.buffer.return_buffer) - self.buffer.pointer
-                shared_state_train = (np.zeros([current_batch_size, self.actor_network.rnn_dim_shared]),
-                                      np.zeros([current_batch_size, self.actor_network.rnn_dim_shared]))
+
             else:
                 final_batch = False
                 current_batch_size = self.params["batch_size"]
             observation_slice, internal_state_slice, action_slice, previous_action_slice, reward_slice, value_slice, \
-            log_impulse_probability_slice, log_angle_probability_slice, advantage_slice, return_slice = self.buffer.get_batch(final_batch)
+            log_impulse_probability_slice, log_angle_probability_slice, advantage_slice, return_slice, \
+            actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice = self.buffer.get_batch(
+                final_batch)
+
+            # TODO: Move this to experience buffer
+            actor_rnn_state_slice = np.moveaxis(actor_rnn_state_slice, 1, 0).squeeze()
+            actor_rnn_state_ref_slice = np.moveaxis(actor_rnn_state_ref_slice, 1, 0).squeeze()
+            critic_rnn_state_slice = np.moveaxis(critic_rnn_state_slice, 1, 0).squeeze()
+            critic_rnn_state_ref_slice = np.moveaxis(critic_rnn_state_ref_slice, 1, 0).squeeze()
+
+            actor_rnn_state_slice = (actor_rnn_state_slice[0], actor_rnn_state_slice[1])
+            actor_rnn_state_ref_slice = (actor_rnn_state_ref_slice[0], actor_rnn_state_ref_slice[1])
+            critic_rnn_state_slice = (critic_rnn_state_slice[0], critic_rnn_state_slice[1])
+            critic_rnn_state_ref_slice = (critic_rnn_state_ref_slice[0], critic_rnn_state_ref_slice[1])
 
             average_loss_value = 0
             average_loss_impulse = 0
             average_loss_angle = 0
             for i in range(self.params["n_updates_per_iteration"]):
-
                 loss_critic_val, _ = self.sess.run(
                     [self.critic_network.critic_loss, self.critic_network.optimizer],
                     feed_dict={self.critic_network.observation: np.vstack(observation_slice),
                                self.critic_network.scaler: np.full(np.vstack(observation_slice).shape, 255),
                                self.critic_network.prev_actions: np.vstack(previous_action_slice),
                                self.critic_network.internal_state: np.vstack(internal_state_slice),
-                               self.critic_network.shared_state_in: shared_state_train,
-                               self.critic_network.shared_state_in_ref: shared_state_train,
+                               self.critic_network.rnn_state_in: critic_rnn_state_slice,
+                               self.critic_network.rnn_state_in_ref: critic_rnn_state_ref_slice,
 
                                self.critic_network.returns_placeholder: np.vstack(return_slice).flatten(),
 
@@ -490,8 +499,8 @@ class PPOTrainingService:
                                self.actor_network.scaler: np.full(np.vstack(observation_slice).shape, 255),
                                self.actor_network.prev_actions: np.vstack(previous_action_slice),
                                self.actor_network.internal_state: np.vstack(internal_state_slice),
-                               self.actor_network.shared_state_in: shared_state_train,
-                               self.actor_network.shared_state_in_ref: shared_state_train,
+                               self.actor_network.rnn_state_in: actor_rnn_state_slice,
+                               self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
 
                                self.actor_network.impulse_placeholder: np.vstack(action_slice[:, 0]),
                                self.actor_network.angle_placeholder: np.vstack(action_slice[:, 1]),
@@ -564,7 +573,8 @@ class PPOTrainingService:
                                     self.total_steps - len(angles) + step * self.params["batch_size"])
 
         for step in range(0, len(self.angle_loss_buffer)):
-            angle_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="angle loss", simple_value=self.angle_loss_buffer[step])])
+            angle_loss_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="angle loss", simple_value=self.angle_loss_buffer[step])])
             self.writer.add_summary(angle_loss_summary,
                                     self.total_steps - len(angles) + step * self.params["batch_size"])
 

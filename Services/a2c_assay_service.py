@@ -187,11 +187,11 @@ class A2CAssayService:
         self.assay_output_data_format = {key: None for key in assay["recordings"]}
 
         rnn_state_shared = (
-            np.zeros([1, self.a2c_network.rnn_dim_shared]),
-            np.zeros([1, self.a2c_network.rnn_dim_shared]))  # Reset RNN hidden state
+            np.zeros([1, self.a2c_network.rnn_dim]),
+            np.zeros([1, self.a2c_network.rnn_dim]))  # Reset RNN hidden state
         rnn_state_shared_ref = (
-            np.zeros([1, self.a2c_network.rnn_dim_shared]),
-            np.zeros([1, self.a2c_network.rnn_dim_shared]))  # Reset RNN hidden state
+            np.zeros([1, self.a2c_network.rnn_dim]),
+            np.zeros([1, self.a2c_network.rnn_dim]))  # Reset RNN hidden state
         rnn_state_critic = (
             np.zeros([1, self.a2c_network.rnn_dim_critic]), np.zeros([1, self.a2c_network.rnn_dim_critic]))
         rnn_state_actor = (
@@ -253,8 +253,8 @@ class A2CAssayService:
                            self.a2c_network.internal_state: internal_state,
                            self.a2c_network.prev_actions: np.reshape(a, (1, 2)),
                            self.a2c_network.trainLength: 1,
-                           self.a2c_network.shared_state_in: rnn_state_shared,
-                           self.a2c_network.shared_state_in_ref: rnn_state_shared_ref,
+                           self.a2c_network.rnn_state_in: rnn_state_shared,
+                           self.a2c_network.rnn_state_in_ref: rnn_state_shared_ref,
 
                            self.a2c_network.critic_state_in: rnn_state_critic,
                            self.a2c_network.actor_state_in: rnn_state_actor,

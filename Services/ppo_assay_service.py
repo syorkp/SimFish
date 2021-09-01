@@ -94,17 +94,17 @@ class PPOAssayService:
         actor_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_actor'], state_is_tuple=True)
 
         ppo_network = PPONetworkActor(simulation=self.simulation,
-                                      rnn_dim_shared=self.learning_params['rnn_dim_shared'],
+                                      rnn_dim=self.learning_params['rnn_dim_shared'],
                                       rnn_dim_critic=self.learning_params['rnn_dim_critic'],
                                       rnn_dim_actor=self.learning_params['rnn_dim_actor'],
-                                      rnn_cell_shared=shared_cell,
+                                      rnn_cell=shared_cell,
                                       rnn_cell_critic=critic_cell,
                                       rnn_cell_actor=actor_cell,
                                       my_scope='main',
                                       internal_states=internal_states,
                                       actor_learning_rate_impulse=self.learning_params['learning_rate_impulse'],
                                       actor_learning_rate_angle=self.learning_params['learning_rate_angle'],
-                                      critic_learning_rate=self.learning_params['learning_rate_critic'],
+                                      learning_rate=self.learning_params['learning_rate_critic'],
                                       max_impulse=self.environment_params['max_impulse'],
                                       max_angle_change=self.environment_params['max_angle_change'],
                                       )
@@ -187,11 +187,11 @@ class PPOAssayService:
         self.assay_output_data_format = {key: None for key in assay["recordings"]}
 
         rnn_state_shared = (
-            np.zeros([1, self.ppo_network.rnn_dim_shared]),
-            np.zeros([1, self.ppo_network.rnn_dim_shared]))  # Reset RNN hidden state
+            np.zeros([1, self.ppo_network.rnn_dim]),
+            np.zeros([1, self.ppo_network.rnn_dim]))  # Reset RNN hidden state
         rnn_state_shared_ref = (
-            np.zeros([1, self.ppo_network.rnn_dim_shared]),
-            np.zeros([1, self.ppo_network.rnn_dim_shared]))  # Reset RNN hidden state
+            np.zeros([1, self.ppo_network.rnn_dim]),
+            np.zeros([1, self.ppo_network.rnn_dim]))  # Reset RNN hidden state
         rnn_state_critic = (
             np.zeros([1, self.ppo_network.rnn_dim_critic]), np.zeros([1, self.ppo_network.rnn_dim_critic]))
         rnn_state_actor = (
@@ -253,8 +253,8 @@ class PPOAssayService:
                            self.ppo_network.internal_state: internal_state,
                            self.ppo_network.prev_actions: np.reshape(a, (1, 2)),
                            self.ppo_network.trainLength: 1,
-                           self.ppo_network.shared_state_in: rnn_state_shared,
-                           self.ppo_network.shared_state_in_ref: rnn_state_shared_ref,
+                           self.ppo_network.rnn_state_in: rnn_state_shared,
+                           self.ppo_network.rnn_state_in_ref: rnn_state_shared_ref,
 
                            self.ppo_network.critic_state_in: rnn_state_critic,
                            self.ppo_network.actor_state_in: rnn_state_actor,

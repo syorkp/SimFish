@@ -14,11 +14,8 @@
     "summaryLength": 50,
     "tau": 0.001,
     "rnn_dim_shared": 512,
-    "rnn_dim_actor": 100,
-    "rnn_dim_critic": 100,
     "extra_rnn": false,
-    "learning_rate_impulse": 1e-06,
-    "learning_rate_angle": 1e-06,
+    "learning_rate_actor": 1e-06,
     "learning_rate_critic": 1e-06,
     "n_updates_per_iteration": 5
 }

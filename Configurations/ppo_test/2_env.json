@@ -68,14 +68,14 @@
     "reafference": false,
     "stress": false,
     "stress_compound": 0.9,
-    "max_angle_change": 0.3141592653589793,
+    "max_angle_change": 0.6283185307179586,
     "max_impulse": 10.0,
     "distance_penalty_scaling_factor": 0.001,
     "angle_penalty_scaling_factor": 0.001,
     "baseline_penalty": 0.002,
     "reward_distance": 100,
     "proximity_reward": 0.005,
-    "max_sigma_value_impulse": 1,
-    "max_sigma_value_angle": 1,
+    "max_sigma_value_impulse": 0.3,
+    "max_sigma_value_angle": 0.3,
     "clip_param": 0.2
 }

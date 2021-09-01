@@ -236,17 +236,17 @@ class PPOTrainingService:
         actor_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim_actor'], state_is_tuple=True)
 
         ppo_network = PPONetworkActor(simulation=self.simulation,
-                                      rnn_dim_shared=self.params['rnn_dim_shared'],
+                                      rnn_dim=self.params['rnn_dim_shared'],
                                       rnn_dim_critic=self.params['rnn_dim_critic'],
                                       rnn_dim_actor=self.params['rnn_dim_actor'],
-                                      rnn_cell_shared=shared_cell,
+                                      rnn_cell=shared_cell,
                                       rnn_cell_critic=critic_cell,
                                       rnn_cell_actor=actor_cell,
                                       my_scope='main',
                                       internal_states=internal_states,
                                       actor_learning_rate_impulse=self.params['learning_rate_impulse'],
                                       actor_learning_rate_angle=self.params['learning_rate_angle'],
-                                      critic_learning_rate=self.params['learning_rate_critic'],
+                                      learning_rate=self.params['learning_rate_critic'],
                                       max_impulse=self.env['max_impulse'],
                                       max_angle_change=self.env['max_angle_change'],
                                       sigma_impulse_max=self.env['max_sigma_value_impulse'],
@@ -263,11 +263,11 @@ class PPOTrainingService:
         t0 = time()
 
         rnn_state_shared = (
-            np.zeros([1, self.ppo_network.rnn_dim_shared]),
-            np.zeros([1, self.ppo_network.rnn_dim_shared]))  # Reset RNN hidden state
+            np.zeros([1, self.ppo_network.rnn_dim]),
+            np.zeros([1, self.ppo_network.rnn_dim]))  # Reset RNN hidden state
         rnn_state_shared_ref = (
-            np.zeros([1, self.ppo_network.rnn_dim_shared]),
-            np.zeros([1, self.ppo_network.rnn_dim_shared]))  # Reset RNN hidden state
+            np.zeros([1, self.ppo_network.rnn_dim]),
+            np.zeros([1, self.ppo_network.rnn_dim]))  # Reset RNN hidden state
         # rnn_state_critic = (
         #     np.zeros([1, self.a2c_network.rnn_dim_critic]), np.zeros([1, self.a2c_network.rnn_dim_critic]))
         # rnn_state_actor = (
@@ -390,8 +390,8 @@ class PPOTrainingService:
                        self.ppo_network.scaler: np.full(o.shape, 255),
                        self.ppo_network.internal_state: internal_state,
                        self.ppo_network.prev_actions: np.reshape(a, (1, 2)),
-                       self.ppo_network.shared_state_in: rnn_state_shared,
-                       self.ppo_network.shared_state_in_ref: rnn_state_shared_ref,
+                       self.ppo_network.rnn_state_in: rnn_state_shared,
+                       self.ppo_network.rnn_state_in_ref: rnn_state_shared_ref,
                        # self.a2c_network.critic_state_in: rnn_state_critic,
                        # self.a2c_network.actor_state_in: rnn_state_actor,
                        self.ppo_network.batch_size: 1,
@@ -438,8 +438,8 @@ class PPOTrainingService:
         self.log_impulse_probability_buffer = np.array(self.log_impulse_probability_buffer)
         self.log_angle_probability_buffer = np.array(self.log_angle_probability_buffer)
 
-        shared_state_train = (np.zeros([self.params["batch_size"] - 1, self.ppo_network.rnn_dim_shared]),
-                              np.zeros([self.params["batch_size"] - 1, self.ppo_network.rnn_dim_shared]))
+        shared_state_train = (np.zeros([self.params["batch_size"] - 1, self.ppo_network.rnn_dim]),
+                              np.zeros([self.params["batch_size"] - 1, self.ppo_network.rnn_dim]))
 
         # V1 = self.sess.run([self.ppo_network.Value_output],
         #                    feed_dict={self.ppo_network.observation: np.vstack(self.observation_buffer[1:, ]),
@@ -473,8 +473,8 @@ class PPOTrainingService:
                            self.ppo_network.scaler: np.full(np.vstack(self.observation_buffer[1:, ]).shape, 255),
                            self.ppo_network.prev_actions: np.vstack(self.action_buffer[:-1, ]),
                            self.ppo_network.internal_state: np.vstack(self.internal_state_buffer[1:, ]),
-                           self.ppo_network.shared_state_in: shared_state_train,
-                           self.ppo_network.shared_state_in_ref: shared_state_train,
+                           self.ppo_network.rnn_state_in: shared_state_train,
+                           self.ppo_network.rnn_state_in_ref: shared_state_train,
 
                            self.ppo_network.action_placeholder: np.vstack(self.action_buffer[1:, ]),
                            self.ppo_network.old_log_prob_impulse_placeholder: self.log_impulse_probability_buffer[1:, ].flatten(),
@@ -494,8 +494,8 @@ class PPOTrainingService:
                            self.ppo_network.scaler: np.full(np.vstack(self.observation_buffer[1:, ]).shape, 255),
                            self.ppo_network.prev_actions: np.vstack(self.action_buffer[:-1, ]),
                            self.ppo_network.internal_state: np.vstack(self.internal_state_buffer[1:, ]),
-                           self.ppo_network.shared_state_in: shared_state_train,
-                           self.ppo_network.shared_state_in_ref: shared_state_train,
+                           self.ppo_network.rnn_state_in: shared_state_train,
+                           self.ppo_network.rnn_state_in_ref: shared_state_train,
 
                            self.ppo_network.action_placeholder: np.vstack(self.action_buffer[1:, ]),
                            self.ppo_network.returns_placeholder: rewards_to_go[1:],
@@ -518,8 +518,8 @@ class PPOTrainingService:
                 self.ppo_network.scaler: np.full(np.vstack(self.observation_buffer[1:, ]).shape, 255),
                 self.ppo_network.prev_actions: np.vstack(self.action_buffer[:-1, ]),
                 self.ppo_network.internal_state: np.vstack(self.internal_state_buffer[1:, ]),
-                self.ppo_network.shared_state_in: shared_state_train,
-                self.ppo_network.shared_state_in_ref: shared_state_train,
+                self.ppo_network.rnn_state_in: shared_state_train,
+                self.ppo_network.rnn_state_in_ref: shared_state_train,
 
                 self.ppo_network.action_placeholder: np.vstack(self.action_buffer[1:, ]),
 

@@ -20,6 +20,10 @@ class PPOBuffer:
         self.log_angle_probability_buffer = []
         self.advantage_buffer = []
         self.return_buffer = []
+        self.actor_rnn_state_buffer = []
+        self.actor_rnn_state_ref_buffer = []
+        self.critic_rnn_state_buffers = []
+        self.critic_rnn_state_ref_buffer = []
 
     def reset(self):
         self.action_buffer = []
@@ -29,9 +33,15 @@ class PPOBuffer:
         self.value_buffer = []
         self.log_impulse_probability_buffer = []
         self.log_angle_probability_buffer = []
+        self.actor_rnn_state_buffer = []
+        self.actor_rnn_state_ref_buffer = []
+        self.critic_rnn_state_buffers = []
+        self.critic_rnn_state_ref_buffer = []
+
         self.pointer = 0
 
-    def add(self, observation, internal_state, action, reward, value, l_p_impulse, l_p_angle):
+    def add(self, observation, internal_state, action, reward, value, l_p_impulse, l_p_angle, actor_rnn_state,
+            actor_rnn_state_ref, critic_rnn_state, critic_rnn_state_ref):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
         self.action_buffer.append(action)
@@ -39,6 +49,10 @@ class PPOBuffer:
         self.value_buffer.append(value)
         self.log_impulse_probability_buffer.append(l_p_impulse)
         self.log_angle_probability_buffer.append(l_p_angle)
+        self.actor_rnn_state_buffer.append(actor_rnn_state)
+        self.actor_rnn_state_ref_buffer.append(actor_rnn_state_ref)
+        self.critic_rnn_state_buffers.append(critic_rnn_state)
+        self.critic_rnn_state_ref_buffer.append(critic_rnn_state_ref)
 
     def tidy(self):
         self.observation_buffer = np.array(self.observation_buffer)
@@ -48,6 +62,10 @@ class PPOBuffer:
         self.internal_state_buffer = np.array(self.internal_state_buffer)
         self.log_impulse_probability_buffer = np.array(self.log_impulse_probability_buffer)
         self.log_angle_probability_buffer = np.array(self.log_angle_probability_buffer)
+        self.actor_rnn_state_buffer = np.array(self.actor_rnn_state_buffer)
+        self.actor_rnn_state_ref_buffer = np.array(self.actor_rnn_state_ref_buffer)
+        self.critic_rnn_state_buffers = np.array(self.critic_rnn_state_buffers)
+        self.critic_rnn_state_ref_buffer = np.array(self.critic_rnn_state_ref_buffer)
 
     def get_batch(self, final_batch):
         if final_batch:
@@ -61,6 +79,11 @@ class PPOBuffer:
             log_angle_probability_slice = self.log_angle_probability_buffer[self.pointer:-1]
             advantage_slice = self.advantage_buffer[self.pointer:]
             return_slice = self.return_buffer[self.pointer:]
+            actor_rnn_state_slice = self.actor_rnn_state_buffer[self.pointer:-1]
+            actor_rnn_state_ref_slice = self.actor_rnn_state_ref_buffer[self.pointer:-1]
+            critic_rnn_state_slice = self.critic_rnn_state_buffers[self.pointer:-1]
+            critic_rnn_state_ref_slice = self.critic_rnn_state_ref_buffer[self.pointer:-1]
+
         else:
             observation_slice = self.observation_buffer[self.pointer:self.pointer+self.batch_size, :]
             internal_state_slice = self.internal_state_buffer[self.pointer:self.pointer+self.batch_size, :]
@@ -72,11 +95,16 @@ class PPOBuffer:
             log_angle_probability_slice = self.log_angle_probability_buffer[self.pointer:self.pointer+self.batch_size, :]
             advantage_slice = self.advantage_buffer[self.pointer:self.pointer+self.batch_size]
             return_slice = self.return_buffer[self.pointer:self.pointer+self.batch_size]
+            actor_rnn_state_slice = self.actor_rnn_state_buffer[self.pointer:self.pointer+self.batch_size]
+            actor_rnn_state_ref_slice = self.actor_rnn_state_ref_buffer[self.pointer:self.pointer+self.batch_size]
+            critic_rnn_state_slice = self.critic_rnn_state_buffers[self.pointer:self.pointer+self.batch_size]
+            critic_rnn_state_ref_slice = self.critic_rnn_state_ref_buffer[self.pointer:self.pointer+self.batch_size]
 
         self.pointer += self.batch_size
 
         return observation_slice, internal_state_slice, action_slice, previous_action_slice, reward_slice, value_slice, \
-               log_impulse_probability_slice, log_angle_probability_slice, advantage_slice, return_slice
+               log_impulse_probability_slice, log_angle_probability_slice, advantage_slice, return_slice, \
+               actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice
 
     def discount_cumsum(self, x, discount):
         """

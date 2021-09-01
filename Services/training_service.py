@@ -433,7 +433,7 @@ class TrainingService:
                            self.main_QN.internal_state: internal_state,
                            self.main_QN.prev_actions: [a],
                            self.main_QN.trainLength: 1,
-                           self.main_QN.shared_state_in: rnn_state,
+                           self.main_QN.rnn_state_in: rnn_state,
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0})
             chosen_a = np.random.randint(0, self.params['num_actions'])
@@ -444,7 +444,7 @@ class TrainingService:
                            self.main_QN.internal_state: internal_state,
                            self.main_QN.prev_actions: [a],
                            self.main_QN.trainLength: 1,
-                           self.main_QN.shared_state_in: rnn_state,
+                           self.main_QN.rnn_state_in: rnn_state,
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0})
             chosen_a = chosen_a[0]
@@ -476,7 +476,7 @@ class TrainingService:
             self.main_QN.prev_actions: np.hstack(([0], train_batch[:-1, 1])),
             self.main_QN.trainLength: self.params['trace_length'],
             self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
-            self.main_QN.shared_state_in: state_train,
+            self.main_QN.rnn_state_in: state_train,
             self.main_QN.batch_size: self.params['batch_size'],
             self.main_QN.exp_keep: 1.0})
 
@@ -485,7 +485,7 @@ class TrainingService:
             self.target_QN.prev_actions: np.hstack(([0], train_batch[:-1, 1])),
             self.target_QN.trainLength: self.params['trace_length'],
             self.target_QN.internal_state: np.vstack(train_batch[:, 3]),
-            self.target_QN.shared_state_in: state_train,
+            self.target_QN.rnn_state_in: state_train,
             self.target_QN.batch_size: self.params['batch_size'],
             self.target_QN.exp_keep: 1.0})
 
@@ -501,6 +501,6 @@ class TrainingService:
                                  self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
                                  self.main_QN.prev_actions: np.hstack(([3], train_batch[:-1, 1])),
                                  self.main_QN.trainLength: self.params['trace_length'],
-                                 self.main_QN.shared_state_in: state_train,
+                                 self.main_QN.rnn_state_in: state_train,
                                  self.main_QN.batch_size: self.params['batch_size'],
                                  self.main_QN.exp_keep: 1.0})

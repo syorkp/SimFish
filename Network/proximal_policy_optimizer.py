@@ -5,34 +5,24 @@ tf.disable_v2_behavior()
 
 class PPONetworkCritic:
 
-    def __init__(self, simulation, rnn_dim_shared, rnn_dim_critic, rnn_dim_actor, rnn_cell_shared, rnn_cell_critic,
-                 rnn_cell_actor, my_scope, internal_states=2, critic_learning_rate=0.00056):
+    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, learning_rate):
         # Variables
         self.num_arms = len(simulation.fish.left_eye.vis_angles)  # Rays for each eye
-        self.rnn_dim_shared = rnn_dim_shared
-        self.rnn_dim_critic = rnn_dim_critic
-        self.rnn_dim_actor = rnn_dim_actor
-
-        self.rnn_output_size_shared = self.rnn_dim_shared
+        self.rnn_dim = rnn_dim
 
         self.trainLength = tf.placeholder(dtype=tf.int32, name="train_length")
         self.batch_size = tf.placeholder(dtype=tf.int32, shape=[], name='batch_size')
 
-        self.shared_state_in = rnn_cell_shared.zero_state(self.batch_size, tf.float32)
-        self.shared_state_in_ref = rnn_cell_shared.zero_state(self.batch_size, tf.float32)
-        self.critic_state_in = rnn_cell_critic.zero_state(self.batch_size, tf.float32)
-        self.actor_state_in = rnn_cell_actor.zero_state(self.batch_size, tf.float32)
+        self.rnn_state_in = rnn_cell.zero_state(self.batch_size, tf.float32)
+        self.rnn_state_in_ref = rnn_cell.zero_state(self.batch_size, tf.float32)
 
         # Network Inputs
         self.prev_actions = tf.placeholder(shape=[None, 2], dtype=tf.float32, name='prev_actions')
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
 
         self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
-
-        self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
         self.scaler = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='scaler')
         self.scaled_obs = tf.divide(self.observation, self.scaler, name="scaled_observation")
-        # self.scaled_obs = self.observation
         self.reshaped_observation = tf.reshape(self.scaled_obs, shape=[-1, self.num_arms, 3, 2],
                                                name="reshaped_observation")
 
@@ -67,16 +57,16 @@ class PPONetworkCritic:
             [self.conv4l_flat, self.conv4r_flat, self.prev_actions, self.internal_state], 1, name="flattened_conv")
 
         # Recurrent Layer
-        self.rnn_in = tf.layers.dense(self.conv_with_states, self.rnn_dim_shared, activation=tf.nn.relu,
+        self.rnn_in = tf.layers.dense(self.conv_with_states, self.rnn_dim, activation=tf.nn.relu,
                                       kernel_initializer=tf.orthogonal_initializer,
                                       trainable=True, name=my_scope + '_rnn_in')
-        self.convFlat = tf.reshape(self.rnn_in, [self.batch_size, self.trainLength, self.rnn_dim_shared],
+        self.convFlat = tf.reshape(self.rnn_in, [self.batch_size, self.trainLength, self.rnn_dim],
                                    name="flattened_shared_rnn_input")
 
-        self.rnn, self.rnn_state_shared = tf.nn.dynamic_rnn(inputs=self.convFlat, cell=rnn_cell_shared,
+        self.rnn, self.rnn_state_shared = tf.nn.dynamic_rnn(inputs=self.convFlat, cell=rnn_cell,
                                                             dtype=tf.float32,
-                                                            initial_state=self.shared_state_in, scope=my_scope + '_rnn')
-        self.rnn = tf.reshape(self.rnn, shape=[-1, self.rnn_dim_shared], name="shared_rnn_output")
+                                                            initial_state=self.rnn_state_in, scope=my_scope + '_rnn')
+        self.rnn = tf.reshape(self.rnn, shape=[-1, self.rnn_dim], name="shared_rnn_output")
         self.rnn_output = self.rnn
         self.rnn_state2 = self.rnn_state_shared
 
@@ -119,16 +109,16 @@ class PPONetworkCritic:
 
         self.conv_with_states_ref = tf.concat(
             [self.conv4l_flat_ref, self.conv4r_flat_ref, self.prev_actions_ref, self.internal_state_ref], 1)
-        self.rnn_in_ref = tf.layers.dense(self.conv_with_states_ref, self.rnn_dim_shared, activation=tf.nn.relu,
+        self.rnn_in_ref = tf.layers.dense(self.conv_with_states_ref, self.rnn_dim, activation=tf.nn.relu,
                                           kernel_initializer=tf.orthogonal_initializer,
                                           trainable=True, name=my_scope + '_rnn_in', reuse=True)
-        self.convFlat_ref = tf.reshape(self.rnn_in_ref, [self.batch_size, self.trainLength, self.rnn_dim_shared])
+        self.convFlat_ref = tf.reshape(self.rnn_in_ref, [self.batch_size, self.trainLength, self.rnn_dim])
 
-        self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell_shared,
+        self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell,
                                                              dtype=tf.float32,
-                                                             initial_state=self.shared_state_in_ref,
+                                                             initial_state=self.rnn_state_in_ref,
                                                              scope=my_scope + '_rnn_ref')  # No need to reuse as takes rnn_cell as argument for both.
-        self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim_shared])
+        self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim])
         self.rnn_output_ref = self.rnn_ref
 
         self.Value_ref = tf.layers.dense(self.rnn_output_ref, 1, None,
@@ -146,7 +136,7 @@ class PPONetworkCritic:
         self.critic_loss = tf.reduce_mean(
             tf.squared_difference(tf.squeeze(self.Value_output), self.returns_placeholder))
 
-        self.optimizer = tf.train.AdamOptimizer(critic_learning_rate, name='actor_optimizer_impulse').minimize(self.critic_loss)
+        self.optimizer = tf.train.AdamOptimizer(learning_rate, name='actor_optimizer_impulse').minimize(self.critic_loss)
 
     @staticmethod
     def bounded_output(x, lower, upper):
@@ -156,32 +146,21 @@ class PPONetworkCritic:
 
 class PPONetworkActor:
 
-    def __init__(self, simulation, rnn_dim_shared, rnn_dim_critic, rnn_dim_actor, rnn_cell_shared, rnn_cell_critic,
-                 rnn_cell_actor, my_scope, internal_states=2, actor_learning_rate_impulse=0.00001,
-                 actor_learning_rate_angle=0.00001,
-                 critic_learning_rate=0.00056, max_impulse=80.0, max_angle_change=1.0,
-                 sigma_impulse_max=0.2, sigma_angle_max=0.2, clip_param=0.2):
+    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, learning_rate, max_impulse,
+                 max_angle_change, sigma_impulse_max, sigma_angle_max, clip_param):
         # Variables
         self.num_arms = len(simulation.fish.left_eye.vis_angles)  # Rays for each eye
-        self.rnn_dim_shared = rnn_dim_shared
-        self.rnn_dim_critic = rnn_dim_critic
-        self.rnn_dim_actor = rnn_dim_actor
-
-        self.rnn_output_size_shared = self.rnn_dim_shared
+        self.rnn_dim = rnn_dim
 
         self.trainLength = tf.placeholder(dtype=tf.int32, name="train_length")
         self.batch_size = tf.placeholder(dtype=tf.int32, shape=[], name='batch_size')
 
-        self.shared_state_in = rnn_cell_shared.zero_state(self.batch_size, tf.float32)
-        self.shared_state_in_ref = rnn_cell_shared.zero_state(self.batch_size, tf.float32)
-        self.critic_state_in = rnn_cell_critic.zero_state(self.batch_size, tf.float32)
-        self.actor_state_in = rnn_cell_actor.zero_state(self.batch_size, tf.float32)
+        self.rnn_state_in = rnn_cell.zero_state(self.batch_size, tf.float32)
+        self.rnn_state_in_ref = rnn_cell.zero_state(self.batch_size, tf.float32)
 
         # Network Inputs
         self.prev_actions = tf.placeholder(shape=[None, 2], dtype=tf.float32, name='prev_actions')
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
-
-        self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
 
         self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
         self.scaler = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='scaler')
@@ -220,16 +199,16 @@ class PPONetworkActor:
             [self.conv4l_flat, self.conv4r_flat, self.prev_actions, self.internal_state], 1, name="flattened_conv")
 
         # Recurrent Layer
-        self.rnn_in = tf.layers.dense(self.conv_with_states, self.rnn_dim_shared, activation=tf.nn.relu,
+        self.rnn_in = tf.layers.dense(self.conv_with_states, self.rnn_dim, activation=tf.nn.relu,
                                       kernel_initializer=tf.orthogonal_initializer,
                                       trainable=True, name=my_scope + '_rnn_in')
-        self.convFlat = tf.reshape(self.rnn_in, [self.batch_size, self.trainLength, self.rnn_dim_shared],
+        self.convFlat = tf.reshape(self.rnn_in, [self.batch_size, self.trainLength, self.rnn_dim],
                                    name="flattened_shared_rnn_input")
 
-        self.rnn, self.rnn_state_shared = tf.nn.dynamic_rnn(inputs=self.convFlat, cell=rnn_cell_shared,
+        self.rnn, self.rnn_state_shared = tf.nn.dynamic_rnn(inputs=self.convFlat, cell=rnn_cell,
                                                             dtype=tf.float32,
-                                                            initial_state=self.shared_state_in, scope=my_scope + '_rnn')
-        self.rnn = tf.reshape(self.rnn, shape=[-1, self.rnn_dim_shared], name="shared_rnn_output")
+                                                            initial_state=self.rnn_state_in, scope=my_scope + '_rnn')
+        self.rnn = tf.reshape(self.rnn, shape=[-1, self.rnn_dim], name="shared_rnn_output")
         self.rnn_output = self.rnn
         self.rnn_state2 = self.rnn_state_shared
         self.mu_impulse_stream, self.sigma_impulse_stream, self.mu_angle_stream, self.sigma_angle_stream = tf.split(
@@ -240,20 +219,20 @@ class PPONetworkActor:
                                           kernel_initializer=tf.orthogonal_initializer,
                                           name=my_scope + '_mu_impulse', trainable=True)
 
-        self.sigma_impulse = tf.layers.dense(self.sigma_impulse_stream, 1, activation=tf.nn.sigmoid,
+        self.sigma_impulse = tf.layers.dense(self.sigma_impulse_stream, 1,
                                              kernel_initializer=tf.orthogonal_initializer,
                                              name=my_scope + '_sigma_impulse', trainable=True)
-        # self.sigma_impulse = self.bounded_output(self.sigma_impulse, 0, sigma_impulse_max)
+        self.sigma_impulse = self.bounded_output(self.sigma_impulse, 0, sigma_impulse_max)
 
         # Actor angle output
         self.mu_angle = tf.layers.dense(self.mu_angle_stream, 1, activation=tf.nn.tanh,
                                         kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_mu_angle',
                                         trainable=True)
 
-        self.sigma_angle = tf.layers.dense(self.sigma_angle_stream, 1, activation=tf.nn.sigmoid,
+        self.sigma_angle = tf.layers.dense(self.sigma_angle_stream, 1,
                                            kernel_initializer=tf.orthogonal_initializer,
                                            name=my_scope + '_sigma_angle', trainable=True)
-        # self.sigma_angle = self.bounded_output(self.sigma_angle, 0, sigma_angle_max)
+        self.sigma_angle = self.bounded_output(self.sigma_angle, 0, sigma_angle_max)
 
         #            ----------        Reflected       ---------            #
 
@@ -290,16 +269,16 @@ class PPONetworkActor:
 
         self.conv_with_states_ref = tf.concat(
             [self.conv4l_flat_ref, self.conv4r_flat_ref, self.prev_actions_ref, self.internal_state_ref], 1)
-        self.rnn_in_ref = tf.layers.dense(self.conv_with_states_ref, self.rnn_dim_shared, activation=tf.nn.relu,
+        self.rnn_in_ref = tf.layers.dense(self.conv_with_states_ref, self.rnn_dim, activation=tf.nn.relu,
                                           kernel_initializer=tf.orthogonal_initializer,
                                           trainable=True, name=my_scope + '_rnn_in', reuse=True)
-        self.convFlat_ref = tf.reshape(self.rnn_in_ref, [self.batch_size, self.trainLength, self.rnn_dim_shared])
+        self.convFlat_ref = tf.reshape(self.rnn_in_ref, [self.batch_size, self.trainLength, self.rnn_dim])
 
-        self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell_shared,
+        self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell,
                                                              dtype=tf.float32,
-                                                             initial_state=self.shared_state_in_ref,
+                                                             initial_state=self.rnn_state_in_ref,
                                                              scope=my_scope + '_rnn_ref')  # No need to reuse as takes rnn_cell as argument for both.
-        self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim_shared])
+        self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim])
         self.rnn_output_ref = self.rnn_ref
         self.mu_impulse_stream_ref, self.sigma_impulse_stream_ref, self.mu_angle_stream_ref, self.sigma_angle_stream_ref = tf.split(
             self.rnn_output_ref, 4, 1)
@@ -309,49 +288,28 @@ class PPONetworkActor:
                                               kernel_initializer=tf.orthogonal_initializer,
                                               name=my_scope + '_mu_impulse', reuse=True, trainable=True)
 
-        self.sigma_impulse_ref = tf.layers.dense(self.sigma_impulse_stream_ref, 1, activation=tf.nn.sigmoid,
+        self.sigma_impulse_ref = tf.layers.dense(self.sigma_impulse_stream_ref, 1,
                                                  kernel_initializer=tf.orthogonal_initializer,
                                                  name=my_scope + '_sigma_impulse', reuse=True, trainable=True)
-        # self.sigma_impulse_ref = self.bounded_output(self.sigma_impulse_ref, 0, sigma_impulse_max)
+        self.sigma_impulse_ref = self.bounded_output(self.sigma_impulse_ref, 0, sigma_impulse_max)
 
         # Actor angle output
         self.mu_angle_ref = tf.layers.dense(self.mu_angle_stream_ref, 1, activation=tf.nn.tanh,
                                             kernel_initializer=tf.orthogonal_initializer,
                                             name=my_scope + '_mu_angle', reuse=True, trainable=True)
 
-        self.sigma_angle_ref = tf.layers.dense(self.sigma_angle_stream_ref, 1, activation=tf.nn.sigmoid,
+        self.sigma_angle_ref = tf.layers.dense(self.sigma_angle_stream_ref, 1,
                                                kernel_initializer=tf.orthogonal_initializer,
                                                name=my_scope + '_sigma_angle', reuse=True, trainable=True)
-        # self.sigma_angle_ref = self.bounded_output(self.sigma_angle_ref, 0, sigma_angle_max)
+        self.sigma_angle_ref = self.bounded_output(self.sigma_angle_ref, 0, sigma_angle_max)
 
         #            ----------        Combined       ---------            #
 
         # Combined Actor impulse output
-        # self.mu_impulse_combined = tf.math.divide(tf.math.add(self.mu_impulse, self.mu_impulse_ref), 2.0,
-        #                                           name="mu_impulse_combined")
-        # self.sigma_impulse_combined = tf.math.divide(tf.math.add(self.sigma_impulse, self.sigma_impulse_ref), 2.0,
-        #                                              name="sigma_impulse_combined")
-        # self.norm_dist_impulse = tf.distributions.Normal(self.mu_impulse_combined, self.sigma_impulse_combined,
-        #                                                  name="norm_dist_impulse")
-        # self.action_tf_var_impulse = tf.squeeze(self.norm_dist_impulse.sample(1), axis=0)
-        # self.action_tf_var_impulse = tf.clip_by_value(self.action_tf_var_impulse, 0, 1)
-        # self.impulse_output = tf.math.multiply(self.action_tf_var_impulse, max_impulse, name="impulse_output")
-        # self.log_prob_impulse = tf.log(self.norm_dist_impulse.prob(self.action_tf_var_impulse) + 1e-5)
-        #
-        # # Combined Actor angle output
-        # self.mu_angle_combined = tf.math.divide(tf.math.subtract(self.mu_angle, self.mu_angle_ref), 2.0,
-        #                                         name="mu_angle_combined")
-        # self.sigma_angle_combined = tf.math.divide(tf.math.add(self.sigma_angle, self.sigma_angle_ref), 2.0,
-        #                                            name="sigma_angle_combined")
-        # self.norm_dist_angle = tf.distributions.Normal(self.mu_angle_combined, self.sigma_angle_combined,
-        #                                                name="norm_dist_angle")
-        # self.action_tf_var_angle = tf.squeeze(self.norm_dist_angle.sample(1), axis=0)
-        # self.action_tf_var_angle = tf.clip_by_value(self.action_tf_var_angle, -1, 1)
-        # self.angle_output = tf.math.multiply(self.action_tf_var_angle, max_angle_change, name="angle_output")
-        # self.log_prob_angle = tf.log(self.norm_dist_angle.prob(self.action_tf_var_angle) + 1e-5)
-
-        self.mu_impulse_combined = self.mu_impulse
-        self.sigma_impulse_combined = self.sigma_impulse
+        self.mu_impulse_combined = tf.math.divide(tf.math.add(self.mu_impulse, self.mu_impulse_ref), 2.0,
+                                                  name="mu_impulse_combined")
+        self.sigma_impulse_combined = tf.math.divide(tf.math.add(self.sigma_impulse, self.sigma_impulse_ref), 2.0,
+                                                     name="sigma_impulse_combined")
         self.norm_dist_impulse = tf.distributions.Normal(self.mu_impulse_combined, self.sigma_impulse_combined,
                                                          name="norm_dist_impulse")
         self.action_tf_var_impulse = tf.squeeze(self.norm_dist_impulse.sample(1), axis=0)
@@ -360,14 +318,35 @@ class PPONetworkActor:
         self.log_prob_impulse = tf.log(self.norm_dist_impulse.prob(self.action_tf_var_impulse) + 1e-5)
 
         # Combined Actor angle output
-        self.mu_angle_combined = self.mu_angle
-        self.sigma_angle_combined = self.sigma_angle
+        self.mu_angle_combined = tf.math.divide(tf.math.subtract(self.mu_angle, self.mu_angle_ref), 2.0,
+                                                name="mu_angle_combined")
+        self.sigma_angle_combined = tf.math.divide(tf.math.add(self.sigma_angle, self.sigma_angle_ref), 2.0,
+                                                   name="sigma_angle_combined")
         self.norm_dist_angle = tf.distributions.Normal(self.mu_angle_combined, self.sigma_angle_combined,
                                                        name="norm_dist_angle")
         self.action_tf_var_angle = tf.squeeze(self.norm_dist_angle.sample(1), axis=0)
         self.action_tf_var_angle = tf.clip_by_value(self.action_tf_var_angle, -1, 1)
         self.angle_output = tf.math.multiply(self.action_tf_var_angle, max_angle_change, name="angle_output")
         self.log_prob_angle = tf.log(self.norm_dist_angle.prob(self.action_tf_var_angle) + 1e-5)
+
+        # self.mu_impulse_combined = self.mu_impulse
+        # self.sigma_impulse_combined = self.sigma_impulse
+        # self.norm_dist_impulse = tf.distributions.Normal(self.mu_impulse_combined, self.sigma_impulse_combined,
+        #                                                  name="norm_dist_impulse")
+        # self.action_tf_var_impulse = tf.squeeze(self.norm_dist_impulse.sample(1), axis=0)
+        # self.action_tf_var_impulse = tf.clip_by_value(self.action_tf_var_impulse, 0, 1)
+        # self.impulse_output = tf.math.multiply(self.action_tf_var_impulse, max_impulse, name="impulse_output")
+        # self.log_prob_impulse = tf.log(self.norm_dist_impulse.prob(self.action_tf_var_impulse) + 1e-5)
+        #
+        # # Combined Actor angle output
+        # self.mu_angle_combined = self.mu_angle
+        # self.sigma_angle_combined = self.sigma_angle
+        # self.norm_dist_angle = tf.distributions.Normal(self.mu_angle_combined, self.sigma_angle_combined,
+        #                                                name="norm_dist_angle")
+        # self.action_tf_var_angle = tf.squeeze(self.norm_dist_angle.sample(1), axis=0)
+        # self.action_tf_var_angle = tf.clip_by_value(self.action_tf_var_angle, -1, 1)
+        # self.angle_output = tf.math.multiply(self.action_tf_var_angle, max_angle_change, name="angle_output")
+        # self.log_prob_angle = tf.log(self.norm_dist_angle.prob(self.action_tf_var_angle) + 1e-5)
 
         #            ----------        Loss functions       ---------            #
 
@@ -400,7 +379,7 @@ class PPONetworkActor:
 
         self.total_loss = tf.add(self.impulse_loss, self.angle_loss)
 
-        self.optimizer = tf.train.AdamOptimizer(critic_learning_rate, name='actor_optimizer_impulse').minimize(self.total_loss)
+        self.optimizer = tf.train.AdamOptimizer(learning_rate, name='actor_optimizer_impulse').minimize(self.total_loss)
 
     @staticmethod
     def bounded_output(x, lower, upper):
