@@ -13,9 +13,9 @@ if not os.path.exists("./Assay-Output/"):
 
 ppo_training_config = [
     {
-        "Model Name": "ppo_two_networks",
+        "Model Name": "ppo_new_buffer",
         "Environment Name": "ppo_test",
-        "Trial Number": 3,
+        "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
