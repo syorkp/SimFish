@@ -22,7 +22,9 @@ class PPONetworkCritic:
 
         self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
         self.scaler = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='scaler')
-        self.scaled_obs = tf.divide(self.observation, self.scaler, name="scaled_observation")
+        # self.scaled_obs = tf.divide(self.observation, self.scaler, name="scaled_observation")
+        self.scaled_obs = self.observation
+
         self.reshaped_observation = tf.reshape(self.scaled_obs, shape=[-1, self.num_arms, 3, 2],
                                                name="reshaped_observation")
 
@@ -104,8 +106,10 @@ class PPONetworkCritic:
 
         self.conv4l_flat_ref = tf.layers.flatten(self.conv4l_ref)
         self.conv4r_flat_ref = tf.layers.flatten(self.conv4r_ref)
-        self.prev_actions_ref = tf.reverse(self.prev_actions, [1])
-        self.internal_state_ref = tf.reverse(self.internal_state, [1])
+        # self.prev_actions_ref = tf.reverse(self.prev_actions, [1])
+        # self.internal_state_ref = tf.reverse(self.internal_state, [1])
+        self.prev_actions_ref = self.prev_actions
+        self.internal_state_ref = self.internal_state
 
         self.conv_with_states_ref = tf.concat(
             [self.conv4l_flat_ref, self.conv4r_flat_ref, self.prev_actions_ref, self.internal_state_ref], 1)
@@ -164,7 +168,8 @@ class PPONetworkActor:
 
         self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
         self.scaler = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='scaler')
-        self.scaled_obs = tf.divide(self.observation, self.scaler, name="scaled_observation")
+        # self.scaled_obs = tf.divide(self.observation, self.scaler, name="scaled_observation")
+        self.scaled_obs = self.observation
         self.reshaped_observation = tf.reshape(self.scaled_obs, shape=[-1, self.num_arms, 3, 2],
                                                name="reshaped_observation")
 
@@ -264,8 +269,10 @@ class PPONetworkActor:
 
         self.conv4l_flat_ref = tf.layers.flatten(self.conv4l_ref)
         self.conv4r_flat_ref = tf.layers.flatten(self.conv4r_ref)
-        self.prev_actions_ref = tf.reverse(self.prev_actions, [1])
-        self.internal_state_ref = tf.reverse(self.internal_state, [1])
+        # self.prev_actions_ref = tf.reverse(self.prev_actions, [1])
+        # self.internal_state_ref = tf.reverse(self.internal_state, [1])
+        self.prev_actions_ref = self.prev_actions
+        self.internal_state_ref = self.internal_state
 
         self.conv_with_states_ref = tf.concat(
             [self.conv4l_flat_ref, self.conv4r_flat_ref, self.prev_actions_ref, self.internal_state_ref], 1)
@@ -310,6 +317,7 @@ class PPONetworkActor:
                                                   name="mu_impulse_combined")
         self.sigma_impulse_combined = tf.math.divide(tf.math.add(self.sigma_impulse, self.sigma_impulse_ref), 2.0,
                                                      name="sigma_impulse_combined")
+        # self.sigma_impulse_combined = tf.constant(0.4)
         self.norm_dist_impulse = tf.distributions.Normal(self.mu_impulse_combined, self.sigma_impulse_combined,
                                                          name="norm_dist_impulse")
         self.action_tf_var_impulse = tf.squeeze(self.norm_dist_impulse.sample(1), axis=0)
@@ -322,6 +330,7 @@ class PPONetworkActor:
                                                 name="mu_angle_combined")
         self.sigma_angle_combined = tf.math.divide(tf.math.add(self.sigma_angle, self.sigma_angle_ref), 2.0,
                                                    name="sigma_angle_combined")
+        # self.sigma_angle_combined = tf.constant(0.4)
         self.norm_dist_angle = tf.distributions.Normal(self.mu_angle_combined, self.sigma_angle_combined,
                                                        name="norm_dist_angle")
         self.action_tf_var_angle = tf.squeeze(self.norm_dist_angle.sample(1), axis=0)
@@ -361,7 +370,6 @@ class PPONetworkActor:
         self.old_log_prob_angle_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='old_log_prob_angle')
 
         self.scaled_advantage_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='scaled_advantage')
-        self.returns_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='returns')
 
         # COMBINED LOSS
 

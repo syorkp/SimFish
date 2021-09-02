@@ -1,6 +1,6 @@
 {
     "num_actions": 10,
-    "batch_size": 100,
+    "batch_size": 50,
     "trace_length": 64,
     "update_freq": 100,
     "y": 0.99,
@@ -16,6 +16,6 @@
     "rnn_dim_shared": 512,
     "extra_rnn": false,
     "learning_rate_actor": 1e-06,
-    "learning_rate_critic": 1e-06,
+    "learning_rate_critic": 1e-05,
     "n_updates_per_iteration": 5
 }

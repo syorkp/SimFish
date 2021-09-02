@@ -106,7 +106,17 @@ class PPOBuffer:
                log_impulse_probability_slice, log_angle_probability_slice, advantage_slice, return_slice, \
                actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice
 
-    def discount_cumsum(self, x, discount):
+    def calculate_advantages_and_returns(self, normalise_advantage=True):
+        delta = self.reward_buffer[:-1] + self.gamma * self.value_buffer[1:] - self.value_buffer[:-1]
+        advantage = self.discount_cumsum(delta, self.gamma * self.lmbda)
+        if normalise_advantage:
+            advantage = (advantage - advantage.mean()) / (advantage.std() + 1e-10)
+        returns = self.discount_cumsum(self.reward_buffer, self.gamma)[:-1]
+        self.advantage_buffer = advantage
+        self.return_buffer = returns
+
+    @staticmethod
+    def discount_cumsum(x, discount):
         """
         magic from rllab for computing discounted cumulative sums of vectors.
         input:
@@ -120,15 +130,6 @@ class PPOBuffer:
              x2]
         """
         return sig.lfilter([1], [1, float(-discount)], x[::-1], axis=0)[::-1]
-
-    def calculate_advantages_and_returns(self, normalise_advantage=True):
-        delta = self.reward_buffer[:-1] + self.gamma * self.value_buffer[1:] - self.value_buffer[:-1]
-        advantage = self.discount_cumsum(delta, self.gamma * self.lmbda)
-        if normalise_advantage:
-            advantages = (advantage - advantage.mean()) / (advantage.std() + 1e-10)
-        returns = self.discount_cumsum(self.reward_buffer, self.gamma)[:-1]
-        self.advantage_buffer = advantage
-        self.return_buffer = returns
 
     def compute_rewards_to_go(self):
         # NOT USED

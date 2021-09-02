@@ -81,7 +81,7 @@ env = {'width': 1500,  # arena size
        'rest_cost': 2,
 
        'capture_swim_extra_cost': 25,
-       'capture_basic_reward': 0.02,
+       'capture_basic_reward': 0.05,
        'predator_cost': 100,
 
        'hunger': True,
@@ -101,16 +101,16 @@ env = {'width': 1500,  # arena size
 
        # Policy scaffolding
        'reward_distance': 100,
-       'proximity_reward': 0.005,
+       'proximity_reward': 0.002,
 
-       'max_sigma_value_impulse': 0.3,
-       'max_sigma_value_angle': 0.3,
+       'max_sigma_value_impulse': 1,
+       'max_sigma_value_angle': 1,
        'clip_param': 0.2
        }
 
 
 params = {'num_actions': 10,  # size of action space
-          'batch_size': 100,  # How many experience traces to use for each training step.
+          'batch_size': 50,  # How many experience traces to use for each training step.
           'trace_length': 64,  # How long each experience trace will be when training
           'update_freq': 100,  # How often to perform a training step.
           'y': .99,  # Discount factor on the target Q-values
@@ -127,7 +127,7 @@ params = {'num_actions': 10,  # size of action space
           'extra_rnn': False,
 
           'learning_rate_actor': 0.000001,
-          'learning_rate_critic': 0.000001,
+          'learning_rate_critic': 0.00001,
 
           'n_updates_per_iteration': 5
           }
