@@ -13,7 +13,7 @@ if not os.path.exists("./Assay-Output/"):
 
 ppo_training_config = [
     {
-        "Model Name": "ppo_sigma_back",
+        "Model Name": "working_ppo",
         "Environment Name": "ppo_test",
         "Trial Number": 1,
         "Total Configurations": 3,

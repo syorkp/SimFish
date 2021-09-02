@@ -315,9 +315,9 @@ class PPONetworkActor:
         # Combined Actor impulse output
         self.mu_impulse_combined = tf.math.divide(tf.math.add(self.mu_impulse, self.mu_impulse_ref), 2.0,
                                                   name="mu_impulse_combined")
-        self.sigma_impulse_combined = tf.math.divide(tf.math.add(self.sigma_impulse, self.sigma_impulse_ref), 2.0,
-                                                     name="sigma_impulse_combined")
-        # self.sigma_impulse_combined = tf.constant(0.4)
+        # self.sigma_impulse_combined = tf.math.divide(tf.math.add(self.sigma_impulse, self.sigma_impulse_ref), 2.0,
+        #                                              name="sigma_impulse_combined")
+        self.sigma_impulse_combined = tf.constant(0.4)
         self.norm_dist_impulse = tf.distributions.Normal(self.mu_impulse_combined, self.sigma_impulse_combined,
                                                          name="norm_dist_impulse")
         self.action_tf_var_impulse = tf.squeeze(self.norm_dist_impulse.sample(1), axis=0)
@@ -328,9 +328,9 @@ class PPONetworkActor:
         # Combined Actor angle output
         self.mu_angle_combined = tf.math.divide(tf.math.subtract(self.mu_angle, self.mu_angle_ref), 2.0,
                                                 name="mu_angle_combined")
-        self.sigma_angle_combined = tf.math.divide(tf.math.add(self.sigma_angle, self.sigma_angle_ref), 2.0,
-                                                   name="sigma_angle_combined")
-        # self.sigma_angle_combined = tf.constant(0.4)
+        # self.sigma_angle_combined = tf.math.divide(tf.math.add(self.sigma_angle, self.sigma_angle_ref), 2.0,
+        #                                            name="sigma_angle_combined")
+        self.sigma_angle_combined = tf.constant(0.4)
         self.norm_dist_angle = tf.distributions.Normal(self.mu_angle_combined, self.sigma_angle_combined,
                                                        name="norm_dist_angle")
         self.action_tf_var_angle = tf.squeeze(self.norm_dist_angle.sample(1), axis=0)
