@@ -7,7 +7,7 @@ import tensorflow.compat.v1 as tf
 
 from Environment.naturalistic_environment import NaturalisticEnvironment
 from Network.q_network import QNetwork
-from Network.experience_buffer import ExperienceBuffer
+from Buffers.experience_buffer import ExperienceBuffer
 from Tools.graph_functions import update_target_graph, update_target
 from Tools.make_gif import make_gif
 

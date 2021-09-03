@@ -7,7 +7,8 @@ import tensorflow.compat.v1 as tf
 
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Environment.controlled_stimulus_environment import ControlledStimulusEnvironment
-from Network.proximal_policy_optimizer import PPONetworkActor
+from Network.proximal_policy_optimizer import PPONetworkActor, PPONetworkCritic
+from Buffers.ppo_buffer import PPOBuffer
 from Tools.make_gif import make_gif
 
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -60,7 +61,8 @@ class PPOAssayService:
 
         # Network Parameters
         self.saver = None
-        self.ppo_network = None
+        self.actor_network = None
+        self.critic_network = None
         self.init = None
         self.sess = None
 
@@ -73,6 +75,7 @@ class PPOAssayService:
             "Total Episodes": episode_number,
             "Total Steps": total_steps,
         }
+        self.total_steps = total_steps
         self.frame_buffer = []
         self.assay_output_data_format = None
         self.assay_output_data = []
@@ -85,30 +88,45 @@ class PPOAssayService:
         self.last_position_dim = self.environment_params["prey_num"]
         self.stimuli_data = []
 
+        # Buffer for saving results of assay
+        self.buffer = PPOBuffer(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"], assay=True,
+                                debug=False)
+
+        self.impulse_sigma = None
+        self.angle_sigma = None
+
+    def update_sigmas(self):
+        self.impulse_sigma = self.environment_params["max_sigma_impulse"] - (
+                    self.environment_params["max_sigma_impulse"] - self.environment_params["min_sigma_impulse"]) * self.total_steps / 5000000
+        self.angle_sigma = self.environment_params["max_sigma_impulse"] - (
+                    self.environment_params["max_sigma_impulse"] - self.environment_params["min_sigma_impulse"]) * self.total_steps / 5000000
+
     def create_network(self):
-        print("Creating network...")
+        print("Creating networks...")
         internal_states = sum(
             [1 for x in [self.environment_params['hunger'], self.environment_params['stress']] if x is True]) + 1
-        shared_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
-        critic_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_critic'], state_is_tuple=True)
-        actor_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_actor'], state_is_tuple=True)
 
-        ppo_network = PPONetworkActor(simulation=self.simulation,
-                                      rnn_dim=self.learning_params['rnn_dim_shared'],
-                                      rnn_dim_critic=self.learning_params['rnn_dim_critic'],
-                                      rnn_dim_actor=self.learning_params['rnn_dim_actor'],
-                                      rnn_cell=shared_cell,
-                                      rnn_cell_critic=critic_cell,
-                                      rnn_cell_actor=actor_cell,
-                                      my_scope='main',
-                                      internal_states=internal_states,
-                                      actor_learning_rate_impulse=self.learning_params['learning_rate_impulse'],
-                                      actor_learning_rate_angle=self.learning_params['learning_rate_angle'],
-                                      learning_rate=self.learning_params['learning_rate_critic'],
-                                      max_impulse=self.environment_params['max_impulse'],
-                                      max_angle_change=self.environment_params['max_angle_change'],
-                                      )
-        return ppo_network
+        actor_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
+        critic_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
+
+        ppo_network_actor = PPONetworkActor(simulation=self.simulation,
+                                            rnn_dim=self.learning_params['rnn_dim_shared'],
+                                            rnn_cell=actor_cell,
+                                            my_scope='actor',
+                                            internal_states=internal_states,
+                                            learning_rate=self.learning_params['learning_rate_actor'],
+                                            max_impulse=self.environment_params['max_impulse'],
+                                            max_angle_change=self.environment_params['max_angle_change'],
+                                            clip_param=self.environment_params['clip_param']
+                                            )
+        ppo_network_critic = PPONetworkCritic(simulation=self.simulation,
+                                              rnn_dim=self.learning_params['rnn_dim_shared'],
+                                              rnn_cell=critic_cell,
+                                              my_scope='critic',
+                                              internal_states=internal_states,
+                                              learning_rate=self.learning_params['learning_rate_critic'],
+                                              )
+        return ppo_network_actor, ppo_network_critic
 
     def create_testing_environment(self, assay):
         """
@@ -146,7 +164,7 @@ class PPOAssayService:
                 self._run()
 
     def _run(self):
-        self.ppo_network = self.create_network()
+        self.actor_network, self.critic_network = self.create_network()
         self.saver = tf.train.Saver(max_to_keep=5)
         self.init = tf.global_variables_initializer()
         checkpoint = tf.train.get_checkpoint_state(self.model_location)
@@ -162,40 +180,28 @@ class PPOAssayService:
             if assay["save stimuli"]:
                 self.save_stimuli_data(assay)
             # self.save_assay_results(assay)
-            self.save_hdf5_data(assay)
+            # self.save_hdf5_data(assay)
         self.save_metadata()
         self.save_episode_data()
 
-    def create_output_data_storage(self, assay):
-        self.output_data = {key: [] for key in assay["recordings"]}
-        self.output_data["step"] = []
-
-    def ablate_units(self, unit_indexes):
-        for unit in unit_indexes:
-            if unit < 256:
-                output = self.sess.graph.get_tensor_by_name('mainaw:0')
-                new_tensor = output.eval()
-                new_tensor[unit] = np.array([0 for i in range(10)])
-                self.sess.run(tf.assign(output, new_tensor))
-            else:
-                output = self.sess.graph.get_tensor_by_name('mainvw:0')
-                new_tensor = output.eval()
-                new_tensor[unit - 256] = np.array([0])
-                self.sess.run(tf.assign(output, new_tensor))
-
     def perform_assay(self, assay):
         self.assay_output_data_format = {key: None for key in assay["recordings"]}
+        self.buffer.recordings = assay["recordings"]
+        self.update_sigmas()
 
-        rnn_state_shared = (
-            np.zeros([1, self.ppo_network.rnn_dim]),
-            np.zeros([1, self.ppo_network.rnn_dim]))  # Reset RNN hidden state
-        rnn_state_shared_ref = (
-            np.zeros([1, self.ppo_network.rnn_dim]),
-            np.zeros([1, self.ppo_network.rnn_dim]))  # Reset RNN hidden state
-        rnn_state_critic = (
-            np.zeros([1, self.ppo_network.rnn_dim_critic]), np.zeros([1, self.ppo_network.rnn_dim_critic]))
         rnn_state_actor = (
-            np.zeros([1, self.ppo_network.rnn_dim_actor]), np.zeros([1, self.ppo_network.rnn_dim_actor]))
+            np.zeros([1, self.actor_network.rnn_dim]),
+            np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
+        rnn_state_actor_ref = (
+            np.zeros([1, self.actor_network.rnn_dim]),
+            np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
+
+        rnn_state_critic = (
+            np.zeros([1, self.actor_network.rnn_dim]),
+            np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
+        rnn_state_critic_ref = (
+            np.zeros([1, self.actor_network.rnn_dim]),
+            np.zeros([1, self.actor_network.rnn_dim]))
 
         self.simulation.reset()
         sa = np.zeros((1, 128))  # Kept for GIFs.
@@ -207,68 +213,159 @@ class PPOAssayService:
                                                                                      activations=(sa,))
 
         # For benchmarking each episode.
-        all_actions = []
         total_episode_reward = 0  # Total reward over episode
 
-        step_number = 0  # To allow exit after maximum steps.
         a = [4.0, 0.0]  # Initialise action for episode.
-        all_actions.append([a])
+
+        # Reset buffers
+        self.buffer.reset()
+        self.buffer.action_buffer.append(a)  # Add to buffer for loading of previous actions
+
         self.step_number = 0
         while self.step_number < assay["duration"]:
             if assay["reset"] and self.step_number % assay["reset interval"] == 0:
-                rnn_state = (np.zeros([1, self.ppo_network.rnn_dim]),
-                             np.zeros([1, self.ppo_network.rnn_dim]))  # Reset RNN hidden state
+                rnn_state_actor = (
+                    np.zeros([1, self.actor_network.rnn_dim]),
+                    np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
+                rnn_state_actor_ref = (
+                    np.zeros([1, self.actor_network.rnn_dim]),
+                    np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
+
+                rnn_state_critic = (
+                    np.zeros([1, self.actor_network.rnn_dim]),
+                    np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
+                rnn_state_critic_ref = (
+                    np.zeros([1, self.actor_network.rnn_dim]),
+                    np.zeros([1, self.actor_network.rnn_dim]))
 
             self.step_number += 1
 
-            o, a, r, internal_state, o1, d, rnn_state_shared, rnn_state_shared_ref = self.step_loop(o=o,
-                                                                                                    internal_state=internal_state,
-                                                                                                    a=a,
-                                                                                                    rnn_state_shared=rnn_state_shared,
-                                                                                                    rnn_state_critic=rnn_state_critic,
-                                                                                                    rnn_state_actor=rnn_state_actor,
-                                                                                                    rnn_state_shared_ref=rnn_state_shared_ref)
-            o = o1
+            r, internal_state, o, d, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic, rnn_state_critic_ref = self.step_loop(
+                o=o,
+                internal_state=internal_state,
+                a=a,
+                rnn_state_actor=rnn_state_actor,
+                rnn_state_actor_ref=rnn_state_actor_ref,
+                rnn_state_critic=rnn_state_critic,
+                rnn_state_critic_ref=rnn_state_critic_ref
+            )
 
+            total_episode_reward += r
             if d:
                 break
 
-    def step_loop(self, o, internal_state, a, rnn_state_shared, rnn_state_critic, rnn_state_actor,
-                  rnn_state_shared_ref):
+        if assay["save frames"]:
+            make_gif(self.frame_buffer,
+                     f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
+                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+        self.frame_buffer = []
+
+        self.buffer.tidy()
+
+        if "reward assessments" in self.buffer.recordings:
+            self.buffer.calculate_advantages_and_returns()
+        self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id)
+
+    def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
+                  rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
+        a = [a[0] / self.environment_params['max_impulse'],
+             a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
 
-        impulse, angle, updated_rnn_state_shared, updated_rnn_state_shared_ref, rnn2_state, conv1l, \
-        conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r, o2 = \
-            self.sess.run(
-                [self.ppo_network.impulse_output, self.ppo_network.angle_output, self.ppo_network.rnn_state_shared,
-                 self.ppo_network.rnn_state_ref,
+        impulse, angle, updated_rnn_state_actor, updated_rnn_state_actor_ref, conv1l_actor, conv2l_actor, conv3l_actor, \
+            conv4l_actor, conv1r_actor, conv2r_actor, conv3r_actor, conv4r_actor, impulse_probability, \
+            angle_probability, mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref = self.sess.run(
+                [self.actor_network.impulse_output, self.actor_network.angle_output,
+                 self.actor_network.rnn_state_shared,
+                 self.actor_network.rnn_state_ref,
+                 self.actor_network.conv1l, self.actor_network.conv2l, self.actor_network.conv3l,
+                 self.actor_network.conv4l,
+                 self.actor_network.conv1r, self.actor_network.conv2r, self.actor_network.conv3r,
+                 self.actor_network.conv4r,
 
-                 # self.ppo_network.value_rnn_state, self.ppo_network.actor_rnn_state,
-                 self.ppo_network.rnn_state2,
-                 self.ppo_network.conv1l, self.ppo_network.conv2l, self.ppo_network.conv3l, self.ppo_network.conv4l,
-                 self.ppo_network.conv1r, self.ppo_network.conv2r, self.ppo_network.conv3r, self.ppo_network.conv4r,
-                 [self.ppo_network.ref_left_eye, self.ppo_network.ref_right_eye]
+                 self.actor_network.log_prob_impulse, self.actor_network.log_prob_angle,
+                 self.actor_network.mu_impulse_combined, self.actor_network.sigma_impulse_combined,
+                 self.actor_network.mu_angle_combined,
+                 self.actor_network.sigma_angle_combined, self.actor_network.mu_impulse,
+                 self.actor_network.mu_impulse_ref,
+                 self.actor_network.mu_angle, self.actor_network.mu_angle_ref
                  ],
-                feed_dict={self.ppo_network.observation: o,
-                           self.ppo_network.internal_state: internal_state,
-                           self.ppo_network.prev_actions: np.reshape(a, (1, 2)),
-                           self.ppo_network.trainLength: 1,
-                           self.ppo_network.rnn_state_in: rnn_state_shared,
-                           self.ppo_network.rnn_state_in_ref: rnn_state_shared_ref,
+                feed_dict={self.actor_network.observation: o,
+                           self.actor_network.scaler: np.full(o.shape, 255),
+                           self.actor_network.internal_state: internal_state,
+                           self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                           self.actor_network.rnn_state_in: rnn_state_actor,
+                           self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                           self.actor_network.batch_size: 1,
+                           self.actor_network.trainLength: 1,
+                           self.actor_network.sigma_impulse_combined: self.impulse_sigma,
+                           self.actor_network.sigma_angle_combined: self.angle_sigma,
+                           }
+            )
 
-                           self.ppo_network.critic_state_in: rnn_state_critic,
-                           self.ppo_network.actor_state_in: rnn_state_actor,
-                           self.ppo_network.batch_size: 1,
-                           self.ppo_network.scaler: np.full(o.shape, 255)})
-        impulse = impulse[0][0]
-        angle = angle[0][0]
-        action = [impulse, angle]
-        o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=action,
-                                                                                                 frame_buffer=self.frame_buffer,
-                                                                                                 save_frames=True,
-                                                                                                 activations=(sa,))
-        fish_angle = self.simulation.fish.body.angle
+        V, updated_rnn_state_critic, updated_rnn_state_critic_ref, conv1l_critic, conv2l_critic, conv3l_critic, \
+            conv4l_critic, conv1r_critic, conv2r_critic, conv3r_critic, conv4r_critic = self.sess.run(
+                [self.critic_network.Value_output, self.critic_network.rnn_state_shared,
+                 self.critic_network.rnn_state_ref,
+                 self.critic_network.conv1l, self.critic_network.conv2l, self.critic_network.conv3l,
+                 self.critic_network.conv4l,
+                 self.critic_network.conv1r, self.critic_network.conv2r, self.critic_network.conv3r,
+                 self.critic_network.conv4r,
+                 ],
+                feed_dict={self.critic_network.observation: o,
+                           self.critic_network.scaler: np.full(o.shape, 255),
+                           self.critic_network.internal_state: internal_state,
+                           self.critic_network.prev_actions: np.reshape(a, (1, 2)),
+                           self.critic_network.rnn_state_in: rnn_state_critic,
+                           self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
+                           self.critic_network.batch_size: 1,
+                           self.critic_network.trainLength: 1,
+                           }
+        )
+        action = [impulse[0][0], angle[0][0]]
 
+        o1, given_reward, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=action,
+                                                                                                     frame_buffer=self.frame_buffer,
+                                                                                                     save_frames=True,
+                                                                                                     activations=(sa,))
+
+        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
+
+        # Update buffer
+        self.buffer.add_training(observation=o,
+                                 internal_state=internal_state,
+                                 action=action,
+                                 reward=given_reward,
+                                 value=V,
+                                 l_p_impulse=impulse_probability,
+                                 l_p_angle=angle_probability,
+                                 actor_rnn_state=rnn_state_actor,
+                                 actor_rnn_state_ref=rnn_state_actor_ref,
+                                 critic_rnn_state=rnn_state_critic,
+                                 critic_rnn_state_ref=rnn_state_critic_ref,
+                                 )
+        self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
+
+        if "environmental positions" in self.buffer.recordings:
+            self.buffer.save_environmental_positions(self.simulation.fish.body.position,
+                                                     self.simulation.prey_consumed_this_step,
+                                                     self.simulation.predator_body,
+                                                     prey_positions,
+                                                     predator_position,
+                                                     sand_grain_positions,
+                                                     vegetation_positions,
+                                                     self.simulation.fish.body.angle,
+                                                     )
+        if "convolutional layers" in self.buffer.recordings:
+            self.buffer.save_conv_states(conv1l_actor, conv2l_actor, conv3l_actor, conv4l_actor, conv1r_actor,
+                                         conv2r_actor, conv3r_actor, conv4r_actor,
+                                         conv1l_critic, conv2l_critic, conv3l_critic, conv4l_critic, conv1r_critic,
+                                         conv2r_critic, conv3r_critic, conv4r_critic)
+
+        return given_reward, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, \
+               updated_rnn_state_critic, updated_rnn_state_critic_ref
+
+    def get_positions(self):
         if not self.simulation.sand_grain_bodies:
             sand_grain_positions = [self.simulation.sand_grain_bodies[i].position for i, b in
                                     enumerate(self.simulation.sand_grain_bodies)]
@@ -304,27 +401,24 @@ class PPOAssayService:
         else:
             vegetation_positions = [[10000, 10000]]
 
-        if not self.learning_params["extra_rnn"]:
-            rnn2_state = [0.0]
+        return sand_grain_positions, prey_positions, predator_position, vegetation_positions
 
-        # Saving step data
-        possible_data_to_save = self.package_output_data(o1, o2, action, sa, updated_rnn_state_shared,
-                                                         rnn2_state,
-                                                         self.simulation.fish.body.position,
-                                                         self.simulation.prey_consumed_this_step,
-                                                         self.simulation.predator_body,
-                                                         conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r,
-                                                         prey_positions,
-                                                         predator_position,
-                                                         sand_grain_positions,
-                                                         vegetation_positions,
-                                                         fish_angle,
-                                                         )  # TODO: Add ability to save other RNN layers.
-        for key in self.assay_output_data_format:
-            self.output_data[key].append(possible_data_to_save[key])
-        self.output_data["step"].append(self.step_number)
+    def create_output_data_storage(self, assay):
+        self.output_data = {key: [] for key in assay["recordings"]}
+        self.output_data["step"] = []
 
-        return o, action, given_reward, internal_state, o1, d, updated_rnn_state_shared, updated_rnn_state_shared_ref  # updated_rnn_state_critic, updated_rnn_state_actor,
+    def ablate_units(self, unit_indexes):
+        for unit in unit_indexes:
+            if unit < 256:
+                output = self.sess.graph.get_tensor_by_name('mainaw:0')  # TODO: Will need to update for new network architecture.
+                new_tensor = output.eval()
+                new_tensor[unit] = np.array([0 for i in range(10)])
+                self.sess.run(tf.assign(output, new_tensor))
+            else:
+                output = self.sess.graph.get_tensor_by_name('mainvw:0')
+                new_tensor = output.eval()
+                new_tensor[unit - 256] = np.array([0])
+                self.sess.run(tf.assign(output, new_tensor))
 
     def save_hdf5_data(self, assay):
         if assay["save frames"]:
@@ -376,7 +470,7 @@ class PPOAssayService:
         with open(f"{self.data_save_location}/{self.assay_configuration_id}.json", "w") as output_file:
             json.dump(self.metadata, output_file)
 
-    def package_output_data(self, observation, rev_observation, action, advantage_stream, rnn_state, rnn2_state,
+    def package_output_data(self, observation, action, advantage_stream, rnn_state, rnn2_state,
                             position, prey_consumed, predator_body,
                             conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r,
                             prey_positions, predator_position, sand_grain_positions, vegetation_positions, fish_angle):
@@ -421,7 +515,6 @@ class PPOAssayService:
             "advantage stream": advantage_stream,
             "position": position,
             "observation": observation,
-            "rev_observation": rev_observation,
             "left_conv_1": conv1l,
             "left_conv_2": conv2l,
             "left_conv_3": conv3l,

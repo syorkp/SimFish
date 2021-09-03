@@ -12,7 +12,7 @@ class VirtualVirtualReality(BaseEnvironment):
         super().__init__(env_variables, draw_screen)
 
         self.fish = Fish(self.board, env_variables, self.dark_col)
-        self.space.add(self.fish.body, self.fish.shape)
+        self.space.add_training(self.fish.body, self.fish.shape)
 
         # Whole environment measurements.
         board_height = env_variables["height"]
@@ -87,7 +87,7 @@ class VirtualVirtualReality(BaseEnvironment):
             s.group = 1
             s.collision_type = 1
             # s.color = (1, 1, 1)  # TODO: Test is translucent
-        self.space.add(static)
+        self.space.add_training(static)
 
     def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None):
         if frame_buffer is None:
@@ -160,7 +160,7 @@ class VirtualVirtualReality(BaseEnvironment):
             s.group = 1
             s.collision_type = 1
             s.color = (0, 0, 1)  # TODO: Test is visible
-        self.space.add(projections)
+        self.space.add_training(projections)
         # In future, could make it so that it takes a predator shape and then flattens it.
         # TODO: Research how to create a visible shape in Pymunk
         # TODO: Start with just a blue line

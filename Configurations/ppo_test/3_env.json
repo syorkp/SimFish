@@ -75,7 +75,9 @@
     "baseline_penalty": 0.002,
     "reward_distance": 100,
     "proximity_reward": 0.002,
-    "max_sigma_value_impulse": 1,
-    "max_sigma_value_angle": 1,
+    "max_sigma_impulse": 0.4,
+    "max_sigma_angle": 0.4,
+    "min_sigma_impulse": 0.1,
+    "min_sigma_angle": 0.1,
     "clip_param": 0.2
 }

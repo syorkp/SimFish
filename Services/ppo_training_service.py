@@ -106,22 +106,14 @@ class PPOTrainingService:
         self.last_episodes_sand_grains_bumped = []
 
         # Training buffers
-        self.buffer = PPOBuffer(gamma=0.99, lmbda=0.9, batch_size=self.params["batch_size"])
+        self.buffer = PPOBuffer(gamma=0.99, lmbda=0.9, batch_size=self.params["batch_size"], assay=False, debug=False)
 
-        # Buffers for checking up on estimates
-        self.mu_i_buffer = []
-        self.si_i_buffer = []
-        self.mu_a_buffer = []
-        self.si_a_buffer = []
+        self.impulse_sigma = None
+        self.angle_sigma = None
 
-        self.mu1_buffer = []
-        self.mu1_ref_buffer = []
-        self.mu_a1_buffer = []
-        self.mu_a_ref_buffer = []
-
-        self.impulse_loss_buffer = []
-        self.angle_loss_buffer = []
-        self.critic_loss_buffer = []
+    def update_sigmas(self):
+        self.impulse_sigma = np.array([self.env["max_sigma_impulse"] - (self.env["max_sigma_impulse"]-self.env["min_sigma_impulse"]) * self.total_steps/5000000])
+        self.angle_sigma = np.array([self.env["max_sigma_impulse"] - (self.env["max_sigma_impulse"]-self.env["min_sigma_impulse"]) * self.total_steps/5000000])
 
     def load_configuration_files(self):
         """
@@ -242,8 +234,6 @@ class PPOTrainingService:
                                             learning_rate=self.params['learning_rate_actor'],
                                             max_impulse=self.env['max_impulse'],
                                             max_angle_change=self.env['max_angle_change'],
-                                            sigma_impulse_max=self.env['max_sigma_value_impulse'],
-                                            sigma_angle_max=self.env['max_sigma_value_angle'],
                                             clip_param=self.env['clip_param']
                                             )
         ppo_network_critic = PPONetworkCritic(simulation=self.simulation,
@@ -261,6 +251,7 @@ class PPOTrainingService:
         steps in the episode. The relevant values are then saved to the experience buffer.
         """
         t0 = time()
+        self.update_sigmas()
 
         rnn_state_actor = (
             np.zeros([1, self.actor_network.rnn_dim]),
@@ -286,77 +277,30 @@ class PPOTrainingService:
                                                                                      activations=(sa,))
 
         # For benchmarking each episode.
-        all_actions = []
         total_episode_reward = 0  # Total reward over episode
 
         step_number = 0  # To allow exit after maximum steps.
         a = [4.0, 0.0]  # Initialise action for episode.
-        all_actions.append([a])
 
         # Reset buffers
         self.buffer.reset()
         self.buffer.action_buffer.append(a)  # Add to buffer for loading of previous actions
 
-        # For logging
-        full_value_buffer = []  # For logging
-        critic_loss_buffer = []
-        impulse_loss_buffer = []
-        angle_loss_buffer = []
-
-        self.mu_i_buffer = []
-        self.si_i_buffer = []
-        self.mu_a_buffer = []
-        self.si_a_buffer = []
-
-        self.mu1_buffer = []
-        self.mu1_ref_buffer = []
-        self.mu_a1_buffer = []
-        self.mu_a_ref_buffer = []
-
         while step_number < self.params["max_epLength"]:
             step_number += 1
-            o, a, r, updated_internal_state, o1, d, updated_rnn_state_shared, updated_rnn_state_shared_ref, V, impulse_probability, angle_probability, updated_rnn_state_critic, updated_rnn_state_critic_ref = self.step_loop(
+            r, internal_state, o, d, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic, rnn_state_critic_ref = self.step_loop(
                 o=o,
                 internal_state=internal_state,
                 a=a,
-                rnn_state_shared_actor=rnn_state_actor,
-                rnn_state_shared_actor_ref=rnn_state_actor_ref,
-                rnn_state_shared_critic=rnn_state_critic,
-                rnn_state_shared_critic_ref=rnn_state_critic_ref
+                rnn_state_actor=rnn_state_actor,
+                rnn_state_actor_ref=rnn_state_actor_ref,
+                rnn_state_critic=rnn_state_critic,
+                rnn_state_critic_ref=rnn_state_critic_ref
             )
 
-            # Update buffer
-            self.buffer.add(observation=o,
-                            internal_state=internal_state,
-                            action=a,
-                            reward=r,
-                            value=V,
-                            l_p_impulse=impulse_probability,
-                            l_p_angle=angle_probability,
-                            actor_rnn_state=rnn_state_actor,
-                            actor_rnn_state_ref=rnn_state_actor_ref,
-                            critic_rnn_state=rnn_state_critic,
-                            critic_rnn_state_ref=rnn_state_critic_ref,
-                            )
-
-            rnn_state_actor = updated_rnn_state_shared
-            rnn_state_actor_ref = updated_rnn_state_shared_ref
-            rnn_state_critic = updated_rnn_state_critic
-            rnn_state_critic_ref = updated_rnn_state_critic_ref
-            o = o1
-            internal_state = updated_internal_state
-
-            # Can get rid of these as my buffer does this anyway
-            full_value_buffer.append(V)
             total_episode_reward += r
-            all_actions.append([a])
-
             if d:
                 break
-
-        self.impulse_loss_buffer = []
-        self.angle_loss_buffer = []
-        self.critic_loss_buffer = []
 
         self.buffer.tidy()
         self.buffer.calculate_advantages_and_returns()
@@ -364,26 +308,21 @@ class PPOTrainingService:
         self.train_network()
 
         print("\n")
-        print(f"Mean Impulse: {np.mean([i[0][0] for i in all_actions])}")
-        print(f"Mean Angle {np.mean([i[0][1] for i in all_actions])}")
+        print(f"Mean Impulse: {np.mean([i[0] for i in self.buffer.action_buffer])}")
+        print(f"Mean Angle {np.mean([i[1] for i in self.buffer.action_buffer])}")
         print(f"Total episode reward: {total_episode_reward}")
 
         # Add the episode to tensorflow logs
         self.save_episode(episode_start_t=t0,
-                          all_actions=all_actions,
                           total_episode_reward=total_episode_reward,
                           prey_caught=self.simulation.prey_caught,
                           predators_avoided=self.simulation.predators_avoided,
                           sand_grains_bumped=self.simulation.sand_grains_bumped,
                           steps_near_vegetation=self.simulation.steps_near_vegetation,
-                          critic_loss=critic_loss_buffer,
-                          impulse_loss=impulse_loss_buffer,
-                          angle_loss=angle_loss_buffer,
-                          value_buffer=full_value_buffer
                           )
 
-    def step_loop(self, o, internal_state, a, rnn_state_shared_actor, rnn_state_shared_actor_ref,
-                  rnn_state_shared_critic, rnn_state_shared_critic_ref):
+    def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
+                  rnn_state_critic_ref):
         # Generate actions and corresponding steps.
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.env['max_impulse'],
@@ -402,8 +341,10 @@ class PPOTrainingService:
                        self.actor_network.scaler: np.full(o.shape, 255),
                        self.actor_network.internal_state: internal_state,
                        self.actor_network.prev_actions: np.reshape(a, (1, 2)),
-                       self.actor_network.rnn_state_in: rnn_state_shared_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_shared_actor_ref,
+                       self.actor_network.rnn_state_in: rnn_state_actor,
+                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       self.actor_network.sigma_impulse_combined: self.impulse_sigma,
+                       self.actor_network.sigma_angle_combined: self.angle_sigma,
                        self.actor_network.batch_size: 1,
                        self.actor_network.trainLength: 1,
                        }
@@ -416,36 +357,40 @@ class PPOTrainingService:
                        self.critic_network.scaler: np.full(o.shape, 255),
                        self.critic_network.internal_state: internal_state,
                        self.critic_network.prev_actions: np.reshape(a, (1, 2)),
-                       self.critic_network.rnn_state_in: rnn_state_shared_critic,
-                       self.critic_network.rnn_state_in_ref: rnn_state_shared_critic_ref,
+                       self.critic_network.rnn_state_in: rnn_state_critic,
+                       self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
                        self.critic_network.batch_size: 1,
                        self.critic_network.trainLength: 1,
 
                        }
         )
-        # print(impulse)
-        impulse = impulse[0][0]
-        angle = angle[0][0]
-        action = [impulse, angle]
 
-        self.mu_i_buffer.append(mu_i)
-        self.si_i_buffer.append(si_i)
-        self.mu_a_buffer.append(mu_a)
-        self.si_a_buffer.append(si_a)
-        self.mu1_buffer.append(mu1)
-        self.mu1_ref_buffer.append(mu1_ref)
-        self.mu_a1_buffer.append(mu_a1)
-        self.mu_a_ref_buffer.append(mu_a_ref)
+        action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
             action=action,
             frame_buffer=self.frame_buffer,
             save_frames=self.save_frames,
             activations=sa)
 
+        # Update buffer
+        self.buffer.add_training(observation=o,
+                                 internal_state=internal_state,
+                                 action=action,
+                                 reward=r,
+                                 value=V,
+                                 l_p_impulse=impulse_probability,
+                                 l_p_angle=angle_probability,
+                                 actor_rnn_state=rnn_state_actor,
+                                 actor_rnn_state_ref=rnn_state_actor_ref,
+                                 critic_rnn_state=rnn_state_critic,
+                                 critic_rnn_state_ref=rnn_state_critic_ref,
+                                 )
+        self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
+
         self.total_steps += 1
-        return o, action, given_reward, internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, V, impulse_probability, angle_probability, updated_rnn_state_critic, updated_rnn_state_critic_ref
+        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
 
     def train_network(self):
         number_of_batches = (len(self.buffer.return_buffer) // self.params["batch_size"]) + 1
@@ -501,6 +446,8 @@ class PPOTrainingService:
                                self.actor_network.internal_state: np.vstack(internal_state_slice),
                                self.actor_network.rnn_state_in: actor_rnn_state_slice,
                                self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
+                               self.actor_network.sigma_impulse_combined: self.impulse_sigma,
+                               self.actor_network.sigma_angle_combined: self.angle_sigma,
 
                                self.actor_network.impulse_placeholder: np.vstack(action_slice[:, 0]),
                                self.actor_network.angle_placeholder: np.vstack(action_slice[:, 1]),
@@ -516,13 +463,12 @@ class PPOTrainingService:
                 average_loss_angle += np.mean(np.abs(loss_actor_val_angle))
                 average_loss_value += np.abs(loss_critic_val)
 
-            self.impulse_loss_buffer.append(average_loss_impulse / self.params["n_updates_per_iteration"])
-            self.angle_loss_buffer.append(average_loss_angle / self.params["n_updates_per_iteration"])
-            self.critic_loss_buffer.append(average_loss_value / self.params["n_updates_per_iteration"])
+            self.buffer.add_loss(average_loss_impulse / self.params["n_updates_per_iteration"],
+                                 average_loss_angle / self.params["n_updates_per_iteration"],
+                                 average_loss_value / self.params["n_updates_per_iteration"])
 
-    def save_episode(self, episode_start_t, all_actions, total_episode_reward, prey_caught,
-                     predators_avoided, sand_grains_bumped, steps_near_vegetation, critic_loss, impulse_loss,
-                     angle_loss, value_buffer):
+    def save_episode(self, episode_start_t, total_episode_reward, prey_caught,
+                     predators_avoided, sand_grains_bumped, steps_near_vegetation):
         """
         Saves the episode the the experience buffer. Also creates a gif if at interval.
         """
@@ -549,80 +495,80 @@ class PPOTrainingService:
         self.writer.add_summary(episode_summary, self.total_steps)
 
         # Action Summary
-        impulses = [action[0][0] for action in all_actions]
+        impulses = [action[0] for action in self.buffer.action_buffer]
         for step in range(0, len(impulses), 5):
             impulse_summary = tf.Summary(value=[tf.Summary.Value(tag="impulse magnitude", simple_value=impulses[step])])
             self.writer.add_summary(impulse_summary, self.total_steps - len(impulses) + step)
 
-        angles = [action[0][1] for action in all_actions]
+        angles = [action[1] for action in self.buffer.action_buffer]
         for step in range(0, len(angles), 5):
             angles_summary = tf.Summary(value=[tf.Summary.Value(tag="angle magnitude", simple_value=angles[step])])
             self.writer.add_summary(angles_summary, self.total_steps - len(angles) + step)
 
         # Save Loss
-        for step in range(0, len(self.critic_loss_buffer)):
+        for step in range(0, len(self.buffer.critic_loss_buffer)):
             critic_loss_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="critic loss", simple_value=self.critic_loss_buffer[step])])
+                value=[tf.Summary.Value(tag="critic loss", simple_value=self.buffer.critic_loss_buffer[step])])
             self.writer.add_summary(critic_loss_summary,
                                     self.total_steps - len(angles) + step * self.params["batch_size"])
 
-        for step in range(0, len(self.impulse_loss_buffer)):
+        for step in range(0, len(self.buffer.impulse_loss_buffer)):
             impulse_loss_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="impulse loss", simple_value=self.impulse_loss_buffer[step])])
+                value=[tf.Summary.Value(tag="impulse loss", simple_value=self.buffer.impulse_loss_buffer[step])])
             self.writer.add_summary(impulse_loss_summary,
                                     self.total_steps - len(angles) + step * self.params["batch_size"])
 
-        for step in range(0, len(self.angle_loss_buffer)):
+        for step in range(0, len(self.buffer.angle_loss_buffer)):
             angle_loss_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="angle loss", simple_value=self.angle_loss_buffer[step])])
+                value=[tf.Summary.Value(tag="angle loss", simple_value=self.buffer.angle_loss_buffer[step])])
             self.writer.add_summary(angle_loss_summary,
                                     self.total_steps - len(angles) + step * self.params["batch_size"])
 
         # Saving Parameters for Testing
-        for step in range(0, len(self.mu_i_buffer)):
+        for step in range(0, len(self.buffer.mu_i_buffer)):
             mu_i_loss_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="mu_impulse", simple_value=self.mu_i_buffer[step])])
-            self.writer.add_summary(mu_i_loss_summary, self.total_steps - len(self.mu_i_buffer) + step)
+                value=[tf.Summary.Value(tag="mu_impulse", simple_value=self.buffer.mu_i_buffer[step])])
+            self.writer.add_summary(mu_i_loss_summary, self.total_steps - len(self.buffer.mu_i_buffer) + step)
 
-        for step in range(0, len(self.si_i_buffer)):
+        for step in range(0, len(self.buffer.si_i_buffer)):
             si_i_loss_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="sigma_impulse", simple_value=self.si_i_buffer[step])])
-            self.writer.add_summary(si_i_loss_summary, self.total_steps - len(self.si_i_buffer) + step)
+                value=[tf.Summary.Value(tag="sigma_impulse", simple_value=self.buffer.si_i_buffer[step])])
+            self.writer.add_summary(si_i_loss_summary, self.total_steps - len(self.buffer.si_i_buffer) + step)
 
-        for step in range(0, len(self.mu_a_buffer)):
+        for step in range(0, len(self.buffer.mu_a_buffer)):
             mu_a_loss_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="mu_angle", simple_value=self.mu_a_buffer[step])])
-            self.writer.add_summary(mu_a_loss_summary, self.total_steps - len(self.mu_a_buffer) + step)
+                value=[tf.Summary.Value(tag="mu_angle", simple_value=self.buffer.mu_a_buffer[step])])
+            self.writer.add_summary(mu_a_loss_summary, self.total_steps - len(self.buffer.mu_a_buffer) + step)
 
-        for step in range(0, len(self.si_a_buffer)):
+        for step in range(0, len(self.buffer.si_a_buffer)):
             si_a_loss_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="sigma_angle", simple_value=self.si_a_buffer[step])])
-            self.writer.add_summary(si_a_loss_summary, self.total_steps - len(self.si_a_buffer) + step)
+                value=[tf.Summary.Value(tag="sigma_angle", simple_value=self.buffer.si_a_buffer[step])])
+            self.writer.add_summary(si_a_loss_summary, self.total_steps - len(self.buffer.si_a_buffer) + step)
 
-        for step in range(0, len(self.mu1_buffer)):
+        for step in range(0, len(self.buffer.mu1_buffer)):
             mu1_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="mu_impulse_base", simple_value=self.mu1_buffer[step])])
-            self.writer.add_summary(mu1_summary, self.total_steps - len(self.mu1_buffer) + step)
+                value=[tf.Summary.Value(tag="mu_impulse_base", simple_value=self.buffer.mu1_buffer[step])])
+            self.writer.add_summary(mu1_summary, self.total_steps - len(self.buffer.mu1_buffer) + step)
 
-        for step in range(0, len(self.mu1_ref_buffer)):
+        for step in range(0, len(self.buffer.mu1_ref_buffer)):
             mu1_ref_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="mu_impulse_ref_base", simple_value=self.mu1_ref_buffer[step])])
-            self.writer.add_summary(mu1_ref_summary, self.total_steps - len(self.mu1_ref_buffer) + step)
+                value=[tf.Summary.Value(tag="mu_impulse_ref_base", simple_value=self.buffer.mu1_ref_buffer[step])])
+            self.writer.add_summary(mu1_ref_summary, self.total_steps - len(self.buffer.mu1_ref_buffer) + step)
 
-        for step in range(0, len(self.mu_a1_buffer)):
+        for step in range(0, len(self.buffer.mu_a1_buffer)):
             mu1_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="mu_angle_base", simple_value=self.mu_a1_buffer[step])])
-            self.writer.add_summary(mu1_summary, self.total_steps - len(self.mu_a1_buffer) + step)
+                value=[tf.Summary.Value(tag="mu_angle_base", simple_value=self.buffer.mu_a1_buffer[step])])
+            self.writer.add_summary(mu1_summary, self.total_steps - len(self.buffer.mu_a1_buffer) + step)
 
-        for step in range(0, len(self.mu_a_ref_buffer)):
+        for step in range(0, len(self.buffer.mu_a_ref_buffer)):
             mu1_ref_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="mu_angle_ref_base", simple_value=self.mu_a_ref_buffer[step])])
-            self.writer.add_summary(mu1_ref_summary, self.total_steps - len(self.mu_a_ref_buffer) + step)
+                value=[tf.Summary.Value(tag="mu_angle_ref_base", simple_value=self.buffer.mu_a_ref_buffer[step])])
+            self.writer.add_summary(mu1_ref_summary, self.total_steps - len(self.buffer.mu_a_ref_buffer) + step)
 
-        for step in range(0, len(value_buffer)):
+        for step in range(0, len(self.buffer.value_buffer)):
             value_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="value_predictions", simple_value=value_buffer[step])])
-            self.writer.add_summary(value_summary, self.total_steps - len(value_buffer) + step)
+                value=[tf.Summary.Value(tag="value_predictions", simple_value=self.buffer.value_buffer[step])])
+            self.writer.add_summary(value_summary, self.total_steps - len(self.buffer.value_buffer) + step)
 
         # Raw logs
         prey_caught_summary = tf.Summary(value=[tf.Summary.Value(tag="prey caught", simple_value=prey_caught)])

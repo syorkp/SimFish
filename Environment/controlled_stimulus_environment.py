@@ -22,7 +22,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
             self.fish = TetheredFish(self.board, env_variables, self.dark_col, realistic_bouts)
         else:
             self.fish = Fish(self.board, env_variables, self.dark_col, realistic_bouts)
-        self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
+        self.space.add_training(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 
         # TODO: Unify in future with other stimuli
         self.prey_positions = {}

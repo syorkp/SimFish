@@ -42,7 +42,7 @@ class Environment:
         self.complex_predator_shape.color = (0, 0, 1)
         self.complex_predator_shape.collision_type = 5
 
-        self.space.add(self.complex_predator_body, self.complex_predator_shape)
+        self.space.add_training(self.complex_predator_body, self.complex_predator_shape)
 
     def grow_complex_predator(self):
         size_limit = 100

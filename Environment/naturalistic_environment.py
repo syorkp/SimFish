@@ -17,7 +17,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             # In the event that I am producing a calibration curve for distance moved.
             self.fish = Fish(self.board, env_variables, self.dark_col, realistic_bouts, fish_mass=fish_mass)
 
-        self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
+        self.space.add_training(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 
         # Create walls.
         self.create_walls()

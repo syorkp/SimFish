@@ -61,11 +61,14 @@ def plot_all_consumption_sequences(all_impulses, all_angles, consumption_times):
     plt.show()
 
 
-data = load_data("scaffold_test-19", "Checking_Observation", "Environment-1")
+data = load_data("ppo_no_sigma-5", "With RNN State", "Environment-1")
 
 all_impulses = data["impulse"]
 all_angles = data["angle"]
 consumption_timestamps = [i for i, c in enumerate(data["consumed"]) if c == 1]
+
+plt.scatter(all_impulses, all_angles)
+plt.show()
 
 plot_all_consumption_sequences(all_impulses, all_angles, consumption_timestamps)
 
@@ -76,5 +79,5 @@ plt.hist(all_angles, bins=20)
 plt.show()
 
 
-plot_capture_sequences_orientation(data["position"], all_angles, consumption_timestamps)
-plot_capture_sequences_impulse(data["position"], all_impulses, consumption_timestamps)
+plot_capture_sequences_orientation(data["fish_position"], all_angles, consumption_timestamps)
+plot_capture_sequences_impulse(data["fish_position"], all_impulses, consumption_timestamps)
