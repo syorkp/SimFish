@@ -5,7 +5,7 @@ tf.disable_v2_behavior()
 
 class PPONetworkCritic:
 
-    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, learning_rate):
+    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, learning_rate, bptt=False):
         # Variables
         self.num_arms = len(simulation.fish.left_eye.vis_angles)  # Rays for each eye
         self.rnn_dim = rnn_dim

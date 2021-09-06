@@ -12,61 +12,9 @@ if not os.path.exists("./Assay-Output/"):
 
 ppo_training_config = [
     {
-        "Model Name": "ppo_scaled_sigmas",
+        "Model Name": "bptt_test",
         "Environment Name": "ppo_test",
         "Trial Number": 1,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-    },
-    {
-        "Model Name": "ppo_scaled_sigmas",
-        "Environment Name": "ppo_test",
-        "Trial Number": 2,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-    },
-    {
-        "Model Name": "ppo_scaled_sigmas",
-        "Environment Name": "ppo_test",
-        "Trial Number": 3,
         "Total Configurations": 3,
         "Episode Transitions": {
         },

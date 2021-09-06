@@ -408,10 +408,10 @@ class PPOTrainingService:
                 final_batch)
 
             # TODO: Move this to experience buffer
-            actor_rnn_state_slice = np.moveaxis(actor_rnn_state_slice, 1, 0).squeeze()
-            actor_rnn_state_ref_slice = np.moveaxis(actor_rnn_state_ref_slice, 1, 0).squeeze()
-            critic_rnn_state_slice = np.moveaxis(critic_rnn_state_slice, 1, 0).squeeze()
-            critic_rnn_state_ref_slice = np.moveaxis(critic_rnn_state_ref_slice, 1, 0).squeeze()
+            actor_rnn_state_slice = np.moveaxis(actor_rnn_state_slice, 1, 0).squeeze()[:, 0:1, :]
+            actor_rnn_state_ref_slice = np.moveaxis(actor_rnn_state_ref_slice, 1, 0).squeeze()[:, 0:1, :]
+            critic_rnn_state_slice = np.moveaxis(critic_rnn_state_slice, 1, 0).squeeze()[:, 0:1, :]
+            critic_rnn_state_ref_slice = np.moveaxis(critic_rnn_state_ref_slice, 1, 0).squeeze()[:, 0:1, :]
 
             actor_rnn_state_slice = (actor_rnn_state_slice[0], actor_rnn_state_slice[1])
             actor_rnn_state_ref_slice = (actor_rnn_state_ref_slice[0], actor_rnn_state_ref_slice[1])
@@ -422,6 +422,7 @@ class PPOTrainingService:
             average_loss_impulse = 0
             average_loss_angle = 0
             for i in range(self.params["n_updates_per_iteration"]):
+                # TODO: Recompute initial state
                 loss_critic_val, _ = self.sess.run(
                     [self.critic_network.critic_loss, self.critic_network.optimizer],
                     feed_dict={self.critic_network.observation: np.vstack(observation_slice),
@@ -433,8 +434,8 @@ class PPOTrainingService:
 
                                self.critic_network.returns_placeholder: np.vstack(return_slice).flatten(),
 
-                               self.critic_network.trainLength: 1,
-                               self.critic_network.batch_size: current_batch_size,
+                               self.critic_network.trainLength: current_batch_size,
+                               self.critic_network.batch_size: 1,
                                })
 
                 loss_actor_val_impulse, loss_actor_val_angle, _ = self.sess.run(
@@ -455,8 +456,8 @@ class PPOTrainingService:
                                self.actor_network.old_log_prob_angle_placeholder: log_angle_probability_slice.flatten(),
                                self.actor_network.scaled_advantage_placeholder: np.vstack(advantage_slice).flatten(),
 
-                               self.actor_network.trainLength: 1,
-                               self.actor_network.batch_size: current_batch_size,
+                               self.actor_network.trainLength: current_batch_size,
+                               self.actor_network.batch_size: 1,
                                })
 
                 average_loss_impulse += np.mean(np.abs(loss_actor_val_impulse))
