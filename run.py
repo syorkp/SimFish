@@ -12,8 +12,8 @@ if not os.path.exists("./Assay-Output/"):
 
 ppo_training_config = [
     {
-        "Model Name": "bptt_test",
-        "Environment Name": "ppo_test",
+        "Model Name": "ppo_bs_1",
+        "Environment Name": "ppo_bs_1",
         "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
@@ -36,15 +36,70 @@ ppo_training_config = [
         "Priority": 2,
         "Using GPU": True,
         "monitor gpu": False,
+        "Full Logs": False,
+    },
+    {
+        "Model Name": "ppo_bs_5",
+        "Environment Name": "ppo_bs_5",
+        "Trial Number": 1,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 6,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": False,
+    },
+    {
+        "Model Name": "ppo_bs_10",
+        "Environment Name": "ppo_bs_10",
+        "Trial Number": 1,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 6,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": False,
     },
 ]
 
 ppo_assay_configuration = [
     {
-        "Model Name": "ppo_no_sigma",
+        "Model Name": "bptt_test",
         "Environment Name": "ppo_assay",
-        "Trial Number": 5,
-        "Assay Configuration Name": "With RNN State",
+        "Trial Number": 1,
+        "Assay Configuration Name": "Value_Estimation_Test",
         "Total Configurations": 3,
         "Run Mode": "Assay",
         "Tethered": False,

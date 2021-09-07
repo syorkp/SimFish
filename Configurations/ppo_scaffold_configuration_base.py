@@ -108,13 +108,15 @@ env = {'width': 1500,  # arena size
        'min_sigma_impulse': 0.1,
        'min_sigma_angle': 0.1,
 
+       'sigma_time_constant': 0.000001,
+
        'clip_param': 0.2
        }
 
 
 params = {'num_actions': 10,  # size of action space
-          'batch_size': 50,  # How many experience traces to use for each training step.
-          'trace_length': 64,  # How long each experience trace will be when training
+          'batch_size': 5,  # How many experience traces to use for each training step.
+          'trace_length': 50,  # How long each experience trace will be when training
           'update_freq': 100,  # How often to perform a training step.
           'y': .99,  # Discount factor on the target Q-values
           'startE': 0.2,  # Starting chance of random action
@@ -136,7 +138,7 @@ params = {'num_actions': 10,  # size of action space
           }
 
 
-directory_name = "ppo_test"
+directory_name = "ppo_bs_5"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):

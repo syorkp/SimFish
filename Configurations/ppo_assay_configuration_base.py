@@ -108,13 +108,15 @@ env = {'width': 1500,  # arena size
        'min_sigma_impulse': 0.1,
        'min_sigma_angle': 0.1,
 
+       'sigma_time_constant': 0.000001,
+
        'clip_param': 0.2
        }
 
 
 params = {'num_actions': 10,  # size of action space
-          'batch_size': 50,  # How many experience traces to use for each training step.
-          'trace_length': 64,  # How long each experience trace will be when training
+          'batch_size': 1,  # How many experience traces to use for each training step.
+          'trace_length': 50,  # How long each experience trace will be when training
           'update_freq': 100,  # How often to perform a training step.
           'y': .99,  # Discount factor on the target Q-values
           'startE': 0.2,  # Starting chance of random action
@@ -124,15 +126,15 @@ params = {'num_actions': 10,  # size of action space
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
           'max_epLength': 1000,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
-          'summaryLength': 50,  # Number of episodes to periodically save for analysis
+          'summaryLength': 200,  # Number of episodes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
           'rnn_dim_shared': 512,  # number of rnn cells
           'extra_rnn': False,
 
           'learning_rate_actor': 0.000001,
-          'learning_rate_critic': 0.00001,
+          'learning_rate_critic': 0.000001,
 
-          'n_updates_per_iteration': 5
+          'n_updates_per_iteration': 5,
           }
 
 

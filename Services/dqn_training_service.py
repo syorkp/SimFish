@@ -16,26 +16,26 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 
 def training_target(trial, epsilon, total_steps, episode_number, memory_fraction):
-    services = TrainingService(model_name=trial["Model Name"],
-                               trial_number=trial["Trial Number"],
-                               model_exists=trial["Model Exists"],
-                               tethered=trial["Tethered"],
-                               scaffold_name=trial["Environment Name"],
-                               episode_transitions=trial["Episode Transitions"],
-                               total_configurations=trial["Total Configurations"],
-                               conditional_transitions=trial["Conditional Transitions"],
-                               e=epsilon,
-                               total_steps=total_steps,
-                               episode_number=episode_number,
-                               monitor_gpu=trial["monitor gpu"],
-                               realistic_bouts=trial["Realistic Bouts"],
-                               memory_fraction=memory_fraction,
-                               using_gpu=trial["Using GPU"]
-                               )
+    services = DQNTrainingService(model_name=trial["Model Name"],
+                                  trial_number=trial["Trial Number"],
+                                  model_exists=trial["Model Exists"],
+                                  tethered=trial["Tethered"],
+                                  scaffold_name=trial["Environment Name"],
+                                  episode_transitions=trial["Episode Transitions"],
+                                  total_configurations=trial["Total Configurations"],
+                                  conditional_transitions=trial["Conditional Transitions"],
+                                  e=epsilon,
+                                  total_steps=total_steps,
+                                  episode_number=episode_number,
+                                  monitor_gpu=trial["monitor gpu"],
+                                  realistic_bouts=trial["Realistic Bouts"],
+                                  memory_fraction=memory_fraction,
+                                  using_gpu=trial["Using GPU"]
+                                  )
     services.run()
 
 
-class TrainingService:
+class DQNTrainingService:
 
     def __init__(self, model_name, trial_number, model_exists, tethered, scaffold_name, episode_transitions,
                  total_configurations, conditional_transitions, e, total_steps, episode_number, monitor_gpu,

@@ -2,8 +2,8 @@ import os
 import json
 import multiprocessing
 
-import Services.training_service as training
-import Services.assay_service as assay
+import Services.dqn_training_service as training
+import Services.dqn_assay_service as assay
 import Services.ppo_training_service as ppo_training
 import Services.a2c_training_service as a2c_training
 import Services.ppo_assay_service as ppo_assay

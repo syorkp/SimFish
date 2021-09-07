@@ -89,17 +89,19 @@ class PPOAssayService:
         self.stimuli_data = []
 
         # Buffer for saving results of assay
-        self.buffer = PPOBuffer(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"], assay=True,
-                                debug=False)
+        self.buffer = PPOBuffer(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
+                                train_length=self.learning_params["trace_length"], assay=True, debug=False)
 
         self.impulse_sigma = None
         self.angle_sigma = None
 
     def update_sigmas(self):
-        self.impulse_sigma = self.environment_params["max_sigma_impulse"] - (
-                    self.environment_params["max_sigma_impulse"] - self.environment_params["min_sigma_impulse"]) * self.total_steps / 5000000
-        self.angle_sigma = self.environment_params["max_sigma_impulse"] - (
-                    self.environment_params["max_sigma_impulse"] - self.environment_params["min_sigma_impulse"]) * self.total_steps / 5000000
+        self.impulse_sigma = np.array([self.environment_params["min_sigma_impulse"] + (
+                    self.environment_params["max_sigma_impulse"] - self.environment_params["min_sigma_impulse"]) * np.e ** (
+                                                   -self.total_steps * self.environment_params["sigma_time_constant"])])
+        self.angle_sigma = np.array([self.environment_params["min_sigma_angle"] + (
+                    self.environment_params["max_sigma_angle"] - self.environment_params["min_sigma_angle"]) * np.e ** (
+                                                 -self.total_steps * self.environment_params["sigma_time_constant"])])
 
     def create_network(self):
         print("Creating networks...")
@@ -291,7 +293,7 @@ class PPOAssayService:
                  self.actor_network.mu_angle, self.actor_network.mu_angle_ref
                  ],
                 feed_dict={self.actor_network.observation: o,
-                           self.actor_network.scaler: np.full(o.shape, 255),
+                           # self.actor_network.scaler: np.full(o.shape, 255),
                            self.actor_network.internal_state: internal_state,
                            self.actor_network.prev_actions: np.reshape(a, (1, 2)),
                            self.actor_network.rnn_state_in: rnn_state_actor,
@@ -313,7 +315,7 @@ class PPOAssayService:
                  self.critic_network.conv4r,
                  ],
                 feed_dict={self.critic_network.observation: o,
-                           self.critic_network.scaler: np.full(o.shape, 255),
+                           # self.critic_network.scaler: np.full(o.shape, 255),
                            self.critic_network.internal_state: internal_state,
                            self.critic_network.prev_actions: np.reshape(a, (1, 2)),
                            self.critic_network.rnn_state_in: rnn_state_critic,
@@ -420,34 +422,6 @@ class PPOAssayService:
                 new_tensor[unit - 256] = np.array([0])
                 self.sess.run(tf.assign(output, new_tensor))
 
-    def save_hdf5_data(self, assay):
-        if assay["save frames"]:
-            make_gif(self.frame_buffer,
-                     f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
-                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-        self.frame_buffer = []
-
-        # absolute_path = '/home/sam/PycharmProjects/SimFish/Assay-Output/new_differential_prey_ref-3' + f'/{self.assay_configuration_id}.h5'
-        # hdf5_file = h5py.File(absolute_path, "a")
-        hdf5_file = h5py.File(f"{self.data_save_location}/{self.assay_configuration_id}.h5", "a")
-
-        try:
-            assay_group = hdf5_file.create_group(assay['assay id'])
-        except ValueError:
-            assay_group = hdf5_file.get(assay['assay id'])
-
-        if "prey_positions" in self.assay_output_data_format.keys():
-            self.output_data["prey_positions"] = np.stack(self.output_data["prey_positions"])
-
-        for key in self.output_data:
-            try:
-                # print(self.output_data[key])
-                assay_group.create_dataset(key, data=np.array(self.output_data[key]))  # TODO: Compress data.
-            except RuntimeError:
-                del assay_group[key]
-                assay_group.create_dataset(key, data=np.array(self.output_data[key]))  # TODO: Compress data.
-        hdf5_file.close()
-
     def save_episode_data(self):
         self.episode_summary_data = {
             "Prey Caught": self.simulation.prey_caught,
@@ -469,99 +443,6 @@ class PPOAssayService:
         self.metadata["Assay Date"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         with open(f"{self.data_save_location}/{self.assay_configuration_id}.json", "w") as output_file:
             json.dump(self.metadata, output_file)
-
-    def package_output_data(self, observation, action, advantage_stream, rnn_state, rnn2_state,
-                            position, prey_consumed, predator_body,
-                            conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r,
-                            prey_positions, predator_position, sand_grain_positions, vegetation_positions, fish_angle):
-        """
-
-        :param action:
-        :param advantage_stream:
-        :param rnn_state:
-        :param position:
-        :param prey_consumed:
-        :param predator_body: A boolean to say whether consumed this step.
-        :param conv1l:
-        :param conv2l:
-        :param conv3l:
-        :param conv4l:
-        :param conv1r:
-        :param conv2r:
-        :param conv3r:
-        :param conv4r:
-        :param prey_positions:
-        :param predator_position:
-        :param sand_grain_positions:
-        :param vegetation_positions:
-        :return:
-        """
-        # Make output data JSON serializable
-        impulse = action[0]
-        angle = action[1]
-        advantage_stream = advantage_stream.tolist()
-        rnn_state = rnn_state.c.tolist()
-        # action_layer = action_layer.c.tolist()
-        # value_layer = value_layer.c.tolist()
-
-        position = list(position)
-        # observation = observation.tolist()
-
-        data = {
-            "impulse": impulse,
-            "angle": angle,
-            "rnn state": rnn_state,
-            "rnn 2 state": rnn2_state,
-            "advantage stream": advantage_stream,
-            "position": position,
-            "observation": observation,
-            "left_conv_1": conv1l,
-            "left_conv_2": conv2l,
-            "left_conv_3": conv3l,
-            "left_conv_4": conv4l,
-            "right_conv_1": conv1r,
-            "right_conv_2": conv2r,
-            "right_conv_3": conv3r,
-            "right_conv_4": conv4r,
-            "prey_positions": prey_positions,
-            "predator_position": predator_position,
-            "sand_grain_positions": sand_grain_positions,
-            "vegetation_positions": vegetation_positions,
-            "fish_angle": fish_angle,
-            "hunger": self.simulation.fish.hungry,
-            "stress": self.simulation.fish.stress,
-            # "action_layer": action_layer,
-            # "value_layer": value_layer
-        }
-
-        if prey_consumed:
-            data["consumed"] = 1
-        else:
-            data["consumed"] = 0
-        if predator_body is not None:
-            data["predator"] = 1
-        else:
-            data["predator"] = 0
-
-        stimuli = self.simulation.stimuli_information
-        to_save = {}
-        for stimulus in stimuli.keys():
-            if stimuli[stimulus]:
-                to_save[stimulus] = stimuli[stimulus]
-
-        if to_save:
-            self.stimuli_data.append(to_save)
-
-        return data
-
-    def make_recordings(self, available_data):
-        """No longer used - saves data in JSON"""
-
-        step_data = {i: available_data[i] for i in self.assay_output_data_format}
-        for d_type in step_data:
-            self.assay_output_data[d_type].append(available_data[d_type])
-        step_data["step"] = self.step_number
-        self.assay_output_data.append(step_data)
 
     def save_assay_results(self, assay):
         """No longer used - saves data in JSON"""

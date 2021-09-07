@@ -325,8 +325,8 @@ def plot_artificial_traces(prey_pred_data, prey_size_data, directional_data, pre
     # plt.show()
 
 
-data1 = load_data("ppo_no_sigma-5", "Without RNN State", "Environment-1")
-unit_activity1a = [[state[0, 0, j] for i, state in enumerate(data1["rnn_state_actor"])] for j in range(512)]
+data1 = load_data("bptt_test-1", "Value_Estimation_Test", "Environment-1")
+unit_activity1a = [[state[0, 0, j] for i, state in enumerate(data1["rnn_state_critic"])] for j in range(512)]
 plot_traces(unit_activity1a)
 #
 # import json

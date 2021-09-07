@@ -6,10 +6,11 @@ import h5py
 class PPOBuffer:
     """Buffer for full episode for PPO training, and logging."""
 
-    def __init__(self, gamma, lmbda, batch_size, assay, debug=False):
+    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False):
         self.gamma = gamma
         self.lmbda = lmbda
         self.batch_size = batch_size
+        self.trace_length = train_length
         self.pointer = 0
         self.debug = debug
         self.assay = assay
@@ -72,7 +73,6 @@ class PPOBuffer:
             self.critic_conv2r_buffer = []
             self.critic_conv3r_buffer = []
             self.critic_conv4r_buffer = []
-
 
     def reset(self):
         # Buffer for training
@@ -162,7 +162,8 @@ class PPOBuffer:
         self.angle_loss_buffer.append(angle_loss)
         self.critic_loss_buffer.append(critic_loss)
 
-    def save_environmental_positions(self, fish_position, prey_consumed, predator_present, prey_positions, predator_position, sand_grain_positions, vegetation_positions, fish_angle):
+    def save_environmental_positions(self, fish_position, prey_consumed, predator_present, prey_positions,
+                                     predator_position, sand_grain_positions, vegetation_positions, fish_angle):
         self.fish_position_buffer.append(fish_position)
         self.prey_consumed_buffer.append(prey_consumed)
         self.predator_presence_buffer.append(predator_present)
@@ -172,8 +173,10 @@ class PPOBuffer:
         self.vegetation_position_buffer.append(vegetation_positions)
         self.fish_angle_buffer.append(fish_angle)
 
-    def save_conv_states(self, actor_conv1l, actor_conv2l, actor_conv3l, actor_conv4l, actor_conv1r, actor_conv2r, actor_conv3r, actor_conv4r,
-                         critic_conv1l, critic_conv2l, critic_conv3l, critic_conv4l, critic_conv1r, critic_conv2r, critic_conv3r, critic_conv4r):
+    def save_conv_states(self, actor_conv1l, actor_conv2l, actor_conv3l, actor_conv4l, actor_conv1r, actor_conv2r,
+                         actor_conv3r, actor_conv4r,
+                         critic_conv1l, critic_conv2l, critic_conv3l, critic_conv4l, critic_conv1r, critic_conv2r,
+                         critic_conv3r, critic_conv4r):
         self.actor_conv1l_buffer.append(actor_conv1l)
         self.actor_conv2l_buffer.append(actor_conv2l)
         self.actor_conv3l_buffer.append(actor_conv3l)
@@ -204,44 +207,91 @@ class PPOBuffer:
         self.critic_rnn_state_buffer = np.array(self.critic_rnn_state_buffer)
         self.critic_rnn_state_ref_buffer = np.array(self.critic_rnn_state_ref_buffer)
 
+    def get_episode_buffer(self):
+        episode_duration = len(self.observation_buffer)
+        available_steps = episode_duration - 1
+        slice_steps = range(0, available_steps, self.trace_length)
+        observation_batch = []
+        internal_state_batch = []
+        action_batch = []
+        previous_action_batch = []
+        value_batch = []
+        log_impulse_probability_batch = []
+        log_angle_probability_batch = []
+        advantage_batch = []
+        return_batch = []
+        for slice in slice_steps:
+            if slice == slice_steps[-1]:
+                observation_slice, internal_state_slice, action_slice, previous_action_slice, value_slice, \
+                log_impulse_probability_slice, log_angle_probability_slice, advantage_slice, return_slice = self.get_batch(final_batch=True)
+            else:
+                observation_slice, internal_state_slice, action_slice, previous_action_slice, value_slice, \
+                log_impulse_probability_slice, log_angle_probability_slice, advantage_slice, return_slice = self.get_batch(final_batch=False)
+
+            observation_batch.append(observation_slice)
+            internal_state_batch.append(internal_state_slice)
+            action_batch.append(action_slice)
+            previous_action_batch.append(previous_action_slice)
+            value_batch.append(value_slice)
+            log_impulse_probability_batch.append(log_impulse_probability_slice)
+            log_angle_probability_batch.append(log_angle_probability_slice)
+            advantage_batch.append(advantage_slice)
+            return_batch.append(return_slice)
+
+        return np.array(observation_batch), np.array(internal_state_batch), np.array(action_batch), \
+            np.array(previous_action_batch), np.array(value_batch), np.array(log_impulse_probability_batch), \
+            np.array(log_angle_probability_batch), np.array(advantage_batch), np.array(return_batch), slice_steps
+
     def get_batch(self, final_batch):
         if final_batch:
-            observation_slice = self.observation_buffer[self.pointer:-1, :]
-            internal_state_slice = self.internal_state_buffer[self.pointer:-1, :]
-            action_slice = self.action_buffer[self.pointer + 1:-1, :]
-            previous_action_slice = self.action_buffer[self.pointer:-2, :]
-            reward_slice = self.reward_buffer[self.pointer:-1]
-            value_slice = self.value_buffer[self.pointer:-1]
-            log_impulse_probability_slice = self.log_impulse_probability_buffer[self.pointer:-1]
-            log_angle_probability_slice = self.log_angle_probability_buffer[self.pointer:-1]
-            advantage_slice = self.advantage_buffer[self.pointer:]
-            return_slice = self.return_buffer[self.pointer:]
-            actor_rnn_state_slice = self.actor_rnn_state_buffer[self.pointer:-1]
-            actor_rnn_state_ref_slice = self.actor_rnn_state_ref_buffer[self.pointer:-1]
-            critic_rnn_state_slice = self.critic_rnn_state_buffer[self.pointer:-1]
-            critic_rnn_state_ref_slice = self.critic_rnn_state_ref_buffer[self.pointer:-1]
+            observation_slice = self.pad_slice(self.observation_buffer[self.pointer:-1, :], self.trace_length)
+            internal_state_slice = self.pad_slice(self.internal_state_buffer[self.pointer:-1, :], self.trace_length)
+            action_slice = self.pad_slice(self.action_buffer[self.pointer + 1:-1, :], self.trace_length)
+            previous_action_slice = self.pad_slice(self.action_buffer[self.pointer:-2, :], self.trace_length)
+            # reward_slice = self.reward_buffer[self.pointer:-1], self.trace_length)
+            value_slice = self.pad_slice(self.value_buffer[self.pointer:-1], self.trace_length)
+            log_impulse_probability_slice = self.pad_slice(self.log_impulse_probability_buffer[self.pointer:-1], self.trace_length)
+            log_angle_probability_slice = self.pad_slice(self.log_angle_probability_buffer[self.pointer:-1], self.trace_length)
+            advantage_slice = self.pad_slice(self.advantage_buffer[self.pointer:], self.trace_length)
+            return_slice = self.pad_slice(self.return_buffer[self.pointer:], self.trace_length)
+            # actor_rnn_state_slice = self.actor_rnn_state_buffer[self.pointer:-1]
+            # actor_rnn_state_ref_slice = self.actor_rnn_state_ref_buffer[self.pointer:-1]
+            # critic_rnn_state_slice = self.critic_rnn_state_buffer[self.pointer:-1]
+            # critic_rnn_state_ref_slice = self.critic_rnn_state_ref_buffer[self.pointer:-1]
 
         else:
-            observation_slice = self.observation_buffer[self.pointer:self.pointer+self.batch_size, :]
-            internal_state_slice = self.internal_state_buffer[self.pointer:self.pointer+self.batch_size, :]
-            action_slice = self.action_buffer[self.pointer + 1:self.pointer+self.batch_size + 1, :]
-            previous_action_slice = self.action_buffer[self.pointer:self.pointer+self.batch_size, :]
-            reward_slice = self.reward_buffer[self.pointer:self.pointer+self.batch_size,]
-            value_slice = self.value_buffer[self.pointer:self.pointer+self.batch_size,]
-            log_impulse_probability_slice = self.log_impulse_probability_buffer[self.pointer:self.pointer+self.batch_size, :]
-            log_angle_probability_slice = self.log_angle_probability_buffer[self.pointer:self.pointer+self.batch_size, :]
-            advantage_slice = self.advantage_buffer[self.pointer:self.pointer+self.batch_size]
-            return_slice = self.return_buffer[self.pointer:self.pointer+self.batch_size]
-            actor_rnn_state_slice = self.actor_rnn_state_buffer[self.pointer:self.pointer+self.batch_size]
-            actor_rnn_state_ref_slice = self.actor_rnn_state_ref_buffer[self.pointer:self.pointer+self.batch_size]
-            critic_rnn_state_slice = self.critic_rnn_state_buffer[self.pointer:self.pointer + self.batch_size]
-            critic_rnn_state_ref_slice = self.critic_rnn_state_ref_buffer[self.pointer:self.pointer+self.batch_size]
+            observation_slice = self.observation_buffer[self.pointer:self.pointer + self.trace_length, :]
+            internal_state_slice = self.internal_state_buffer[self.pointer:self.pointer + self.trace_length, :]
+            action_slice = self.action_buffer[self.pointer + 1:self.pointer + self.trace_length + 1, :]
+            previous_action_slice = self.action_buffer[self.pointer:self.pointer + self.trace_length, :]
+            # reward_slice = self.reward_buffer[self.pointer:self.pointer + self.trace_length, ]
+            value_slice = self.value_buffer[self.pointer:self.pointer + self.trace_length, ]
+            log_impulse_probability_slice = self.log_impulse_probability_buffer[
+                                            self.pointer:self.pointer + self.trace_length, :]
+            log_angle_probability_slice = self.log_angle_probability_buffer[self.pointer:self.pointer + self.trace_length,
+                                          :]
+            advantage_slice = self.advantage_buffer[self.pointer:self.pointer + self.trace_length]
+            return_slice = self.return_buffer[self.pointer:self.pointer + self.trace_length]
+            # actor_rnn_state_slice = self.actor_rnn_state_buffer[self.pointer:self.pointer + self.trace_length]
+            # actor_rnn_state_ref_slice = self.actor_rnn_state_ref_buffer[self.pointer:self.pointer + self.trace_length]
+            # critic_rnn_state_slice = self.critic_rnn_state_buffer[self.pointer:self.pointer + self.trace_length]
+            # critic_rnn_state_ref_slice = self.critic_rnn_state_ref_buffer[self.pointer:self.pointer + self.trace_length]
 
-        self.pointer += self.batch_size
+        self.pointer += self.trace_length
 
-        return observation_slice, internal_state_slice, action_slice, previous_action_slice, reward_slice, value_slice, \
+        return observation_slice, internal_state_slice, action_slice, previous_action_slice, value_slice, \
                log_impulse_probability_slice, log_angle_probability_slice, advantage_slice, return_slice, \
-               actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice
+               #actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice
+
+    def pad_slice(self, buffer, desired_length):
+        shape_of_data = buffer.shape[1:]
+        extra_pads = desired_length - buffer.shape[0]
+        padding_shape = (extra_pads, ) + shape_of_data
+        padding = np.zeros(padding_shape, dtype=float)
+        buffer = np.concatenate((buffer, padding), axis=0)
+        x = True
+        return buffer
+
 
     def calculate_advantages_and_returns(self, normalise_advantage=True):
         delta = self.reward_buffer[:-1] + self.gamma * self.value_buffer[1:] - self.value_buffer[:-1]
@@ -317,7 +367,6 @@ class PPOBuffer:
             self.create_data_group("value", np.array(self.value_buffer), assay_group)
             self.create_data_group("returns", np.array(self.return_buffer), assay_group)
 
-
         # if "prey_positions" in self.assay_output_data_format.keys():
         #     self.output_data["prey_positions"] = np.stack(self.output_data["prey_positions"])
 
@@ -350,7 +399,8 @@ class PPOBuffer:
         # Check for NaN
         print("Checking Buffers")
         buffers = [self.advantage_buffer, self.reward_buffer, self.observation_buffer, self.action_buffer,
-                   self.return_buffer, self.value_buffer, self.log_angle_probability_buffer, self.log_impulse_probability_buffer]
+                   self.return_buffer, self.value_buffer, self.log_angle_probability_buffer,
+                   self.log_impulse_probability_buffer]
         if np.isnan(np.sum(np.sum(buffer) for buffer in buffers)):
             print("NaN Detected")
 

@@ -15,24 +15,24 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 
 def assay_target(trial, learning_params, environment_params, total_steps, episode_number, memory_fraction):
-    service = AssayService(model_name=trial["Model Name"],
-                           trial_number=trial["Trial Number"],
-                           assay_config_name=trial["Assay Configuration Name"],
-                           learning_params=learning_params,
-                           environment_params=environment_params,
-                           total_steps=total_steps,
-                           episode_number=episode_number,
-                           assays=trial["Assays"],
-                           realistic_bouts=trial["Realistic Bouts"],
-                           memory_fraction=memory_fraction,
-                           using_gpu=trial["Using GPU"],
-                           set_random_seed=trial["set random seed"]
-                           )
+    service = DQNAssayService(model_name=trial["Model Name"],
+                              trial_number=trial["Trial Number"],
+                              assay_config_name=trial["Assay Configuration Name"],
+                              learning_params=learning_params,
+                              environment_params=environment_params,
+                              total_steps=total_steps,
+                              episode_number=episode_number,
+                              assays=trial["Assays"],
+                              realistic_bouts=trial["Realistic Bouts"],
+                              memory_fraction=memory_fraction,
+                              using_gpu=trial["Using GPU"],
+                              set_random_seed=trial["set random seed"]
+                              )
 
     service.run()
 
 
-class AssayService:
+class DQNAssayService:
 
     def __init__(self, model_name, trial_number, assay_config_name, learning_params, environment_params, total_steps,
                  episode_number, assays, realistic_bouts, memory_fraction, using_gpu, set_random_seed):
