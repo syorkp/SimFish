@@ -293,7 +293,6 @@ class PPOAssayService:
                  self.actor_network.mu_angle, self.actor_network.mu_angle_ref
                  ],
                 feed_dict={self.actor_network.observation: o,
-                           # self.actor_network.scaler: np.full(o.shape, 255),
                            self.actor_network.internal_state: internal_state,
                            self.actor_network.prev_actions: np.reshape(a, (1, 2)),
                            self.actor_network.rnn_state_in: rnn_state_actor,
@@ -315,7 +314,6 @@ class PPOAssayService:
                  self.critic_network.conv4r,
                  ],
                 feed_dict={self.critic_network.observation: o,
-                           # self.critic_network.scaler: np.full(o.shape, 255),
                            self.critic_network.internal_state: internal_state,
                            self.critic_network.prev_actions: np.reshape(a, (1, 2)),
                            self.critic_network.rnn_state_in: rnn_state_critic,

@@ -120,12 +120,16 @@ class PPOTrainingService:
             self.step_loop = self._step_loop_reduced_logs
 
     def update_sigmas(self):
-        self.impulse_sigma = np.array([self.env["min_sigma_impulse"] + (
-                    self.env["max_sigma_impulse"] - self.env["min_sigma_impulse"]) * np.e ** (
-                                                   -self.total_steps * self.env["sigma_time_constant"])])
-        self.angle_sigma = np.array([self.env["min_sigma_angle"] + (
-                    self.env["max_sigma_angle"] - self.env["min_sigma_angle"]) * np.e ** (
-                                                 -self.total_steps * self.env["sigma_time_constant"])])
+        # self.impulse_sigma = np.array([self.env["min_sigma_impulse"] + (
+        #             self.env["max_sigma_impulse"] - self.env["min_sigma_impulse"]) * np.e ** (
+        #                                            -self.total_steps * self.env["sigma_time_constant"])])
+        # self.angle_sigma = np.array([self.env["min_sigma_angle"] + (
+        #             self.env["max_sigma_angle"] - self.env["min_sigma_angle"]) * np.e ** (
+        #                                          -self.total_steps * self.env["sigma_time_constant"])])
+        self.impulse_sigma = np.array([self.env["max_sigma_impulse"] - (
+                    self.env["max_sigma_impulse"] - self.env["min_sigma_impulse"]) * (self.total_steps/5000000)])
+        self.angle_sigma = np.array([self.env["max_sigma_angle"] - (
+                    self.env["max_sigma_angle"] - self.env["min_sigma_angle"]) * (self.total_steps/5000000)])
 
     def load_configuration_files(self):
         """
@@ -464,17 +468,88 @@ class PPOTrainingService:
         self.total_steps += 1
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
 
-    def compute_rnn_states(self):
-        ...  # Compute RNN states at key steps
+    def compute_rnn_states(self, rnn_key_points, observation_buffer, internal_state_buffer, previous_action_buffer):
+
+        observation_buffer = np.vstack(observation_buffer)
+        internal_state_buffer = np.vstack(internal_state_buffer)
+        previous_action_buffer = np.vstack(previous_action_buffer)
+
+        actor_rnn_state = (
+            np.zeros([1, self.actor_network.rnn_dim]),
+            np.zeros([1, self.actor_network.rnn_dim]))
+        actor_rnn_state_ref = (
+            np.zeros([1, self.actor_network.rnn_dim]),
+            np.zeros([1, self.actor_network.rnn_dim]))
+
+        critic_rnn_state = (
+            np.zeros([1, self.actor_network.rnn_dim]),
+            np.zeros([1, self.actor_network.rnn_dim]))
+        critic_rnn_state_ref = (
+            np.zeros([1, self.actor_network.rnn_dim]),
+            np.zeros([1, self.actor_network.rnn_dim]))
+
+        actor_rnn_state_buffer = ([actor_rnn_state[0][0]], [actor_rnn_state[1][0]])
+        actor_rnn_state_ref_buffer = ([actor_rnn_state_ref[0][0]], [actor_rnn_state_ref[1][0]])
+        critic_rnn_state_buffer = ([critic_rnn_state[0][0]], [critic_rnn_state[1][0]])
+        critic_rnn_state_ref_buffer = ([critic_rnn_state_ref[0][0]], [critic_rnn_state_ref[1][0]])
+
+        for step in range(max(rnn_key_points)):
+            critic_rnn_state, critic_rnn_state_ref = self.sess.run(
+                [self.critic_network.rnn_state_shared, self.critic_network.rnn_state_ref],
+                feed_dict={self.critic_network.observation: observation_buffer[step],
+                           self.critic_network.prev_actions: previous_action_buffer[step].reshape(1, 2),
+                           self.critic_network.internal_state: internal_state_buffer[step].reshape(1, 2),
+
+                           self.critic_network.rnn_state_in: critic_rnn_state,
+                           self.critic_network.rnn_state_in_ref: critic_rnn_state_ref,
+
+                           self.critic_network.trainLength: 1,
+                           self.critic_network.batch_size: 1,
+                           })
+            actor_rnn_state, actor_rnn_state_ref = self.sess.run(
+                [self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref],
+                feed_dict={self.actor_network.observation: observation_buffer[step],
+                           self.actor_network.prev_actions: previous_action_buffer[step].reshape(1, 2),
+                           self.actor_network.internal_state: internal_state_buffer[step].reshape(1, 2),
+
+                           self.actor_network.rnn_state_in: actor_rnn_state,
+                           self.actor_network.rnn_state_in_ref: actor_rnn_state_ref,
+
+                           self.actor_network.sigma_impulse_combined: self.impulse_sigma,
+                           self.actor_network.sigma_angle_combined: self.angle_sigma,
+
+                           self.actor_network.trainLength: 1,
+                           self.actor_network.batch_size: 1,
+                           })
+            if step-1 in rnn_key_points:
+                actor_rnn_state_buffer[0].append(actor_rnn_state[0][0])
+                actor_rnn_state_buffer[1].append(actor_rnn_state[1][0])
+
+                actor_rnn_state_ref_buffer[0].append(actor_rnn_state_ref[0][0])
+                actor_rnn_state_ref_buffer[1].append(actor_rnn_state_ref[1][0])
+
+                critic_rnn_state_buffer[0].append(critic_rnn_state[0][0])
+                critic_rnn_state_buffer[1].append(critic_rnn_state[1][0])
+
+                critic_rnn_state_ref_buffer[0].append(critic_rnn_state_ref[0][0])
+                critic_rnn_state_ref_buffer[1].append(critic_rnn_state_ref[1][0])
+
+        actor_rnn_state_buffer = (np.array(actor_rnn_state_buffer[0]), np.array(actor_rnn_state_buffer[1]))
+        actor_rnn_state_ref_buffer = (np.array(actor_rnn_state_ref_buffer[0]), np.array(actor_rnn_state_ref_buffer[1]))
+        critic_rnn_state_buffer = (np.array(critic_rnn_state_buffer[0]), np.array(critic_rnn_state_buffer[1]))
+        critic_rnn_state_ref_buffer = (np.array(critic_rnn_state_ref_buffer[0]), np.array(critic_rnn_state_ref_buffer[1]))
+
+        return actor_rnn_state_buffer, actor_rnn_state_ref_buffer, critic_rnn_state_buffer, critic_rnn_state_ref_buffer
 
     def train_network(self):
         # TODO: Scale learning rates according to batch size - will need to make a placeholder
-        observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, value_buffer, \
+        observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
         log_impulse_probability_buffer, log_angle_probability_buffer, advantage_buffer, return_buffer, key_rnn_points = self.buffer.get_episode_buffer()
 
         number_of_batches = int(observation_buffer.shape[0]/self.params["batch_size"])
 
         for batch in range(number_of_batches):
+            batch_key_points = [i for i in key_rnn_points if batch*self.params["batch_size"]*self.params["trace_length"] <= i < (batch+1)*self.params["batch_size"]*self.params["trace_length"]]
             # TODO: Change way this is done so that works for different dimensions
             # TODO: Add to buffer class
             # TODO: Tidy up buffer class
@@ -482,7 +557,6 @@ class PPOTrainingService:
             internal_state_batch = internal_state_buffer[batch*self.params["batch_size"]: (batch+1)*self.params["batch_size"]]
             action_batch = action_buffer[batch*self.params["batch_size"]: (batch+1)*self.params["batch_size"]]
             previous_action_batch = previous_action_buffer[batch*self.params["batch_size"]: (batch+1)*self.params["batch_size"]]
-            value_batch = value_buffer[batch*self.params["batch_size"]: (batch+1)*self.params["batch_size"]]
             log_impulse_probability_batch = log_impulse_probability_buffer[batch*self.params["batch_size"]: (batch+1)*self.params["batch_size"]]
             log_angle_probability_batch = log_angle_probability_buffer[batch*self.params["batch_size"]: (batch+1)*self.params["batch_size"]]
             advantage_batch = advantage_buffer[batch*self.params["batch_size"]: (batch+1)*self.params["batch_size"]]
@@ -501,25 +575,15 @@ class PPOTrainingService:
             advantage_batch = np.vstack(advantage_batch).flatten()
             return_batch = np.vstack(np.vstack(return_batch)).flatten()
 
-            actor_rnn_state_slice = (
-                np.zeros([current_batch_size, self.actor_network.rnn_dim]),
-                np.zeros([current_batch_size, self.actor_network.rnn_dim]))  # Reset RNN hidden state
-            actor_rnn_state_ref_slice = (
-                np.zeros([current_batch_size, self.actor_network.rnn_dim]),
-                np.zeros([current_batch_size, self.actor_network.rnn_dim]))  # Reset RNN hidden state
-
-            critic_rnn_state_slice = (
-                np.zeros([current_batch_size, self.actor_network.rnn_dim]),
-                np.zeros([current_batch_size, self.actor_network.rnn_dim]))  # Reset RNN hidden state
-            critic_rnn_state_ref_slice = (
-                np.zeros([current_batch_size, self.actor_network.rnn_dim]),
-                np.zeros([current_batch_size, self.actor_network.rnn_dim]))
-
             average_loss_value = 0
             average_loss_impulse = 0
             average_loss_angle = 0
             for i in range(self.params["n_updates_per_iteration"]):
-                # TODO: Recompute initial state
+                actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, \
+                critic_rnn_state_ref_slice = self.compute_rnn_states(batch_key_points,
+                                                                     observation_buffer[:(batch+1)*self.params["batch_size"]],
+                                                                     internal_state_buffer[:(batch+1)*self.params["batch_size"]],
+                                                                     previous_action_buffer[:(batch+1)*self.params["batch_size"]])
                 loss_critic_val, _ = self.sess.run(
                     [self.critic_network.critic_loss, self.critic_network.optimizer],
                     feed_dict={self.critic_network.observation: observation_batch,

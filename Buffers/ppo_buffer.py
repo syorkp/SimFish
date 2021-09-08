@@ -215,31 +215,29 @@ class PPOBuffer:
         internal_state_batch = []
         action_batch = []
         previous_action_batch = []
-        value_batch = []
         log_impulse_probability_batch = []
         log_angle_probability_batch = []
         advantage_batch = []
         return_batch = []
         for slice in slice_steps:
             if slice == slice_steps[-1]:
-                observation_slice, internal_state_slice, action_slice, previous_action_slice, value_slice, \
+                observation_slice, internal_state_slice, action_slice, previous_action_slice, \
                 log_impulse_probability_slice, log_angle_probability_slice, advantage_slice, return_slice = self.get_batch(final_batch=True)
             else:
-                observation_slice, internal_state_slice, action_slice, previous_action_slice, value_slice, \
+                observation_slice, internal_state_slice, action_slice, previous_action_slice, \
                 log_impulse_probability_slice, log_angle_probability_slice, advantage_slice, return_slice = self.get_batch(final_batch=False)
 
             observation_batch.append(observation_slice)
             internal_state_batch.append(internal_state_slice)
             action_batch.append(action_slice)
             previous_action_batch.append(previous_action_slice)
-            value_batch.append(value_slice)
             log_impulse_probability_batch.append(log_impulse_probability_slice)
             log_angle_probability_batch.append(log_angle_probability_slice)
             advantage_batch.append(advantage_slice)
             return_batch.append(return_slice)
 
         return np.array(observation_batch), np.array(internal_state_batch), np.array(action_batch), \
-            np.array(previous_action_batch), np.array(value_batch), np.array(log_impulse_probability_batch), \
+            np.array(previous_action_batch), np.array(log_impulse_probability_batch), \
             np.array(log_angle_probability_batch), np.array(advantage_batch), np.array(return_batch), slice_steps
 
     def get_batch(self, final_batch):
@@ -249,7 +247,7 @@ class PPOBuffer:
             action_slice = self.pad_slice(self.action_buffer[self.pointer + 1:-1, :], self.trace_length)
             previous_action_slice = self.pad_slice(self.action_buffer[self.pointer:-2, :], self.trace_length)
             # reward_slice = self.reward_buffer[self.pointer:-1], self.trace_length)
-            value_slice = self.pad_slice(self.value_buffer[self.pointer:-1], self.trace_length)
+            # value_slice = self.pad_slice(self.value_buffer[self.pointer:-1], self.trace_length)
             log_impulse_probability_slice = self.pad_slice(self.log_impulse_probability_buffer[self.pointer:-1], self.trace_length)
             log_angle_probability_slice = self.pad_slice(self.log_angle_probability_buffer[self.pointer:-1], self.trace_length)
             advantage_slice = self.pad_slice(self.advantage_buffer[self.pointer:], self.trace_length)
@@ -265,7 +263,7 @@ class PPOBuffer:
             action_slice = self.action_buffer[self.pointer + 1:self.pointer + self.trace_length + 1, :]
             previous_action_slice = self.action_buffer[self.pointer:self.pointer + self.trace_length, :]
             # reward_slice = self.reward_buffer[self.pointer:self.pointer + self.trace_length, ]
-            value_slice = self.value_buffer[self.pointer:self.pointer + self.trace_length, ]
+            # value_slice = self.value_buffer[self.pointer:self.pointer + self.trace_length, ]
             log_impulse_probability_slice = self.log_impulse_probability_buffer[
                                             self.pointer:self.pointer + self.trace_length, :]
             log_angle_probability_slice = self.log_angle_probability_buffer[self.pointer:self.pointer + self.trace_length,
@@ -279,19 +277,18 @@ class PPOBuffer:
 
         self.pointer += self.trace_length
 
-        return observation_slice, internal_state_slice, action_slice, previous_action_slice, value_slice, \
+        return observation_slice, internal_state_slice, action_slice, previous_action_slice, \
                log_impulse_probability_slice, log_angle_probability_slice, advantage_slice, return_slice, \
                #actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice
 
-    def pad_slice(self, buffer, desired_length):
+    @staticmethod
+    def pad_slice(buffer, desired_length):
         shape_of_data = buffer.shape[1:]
         extra_pads = desired_length - buffer.shape[0]
         padding_shape = (extra_pads, ) + shape_of_data
         padding = np.zeros(padding_shape, dtype=float)
         buffer = np.concatenate((buffer, padding), axis=0)
-        x = True
         return buffer
-
 
     def calculate_advantages_and_returns(self, normalise_advantage=True):
         delta = self.reward_buffer[:-1] + self.gamma * self.value_buffer[1:] - self.value_buffer[:-1]

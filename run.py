@@ -14,7 +14,7 @@ ppo_training_config = [
     {
         "Model Name": "ppo_bs_1",
         "Environment Name": "ppo_bs_1",
-        "Trial Number": 1,
+        "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -36,12 +36,12 @@ ppo_training_config = [
         "Priority": 2,
         "Using GPU": True,
         "monitor gpu": False,
-        "Full Logs": False,
+        "Full Logs": True,
     },
     {
         "Model Name": "ppo_bs_5",
         "Environment Name": "ppo_bs_5",
-        "Trial Number": 1,
+        "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -63,12 +63,12 @@ ppo_training_config = [
         "Priority": 2,
         "Using GPU": True,
         "monitor gpu": False,
-        "Full Logs": False,
+        "Full Logs": True,
     },
     {
         "Model Name": "ppo_bs_10",
         "Environment Name": "ppo_bs_10",
-        "Trial Number": 1,
+        "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -90,7 +90,7 @@ ppo_training_config = [
         "Priority": 2,
         "Using GPU": True,
         "monitor gpu": False,
-        "Full Logs": False,
+        "Full Logs": True,
     },
 ]
 
