@@ -4,7 +4,7 @@ import json
 
 import numpy as np
 
-from Environment.naturalistic_environment import NaturalisticEnvironment
+from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Environment.controlled_stimulus_environment import ControlledStimulusEnvironment
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 

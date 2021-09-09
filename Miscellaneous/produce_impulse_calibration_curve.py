@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Environment.naturalistic_environment import NaturalisticEnvironment
+from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 
 try:
     arg = str(sys.argv[1])
@@ -51,11 +51,11 @@ def produce_weighted_average(data1, data2, weight_of_1):
 
 
 def produce_values_for_a_m_value(m):
-    s = NaturalisticEnvironment(env, draw_screen=False, fish_mass=m)
+    s = DiscreteNaturalisticEnvironment(env, draw_screen=False, fish_mass=m)
     data_a = produce_calibration_curve_data(s)
 
     for i in range(100):
-        s = NaturalisticEnvironment(env, draw_screen=False, fish_mass=m)
+        s = DiscreteNaturalisticEnvironment(env, draw_screen=False, fish_mass=m)
         data_b = produce_calibration_curve_data(s)
         data_a = produce_weighted_average(data_a, data_b, i)
 

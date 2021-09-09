@@ -5,8 +5,8 @@ tf.disable_v2_behavior()
 
 class PPONetworkActor:
 
-    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, learning_rate, max_impulse,
-                 max_angle_change, clip_param):
+    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, max_impulse, max_angle_change,
+                 clip_param):
         # Variables
         self.num_arms = len(simulation.fish.left_eye.vis_angles)  # Rays for each eye
         self.rnn_dim = rnn_dim
@@ -235,7 +235,8 @@ class PPONetworkActor:
 
         self.total_loss = tf.add(self.impulse_loss, self.angle_loss)
 
-        self.optimizer = tf.train.AdamOptimizer(learning_rate, name='actor_optimizer_impulse').minimize(self.total_loss)
+        self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
+        self.optimizer = tf.train.AdamOptimizer(self.learning_rate, name='actor_optimizer_impulse').minimize(self.total_loss)
 
     @staticmethod
     def bounded_output(x, lower, upper):
@@ -245,7 +246,7 @@ class PPONetworkActor:
 
 class PPONetworkCritic:
 
-    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, learning_rate):
+    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states):
         # Variables
         self.num_arms = len(simulation.fish.left_eye.vis_angles)  # Rays for each eye
         self.rnn_dim = rnn_dim
@@ -380,7 +381,8 @@ class PPONetworkCritic:
         self.critic_loss = tf.reduce_mean(
             tf.squared_difference(tf.squeeze(self.Value_output), self.returns_placeholder))
 
-        self.optimizer = tf.train.AdamOptimizer(learning_rate, name='actor_optimizer_impulse').minimize(self.critic_loss)
+        self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
+        self.optimizer = tf.train.AdamOptimizer(self.learning_rate, name='actor_optimizer_impulse').minimize(self.critic_loss)
 
     @staticmethod
     def bounded_output(x, lower, upper):

@@ -5,7 +5,7 @@ from Environment.base_environment import BaseEnvironment
 from Environment.Fish.fish import Fish
 
 
-class NaturalisticEnvironment(BaseEnvironment):
+class DiscreteNaturalisticEnvironment(BaseEnvironment):
 
     def __init__(self, env_variables, realistic_bouts, draw_screen=False, fish_mass=None, collisions=True):
         super().__init__(env_variables, draw_screen)
@@ -17,7 +17,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             # In the event that I am producing a calibration curve for distance moved.
             self.fish = Fish(self.board, env_variables, self.dark_col, realistic_bouts, fish_mass=fish_mass)
 
-        self.space.add_training(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
+        self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 
         # Create walls.
         self.create_walls()

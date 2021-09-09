@@ -115,7 +115,7 @@ env = {'width': 1500,  # arena size
 
 
 params = {'num_actions': 10,  # size of action space
-          'batch_size': 5,  # How many experience traces to use for each training step.
+          'batch_size': 3,  # How many experience traces to use for each training step.
           'trace_length': 50,  # How long each experience trace will be when training
           'update_freq': 100,  # How often to perform a training step.
           'y': .99,  # Discount factor on the target Q-values
@@ -138,7 +138,7 @@ params = {'num_actions': 10,  # size of action space
           }
 
 
-directory_name = "ppo_bs_5"
+directory_name = "ppo_discrete"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):

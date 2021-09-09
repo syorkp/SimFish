@@ -5,7 +5,7 @@ import os
 import numpy as np
 import tensorflow.compat.v1 as tf
 
-from Environment.naturalistic_environment import NaturalisticEnvironment
+from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Network.q_network import QNetwork
 from Buffers.experience_buffer import ExperienceBuffer
 from Tools.graph_functions import update_target_graph, update_target
@@ -96,7 +96,7 @@ class DQNTrainingService:
         self.pre_train_steps = self.total_steps + self.params["pre_train_steps"]
 
         # Simulation
-        self.simulation = NaturalisticEnvironment(self.env, realistic_bouts)
+        self.simulation = DiscreteNaturalisticEnvironment(self.env, realistic_bouts)
         self.realistic_bouts = realistic_bouts
         self.save_frames = False
         self.switched_configuration = True
@@ -185,7 +185,7 @@ class DQNTrainingService:
         self.switched_configuration = True
         print(f"{self.trial_id}: Changing configuration to configuration {self.configuration_index}")
         self.params, self.env = self.load_configuration_files()
-        self.simulation = NaturalisticEnvironment(self.env, self.realistic_bouts)
+        self.simulation = DiscreteNaturalisticEnvironment(self.env, self.realistic_bouts)
 
     def check_update_configuration(self):
         # TODO: Will want to tidy this up later.

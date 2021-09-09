@@ -2,17 +2,22 @@ import os
 import json
 import multiprocessing
 
-import Services.dqn_training_service as training
-import Services.dqn_assay_service as assay
-import Services.ppo_training_service as ppo_training
-import Services.a2c_training_service as a2c_training
-import Services.ppo_assay_service as ppo_assay
-import Services.a2c_assay_service as a2c_assay
+import Services.DQN.dqn_training_service as training
+import Services.DQN.dqn_assay_service as assay
+
+import Services.PPO.ppo_training_service_continuous as ppo_training_continuous
+import Services.PPO.ppo_assay_service_continuous as ppo_assay_continuous
+
+import Services.PPO.ppo_training_service_discrete as ppo_training_discrete
+import Services.PPO.ppo_assay_service_discrete as ppo_assay_discrete
+
+import Services.A2C.a2c_training_service as a2c_training
+import Services.A2C.a2c_assay_service as a2c_assay
 
 
 class TrialManager:
 
-    def __init__(self, trial_configuration):
+    def __init__(self, trial_configuration, parallel_jobs):
         """
         A service that manages running of the different trial types, according to their specified environment and
         learning parameters. This is done in a way that allows threading and so simultaneous running of trials.
@@ -26,6 +31,8 @@ class TrialManager:
 
         # self.create_configuration_files()  TODO: Possibly add later if makes sense to.
         self.create_output_directories()
+
+        self.parallel_jobs = parallel_jobs
 
     def create_configuration_files(self):
         """
@@ -61,7 +68,7 @@ class TrialManager:
                 self.priority_ordered_trials[index]["Model Exists"] = True
                 if not os.path.exists(assay_directory_location):
                     os.makedirs(assay_directory_location)
-        #print(self.priority_ordered_trials)
+        # print(self.priority_ordered_trials)
 
     @staticmethod
     def check_model_exists(output_directory_location):
@@ -110,13 +117,78 @@ class TrialManager:
 
         return epsilon, total_steps, episode_number
 
+    def get_new_job(self, trial, total_steps, episode_number, memory_fraction, epsilon):
+        if trial["Run Mode"] == "Training":
+
+            if trial["Continuous Actions"]:
+                if trial["Learning Algorithm"] == "PPO":
+                    new_job = multiprocessing.Process(target=ppo_training_continuous.ppo_training_target_continuous,
+                                                      args=(trial, total_steps, episode_number, memory_fraction))
+                elif trial["Learning Algorithm"] == "A2C":
+                    new_job = multiprocessing.Process(target=a2c_training.a2c_training_target,
+                                                      args=(trial, total_steps, episode_number, memory_fraction))
+                elif trial["Learning Algorithm"] == "DQN":
+                    print('Cannot use DQN with continuous actions (training mode)')
+                    new_job = None
+                else:
+                    print('Invalid "Learning Algorithm" selected with continuous actions (training mode)')
+                    new_job = None
+
+            else:
+                if trial["Learning Algorithm"] == "PPO":
+                    new_job = multiprocessing.Process(target=ppo_training_discrete.ppo_training_target_discrete,
+                                                      args=(trial, total_steps, episode_number, memory_fraction))
+                elif trial["Learning Algorithm"] == "A2C":
+                    print('Cannot use A2C with discrete actions (training mode)')
+                    new_job = None
+                elif trial["Learning Algorithm"] == "DQN":
+                    new_job = multiprocessing.Process(target=training.training_target,
+                                                      args=(trial, epsilon, total_steps, episode_number, memory_fraction))
+                else:
+                    print('Invalid "Learning Algorithm" selected with discrete actions (training mode)')
+                    new_job = None
+
+        elif trial["Run Mode"] == "Assay":
+            learning_params, environment_params = self.load_configuration_files(trial["Environment Name"])
+
+            if trial["Continuous Actions"]:
+                if trial["Learning Algorithm"] == "PPO":
+                    new_job = multiprocessing.Process(target=ppo_assay_continuous.ppo_assay_target_continuous, args=(
+                        trial, total_steps, episode_number, memory_fraction))
+                elif trial["Learning Algorithm"] == "A2C":
+                    new_job = multiprocessing.Process(target=a2c_assay.a2c_assay_target, args=(
+                        trial, total_steps, episode_number, memory_fraction))
+                elif trial["Learning Algorithm"] == "DQN":
+                    print('Cannot use DQN with continuous actions (assay mode)')
+                    new_job = None
+                else:
+                    print('Invalid "Learning Algorithm" selected with continuous actions (assay mode)')
+                    new_job = None
+
+            else:
+                if trial["Learning Algorithm"] == "PPO":
+                    new_job = multiprocessing.Process(target=ppo_assay_discrete.ppo_assay_target_discrete, args=(
+                        trial, total_steps, episode_number, memory_fraction))
+                elif trial["Learning Algorithm"] == "A2C":
+                    print('Cannot use A2C with discrete actions (assay mode)')
+                    new_job = None
+                elif trial["Learning Algorithm"] == "DQN":
+                    new_job = multiprocessing.Process(target=assay.assay_target, args=(
+                        trial, total_steps, episode_number, memory_fraction))
+                else:
+                    print('Invalid "Learning Algorithm" selected with discrete actions (assay mode)')
+                    new_job = None
+        else:
+            print('Invalid "Run Mode" selected')
+            new_job = None
+        return new_job
+
     def run_priority_loop(self):
         """
         Executes the trials in the required order.
         :return:
         """
-        parallel_jobs = 3
-        memory_fraction = 0.99/parallel_jobs
+        memory_fraction = 0.99 / self.parallel_jobs
         running_jobs = {}
         to_delete = None
         for index, trial in enumerate(self.priority_ordered_trials):
@@ -124,28 +196,15 @@ class TrialManager:
                 del running_jobs[to_delete]
                 to_delete = None
             epsilon, total_steps, episode_number = self.get_saved_parameters(trial)
-            if trial["Run Mode"] == "Training":
-                if trial["Continuous Actions"]:
-                    if trial["Learning Algorithm"] == "PPO":
-                        running_jobs[str(index)] = multiprocessing.Process(target=ppo_training.ppo_training_target, args=(trial, total_steps, episode_number, memory_fraction))
+            new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon)
+            if new_job is not None:
+                running_jobs[str(index)] = new_job
+                running_jobs[str(index)].start()
+                print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
+            else:
+                print("New job failed")
 
-                    else:
-                        running_jobs[str(index)] = multiprocessing.Process(target=a2c_training.a2c_training_target, args=(trial, total_steps, episode_number, memory_fraction))
-                else:
-                    running_jobs[str(index)] = multiprocessing.Process(target=training.training_target, args=(trial, epsilon, total_steps, episode_number, memory_fraction))
-            elif trial["Run Mode"] == "Assay":
-                learning_params, environment_params = self.load_configuration_files(trial["Environment Name"])
-                if trial["Continuous Actions"]:
-                    if trial["Learning Algorithm"] == "PPO":
-                        running_jobs[str(index)] = multiprocessing.Process(target=ppo_assay.ppo_assay_target, args=(trial, learning_params, environment_params, total_steps, episode_number, memory_fraction))
-                    else:
-                        running_jobs[str(index)] = multiprocessing.Process(target=a2c_assay.a2c_assay_target, args=(trial, learning_params, environment_params, total_steps, episode_number, memory_fraction))
-                else:
-                    running_jobs[str(index)] = multiprocessing.Process(target=assay.assay_target, args=(trial, learning_params, environment_params, total_steps, episode_number, memory_fraction))
-            running_jobs[str(index)].start()
-            print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
-
-            while len(running_jobs.keys()) > parallel_jobs - 1 and to_delete is None:
+            while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
                 for process in running_jobs.keys():
                     if running_jobs[process].is_alive():
                         pass

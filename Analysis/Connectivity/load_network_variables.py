@@ -1,11 +1,11 @@
 import tensorflow.compat.v1 as tf
 import json
 
-from Environment.naturalistic_environment import NaturalisticEnvironment
+from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Network.q_network import QNetwork
 from Network.advantage_actor_critic import A2CNetwork
-from Network.proximal_policy_optimizer import PPONetworkActor
+from Network.proximal_policy_optimizer_continuous import PPONetworkActor
 
 tf.disable_v2_behavior()
 
@@ -27,7 +27,7 @@ def load_configuration_files(environment_name):
 
 def load_network_variables_a2c(model_name, conf_name):
     learning, env = load_configuration_files(f"{conf_name}")
-    simulation = NaturalisticEnvironment(env, False)
+    simulation = DiscreteNaturalisticEnvironment(env, False)
     model_location = f"../../Training-Output/{model_name}"
 
     with tf.Session() as sess:

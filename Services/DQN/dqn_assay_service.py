@@ -6,7 +6,7 @@ import os
 import numpy as np
 import tensorflow.compat.v1 as tf
 
-from Environment.naturalistic_environment import NaturalisticEnvironment
+from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Environment.controlled_stimulus_environment import ControlledStimulusEnvironment
 from Network.q_network import QNetwork
 from Tools.make_gif import make_gif
@@ -67,7 +67,7 @@ class DQNAssayService:
         self.sess = None
 
         # Simulation
-        self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
+        self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts)
         self.step_number = 0
 
         # Data
@@ -116,9 +116,9 @@ class DQNAssayService:
                                                             background=assay["background"]
                                                             )
         elif assay["stimulus paradigm"] == "Naturalistic":
-            self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts, collisions=assay["collisions"])
+            self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts, collisions=assay["collisions"])
         else:
-            self.simulation = NaturalisticEnvironment(self.environment_params, self.realistic_bouts)
+            self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts)
 
     def run(self):
         if self.using_gpu:
