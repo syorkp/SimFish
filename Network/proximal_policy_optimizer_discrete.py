@@ -70,6 +70,7 @@ class PPONetworkActor:
                                                             initial_state=self.rnn_state_in, scope=my_scope + '_rnn')
         self.rnn = tf.reshape(self.rnn, shape=[-1, self.rnn_dim], name="shared_rnn_output")
         self.rnn_output = self.rnn
+
         self.action_values = tf.layers.dense(self.rnn_output, num_actions, activation=tf.nn.sigmoid,
                                              kernel_initializer=tf.orthogonal_initializer,
                                              name=my_scope + '_action_values', trainable=True)
@@ -142,10 +143,16 @@ class PPONetworkActor:
         # Combined Actor impulse output
         self.action_values_combined = tf.math.divide(tf.add(self.action_values, self.action_values_ref), 2,
                                                      name="Action_values_combined")
-        self.action_output = tf.argmax(self.action_values_combined, 1)
-        self.action_probabilities = tf.nn.softmax(self.action_values_combined)
-        # TODO: Would not be better to select action probabilistically, rather than choosing random action.
-        self.chosen_action_probability = self.action_probabilities[:, tf.squeeze(self.action_output)]
+        # Epsilon-greedy
+        # self.action_output = tf.argmax(self.action_values_combined, 1)
+        self.action_probabilities = tf.nn.softmax(self.action_values_combined)  # BS.TL x An
+
+        # Probabilistic.
+        self.action_output = tf.random.categorical(tf.log(self.action_probabilities), 1)  # BS.TL x 1
+        self.batch_indexes = tf.reshape(tf.range(0, self.batch_size*self.trainLength, 1, dtype=tf.int64), [self.batch_size*self.trainLength, 1])
+        self.action_indices = tf.concat([self.batch_indexes, self.action_output], 1)
+
+        self.chosen_action_probability = tf.gather_nd(self.action_probabilities, indices=self.action_indices)
 
         #            ----------        Loss functions       ---------            #
 

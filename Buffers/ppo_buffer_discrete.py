@@ -123,7 +123,7 @@ class PPOBufferDiscrete:
                      actor_rnn_state_ref, critic_rnn_state, critic_rnn_state_ref):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
-        self.action_buffer.append(action)
+        self.action_buffer.append(int(action))
         self.reward_buffer.append(reward)
         self.value_buffer.append(value)
         self.log_action_probability_buffer.append(l_p_action)
@@ -228,8 +228,8 @@ class PPOBufferDiscrete:
         if final_batch:
             observation_slice = self.pad_slice(self.observation_buffer[self.pointer:-1, :], self.trace_length)
             internal_state_slice = self.pad_slice(self.internal_state_buffer[self.pointer:-1, :], self.trace_length)
-            action_slice = self.pad_slice(self.action_buffer[self.pointer + 1:-1, :], self.trace_length)
-            previous_action_slice = self.pad_slice(self.action_buffer[self.pointer:-2, :], self.trace_length)
+            action_slice = self.pad_slice(self.action_buffer[self.pointer + 1:-1], self.trace_length)
+            previous_action_slice = self.pad_slice(self.action_buffer[self.pointer:-2], self.trace_length)
             # reward_slice = self.reward_buffer[self.pointer:-1], self.trace_length)
             # value_slice = self.pad_slice(self.value_buffer[self.pointer:-1], self.trace_length)
             log_action_probability_slice = self.pad_slice(self.log_action_probability_buffer[self.pointer:-1], self.trace_length)
@@ -243,12 +243,12 @@ class PPOBufferDiscrete:
         else:
             observation_slice = self.observation_buffer[self.pointer:self.pointer + self.trace_length, :]
             internal_state_slice = self.internal_state_buffer[self.pointer:self.pointer + self.trace_length, :]
-            action_slice = self.action_buffer[self.pointer + 1:self.pointer + self.trace_length + 1, :]
-            previous_action_slice = self.action_buffer[self.pointer:self.pointer + self.trace_length, :]
+            action_slice = self.action_buffer[self.pointer + 1:self.pointer + self.trace_length + 1]
+            previous_action_slice = self.action_buffer[self.pointer:self.pointer + self.trace_length]
             # reward_slice = self.reward_buffer[self.pointer:self.pointer + self.trace_length, ]
             # value_slice = self.value_buffer[self.pointer:self.pointer + self.trace_length, ]
             log_action_probability_slice = self.log_action_probability_buffer[
-                                            self.pointer:self.pointer + self.trace_length, :]
+                                            self.pointer:self.pointer + self.trace_length]
             advantage_slice = self.advantage_buffer[self.pointer:self.pointer + self.trace_length]
             return_slice = self.return_buffer[self.pointer:self.pointer + self.trace_length]
             # actor_rnn_state_slice = self.actor_rnn_state_buffer[self.pointer:self.pointer + self.trace_length]

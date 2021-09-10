@@ -78,9 +78,6 @@ class TrainingService(BaseService):
                 self.check_update_configuration()
             self.episode_loop()
 
-    def train_network(self):
-        """Placeholder to be overwritten by subclass."""
-
     def create_environment(self):
         if self.continuous_actions:
             self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts)

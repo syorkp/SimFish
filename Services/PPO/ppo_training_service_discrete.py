@@ -14,22 +14,22 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 def ppo_training_target_discrete(trial, total_steps, episode_number, memory_fraction):
     services = PPOTrainingServiceDiscrete(model_name=trial["Model Name"],
-                                            trial_number=trial["Trial Number"],
-                                            total_steps=total_steps,
-                                            episode_number=episode_number,
-                                            monitor_gpu=trial["monitor gpu"],
-                                            using_gpu=trial["Using GPU"],
-                                            memory_fraction=memory_fraction,
-                                            config_name=trial["Environment Name"],
-                                            realistic_bouts=trial["Realistic Bouts"],
-                                            continuous_actions=trial["Continuous Actions"],
+                                          trial_number=trial["Trial Number"],
+                                          total_steps=total_steps,
+                                          episode_number=episode_number,
+                                          monitor_gpu=trial["monitor gpu"],
+                                          using_gpu=trial["Using GPU"],
+                                          memory_fraction=memory_fraction,
+                                          config_name=trial["Environment Name"],
+                                          realistic_bouts=trial["Realistic Bouts"],
+                                          continuous_actions=trial["Continuous Actions"],
 
-                                            model_exists=trial["Model Exists"],
-                                            episode_transitions=trial["Episode Transitions"],
-                                            total_configurations=trial["Total Configurations"],
-                                            conditional_transitions=trial["Conditional Transitions"],
-                                            full_logs=trial["Full Logs"]
-                                            )
+                                          model_exists=trial["Model Exists"],
+                                          episode_transitions=trial["Episode Transitions"],
+                                          total_configurations=trial["Total Configurations"],
+                                          conditional_transitions=trial["Conditional Transitions"],
+                                          full_logs=trial["Full Logs"]
+                                          )
     services.run()
 
 
@@ -52,10 +52,11 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
 
         self.batch_size = self.learning_params["batch_size"]  # TODO: replace all readings with these
         self.trace_length = self.learning_params["trace_length"]
-        self.step_drop = (self.learning_params['startE'] - self.learning_params['endE']) / self.learning_params['anneling_steps']
+        self.step_drop = (self.learning_params['startE'] - self.learning_params['endE']) / self.learning_params[
+            'anneling_steps']
 
         self.buffer = PPOBufferDiscrete(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
-                                train_length=self.learning_params["trace_length"], assay=False, debug=False)
+                                        train_length=self.learning_params["trace_length"], assay=False, debug=False)
         # TODO: Update buffer
         self.e = self.learning_params["startE"]
         # TODO: Move this to TrainingService
@@ -72,13 +73,12 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
         """
         t0 = time()
 
-
         self.current_episode_max_duration = self.learning_params["max_epLength"]
         DiscretePPO.episode_loop(self)
 
         # Train the network on the episode buffer
         self.buffer.calculate_advantages_and_returns()
-        self.train_network()
+        DiscretePPO.train_network(self)
 
         # Add the episode to tensorflow logs
         self.save_episode(episode_start_t=t0,
@@ -99,12 +99,12 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
         # TODO: Consider moving down...
         if self.full_logs:
             return DiscretePPO._training_step_loop_full_logs(self, o, internal_state, a, rnn_state_actor,
-                                                               rnn_state_actor_ref, rnn_state_critic,
-                                                               rnn_state_critic_ref)
+                                                             rnn_state_actor_ref, rnn_state_critic,
+                                                             rnn_state_critic_ref)
         else:
             return DiscretePPO._training_step_loop_reduced_logs(self, o, internal_state, a, rnn_state_actor,
-                                                                  rnn_state_actor_ref, rnn_state_critic,
-                                                                  rnn_state_critic_ref)
+                                                                rnn_state_actor_ref, rnn_state_critic,
+                                                                rnn_state_critic_ref)
 
     def save_episode(self, episode_start_t, total_episode_reward, prey_caught,
                      predators_avoided, sand_grains_bumped, steps_near_vegetation):
@@ -117,7 +117,7 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
 
         # Action Summary
         for act in range(self.learning_params['num_actions']):
-            action_freq = np.sum(np.array( self.buffer.action_buffer) == act) / len( self.buffer.action_buffer)
+            action_freq = np.sum(np.array(self.buffer.action_buffer) == act) / len(self.buffer.action_buffer)
             a_freq = tf.Summary(value=[tf.Summary.Value(tag="action " + str(act), simple_value=action_freq)])
             self.writer.add_summary(a_freq, self.total_steps)
 
@@ -133,7 +133,8 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
                 critic_loss_summary = tf.Summary(
                     value=[tf.Summary.Value(tag="critic loss", simple_value=self.buffer.critic_loss_buffer[step])])
                 self.writer.add_summary(critic_loss_summary,
-                                        self.total_steps - len(angles) + step * self.learning_params["batch_size"])
+                                        self.total_steps - len(self.buffer.action_buffer) + step * self.learning_params[
+                                            "batch_size"])
 
                 # TODO: Save action loss here
 

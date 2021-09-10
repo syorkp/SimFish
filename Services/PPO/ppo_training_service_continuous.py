@@ -74,7 +74,7 @@ class PPOTrainingServiceContinuous(TrainingService, ContinuousPPO):
 
         # Train the network on the episode buffer
         self.buffer.calculate_advantages_and_returns()
-        self.train_network()
+        ContinuousPPO.train_network(self)
 
         # Add the episode to tensorflow logs
         self.save_episode(episode_start_t=t0,

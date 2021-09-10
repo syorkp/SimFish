@@ -48,7 +48,8 @@ class PPOAssayServiceDiscrete(AssayService, DiscretePPO):
                                         train_length=self.learning_params["trace_length"], assay=True, debug=False)
 
     def _run(self):
-        self.create_network()  # Could also achieve by
+        self.create_network()
+        self.init_states()
         AssayService._run(self)
 
     def perform_assay(self, assay):
