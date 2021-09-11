@@ -21,34 +21,12 @@ class ContinuousPPO(BasePPO):
         self.impulse_sigma = None
         self.angle_sigma = None
 
-        self.batch_size = None
-        self.trace_length = None
-
-        # Init states for RNN TODO: Check not being changed
-        self.init_rnn_state_actor = (
-            np.zeros([1, self.actor_network.rnn_dim]),
-            np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
-        self.init_rnn_state_actor_ref = (
-            np.zeros([1, self.actor_network.rnn_dim]),
-            np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
-
-        self.init_rnn_state_critic = (
-            np.zeros([1, self.actor_network.rnn_dim]),
-            np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
-        self.init_rnn_state_critic_ref = (
-            np.zeros([1, self.actor_network.rnn_dim]),
-            np.zeros([1, self.actor_network.rnn_dim]))
-
     def create_network(self):
         """
         Create the main and target Q networks, according to the configuration parameters.
         :return: The main network and the target network graphs.
         """
-        print("Creating networks...")
-        internal_states = sum([1 for x in [self.environment_params['hunger'], self.environment_params['stress']] if x is True]) + 1
-
-        actor_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
-        critic_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
+        actor_cell, internal_states = BasePPO.create_network(self)
 
         self.actor_network = PPONetworkActor(simulation=self.simulation,
                                              rnn_dim=self.learning_params['rnn_dim_shared'],
@@ -59,12 +37,6 @@ class ContinuousPPO(BasePPO):
                                              max_angle_change=self.environment_params['max_angle_change'],
                                              clip_param=self.environment_params['clip_param']
                                              )
-        self.critic_network = PPONetworkCritic(simulation=self.simulation,
-                                               rnn_dim=self.learning_params['rnn_dim_shared'],
-                                               rnn_cell=critic_cell,
-                                               my_scope='critic',
-                                               internal_states=internal_states,
-                                               )
 
     def update_sigmas(self):
         # Exponential scale
@@ -82,6 +54,7 @@ class ContinuousPPO(BasePPO):
                 self.environment_params["max_sigma_angle"] - self.environment_params["min_sigma_angle"]) * (self.total_steps / 5000000)])
 
     def episode_loop(self):
+        # TODO: Move to parent
         self.update_sigmas()
 
         rnn_state_actor = copy.copy(self.init_rnn_state_actor)

@@ -16,45 +16,14 @@ class DiscretePPO(BasePPO):
     def __init__(self):
         super().__init__()
 
-        self.batch_size = None
-        self.trace_length = None
-
-        # Init states for RNN TODO: Check not being changed. MOve to parent
-        self.init_rnn_state_actor = None # Reset RNN hidden state
-        self.init_rnn_state_actor_ref = None
-
-        self.init_rnn_state_critic = None
-        self.init_rnn_state_critic_ref = None
-
         self.e = None
-
-    def init_states(self):
-        # Init states for RNN TODO: Check not being changed. MOve to parent
-        self.init_rnn_state_actor = (
-            np.zeros([1, self.actor_network.rnn_dim]),
-            np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
-        self.init_rnn_state_actor_ref = (
-            np.zeros([1, self.actor_network.rnn_dim]),
-            np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
-
-        self.init_rnn_state_critic = (
-            np.zeros([1, self.actor_network.rnn_dim]),
-            np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
-        self.init_rnn_state_critic_ref = (
-            np.zeros([1, self.actor_network.rnn_dim]),
-            np.zeros([1, self.actor_network.rnn_dim]))
 
     def create_network(self):
         """
         Create the main and target Q networks, according to the configuration parameters.
         :return: The main network and the target network graphs.
         """
-        print("Creating networks...")
-        internal_states = sum(
-            [1 for x in [self.environment_params['hunger'], self.environment_params['stress']] if x is True]) + 1
-
-        actor_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
-        critic_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
+        actor_cell, internal_states = BasePPO.create_network(self)
 
         self.actor_network = PPONetworkActor(simulation=self.simulation,
                                              rnn_dim=self.learning_params['rnn_dim_shared'],
@@ -64,14 +33,8 @@ class DiscretePPO(BasePPO):
                                              max_impulse=self.environment_params['max_impulse'],
                                              max_angle_change=self.environment_params['max_angle_change'],
                                              clip_param=self.environment_params['clip_param'],
-                                             num_actions = self.learning_params['num_actions']
+                                             num_actions=self.learning_params['num_actions']
                                              )
-        self.critic_network = PPONetworkCritic(simulation=self.simulation,
-                                               rnn_dim=self.learning_params['rnn_dim_shared'],
-                                               rnn_cell=critic_cell,
-                                               my_scope='critic',
-                                               internal_states=internal_states,
-                                               )
 
     def episode_loop(self):
         rnn_state_actor = copy.copy(self.init_rnn_state_actor)
