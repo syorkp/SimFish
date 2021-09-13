@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 
 import tensorflow.compat.v1 as tf
@@ -21,6 +22,7 @@ class BasePPO:
         self.batch_size = None
         self.trace_length = None
         self.output_dimensions = None
+        self.continuous = None
 
         self.frame_buffer = None
         self.save_frames = None
@@ -45,17 +47,17 @@ class BasePPO:
         # Init states for RNN TODO: Check not being changed. MOve to parent
         self.init_rnn_state_actor = (
             np.zeros([1, self.actor_network.rnn_dim]),
-            np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
+            np.zeros([1, self.actor_network.rnn_dim]))
         self.init_rnn_state_actor_ref = (
             np.zeros([1, self.actor_network.rnn_dim]),
-            np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
+            np.zeros([1, self.actor_network.rnn_dim]))
 
         self.init_rnn_state_critic = (
-            np.zeros([1, self.actor_network.rnn_dim]),
-            np.zeros([1, self.actor_network.rnn_dim]))  # Reset RNN hidden state
+            np.zeros([1, self.critic_network.rnn_dim]),
+            np.zeros([1, self.critic_network.rnn_dim]))
         self.init_rnn_state_critic_ref = (
-            np.zeros([1, self.actor_network.rnn_dim]),
-            np.zeros([1, self.actor_network.rnn_dim]))
+            np.zeros([1, self.critic_network.rnn_dim]),
+            np.zeros([1, self.critic_network.rnn_dim]))
 
     def create_network(self):
         """
@@ -80,3 +82,82 @@ class BasePPO:
                                                )
 
         return actor_cell, internal_states
+
+    def compute_rnn_states(self, rnn_key_points, observation_buffer, internal_state_buffer, previous_action_buffer):
+        num_actions = self.output_dimensions
+        batch_size = len(rnn_key_points)
+
+        if self.learning_params["rnn_state_computation"]:
+            observation_buffer = np.vstack(observation_buffer)
+            internal_state_buffer = np.vstack(internal_state_buffer)
+            previous_action_buffer = np.reshape(previous_action_buffer, (observation_buffer.shape[0], num_actions))
+
+            rnn_state_actor = copy.copy(self.init_rnn_state_actor)
+            rnn_state_actor_ref = copy.copy(self.init_rnn_state_actor_ref)
+            rnn_state_critic = copy.copy(self.init_rnn_state_critic)
+            rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
+
+            actor_rnn_state_buffer = ([rnn_state_actor[0][0]], [rnn_state_actor[1][0]])
+            actor_rnn_state_ref_buffer = ([rnn_state_actor_ref[0][0]], [rnn_state_actor_ref[1][0]])
+            critic_rnn_state_buffer = ([rnn_state_critic[0][0]], [rnn_state_critic[1][0]])
+            critic_rnn_state_ref_buffer = ([rnn_state_critic_ref[0][0]], [rnn_state_critic_ref[1][0]])
+
+            for step in range(max(rnn_key_points)):
+                rnn_state_critic, rnn_state_critic_ref = self.sess.run(
+                    [self.critic_network.rnn_state_shared, self.critic_network.rnn_state_ref],
+                    feed_dict={self.critic_network.observation: observation_buffer[step],
+                               self.critic_network.prev_actions: previous_action_buffer[step].reshape(1, num_actions),
+                               self.critic_network.internal_state: internal_state_buffer[step].reshape(1, 2),
+
+                               self.critic_network.rnn_state_in: rnn_state_critic,
+                               self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
+
+                               self.critic_network.trainLength: 1,
+                               self.critic_network.batch_size: 1,
+                               })
+                rnn_state_actor, rnn_state_actor_ref = self.sess.run(
+                    [self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref],
+                    feed_dict={self.actor_network.observation: observation_buffer[step],
+                               self.actor_network.prev_actions: previous_action_buffer[step].reshape(1, num_actions),
+                               self.actor_network.internal_state: internal_state_buffer[step].reshape(1, 2),
+
+                               self.actor_network.rnn_state_in: rnn_state_actor,
+                               self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+
+                               self.actor_network.trainLength: 1,
+                               self.actor_network.batch_size: 1,
+                               })
+                if step - 1 in rnn_key_points:
+                    actor_rnn_state_buffer[0].append(rnn_state_actor[0][0])
+                    actor_rnn_state_buffer[1].append(rnn_state_actor[1][0])
+
+                    actor_rnn_state_ref_buffer[0].append(rnn_state_actor_ref[0][0])
+                    actor_rnn_state_ref_buffer[1].append(rnn_state_actor_ref[1][0])
+
+                    critic_rnn_state_buffer[0].append(rnn_state_critic[0][0])
+                    critic_rnn_state_buffer[1].append(rnn_state_critic[1][0])
+
+                    critic_rnn_state_ref_buffer[0].append(rnn_state_critic_ref[0][0])
+                    critic_rnn_state_ref_buffer[1].append(rnn_state_critic_ref[1][0])
+
+            actor_rnn_state_buffer = (np.array(actor_rnn_state_buffer[0]), np.array(actor_rnn_state_buffer[1]))
+            actor_rnn_state_ref_buffer = (np.array(actor_rnn_state_ref_buffer[0]), np.array(actor_rnn_state_ref_buffer[1]))
+            critic_rnn_state_buffer = (np.array(critic_rnn_state_buffer[0]), np.array(critic_rnn_state_buffer[1]))
+            critic_rnn_state_ref_buffer = (
+                np.array(critic_rnn_state_ref_buffer[0]), np.array(critic_rnn_state_ref_buffer[1]))
+        else:
+            actor_rnn_state_buffer = (
+                np.zeros([batch_size, self.actor_network.rnn_dim]),
+                np.zeros([batch_size, self.actor_network.rnn_dim]))  # Reset RNN hidden state
+            actor_rnn_state_ref_buffer = (
+                np.zeros([batch_size, self.actor_network.rnn_dim]),
+                np.zeros([batch_size, self.actor_network.rnn_dim]))  # Reset RNN hidden state
+            critic_rnn_state_buffer = (
+                np.zeros([batch_size, self.actor_network.rnn_dim]),
+                np.zeros([batch_size, self.actor_network.rnn_dim]))  # Reset RNN hidden state
+            critic_rnn_state_ref_buffer = (
+                np.zeros([batch_size, self.actor_network.rnn_dim]),
+                np.zeros([batch_size, self.actor_network.rnn_dim]))
+
+        return actor_rnn_state_buffer, actor_rnn_state_ref_buffer, critic_rnn_state_buffer, critic_rnn_state_ref_buffer
+

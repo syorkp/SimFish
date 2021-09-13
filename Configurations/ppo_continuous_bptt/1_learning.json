@@ -1,7 +1,7 @@
 {
     "num_actions": 10,
-    "batch_size": 50,
-    "trace_length": 1,
+    "batch_size": 1,
+    "trace_length": 50,
     "update_freq": 100,
     "y": 0.99,
     "startE": 0.2,

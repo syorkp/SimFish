@@ -60,6 +60,7 @@ class PPOTrainingServiceContinuous(TrainingService, ContinuousPPO):
 
     def _run(self):
         self.create_network()
+        self.init_states()
         TrainingService._run(self)
 
     def episode_loop(self):

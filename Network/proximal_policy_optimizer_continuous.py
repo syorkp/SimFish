@@ -14,8 +14,8 @@ class PPONetworkActor:
         self.trainLength = tf.placeholder(dtype=tf.int32, shape=[], name="train_length")
         self.batch_size = tf.placeholder(dtype=tf.int32, shape=[], name='batch_size')
 
-        self.rnn_state_in = rnn_cell.zero_state(self.trainLength, tf.float32)
-        self.rnn_state_in_ref = rnn_cell.zero_state(self.trainLength, tf.float32)
+        self.rnn_state_in = rnn_cell.zero_state(self.batch_size, tf.float32)
+        self.rnn_state_in_ref = rnn_cell.zero_state(self.batch_size, tf.float32)
 
         # Network Inputs
         self.prev_actions = tf.placeholder(shape=[None, 2], dtype=tf.float32, name='prev_actions')

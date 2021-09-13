@@ -18,11 +18,12 @@ class ContinuousPPO(BasePPO):
         super().__init__(**kwargs)
         print("PPO Constructor called")
 
+        self.continuous = True
+
         self.impulse_sigma = None
         self.angle_sigma = None
 
         self.output_dimensions = 2
-
 
     def create_network(self):
         """
@@ -342,7 +343,7 @@ class ContinuousPPO(BasePPO):
         self.total_steps += 1
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
 
-    def compute_rnn_states(self, rnn_key_points, observation_buffer, internal_state_buffer, previous_action_buffer):
+    def compute_rnn_states_old(self, rnn_key_points, observation_buffer, internal_state_buffer, previous_action_buffer):
         """Gets the RNN states at given points in the trial. Not strictly necessary, but should improve RNN learning
         versus setting them for zero for each trace."""
 
