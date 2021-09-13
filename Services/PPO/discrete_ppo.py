@@ -4,7 +4,7 @@ import numpy as np
 
 import tensorflow.compat.v1 as tf
 
-from Network.proximal_policy_optimizer_discrete import PPONetworkActor, PPONetworkCritic
+from Network.proximal_policy_optimizer_discrete import PPONetworkActor
 from Services.PPO.base_ppo import BasePPO
 
 tf.disable_v2_behavior()
@@ -17,6 +17,7 @@ class DiscretePPO(BasePPO):
         super().__init__()
 
         self.e = None
+        self.output_dimensions = 1
 
     def create_network(self):
         """

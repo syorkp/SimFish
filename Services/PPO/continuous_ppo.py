@@ -5,7 +5,7 @@ import copy
 import tensorflow.compat.v1 as tf
 
 from Buffers.ppo_buffer import PPOBuffer
-from Network.proximal_policy_optimizer_continuous import PPONetworkActor, PPONetworkCritic
+from Network.proximal_policy_optimizer_continuous import PPONetworkActor
 from Services.PPO.base_ppo import BasePPO
 
 tf.disable_v2_behavior()
@@ -20,6 +20,9 @@ class ContinuousPPO(BasePPO):
 
         self.impulse_sigma = None
         self.angle_sigma = None
+
+        self.output_dimensions = 2
+
 
     def create_network(self):
         """

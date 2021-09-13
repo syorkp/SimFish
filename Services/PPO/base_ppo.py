@@ -2,7 +2,7 @@ import numpy as np
 
 import tensorflow.compat.v1 as tf
 
-from Network.proximal_policy_optimizer_continuous import PPONetworkCritic
+from Network.proximal_policy_optimizer_critic import PPONetworkCritic
 
 
 class BasePPO:
@@ -20,6 +20,7 @@ class BasePPO:
         self.sess = None
         self.batch_size = None
         self.trace_length = None
+        self.output_dimensions = None
 
         self.frame_buffer = None
         self.save_frames = None
@@ -68,11 +69,14 @@ class BasePPO:
         actor_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
         critic_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
 
+        output_dimension = self.output_dimensions
+
         self.critic_network = PPONetworkCritic(simulation=self.simulation,
                                                rnn_dim=self.learning_params['rnn_dim_shared'],
                                                rnn_cell=critic_cell,
                                                my_scope='critic',
                                                internal_states=internal_states,
+                                               outputs_per_step=output_dimension
                                                )
 
         return actor_cell, internal_states
