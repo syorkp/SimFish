@@ -89,7 +89,10 @@ env = {'width': 1500,  # arena size
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
        'reafference': False,
        'stress': False,
-       'stress_compound': 0.9
+       'stress_compound': 0.9,
+
+       'distance_penalty_scaling_factor': 0.001,
+       'angle_penalty_scaling_factor': 0.001,
        }
 
 
@@ -102,10 +105,11 @@ params = {'num_actions': 10,  # size of action space
           'endE': 0.01,  # Final chance of random action
           'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
           'num_episodes': 50000,  # How many episodes of game environment to train network with.
-          'pre_train_steps': 50000,  # How many steps of random actions before training begins.
+          # 'pre_train_steps': 50000,  # How many steps of random actions before training begins.
+          'pre_train_steps': 5000,  # How many steps of random actions before training begins.
           'max_epLength': 1000,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
-          'summaryLength': 2000,  # Number of epidoes to periodically save for analysis
+          'summaryLength': 200,  # Number of epidoes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
           'rnn_dim': 512,  # number of rnn cells
           'extra_rnn': False,
@@ -114,7 +118,7 @@ params = {'num_actions': 10,  # size of action space
           'learning_rate': 0.0001}
 
 
-directory_name = "even_prey"
+directory_name = "dqn_test"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):

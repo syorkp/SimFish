@@ -149,8 +149,6 @@ class TrialManager:
                     new_job = None
 
         elif trial["Run Mode"] == "Assay":
-            learning_params, environment_params = self.load_configuration_files(trial["Environment Name"])
-
             if trial["Continuous Actions"]:
                 if trial["Learning Algorithm"] == "PPO":
                     new_job = multiprocessing.Process(target=ppo_assay_continuous.ppo_assay_target_continuous, args=(

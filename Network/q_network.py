@@ -33,7 +33,7 @@ class QNetwork:
         self.Temp = tf.placeholder(shape=None, dtype=tf.float32)
         self.trainLength = tf.placeholder(dtype=tf.int32)
         self.batch_size = tf.placeholder(dtype=tf.int32, shape=[])
-        self.state_in = rnn_cell.zero_state(self.batch_size, tf.float32)
+        self.rnn_state_in = rnn_cell.zero_state(self.batch_size, tf.float32)
 
         #                ------------ Normal network ------------                   #
 
@@ -70,7 +70,7 @@ class QNetwork:
         self.convFlat = tf.reshape(self.rnn_in, [self.batch_size, self.trainLength, self.rnn_dim])
 
         self.rnn, self.rnn_state = tf.nn.dynamic_rnn(inputs=self.convFlat, cell=rnn_cell, dtype=tf.float32,
-                                                     initial_state=self.state_in, scope=my_scope + '_rnn',)
+                                                     initial_state=self.rnn_state_in, scope=my_scope + '_rnn', )
         self.rnn = tf.reshape(self.rnn, shape=[-1, self.rnn_dim])
         self.rnn_output = self.rnn
 
@@ -81,7 +81,7 @@ class QNetwork:
             self.rnnFlat = tf.reshape(self.rnn_in2, [self.batch_size, self.trainLength, self.rnn_dim])
 
             self.rnn2, self.rnn_state2 = tf.nn.dynamic_rnn(inputs=self.rnnFlat, cell=rnn_cell, dtype=tf.float32,
-                                                           initial_state=self.state_in, scope=my_scope + '_rnn2',
+                                                           initial_state=self.rnn_state_in, scope=my_scope + '_rnn2',
                                                            name=my_scope + "_rnn2")
             self.rnn2 = tf.reshape(self.rnn2, shape=[-1, self.rnn_dim])
             self.rnn2_output = self.rnn2
@@ -137,7 +137,7 @@ class QNetwork:
         self.convFlat_ref = tf.reshape(self.rnn_in_ref, [self.batch_size, self.trainLength, self.rnn_dim])
 
         self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell, dtype=tf.float32,
-                                                             initial_state=self.state_in, scope=my_scope + '_rnn')
+                                                             initial_state=self.rnn_state_in, scope=my_scope + '_rnn')
         self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim])
         self.rnn_output_ref = self.rnn_ref
 
@@ -149,7 +149,7 @@ class QNetwork:
 
             self.rnn2_ref, self.rnn_state2_ref = tf.nn.dynamic_rnn(inputs=self.rnnFlat_ref, cell=rnn_cell,
                                                                    dtype=tf.float32,
-                                                                   initial_state=self.state_in,
+                                                                   initial_state=self.rnn_state_in,
                                                                    scope=my_scope + '_rnn2', name=my_scope + "_rnn2",
                                                                    reuse=True)
             self.rnn2_ref = tf.reshape(self.rnn2_ref, shape=[-1, self.rnn_dim])
@@ -178,8 +178,8 @@ class QNetwork:
 
         #                ------------ Integrating Normal and Reflected ------------                   #
 
-        self.Value_final = tf.divide(tf.add_training(self.Value, self.Value_ref), 2)
-        self.Advantage_final = tf.divide(tf.add_training(self.Advantage, self.Advantage_ref), 2)
+        self.Value_final = tf.divide(tf.add(self.Value, self.Value_ref), 2)
+        self.Advantage_final = tf.divide(tf.add(self.Advantage, self.Advantage_ref), 2)
 
         self.salience = tf.gradients(self.Advantage_final, self.observation)
         # Then combine them together to get our final Q-values.

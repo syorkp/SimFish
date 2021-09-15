@@ -8,6 +8,7 @@ from Environment.continuous_naturalistic_environment import ContinuousNaturalist
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Services.base_service import BaseService
 from Tools.make_gif import make_gif
+from Tools.graph_functions import update_target_graph, update_target
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -38,6 +39,7 @@ class TrainingService(BaseService):
         self.trainables = None
         self.target_ops = None
         self.writer = None
+        self.algorithm = None
 
         # Create simulation variable
         self.create_environment()
@@ -57,6 +59,9 @@ class TrainingService(BaseService):
         self.saver = tf.train.Saver(max_to_keep=5)
         self.init = tf.global_variables_initializer()
         self.trainables = tf.trainable_variables()
+        if self.algorithm == "DQN":
+            self.target_ops = update_target_graph(self.trainables, self.learning_params['tau'])
+
         if self.load_model:
             print(f"Attempting to load model at {self.model_location}")
             checkpoint = tf.train.get_checkpoint_state(self.model_location)
@@ -71,6 +76,8 @@ class TrainingService(BaseService):
             print("First attempt at running model. Starting from scratch.")
             self.sess.run(self.init)
         self.writer = tf.summary.FileWriter(f"{self.model_location}/logs/", tf.get_default_graph())
+        if self.algorithm == "DQN":
+            update_target(self.target_ops, self.sess)  # Set the target network to be equal to the primary network.
 
         for e_number in range(self.episode_number, self.learning_params["num_episodes"]):
             self.episode_number = e_number

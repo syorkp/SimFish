@@ -5,11 +5,10 @@ import os
 import numpy as np
 import tensorflow.compat.v1 as tf
 
-from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
-from Network.q_network import QNetwork
 from Buffers.experience_buffer import ExperienceBuffer
-from Tools.graph_functions import update_target_graph, update_target
 from Tools.make_gif import make_gif
+from Services.training_service import TrainingService
+from Services.DQN.base_dqn import BaseDQN
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -18,262 +17,77 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 def training_target(trial, epsilon, total_steps, episode_number, memory_fraction):
     services = DQNTrainingService(model_name=trial["Model Name"],
                                   trial_number=trial["Trial Number"],
-                                  model_exists=trial["Model Exists"],
-                                  tethered=trial["Tethered"],
-                                  scaffold_name=trial["Environment Name"],
-                                  episode_transitions=trial["Episode Transitions"],
-                                  total_configurations=trial["Total Configurations"],
-                                  conditional_transitions=trial["Conditional Transitions"],
-                                  e=epsilon,
                                   total_steps=total_steps,
                                   episode_number=episode_number,
                                   monitor_gpu=trial["monitor gpu"],
-                                  realistic_bouts=trial["Realistic Bouts"],
+                                  using_gpu=trial["Using GPU"],
                                   memory_fraction=memory_fraction,
-                                  using_gpu=trial["Using GPU"]
+                                  config_name=trial["Environment Name"],
+                                  realistic_bouts=trial["Realistic Bouts"],
+                                  continuous_actions=trial["Continuous Actions"],
+                                  epsilon=epsilon,
+
+                                  model_exists=trial["Model Exists"],
+                                  episode_transitions=trial["Episode Transitions"],
+                                  total_configurations=trial["Total Configurations"],
+                                  conditional_transitions=trial["Conditional Transitions"],
+                                  full_logs=trial["Full Logs"]
                                   )
     services.run()
 
 
-class DQNTrainingService:
+class DQNTrainingService(TrainingService, BaseDQN):
 
-    def __init__(self, model_name, trial_number, model_exists, tethered, scaffold_name, episode_transitions,
-                 total_configurations, conditional_transitions, e, total_steps, episode_number, monitor_gpu,
-                 realistic_bouts, memory_fraction, using_gpu):
-        """
-        An instance of TrainingService handles the training of the DQN within a specified environment, according to
-        specified parameters.
-        :param model_name: The name of the model, usually to match the naming of the env configuration files.
-        :param trial_number: The index of the trial, so that agents trained under the same configuration may be
-        distinguished in their output files.
-        """
+    def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
+                 config_name, realistic_bouts, continuous_actions, epsilon, model_exists, episode_transitions,
+                 total_configurations, conditional_transitions, full_logs):
+        super().__init__(model_name=model_name, trial_number=trial_number,
+                         total_steps=total_steps, episode_number=episode_number,
+                         monitor_gpu=monitor_gpu, using_gpu=using_gpu,
+                         memory_fraction=memory_fraction, config_name=config_name,
+                         realistic_bouts=realistic_bouts,
+                         continuous_actions=continuous_actions,
+                         model_exists=model_exists,
+                         episode_transitions=episode_transitions,
+                         total_configurations=total_configurations,
+                         conditional_transitions=conditional_transitions,
+                         full_logs=full_logs)
 
-        # Names and directories
-        self.trial_id = f"{model_name}-{trial_number}"
-        self.output_location = f"./Training-Output/{model_name}-{trial_number}"
+        self.algorithm = "DQN"
+        self.batch_size = self.learning_params["batch_size"]  # TODO: replace all readings with these
+        self.trace_length = self.learning_params["trace_length"]
+        self.step_drop = (self.learning_params['startE'] - self.learning_params['endE']) / self.learning_params[
+            'anneling_steps']
+        self.pre_train_steps = self.total_steps + self.learning_params["pre_train_steps"]
 
-        # Configurations
-        self.scaffold_name = scaffold_name
-        self.total_configurations = total_configurations
-        self.episode_transitions = episode_transitions
-        self.conditional_transitions = conditional_transitions
-        self.tethered = tethered
-        self.configuration_index = 1
-        self.switched_configuration = False
-        self.params, self.env = self.load_configuration_files()
-
-        # Basic Parameters
-        self.load_model = model_exists
-        self.monitor_gpu = monitor_gpu
-        self.using_gpu = using_gpu
-        self.realistic_bouts = realistic_bouts
-        self.memory_fraction = memory_fraction
-
-        # Maintain variables
-        if e is not None:
-            self.e = e
-        else:
-            self.e = self.params["startE"]
-        if episode_number is not None:
-            self.episode_number = episode_number + 1
-        else:
-            self.episode_number = 0
-
-        if total_steps is not None:
-            self.total_steps = total_steps
-        else:
-            self.total_steps = 0
-
-        # Network and Training Parameters
-        self.saver = None
+        # TODO: Check below dont already exist
         self.writer = None
-        self.main_QN, self.target_QN = None, None
-        self.init = None
         self.trainables = None
         self.target_ops = None
-        self.sess = None
-        self.step_drop = (self.params['startE'] - self.params['endE']) / self.params['anneling_steps']
-        self.pre_train_steps = self.total_steps + self.params["pre_train_steps"]
 
-        # Simulation
-        self.simulation = DiscreteNaturalisticEnvironment(self.env, realistic_bouts)
-        self.realistic_bouts = realistic_bouts
-        self.save_frames = False
-        self.switched_configuration = True
-
-        # Data
-        self.training_buffer = ExperienceBuffer(output_location=self.output_location, buffer_size=self.params["exp_buffer_size"])
-        self.frame_buffer = []
-        self.training_times = []
-        self.reward_list = []
-
-        self.last_episodes_prey_caught = []
-        self.last_episodes_predators_avoided = []
-        self.last_episodes_sand_grains_bumped = []
-
-    def load_configuration_files(self):
-        """
-        Called by create_trials method, should return the learning and environment configurations in JSON format.
-        :return:
-        """
-        print("Loading configuration...")
-        configuration_location = f"./Configurations/{self.scaffold_name}/{str(self.configuration_index)}"
-        with open(f"{configuration_location}_learning.json", 'r') as f:
-            params = json.load(f)
-        with open(f"{configuration_location}_env.json", 'r') as f:
-            env = json.load(f)
-        return params, env
-
-    def run(self):
-        """Run the simulation, either loading a checkpoint if there or starting from scratch. If loading, uses the
-        previous checkpoint to set the episode number."""
-
-        print("Running simulation")
-
-        if self.using_gpu:
-            # options = tf.GPUOptions(per_process_gpu_memory_fraction=self.memory_fraction)
-            # config = tf.ConfigProto(gpu_options=options)
-            config = tf.ConfigProto()
-            config.gpu_options.allow_growth = True
+        # Maintain variables
+        if epsilon is not None:
+            self.epsilon = epsilon
         else:
-            config = None
+            self.epsilon = self.learning_params["startE"]
 
-        if config:
-            with tf.Session(config=config) as self.sess:
-                self._run()
-        else:
-            with tf.Session() as self.sess:
-                self._run()
+        self.buffer = ExperienceBuffer(output_location=self.model_location, buffer_size=self.learning_params["exp_buffer_size"])
 
     def _run(self):
-        self.main_QN, self.target_QN = self.create_networks()
-        self.saver = tf.train.Saver(max_to_keep=5)
-        self.init = tf.global_variables_initializer()
-        self.trainables = tf.trainable_variables()
-        self.target_ops = update_target_graph(self.trainables, self.params['tau'])
-        if self.load_model:
-            print(f"Attempting to load model at {self.output_location}")
-            checkpoint = tf.train.get_checkpoint_state(self.output_location)
-            if hasattr(checkpoint, "model_checkpoint_path"):
-                self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
-                print("Loading successful")
+        self.create_network()
+        self.init_states()
+        TrainingService._run(self)
 
-            else:
-                print("No saved checkpoints found, starting from scratch.")
-                self.sess.run(self.init)
 
-            # if self.training_buffer.check_saved():  TODO: Consider adding training buffer
-            #     print("Loading previous training buffer")
-            #     self.training_buffer.load()
-            # else:
-            #     print("No existing training buffer")
-        else:
-            print("First attempt at running model. Starting from scratch.")
-            self.sess.run(self.init)
-
-        update_target(self.target_ops, self.sess)  # Set the target network to be equal to the primary network.
-        self.writer = tf.summary.FileWriter(f"{self.output_location}/logs/", tf.get_default_graph())
-
-        for e_number in range(self.episode_number, self.params["num_episodes"]):
-            self.episode_number = e_number
-            if self.configuration_index < self.total_configurations:
-                self.check_update_configuration()
-            self.episode_loop()
-
-    def switch_configuration(self, next_point):
-        self.configuration_index = int(next_point)
-        self.switched_configuration = True
-        print(f"{self.trial_id}: Changing configuration to configuration {self.configuration_index}")
-        self.params, self.env = self.load_configuration_files()
-        self.simulation = DiscreteNaturalisticEnvironment(self.env, self.realistic_bouts)
-
-    def check_update_configuration(self):
-        # TODO: Will want to tidy this up later.
-        next_point = str(self.configuration_index + 1)
-        episode_transition_points = self.episode_transitions.keys()
-
-        if next_point in episode_transition_points:
-            if self.episode_number > self.episode_transitions[next_point]:
-                self.switch_configuration(next_point)
-                return
-
-        if len(self.last_episodes_prey_caught) >= 20:
-            prey_conditional_transition_points = self.conditional_transitions["Prey Caught"].keys()
-            predators_conditional_transition_points = self.conditional_transitions["Predators Avoided"].keys()
-            grains_bumped_conditional_transfer_points = self.conditional_transitions["Sand Grains Bumped"].keys()
-
-            if next_point in predators_conditional_transition_points:
-                if np.mean(self.last_episodes_predators_avoided) > self.conditional_transitions["Predators Avoided"][next_point]:
-                    self.switch_configuration(next_point)
-                    return
-
-            if next_point in prey_conditional_transition_points:
-                if np.mean(self.last_episodes_prey_caught) > self.conditional_transitions["Prey Caught"][next_point]:
-                    self.switch_configuration(next_point)
-                    return
-
-            if next_point in grains_bumped_conditional_transfer_points:
-                if np.mean(self.last_episodes_sand_grains_bumped) > self.conditional_transitions["Sand Grains Bumped"][next_point]:
-                    self.switch_configuration(next_point)
-                    return
-        self.switched_configuration = False
-
-    def create_networks(self):
-        """
-        Create the main and target Q networks, according to the configuration parameters.
-        :return: The main network and the target network graphs.
-        """
-        print("Creating networks...")
-        internal_states = sum([1 for x in [self.env['hunger'], self.env['stress']] if x is True]) + 1
-        cell = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim'], state_is_tuple=True)
-        cell_t = tf.nn.rnn_cell.LSTMCell(num_units=self.params['rnn_dim'], state_is_tuple=True)
-        main_QN = QNetwork(self.simulation, self.params['rnn_dim'], cell, 'main', self.params['num_actions'], internal_states=internal_states,
-                           learning_rate=self.params['learning_rate'], extra_layer=self.params['extra_rnn'])
-        target_QN = QNetwork(self.simulation, self.params['rnn_dim'], cell_t, 'target', self.params['num_actions'], internal_states=internal_states,
-                             learning_rate=self.params['learning_rate'], extra_layer=self.params['extra_rnn'])
-        return main_QN, target_QN
+        # Print saved metrics
+        # print(f"Total training time: {sum(self.training_times)}")
+        # print(f"Total reward: {sum(self.reward_list)}")
 
     def episode_loop(self):
-        """
-        Loops over an episode, which involves initialisation of the environment and RNN state, then iteration over the
-        steps in the episode. The relevant values are then saved to the experience buffer.
-        """
         t0 = time()
-        episode_buffer = []
+        self.current_episode_max_duration = self.learning_params["max_epLength"]
+        all_actions, total_episode_reward, episode_buffer = BaseDQN.episode_loop(self)
 
-        rnn_state = (np.zeros([1, self.main_QN.rnn_dim]), np.zeros([1, self.main_QN.rnn_dim]))  # Reset RNN hidden state
-        self.simulation.reset()
-        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
-        sv = np.zeros((1, 128))  # Placeholder for the state value stream
-
-        # Take the first simulation step, with a capture action. Assigns observation, reward, internal state, done, and
-        o, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=3,
-                                                                                     frame_buffer=self.frame_buffer,
-                                                                                     save_frames=self.save_frames,
-                                                                                     activations=(sa,))
-
-        # For benchmarking each episode.
-        all_actions = []
-        total_episode_reward = 0  # Total reward over episode
-
-        step_number = 0  # To allow exit after maximum steps.
-        a = 0  # Initialise action for episode.
-        while step_number < self.params["max_epLength"]:
-            step_number += 1
-            o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
-                                                                       a=a, rnn_state=rnn_state)
-            all_actions.append(a)
-            episode_buffer.append(np.reshape(np.array([o, a, r, internal_state, o1, d]), [1, 6]))
-            total_episode_reward += r
-            o = o1
-            if self.total_steps > self.pre_train_steps:
-                if self.e > self.params['endE']:
-                    self.e -= self.step_drop
-                if self.total_steps % (self.params['update_freq']) == 0:
-                    self.train_networks()
-            if d:
-                break
-        # Add the episode to the experience buffer
         self.save_episode(episode_start_t=t0,
                           all_actions=all_actions,
                           total_episode_reward=total_episode_reward,
@@ -283,9 +97,6 @@ class DQNTrainingService:
                           sand_grains_bumped=self.simulation.sand_grains_bumped,
                           steps_near_vegetation=self.simulation.steps_near_vegetation
                           )
-        # Print saved metrics
-        # print(f"Total training time: {sum(self.training_times)}")
-        # print(f"Total reward: {sum(self.reward_list)}")
 
     def save_episode(self, episode_start_t, all_actions, total_episode_reward, episode_buffer, prey_caught,
                      predators_avoided, sand_grains_bumped, steps_near_vegetation):
@@ -299,208 +110,20 @@ class DQNTrainingService:
         :return:
         """
 
-        print(f"{self.trial_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}",
-              flush=True)
+        TrainingService._save_episode(self, episode_start_t, total_episode_reward, prey_caught,
+                                      predators_avoided, sand_grains_bumped, steps_near_vegetation)
 
-        # # Log the average training time for episodes (when not saved)
-        # if not self.save_frames:
-        #     self.training_times.append(time() - episode_start_t)
-        #     print(np.mean(self.training_times))
-
-        # Keep recent predators caught.
-        self.last_episodes_prey_caught.append(prey_caught)
-        self.last_episodes_predators_avoided.append(predators_avoided)
-        self.last_episodes_sand_grains_bumped.append(sand_grains_bumped)
-        if len(self.last_episodes_predators_avoided) > 20:
-            self.last_episodes_prey_caught.pop(0)
-            self.last_episodes_predators_avoided.pop(0)
-            self.last_episodes_sand_grains_bumped.pop(0)
-
-        # Add Summary to Logs
-        episode_summary = tf.Summary(value=[tf.Summary.Value(tag="episode reward", simple_value=total_episode_reward)])
-        self.writer.add_summary(episode_summary, self.total_steps)
-
-        # Raw logs
-        prey_caught_summary = tf.Summary(value=[tf.Summary.Value(tag="prey caught", simple_value=prey_caught)])
-        self.writer.add_summary(prey_caught_summary, self.episode_number)
-
-        predators_avoided_summary = tf.Summary(
-            value=[tf.Summary.Value(tag="predators avoided", simple_value=predators_avoided)])
-        self.writer.add_summary(predators_avoided_summary, self.episode_number)
-
-        sand_grains_bumped_summary = tf.Summary(
-            value=[tf.Summary.Value(tag="attempted sand grain captures", simple_value=sand_grains_bumped)])
-        self.writer.add_summary(sand_grains_bumped_summary, self.episode_number)
-
-        steps_near_vegetation_summary = tf.Summary(
-            value=[tf.Summary.Value(tag="steps near vegetation", simple_value=steps_near_vegetation)])
-        self.writer.add_summary(steps_near_vegetation_summary, self.episode_number)
-
-        # Normalised Logs
-        if self.env["prey_num"] != 0:
-            fraction_prey_caught = prey_caught/self.env["prey_num"]
-            prey_caught_summary = tf.Summary(value=[tf.Summary.Value(tag="prey capture index (fraction caught)", simple_value=fraction_prey_caught)])
-            self.writer.add_summary(prey_caught_summary, self.episode_number)
-
-        if self.env["probability_of_predator"] != 0:
-            predator_avoided_index = predators_avoided/self.env["probability_of_predator"]
-            predators_avoided_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="predator avoidance index (avoided/p_pred)", simple_value=predator_avoided_index)])
-            self.writer.add_summary(predators_avoided_summary, self.episode_number)
-
-        if self.env["sand_grain_num"] != 0:
-            sand_grain_capture_index = sand_grains_bumped/self.env["sand_grain_num"]
-            sand_grains_bumped_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="sand grain capture index (fraction attempted caught)", simple_value=sand_grain_capture_index)])
-            self.writer.add_summary(sand_grains_bumped_summary, self.episode_number)
-
-        if self.env["vegetation_num"] != 0:
-            vegetation_index = (steps_near_vegetation/self.simulation.num_steps)/self.env["vegetation_num"]
-            use_of_vegetation_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="use of vegetation index (fraction_steps/vegetation_num", simple_value=vegetation_index)])
-            self.writer.add_summary(use_of_vegetation_summary, self.episode_number)
-
-        if self.switched_configuration:
-            configuration_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="Configuration change", simple_value=self.configuration_index)]
-            )
-            self.writer.add_summary(configuration_summary, self.episode_number)
-
-        for act in range(self.params['num_actions']):
+        for act in range(self.learning_params['num_actions']):
             action_freq = np.sum(np.array(all_actions) == act) / len(all_actions)
             a_freq = tf.Summary(value=[tf.Summary.Value(tag="action " + str(act), simple_value=action_freq)])
             self.writer.add_summary(a_freq, self.total_steps)
 
         # Save the parameters to be carried over.
-        output_data = {"epsilon": self.e, "episode_number": self.episode_number, "total_steps": self.total_steps}
-        with open(f"{self.output_location}/saved_parameters.json", "w") as file:
+        output_data = {"epsilon": self.epsilon, "episode_number": self.episode_number, "total_steps": self.total_steps}
+        with open(f"{self.model_location}/saved_parameters.json", "w") as file:
             json.dump(output_data, file)
 
         buffer_array = np.array(episode_buffer)
         episode_buffer = list(zip(buffer_array))
-        self.training_buffer.add(episode_buffer)
-        self.reward_list.append(total_episode_reward)
+        self.buffer.add(episode_buffer)
         # Periodically save the model.
-        if self.episode_number % self.params['summaryLength'] == 0 and self.episode_number != 0:
-            # print(f"mean time: {np.mean(self.training_times)}")
-
-            # Save training buffer  TODO: Consider adding training buffer in future
-            # print(f"Saving training buffer for {self.trial_id}")
-            # self.training_buffer.save()
-
-            # Save the model
-            self.saver.save(self.sess, f"{self.output_location}/model-{str(self.episode_number)}.cptk")
-            print("Saved Model")
-
-            # Create the GIF
-            make_gif(self.frame_buffer, f"{self.output_location}/episodes/episode-{str(self.episode_number)}.gif",
-                     duration=len(self.frame_buffer) * self.params['time_per_step'], true_image=True)
-            self.frame_buffer = []
-            self.save_frames = False
-
-        if (self.episode_number + 1) % self.params['summaryLength'] == 0:
-            print('starting to save frames', flush=True)
-            self.save_frames = True
-        if self.monitor_gpu:
-            print(f"GPU usage {os.system('gpustat -cp')}")
-
-    def step_loop(self, o, internal_state, a, rnn_state):
-        """
-        Runs a step, choosing an action given an initial condition using the network/randomly, and running this in the
-        environment.
-
-        :param
-        session: The TF session.
-        internal_state: The internal state of the agent - whether it is in light, and whether it is hungry.
-        a: The previous chosen action.
-        rnn_state: The state inside the RNN.
-
-        :return:
-        s: The environment state.
-        chosen_a: The action chosen randomly/by the network.
-        given_reward: The reward returned.
-        internal_state: The internal state of the agent - whether it is in light, and whether it is hungry.
-        s1: The subsequent environment state
-        d: Boolean indicating agent death.
-        updated_rnn_state: The updated RNN state
-        """
-
-        # Generate actions and corresponding steps.
-        if np.random.rand(1) < self.e or self.total_steps < self.pre_train_steps:
-            [updated_rnn_state, sa, sv] = self.sess.run(
-                [self.main_QN.rnn_state_shared, self.main_QN.streamA, self.main_QN.streamV],
-                feed_dict={self.main_QN.observation: o,
-                           self.main_QN.internal_state: internal_state,
-                           self.main_QN.prev_actions: [a],
-                           self.main_QN.trainLength: 1,
-                           self.main_QN.rnn_state_in: rnn_state,
-                           self.main_QN.batch_size: 1,
-                           self.main_QN.exp_keep: 1.0})
-            chosen_a = np.random.randint(0, self.params['num_actions'])
-        else:
-            chosen_a, updated_rnn_state, sa, sv = self.sess.run(
-                [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.streamA, self.main_QN.streamV],
-                feed_dict={self.main_QN.observation: o,
-                           self.main_QN.internal_state: internal_state,
-                           self.main_QN.prev_actions: [a],
-                           self.main_QN.trainLength: 1,
-                           self.main_QN.rnn_state_in: rnn_state,
-                           self.main_QN.batch_size: 1,
-                           self.main_QN.exp_keep: 1.0})
-            chosen_a = chosen_a[0]
-
-        # Simulation step
-        o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=chosen_a,
-                                                                                                 frame_buffer=self.frame_buffer,
-                                                                                                 save_frames=self.save_frames,
-                                                                                                 activations=(sa,))
-        self.total_steps += 1
-        return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
-
-    def train_networks(self):
-        """
-        Trains the two networks, copying over the target network
-        :return:
-        """
-        update_target(self.target_ops, self.sess)
-        # Reset the recurrent layer's hidden state
-        state_train = (np.zeros([self.params['batch_size'], self.main_QN.rnn_dim]),
-                       np.zeros([self.params['batch_size'], self.main_QN.rnn_dim]))
-
-        # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
-        train_batch = self.training_buffer.sample(self.params['batch_size'], self.params['trace_length'])
-
-        # Below we perform the Double-DQN update to the target Q-values
-        Q1 = self.sess.run(self.main_QN.predict, feed_dict={
-            self.main_QN.observation: np.vstack(train_batch[:, 4]),
-            self.main_QN.prev_actions: np.hstack(([0], train_batch[:-1, 1])),
-            self.main_QN.trainLength: self.params['trace_length'],
-            self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
-            self.main_QN.rnn_state_in: state_train,
-            self.main_QN.batch_size: self.params['batch_size'],
-            self.main_QN.exp_keep: 1.0})
-
-        Q2 = self.sess.run(self.target_QN.Q_out, feed_dict={
-            self.target_QN.observation: np.vstack(train_batch[:, 4]),
-            self.target_QN.prev_actions: np.hstack(([0], train_batch[:-1, 1])),
-            self.target_QN.trainLength: self.params['trace_length'],
-            self.target_QN.internal_state: np.vstack(train_batch[:, 3]),
-            self.target_QN.rnn_state_in: state_train,
-            self.target_QN.batch_size: self.params['batch_size'],
-            self.target_QN.exp_keep: 1.0})
-
-        end_multiplier = -(train_batch[:, 5] - 1)
-
-        double_Q = Q2[range(self.params['batch_size'] * self.params['trace_length']), Q1]
-        target_Q = train_batch[:, 2] + (self.params['y'] * double_Q * end_multiplier)
-        # Update the network with our target values.
-        self.sess.run(self.main_QN.updateModel,
-                      feed_dict={self.main_QN.observation: np.vstack(train_batch[:, 0]),
-                                 self.main_QN.targetQ: target_Q,
-                                 self.main_QN.actions: train_batch[:, 1],
-                                 self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
-                                 self.main_QN.prev_actions: np.hstack(([3], train_batch[:-1, 1])),
-                                 self.main_QN.trainLength: self.params['trace_length'],
-                                 self.main_QN.rnn_state_in: state_train,
-                                 self.main_QN.batch_size: self.params['batch_size'],
-                                 self.main_QN.exp_keep: 1.0})
