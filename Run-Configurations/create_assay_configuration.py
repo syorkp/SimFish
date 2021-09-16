@@ -3942,7 +3942,7 @@ def build_naturalistic_configuration(model_names, naturalistic_config_name, pred
 def build_indiscriminate_ablation_gradient_configuration(model_names, environment, configuration_name):
     configuration = []
     for model in model_names:
-        gradient_conf_list = copy.deepcopy(indiscriminate_ablation_gradient2)  # TODO: Change back
+        gradient_conf_list = copy.deepcopy(indiscriminate_ablation_gradient2)
         for conf in gradient_conf_list:
             conf["Model Name"] = model[:-2]
             conf["Trial Number"] = int(model[-1])

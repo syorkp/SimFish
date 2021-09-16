@@ -26,7 +26,7 @@ class BaseService:
         self.monitor_gpu = monitor_gpu
         self.memory_fraction = memory_fraction
 
-        # Network Parameters
+        # Networks Parameters
         self.saver = None
         self.init = None
         self.sess = None
@@ -52,8 +52,8 @@ class BaseService:
         else:
             self.total_steps = 0
 
-    def run(self):
-        print("Running..")
+    def create_session(self):
+        print("Creating Session..")
         # TODO: Check is not breaking on GPU Usage (old Training and AssayServices did differently.
 
         if self.using_gpu:
@@ -65,14 +65,9 @@ class BaseService:
             config = None
 
         if config:
-            with tf.Session(config=config) as self.sess:
-                self._run()
+            return tf.Session(config=config)
         else:
-            with tf.Session() as self.sess:
-                self._run()
-
-    def _run(self):
-        """Placeholder to be overwritten by subclass."""
+            return tf.Session()
 
     def load_configuration_files(self):
         with open(f"{self.current_configuration_location}_learning.json", 'r') as f:

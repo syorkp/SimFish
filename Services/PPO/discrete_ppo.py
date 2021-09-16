@@ -4,7 +4,7 @@ import numpy as np
 
 import tensorflow.compat.v1 as tf
 
-from Network.proximal_policy_optimizer_discrete import PPONetworkActor
+from Networks.PPO.proximal_policy_optimizer_discrete import PPONetworkActor
 from Services.PPO.base_ppo import BasePPO
 
 tf.disable_v2_behavior()
@@ -32,64 +32,13 @@ class DiscretePPO(BasePPO):
                                              rnn_cell=actor_cell,
                                              my_scope='actor',
                                              internal_states=internal_states,
-                                             max_impulse=self.environment_params['max_impulse'],
-                                             max_angle_change=self.environment_params['max_angle_change'],
                                              clip_param=self.environment_params['clip_param'],
                                              num_actions=self.learning_params['num_actions']
                                              )
 
-    def episode_loop(self):
-        rnn_state_actor = copy.copy(self.init_rnn_state_actor)
-        rnn_state_actor_ref = copy.copy(self.init_rnn_state_actor_ref)
-        rnn_state_critic = copy.copy(self.init_rnn_state_critic)
-        rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
-
-        self.simulation.reset()
-        sa = np.zeros((1, 128))  # Kept for GIFs.
-
-        o, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=0,
-                                                                                     frame_buffer=self.frame_buffer,
-                                                                                     save_frames=self.save_frames,
-                                                                                     activations=(sa,))
-
-        self.total_episode_reward = 0  # Total reward over episode
-
+    def _episode_loop(self, a=None):
         a = 0
-
-        self.buffer.reset()
-        self.buffer.action_buffer.append(a)  # Add to buffer for loading of previous actions
-
-        self.step_number = 0
-        while self.step_number < self.current_episode_max_duration:
-            if self.assay is not None:
-                if self.assay["reset"] and self.step_number % self.assay["reset interval"] == 0:
-                    rnn_state_actor = copy.copy(self.init_rnn_state_actor)
-                    rnn_state_actor_ref = copy.copy(self.init_rnn_state_actor_ref)
-                    rnn_state_critic = copy.copy(self.init_rnn_state_critic)
-                    rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
-
-            self.step_number += 1
-
-            r, internal_state, o, d, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic, rnn_state_critic_ref = self.step_loop(
-                o=o,
-                internal_state=internal_state,
-                a=a,
-                rnn_state_actor=rnn_state_actor,
-                rnn_state_actor_ref=rnn_state_actor_ref,
-                rnn_state_critic=rnn_state_critic,
-                rnn_state_critic_ref=rnn_state_critic_ref
-            )
-
-            self.total_episode_reward += r
-            if d:
-                break
-
-        self.buffer.tidy()
-
-    def step_loop(self, **kwargs):
-        """Placeholder to be overwritten by child class"""
-        # TODO: Possiblly modify so that encoompasses what other step methods do
-        return kwargs
+        super(DiscretePPO, self)._episode_loop(a)
 
     def _assay_step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                          rnn_state_critic_ref):

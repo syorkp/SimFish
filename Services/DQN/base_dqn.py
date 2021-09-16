@@ -1,11 +1,9 @@
-import copy
 import numpy as np
 
 import tensorflow.compat.v1 as tf
 
-from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
-from Network.q_network import QNetwork
-from Tools.graph_functions import update_target_graph, update_target
+from Networks.DQN.q_network import QNetwork
+from Tools.graph_functions import update_target
 
 
 class BaseDQN:
@@ -29,7 +27,7 @@ class BaseDQN:
         self.frame_buffer = None
         self.save_frames = None
 
-        # Network
+        # Networks
         self.main_QN = None
         self.target_QN = None
 

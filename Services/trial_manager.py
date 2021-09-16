@@ -29,7 +29,6 @@ class TrialManager:
         trial_configuration.sort(key=lambda item: item.get("Priority"))
         self.priority_ordered_trials = trial_configuration
 
-        # self.create_configuration_files()  TODO: Possibly add later if makes sense to.
         self.create_output_directories()
 
         self.parallel_jobs = parallel_jobs
@@ -110,23 +109,25 @@ class TrialManager:
                     epsilon = data["epsilon"]
                 total_steps = data["total_steps"]
                 episode_number = data["episode_number"]
+                configuration_index = data["configuration_index"]
         else:
             epsilon = None
             total_steps = None
             episode_number = None
+            configuration_index = None
 
-        return epsilon, total_steps, episode_number
+        return epsilon, total_steps, episode_number, configuration_index
 
-    def get_new_job(self, trial, total_steps, episode_number, memory_fraction, epsilon):
+    def get_new_job(self, trial, total_steps, episode_number, memory_fraction, epsilon, configuration_index):
         if trial["Run Mode"] == "Training":
 
             if trial["Continuous Actions"]:
                 if trial["Learning Algorithm"] == "PPO":
                     new_job = multiprocessing.Process(target=ppo_training_continuous.ppo_training_target_continuous,
-                                                      args=(trial, total_steps, episode_number, memory_fraction))
+                                                      args=(trial, total_steps, episode_number, memory_fraction, configuration_index))
                 elif trial["Learning Algorithm"] == "A2C":
                     new_job = multiprocessing.Process(target=a2c_training.a2c_training_target,
-                                                      args=(trial, total_steps, episode_number, memory_fraction))
+                                                      args=(trial, total_steps, episode_number, memory_fraction, configuration_index))
                 elif trial["Learning Algorithm"] == "DQN":
                     print('Cannot use DQN with continuous actions (training mode)')
                     new_job = None
@@ -137,13 +138,13 @@ class TrialManager:
             else:
                 if trial["Learning Algorithm"] == "PPO":
                     new_job = multiprocessing.Process(target=ppo_training_discrete.ppo_training_target_discrete,
-                                                      args=(trial, total_steps, episode_number, memory_fraction))
+                                                      args=(trial, total_steps, episode_number, memory_fraction, configuration_index))
                 elif trial["Learning Algorithm"] == "A2C":
                     print('Cannot use A2C with discrete actions (training mode)')
                     new_job = None
                 elif trial["Learning Algorithm"] == "DQN":
                     new_job = multiprocessing.Process(target=training.training_target,
-                                                      args=(trial, epsilon, total_steps, episode_number, memory_fraction))
+                                                      args=(trial, epsilon, total_steps, episode_number, memory_fraction, configuration_index))
                 else:
                     print('Invalid "Learning Algorithm" selected with discrete actions (training mode)')
                     new_job = None
@@ -193,7 +194,7 @@ class TrialManager:
             if to_delete is not None:
                 del running_jobs[to_delete]
                 to_delete = None
-            epsilon, total_steps, episode_number = self.get_saved_parameters(trial)
+            epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
             new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon)
             if new_job is not None:
                 running_jobs[str(index)] = new_job

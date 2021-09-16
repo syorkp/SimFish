@@ -7,7 +7,7 @@ import tensorflow.compat.v1 as tf
 
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Environment.controlled_stimulus_environment import ControlledStimulusEnvironment
-from Network.advantage_actor_critic import A2CNetwork
+from Networks.A2C.advantage_actor_critic import A2CNetwork
 from Tools.make_gif import make_gif
 
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -58,7 +58,7 @@ class A2CAssayService:
         self.realistic_bouts = realistic_bouts
         self.memory_fraction = memory_fraction
 
-        # Network Parameters
+        # Networks Parameters
         self.saver = None
         self.a2c_network = None
         self.init = None

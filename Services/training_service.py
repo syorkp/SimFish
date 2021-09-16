@@ -15,10 +15,10 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 
 class TrainingService(BaseService):
-
+    # TODO: Test new configuration savinfg
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_actions, model_exists, episode_transitions,
-                 total_configurations, conditional_transitions, full_logs):
+                 total_configurations, conditional_transitions, configuration_index, full_logs):
 
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                          config_name, realistic_bouts, continuous_actions)
@@ -29,7 +29,10 @@ class TrainingService(BaseService):
         self.total_configurations = total_configurations
         self.episode_transitions = episode_transitions
         self.conditional_transitions = conditional_transitions
-        self.configuration_index = 1  # TODO: Add previous configuration to metadata.
+        if configuration_index is not None:
+            self.configuration_index = configuration_index
+        else:
+            self.configuration_index = 1
         self.switched_configuration = False
         self.current_configuration_location = f"./Configurations/{self.config_name}/{str(self.configuration_index)}"
         self.learning_params, self.environment_params = self.load_configuration_files()
@@ -52,8 +55,6 @@ class TrainingService(BaseService):
         self.last_episodes_prey_caught = []
         self.last_episodes_predators_avoided = []
         self.last_episodes_sand_grains_bumped = []
-
-        # TODO: Step loop log handling
 
     def _run(self):
         self.saver = tf.train.Saver(max_to_keep=5)
@@ -206,7 +207,7 @@ class TrainingService(BaseService):
             self.writer.add_summary(configuration_summary, self.episode_number)
 
         # Save the parameters to be carried over.
-        output_data = {"episode_number": self.episode_number, "total_steps": self.total_steps}
+        output_data = {"episode_number": self.episode_number, "total_steps": self.total_steps, "configuration_index": self.configuration_index}
         with open(f"{self.model_location}/saved_parameters.json", "w") as file:
             json.dump(output_data, file)
 

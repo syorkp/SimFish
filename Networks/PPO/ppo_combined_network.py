@@ -26,7 +26,7 @@ class PPONetwork:
         self.critic_state_in = rnn_cell_critic.zero_state(self.batch_size, tf.float32)
         self.actor_state_in = rnn_cell_actor.zero_state(self.batch_size, tf.float32)
 
-        # Network Inputs
+        # Networks Inputs
         self.prev_actions = tf.placeholder(shape=[None, 2], dtype=tf.float32, name='prev_actions')
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
 

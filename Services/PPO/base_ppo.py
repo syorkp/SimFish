@@ -3,7 +3,7 @@ import numpy as np
 
 import tensorflow.compat.v1 as tf
 
-from Network.proximal_policy_optimizer_critic import PPONetworkCritic
+from Networks.PPO.proximal_policy_optimizer_critic import PPONetworkCritic
 
 
 class BasePPO:
@@ -27,7 +27,7 @@ class BasePPO:
         self.frame_buffer = None
         self.save_frames = None
 
-        # Network
+        # Networks
         self.actor_network = None
         self.critic_network = None
 
@@ -44,7 +44,7 @@ class BasePPO:
         self.init_rnn_state_critic_ref = None
 
     def init_states(self):
-        # Init states for RNN TODO: Check not being changed. MOve to parent
+        # Init states for RNN
         self.init_rnn_state_actor = (
             np.zeros([1, self.actor_network.rnn_dim]),
             np.zeros([1, self.actor_network.rnn_dim]))
@@ -78,10 +78,56 @@ class BasePPO:
                                                rnn_cell=critic_cell,
                                                my_scope='critic',
                                                internal_states=internal_states,
-                                               outputs_per_step=output_dimension
+                                               outputs_per_step=output_dimension,
                                                )
 
         return actor_cell, internal_states
+
+    def _episode_loop(self, a):
+        rnn_state_actor = copy.copy(self.init_rnn_state_actor)
+        rnn_state_actor_ref = copy.copy(self.init_rnn_state_actor_ref)
+        rnn_state_critic = copy.copy(self.init_rnn_state_critic)
+        rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
+
+        self.simulation.reset()
+        sa = np.zeros((1, 128))  # Kept for GIFs.
+
+        o, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=a,
+                                                                                     frame_buffer=self.frame_buffer,
+                                                                                     save_frames=self.save_frames,
+                                                                                     activations=(sa,))
+
+        self.total_episode_reward = 0  # Total reward over episode
+
+        self.buffer.reset()
+        self.buffer.action_buffer.append(a)  # Add to buffer for loading of previous actions
+
+        self.step_number = 0
+        while self.step_number < self.current_episode_max_duration:
+            if self.assay is not None:
+                if self.assay["reset"] and self.step_number % self.assay["reset interval"] == 0:
+                    rnn_state_actor = copy.copy(self.init_rnn_state_actor)
+                    rnn_state_actor_ref = copy.copy(self.init_rnn_state_actor_ref)
+                    rnn_state_critic = copy.copy(self.init_rnn_state_critic)
+                    rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
+
+            self.step_number += 1
+
+            r, internal_state, o, d, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic, rnn_state_critic_ref = self.step_loop(
+                o=o,
+                internal_state=internal_state,
+                a=a,
+                rnn_state_actor=rnn_state_actor,
+                rnn_state_actor_ref=rnn_state_actor_ref,
+                rnn_state_critic=rnn_state_critic,
+                rnn_state_critic_ref=rnn_state_critic_ref
+            )
+
+            self.total_episode_reward += r
+            if d:
+                break
+
+        self.buffer.tidy()
 
     def compute_rnn_states(self, rnn_key_points, observation_buffer, internal_state_buffer, previous_action_buffer):
         num_actions = self.output_dimensions

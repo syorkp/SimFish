@@ -4,8 +4,7 @@ import copy
 
 import tensorflow.compat.v1 as tf
 
-from Buffers.ppo_buffer import PPOBuffer
-from Network.proximal_policy_optimizer_continuous import PPONetworkActor
+from Networks.PPO.proximal_policy_optimizer_continuous import PPONetworkActor
 from Services.PPO.base_ppo import BasePPO
 
 tf.disable_v2_behavior()
@@ -57,64 +56,10 @@ class ContinuousPPO(BasePPO):
         self.angle_sigma = np.array([self.environment_params["max_sigma_angle"] - (
                 self.environment_params["max_sigma_angle"] - self.environment_params["min_sigma_angle"]) * (self.total_steps / 5000000)])
 
-    def episode_loop(self):
-        # TODO: Move to parent
+    def _episode_loop(self, a=None):
         self.update_sigmas()
-
-        rnn_state_actor = copy.copy(self.init_rnn_state_actor)
-        rnn_state_actor_ref = copy.copy(self.init_rnn_state_actor_ref)
-        rnn_state_critic = copy.copy(self.init_rnn_state_critic)
-        rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
-
-        self.simulation.reset()
-        sa = np.zeros((1, 128))  # Kept for GIFs.
-
-        # Take the first simulation step, with a capture action. Assigns observation, reward, internal state, done, and
-        o, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=[4.0, 0.0],
-                                                                                     frame_buffer=self.frame_buffer,
-                                                                                     save_frames=self.save_frames,
-                                                                                     activations=(sa,))
-
-        # For benchmarking each episode.
-        self.total_episode_reward = 0  # Total reward over episode
-
-        a = [4.0, 0.0]  # Initialise action for episode.
-
-        # Reset buffers
-        self.buffer.reset()
-        self.buffer.action_buffer.append(a)  # Add to buffer for loading of previous actions
-
-        self.step_number = 0
-        while self.step_number < self.current_episode_max_duration:
-            if self.assay is not None:
-                if self.assay["reset"] and self.step_number % self.assay["reset interval"] == 0:
-                    rnn_state_actor = copy.copy(self.init_rnn_state_actor)
-                    rnn_state_actor_ref = copy.copy(self.init_rnn_state_actor_ref)
-                    rnn_state_critic = copy.copy(self.init_rnn_state_critic)
-                    rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
-
-            self.step_number += 1
-
-            r, internal_state, o, d, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic, rnn_state_critic_ref = self.step_loop(
-                o=o,
-                internal_state=internal_state,
-                a=a,
-                rnn_state_actor=rnn_state_actor,
-                rnn_state_actor_ref=rnn_state_actor_ref,
-                rnn_state_critic=rnn_state_critic,
-                rnn_state_critic_ref=rnn_state_critic_ref
-            )
-
-            self.total_episode_reward += r
-            if d:
-                break
-
-        self.buffer.tidy()
-
-    def step_loop(self, **kwargs):
-        """Placeholder to be overwritten by child class"""
-        # TODO: Possiblly modify so that encoompasses what other step methods do
-        return kwargs
+        a = [4.0, 0.0]
+        super(ContinuousPPO, self)._episode_loop(a)
 
     def _assay_step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                          rnn_state_critic_ref):
@@ -555,7 +500,7 @@ class ContinuousPPO(BasePPO):
             actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice = self.buffer.get_batch(
                 final_batch)
 
-            # TODO: Move this to experience buffer
+            # Moveed to buffer
             # actor_rnn_state_slice = np.moveaxis(actor_rnn_state_slice, 1, 0).squeeze()[:, 0:1, :]
             # actor_rnn_state_ref_slice = np.moveaxis(actor_rnn_state_ref_slice, 1, 0).squeeze()[:, 0:1, :]
             # critic_rnn_state_slice = np.moveaxis(critic_rnn_state_slice, 1, 0).squeeze()[:, 0:1, :]
@@ -570,7 +515,7 @@ class ContinuousPPO(BasePPO):
             average_loss_impulse = 0
             average_loss_angle = 0
             for i in range(self.learning_params["n_updates_per_iteration"]):
-                # TODO: Recompute initial state
+                # Dont Recompute initial state
                 loss_critic_val, _ = self.sess.run(
                     [self.critic_network.critic_loss, self.critic_network.optimizer],
                     feed_dict={self.critic_network.observation: np.vstack(observation_slice),

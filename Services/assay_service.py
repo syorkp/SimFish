@@ -25,7 +25,6 @@ class AssayService(BaseService):
 
         print("AssayService Constructor called")
 
-
         if set_random_seed:
             np.random.seed(404)
 
@@ -44,11 +43,11 @@ class AssayService(BaseService):
         else:
             self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts)
 
-        # Data TODO: Ensure all are being used.
-        self.metadata = {
-            "Total Episodes": episode_number,
-            "Total Steps": total_steps,
-        }  # TODO: Ideally, get rid of this.
+        # Metadata
+        self.episode_number = episode_number
+        self.total_steps = total_steps
+
+        # Output Data
         self.assay_output_data_format = None
         self.assay_output_data = []
         self.output_data = {}
@@ -58,7 +57,9 @@ class AssayService(BaseService):
         self.last_position_dim = self.environment_params["prey_num"]
         self.stimuli_data = []
 
-        # TODO: Buffer
+        # Placeholders overwritten by child class
+        self.buffer = None
+        self.ppo_version = None
 
     def _run(self):
         self.saver = tf.train.Saver(max_to_keep=5)
@@ -79,7 +80,21 @@ class AssayService(BaseService):
         self.save_episode_data()
 
     def perform_assay(self, assay):
-        """Placeholder to be overwritten by subclass."""
+        self.assay_output_data_format = {key: None for key in assay["recordings"]}
+        self.buffer.recordings = assay["recordings"]
+        self.current_episode_max_duration = assay["duration"]
+
+        self._episode_loop()
+
+        if assay["save frames"]:
+            make_gif(self.frame_buffer,
+                     f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
+                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+        self.frame_buffer = []
+
+        if "reward assessments" in self.buffer.recordings:
+            self.buffer.calculate_advantages_and_returns()
+        self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id)
 
     def create_testing_environment(self, assay):
         """
@@ -97,7 +112,7 @@ class AssayService(BaseService):
                                                             reset_interval=assay["reset interval"],
                                                             background=assay["background"]
                                                             )
-        elif assay["stimulus paradigm"] == "Naturalistic":  # TODO: Check all correct parameters
+        elif assay["stimulus paradigm"] == "Naturalistic":
             if self.continuous_actions:
                 self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
                                                                     collisions=assay["collisions"])
@@ -111,9 +126,10 @@ class AssayService(BaseService):
                 self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts)
 
     def ablate_units(self, unit_indexes):
+        # TODO: Will need to update for new network architecture.
         for unit in unit_indexes:
             if unit < 256:
-                output = self.sess.graph.get_tensor_by_name('mainaw:0')  # TODO: Will need to update for new network architecture.
+                output = self.sess.graph.get_tensor_by_name('mainaw:0')
                 new_tensor = output.eval()
                 new_tensor[unit] = np.array([0 for i in range(10)])
                 self.sess.run(tf.assign(output, new_tensor))
@@ -132,7 +148,6 @@ class AssayService(BaseService):
             sand_grain_positions = [[10000, 10000]]
 
         if self.simulation.prey_bodies:
-            # TODO: Note hacky fix which may want to clean up later.
             prey_positions = [prey.position for prey in self.simulation.prey_bodies]
             prey_positions = [[i[0], i[1]] for i in prey_positions]
             while True:
@@ -183,10 +198,13 @@ class AssayService(BaseService):
         self.stimuli_data = []
 
     def save_metadata(self):
-        # TODO: Different way of getting metadata
-        self.metadata["Assay Date"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        metadata = {
+            "Total Episodes": self.episode_number,
+            "Total Steps": self.total_steps,
+            "Assay Date": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        }
         with open(f"{self.data_save_location}/{self.assay_configuration_id}.json", "w") as output_file:
-            json.dump(self.metadata, output_file)
+            json.dump(metadata, output_file)
 
     def save_assay_results(self, assay):
         """No longer used - saves data in JSON"""

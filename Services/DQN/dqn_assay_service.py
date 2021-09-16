@@ -131,17 +131,6 @@ class DQNAssayService(AssayService, BaseDQN):
             json.dump(self.episode_summary_data, output_file)
         self.episode_summary_data = None
 
-    def save_stimuli_data(self, assay):
-        with open(f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}-stimuli_data.json",
-                  "w") as output_file:
-            json.dump(self.stimuli_data, output_file)
-        self.stimuli_data = []
-
-    def save_metadata(self):
-        self.metadata["Assay Date"] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        with open(f"{self.data_save_location}/{self.assay_configuration_id}.json", "w") as output_file:
-            json.dump(self.metadata, output_file)
-
     def package_output_data(self, observation, rev_observation, action, advantage_stream, rnn_state, rnn2_state,
                             position, prey_consumed, predator_body,
                             conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r,

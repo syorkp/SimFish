@@ -12,7 +12,7 @@ tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
 
 
-def ppo_training_target_discrete(trial, total_steps, episode_number, memory_fraction):
+def ppo_training_target_discrete(trial, total_steps, episode_number, memory_fraction, configuration_index):
     services = PPOTrainingServiceDiscrete(model_name=trial["Model Name"],
                                           trial_number=trial["Trial Number"],
                                           total_steps=total_steps,
@@ -28,6 +28,7 @@ def ppo_training_target_discrete(trial, total_steps, episode_number, memory_frac
                                           episode_transitions=trial["Episode Transitions"],
                                           total_configurations=trial["Total Configurations"],
                                           conditional_transitions=trial["Conditional Transitions"],
+                                          configuration_index=configuration_index,
                                           full_logs=trial["Full Logs"]
                                           )
     services.run()
@@ -37,7 +38,7 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_actions, model_exists, episode_transitions,
-                 total_configurations, conditional_transitions, full_logs):
+                 total_configurations, conditional_transitions, configuration_index, full_logs):
         super().__init__(model_name=model_name, trial_number=trial_number,
                          total_steps=total_steps, episode_number=episode_number,
                          monitor_gpu=monitor_gpu, using_gpu=using_gpu,
@@ -48,23 +49,24 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
                          episode_transitions=episode_transitions,
                          total_configurations=total_configurations,
                          conditional_transitions=conditional_transitions,
+                         configuration_index=configuration_index,
                          full_logs=full_logs)
 
-        self.batch_size = self.learning_params["batch_size"]  # TODO: replace all readings with these
+        self.batch_size = self.learning_params["batch_size"]
         self.trace_length = self.learning_params["trace_length"]
         self.step_drop = (self.learning_params['startE'] - self.learning_params['endE']) / self.learning_params[
             'anneling_steps']
 
         self.buffer = PPOBufferDiscrete(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
                                         train_length=self.learning_params["trace_length"], assay=False, debug=False)
-        # TODO: Update buffer
-        self.e = self.learning_params["startE"]
-        # TODO: Move this to TrainingService
+        # self.e = self.learning_params["startE"]
 
-    def _run(self):
-        self.create_network()
-        self.init_states()
-        TrainingService._run(self)
+    def run(self):
+        sess = self.create_session()
+        with sess as self.sess:
+            self.create_network()
+            self.init_states()
+            TrainingService._run(self)
 
     def episode_loop(self):
         """
@@ -74,11 +76,11 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
         t0 = time()
 
         self.current_episode_max_duration = self.learning_params["max_epLength"]
-        DiscretePPO.episode_loop(self)
+        self._episode_loop()
 
         # Train the network on the episode buffer
         self.buffer.calculate_advantages_and_returns()
-        DiscretePPO.train_network(self)
+        self.train_network()
 
         # Add the episode to tensorflow logs
         self.save_episode(episode_start_t=t0,
@@ -96,15 +98,14 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
 
     def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                   rnn_state_critic_ref):
-        # TODO: Consider moving down...
         if self.full_logs:
-            return DiscretePPO._training_step_loop_full_logs(self, o, internal_state, a, rnn_state_actor,
-                                                             rnn_state_actor_ref, rnn_state_critic,
-                                                             rnn_state_critic_ref)
+            return self._training_step_loop_full_logs(o, internal_state, a, rnn_state_actor,
+                                                      rnn_state_actor_ref, rnn_state_critic,
+                                                      rnn_state_critic_ref)
         else:
-            return DiscretePPO._training_step_loop_reduced_logs(self, o, internal_state, a, rnn_state_actor,
-                                                                rnn_state_actor_ref, rnn_state_critic,
-                                                                rnn_state_critic_ref)
+            return self._training_step_loop_reduced_logs(o, internal_state, a, rnn_state_actor,
+                                                         rnn_state_actor_ref, rnn_state_critic,
+                                                         rnn_state_critic_ref)
 
     def save_episode(self, episode_start_t, total_episode_reward, prey_caught,
                      predators_avoided, sand_grains_bumped, steps_near_vegetation):
@@ -135,46 +136,9 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
                 self.writer.add_summary(critic_loss_summary,
                                         self.total_steps - len(self.buffer.action_buffer) + step * self.learning_params[
                                             "batch_size"])
-
-                # TODO: Save action loss here
-
-            # Saving Parameters for Testing
-            for step in range(0, len(self.buffer.mu_i_buffer)):
-                mu_i_loss_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="mu_impulse", simple_value=self.buffer.mu_i_buffer[step])])
-                self.writer.add_summary(mu_i_loss_summary, self.total_steps - len(self.buffer.mu_i_buffer) + step)
-
-            for step in range(0, len(self.buffer.si_i_buffer)):
-                si_i_loss_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="sigma_impulse", simple_value=self.buffer.si_i_buffer[step])])
-                self.writer.add_summary(si_i_loss_summary, self.total_steps - len(self.buffer.si_i_buffer) + step)
-
-            for step in range(0, len(self.buffer.mu_a_buffer)):
-                mu_a_loss_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="mu_angle", simple_value=self.buffer.mu_a_buffer[step])])
-                self.writer.add_summary(mu_a_loss_summary, self.total_steps - len(self.buffer.mu_a_buffer) + step)
-
-            for step in range(0, len(self.buffer.si_a_buffer)):
-                si_a_loss_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="sigma_angle", simple_value=self.buffer.si_a_buffer[step])])
-                self.writer.add_summary(si_a_loss_summary, self.total_steps - len(self.buffer.si_a_buffer) + step)
-
-            for step in range(0, len(self.buffer.mu1_buffer)):
-                mu1_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="mu_impulse_base", simple_value=self.buffer.mu1_buffer[step])])
-                self.writer.add_summary(mu1_summary, self.total_steps - len(self.buffer.mu1_buffer) + step)
-
-            for step in range(0, len(self.buffer.mu1_ref_buffer)):
-                mu1_ref_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="mu_impulse_ref_base", simple_value=self.buffer.mu1_ref_buffer[step])])
-                self.writer.add_summary(mu1_ref_summary, self.total_steps - len(self.buffer.mu1_ref_buffer) + step)
-
-            for step in range(0, len(self.buffer.mu_a1_buffer)):
-                mu1_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="mu_angle_base", simple_value=self.buffer.mu_a1_buffer[step])])
-                self.writer.add_summary(mu1_summary, self.total_steps - len(self.buffer.mu_a1_buffer) + step)
-
-            for step in range(0, len(self.buffer.mu_a_ref_buffer)):
-                mu1_ref_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="mu_angle_ref_base", simple_value=self.buffer.mu_a_ref_buffer[step])])
-                self.writer.add_summary(mu1_ref_summary, self.total_steps - len(self.buffer.mu_a_ref_buffer) + step)
+            for step in range(0, len(self.buffer.actor_loss_buffer)):
+                actor_loss_summary = tf.Summary(
+                    value=[tf.Summary.Value(tag="critic loss", simple_value=self.buffer.actor_loss_buffer[step])])
+                self.writer.add_summary(actor_loss_summary,
+                                        self.total_steps - len(self.buffer.action_buffer) + step * self.learning_params[
+                                            "batch_size"])

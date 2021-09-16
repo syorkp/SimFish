@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
-from Network.advantage_actor_critic import A2CNetwork
+from Networks.A2C.advantage_actor_critic import A2CNetwork
 from Tools.make_gif import make_gif
 
 tf.disable_v2_behavior()
@@ -77,7 +77,7 @@ class A2CTrainingService:
         else:
             self.total_steps = 0
 
-        # Network and Training Parameters
+        # Networks and Training Parameters
         self.saver = None
         self.writer = None
         self.a2c_network = None

@@ -3,7 +3,7 @@ from time import time
 import numpy as np
 import tensorflow.compat.v1 as tf
 
-from Buffers.ppo_buffer import PPOBuffer
+from Buffers.ppo_buffer_continuous import PPOBufferContinuous
 
 from Services.PPO.continuous_ppo import ContinuousPPO
 from Services.training_service import TrainingService
@@ -12,7 +12,7 @@ tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
 
 
-def ppo_training_target_continuous(trial, total_steps, episode_number, memory_fraction):
+def ppo_training_target_continuous(trial, total_steps, episode_number, memory_fraction, configuration_index):
     services = PPOTrainingServiceContinuous(model_name=trial["Model Name"],
                                             trial_number=trial["Trial Number"],
                                             total_steps=total_steps,
@@ -28,6 +28,7 @@ def ppo_training_target_continuous(trial, total_steps, episode_number, memory_fr
                                             episode_transitions=trial["Episode Transitions"],
                                             total_configurations=trial["Total Configurations"],
                                             conditional_transitions=trial["Conditional Transitions"],
+                                            configuration_index=configuration_index,
                                             full_logs=trial["Full Logs"]
                                             )
     services.run()
@@ -37,7 +38,7 @@ class PPOTrainingServiceContinuous(TrainingService, ContinuousPPO):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_actions, model_exists, episode_transitions,
-                 total_configurations, conditional_transitions, full_logs):
+                 total_configurations, conditional_transitions, configuration_index, full_logs):
         super().__init__(model_name=model_name, trial_number=trial_number,
                          total_steps=total_steps, episode_number=episode_number,
                          monitor_gpu=monitor_gpu, using_gpu=using_gpu,
@@ -48,20 +49,21 @@ class PPOTrainingServiceContinuous(TrainingService, ContinuousPPO):
                          episode_transitions=episode_transitions,
                          total_configurations=total_configurations,
                          conditional_transitions=conditional_transitions,
+                         configuration_index=configuration_index,
                          full_logs=full_logs)
 
-        self.batch_size = self.learning_params["batch_size"]  # TODO: replace all readings with these
+        self.batch_size = self.learning_params["batch_size"]
         self.trace_length = self.learning_params["trace_length"]
 
-        self.buffer = PPOBuffer(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
-                                train_length=self.learning_params["trace_length"], assay=False, debug=False)
+        self.buffer = PPOBufferContinuous(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
+                                          train_length=self.learning_params["trace_length"], assay=False, debug=False)
 
-        # TODO: Move this to TrainingService
-
-    def _run(self):
-        self.create_network()
-        self.init_states()
-        TrainingService._run(self)
+    def run(self):
+        sess = self.create_session()
+        with sess as self.sess:
+            self.create_network()
+            self.init_states()
+            TrainingService._run(self)
 
     def episode_loop(self):
         """
@@ -71,7 +73,7 @@ class PPOTrainingServiceContinuous(TrainingService, ContinuousPPO):
         t0 = time()
 
         self.current_episode_max_duration = self.learning_params["max_epLength"]
-        ContinuousPPO.episode_loop(self)
+        self._episode_loop()
 
         # Train the network on the episode buffer
         self.buffer.calculate_advantages_and_returns()
@@ -93,13 +95,13 @@ Total episode reward: {self.total_episode_reward}\n""")
     def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                   rnn_state_critic_ref):
         if self.full_logs:
-            return ContinuousPPO._training_step_loop_full_logs(self, o, internal_state, a, rnn_state_actor,
-                                                               rnn_state_actor_ref, rnn_state_critic,
-                                                               rnn_state_critic_ref)
+            return self._training_step_loop_full_logs(o, internal_state, a, rnn_state_actor,
+                                                      rnn_state_actor_ref, rnn_state_critic,
+                                                      rnn_state_critic_ref)
         else:
-            return ContinuousPPO._training_step_loop_reduced_logs(self, o, internal_state, a, rnn_state_actor,
-                                                                  rnn_state_actor_ref, rnn_state_critic,
-                                                                  rnn_state_critic_ref)
+            return self._training_step_loop_reduced_logs(o, internal_state, a, rnn_state_actor,
+                                                         rnn_state_actor_ref, rnn_state_critic,
+                                                         rnn_state_critic_ref)
 
     def save_episode(self, episode_start_t, total_episode_reward, prey_caught,
                      predators_avoided, sand_grains_bumped, steps_near_vegetation):

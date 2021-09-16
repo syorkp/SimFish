@@ -3,9 +3,8 @@ import json
 
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
-from Network.q_network import QNetwork
-from Network.advantage_actor_critic import A2CNetwork
-from Network.proximal_policy_optimizer_continuous import PPONetworkActor
+from Networks.A2C.advantage_actor_critic import A2CNetwork
+from Networks.PPO.proximal_policy_optimizer_continuous import PPONetworkActor
 
 tf.disable_v2_behavior()
 

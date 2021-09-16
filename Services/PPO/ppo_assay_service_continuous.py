@@ -1,8 +1,6 @@
-import numpy as np
 import tensorflow.compat.v1 as tf
 
-from Buffers.ppo_buffer import PPOBuffer
-from Tools.make_gif import make_gif
+from Buffers.ppo_buffer_continuous import PPOBufferContinuous
 
 from Services.PPO.continuous_ppo import ContinuousPPO
 from Services.assay_service import AssayService
@@ -44,34 +42,19 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                          assay_config_name=assay_config_name)
 
         # Buffer for saving results of assay
-        self.buffer = PPOBuffer(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
-                                train_length=self.learning_params["trace_length"], assay=True, debug=False)
+        self.buffer = PPOBufferContinuous(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
+                                          train_length=self.learning_params["trace_length"], assay=True, debug=False)
 
-    def _run(self):
-        self.create_network()  # Could also achieve by
-        self.init_states()
-        AssayService._run(self)
+        self.ppo_version = ContinuousPPO
 
-    def perform_assay(self, assay):
-        self.assay_output_data_format = {key: None for key in assay["recordings"]}
-        self.buffer.recordings = assay["recordings"]
-        self.current_episode_max_duration = assay["duration"]
-
-        ContinuousPPO.episode_loop(self)
-
-        if assay["save frames"]:
-            make_gif(self.frame_buffer,
-                     f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
-                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-        self.frame_buffer = []
-
-        if "reward assessments" in self.buffer.recordings:
-            self.buffer.calculate_advantages_and_returns()
-        self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id)
+    def run(self):
+        sess = self.create_session()
+        with sess as self.sess:
+            self.create_network()
+            self.init_states()
+            AssayService._run(self)
 
     def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                   rnn_state_critic_ref):
-        # TODO: Either eliminate or make useful
-        return ContinuousPPO._assay_step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                       rnn_state_critic,
-                                       rnn_state_critic_ref)
+        return self._assay_step_loop(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,rnn_state_critic,
+                                     rnn_state_critic_ref)

@@ -254,7 +254,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         for stimulus in self.unset_stimuli.keys():
             i = int(stimulus.split()[1]) - 1
             if self.num_steps <= init_period:
-                # Network initialisation period
+                # Networks initialisation period
                 if "prey" in stimulus:
                     self.prey_bodies[i].position = (10, 10)
                 elif "predator" in stimulus:

@@ -2,11 +2,9 @@ import tensorflow.compat.v1 as tf
 
 tf.disable_v2_behavior()
 
+class PPONetworkCriticOldContinuous:
 
-class PPONetworkActor:
-
-    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, max_impulse, max_angle_change,
-                 clip_param, num_actions):
+    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, outputs_per_step):
         # Variables
         self.num_arms = len(simulation.fish.left_eye.vis_angles)  # Rays for each eye
         self.rnn_dim = rnn_dim
@@ -17,14 +15,15 @@ class PPONetworkActor:
         self.rnn_state_in = rnn_cell.zero_state(self.trainLength, tf.float32)
         self.rnn_state_in_ref = rnn_cell.zero_state(self.trainLength, tf.float32)
 
-        # Network Inputs
-        self.prev_actions = tf.placeholder(shape=[None, 1], dtype=tf.float32, name='prev_actions')
+        # Networks Inputs
+        self.prev_actions = tf.placeholder(shape=[None, outputs_per_step], dtype=tf.float32, name='prev_actions')
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
 
         self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
-        self.scaler = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='scaler')
+        #self.scaler = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='scaler')
         # self.scaled_obs = tf.divide(self.observation, self.scaler, name="scaled_observation")
         self.scaled_obs = self.observation
+
         self.reshaped_observation = tf.reshape(self.scaled_obs, shape=[-1, self.num_arms, 3, 2],
                                                name="reshaped_observation")
 
@@ -70,10 +69,11 @@ class PPONetworkActor:
                                                             initial_state=self.rnn_state_in, scope=my_scope + '_rnn')
         self.rnn = tf.reshape(self.rnn, shape=[-1, self.rnn_dim], name="shared_rnn_output")
         self.rnn_output = self.rnn
+        self.rnn_state2 = self.rnn_state_shared
 
-        self.action_values = tf.layers.dense(self.rnn_output, num_actions, activation=tf.nn.sigmoid,
-                                             kernel_initializer=tf.orthogonal_initializer,
-                                             name=my_scope + '_action_values', trainable=True)
+        self.Value = tf.layers.dense(self.rnn_output, 1, None,
+                                     kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_Value',
+                                     trainable=True)
 
         #            ----------        Reflected       ---------            #
 
@@ -124,60 +124,25 @@ class PPONetworkActor:
         self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim])
         self.rnn_output_ref = self.rnn_ref
 
-        self.action_values_ref = tf.layers.dense(self.rnn_output_ref, num_actions, activation=tf.nn.sigmoid,
-                                                 kernel_initializer=tf.orthogonal_initializer,
-                                                 name=my_scope + '_action_values', trainable=True, reuse=True)
-        self.action_values_ref = tf.concat([self.action_values_ref[0:, :][:, :1],
-                                            self.action_values_ref[0:, :][:, 2:3],
-                                            self.action_values_ref[0:, :][:, 1:2],
-                                            self.action_values_ref[0:, :][:, 3:4],
-                                            self.action_values_ref[0:, :][:, 5:6],
-                                            self.action_values_ref[0:, :][:, 4:5],
-                                            self.action_values_ref[0:, :][:, 6:7],
-                                            self.action_values_ref[0:, :][:, 8:9],
-                                            self.action_values_ref[0:, :][:, 7:8],
-                                            self.action_values_ref[0:, :][:, 9:]], axis=1)
-
+        self.Value_ref = tf.layers.dense(self.rnn_output_ref, 1, None,
+                                         kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_Value',
+                                         reuse=True, trainable=True)
         #            ----------        Combined       ---------            #
 
-        # Combined Actor impulse output
-        self.action_values_combined = tf.math.divide(tf.add(self.action_values, self.action_values_ref), 2.0,
-                                                     name="Action_values_combined")
-        # Epsilon-greedy
-        # self.action_output = tf.argmax(self.action_values_combined, 1)
-        self.action_probabilities = tf.nn.softmax(self.action_values_combined)  # BS.TL x An
-
-        # Probabilistic.
-        self.action_output = tf.random.categorical(tf.log(self.action_probabilities), 1)  # BS.TL x 1
-        self.batch_indexes = tf.reshape(tf.range(0, self.batch_size*self.trainLength, 1, dtype=tf.int64), [self.batch_size*self.trainLength, 1])
-        self.action_indices = tf.concat([self.batch_indexes, self.action_output], 1)
-
-        self.chosen_action_probability = tf.gather_nd(self.action_probabilities, indices=self.action_indices)
+        self.Value_output = tf.math.divide(tf.math.add(self.Value, self.Value_ref), 2.0, name="value_output")
 
         #            ----------        Loss functions       ---------            #
 
         # Placeholders
-        self.action_placeholder = tf.placeholder(shape=[None, 1], dtype=tf.float32, name='action_placeholder')
+        self.returns_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='returns')
 
-        self.new_log_prob_action = self.chosen_action_probability  # TODO: Check format - may not be log
-        self.old_log_prob_action_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='old_log_prob_angle')
-
-        self.scaled_advantage_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='scaled_advantage')
-
-        # COMBINED LOSS
-
-        self.action_ratio = tf.exp(self.new_log_prob_action - self.old_log_prob_action_placeholder)
-        self.action_surrogate_loss_1 = tf.math.multiply(self.action_ratio, self.scaled_advantage_placeholder)
-        self.action_surrogate_loss_2 = tf.math.multiply(
-            tf.clip_by_value(self.action_ratio, 1 - clip_param, 1 + clip_param), self.scaled_advantage_placeholder)
-        self.action_loss = -tf.reduce_mean(tf.minimum(self.action_surrogate_loss_1, self.action_surrogate_loss_2))
+        self.critic_loss = tf.reduce_mean(
+            tf.squared_difference(tf.squeeze(self.Value_output), self.returns_placeholder))
 
         self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
-        self.optimizer = tf.train.AdamOptimizer(self.learning_rate, name='actor_optimizer_impulse').minimize(
-            self.action_loss)
+        self.optimizer = tf.train.AdamOptimizer(self.learning_rate, name='actor_optimizer_impulse').minimize(self.critic_loss)
 
     @staticmethod
     def bounded_output(x, lower, upper):
         scale = upper - lower
         return scale * tf.nn.sigmoid(x) + lower
-
