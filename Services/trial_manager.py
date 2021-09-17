@@ -195,7 +195,7 @@ class TrialManager:
                 del running_jobs[to_delete]
                 to_delete = None
             epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
-            new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon)
+            new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
             if new_job is not None:
                 running_jobs[str(index)] = new_job
                 running_jobs[str(index)].start()
