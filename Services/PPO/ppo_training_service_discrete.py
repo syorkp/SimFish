@@ -91,8 +91,8 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
                           steps_near_vegetation=self.simulation.steps_near_vegetation,
                           )
 
-        if self.e > self.learning_params['endE']:
-            self.e -= self.step_drop
+        # if self.e > self.learning_params['endE']:
+        #     self.e -= self.step_drop
 
         print(f"""Total episode reward: {self.total_episode_reward}\n""")
 

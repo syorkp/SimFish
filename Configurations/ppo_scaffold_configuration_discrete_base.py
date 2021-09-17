@@ -11,6 +11,7 @@ import os
 # all distances in pixels
 import numpy as np
 
+
 env = {'width': 1500,  # arena size
        'height': 1500,
        'drag': 0.7,  # water drag
@@ -81,7 +82,7 @@ env = {'width': 1500,  # arena size
        'rest_cost': 2,
 
        'capture_swim_extra_cost': 25,
-       'capture_basic_reward': 0.05,
+       'capture_basic_reward': 10000,
        'predator_cost': 100,
 
        'hunger': True,
