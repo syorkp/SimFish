@@ -19,7 +19,7 @@ env = {'width': 1500,  # arena size
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step
 
        'fish_mass': 140.,
-       'fish_mouth_size': 4.,
+       'fish_mouth_size': 10.,
        'fish_head_size': 10.,
        'fish_tail_length': 70.,
        'eyes_verg_angle': 77.,  # in deg
@@ -102,7 +102,7 @@ env = {'width': 1500,  # arena size
 
        # Policy scaffolding
        'reward_distance': 100,
-       'proximity_reward': 0.002,
+       'proximity_reward': 2,
 
        'max_sigma_impulse': 0.4,
        'max_sigma_angle': 0.4,
@@ -116,8 +116,8 @@ env = {'width': 1500,  # arena size
 
 
 params = {'num_actions': 10,  # size of action space
-          'batch_size': 50,  # How many experience traces to use for each training step.
-          'trace_length': 1,  # How long each experience trace will be when training
+          'batch_size': 1,  # How many experience traces to use for each training step.
+          'trace_length': 50,  # How long each experience trace will be when training
           'update_freq': 100,  # How often to perform a training step.
           'y': .99,  # Discount factor on the target Q-values
           'startE': 0.2,  # Starting chance of random action
@@ -139,7 +139,7 @@ params = {'num_actions': 10,  # size of action space
           'rnn_state_computation': False
           }
 
-directory_name = "ppo_discrete"
+directory_name = "ppo_discrete_new"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):

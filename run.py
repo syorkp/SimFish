@@ -172,8 +172,8 @@ dqn_config_test = [
 
 ppo_discrete_training_config = [
     {
-        "Model Name": "ppo_discrete_test_rew",
-        "Environment Name": "ppo_discrete",
+        "Model Name": "ppo_discrete_test_new",
+        "Environment Name": "ppo_discrete_new",
         "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
@@ -196,11 +196,11 @@ ppo_discrete_training_config = [
         "Priority": 2,
         "Using GPU": True,
         "monitor gpu": False,
-        "Full Logs": True,
+        "Full Logs": False,
     },
     {
-        "Model Name": "ppo_discrete_test_rew",
-        "Environment Name": "ppo_discrete",
+        "Model Name": "ppo_discrete_test_new",
+        "Environment Name": "ppo_discrete_new",
         "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
@@ -223,11 +223,11 @@ ppo_discrete_training_config = [
         "Priority": 2,
         "Using GPU": True,
         "monitor gpu": False,
-        "Full Logs": True,
+        "Full Logs": False,
     },
     {
-        "Model Name": "ppo_discrete_test_rew",
-        "Environment Name": "ppo_discrete",
+        "Model Name": "ppo_discrete_test_new",
+        "Environment Name": "ppo_discrete_new",
         "Trial Number": 3,
         "Total Configurations": 3,
         "Episode Transitions": {
@@ -250,7 +250,7 @@ ppo_discrete_training_config = [
         "Priority": 2,
         "Using GPU": True,
         "monitor gpu": False,
-        "Full Logs": True,
+        "Full Logs": False,
     },
 ]
 
