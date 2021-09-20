@@ -12,15 +12,16 @@ To run:
 To view graphs, install tensorboard and run 'tensorboard --logdir="./Output/{trial_directory}/logs"'
 
 Uses the following packages:
-* Tensorflow
-* numpy
-* h5py
-* matplotlin
-* pymunk - must be version 5.7
-* skimage
-* pandas
-* moviepy
-* Cython
+* Tensorflow==2.3.1/1.15.0
+* numpy==1.19.2
+* h5py==2.10.0
+* matplotlib==3.3.2
+* pymunk==5.7 - MUST be version 5.7
+* skimage==0.17.2 - install as "scikit-image"
+* pandas==1.1.4
+* moviepy==1.0.3
+* Cython==0.29.21
+* seaborn==0.11.0
 
 ## Run Configurations
 

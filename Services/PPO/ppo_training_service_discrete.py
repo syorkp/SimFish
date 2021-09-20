@@ -59,7 +59,10 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
 
         self.buffer = PPOBufferDiscrete(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
                                         train_length=self.learning_params["trace_length"], assay=False, debug=False)
-        # self.e = self.learning_params["startE"]
+
+        if self.learning_params["epsilon_greedy"]:
+            self.epsilon_greedy = True
+            self.e = self.learning_params["startE"]
 
     def run(self):
         sess = self.create_session()
@@ -91,8 +94,8 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
                           steps_near_vegetation=self.simulation.steps_near_vegetation,
                           )
 
-        # if self.e > self.learning_params['endE']:
-        #     self.e -= self.step_drop
+        if self.epsilon_greedy and self.e > self.learning_params['endE']:
+            self.e -= self.step_drop
 
         print(f"""Total episode reward: {self.total_episode_reward}\n""")
 

@@ -39,16 +39,18 @@ class PPONetworkActor(BaseNetwork):
         # Combined Actor impulse output
         self.action_values_combined = tf.math.divide(tf.add(self.action_values, self.action_values_ref), 2.0,
                                                      name="Action_values_combined")
-        # Epsilon-greedy
-        # self.action_output = tf.argmax(self.action_values_combined, 1)
         self.action_probabilities = tf.nn.softmax(self.action_values_combined)  # BS.TL x An
 
-        # Probabilistic.
-        self.action_output = tf.random.categorical(tf.log(self.action_probabilities), 1)  # BS.TL x 1
-        self.batch_indexes = tf.reshape(tf.range(0, self.batch_size*self.trainLength, 1, dtype=tf.int64), [self.batch_size*self.trainLength, 1])
-        self.action_indices = tf.concat([self.batch_indexes, self.action_output], 1)
+        # Epsilon-greedy
+        self.action_output = tf.argmax(self.action_values_combined, 1)  # BS.TL
+        self.action_output = tf.reshape(self.action_output, [self.batch_size*self.trainLength, 1])  # BS.TL x 1
 
-        self.chosen_action_probability = tf.gather_nd(self.action_probabilities, indices=self.action_indices)
+        # Probabilistic.
+        # self.action_output = tf.random.categorical(tf.log(self.action_probabilities), 1)  # BS.TL x 1
+
+        self.batch_indexes = tf.reshape(tf.range(0, self.batch_size*self.trainLength, 1, dtype=tf.int64), [self.batch_size*self.trainLength, 1])  # BS.TL x 1
+        self.action_indices = tf.concat([self.batch_indexes, self.action_output], 1)  # BS.TL x 2
+        self.chosen_action_probability = tf.gather_nd(self.action_probabilities, indices=self.action_indices)  # BS.TL
 
         #            ----------        Loss functions       ---------            #
 

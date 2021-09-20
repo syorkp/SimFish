@@ -172,7 +172,7 @@ dqn_config_test = [
 
 ppo_discrete_training_config = [
     {
-        "Model Name": "ppo_discrete_test_new",
+        "Model Name": "ppo_discrete_epsilon",
         "Environment Name": "ppo_discrete_new",
         "Trial Number": 1,
         "Total Configurations": 3,
@@ -199,7 +199,7 @@ ppo_discrete_training_config = [
         "Full Logs": False,
     },
     {
-        "Model Name": "ppo_discrete_test_new",
+        "Model Name": "ppo_discrete_epsilon",
         "Environment Name": "ppo_discrete_new",
         "Trial Number": 2,
         "Total Configurations": 3,
@@ -226,7 +226,7 @@ ppo_discrete_training_config = [
         "Full Logs": False,
     },
     {
-        "Model Name": "ppo_discrete_test_new",
+        "Model Name": "ppo_discrete_epsilon",
         "Environment Name": "ppo_discrete_new",
         "Trial Number": 3,
         "Total Configurations": 3,
