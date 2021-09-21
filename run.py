@@ -174,7 +174,7 @@ ppo_discrete_training_config = [
     {
         "Model Name": "ppo_discrete_epsilon",
         "Environment Name": "ppo_discrete_new",
-        "Trial Number": 1,
+        "Trial Number": 4,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -201,7 +201,7 @@ ppo_discrete_training_config = [
     {
         "Model Name": "ppo_discrete_epsilon",
         "Environment Name": "ppo_discrete_new",
-        "Trial Number": 2,
+        "Trial Number": 5,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -228,7 +228,7 @@ ppo_discrete_training_config = [
     {
         "Model Name": "ppo_discrete_epsilon",
         "Environment Name": "ppo_discrete_new",
-        "Trial Number": 3,
+        "Trial Number": 6,
         "Total Configurations": 3,
         "Episode Transitions": {
         },

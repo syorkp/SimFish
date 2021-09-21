@@ -132,8 +132,8 @@ params = {'num_actions': 10,  # size of action space
           'rnn_dim_shared': 512,  # number of rnn cells
           'extra_rnn': False,
 
-          'learning_rate_actor': 0.000001,
-          'learning_rate_critic': 0.000001,
+          'learning_rate_actor': 0.00002,
+          'learning_rate_critic': 0.00002,
 
           'n_updates_per_iteration': 5,
           'rnn_state_computation': False,

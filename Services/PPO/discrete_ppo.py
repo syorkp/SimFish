@@ -20,6 +20,8 @@ class DiscretePPO(BasePPO):
         self.epsilon_greedy = None
         self.e = None
         self.output_dimensions = 1
+        self.random_count = 0
+        self.chosen_count = 0
 
     def create_network(self):
         """
@@ -88,7 +90,7 @@ class DiscretePPO(BasePPO):
                                                                                                      save_frames=True,
                                                                                                      activations=(sa,))
 
-        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions() # TODO: Modify
+        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()  # TODO: Modify
 
         # Update buffer
         self.buffer.add_training(observation=o,
@@ -121,81 +123,20 @@ class DiscretePPO(BasePPO):
         return given_reward, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, \
                updated_rnn_state_critic, updated_rnn_state_critic_ref
 
-    def _training_step_loop_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
+    def _training_step_loop_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+                                         rnn_state_critic,
                                          rnn_state_critic_ref):
-        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
+        return self._training_step_loop(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
+                                 rnn_state_critic_ref)
 
-        if self.epsilon_greedy:
-
-            action, updated_rnn_state_actor, updated_rnn_state_actor_ref, action_probabilities = self.sess.run(
-                [self.actor_network.action_output, self.actor_network.rnn_state_shared,
-                 self.actor_network.rnn_state_ref, self.actor_network.action_probabilities
-                 ],
-                feed_dict={self.actor_network.observation: o,
-                           self.actor_network.internal_state: internal_state,
-                           self.actor_network.prev_actions: np.reshape(a, (1, 1)),
-                           self.actor_network.rnn_state_in: rnn_state_actor,
-                           self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
-                           self.actor_network.batch_size: 1,
-                           self.actor_network.trainLength: 1,
-                           }
-            )
-            if np.random.rand(1) < self.e:
-                action = np.random.randint(0, self.learning_params['num_actions'])
-            probability = action_probabilities[0][action]
-
-        else:
-            action, updated_rnn_state_actor, updated_rnn_state_actor_ref, probability = self.sess.run(
-                [self.actor_network.action_output, self.actor_network.rnn_state_shared,
-                 self.actor_network.rnn_state_ref, self.actor_network.chosen_action_probability
-                 ],
-                feed_dict={self.actor_network.observation: o,
-                           self.actor_network.internal_state: internal_state,
-                           self.actor_network.prev_actions: np.reshape(a, (1, 1)),
-                           self.actor_network.rnn_state_in: rnn_state_actor,
-                           self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
-                           self.actor_network.batch_size: 1,
-                           self.actor_network.trainLength: 1,
-                           }
-            )
-
-        V, updated_rnn_state_critic, updated_rnn_state_critic_ref = self.sess.run(
-            [self.critic_network.Value_output, self.critic_network.rnn_state_shared,
-             self.critic_network.rnn_state_ref],
-            feed_dict={self.critic_network.observation: o,
-                       self.critic_network.internal_state: internal_state,
-                       self.critic_network.prev_actions: np.reshape(a, (1, 1)),
-                       self.critic_network.rnn_state_in: rnn_state_critic,
-                       self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
-                       self.critic_network.batch_size: 1,
-                       self.critic_network.trainLength: 1,
-                       }
-        )
-
-        # Simulation step
-        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
-            action=action,
-            frame_buffer=self.frame_buffer,
-            save_frames=self.save_frames,
-            activations=sa)
-
-        # Update buffer
-        self.buffer.add_training(observation=o,
-                                 internal_state=internal_state,
-                                 action=action,
-                                 reward=r,
-                                 value=V,
-                                 l_p_action=probability,
-                                 actor_rnn_state=rnn_state_actor,
-                                 actor_rnn_state_ref=rnn_state_actor_ref,
-                                 critic_rnn_state=rnn_state_critic,
-                                 critic_rnn_state_ref=rnn_state_critic_ref,
-                                 )
-        self.total_steps += 1
-        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
-
-    def _training_step_loop_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
+    def _training_step_loop_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+                                      rnn_state_critic,
                                       rnn_state_critic_ref):
+        return self._training_step_loop(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
+                                 rnn_state_critic_ref)
+
+    def _training_step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
+                            rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
 
         if self.epsilon_greedy:
@@ -214,9 +155,14 @@ class DiscretePPO(BasePPO):
                            }
             )
             if np.random.rand(1) < self.e:
+                self.random_count += 1
                 action = np.random.randint(0, self.learning_params['num_actions'])
+            else:
+                self.chosen_count += 1
             probability = action_probabilities[0][action]
 
+            if self.e > self.learning_params['endE']:
+                self.e -= self.step_drop
         else:
             action, updated_rnn_state_actor, updated_rnn_state_actor_ref, probability = self.sess.run(
                 [self.actor_network.action_output, self.actor_network.rnn_state_shared,
@@ -339,8 +285,8 @@ class DiscretePPO(BasePPO):
         previous_action_batch = previous_action_buffer[
                                 batch * self.batch_size: (batch + 1) * self.batch_size]
         log_action_probability_batch = log_action_probability_buffer[
-                                        batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params[
-                                            "batch_size"]]
+                                       batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params[
+                                           "batch_size"]]
         advantage_batch = advantage_buffer[
                           batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
         return_batch = return_buffer[
@@ -352,7 +298,8 @@ class DiscretePPO(BasePPO):
         observation_batch = np.vstack(np.vstack(observation_batch))
         internal_state_batch = np.vstack(np.vstack(internal_state_batch))
         action_batch = np.reshape(action_batch, (action_batch.shape[0] * action_batch.shape[1], 1))
-        previous_action_batch = np.reshape(previous_action_batch, (previous_action_batch.shape[0] * previous_action_batch.shape[1], 1))
+        previous_action_batch = np.reshape(previous_action_batch,
+                                           (previous_action_batch.shape[0] * previous_action_batch.shape[1], 1))
         log_action_probability_batch = log_action_probability_batch.flatten()
         advantage_batch = np.vstack(advantage_batch).flatten()
         return_batch = np.vstack(np.vstack(return_batch)).flatten()

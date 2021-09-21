@@ -206,11 +206,6 @@ class TrainingService(BaseService):
             )
             self.writer.add_summary(configuration_summary, self.episode_number)
 
-        # Save the parameters to be carried over.
-        output_data = {"episode_number": self.episode_number, "total_steps": self.total_steps, "configuration_index": self.configuration_index}
-        with open(f"{self.model_location}/saved_parameters.json", "w") as file:
-            json.dump(output_data, file)
-
         # Periodically save the model.
         if self.episode_number % self.learning_params['summaryLength'] == 0 and self.episode_number != 0:
             # print(f"mean time: {np.mean(self.training_times)}")

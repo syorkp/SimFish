@@ -121,7 +121,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
             self.writer.add_summary(a_freq, self.total_steps)
 
         # Save the parameters to be carried over.
-        output_data = {"epsilon": self.epsilon, "episode_number": self.episode_number, "total_steps": self.total_steps}
+        output_data = {"epsilon": self.epsilon, "episode_number": self.episode_number, "total_steps": self.total_steps, "configuration_index": self.configuration_index}
         with open(f"{self.model_location}/saved_parameters.json", "w") as file:
             json.dump(output_data, file)
 

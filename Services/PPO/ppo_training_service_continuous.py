@@ -1,4 +1,5 @@
 from time import time
+import json
 
 import numpy as np
 import tensorflow.compat.v1 as tf
@@ -112,6 +113,10 @@ Total episode reward: {self.total_episode_reward}\n""")
 
         TrainingService._save_episode(self, episode_start_t, total_episode_reward, prey_caught,
                                       predators_avoided, sand_grains_bumped, steps_near_vegetation)
+
+        output_data = {"episode_number": self.episode_number, "total_steps": self.total_steps, "configuration_index": self.configuration_index}
+        with open(f"{self.model_location}/saved_parameters.json", "w") as file:
+            json.dump(output_data, file)
 
         # Action Summary
         impulses = [action[0] for action in self.buffer.action_buffer]

@@ -1,4 +1,5 @@
 from time import time
+import json
 
 import numpy as np
 import tensorflow.compat.v1 as tf
@@ -94,10 +95,8 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
                           steps_near_vegetation=self.simulation.steps_near_vegetation,
                           )
 
-        if self.epsilon_greedy and self.e > self.learning_params['endE']:
-            self.e -= self.step_drop
-
         print(f"""Total episode reward: {self.total_episode_reward}\n""")
+        print(f"Random: {self.random_count}, Chosen: {self.chosen_count}")
 
     def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                   rnn_state_critic_ref):
@@ -118,6 +117,10 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
 
         TrainingService._save_episode(self, episode_start_t, total_episode_reward, prey_caught,
                                       predators_avoided, sand_grains_bumped, steps_near_vegetation)
+
+        output_data = {"epsilon": self.e, "episode_number": self.episode_number, "total_steps": self.total_steps, "configuration_index": self.configuration_index}
+        with open(f"{self.model_location}/saved_parameters.json", "w") as file:
+            json.dump(output_data, file)
 
         # Action Summary
         for act in range(self.learning_params['num_actions']):
