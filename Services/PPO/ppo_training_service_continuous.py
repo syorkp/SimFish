@@ -5,6 +5,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from Buffers.ppo_buffer_continuous import PPOBufferContinuous
+from Buffers.ppo_buffer_continuous_multivariate import PPOBufferContinuousMultivariate
 
 from Services.PPO.continuous_ppo import ContinuousPPO
 from Services.training_service import TrainingService
@@ -56,8 +57,16 @@ class PPOTrainingServiceContinuous(TrainingService, ContinuousPPO):
         self.batch_size = self.learning_params["batch_size"]
         self.trace_length = self.learning_params["trace_length"]
 
-        self.buffer = PPOBufferContinuous(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
-                                          train_length=self.learning_params["trace_length"], assay=False, debug=False)
+
+        # TODO: Build in as option
+        self.multivariate = True
+
+        if self.multivariate:
+            self.buffer = PPOBufferContinuousMultivariate(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
+                                              train_length=self.learning_params["trace_length"], assay=False, debug=False)
+        else:
+            self.buffer = PPOBufferContinuous(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
+                                              train_length=self.learning_params["trace_length"], assay=False, debug=False)
 
     def run(self):
         sess = self.create_session()
@@ -78,7 +87,10 @@ class PPOTrainingServiceContinuous(TrainingService, ContinuousPPO):
 
         # Train the network on the episode buffer
         self.buffer.calculate_advantages_and_returns()
-        ContinuousPPO.train_network(self)
+        if self.multivariate:
+            ContinuousPPO.train_network_multivariate(self)
+        else:
+            ContinuousPPO.train_network(self)
 
         # Add the episode to tensorflow logs
         self.save_episode(episode_start_t=t0,
@@ -95,6 +107,10 @@ Total episode reward: {self.total_episode_reward}\n""")
 
     def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                   rnn_state_critic_ref):
+        if self.multivariate:
+            return self._training_step_multivariate(o, internal_state, a, rnn_state_actor,
+                                                      rnn_state_actor_ref, rnn_state_critic,
+                                                      rnn_state_critic_ref)
         if self.full_logs:
             return self._training_step_loop_full_logs(o, internal_state, a, rnn_state_actor,
                                                       rnn_state_actor_ref, rnn_state_critic,
