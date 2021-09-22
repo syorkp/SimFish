@@ -20,8 +20,6 @@ class DiscretePPO(BasePPO):
         self.epsilon_greedy = None
         self.e = None
         self.output_dimensions = 1
-        self.random_count = 0
-        self.chosen_count = 0
 
     def create_network(self):
         """
@@ -155,10 +153,7 @@ class DiscretePPO(BasePPO):
                            }
             )
             if np.random.rand(1) < self.e:
-                self.random_count += 1
                 action = np.random.randint(0, self.learning_params['num_actions'])
-            else:
-                self.chosen_count += 1
             probability = action_probabilities[0][action]
 
             if self.e > self.learning_params['endE']:

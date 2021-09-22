@@ -192,18 +192,21 @@ class BasePPO:
             critic_rnn_state_ref_buffer = (
                 np.array(critic_rnn_state_ref_buffer[0]), np.array(critic_rnn_state_ref_buffer[1]))
         else:
-            actor_rnn_state_buffer = (
-                np.zeros([batch_size, self.actor_network.rnn_dim]),
-                np.zeros([batch_size, self.actor_network.rnn_dim]))  # Reset RNN hidden state
-            actor_rnn_state_ref_buffer = (
-                np.zeros([batch_size, self.actor_network.rnn_dim]),
-                np.zeros([batch_size, self.actor_network.rnn_dim]))  # Reset RNN hidden state
-            critic_rnn_state_buffer = (
-                np.zeros([batch_size, self.actor_network.rnn_dim]),
-                np.zeros([batch_size, self.actor_network.rnn_dim]))  # Reset RNN hidden state
-            critic_rnn_state_ref_buffer = (
-                np.zeros([batch_size, self.actor_network.rnn_dim]),
-                np.zeros([batch_size, self.actor_network.rnn_dim]))
+            actor_rnn_state_buffer, actor_rnn_state_ref_buffer, critic_rnn_state_buffer, critic_rnn_state_ref_buffer = \
+                self.buffer.get_rnn_batch(rnn_key_points, batch_size)
+
+            # actor_rnn_state_buffer = (
+            #     np.zeros([batch_size, self.actor_network.rnn_dim]),
+            #     np.zeros([batch_size, self.actor_network.rnn_dim]))  # Reset RNN hidden state
+            # actor_rnn_state_ref_buffer = (
+            #     np.zeros([batch_size, self.actor_network.rnn_dim]),
+            #     np.zeros([batch_size, self.actor_network.rnn_dim]))  # Reset RNN hidden state
+            # critic_rnn_state_buffer = (
+            #     np.zeros([batch_size, self.actor_network.rnn_dim]),
+            #     np.zeros([batch_size, self.actor_network.rnn_dim]))  # Reset RNN hidden state
+            # critic_rnn_state_ref_buffer = (
+            #     np.zeros([batch_size, self.actor_network.rnn_dim]),
+            #     np.zeros([batch_size, self.actor_network.rnn_dim]))
 
         return actor_rnn_state_buffer, actor_rnn_state_ref_buffer, critic_rnn_state_buffer, critic_rnn_state_ref_buffer
 

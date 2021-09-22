@@ -67,10 +67,10 @@ class ContinuousPPO(BasePPO):
         # Linear scale
         self.impulse_sigma = np.array([self.environment_params["max_sigma_impulse"] - (
                 self.environment_params["max_sigma_impulse"] - self.environment_params["min_sigma_impulse"]) * (
-                                                   self.total_steps / 5000000)])
+                                               self.total_steps / 5000000)])
         self.angle_sigma = np.array([self.environment_params["max_sigma_angle"] - (
                 self.environment_params["max_sigma_angle"] - self.environment_params["min_sigma_angle"]) * (
-                                                 self.total_steps / 5000000)])
+                                             self.total_steps / 5000000)])
 
     def _episode_loop(self, a=None):
         self.update_sigmas()
@@ -175,8 +175,8 @@ class ContinuousPPO(BasePPO):
                updated_rnn_state_critic, updated_rnn_state_critic_ref
 
     def _training_step_multivariate(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                         rnn_state_critic,
-                                         rnn_state_critic_ref):
+                                    rnn_state_critic,
+                                    rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
@@ -432,8 +432,9 @@ class ContinuousPPO(BasePPO):
 
         return actor_rnn_state_buffer, actor_rnn_state_ref_buffer, critic_rnn_state_buffer, critic_rnn_state_ref_buffer
 
-    def get_batch_multivariate(self, batch, observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer,
-                  log_action_probability_buffer, advantage_buffer, return_buffer):
+    def get_batch_multivariate(self, batch, observation_buffer, internal_state_buffer, action_buffer,
+                               previous_action_buffer,
+                               log_action_probability_buffer, advantage_buffer, return_buffer):
 
         observation_batch = observation_buffer[
                             batch * self.batch_size: (batch + 1) * self.batch_size]
@@ -444,8 +445,8 @@ class ContinuousPPO(BasePPO):
         previous_action_batch = previous_action_buffer[
                                 batch * self.batch_size: (batch + 1) * self.batch_size]
         log_action_probability_batch = log_action_probability_buffer[
-                                      batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params[
-                                          "batch_size"]]
+                                       batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params[
+                                           "batch_size"]]
         advantage_batch = advantage_buffer[
                           batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
         return_batch = return_buffer[
@@ -457,7 +458,7 @@ class ContinuousPPO(BasePPO):
         observation_batch = np.vstack(np.vstack(observation_batch))
         internal_state_batch = np.vstack(np.vstack(internal_state_batch))
         action_batch = np.reshape(action_batch[:, :, :],
-                                   (self.learning_params["trace_length"] * current_batch_size, 2))
+                                  (self.learning_params["trace_length"] * current_batch_size, 2))
         previous_action_batch = np.vstack(np.vstack(previous_action_batch))
         log_action_probability_batch = log_action_probability_batch.flatten()
         advantage_batch = np.vstack(advantage_batch).flatten()
@@ -690,11 +691,12 @@ class ContinuousPPO(BasePPO):
             # Get the current batch
             observation_batch, internal_state_batch, action_batch, previous_action_batch, \
             log_action_probability_batch, advantage_batch, \
-            return_batch, current_batch_size = self.get_batch_multivariate(batch, observation_buffer, internal_state_buffer,
-                                                              action_buffer, previous_action_buffer,
-                                                              log_action_probability_buffer,
-                                                              advantage_buffer,
-                                                              return_buffer)
+            return_batch, current_batch_size = self.get_batch_multivariate(batch, observation_buffer,
+                                                                           internal_state_buffer,
+                                                                           action_buffer, previous_action_buffer,
+                                                                           log_action_probability_buffer,
+                                                                           advantage_buffer,
+                                                                           return_buffer)
 
             # Loss value logging
             average_loss_value = 0

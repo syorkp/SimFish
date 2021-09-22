@@ -158,6 +158,31 @@ class BasePPOBuffer:
         self.critic_conv3r_buffer.append(critic_conv3r)
         self.critic_conv4r_buffer.append(critic_conv4r)
 
+    def get_rnn_batch(self, key_points, batch_size):
+        actor_rnn_state_batch = []
+        actor_rnn_state_batch_ref = []
+        critic_rnn_state_batch = []
+        critic_rnn_state_batch_ref = []
+
+        for point in key_points:
+            actor_rnn_state_batch.append(self.actor_rnn_state_buffer[point])
+            actor_rnn_state_batch_ref.append(self.actor_rnn_state_ref_buffer[point])
+            critic_rnn_state_batch.append(self.critic_rnn_state_buffer[point])
+            critic_rnn_state_batch_ref.append(self.critic_rnn_state_ref_buffer[point])
+
+        actor_rnn_state_batch = np.reshape(np.array(actor_rnn_state_batch), (batch_size, 2, 512))
+        actor_rnn_state_batch_ref = np.reshape(np.array(actor_rnn_state_batch_ref), (batch_size, 2, 512))
+        critic_rnn_state_batch = np.reshape(np.array(critic_rnn_state_batch), (batch_size, 2, 512))
+        critic_rnn_state_batch_ref = np.reshape(np.array(critic_rnn_state_batch_ref), (batch_size, 2, 512))
+
+        actor_rnn_state_batch = (np.array(actor_rnn_state_batch[:, 0, :]), np.array(actor_rnn_state_batch[:, 1, :]))
+        actor_rnn_state_batch_ref = (np.array(actor_rnn_state_batch_ref[:, 0, :]), np.array(actor_rnn_state_batch_ref[:, 1, :]))
+        critic_rnn_state_batch = (np.array(critic_rnn_state_batch[:, 0, :]), np.array(critic_rnn_state_batch[:, 1, :]))
+        critic_rnn_state_batch_ref = (
+            np.array(critic_rnn_state_batch_ref[:, 0, :]), np.array(critic_rnn_state_batch_ref[:, 1, :]))
+
+        return actor_rnn_state_batch, actor_rnn_state_batch_ref, critic_rnn_state_batch, critic_rnn_state_batch_ref
+
     @staticmethod
     def pad_slice(buffer, desired_length):
         """Zero pads a trace so all are same length"""

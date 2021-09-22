@@ -107,6 +107,22 @@ class Fish:
             self.head.color = [1, 1, 1]
         elif action == 6:   # do nothing:
             reward = -self.env_variables['rest_cost']
+        # TODO: Create actual actions for the below
+        elif action == 7:  # c start right
+            reward = -self.env_variables['j_turn_cost']
+            self.body.angle += self.env_variables['j_turn_dir_change']
+            self.body.apply_impulse_at_local_point((self.env_variables['j_turn_impulse'], 0))
+            self.head.color = [1, 1, 1]
+        elif action == 8:  # c start left
+            reward = -self.env_variables['j_turn_cost']
+            self.body.angle -= self.env_variables['j_turn_dir_change']
+            self.body.apply_impulse_at_local_point((self.env_variables['j_turn_impulse'], 0))
+            self.head.color = [1, 1, 1]
+
+        elif action == 9:  # Approach swim.
+            reward = -self.env_variables['forward_swim_cost']
+            self.body.apply_impulse_at_local_point((self.env_variables['forward_swim_impulse'], 0))
+            self.head.color = (0, 1, 0)
         else:
             reward = None
             print("Invalid action given")

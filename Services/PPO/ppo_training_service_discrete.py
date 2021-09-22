@@ -96,7 +96,6 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
                           )
 
         print(f"""Total episode reward: {self.total_episode_reward}\n""")
-        print(f"Random: {self.random_count}, Chosen: {self.chosen_count}")
 
     def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                   rnn_state_critic_ref):
