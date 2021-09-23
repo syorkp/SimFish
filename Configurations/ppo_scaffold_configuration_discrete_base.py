@@ -139,6 +139,7 @@ params = {'num_actions': 10,  # size of action space
           'rnn_state_computation': False,
 
           'epsilon_greedy': True
+
           }
 
 directory_name = "ppo_discrete_new"

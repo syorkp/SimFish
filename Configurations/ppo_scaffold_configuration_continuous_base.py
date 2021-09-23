@@ -135,11 +135,13 @@ params = {'num_actions': 10,  # size of action space
           'learning_rate_critic': 0.000001,
 
           'n_updates_per_iteration': 5,
-          'rnn_state_computation': False
+          'rnn_state_computation': False,
+
+          'mutivariate': True
           }
 
 
-directory_name = "ppo_continuous"
+directory_name = "ppo_continuous_multivariate"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/{directory_name}/"):

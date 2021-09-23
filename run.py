@@ -452,8 +452,8 @@ ppo_continuous_training_config = [
     #     "Full Logs": True,
     # },
     {
-        "Model Name": "ppo_continuous_bptt",
-        "Environment Name": "ppo_continuous_bptt",
+        "Model Name": "ppo_multivariate",
+        "Environment Name": "ppo_continuous_multivariate",
         "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
@@ -545,5 +545,5 @@ ppo_assay_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_discrete_det_training_config, parallel_jobs=3)
+manager = TrialManager(ppo_continuous_training_config, parallel_jobs=3)
 manager.run_priority_loop()

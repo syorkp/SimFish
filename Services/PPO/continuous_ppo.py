@@ -22,6 +22,7 @@ class ContinuousPPO(BasePPO):
 
         self.impulse_sigma = None
         self.angle_sigma = None
+        self.multivariate = None
 
         self.output_dimensions = 2
 

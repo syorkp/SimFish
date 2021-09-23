@@ -57,9 +57,7 @@ class PPOTrainingServiceContinuous(TrainingService, ContinuousPPO):
         self.batch_size = self.learning_params["batch_size"]
         self.trace_length = self.learning_params["trace_length"]
 
-
-        # TODO: Build in as option
-        self.multivariate = True
+        self.multivariate = self.learning_params["multivariate"]
 
         if self.multivariate:
             self.buffer = PPOBufferContinuousMultivariate(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
