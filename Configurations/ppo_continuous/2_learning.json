@@ -18,5 +18,6 @@
     "learning_rate_actor": 1e-06,
     "learning_rate_critic": 1e-06,
     "n_updates_per_iteration": 5,
-    "rnn_state_computation": false
+    "rnn_state_computation": false,
+    "multivariate": false
 }
