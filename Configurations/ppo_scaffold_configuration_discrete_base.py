@@ -152,7 +152,7 @@ params = {'num_actions': 10,  # size of action space
           'lambda': 0.9
           }
 
-directory_name = "ppo_discrete_new"
+directory_name = "ppo_discrete_gamma_99"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):

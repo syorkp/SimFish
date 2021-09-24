@@ -175,9 +175,12 @@ class ContinuousPPO(BasePPO):
         return given_reward, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, \
                updated_rnn_state_critic, updated_rnn_state_critic_ref
 
-    def _training_step_multivariate(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                    rnn_state_critic,
-                                    rnn_state_critic_ref):
+    def _training_step_loop(self, actor_network_to_get, actor_network_feed_dict):
+        ...
+
+    def _training_step_multivariate_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+                                              rnn_state_critic,
+                                              rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
@@ -238,6 +241,65 @@ class ContinuousPPO(BasePPO):
                                  )
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
 
+        self.total_steps += 1
+        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
+
+    def _training_step_multivariate_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+                                              rnn_state_critic,
+                                              rnn_state_critic_ref):
+        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
+        a = [a[0] / self.environment_params['max_impulse'],
+             a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
+
+        impulse, angle, updated_rnn_state_actor, updated_rnn_state_actor_ref, action_probability = self.sess.run(
+            [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.rnn_state_shared,
+             self.actor_network.rnn_state_ref,
+             self.actor_network.log_prob,
+             ],
+            feed_dict={self.actor_network.observation: o,
+                       self.actor_network.internal_state: internal_state,
+                       self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                       self.actor_network.rnn_state_in: rnn_state_actor,
+                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       self.actor_network.batch_size: 1,
+                       self.actor_network.trainLength: 1,
+                       }
+        )
+
+        V, updated_rnn_state_critic, updated_rnn_state_critic_ref = self.sess.run(
+            [self.critic_network.Value_output, self.critic_network.rnn_state_shared,
+             self.critic_network.rnn_state_ref],
+            feed_dict={self.critic_network.observation: o,
+                       self.critic_network.internal_state: internal_state,
+                       self.critic_network.prev_actions: np.reshape(a, (1, 2)),
+                       self.critic_network.rnn_state_in: rnn_state_critic,
+                       self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
+                       self.critic_network.batch_size: 1,
+                       self.critic_network.trainLength: 1,
+                       }
+        )
+
+        action = [impulse[0][0], angle[0][0]]
+
+        # Simulation step
+        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+            action=action,
+            frame_buffer=self.frame_buffer,
+            save_frames=self.save_frames,
+            activations=sa)
+
+        # Update buffer
+        self.buffer.add_training(observation=o,
+                                 internal_state=internal_state,
+                                 action=action,
+                                 reward=r,
+                                 value=V,
+                                 l_p_action=action_probability,
+                                 actor_rnn_state=rnn_state_actor,
+                                 actor_rnn_state_ref=rnn_state_actor_ref,
+                                 critic_rnn_state=rnn_state_critic,
+                                 critic_rnn_state_ref=rnn_state_critic_ref,
+                                 )
         self.total_steps += 1
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
 
@@ -372,73 +434,6 @@ class ContinuousPPO(BasePPO):
 
         self.total_steps += 1
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
-
-    def compute_rnn_states_old(self, rnn_key_points, observation_buffer, internal_state_buffer, previous_action_buffer):
-        """Gets the RNN states at given points in the trial. Not strictly necessary, but should improve RNN learning
-        versus setting them for zero for each trace."""
-
-        observation_buffer = np.vstack(observation_buffer)
-        internal_state_buffer = np.vstack(internal_state_buffer)
-        previous_action_buffer = np.vstack(previous_action_buffer)
-
-        rnn_state_actor = copy.copy(self.init_rnn_state_actor)
-        rnn_state_actor_ref = copy.copy(self.init_rnn_state_actor_ref)
-        rnn_state_critic = copy.copy(self.init_rnn_state_critic)
-        rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
-
-        actor_rnn_state_buffer = ([rnn_state_actor[0][0]], [rnn_state_actor[1][0]])
-        actor_rnn_state_ref_buffer = ([rnn_state_actor_ref[0][0]], [rnn_state_actor_ref[1][0]])
-        critic_rnn_state_buffer = ([rnn_state_critic[0][0]], [rnn_state_critic[1][0]])
-        critic_rnn_state_ref_buffer = ([rnn_state_critic_ref[0][0]], [rnn_state_critic_ref[1][0]])
-
-        for step in range(max(rnn_key_points)):
-            rnn_state_critic, rnn_state_critic_ref = self.sess.run(
-                [self.critic_network.rnn_state_shared, self.critic_network.rnn_state_ref],
-                feed_dict={self.critic_network.observation: observation_buffer[step],
-                           self.critic_network.prev_actions: previous_action_buffer[step].reshape(1, 2),
-                           self.critic_network.internal_state: internal_state_buffer[step].reshape(1, 2),
-
-                           self.critic_network.rnn_state_in: rnn_state_critic,
-                           self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
-
-                           self.critic_network.trainLength: 1,
-                           self.critic_network.batch_size: 1,
-                           })
-            rnn_state_actor, rnn_state_actor_ref = self.sess.run(
-                [self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref],
-                feed_dict={self.actor_network.observation: observation_buffer[step],
-                           self.actor_network.prev_actions: previous_action_buffer[step].reshape(1, 2),
-                           self.actor_network.internal_state: internal_state_buffer[step].reshape(1, 2),
-
-                           self.actor_network.rnn_state_in: rnn_state_actor,
-                           self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
-
-                           self.actor_network.sigma_impulse_combined: self.impulse_sigma,
-                           self.actor_network.sigma_angle_combined: self.angle_sigma,
-
-                           self.actor_network.trainLength: 1,
-                           self.actor_network.batch_size: 1,
-                           })
-            if step - 1 in rnn_key_points:
-                actor_rnn_state_buffer[0].append(rnn_state_actor[0][0])
-                actor_rnn_state_buffer[1].append(rnn_state_actor[1][0])
-
-                actor_rnn_state_ref_buffer[0].append(rnn_state_actor_ref[0][0])
-                actor_rnn_state_ref_buffer[1].append(rnn_state_actor_ref[1][0])
-
-                critic_rnn_state_buffer[0].append(rnn_state_critic[0][0])
-                critic_rnn_state_buffer[1].append(rnn_state_critic[1][0])
-
-                critic_rnn_state_ref_buffer[0].append(rnn_state_critic_ref[0][0])
-                critic_rnn_state_ref_buffer[1].append(rnn_state_critic_ref[1][0])
-
-        actor_rnn_state_buffer = (np.array(actor_rnn_state_buffer[0]), np.array(actor_rnn_state_buffer[1]))
-        actor_rnn_state_ref_buffer = (np.array(actor_rnn_state_ref_buffer[0]), np.array(actor_rnn_state_ref_buffer[1]))
-        critic_rnn_state_buffer = (np.array(critic_rnn_state_buffer[0]), np.array(critic_rnn_state_buffer[1]))
-        critic_rnn_state_ref_buffer = (
-            np.array(critic_rnn_state_ref_buffer[0]), np.array(critic_rnn_state_ref_buffer[1]))
-
-        return actor_rnn_state_buffer, actor_rnn_state_ref_buffer, critic_rnn_state_buffer, critic_rnn_state_ref_buffer
 
     def get_batch_multivariate(self, batch, observation_buffer, internal_state_buffer, action_buffer,
                                previous_action_buffer,
@@ -606,82 +601,6 @@ class ContinuousPPO(BasePPO):
                                  average_loss_angle / self.learning_params["n_updates_per_iteration"],
                                  average_loss_value / self.learning_params["n_updates_per_iteration"])
 
-    def old_training(self):
-        number_of_batches = 5
-        for batch in range(number_of_batches):
-            if batch == number_of_batches - 1:
-                final_batch = True
-                current_batch_size = len(self.buffer.return_buffer) - self.buffer.pointer
-
-            else:
-                final_batch = False
-                current_batch_size = self.learning_params["batch_size"]
-            observation_slice, internal_state_slice, action_slice, previous_action_slice, reward_slice, value_slice, \
-            log_impulse_probability_slice, log_angle_probability_slice, advantage_slice, return_slice, \
-            actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice = self.buffer.get_batch(
-                final_batch)
-
-            # Moveed to buffer
-            # actor_rnn_state_slice = np.moveaxis(actor_rnn_state_slice, 1, 0).squeeze()[:, 0:1, :]
-            # actor_rnn_state_ref_slice = np.moveaxis(actor_rnn_state_ref_slice, 1, 0).squeeze()[:, 0:1, :]
-            # critic_rnn_state_slice = np.moveaxis(critic_rnn_state_slice, 1, 0).squeeze()[:, 0:1, :]
-            # critic_rnn_state_ref_slice = np.moveaxis(critic_rnn_state_ref_slice, 1, 0).squeeze()[:, 0:1, :]
-            #
-            # actor_rnn_state_slice = (actor_rnn_state_slice[0], actor_rnn_state_slice[1])
-            # actor_rnn_state_ref_slice = (actor_rnn_state_ref_slice[0], actor_rnn_state_ref_slice[1])
-            # critic_rnn_state_slice = (critic_rnn_state_slice[0], critic_rnn_state_slice[1])
-            # critic_rnn_state_ref_slice = (critic_rnn_state_ref_slice[0], critic_rnn_state_ref_slice[1])
-
-            average_loss_value = 0
-            average_loss_impulse = 0
-            average_loss_angle = 0
-            for i in range(self.learning_params["n_updates_per_iteration"]):
-                # Dont Recompute initial state
-                loss_critic_val, _ = self.sess.run(
-                    [self.critic_network.critic_loss, self.critic_network.optimizer],
-                    feed_dict={self.critic_network.observation: np.vstack(observation_slice),
-                               # self.critic_network.scaler: np.full(np.vstack(observation_slice).shape, 255),
-                               self.critic_network.prev_actions: np.vstack(previous_action_slice),
-                               self.critic_network.internal_state: np.vstack(internal_state_slice),
-                               self.critic_network.rnn_state_in: critic_rnn_state_slice,
-                               self.critic_network.rnn_state_in_ref: critic_rnn_state_ref_slice,
-
-                               self.critic_network.returns_placeholder: np.vstack(return_slice).flatten(),
-
-                               self.critic_network.trainLength: current_batch_size,
-                               self.critic_network.batch_size: 1,
-                               })
-
-                loss_actor_val_impulse, loss_actor_val_angle, _ = self.sess.run(
-                    [self.actor_network.impulse_loss, self.actor_network.angle_loss,
-                     self.actor_network.optimizer],
-                    feed_dict={self.actor_network.observation: np.vstack(observation_slice),
-                               # self.actor_network.scaler: np.full(np.vstack(observation_slice).shape, 255),
-                               self.actor_network.prev_actions: np.vstack(previous_action_slice),
-                               self.actor_network.internal_state: np.vstack(internal_state_slice),
-                               self.actor_network.rnn_state_in: actor_rnn_state_slice,
-                               self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
-                               self.actor_network.sigma_impulse_combined: self.impulse_sigma,
-                               self.actor_network.sigma_angle_combined: self.angle_sigma,
-
-                               self.actor_network.impulse_placeholder: np.vstack(action_slice[:, 0]),
-                               self.actor_network.angle_placeholder: np.vstack(action_slice[:, 1]),
-                               self.actor_network.old_log_prob_impulse_placeholder: log_impulse_probability_slice.flatten(),
-                               self.actor_network.old_log_prob_angle_placeholder: log_angle_probability_slice.flatten(),
-                               self.actor_network.scaled_advantage_placeholder: np.vstack(advantage_slice).flatten(),
-
-                               self.actor_network.trainLength: current_batch_size,
-                               self.actor_network.batch_size: 1,
-                               })
-
-                average_loss_impulse += np.mean(np.abs(loss_actor_val_impulse))
-                average_loss_angle += np.mean(np.abs(loss_actor_val_angle))
-                average_loss_value += np.abs(loss_critic_val)
-
-            self.buffer.add_loss(average_loss_impulse / self.learning_params["n_updates_per_iteration"],
-                                 average_loss_angle / self.learning_params["n_updates_per_iteration"],
-                                 average_loss_value / self.learning_params["n_updates_per_iteration"])
-
     def train_network_multivariate(self):
         observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
         log_action_probability_buffer, advantage_buffer, return_buffer, \
@@ -768,3 +687,80 @@ class ContinuousPPO(BasePPO):
             self.buffer.add_loss(average_loss_impulse / self.learning_params["n_updates_per_iteration"],
                                  average_loss_angle / self.learning_params["n_updates_per_iteration"],
                                  average_loss_value / self.learning_params["n_updates_per_iteration"])
+
+    def old_training(self):
+        number_of_batches = 5
+        for batch in range(number_of_batches):
+            if batch == number_of_batches - 1:
+                final_batch = True
+                current_batch_size = len(self.buffer.return_buffer) - self.buffer.pointer
+
+            else:
+                final_batch = False
+                current_batch_size = self.learning_params["batch_size"]
+            observation_slice, internal_state_slice, action_slice, previous_action_slice, reward_slice, value_slice, \
+            log_impulse_probability_slice, log_angle_probability_slice, advantage_slice, return_slice, \
+            actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice = self.buffer.get_batch(
+                final_batch)
+
+            # Moveed to buffer
+            # actor_rnn_state_slice = np.moveaxis(actor_rnn_state_slice, 1, 0).squeeze()[:, 0:1, :]
+            # actor_rnn_state_ref_slice = np.moveaxis(actor_rnn_state_ref_slice, 1, 0).squeeze()[:, 0:1, :]
+            # critic_rnn_state_slice = np.moveaxis(critic_rnn_state_slice, 1, 0).squeeze()[:, 0:1, :]
+            # critic_rnn_state_ref_slice = np.moveaxis(critic_rnn_state_ref_slice, 1, 0).squeeze()[:, 0:1, :]
+            #
+            # actor_rnn_state_slice = (actor_rnn_state_slice[0], actor_rnn_state_slice[1])
+            # actor_rnn_state_ref_slice = (actor_rnn_state_ref_slice[0], actor_rnn_state_ref_slice[1])
+            # critic_rnn_state_slice = (critic_rnn_state_slice[0], critic_rnn_state_slice[1])
+            # critic_rnn_state_ref_slice = (critic_rnn_state_ref_slice[0], critic_rnn_state_ref_slice[1])
+
+            average_loss_value = 0
+            average_loss_impulse = 0
+            average_loss_angle = 0
+            for i in range(self.learning_params["n_updates_per_iteration"]):
+                # Dont Recompute initial state
+                loss_critic_val, _ = self.sess.run(
+                    [self.critic_network.critic_loss, self.critic_network.optimizer],
+                    feed_dict={self.critic_network.observation: np.vstack(observation_slice),
+                               # self.critic_network.scaler: np.full(np.vstack(observation_slice).shape, 255),
+                               self.critic_network.prev_actions: np.vstack(previous_action_slice),
+                               self.critic_network.internal_state: np.vstack(internal_state_slice),
+                               self.critic_network.rnn_state_in: critic_rnn_state_slice,
+                               self.critic_network.rnn_state_in_ref: critic_rnn_state_ref_slice,
+
+                               self.critic_network.returns_placeholder: np.vstack(return_slice).flatten(),
+
+                               self.critic_network.trainLength: current_batch_size,
+                               self.critic_network.batch_size: 1,
+                               })
+
+                loss_actor_val_impulse, loss_actor_val_angle, _ = self.sess.run(
+                    [self.actor_network.impulse_loss, self.actor_network.angle_loss,
+                     self.actor_network.optimizer],
+                    feed_dict={self.actor_network.observation: np.vstack(observation_slice),
+                               # self.actor_network.scaler: np.full(np.vstack(observation_slice).shape, 255),
+                               self.actor_network.prev_actions: np.vstack(previous_action_slice),
+                               self.actor_network.internal_state: np.vstack(internal_state_slice),
+                               self.actor_network.rnn_state_in: actor_rnn_state_slice,
+                               self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
+                               self.actor_network.sigma_impulse_combined: self.impulse_sigma,
+                               self.actor_network.sigma_angle_combined: self.angle_sigma,
+
+                               self.actor_network.impulse_placeholder: np.vstack(action_slice[:, 0]),
+                               self.actor_network.angle_placeholder: np.vstack(action_slice[:, 1]),
+                               self.actor_network.old_log_prob_impulse_placeholder: log_impulse_probability_slice.flatten(),
+                               self.actor_network.old_log_prob_angle_placeholder: log_angle_probability_slice.flatten(),
+                               self.actor_network.scaled_advantage_placeholder: np.vstack(advantage_slice).flatten(),
+
+                               self.actor_network.trainLength: current_batch_size,
+                               self.actor_network.batch_size: 1,
+                               })
+
+                average_loss_impulse += np.mean(np.abs(loss_actor_val_impulse))
+                average_loss_angle += np.mean(np.abs(loss_actor_val_angle))
+                average_loss_value += np.abs(loss_critic_val)
+
+            self.buffer.add_loss(average_loss_impulse / self.learning_params["n_updates_per_iteration"],
+                                 average_loss_angle / self.learning_params["n_updates_per_iteration"],
+                                 average_loss_value / self.learning_params["n_updates_per_iteration"])
+

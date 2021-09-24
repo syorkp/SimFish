@@ -137,13 +137,13 @@ params = {'num_actions': 10,  # size of action space
           'n_updates_per_iteration': 5,
           'rnn_state_computation': False,
 
-          'multivariate': True,
-          'gamma': 0.9,
+          'multivariate': False,
+          'gamma': 0.99,
           'lambda': 0.9
           }
 
 
-directory_name = "ppo_continuous_multivariate"
+directory_name = "ppo_continuous_gamma_99"
 
 # Ensure Output File Exists
 # Ensure Output File Exists

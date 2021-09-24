@@ -106,17 +106,23 @@ Total episode reward: {self.total_episode_reward}\n""")
     def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                   rnn_state_critic_ref):
         if self.multivariate:
-            return self._training_step_multivariate(o, internal_state, a, rnn_state_actor,
-                                                      rnn_state_actor_ref, rnn_state_critic,
-                                                      rnn_state_critic_ref)
-        if self.full_logs:
-            return self._training_step_loop_full_logs(o, internal_state, a, rnn_state_actor,
-                                                      rnn_state_actor_ref, rnn_state_critic,
-                                                      rnn_state_critic_ref)
+            if self.full_logs:
+                return self._training_step_multivariate_full_logs(o, internal_state, a, rnn_state_actor,
+                                                                  rnn_state_actor_ref, rnn_state_critic,
+                                                                  rnn_state_critic_ref)
+            else:
+                return self._training_step_multivariate_reduced_logs(o, internal_state, a, rnn_state_actor,
+                                                                     rnn_state_actor_ref, rnn_state_critic,
+                                                                     rnn_state_critic_ref)
         else:
-            return self._training_step_loop_reduced_logs(o, internal_state, a, rnn_state_actor,
-                                                         rnn_state_actor_ref, rnn_state_critic,
-                                                         rnn_state_critic_ref)
+            if self.full_logs:
+                return self._training_step_loop_full_logs(o, internal_state, a, rnn_state_actor,
+                                                          rnn_state_actor_ref, rnn_state_critic,
+                                                          rnn_state_critic_ref)
+            else:
+                return self._training_step_loop_reduced_logs(o, internal_state, a, rnn_state_actor,
+                                                             rnn_state_actor_ref, rnn_state_critic,
+                                                             rnn_state_critic_ref)
 
     def save_episode(self, episode_start_t, total_episode_reward, prey_caught,
                      predators_avoided, sand_grains_bumped, steps_near_vegetation):
