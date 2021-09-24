@@ -182,12 +182,15 @@ class ContinuousPPO(BasePPO):
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
 
-        impulse, angle, updated_rnn_state_actor, updated_rnn_state_actor_ref, action_probability, mu_i, mu_a, si_i, si_a = self.sess.run(
+        impulse, angle, updated_rnn_state_actor, updated_rnn_state_actor_ref, action_probability, mu_i, si_i, mu_a, \
+        si_a, mu1, mu1_ref, mu_a1, mu_a_ref = self.sess.run(
             [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.rnn_state_shared,
              self.actor_network.rnn_state_ref,
              self.actor_network.log_prob,
-             self.actor_network.mu_impulse_combined, self.actor_network.mu_angle_combined,
-             self.actor_network.sigma_impulse_combined, self.actor_network.sigma_angle_combined,
+             self.actor_network.mu_impulse_combined, self.actor_network.sigma_impulse_combined,
+             self.actor_network.mu_angle_combined,
+             self.actor_network.sigma_angle_combined, self.actor_network.mu_impulse, self.actor_network.mu_impulse_ref,
+             self.actor_network.mu_angle, self.actor_network.mu_angle_ref
              ],
             feed_dict={self.actor_network.observation: o,
                        self.actor_network.internal_state: internal_state,
@@ -233,6 +236,8 @@ class ContinuousPPO(BasePPO):
                                  critic_rnn_state=rnn_state_critic,
                                  critic_rnn_state_ref=rnn_state_critic_ref,
                                  )
+        self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
+
         self.total_steps += 1
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
 

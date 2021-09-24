@@ -34,7 +34,7 @@ class TrainingService(BaseService):
         else:
             self.configuration_index = 1
         self.switched_configuration = False
-        self.current_configuration_location = f"./Configurations/{self.config_name}/{str(self.configuration_index)}"
+        self.current_configuration_location = f"./Configurations/Training-Configs/{self.config_name}/{str(self.configuration_index)}"
         self.learning_params, self.environment_params = self.load_configuration_files()
 
         # Training Parameters
@@ -122,7 +122,7 @@ class TrainingService(BaseService):
             self.configuration_index = int(next_point)
             self.switched_configuration = True
             print(f"{self.model_id}: Changing configuration to configuration {self.configuration_index}")
-            self.current_configuration_location = f"./Configurations/{self.config_name}/{str(self.configuration_index)}"
+            self.current_configuration_location = f"./Configurations/Training-Configs/{self.config_name}/{str(self.configuration_index)}"
             self.learning_params, self.environment_params = self.load_configuration_files()
             self.create_environment()
         else:

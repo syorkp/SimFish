@@ -180,11 +180,41 @@ ppo_discrete_training_config = [
     },
 ]
 
+test_config = [
+    {
+        "Model Name": "test_config",
+        "Environment Name": "ppo_continuous_multivariate",
+        "Trial Number": 1,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 6,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+    },
+]
+
 ppo_continuous_multivariate_test_config = [
     {
-        "Model Name": "ppo_continuous_multivariate",
+        "Model Name": "ppo_continuous_multivariate_full_logs",
         "Environment Name": "ppo_continuous_multivariate",
-        "Trial Number": 4,
+        "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -209,9 +239,9 @@ ppo_continuous_multivariate_test_config = [
         "Full Logs": True,
     },
     {
-        "Model Name": "ppo_continuous_multivariate",
+        "Model Name": "ppo_continuous_multivariate_full_logs",
         "Environment Name": "ppo_continuous_bptt",
-        "Trial Number": 5,
+        "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -236,9 +266,9 @@ ppo_continuous_multivariate_test_config = [
         "Full Logs": True,
     },
     {
-        "Model Name": "ppo_continuous_multivariate",
+        "Model Name": "ppo_continuous_multivariate_full_logs",
         "Environment Name": "ppo_continuous_bptt",
-        "Trial Number": 6,
+        "Trial Number": 3,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
