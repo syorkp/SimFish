@@ -17,8 +17,11 @@ class DiscretePPO(BasePPO):
         super().__init__()
         self.continuous = False
 
+        # Placeholders
         self.epsilon_greedy = None
         self.e = None
+        self.step_drop = None
+
         self.output_dimensions = 1
 
     def create_network(self):
@@ -34,7 +37,8 @@ class DiscretePPO(BasePPO):
                                              my_scope='actor',
                                              internal_states=internal_states,
                                              clip_param=self.environment_params['clip_param'],
-                                             num_actions=self.learning_params['num_actions']
+                                             num_actions=self.learning_params['num_actions'],
+                                             epsilon_greedy=self.epsilon_greedy
                                              )
 
     def _episode_loop(self, a=None):

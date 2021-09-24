@@ -172,7 +172,7 @@ dqn_config_test = [
 
 ppo_discrete_det_training_config = [
     {
-        "Model Name": "ppo_discrete_deterministic",
+        "Model Name": "ppo_discrete_deterministic_new",
         "Environment Name": "ppo_discrete_new",
         "Trial Number": 1,
         "Total Configurations": 3,
@@ -199,7 +199,7 @@ ppo_discrete_det_training_config = [
         "Full Logs": False,
     },
     {
-        "Model Name": "ppo_discrete_deterministic",
+        "Model Name": "ppo_discrete_deterministic_new",
         "Environment Name": "ppo_discrete_new",
         "Trial Number": 2,
         "Total Configurations": 3,
@@ -226,7 +226,7 @@ ppo_discrete_det_training_config = [
         "Full Logs": False,
     },
     {
-        "Model Name": "ppo_discrete_deterministic",
+        "Model Name": "ppo_discrete_deterministic_new",
         "Environment Name": "ppo_discrete_new",
         "Trial Number": 3,
         "Total Configurations": 3,
@@ -545,5 +545,5 @@ ppo_assay_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_continuous_training_config, parallel_jobs=3)
+manager = TrialManager(ppo_discrete_det_training_config, parallel_jobs=3)
 manager.run_priority_loop()

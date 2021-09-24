@@ -69,19 +69,27 @@ env = {'width': 1500,  # arena size
        'dark_gain': 0.02,  # gai nof brightness in the dark side
        'light_gain': 1.,  # gain of brightness in the bright side
 
-       'forward_swim_cost': 3,
+       # 'forward_swim_cost': 3,
+       # 'routine_turn_cost': 3,
+       # 'capture_swim_cost': 5,
+       # 'j_turn_cost': 2.5,
+       # 'rest_cost': 2,
+       # 'capture_swim_extra_cost': 25,
+
+       'forward_swim_cost': 0,
+       'routine_turn_cost': 0,
+       'capture_swim_cost': 0,
+       'j_turn_cost': 0,
+       'rest_cost': 0,
+       'capture_swim_extra_cost': 0,
+
        'forward_swim_impulse': 10,
-       'routine_turn_cost': 3,
        'routine_turn_impulse': 5,
        'routine_turn_dir_change': 0.6,
-       'capture_swim_cost': 5,
        'capture_swim_impulse': 5,
-       'j_turn_cost': 2.5,
        'j_turn_impulse': 0.1,
        'j_turn_dir_change': 0.07,
-       'rest_cost': 2,
 
-       'capture_swim_extra_cost': 25,
        'capture_basic_reward': 10000,
        'predator_cost': 100,
 
@@ -138,7 +146,7 @@ params = {'num_actions': 10,  # size of action space
           'n_updates_per_iteration': 5,
           'rnn_state_computation': False,
 
-          'epsilon_greedy': True
+          'epsilon_greedy': False
 
           }
 
