@@ -136,16 +136,16 @@ params = {'num_actions': 10,  # size of action space
 directory_name = "continuous_learning_scaffold"
 
 # Ensure Output File Exists
-if not os.path.exists(f"Configurations/{directory_name}/"):
-    os.makedirs(f"Configurations/{directory_name}/")
+if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):
+    os.makedirs(f"Configurations/Training-Configs/{directory_name}/")
 
 
 # Equal to that given in the file name.
 def save_files(n):
-    with open(f"Configurations/{directory_name}/{str(n)}_env.json", 'w') as f:
+    with open(f"Configurations/Training-Configs/{directory_name}/{str(n)}_env.json", 'w') as f:
         json.dump(env, f, indent=4)
 
-    with open(f"Configurations/{directory_name}/{str(n)}_learning.json", 'w') as f:
+    with open(f"Configurations/Training-Configs/{directory_name}/{str(n)}_learning.json", 'w') as f:
         json.dump(params, f, indent=4)
 
 

@@ -416,5 +416,5 @@ ppo_assay_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_continuous_multivariate_test_config, parallel_jobs=3)
+manager = TrialManager(test_config, parallel_jobs=3)
 manager.run_priority_loop()

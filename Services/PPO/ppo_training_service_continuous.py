@@ -60,10 +60,10 @@ class PPOTrainingServiceContinuous(TrainingService, ContinuousPPO):
         self.multivariate = self.learning_params["multivariate"]
 
         if self.multivariate:
-            self.buffer = PPOBufferContinuousMultivariate(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
+            self.buffer = PPOBufferContinuousMultivariate(gamma=self.learning_params["gamma"], lmbda=self.learning_params["lambda"], batch_size=self.learning_params["batch_size"],
                                               train_length=self.learning_params["trace_length"], assay=False, debug=False)
         else:
-            self.buffer = PPOBufferContinuous(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
+            self.buffer = PPOBufferContinuous(gamma=self.learning_params["gamma"], lmbda=self.learning_params["lambda"],  batch_size=self.learning_params["batch_size"],
                                               train_length=self.learning_params["trace_length"], assay=False, debug=False)
 
     def run(self):

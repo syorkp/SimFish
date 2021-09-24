@@ -58,7 +58,7 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
         self.step_drop = (self.learning_params['startE'] - self.learning_params['endE']) / self.learning_params[
             'anneling_steps']
 
-        self.buffer = PPOBufferDiscrete(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
+        self.buffer = PPOBufferDiscrete(gamma=self.learning_params["gamma"], lmbda=self.learning_params["lambda"], batch_size=self.learning_params["batch_size"],
                                         train_length=self.learning_params["trace_length"], assay=False, debug=False)
 
         if self.learning_params["epsilon_greedy"]:
