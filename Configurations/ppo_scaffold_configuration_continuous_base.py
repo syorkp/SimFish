@@ -137,7 +137,7 @@ params = {'num_actions': 10,  # size of action space
           'n_updates_per_iteration': 5,
           'rnn_state_computation': False,
 
-          'mutivariate': True
+          'multivariate': True
           }
 
 

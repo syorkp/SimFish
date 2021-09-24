@@ -182,10 +182,12 @@ class ContinuousPPO(BasePPO):
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
 
-        impulse, angle, updated_rnn_state_actor, updated_rnn_state_actor_ref, action_probability = self.sess.run(
+        impulse, angle, updated_rnn_state_actor, updated_rnn_state_actor_ref, action_probability, mu_i, mu_a, si_i, si_a = self.sess.run(
             [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.rnn_state_shared,
              self.actor_network.rnn_state_ref,
-             self.actor_network.log_prob
+             self.actor_network.log_prob,
+             self.actor_network.mu_impulse_combined, self.actor_network.mu_angle_combined,
+             self.actor_network.sigma_impulse_combined, self.actor_network.sigma_angle_combined,
              ],
             feed_dict={self.actor_network.observation: o,
                        self.actor_network.internal_state: internal_state,

@@ -22,6 +22,7 @@ Uses the following packages:
 * moviepy==1.0.3
 * Cython==0.29.21
 * seaborn==0.11.0
+* tensorflow-probability==0.11.0 (0.8 on myriad due to TF compatability)
 
 ## Run Configurations
 

@@ -76,13 +76,14 @@ class PPONetworkActorMultivariate(BaseNetwork):
 
         # Multinomial distribution
         self.mu_action = tf.concat([self.mu_impulse_combined, self.mu_angle_combined], axis=1)
-        self.sigma_action = tf.concat([self.mu_impulse_combined, self.mu_angle_combined], axis=1)
+        self.sigma_action = tf.concat([self.sigma_impulse_combined, self.sigma_angle_combined], axis=1)
         self.action_distribution = tfp.distributions.MultivariateNormalDiag(loc=self.mu_action, scale_diag=self.sigma_action)
 
         self.action_output = tf.squeeze(self.action_distribution.sample(1), axis=0)
-        self.action_output = tf.clip_by_value(self.action_output, 0, 1)
 
         self.impulse_output, self.angle_output = tf.split(self.action_output, 2, axis=1)
+        self.impulse_output = tf.clip_by_value(self.impulse_output, 0, 1)
+        self.angle_output = tf.clip_by_value(self.angle_output, -1, 1)
         self.impulse_output = tf.math.multiply(self.impulse_output, max_impulse, name="impulse_output")
         self.angle_output = tf.math.multiply(self.angle_output, max_angle_change, name="angle_output")
 
