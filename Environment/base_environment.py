@@ -330,6 +330,7 @@ class BaseEnvironment:
     def move_prey(self):
         # Not, currently, a prey isn't guaranteed to try to escape if a loud predator is near, only if it was going to
         # move anyway. Should reconsider this in the future.
+        # TODO: largest computational overhead.
         to_move = np.where(np.random.rand(len(self.prey_bodies)) < self.env_variables['prey_impulse_rate'])[0]
         for ii in range(len(to_move)):
             if self.check_proximity(self.prey_bodies[to_move[ii]].position,

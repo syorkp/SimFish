@@ -1,6 +1,7 @@
 import json
 import os
 import numpy as np
+import pstats
 
 import tensorflow.compat.v1 as tf
 
@@ -85,6 +86,10 @@ class TrainingService(BaseService):
             if self.configuration_index < self.total_configurations:
                 self.check_update_configuration()
             self.episode_loop()
+            if self.monitor_performance:
+                ps = pstats.Stats(self.profile)
+                ps.sort_stats("tottime")
+                ps.print_stats(20)
 
     def create_environment(self):
         if self.continuous_actions:
@@ -227,3 +232,5 @@ class TrainingService(BaseService):
             print(f"GPU usage {os.system('gpustat -cp')}")
 
         self.reward_list.append(total_episode_reward)
+
+
