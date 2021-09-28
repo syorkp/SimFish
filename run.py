@@ -212,9 +212,9 @@ test_config = [
 
 ppo_continuous_multivariate_test_config = [
     {
-        "Model Name": "ppo_continuous_multivariate_full_logs",
+        "Model Name": "ppo_continuous_multivariate",
         "Environment Name": "ppo_continuous_multivariate",
-        "Trial Number": 2,
+        "Trial Number": 5,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -236,12 +236,12 @@ ppo_continuous_multivariate_test_config = [
         "Priority": 2,
         "Using GPU": True,
         "monitor gpu": False,
-        "Full Logs": True,
+        "Full Logs": False,
     },
     {
-        "Model Name": "ppo_continuous_multivariate_full_logs",
+        "Model Name": "ppo_continuous_multivariate",
         "Environment Name": "ppo_continuous_multivariate",
-        "Trial Number": 3,
+        "Trial Number": 6,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -263,12 +263,12 @@ ppo_continuous_multivariate_test_config = [
         "Priority": 2,
         "Using GPU": True,
         "monitor gpu": False,
-        "Full Logs": True,
+        "Full Logs": False,
     },
     {
-        "Model Name": "ppo_continuous_multivariate_full_logs",
+        "Model Name": "ppo_continuous_multivariate",
         "Environment Name": "ppo_continuous_multivariate",
-        "Trial Number": 4,
+        "Trial Number": 7,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -290,7 +290,7 @@ ppo_continuous_multivariate_test_config = [
         "Priority": 2,
         "Using GPU": True,
         "monitor gpu": False,
-        "Full Logs": True,
+        "Full Logs": False,
     },
 ]
 
