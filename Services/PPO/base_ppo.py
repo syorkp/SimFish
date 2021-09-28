@@ -138,22 +138,30 @@ class BasePPO:
             internal_state_buffer = np.vstack(internal_state_buffer)
             previous_action_buffer = np.reshape(previous_action_buffer, (observation_buffer.shape[0], num_actions))
 
-            rnn_state_actor = copy.copy(self.init_rnn_state_actor)
-            rnn_state_actor_ref = copy.copy(self.init_rnn_state_actor_ref)
-            rnn_state_critic = copy.copy(self.init_rnn_state_critic)
-            rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
+            rnn_state_actor, rnn_state_actor_ref, rnn_state_critic, rnn_state_critic_ref = \
+                self.buffer.get_rnn_batch([min(rnn_key_points)], 1)
+
+            # rnn_state_actor = copy.copy(self.init_rnn_state_actor)
+            # rnn_state_actor_ref = copy.copy(self.init_rnn_state_actor_ref)
+            # rnn_state_critic = copy.copy(self.init_rnn_state_critic)
+            # rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
+
+            observation_buffer_slice = observation_buffer[min(rnn_key_points): max(rnn_key_points)+1]
+            internal_state_buffer_slice = internal_state_buffer[min(rnn_key_points): max(rnn_key_points)+1]
+            previous_action_buffer_slice = previous_action_buffer[min(rnn_key_points): max(rnn_key_points)+1]
 
             actor_rnn_state_buffer = ([rnn_state_actor[0][0]], [rnn_state_actor[1][0]])
             actor_rnn_state_ref_buffer = ([rnn_state_actor_ref[0][0]], [rnn_state_actor_ref[1][0]])
             critic_rnn_state_buffer = ([rnn_state_critic[0][0]], [rnn_state_critic[1][0]])
             critic_rnn_state_ref_buffer = ([rnn_state_critic_ref[0][0]], [rnn_state_critic_ref[1][0]])
 
-            for step in range(max(rnn_key_points)):
+            for step in range(max(rnn_key_points)-min(rnn_key_points)+1):
                 rnn_state_critic, rnn_state_critic_ref = self.sess.run(
                     [self.critic_network.rnn_state_shared, self.critic_network.rnn_state_ref],
-                    feed_dict={self.critic_network.observation: observation_buffer[step],
-                               self.critic_network.prev_actions: previous_action_buffer[step].reshape(1, num_actions),
-                               self.critic_network.internal_state: internal_state_buffer[step].reshape(1, 2),
+                    feed_dict={self.critic_network.observation: observation_buffer_slice[step],
+                               self.critic_network.prev_actions: previous_action_buffer_slice[step].reshape(1,
+                                                                                                      num_actions),
+                               self.critic_network.internal_state: internal_state_buffer_slice[step].reshape(1, 2),
 
                                self.critic_network.rnn_state_in: rnn_state_critic,
                                self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
@@ -163,9 +171,10 @@ class BasePPO:
                                })
                 rnn_state_actor, rnn_state_actor_ref = self.sess.run(
                     [self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref],
-                    feed_dict={self.actor_network.observation: observation_buffer[step],
-                               self.actor_network.prev_actions: previous_action_buffer[step].reshape(1, num_actions),
-                               self.actor_network.internal_state: internal_state_buffer[step].reshape(1, 2),
+                    feed_dict={self.actor_network.observation: observation_buffer_slice[step],
+                               self.actor_network.prev_actions: previous_action_buffer_slice[step].reshape(1,
+                                                                                                     num_actions),
+                               self.actor_network.internal_state: internal_state_buffer_slice[step].reshape(1, 2),
 
                                self.actor_network.rnn_state_in: rnn_state_actor,
                                self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
@@ -173,6 +182,7 @@ class BasePPO:
                                self.actor_network.trainLength: 1,
                                self.actor_network.batch_size: 1,
                                })
+
                 if step - 1 in rnn_key_points:
                     actor_rnn_state_buffer[0].append(rnn_state_actor[0][0])
                     actor_rnn_state_buffer[1].append(rnn_state_actor[1][0])
@@ -187,10 +197,56 @@ class BasePPO:
                     critic_rnn_state_ref_buffer[1].append(rnn_state_critic_ref[1][0])
 
             actor_rnn_state_buffer = (np.array(actor_rnn_state_buffer[0]), np.array(actor_rnn_state_buffer[1]))
-            actor_rnn_state_ref_buffer = (np.array(actor_rnn_state_ref_buffer[0]), np.array(actor_rnn_state_ref_buffer[1]))
+            actor_rnn_state_ref_buffer = (
+            np.array(actor_rnn_state_ref_buffer[0]), np.array(actor_rnn_state_ref_buffer[1]))
             critic_rnn_state_buffer = (np.array(critic_rnn_state_buffer[0]), np.array(critic_rnn_state_buffer[1]))
             critic_rnn_state_ref_buffer = (
                 np.array(critic_rnn_state_ref_buffer[0]), np.array(critic_rnn_state_ref_buffer[1]))
+            # for step in range(max(rnn_key_points)):
+            #     rnn_state_critic, rnn_state_critic_ref = self.sess.run(
+            #         [self.critic_network.rnn_state_shared, self.critic_network.rnn_state_ref],
+            #         feed_dict={self.critic_network.observation: observation_buffer[step],
+            #                    self.critic_network.prev_actions: previous_action_buffer[step].reshape(1, num_actions),
+            #                    self.critic_network.internal_state: internal_state_buffer[step].reshape(1, 2),
+            #
+            #                    self.critic_network.rnn_state_in: rnn_state_critic,
+            #                    self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
+            #
+            #                    self.critic_network.trainLength: 1,
+            #                    self.critic_network.batch_size: 1,
+            #                    })
+            #     rnn_state_actor, rnn_state_actor_ref = self.sess.run(
+            #         [self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref],
+            #         feed_dict={self.actor_network.observation: observation_buffer[step],
+            #                    self.actor_network.prev_actions: previous_action_buffer[step].reshape(1, num_actions),
+            #                    self.actor_network.internal_state: internal_state_buffer[step].reshape(1, 2),
+            #
+            #                    self.actor_network.rnn_state_in: rnn_state_actor,
+            #                    self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+            #
+            #                    self.actor_network.trainLength: 1,
+            #                    self.actor_network.batch_size: 1,
+            #                    })
+            #
+            #
+            #     if step - 1 in rnn_key_points:
+            #         actor_rnn_state_buffer[0].append(rnn_state_actor[0][0])
+            #         actor_rnn_state_buffer[1].append(rnn_state_actor[1][0])
+            #
+            #         actor_rnn_state_ref_buffer[0].append(rnn_state_actor_ref[0][0])
+            #         actor_rnn_state_ref_buffer[1].append(rnn_state_actor_ref[1][0])
+            #
+            #         critic_rnn_state_buffer[0].append(rnn_state_critic[0][0])
+            #         critic_rnn_state_buffer[1].append(rnn_state_critic[1][0])
+            #
+            #         critic_rnn_state_ref_buffer[0].append(rnn_state_critic_ref[0][0])
+            #         critic_rnn_state_ref_buffer[1].append(rnn_state_critic_ref[1][0])
+            #
+            # actor_rnn_state_buffer = (np.array(actor_rnn_state_buffer[0]), np.array(actor_rnn_state_buffer[1]))
+            # actor_rnn_state_ref_buffer = (np.array(actor_rnn_state_ref_buffer[0]), np.array(actor_rnn_state_ref_buffer[1]))
+            # critic_rnn_state_buffer = (np.array(critic_rnn_state_buffer[0]), np.array(critic_rnn_state_buffer[1]))
+            # critic_rnn_state_ref_buffer = (
+            #     np.array(critic_rnn_state_ref_buffer[0]), np.array(critic_rnn_state_ref_buffer[1]))
         else:
             actor_rnn_state_buffer, actor_rnn_state_ref_buffer, critic_rnn_state_buffer, critic_rnn_state_ref_buffer = \
                 self.buffer.get_rnn_batch(rnn_key_points, batch_size)

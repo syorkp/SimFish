@@ -58,6 +58,6 @@ class DiscreteNaturalisticEnvironment(NaturalisticEnvironment):
         super().reset()
 
     def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None, impulse=None):
-        self.fish.making_capture = True
+        self.fish.making_capture = False
         return super().simulation_step(action, save_frames, frame_buffer, activations, impulse)
 
