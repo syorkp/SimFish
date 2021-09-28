@@ -98,92 +98,8 @@ ppo_discrete_det_training_config = [
 
 ppo_discrete_training_config = [
     {
-        "Model Name": "ppo_discrete_epsilon",
-        "Environment Name": "ppo_discrete_new",
-        "Trial Number": 4,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": False,
-        "Learning Algorithm": "PPO",
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": False,
-    },
-    {
-        "Model Name": "ppo_discrete_epsilon",
-        "Environment Name": "ppo_discrete_new",
-        "Trial Number": 5,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": False,
-        "Learning Algorithm": "PPO",
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": False,
-    },
-    {
-        "Model Name": "ppo_discrete_epsilon",
-        "Environment Name": "ppo_discrete_new",
-        "Trial Number": 6,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": False,
-        "Learning Algorithm": "PPO",
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": False,
-    },
-]
-
-test_config = [
-    {
-        "Model Name": "test_config",
-        "Environment Name": "ppo_continuous_multivariate",
+        "Model Name": "ppo_discrete_mc",
+        "Environment Name": "ppo_discrete_latest",
         "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
@@ -201,12 +117,66 @@ test_config = [
         "Run Mode": "Training",
         "Tethered": False,
         "Realistic Bouts": True,
-        "Continuous Actions": True,
+        "Continuous Actions": False,
         "Learning Algorithm": "PPO",
         "Priority": 2,
         "Using GPU": True,
         "monitor gpu": False,
-        "Full Logs": True,
+        "Full Logs": False,
+    },
+    {
+        "Model Name": "ppo_discrete_mc",
+        "Environment Name": "ppo_discrete_latest",
+        "Trial Number": 2,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 6,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "PPO",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": False,
+    },
+    {
+        "Model Name": "ppo_discrete_mc",
+        "Environment Name": "ppo_discrete_latest",
+        "Trial Number": 3,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 6,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "PPO",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": False,
     },
 ]
 
@@ -416,5 +386,5 @@ ppo_assay_configuration = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_continuous_multivariate_test_config, parallel_jobs=3)
+manager = TrialManager(ppo_discrete_training_config, parallel_jobs=3)
 manager.run_priority_loop()

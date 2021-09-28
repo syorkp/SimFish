@@ -19,7 +19,7 @@ env = {'width': 1500,  # arena size
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step
 
        'fish_mass': 140.,
-       'fish_mouth_size': 10.,
+       'fish_mouth_size': 4.,
        'fish_head_size': 10.,
        'fish_tail_length': 70.,
        'eyes_verg_angle': 77.,  # in deg
@@ -152,7 +152,7 @@ params = {'num_actions': 10,  # size of action space
           'lambda': 0.9
           }
 
-directory_name = "ppo_discrete_gamma_99"
+directory_name = "ppo_discrete_latest"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):
