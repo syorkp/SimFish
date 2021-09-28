@@ -388,10 +388,10 @@ ppo_assay_configuration = [
     },
 ]
 
-ppo_multivariate_bptt = [
+ppo_multivariate_impulse_scaled = [
     {
-        "Model Name": "ppo_multivariate_bptt",
-        "Environment Name": "ppo_multivariate_bptt",
+        "Model Name": "ppo_multivariate_impulse_scaled",
+        "Environment Name": "ppo_multivariate_impulse_scaled",
         "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
@@ -417,8 +417,8 @@ ppo_multivariate_bptt = [
         "Full Logs": True,
     },
     {
-        "Model Name": "ppo_multivariate_bptt",
-        "Environment Name": "ppo_multivariate_bptt",
+        "Model Name": "ppo_multivariate_impulse_scaled",
+        "Environment Name": "ppo_multivariate_impulse_scaled",
         "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
@@ -444,8 +444,8 @@ ppo_multivariate_bptt = [
         "Full Logs": True,
     },
     {
-        "Model Name": "ppo_multivariate_bptt",
-        "Environment Name": "ppo_multivariate_bptt",
+        "Model Name": "ppo_multivariate_impulse_scaled",
+        "Environment Name": "ppo_multivariate_impulse_scaled",
         "Trial Number": 3,
         "Total Configurations": 3,
         "Episode Transitions": {
@@ -503,5 +503,5 @@ ppo_test = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_multivariate_bptt, parallel_jobs=3)
+manager = TrialManager(ppo_multivariate_impulse_scaled, parallel_jobs=3)
 manager.run_priority_loop()

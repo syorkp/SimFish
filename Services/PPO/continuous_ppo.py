@@ -543,8 +543,7 @@ class ContinuousPPO(BasePPO):
                 # Compute RNN states for start of each trace.
                 actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, \
                 critic_rnn_state_ref_slice = self.compute_rnn_states(batch_key_points,
-                                                                     observation_buffer[
-                                                                     :(batch + 1) * self.learning_params["batch_size"]],
+                                                                     observation_buffer[:(batch + 1) * self.learning_params["batch_size"]],
                                                                      internal_state_buffer[
                                                                      :(batch + 1) * self.learning_params["batch_size"]],
                                                                      previous_action_buffer[

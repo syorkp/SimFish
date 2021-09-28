@@ -144,18 +144,18 @@ class BasePPO:
             # rnn_state_actor = copy.copy(self.init_rnn_state_actor)
             # rnn_state_actor_ref = copy.copy(self.init_rnn_state_actor_ref)
             # rnn_state_critic = copy.copy(self.init_rnn_state_critic)
-            # rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
+            # rnn_state_critic_ref #= copy.copy(self.init_rnn_state_critic_ref)
 
-            observation_buffer_slice = observation_buffer[min(rnn_key_points): max(rnn_key_points)+1]
-            internal_state_buffer_slice = internal_state_buffer[min(rnn_key_points): max(rnn_key_points)+1]
-            previous_action_buffer_slice = previous_action_buffer[min(rnn_key_points): max(rnn_key_points)+1]
+            observation_buffer_slice = observation_buffer#[min(rnn_key_points): max(rnn_key_points)+1]
+            internal_state_buffer_slice = internal_state_buffer#[min(rnn_key_points): max(rnn_key_points)+1]
+            previous_action_buffer_slice = previous_action_buffer#[min(rnn_key_points): max(rnn_key_points)+1]
 
             actor_rnn_state_buffer = ([rnn_state_actor[0][0]], [rnn_state_actor[1][0]])
             actor_rnn_state_ref_buffer = ([rnn_state_actor_ref[0][0]], [rnn_state_actor_ref[1][0]])
             critic_rnn_state_buffer = ([rnn_state_critic[0][0]], [rnn_state_critic[1][0]])
             critic_rnn_state_ref_buffer = ([rnn_state_critic_ref[0][0]], [rnn_state_critic_ref[1][0]])
 
-            for step in range(max(rnn_key_points)-min(rnn_key_points)+1):
+            for step in range(min(rnn_key_points), max(rnn_key_points)+1):
                 rnn_state_critic, rnn_state_critic_ref = self.sess.run(
                     [self.critic_network.rnn_state_shared, self.critic_network.rnn_state_ref],
                     feed_dict={self.critic_network.observation: observation_buffer_slice[step],

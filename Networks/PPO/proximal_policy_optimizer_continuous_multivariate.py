@@ -17,7 +17,10 @@ class PPONetworkActorMultivariate(BaseNetwork):
         self.mu_impulse_stream, self.sigma_impulse_stream, self.mu_angle_stream, self.sigma_angle_stream = tf.split(self.rnn_output, 4, 1)
 
         # Actor impulse output
-        self.mu_impulse = tf.layers.dense(self.mu_impulse_stream, 1, activation=tf.nn.sigmoid,
+        # self.mu_impulse = tf.layers.dense(self.mu_impulse_stream, 1, activation=tf.nn.sigmoid,
+        #                                   kernel_initializer=tf.orthogonal_initializer,
+        #                                   name=my_scope + '_mu_impulse', trainable=True)
+        self.mu_impulse = tf.layers.dense(self.mu_impulse_stream, 1, activation=tf.nn.tanh,
                                           kernel_initializer=tf.orthogonal_initializer,
                                           name=my_scope + '_mu_impulse', trainable=True)
 
@@ -41,7 +44,10 @@ class PPONetworkActorMultivariate(BaseNetwork):
         self.mu_impulse_stream_ref, self.sigma_impulse_stream_ref, self.mu_angle_stream_ref, self.sigma_angle_stream_ref = tf.split(self.rnn_output_ref, 4, 1)
 
         # Actor impulse output
-        self.mu_impulse_ref = tf.layers.dense(self.mu_impulse_stream_ref, 1, activation=tf.nn.sigmoid,
+        # self.mu_impulse_ref = tf.layers.dense(self.mu_impulse_stream_ref, 1, activation=tf.nn.sigmoid,
+        #                                       kernel_initializer=tf.orthogonal_initializer,
+        #                                       name=my_scope + '_mu_impulse', reuse=True, trainable=True)
+        self.mu_impulse_ref = tf.layers.dense(self.mu_impulse_stream_ref, 1, activation=tf.nn.tanh,
                                               kernel_initializer=tf.orthogonal_initializer,
                                               name=my_scope + '_mu_impulse', reuse=True, trainable=True)
 
@@ -82,6 +88,8 @@ class PPONetworkActorMultivariate(BaseNetwork):
         self.action_output = tf.squeeze(self.action_distribution.sample(1), axis=0)
 
         self.impulse_output, self.angle_output = tf.split(self.action_output, 2, axis=1)
+        # Scaled impulse TODO: Remove if doesnt work
+        self.impulse_output = tf.divide(tf.add(self.impulse_output, 1), 2)
         self.impulse_output = tf.clip_by_value(self.impulse_output, 0, 1)
         self.angle_output = tf.clip_by_value(self.angle_output, -1, 1)
         self.impulse_output = tf.math.multiply(self.impulse_output, max_impulse, name="impulse_output")
@@ -95,6 +103,8 @@ class PPONetworkActorMultivariate(BaseNetwork):
         self.action_placeholder = tf.placeholder(shape=[None, 2], dtype=tf.float32, name='impulse_placeholder')
         self.impulse_placeholder, self.angle_placeholder = tf.split(self.action_placeholder, 2, axis=1)
         self.impulse_placeholder = tf.math.divide(self.impulse_placeholder, max_impulse)
+        # Scaled impulse TODO: Remove if doesnt work
+        self.impulse_placeholder = tf.math.multiply(tf.math.subtract(self.impulse_placeholder, 1), 2)
         self.angle_placeholder = tf.math.divide(self.angle_placeholder, max_angle_change)
         self.action_placeholder2 = tf.concat([self.impulse_placeholder, self.angle_placeholder], axis=1)
 
