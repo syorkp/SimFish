@@ -11,7 +11,7 @@ class BaseService:
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_actions):
-        self.monitor_performance = True  # TODO: make parameter or change back.
+        self.monitor_performance = False  # TODO: make parameter
         if self.monitor_performance:
             self.profile = cProfile.Profile()
             self.profile.enable()
