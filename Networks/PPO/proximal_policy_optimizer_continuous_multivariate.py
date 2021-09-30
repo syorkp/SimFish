@@ -14,8 +14,8 @@ class PPONetworkActorMultivariate(BaseNetwork):
 
         #            ----------        Non-Reflected       ---------            #
 
-        # self.mu_impulse_stream, self.sigma_impulse_stream, self.mu_angle_stream, self.sigma_angle_stream = tf.split(self.rnn_output, 4, 1)
-        self.mu_impulse_stream, self.mu_angle_stream = tf.split(self.rnn_output, 2, 1)
+        self.mu_impulse_stream, self.sigma_impulse_stream, self.mu_angle_stream, self.sigma_angle_stream = tf.split(self.rnn_output, 4, 1)
+        #self.mu_impulse_stream, self.mu_angle_stream = tf.split(self.rnn_output, 2, 1)
 
         # Actor impulse output
         self.mu_impulse = tf.layers.dense(self.mu_impulse_stream, 1, activation=tf.nn.sigmoid,
@@ -25,25 +25,25 @@ class PPONetworkActorMultivariate(BaseNetwork):
         #                                   kernel_initializer=tf.orthogonal_initializer,
         #                                   name=my_scope + '_mu_impulse', trainable=True)
 
-        # self.sigma_impulse = tf.layers.dense(self.sigma_impulse_stream, 1,
-        #                                      kernel_initializer=tf.orthogonal_initializer,
-        #                                      name=my_scope + '_sigma_impulse', trainable=True)
-        # self.sigma_impulse = self.bounded_output(self.sigma_impulse, 0, 1)
+        self.sigma_impulse = tf.layers.dense(self.sigma_impulse_stream, 1,
+                                             kernel_initializer=tf.orthogonal_initializer,
+                                             name=my_scope + '_sigma_impulse', trainable=True)
+        self.sigma_impulse = self.bounded_output(self.sigma_impulse, 0, 1)
 
         # Actor angle output
         self.mu_angle = tf.layers.dense(self.mu_angle_stream, 1, activation=tf.nn.tanh,
                                         kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_mu_angle',
                                         trainable=True)
 
-        # self.sigma_angle = tf.layers.dense(self.sigma_angle_stream, 1,
-        #                                    kernel_initializer=tf.orthogonal_initializer,
-        #                                    name=my_scope + '_sigma_angle', trainable=True)
-        # self.sigma_angle = self.bounded_output(self.sigma_angle, 0, 1)
+        self.sigma_angle = tf.layers.dense(self.sigma_angle_stream, 1,
+                                           kernel_initializer=tf.orthogonal_initializer,
+                                           name=my_scope + '_sigma_angle', trainable=True)
+        self.sigma_angle = self.bounded_output(self.sigma_angle, 0, 1)
 
         #            ----------        Reflected       ---------            #
 
-        # self.mu_impulse_stream_ref, self.sigma_impulse_stream_ref, self.mu_angle_stream_ref, self.sigma_angle_stream_ref = tf.split(self.rnn_output_ref, 4, 1)
-        self.mu_impulse_stream_ref, self.mu_angle_stream_ref = tf.split(self.rnn_output_ref, 2, 1)
+        self.mu_impulse_stream_ref, self.sigma_impulse_stream_ref, self.mu_angle_stream_ref, self.sigma_angle_stream_ref = tf.split(self.rnn_output_ref, 4, 1)
+        # self.mu_impulse_stream_ref, self.mu_angle_stream_ref = tf.split(self.rnn_output_ref, 2, 1)
 
         # Actor impulse output
         self.mu_impulse_ref = tf.layers.dense(self.mu_impulse_stream_ref, 1, activation=tf.nn.sigmoid,
@@ -53,44 +53,44 @@ class PPONetworkActorMultivariate(BaseNetwork):
         #                                       kernel_initializer=tf.orthogonal_initializer,
         #                                       name=my_scope + '_mu_impulse', reuse=True, trainable=True)
 
-        # self.sigma_impulse_ref = tf.layers.dense(self.sigma_impulse_stream_ref, 1,
-        #                                          kernel_initializer=tf.orthogonal_initializer,
-        #                                          name=my_scope + '_sigma_impulse', reuse=True, trainable=True)
-        # self.sigma_impulse_ref = self.bounded_output(self.sigma_impulse_ref, 0, 1)
+        self.sigma_impulse_ref = tf.layers.dense(self.sigma_impulse_stream_ref, 1,
+                                                 kernel_initializer=tf.orthogonal_initializer,
+                                                 name=my_scope + '_sigma_impulse', reuse=True, trainable=True)
+        self.sigma_impulse_ref = self.bounded_output(self.sigma_impulse_ref, 0, 1)
 
         # Actor angle output
         self.mu_angle_ref = tf.layers.dense(self.mu_angle_stream_ref, 1, activation=tf.nn.tanh,
                                             kernel_initializer=tf.orthogonal_initializer,
                                             name=my_scope + '_mu_angle', reuse=True, trainable=True)
 
-        # self.sigma_angle_ref = tf.layers.dense(self.sigma_angle_stream_ref, 1,
-        #                                        kernel_initializer=tf.orthogonal_initializer,
-        #                                        name=my_scope + '_sigma_angle', reuse=True, trainable=True)
-        # self.sigma_angle_ref = self.bounded_output(self.sigma_angle_ref, 0, 1)
+        self.sigma_angle_ref = tf.layers.dense(self.sigma_angle_stream_ref, 1,
+                                               kernel_initializer=tf.orthogonal_initializer,
+                                               name=my_scope + '_sigma_angle', reuse=True, trainable=True)
+        self.sigma_angle_ref = self.bounded_output(self.sigma_angle_ref, 0, 1)
 
         #            ----------        Combined       ---------            #
 
         # Combined Actor impulse output
         self.mu_impulse_combined = tf.math.divide(tf.math.add(self.mu_impulse, self.mu_impulse_ref), 2.0,
                                                   name="mu_impulse_combined")
-        # self.sigma_impulse_combined = tf.math.divide(tf.math.add(self.sigma_impulse, self.sigma_impulse_ref), 2.0,
-        #                                              name="sigma_impulse_combined")
+        self.sigma_impulse_combined = tf.math.divide(tf.math.add(self.sigma_impulse, self.sigma_impulse_ref), 2.0,
+                                                     name="sigma_impulse_combined")
         # self.sigma_impulse_combined = tf.get_variable(name='sigimp', shape=[1, 2], initializer=tf.zeros_initializer())
 
 
         # Combined Actor angle output
         self.mu_angle_combined = tf.math.divide(tf.math.subtract(self.mu_angle, self.mu_angle_ref), 2.0,
                                                 name="mu_angle_combined")
-        # self.sigma_angle_combined = tf.math.divide(tf.math.add(self.sigma_angle, self.sigma_angle_ref), 2.0,
-        #                                            name="sigma_angle_combined")
+        self.sigma_angle_combined = tf.math.divide(tf.math.add(self.sigma_angle, self.sigma_angle_ref), 2.0,
+                                                   name="sigma_angle_combined")
         # self.sigma_angle_combined = tf.get_variable(name='sigang', shape=[1, 2], initializer=tf.zeros_initializer())
 
-        self.sigma_action = tf.get_variable(name='sigmas', shape=[1, 2], initializer=tf.zeros_initializer())
+        # self.sigma_action = tf.get_variable(name='sigmas', shape=[1, 2], initializer=tf.zeros_initializer())
 
 
         # Multinomial distribution
         self.mu_action = tf.concat([self.mu_impulse_combined, self.mu_angle_combined], axis=1)
-        # self.sigma_action = tf.concat([self.sigma_impulse_combined, self.sigma_angle_combined], axis=1)
+        self.sigma_action = tf.concat([self.sigma_impulse_combined, self.sigma_angle_combined], axis=1)
         self.action_distribution = tfp.distributions.MultivariateNormalDiag(loc=self.mu_action, scale_diag=self.sigma_action)
 
         self.action_output = tf.squeeze(self.action_distribution.sample(1), axis=0)
@@ -99,9 +99,10 @@ class PPONetworkActorMultivariate(BaseNetwork):
 
         # Scaled impulse TODO: Remove if doesnt work
         # self.impulse_output = tf.divide(tf.add(self.impulse_output, 1), 2)
-        # self.impulse_output = tf.clip_by_value(self.impulse_output, 0, 1)
 
+        self.impulse_output = tf.clip_by_value(self.impulse_output, 0, 1)
         self.angle_output = tf.clip_by_value(self.angle_output, -1, 1)
+
         self.impulse_output = tf.math.multiply(self.impulse_output, max_impulse, name="impulse_output")
         self.angle_output = tf.math.multiply(self.angle_output, max_angle_change, name="angle_output")
 

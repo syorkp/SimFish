@@ -24,6 +24,9 @@ class PPOBufferContinuousMultivariate(BasePPOBuffer):
         self.impulse_loss_buffer = []
         self.angle_loss_buffer = []
 
+        # For assay saving
+        self.multivariate = True
+
     def reset(self):
         super().reset()
         # Buffer for training
@@ -140,6 +143,17 @@ class PPOBufferContinuousMultivariate(BasePPOBuffer):
         return observation_slice, internal_state_slice, action_slice, previous_action_slice, \
                log_action_probability_slice, advantage_slice, return_slice, \
                #actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice
+
+    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id):
+        hdf5_file, assay_group = BasePPOBuffer.save_assay_data(self, assay_id, data_save_location, assay_configuration_id)
+
+        if "environmental positions" in self.recordings:
+            self.create_data_group("mu_impulse", np.array(self.mu_i_buffer)[:, 0], assay_group)
+            self.create_data_group("mu_angle", np.array(self.mu_a_buffer)[:, 0], assay_group)
+            self.create_data_group("sigma_impulse", np.array(self.si_i_buffer)[:, 0], assay_group)
+            self.create_data_group("sigma_angle", np.array(self.si_a_buffer)[:, 0], assay_group)
+
+        hdf5_file.close()
 
     def check_buffers(self):
         # Check for NaN

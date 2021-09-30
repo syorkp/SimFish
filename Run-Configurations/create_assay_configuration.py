@@ -3857,15 +3857,22 @@ indiscriminate_ablation_gradient2 = [
     },
 ]
 
-def build_vrv_configuration(model_names, background=False, name="vrv_config"):
+
+def build_vrv_configuration(model_names, background=False, name="vrv_config", continuous=False, learning_algorithm="PPO"):
     configuration = []
     for model in model_names:
         pred_config = predator_response_vector.copy()
         prey_config = prey_response_vector.copy()
+
         pred_config["Model Name"] = model[:-2]
         pred_config["Trial Number"] = int(model[-1])
+        pred_config["Continuous Actions"] = continuous
+        pred_config["Learning Algorithm"] = learning_algorithm
+
         prey_config["Model Name"] = model[:-2]
         prey_config["Trial Number"] = int(model[-1])
+        prey_config["Continuous Actions"] = continuous
+        prey_config["Learning Algorithm"] = learning_algorithm
         if background:
             for i, assay in enumerate(prey_config["Assays"]):
                 assay["background"] = "Red"
@@ -3874,7 +3881,7 @@ def build_vrv_configuration(model_names, background=False, name="vrv_config"):
                 assay["background"] = "Red"
                 pred_config["Assays"][i] = assay
         configuration.append(prey_config.copy())
-        configuration.append(pred_config.copy())
+        # configuration.append(pred_config.copy())  TODO: Switch back when using predators
     with open(f"{name}.json", 'w') as f:
         json.dump(configuration, f, indent=4)
 
@@ -3979,7 +3986,7 @@ def build_ablation_gradient_configuration(model_names, ablation_group, environme
         json.dump(configuration, f, indent=4)
 
 
-
+build_vrv_configuration(["ppo_continuous_multivariate-7", "ppo_continuous_multivariate-9"], False, "VRV_CONFIG", True, "PPO")
 # Examples:
 # build_indescriminate_ablation_gradient_configuration(["even_prey_ref-5"], ["test"], "non_env", "all_ablation")
 # build_differential_configuration(["new_differential_prey_ref-3", "new_differential_prey_ref-4", "new_differential_prey_ref-5", "new_differential_prey_ref-6"], "differential_prey_low_predator", "differential_naturalistic")

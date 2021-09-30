@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import datetime
 
@@ -9,6 +10,9 @@ if not os.path.exists("./Training-Output/"):
 
 if not os.path.exists("./Assay-Output/"):
     os.makedirs("./Assay-Output/")
+
+with open("./Run-Configurations/VRV_CONFIG.json", "r") as file:
+    vrv_config = json.load(file)
 
 
 ppo_discrete_det_training_config = [
@@ -351,12 +355,12 @@ ppo_continuous_training_config = [
     },
 ]
 
-ppo_assay_configuration = [
-    {
-        "Model Name": "bptt_test",
-        "Environment Name": "ppo_assay",
-        "Trial Number": 1,
-        "Assay Configuration Name": "Value_Estimation_Test",
+ppo_vrv_config = [
+{
+        "Model Name": "ppo_multivariate_bptt",
+        "Environment Name": "ppo_multivariate_assay",
+        "Trial Number": 2,
+        "Assay Configuration Name": "MultivariateData",
         "Total Configurations": 3,
         "Run Mode": "Assay",
         "Tethered": False,
@@ -369,7 +373,44 @@ ppo_assay_configuration = [
         "set random seed": True,
         "Assays": [
             {
-                "assay id": "Environment-1",
+                "assay id": "Naturalistic-1",
+                "stimulus paradigm": "Presentation",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": True,
+
+                "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+                "ablations": []
+            },
+        ]
+    },
+]
+
+ppo_assay_configuration_univariate = [
+    {
+        "Model Name": "ppo_continuous_buffered",
+        "Environment Name": "ppo_univariate_assay",
+        "Trial Number": 2,
+        "Assay Configuration Name": "MultivariateData",
+        "Total Configurations": 3,
+        "Run Mode": "Assay",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "set random seed": True,
+        "Assays": [
+            {
+                "assay id": "Naturalistic-1",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -388,52 +429,16 @@ ppo_assay_configuration = [
     },
 ]
 
-ppo_multivariate_impulse_scaled = [
+
+
+ppo_assay_configuration = [
     {
-        "Model Name": "ppo_multivariate_impulse_scaled",
-        "Environment Name": "ppo_multivariate_impulse_scaled",
-        "Trial Number": 1,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-    },
-    {
-        "Model Name": "ppo_multivariate_impulse_scaled",
-        "Environment Name": "ppo_multivariate_impulse_scaled",
+        "Model Name": "ppo_continuous_buffered",
+        "Environment Name": "ppo_multivariate_assay",
         "Trial Number": 2,
+        "Assay Configuration Name": "MultivariateData",
         "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
+        "Run Mode": "Assay",
         "Tethered": False,
         "Realistic Bouts": True,
         "Continuous Actions": True,
@@ -441,34 +446,25 @@ ppo_multivariate_impulse_scaled = [
         "Priority": 2,
         "Using GPU": True,
         "monitor gpu": False,
-        "Full Logs": True,
-    },
-    {
-        "Model Name": "ppo_multivariate_impulse_scaled",
-        "Environment Name": "ppo_multivariate_impulse_scaled",
-        "Trial Number": 3,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
+        "set random seed": True,
+        "Assays": [
+            {
+                "assay id": "Naturalistic-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": True,
+
+                "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+                "ablations": []
             },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
+        ]
     },
 ]
 
@@ -696,36 +692,6 @@ ppo_univariate_buffered = [
 ]
 
 
-ppo_test = [
-    {
-        "Model Name": "ppo_test",
-        "Environment Name": "ppo_testing",
-        "Trial Number": 1,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-    },
-]
-
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_univariate_buffered, parallel_jobs=4)
+manager = TrialManager(vrv_config, parallel_jobs=1)
 manager.run_priority_loop()

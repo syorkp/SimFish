@@ -78,6 +78,100 @@ class ContinuousPPO(BasePPO):
         a = [4.0, 0.0]
         super(ContinuousPPO, self)._episode_loop(a)
 
+    def _assay_step_loop_multivariate(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
+                         rnn_state_critic_ref):
+        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
+        a = [a[0] / self.environment_params['max_impulse'],
+             a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
+
+        impulse, angle, updated_rnn_state_actor, updated_rnn_state_actor_ref, conv1l_actor, conv2l_actor, conv3l_actor, \
+        conv4l_actor, conv1r_actor, conv2r_actor, conv3r_actor, conv4r_actor, action_probability, \
+        mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref = self.sess.run(
+            [self.actor_network.impulse_output, self.actor_network.angle_output,
+             self.actor_network.rnn_state_shared,
+             self.actor_network.rnn_state_ref,
+             self.actor_network.conv1l, self.actor_network.conv2l, self.actor_network.conv3l,
+             self.actor_network.conv4l,
+             self.actor_network.conv1r, self.actor_network.conv2r, self.actor_network.conv3r,
+             self.actor_network.conv4r,
+
+             self.actor_network.log_prob,
+             self.actor_network.mu_impulse_combined, self.actor_network.sigma_impulse_combined,
+             self.actor_network.mu_angle_combined,
+             self.actor_network.sigma_angle_combined, self.actor_network.mu_impulse,
+             self.actor_network.mu_impulse_ref,
+             self.actor_network.mu_angle, self.actor_network.mu_angle_ref
+             ],
+            feed_dict={self.actor_network.observation: o,
+                       self.actor_network.internal_state: internal_state,
+                       self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                       self.actor_network.rnn_state_in: rnn_state_actor,
+                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       self.actor_network.batch_size: 1,
+                       self.actor_network.trainLength: 1,
+                       }
+        )
+
+        V, updated_rnn_state_critic, updated_rnn_state_critic_ref, conv1l_critic, conv2l_critic, conv3l_critic, \
+        conv4l_critic, conv1r_critic, conv2r_critic, conv3r_critic, conv4r_critic = self.sess.run(
+            [self.critic_network.Value_output, self.critic_network.rnn_state_shared,
+             self.critic_network.rnn_state_ref,
+             self.critic_network.conv1l, self.critic_network.conv2l, self.critic_network.conv3l,
+             self.critic_network.conv4l,
+             self.critic_network.conv1r, self.critic_network.conv2r, self.critic_network.conv3r,
+             self.critic_network.conv4r,
+             ],
+            feed_dict={self.critic_network.observation: o,
+                       self.critic_network.internal_state: internal_state,
+                       self.critic_network.prev_actions: np.reshape(a, (1, 2)),
+                       self.critic_network.rnn_state_in: rnn_state_critic,
+                       self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
+                       self.critic_network.batch_size: 1,
+                       self.critic_network.trainLength: 1,
+                       }
+        )
+        action = [impulse[0][0], angle[0][0]]
+
+        o1, given_reward, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=action,
+                                                                                                     frame_buffer=self.frame_buffer,
+                                                                                                     save_frames=True,
+                                                                                                     activations=(sa,))
+
+        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()  # TODO: Modify
+
+        # Update buffer
+        self.buffer.add_training(observation=o,
+                                 internal_state=internal_state,
+                                 action=action,
+                                 reward=given_reward,
+                                 value=V,
+                                 l_p_action=action_probability,
+                                 actor_rnn_state=rnn_state_actor,
+                                 actor_rnn_state_ref=rnn_state_actor_ref,
+                                 critic_rnn_state=rnn_state_critic,
+                                 critic_rnn_state_ref=rnn_state_critic_ref,
+                                 )
+        self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
+
+        if "environmental positions" in self.buffer.recordings:
+            self.buffer.save_environmental_positions(self.simulation.fish.body.position,
+                                                     self.simulation.prey_consumed_this_step,
+                                                     self.simulation.predator_body,
+                                                     prey_positions,
+                                                     predator_position,
+                                                     sand_grain_positions,
+                                                     vegetation_positions,
+                                                     self.simulation.fish.body.angle,
+                                                     )
+        if "convolutional layers" in self.buffer.recordings:
+            self.buffer.save_conv_states(conv1l_actor, conv2l_actor, conv3l_actor, conv4l_actor, conv1r_actor,
+                                         conv2r_actor, conv3r_actor, conv4r_actor,
+                                         conv1l_critic, conv2l_critic, conv3l_critic, conv4l_critic, conv1r_critic,
+                                         conv2r_critic, conv3r_critic, conv4r_critic)
+
+        return given_reward, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, \
+               updated_rnn_state_critic, updated_rnn_state_critic_ref
+
     def _assay_step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                          rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.

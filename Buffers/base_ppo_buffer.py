@@ -15,6 +15,7 @@ class BasePPOBuffer:
         self.debug = debug
         self.assay = assay
         self.recordings = None
+        self.multivariate = None
 
         # Buffer for training
         self.action_buffer = []
@@ -268,7 +269,7 @@ class BasePPOBuffer:
             self.create_data_group("value", np.array(self.value_buffer), assay_group)
             self.create_data_group("returns", np.array(self.return_buffer), assay_group)
 
-        hdf5_file.close()
+        return hdf5_file, assay_group
 
     @staticmethod
     def discount_cumsum(x, discount):

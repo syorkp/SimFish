@@ -6,6 +6,7 @@ import tensorflow.compat.v1 as tf
 
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Environment.controlled_stimulus_environment import ControlledStimulusEnvironment
+from Environment.controlled_stimulus_environment_continuous import ControlledStimulusEnvironmentContinuous
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Services.base_service import BaseService
 from Tools.make_gif import make_gif
@@ -102,16 +103,28 @@ class AssayService(BaseService):
         :return:
         """
         if assay["stimulus paradigm"] == "Projection":
-            self.simulation = ControlledStimulusEnvironment(self.environment_params, assay["stimuli"],
-                                                            self.realistic_bouts,
-                                                            tethered=assay["Tethered"],
-                                                            set_positions=assay["set positions"],
-                                                            random=assay["random positions"],
-                                                            moving=assay["moving"],
-                                                            reset_each_step=assay["reset"],
-                                                            reset_interval=assay["reset interval"],
-                                                            background=assay["background"]
-                                                            )
+            if self.continuous_actions:
+                self.simulation = ControlledStimulusEnvironmentContinuous(self.environment_params, assay["stimuli"],
+                                                                self.realistic_bouts,
+                                                                tethered=assay["Tethered"],
+                                                                set_positions=assay["set positions"],
+                                                                random=assay["random positions"],
+                                                                moving=assay["moving"],
+                                                                reset_each_step=assay["reset"],
+                                                                reset_interval=assay["reset interval"],
+                                                                background=assay["background"]
+                                                                )
+            else:
+                self.simulation = ControlledStimulusEnvironment(self.environment_params, assay["stimuli"],
+                                                                self.realistic_bouts,
+                                                                tethered=assay["Tethered"],
+                                                                set_positions=assay["set positions"],
+                                                                random=assay["random positions"],
+                                                                moving=assay["moving"],
+                                                                reset_each_step=assay["reset"],
+                                                                reset_interval=assay["reset interval"],
+                                                                background=assay["background"]
+                                                                )
         elif assay["stimulus paradigm"] == "Naturalistic":
             if self.continuous_actions:
                 self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,

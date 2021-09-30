@@ -26,6 +26,9 @@ class PPOBufferContinuous(BasePPOBuffer):
         self.impulse_loss_buffer = []
         self.angle_loss_buffer = []
 
+        # For assay saving
+        self.multivariate = False
+
     def reset(self):
         super().reset()
         # Buffer for training
@@ -163,3 +166,8 @@ class PPOBufferContinuous(BasePPOBuffer):
         print("Buffers fine")
 
         # TODO: Add methods for detecting values outside of range.
+
+    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id):
+        hdf5_file, assay_group = BasePPOBuffer.save_assay_data(self, assay_id, data_save_location, assay_configuration_id)
+
+        hdf5_file.close()

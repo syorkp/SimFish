@@ -1,6 +1,7 @@
 import tensorflow.compat.v1 as tf
 
 from Buffers.ppo_buffer_continuous import PPOBufferContinuous
+from Buffers.ppo_buffer_continuous_multivariate import PPOBufferContinuousMultivariate
 
 from Services.PPO.continuous_ppo import ContinuousPPO
 from Services.assay_service import AssayService
@@ -41,9 +42,18 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                          continuous_environment=continuous_environment, assays=assays, set_random_seed=set_random_seed,
                          assay_config_name=assay_config_name)
 
+        self.multivariate = self.learning_params["multivariate"]
+
         # Buffer for saving results of assay
-        self.buffer = PPOBufferContinuous(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
-                                          train_length=self.learning_params["trace_length"], assay=True, debug=False)
+        if self.multivariate:
+            self.buffer = PPOBufferContinuousMultivariate(gamma=0.99, lmbda=0.9,
+                                                          batch_size=self.learning_params["batch_size"],
+                                                          train_length=self.learning_params["trace_length"], assay=True,
+                                                          debug=False)
+        else:
+            self.buffer = PPOBufferContinuous(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
+                                              train_length=self.learning_params["trace_length"], assay=True,
+                                              debug=False)
 
         self.ppo_version = ContinuousPPO
 
@@ -56,5 +66,10 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
     def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                   rnn_state_critic_ref):
-        return self._assay_step_loop(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,rnn_state_critic,
-                                     rnn_state_critic_ref)
+        if self.multivariate:
+            return self._assay_step_loop_multivariate(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+                                                      rnn_state_critic,
+                                                      rnn_state_critic_ref)
+        else:
+            return self._assay_step_loop(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
+                                         rnn_state_critic_ref)

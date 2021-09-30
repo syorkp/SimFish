@@ -4,10 +4,12 @@ import pymunk
 
 from Environment.base_environment import BaseEnvironment
 from Environment.Fish.fish import Fish
+from Environment.Fish.continuous_fish import ContinuousFish
+from Environment.Fish.continuous_tethered_fish import ContinuousTetheredFish
 from Environment.Fish.tethered_fish import TetheredFish
 
 
-class ControlledStimulusEnvironment(BaseEnvironment):
+class ControlledStimulusEnvironmentContinuous(BaseEnvironment):
     """
     This version is made with only the fixed projection configuration in mind.
     As a result, doesnt have walls, and fish appears directly in the centfre of the environment.
@@ -19,9 +21,9 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         super().__init__(env_variables, draw_screen)
 
         if tethered:
-            self.fish = TetheredFish(self.board, env_variables, self.dark_col, realistic_bouts)
+            self.fish = ContinuousTetheredFish(self.board, env_variables, self.dark_col, realistic_bouts)
         else:
-            self.fish = Fish(self.board, env_variables, self.dark_col, realistic_bouts)
+            self.fish = ContinuousFish(self.board, env_variables, self.dark_col, realistic_bouts)
         self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 
         # TODO: Unify in future with other stimuli

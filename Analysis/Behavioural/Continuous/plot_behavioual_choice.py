@@ -61,13 +61,27 @@ def plot_all_consumption_sequences(all_impulses, all_angles, consumption_times):
     plt.show()
 
 
-data = load_data("ppo_no_sigma-5", "With RNN State", "Environment-1")
+# data = load_data("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic-1")
+data = load_data("ppo_continuous_multivariate-7", "MultivariateData", "Naturalistic-1")
+# data = load_data("ppo_multivariate_bptt-2", "MultivariateData", "Naturalistic-1")
 
 all_impulses = data["impulse"]
 all_angles = data["angle"]
 consumption_timestamps = [i for i, c in enumerate(data["consumed"]) if c == 1]
 
-plt.scatter(all_impulses, all_angles)
+plt.scatter(all_impulses, all_angles, alpha=.5)
+plt.show()
+
+mu_impulse = data["mu_impulse"]
+mu_angle = data["mu_angle"]
+
+plt.scatter(mu_impulse, mu_angle, alpha=.5)
+plt.show()
+
+sigma_impulse = data["sigma_impulse"]
+sigma_angle = data["sigma_angle"]
+
+plt.scatter(sigma_impulse, sigma_angle, alpha=.5)
 plt.show()
 
 plot_all_consumption_sequences(all_impulses, all_angles, consumption_timestamps)

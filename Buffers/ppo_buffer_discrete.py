@@ -15,6 +15,9 @@ class PPOBufferDiscrete(BasePPOBuffer):
 
         self.actor_loss_buffer = []
 
+        # For assay saving (Make more elegant)
+        self.multivariate = True
+
     def reset(self):
         super().reset()
         # Buffer for training
@@ -125,3 +128,7 @@ class PPOBufferDiscrete(BasePPOBuffer):
 
         # TODO: Add methods for detecting values outside of range.
 
+    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id):
+        hdf5_file, assay_group = BasePPOBuffer.save_assay_data(self, assay_id, data_save_location, assay_configuration_id)
+
+        hdf5_file.close()
