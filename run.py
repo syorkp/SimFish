@@ -584,38 +584,11 @@ ppo_continuous_multivariate_sigmas_alone = [
 ]
 
 
-ppo_recomputation_test = [
+ppo_univariate_buffered = [
     {
-        "Model Name": "ppo_continuous_recomputation",
-        "Environment Name": "ppo_continuous_recomputation",
-        "Trial Number": 1,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": False,
-    },
-    {
-        "Model Name": "ppo_continuous_recomputation",
-        "Environment Name": "ppo_continuous_recomputation",
-        "Trial Number": 2,
+        "Model Name": "ppo_continuous_buffered",
+        "Environment Name": "ppo_continuous_buffered",
+        "Trial Number": 3,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -642,7 +615,7 @@ ppo_recomputation_test = [
     {
         "Model Name": "ppo_continuous_buffered",
         "Environment Name": "ppo_continuous_buffered",
-        "Trial Number": 1,
+        "Trial Number": 4,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -669,7 +642,34 @@ ppo_recomputation_test = [
     {
         "Model Name": "ppo_continuous_buffered",
         "Environment Name": "ppo_continuous_buffered",
-        "Trial Number": 2,
+        "Trial Number": 5,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 6,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": False,
+    },
+    {
+        "Model Name": "ppo_continuous_buffered",
+        "Environment Name": "ppo_continuous_buffered",
+        "Trial Number": 6,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -727,5 +727,5 @@ ppo_test = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_continuous_multivariate_sigmas_alone, parallel_jobs=4)
+manager = TrialManager(ppo_univariate_buffered, parallel_jobs=4)
 manager.run_priority_loop()
