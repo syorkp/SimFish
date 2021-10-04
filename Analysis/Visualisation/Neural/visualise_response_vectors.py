@@ -305,6 +305,15 @@ def get_transition_points_and_order(groups, vectors):
     return transition_points, ordered_atas
 
 
+
+# full_rv = create_full_response_vector(f"ppo_continuous_multivariate-9", background=True)
+# full_rv = np.array(full_rv)
+# full_rv, full_rv2 = list(full_rv[:, :int(len(full_rv[0])/2)]), list(full_rv[:, int(len(full_rv[0])/2):])
+# full_sv = create_full_stimulus_vector(f"ppo_continuous_multivariate-9")
+# full_rv = normalise_response_vectors(full_rv)
+# tps, full_rv = get_transition_points_and_order(data2[f"ppo_continuous_multivariate-9"], full_rv)
+# display_full_response_vector(full_rv, full_sv, "All Stimuli", tps)
+
 # with open(f"../../Categorisation-Data/latest_even.json", 'r') as f:
 #     data2 = json.load(f)
 # with open(f"../../Categorisation-Data/final_even.json", 'r') as f:

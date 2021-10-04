@@ -170,4 +170,10 @@ class PPOBufferContinuous(BasePPOBuffer):
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id):
         hdf5_file, assay_group = BasePPOBuffer.save_assay_data(self, assay_id, data_save_location, assay_configuration_id)
 
+        if "environmental positions" in self.recordings:
+            self.create_data_group("mu_impulse", np.array(self.mu_i_buffer)[:, 0], assay_group)
+            self.create_data_group("mu_angle", np.array(self.mu_a_buffer)[:, 0], assay_group)
+            self.create_data_group("sigma_impulse", np.array(self.si_i_buffer)[:, 0], assay_group)
+            self.create_data_group("sigma_angle", np.array(self.si_a_buffer)[:, 0], assay_group)
+
         hdf5_file.close()

@@ -274,19 +274,19 @@ def display_selectivity_tally(selectivities, stimulus_vector):
 
     plt.show()
 
-cats = []
-sels = []
-for i in [4, 5, 6, 8]:
-    full_rv = create_full_response_vector(f"new_even_prey_ref-{i}")
-    full_sv = create_full_stimulus_vector(f"new_even_prey_ref-{i}")
-    sel = label_all_units_selectivities(full_rv, full_sv)
-    sels.append(sel)
-    # display_selectivity_tally(sel, full_sv)
-    cat = assign_neuron_names(sel)
-    predator_ns = [j for j, c in enumerate(cat) if c == "Prey-Only"]
-    cats.append(cat)
-display_selectivity_tally2(sels)
-display_categories_counts(cats)
+# cats = []
+# sels = []
+# for i in [4, 5, 6, 8]:
+#     full_rv = create_full_response_vector(f"new_even_prey_ref-{i}")
+#     full_sv = create_full_stimulus_vector(f"new_even_prey_ref-{i}")
+#     sel = label_all_units_selectivities(full_rv, full_sv)
+#     sels.append(sel)
+#     # display_selectivity_tally(sel, full_sv)
+#     cat = assign_neuron_names(sel)
+#     predator_ns = [j for j, c in enumerate(cat) if c == "Prey-Only"]
+#     cats.append(cat)
+# display_selectivity_tally2(sels)
+# display_categories_counts(cats)
 #
 # cats = []
 

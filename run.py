@@ -429,12 +429,425 @@ ppo_assay_configuration_univariate = [
     },
 ]
 
+ppo_assay_configuration_extra = [
+#     {
+#         "Model Name": "ppo_continuous_multivariate",
+#         "Environment Name": "ppo_multivariate_assay",
+#         "Trial Number": 7,
+#         "Assay Configuration Name": "MultivariateData",
+#         "Total Configurations": 3,
+#         "Run Mode": "Assay",
+#         "Tethered": False,
+#         "Realistic Bouts": True,
+#         "Continuous Actions": True,
+#         "Learning Algorithm": "PPO",
+#         "Priority": 2,
+#         "Using GPU": True,
+#         "monitor gpu": False,
+#         "set random seed": True,
+#         "Assays": [
+#             {
+#                 "assay id": "Naturalistic-5",
+#                 "stimulus paradigm": "Naturalistic",
+#                 "duration": 1000,
+#                 "Tethered": False,
+#                 "save frames": False,
+#                 "random positions": False,
+#                 "background": None,
+#                 "moving": False,
+#                 "save stimuli": False,
+#                 "reset": False,
+#                 "collisions": True,
+#
+#                 "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+#                 "ablations": []
+#             },
+#             {
+#                 "assay id": "Naturalistic-6",
+#                 "stimulus paradigm": "Naturalistic",
+#                 "duration": 1000,
+#                 "Tethered": False,
+#                 "save frames": False,
+#                 "random positions": False,
+#                 "background": None,
+#                 "moving": False,
+#                 "save stimuli": False,
+#
+#                 "reset": False,
+#                 "collisions": True,
+#
+#                 "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+#                 "ablations": []
+#             },
+#             {
+#                 "assay id": "Naturalistic-7",
+#                 "stimulus paradigm": "Naturalistic",
+#                 "duration": 1000,
+#                 "Tethered": False,
+#                 "save frames": False,
+#                 "random positions": False,
+#                 "background": None,
+#                 "moving": False,
+#                 "save stimuli": False,
+#                 "reset": False,
+#                 "collisions": True,
+#
+#                 "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+#                 "ablations": []
+#             },
+#             {
+#                 "assay id": "Naturalistic-8",
+#                 "stimulus paradigm": "Naturalistic",
+#                 "duration": 1000,
+#                 "Tethered": False,
+#                 "save frames": False,
+#                 "random positions": False,
+#                 "background": None,
+#                 "moving": False,
+#                 "save stimuli": False,
+#                 "reset": False,
+#                 "collisions": True,
+#
+#                 "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+#                 "ablations": []
+#             },
+#         ]
+#     },
+#     {
+#         "Model Name": "ppo_continuous_multivariate",
+#         "Environment Name": "ppo_multivariate_assay",
+#         "Trial Number": 9,
+#         "Assay Configuration Name": "MultivariateData",
+#         "Total Configurations": 3,
+#         "Run Mode": "Assay",
+#         "Tethered": False,
+#         "Realistic Bouts": True,
+#         "Continuous Actions": True,
+#         "Learning Algorithm": "PPO",
+#         "Priority": 2,
+#         "Using GPU": True,
+#         "monitor gpu": False,
+#         "set random seed": True,
+#         "Assays": [
+#             {
+#                 "assay id": "Naturalistic-5",
+#                 "stimulus paradigm": "Naturalistic",
+#                 "duration": 1000,
+#                 "Tethered": False,
+#                 "save frames": False,
+#                 "random positions": False,
+#                 "background": None,
+#                 "moving": False,
+#                 "save stimuli": False,
+#                 "reset": False,
+#                 "collisions": True,
+#
+#                 "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+#                 "ablations": []
+#             },
+#             {
+#                 "assay id": "Naturalistic-6",
+#                 "stimulus paradigm": "Naturalistic",
+#                 "duration": 1000,
+#                 "Tethered": False,
+#                 "save frames": False,
+#                 "random positions": False,
+#                 "background": None,
+#                 "moving": False,
+#                 "save stimuli": False,
+#                 "reset": False,
+#                 "collisions": True,
+#
+#                 "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+#                 "ablations": []
+#             },
+#             {
+#                 "assay id": "Naturalistic-7",
+#                 "stimulus paradigm": "Naturalistic",
+#                 "duration": 1000,
+#                 "Tethered": False,
+#                 "save frames": False,
+#                 "random positions": False,
+#                 "background": None,
+#                 "moving": False,
+#                 "save stimuli": False,
+#                 "reset": False,
+#                 "collisions": True,
+#
+#                 "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+#                 "ablations": []
+#             },
+#             {
+#                 "assay id": "Naturalistic-8",
+#                 "stimulus paradigm": "Naturalistic",
+#                 "duration": 1000,
+#                 "Tethered": False,
+#                 "save frames": False,
+#                 "random positions": False,
+#                 "background": None,
+#                 "moving": False,
+#                 "save stimuli": False,
+#                 "reset": False,
+#                 "collisions": True,
+#
+#                 "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+#                 "ablations": []
+#             },
+#         ]
+#     },
+# {
+#         "Model Name": "ppo_multivariate_bptt",
+#         "Environment Name": "ppo_multivariate_assay",
+#         "Trial Number": 2,
+#         "Assay Configuration Name": "MultivariateData",
+#         "Total Configurations": 3,
+#         "Run Mode": "Assay",
+#         "Tethered": False,
+#         "Realistic Bouts": True,
+#         "Continuous Actions": True,
+#         "Learning Algorithm": "PPO",
+#         "Priority": 2,
+#         "Using GPU": True,
+#         "monitor gpu": False,
+#         "set random seed": True,
+#         "Assays": [
+#             {
+#                 "assay id": "Naturalistic-5",
+#                 "stimulus paradigm": "Naturalistic",
+#                 "duration": 1000,
+#                 "Tethered": False,
+#                 "save frames": False,
+#                 "random positions": False,
+#                 "background": None,
+#                 "moving": False,
+#                 "save stimuli": False,
+#                 "reset": False,
+#                 "collisions": True,
+#
+#                 "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+#                 "ablations": []
+#             },
+#             {
+#                 "assay id": "Naturalistic-6",
+#                 "stimulus paradigm": "Naturalistic",
+#                 "duration": 1000,
+#                 "Tethered": False,
+#                 "save frames": False,
+#                 "random positions": False,
+#                 "background": None,
+#                 "moving": False,
+#                 "save stimuli": False,
+#                 "reset": False,
+#                 "collisions": True,
+#
+#                 "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+#                 "ablations": []
+#             },
+#             {
+#                 "assay id": "Naturalistic-7",
+#                 "stimulus paradigm": "Naturalistic",
+#                 "duration": 1000,
+#                 "Tethered": False,
+#                 "save frames": False,
+#                 "random positions": False,
+#                 "background": None,
+#                 "moving": False,
+#                 "save stimuli": False,
+#                 "reset": False,
+#                 "collisions": True,
+#
+#                 "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+#                 "ablations": []
+#             },
+#             {
+#                 "assay id": "Naturalistic-8",
+#                 "stimulus paradigm": "Naturalistic",
+#                 "duration": 1000,
+#                 "Tethered": False,
+#                 "save frames": False,
+#                 "random positions": False,
+#                 "background": None,
+#                 "moving": False,
+#                 "save stimuli": False,
+#                 "reset": False,
+#                 "collisions": True,
+#
+#                 "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+#                 "ablations": []
+#             },
+#         ]
+#     },
+    {
+        "Model Name": "ppo_continuous_buffered",
+        "Environment Name": "ppo_univariate_assay",
+        "Trial Number": 2,
+        "Assay Configuration Name": "MultivariateData",
+        "Total Configurations": 3,
+        "Run Mode": "Assay",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "set random seed": True,
+        "Assays": [
+            # {
+            #     "assay id": "Naturalistic-1",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 1000,
+            #     "Tethered": False,
+            #     "save frames": False,
+            #     "random positions": False,
+            #     "background": None,
+            #     "moving": False,
+            #     "save stimuli": False,
+            #     "reset": False,
+            #     "collisions": True,
+            #
+            #     "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+            #     "ablations": []
+            # },
+            {
+                "assay id": "Naturalistic-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": False,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": True,
+
+                "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+                "ablations": []
+            },
+            {
+                "assay id": "Naturalistic-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": False,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": True,
+
+                "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+                "ablations": []
+            },
+            {
+                "assay id": "Naturalistic-4",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": False,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": True,
+
+                "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+                "ablations": []
+            },
+        ]
+    },
+]
 
 
 ppo_assay_configuration = [
+    # {
+    #     "Model Name": "ppo_multivariate_bptt",
+    #     "Environment Name": "ppo_multivariate_assay",
+    #     "Trial Number": 2,
+    #     "Assay Configuration Name": "MultivariateData",
+    #     "Total Configurations": 3,
+    #     "Run Mode": "Assay",
+    #     "Tethered": False,
+    #     "Realistic Bouts": True,
+    #     "Continuous Actions": True,
+    #     "Learning Algorithm": "PPO",
+    #     "Priority": 2,
+    #     "Using GPU": True,
+    #     "monitor gpu": False,
+    #     "set random seed": True,
+    #     "Assays": [
+    #         {
+    #             "assay id": "Naturalistic-5",
+    #             "stimulus paradigm": "Naturalistic",
+    #             "duration": 1000,
+    #             "Tethered": False,
+    #             "save frames": False,
+    #             "random positions": False,
+    #             "background": None,
+    #             "moving": False,
+    #             "save stimuli": False,
+    #             "reset": False,
+    #             "collisions": True,
+    #
+    #             "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+    #             "ablations": []
+    #         },
+    #         {
+    #             "assay id": "Naturalistic-6",
+    #             "stimulus paradigm": "Naturalistic",
+    #             "duration": 1000,
+    #             "Tethered": False,
+    #             "save frames": False,
+    #             "random positions": False,
+    #             "background": None,
+    #             "moving": False,
+    #             "save stimuli": False,
+    #             "reset": False,
+    #             "collisions": True,
+    #
+    #             "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+    #             "ablations": []
+    #         },
+    #         {
+    #             "assay id": "Naturalistic-7",
+    #             "stimulus paradigm": "Naturalistic",
+    #             "duration": 1000,
+    #             "Tethered": False,
+    #             "save frames": False,
+    #             "random positions": False,
+    #             "background": None,
+    #             "moving": False,
+    #             "save stimuli": False,
+    #             "reset": False,
+    #             "collisions": True,
+    #
+    #             "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+    #             "ablations": []
+    #         },
+    #         {
+    #             "assay id": "Naturalistic-8",
+    #             "stimulus paradigm": "Naturalistic",
+    #             "duration": 1000,
+    #             "Tethered": False,
+    #             "save frames": False,
+    #             "random positions": False,
+    #             "background": None,
+    #             "moving": False,
+    #             "save stimuli": False,
+    #             "reset": False,
+    #             "collisions": True,
+    #
+    #             "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+    #             "ablations": []
+    #         },
+    #     ]
+    # },
     {
         "Model Name": "ppo_continuous_buffered",
-        "Environment Name": "ppo_multivariate_assay",
+        "Environment Name": "ppo_univariate_assay",
         "Trial Number": 2,
         "Assay Configuration Name": "MultivariateData",
         "Total Configurations": 3,
@@ -449,11 +862,59 @@ ppo_assay_configuration = [
         "set random seed": True,
         "Assays": [
             {
-                "assay id": "Naturalistic-1",
+                "assay id": "Naturalistic-5",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
-                "save frames": True,
+                "save frames": False,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": True,
+
+                "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+                "ablations": []
+            },
+            {
+                "assay id": "Naturalistic-6",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": False,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": True,
+
+                "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+                "ablations": []
+            },
+            {
+                "assay id": "Naturalistic-7",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": False,
+                "random positions": False,
+                "background": None,
+                "moving": False,
+                "save stimuli": False,
+                "reset": False,
+                "collisions": True,
+
+                "recordings": ["convolutional layers", "rnn state", "environmental positions", "reward assessments"],
+                "ablations": []
+            },
+            {
+                "assay id": "Naturalistic-8",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": False,
                 "random positions": False,
                 "background": None,
                 "moving": False,
@@ -693,5 +1154,5 @@ ppo_univariate_buffered = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(vrv_config, parallel_jobs=1)
+manager = TrialManager(ppo_continuous_multivariate_sigmas_alone, parallel_jobs=3)
 manager.run_priority_loop()

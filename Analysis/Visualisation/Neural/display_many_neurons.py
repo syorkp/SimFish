@@ -325,9 +325,10 @@ def plot_artificial_traces(prey_pred_data, prey_size_data, directional_data, pre
     # plt.show()
 
 
-data1 = load_data("ppo_continuous_multivariate-7", "MultivariateData", "Naturalistic-1")
+#data1 = load_data("ppo_continuous_multivariate-7", "MultivariateData", "Naturalistic-1")
 # data1 = load_data("ppo_continuous_multivariate-40", "MultivariateData", "Naturalistic-1")
-# data1 = load_data("ppo_multivariate_bptt-2", "MultivariateData", "Naturalistic-1")
+data1 = load_data("ppo_multivariate_bptt-2", "MultivariateData", "Naturalistic-1")
+data1a = load_data("ppo_multivariate_bptt-2", "Prey-Full-Response-Vector", "Prey-Static-5")
 
 unit_activity1a = [[state[0, 0, j] for i, state in enumerate(data1["rnn_state_actor"])] for j in range(512)]
 plot_traces(unit_activity1a)

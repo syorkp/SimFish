@@ -61,35 +61,103 @@ def plot_all_consumption_sequences(all_impulses, all_angles, consumption_times):
     plt.show()
 
 
+def get_multiple_actions(p1, p2, p3, n=1):
+    consumption_timestamps = np.array([])
+    all_impulses = np.array([])
+    all_angles = np.array([])
+    predation_sequences = np.array([])
+    for i in range(1, n+1):
+        if i > 12:
+            data = load_data(p1, f"{p2}-2", f"{p3} {i}")
+        else:
+            data = load_data(p1, p2, f"{p3}-{i}")
+        all_impulses = np.concatenate((all_impulses, data["impulse"][1:]))
+        all_angles = np.concatenate((all_angles, data["angle"][1:]))
+        consumption_timestamps = np.concatenate((consumption_timestamps, [i for i, c in enumerate(data["consumed"]) if c == 1]))
+        x = extract_consumption_action_sequences(data)
+        x = [i for s in x for i in s]
+        predation_sequences = np.concatenate((predation_sequences, x))
+
+    return all_impulses, all_angles, consumption_timestamps, predation_sequences
+
+
+def get_multiple_means(p1, p2, p3, n=1):
+    all_impulses = np.array([])
+    all_angles = np.array([])
+    for i in range(1, n+1):
+        if i > 12:
+            data = load_data(p1, f"{p2}-2", f"{p3} {i}")
+        else:
+            data = load_data(p1, p2, f"{p3}-{i}")
+        all_impulses = np.concatenate((all_impulses, data["mu_impulse"][1:, 0]))
+        all_angles = np.concatenate((all_angles, data["mu_angle"][1:, 0]))
+    return all_impulses, all_angles
+
+
+def extract_consumption_action_sequences(data, n=20):
+    """Returns all action sequences that occur n steps before consumption"""
+    consumption_timestamps = [i for i, a in enumerate(data["consumed"]) if a == 1]
+    prey_c_t = []
+    action_sequences = []
+    while len(consumption_timestamps) > 0:
+        index = consumption_timestamps.pop(0)
+        prey_capture_timestamps = [i for i in range(index-n+1, index+1) if i >= 0]
+        prey_c_t.append(prey_capture_timestamps)
+    return prey_c_t
+
 # data = load_data("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic-1")
-data = load_data("ppo_continuous_multivariate-7", "MultivariateData", "Naturalistic-1")
+# data = load_data("ppo_continuous_multivariate-7", "MultivariateData", "Naturalistic-1")
 # data = load_data("ppo_multivariate_bptt-2", "MultivariateData", "Naturalistic-1")
 
-all_impulses = data["impulse"]
-all_angles = data["angle"]
-consumption_timestamps = [i for i, c in enumerate(data["consumed"]) if c == 1]
 
-plt.scatter(all_impulses, all_angles, alpha=.5)
+# all_impulses, all_angles = get_multiple_actions("ppo_continuous_multivariate-7", "MultivariateData", "Naturalistic", 8)
+# mu_impulse, mu_angle = get_multiple_means("ppo_continuous_multivariate-7", "MultivariateData", "Naturalistic", 8)
+
+# all_impulses, all_angles, consumption_timestamps, predation_sequences = get_multiple_actions("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic", 8)
+# mu_impulse, mu_angle = get_multiple_means("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic", 8)
+
+all_impulses, all_angles, consumption_timestamps, predation_sequences = get_multiple_actions("ppo_continuous_buffered-2", "MultivariateData", "Naturalistic", 8)
+mu_impulse, mu_angle = get_multiple_means("ppo_continuous_buffered-2", "MultivariateData", "Naturalistic", 8)
+consumption_timestamps = consumption_timestamps.astype(int)
+consumption_timestamps = consumption_timestamps.tolist()
+
+plt.scatter(all_impulses, all_angles, alpha=.2)
 plt.show()
 
-mu_impulse = data["mu_impulse"]
-mu_angle = data["mu_angle"]
 
-plt.scatter(mu_impulse, mu_angle, alpha=.5)
+heatmap, xedges, yedges = np.histogram2d(mu_impulse*10, mu_angle, bins=50)
+extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
+
+plt.clf()
+plt.imshow(heatmap.T, extent=extent, origin='lower')
 plt.show()
 
-sigma_impulse = data["sigma_impulse"]
-sigma_angle = data["sigma_angle"]
-
-plt.scatter(sigma_impulse, sigma_angle, alpha=.5)
+plt.scatter(mu_impulse, mu_angle, alpha=.2)
+consumption_mu_imp = [a for i, a in enumerate(mu_impulse) if i in consumption_timestamps]
+consumption_mu_ang = [a for i, a in enumerate(mu_angle) if i in consumption_timestamps]
+plt.scatter(consumption_mu_imp, consumption_mu_ang, alpha=.2, color="r")
 plt.show()
+
+
+plt.scatter(mu_impulse, mu_angle, alpha=.2)
+consumption_mu_imp = [a for i, a in enumerate(mu_impulse) if i in predation_sequences]
+consumption_mu_ang = [a for i, a in enumerate(mu_angle) if i in predation_sequences]
+plt.scatter(consumption_mu_imp, consumption_mu_ang, alpha=.2, color="r")
+plt.show()
+
+
+# sigma_impulse = data["sigma_impulse"]
+# sigma_angle = data["sigma_angle"]
+#
+# plt.scatter(sigma_impulse, sigma_angle, alpha=.5)
+# plt.show()
 
 plot_all_consumption_sequences(all_impulses, all_angles, consumption_timestamps)
 
-plt.hist(all_impulses, bins=20)
+plt.hist(all_impulses, bins=60)
 plt.show()
 
-plt.hist(all_angles, bins=20)
+plt.hist(all_angles, bins=60)
 plt.show()
 
 

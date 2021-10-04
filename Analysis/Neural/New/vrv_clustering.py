@@ -53,18 +53,18 @@ def save_neuron_groups(model_names, neuron_groups, group_number, group_name):
 # full_rv3 = create_full_response_vector("new_even_prey_ref-6", background=False)
 # full_rv4 = create_full_response_vector("new_even_prey_ref-8", background=False)
 
-full_rv1 = create_full_response_vector("new_even_prey_ref-1", background=False)
-full_rv2 = create_full_response_vector("new_even_prey_ref-2", background=False)
-full_rv3 = create_full_response_vector("new_even_prey_ref-3", background=False)
-full_rv4 = create_full_response_vector("new_even_prey_ref-4", background=False)
+full_rv1 = create_full_response_vector("ppo_continuous_multivariate-9", background=False)
+full_rv2 = create_full_response_vector("ppo_continuous_multivariate-7", background=False)
+# full_rv3 = create_full_response_vector("new_even_prey_ref-3", background=False)
+# full_rv4 = create_full_response_vector("new_even_prey_ref-4", background=False)
 
-full_sv = create_full_stimulus_vector("new_even_prey_ref-4")
+full_sv = create_full_stimulus_vector("ppo_continuous_multivariate-9")
 
-model_l, transition_points = knn_clustering_assign_categories([full_rv1, full_rv2, full_rv3, full_rv4], full_sv, 20)
-save_neuron_groups(["new_even_prey_ref-1",
-                        "new_even_prey_ref-2",
-                        "new_even_prey_ref-3",
-                        "new_even_prey_ref-4"], model_l, 20, "final_even2")
+model_l, transition_points = knn_clustering_assign_categories([full_rv1, full_rv2], full_sv, 20)#, full_rv2, full_rv3, full_rv4], full_sv, 20)
+# save_neuron_groups(["new_even_prey_ref-1",
+#                         "new_even_prey_ref-2",
+#                         "new_even_prey_ref-3",
+#                         "new_even_prey_ref-4"], model_l, 20, "final_even2")
 
 
 # Do clustering over many models:

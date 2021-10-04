@@ -19,6 +19,17 @@ def get_stimulus_vector(stimulus_data, stimulus):
 
 
 def get_all_neuron_vectors(all_data, stimulus, stimulus_data, neuron_type):
+    # Modified for new data type TODO: Fix guesswork for neuron choice
+    n_neurons = all_data[neuron_type].shape[3]
+    vectors = []
+    for i in range(n_neurons):
+        neural_data = all_data[neuron_type][:, 0, 0, i]
+        vector = get_neuron_vector(neural_data, stimulus_data, stimulus)
+        vectors.append(vector)
+    return vectors
+
+
+def get_all_neuron_vectors_old_diss(all_data, stimulus, stimulus_data, neuron_type):
     n_neurons = all_data[neuron_type].shape[2]
     vectors = []
     for i in range(n_neurons):
@@ -26,7 +37,6 @@ def get_all_neuron_vectors(all_data, stimulus, stimulus_data, neuron_type):
         vector = get_neuron_vector(neural_data, stimulus_data, stimulus)
         vectors.append(vector)
     return vectors
-
 
 def get_conv_neuron_vectors(all_data, stimulus, stimulus_data, neuron_type):
     n_neurons = all_data[neuron_type].shape[-1]
@@ -85,6 +95,7 @@ def normalise_vrvs(vectors):
 def create_full_stimulus_vector(model_name, background=False):
     full_stimulus_vector = []
     file_precursors = ["Prey", "Predator"]
+    file_precursors = ["Prey"]  #TODO: Change back later
     prey_assay_ids = ["Prey-Static-5", "Prey-Static-10", "Prey-Static-15",
                       "Prey-Left-5", "Prey-Left-10", "Prey-Left-15",
                       "Prey-Right-5", "Prey-Right-10", "Prey-Right-15",
@@ -118,6 +129,7 @@ def create_full_response_vector(model_name, background=False):
     # Creates the full 484 dimensional response vector.
     response_vectors = [[] for i in range(512)]
     file_precursors = ["Prey", "Predator"]
+    file_precursors = ["Prey"]  # TODO: Switch back when using predators
     prey_assay_ids = ["Prey-Static-5", "Prey-Static-10", "Prey-Static-15",
                       "Prey-Left-5", "Prey-Left-10", "Prey-Left-15",
                       "Prey-Right-5", "Prey-Right-10", "Prey-Right-15",
@@ -135,14 +147,14 @@ def create_full_response_vector(model_name, background=False):
                 data = load_data(model_name, f"{file_p}-Full-Response-Vector", aid)
                 stimulus_data = load_stimulus_data(model_name, f"{file_p}-Full-Response-Vector", aid)
                 # stimulus_data = new_load_stimulus_data(model_name, f"{file_p}-Full-Response-Vector", aid)
-                new_vector_section = get_all_neuron_vectors(data, "prey 1", stimulus_data, "rnn state")
+                new_vector_section = get_all_neuron_vectors(data, "prey 1", stimulus_data, "rnn_state_actor")
                 for i, n in enumerate(response_vectors):
                     response_vectors[i] = n + new_vector_section[i]
         elif "Predator" in file_p:
             for aid in predator_assay_ids:
                 data = load_data(model_name, f"{file_p}-Full-Response-Vector", aid)
                 stimulus_data = load_stimulus_data(model_name, f"{file_p}-Full-Response-Vector", aid)
-                new_vector_section = get_all_neuron_vectors(data, "predator 1", stimulus_data, "rnn state")
+                new_vector_section = get_all_neuron_vectors(data, "predator 1", stimulus_data, "rnn_state_actor")
                 for i, n in enumerate(response_vectors):
                     response_vectors[i] = n + new_vector_section[i]
     return response_vectors

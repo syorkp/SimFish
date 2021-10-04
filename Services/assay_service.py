@@ -96,6 +96,7 @@ class AssayService(BaseService):
         if "reward assessments" in self.buffer.recordings:
             self.buffer.calculate_advantages_and_returns()
         self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id)
+        print(f"Assay: {assay['assay id']} Completed")
 
     def create_testing_environment(self, assay):
         """
