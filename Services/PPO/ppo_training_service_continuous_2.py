@@ -6,6 +6,7 @@ import tensorflow.compat.v1 as tf
 
 from Buffers.ppo_buffer_continuous import PPOBufferContinuous
 from Buffers.ppo_buffer_continuous_multivariate import PPOBufferContinuousMultivariate
+from Buffers.ppo_buffer_continuous_multivariate2 import PPOBufferContinuousMultivariate2
 
 from Services.PPO.continuous_ppo import ContinuousPPO
 from Services.training_service import TrainingService
@@ -62,7 +63,7 @@ class PPOTrainingServiceContinuous2(TrainingService, ContinuousPPO):
         self.sb_emulator = True
 
         if self.multivariate:
-            self.buffer = PPOBufferContinuousMultivariate(gamma=self.learning_params["gamma"], lmbda=self.learning_params["lambda"], batch_size=self.learning_params["batch_size"],
+            self.buffer = PPOBufferContinuousMultivariate2(gamma=self.learning_params["gamma"], lmbda=self.learning_params["lambda"], batch_size=self.learning_params["batch_size"],
                                               train_length=self.learning_params["trace_length"], assay=False, debug=False)
         else:
             self.buffer = PPOBufferContinuous(gamma=self.learning_params["gamma"], lmbda=self.learning_params["lambda"],  batch_size=self.learning_params["batch_size"],
