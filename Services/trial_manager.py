@@ -8,6 +8,8 @@ import Services.DQN.dqn_assay_service as assay
 import Services.PPO.ppo_training_service_continuous as ppo_training_continuous
 import Services.PPO.ppo_assay_service_continuous as ppo_assay_continuous
 
+import Services.PPO.ppo_training_service_continuous_2 as ppo_training_continuous_2
+
 import Services.PPO.ppo_training_service_discrete as ppo_training_discrete
 import Services.PPO.ppo_assay_service_discrete as ppo_assay_discrete
 
@@ -123,7 +125,11 @@ class TrialManager:
 
             if trial["Continuous Actions"]:
                 if trial["Learning Algorithm"] == "PPO":
-                    new_job = multiprocessing.Process(target=ppo_training_continuous.ppo_training_target_continuous,
+                    if trial["SB Emulator"]:
+                        new_job = multiprocessing.Process(target=ppo_training_continuous_2.ppo_training_target_continuous,
+                                                          args=(trial, total_steps, episode_number, memory_fraction, configuration_index))
+                    else:
+                        new_job = multiprocessing.Process(target=ppo_training_continuous.ppo_training_target_continuous,
                                                       args=(trial, total_steps, episode_number, memory_fraction, configuration_index))
                 elif trial["Learning Algorithm"] == "A2C":
                     new_job = multiprocessing.Process(target=a2c_training.a2c_training_target,

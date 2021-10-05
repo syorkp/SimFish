@@ -15,28 +15,28 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 
 def ppo_training_target_continuous(trial, total_steps, episode_number, memory_fraction, configuration_index):
-    services = PPOTrainingServiceContinuous(model_name=trial["Model Name"],
-                                            trial_number=trial["Trial Number"],
-                                            total_steps=total_steps,
-                                            episode_number=episode_number,
-                                            monitor_gpu=trial["monitor gpu"],
-                                            using_gpu=trial["Using GPU"],
-                                            memory_fraction=memory_fraction,
-                                            config_name=trial["Environment Name"],
-                                            realistic_bouts=trial["Realistic Bouts"],
-                                            continuous_actions=trial["Continuous Actions"],
+    services = PPOTrainingServiceContinuous2(model_name=trial["Model Name"],
+                                             trial_number=trial["Trial Number"],
+                                             total_steps=total_steps,
+                                             episode_number=episode_number,
+                                             monitor_gpu=trial["monitor gpu"],
+                                             using_gpu=trial["Using GPU"],
+                                             memory_fraction=memory_fraction,
+                                             config_name=trial["Environment Name"],
+                                             realistic_bouts=trial["Realistic Bouts"],
+                                             continuous_actions=trial["Continuous Actions"],
 
-                                            model_exists=trial["Model Exists"],
-                                            episode_transitions=trial["Episode Transitions"],
-                                            total_configurations=trial["Total Configurations"],
-                                            conditional_transitions=trial["Conditional Transitions"],
-                                            configuration_index=configuration_index,
-                                            full_logs=trial["Full Logs"]
-                                            )
+                                             model_exists=trial["Model Exists"],
+                                             episode_transitions=trial["Episode Transitions"],
+                                             total_configurations=trial["Total Configurations"],
+                                             conditional_transitions=trial["Conditional Transitions"],
+                                             configuration_index=configuration_index,
+                                             full_logs=trial["Full Logs"]
+                                             )
     services.run()
 
 
-class PPOTrainingServiceContinuous(TrainingService, ContinuousPPO):
+class PPOTrainingServiceContinuous2(TrainingService, ContinuousPPO):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_actions, model_exists, episode_transitions,
@@ -56,9 +56,10 @@ class PPOTrainingServiceContinuous(TrainingService, ContinuousPPO):
 
         self.batch_size = self.learning_params["batch_size"]
         self.trace_length = self.learning_params["trace_length"]
-        self.sb_emulator = False
 
         self.multivariate = self.learning_params["multivariate"]
+
+        self.sb_emulator = True
 
         if self.multivariate:
             self.buffer = PPOBufferContinuousMultivariate(gamma=self.learning_params["gamma"], lmbda=self.learning_params["lambda"], batch_size=self.learning_params["batch_size"],
@@ -87,7 +88,7 @@ class PPOTrainingServiceContinuous(TrainingService, ContinuousPPO):
         # Train the network on the episode buffer
         self.buffer.calculate_advantages_and_returns()
         if self.multivariate:
-            ContinuousPPO.train_network_multivariate(self)
+            ContinuousPPO.train_network_multivariate2(self)
         else:
             ContinuousPPO.train_network(self)
 
@@ -108,7 +109,7 @@ Total episode reward: {self.total_episode_reward}\n""")
                   rnn_state_critic_ref):
         if self.multivariate:
             if self.full_logs:
-                return self._training_step_multivariate_full_logs(o, internal_state, a, rnn_state_actor,
+                return self._training_step_multivariate_full_logs2(o, internal_state, a, rnn_state_actor,
                                                                   rnn_state_actor_ref, rnn_state_critic,
                                                                   rnn_state_critic_ref)
             else:

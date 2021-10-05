@@ -55,6 +55,8 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
 
         self.batch_size = self.learning_params["batch_size"]
         self.trace_length = self.learning_params["trace_length"]
+        self.sb_emulator = False
+
         self.step_drop = (self.learning_params['startE'] - self.learning_params['endE']) / self.learning_params[
             'anneling_steps']
 

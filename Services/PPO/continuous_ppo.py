@@ -6,6 +6,7 @@ import tensorflow.compat.v1 as tf
 
 from Networks.PPO.proximal_policy_optimizer_continuous import PPONetworkActor
 from Networks.PPO.proximal_policy_optimizer_continuous_multivariate import PPONetworkActorMultivariate
+from Networks.PPO.proximal_policy_optimizer_continuous_multivariate2 import PPONetworkActorMultivariate2
 from Services.PPO.base_ppo import BasePPO
 
 tf.disable_v2_behavior()
@@ -34,16 +35,28 @@ class ContinuousPPO(BasePPO):
         actor_cell, internal_states = BasePPO.create_network(self)
 
         if self.multivariate:
-            self.actor_network = PPONetworkActorMultivariate(simulation=self.simulation,
-                                                             rnn_dim=self.learning_params['rnn_dim_shared'],
-                                                             rnn_cell=actor_cell,
-                                                             my_scope='actor',
-                                                             internal_states=internal_states,
-                                                             max_impulse=self.environment_params['max_impulse'],
-                                                             max_angle_change=self.environment_params[
-                                                                 'max_angle_change'],
-                                                             clip_param=self.environment_params['clip_param']
-                                                             )
+            if self.sb_emulator:
+                self.actor_network = PPONetworkActorMultivariate2(simulation=self.simulation,
+                                                                  rnn_dim=self.learning_params['rnn_dim_shared'],
+                                                                  rnn_cell=actor_cell,
+                                                                  my_scope='actor',
+                                                                  internal_states=internal_states,
+                                                                  max_impulse=self.environment_params['max_impulse'],
+                                                                  max_angle_change=self.environment_params[
+                                                                      'max_angle_change'],
+                                                                  clip_param=self.environment_params['clip_param']
+                                                                  )
+            else:
+                self.actor_network = PPONetworkActorMultivariate(simulation=self.simulation,
+                                                                 rnn_dim=self.learning_params['rnn_dim_shared'],
+                                                                 rnn_cell=actor_cell,
+                                                                 my_scope='actor',
+                                                                 internal_states=internal_states,
+                                                                 max_impulse=self.environment_params['max_impulse'],
+                                                                 max_angle_change=self.environment_params[
+                                                                     'max_angle_change'],
+                                                                 clip_param=self.environment_params['clip_param']
+                                                                 )
 
         else:
             self.actor_network = PPONetworkActor(simulation=self.simulation,
@@ -78,8 +91,9 @@ class ContinuousPPO(BasePPO):
         a = [4.0, 0.0]
         super(ContinuousPPO, self)._episode_loop(a)
 
-    def _assay_step_loop_multivariate(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
-                         rnn_state_critic_ref):
+    def _assay_step_loop_multivariate(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+                                      rnn_state_critic,
+                                      rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
@@ -272,6 +286,94 @@ class ContinuousPPO(BasePPO):
     def _training_step_loop(self, actor_network_to_get, actor_network_feed_dict):
         ...
 
+    def _training_step_multivariate_full_logs2(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+                                               rnn_state_critic,
+                                               rnn_state_critic_ref):
+        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
+        a = [a[0] / self.environment_params['max_impulse'],
+             a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
+
+        # impulse, angle, updated_rnn_state_actor, updated_rnn_state_actor_ref, action_probability, mu_i, si_i, mu_a, \
+        # si_a, mu1, mu1_ref, mu_a1, mu_a_ref = self.sess.run(
+        #     [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.rnn_state_shared,
+        #      self.actor_network.rnn_state_ref,
+        #      self.actor_network.log_prob,
+        #      self.actor_network.mu_impulse_combined, self.actor_network.sigma_impulse_combined,
+        #      self.actor_network.mu_angle_combined,
+        #      self.actor_network.sigma_angle_combined, self.actor_network.mu_impulse, self.actor_network.mu_impulse_ref,
+        #      self.actor_network.mu_angle, self.actor_network.mu_angle_ref
+        #      ],
+        #     feed_dict={self.actor_network.observation: o,
+        #                self.actor_network.internal_state: internal_state,
+        #                self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+        #                self.actor_network.rnn_state_in: rnn_state_actor,
+        #                self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+        #                self.actor_network.batch_size: 1,
+        #                self.actor_network.trainLength: 1,
+        #                }
+        # )
+
+        impulse, angle, updated_rnn_state_actor, updated_rnn_state_actor_ref, action_probability, mu_i, mu_a, \
+        si = self.sess.run(
+            [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.rnn_state_shared,
+             self.actor_network.rnn_state_ref,
+             self.actor_network.log_prob,
+             self.actor_network.mu_impulse_combined,
+             self.actor_network.mu_angle_combined,
+             self.actor_network.sigma_action
+             ],
+            feed_dict={self.actor_network.observation: o,
+                       self.actor_network.internal_state: internal_state,
+                       self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                       self.actor_network.rnn_state_in: rnn_state_actor,
+                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       self.actor_network.batch_size: 1,
+                       self.actor_network.trainLength: 1,
+                       }
+        )
+
+        V, updated_rnn_state_critic, updated_rnn_state_critic_ref = self.sess.run(
+            [self.critic_network.Value_output, self.critic_network.rnn_state_shared,
+             self.critic_network.rnn_state_ref],
+            feed_dict={self.critic_network.observation: o,
+                       self.critic_network.internal_state: internal_state,
+                       self.critic_network.prev_actions: np.reshape(a, (1, 2)),
+                       self.critic_network.rnn_state_in: rnn_state_critic,
+                       self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
+                       self.critic_network.batch_size: 1,
+                       self.critic_network.trainLength: 1,
+                       }
+        )
+
+        action = [impulse[0][0], angle[0][0]]
+
+        # Simulation step
+        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+            action=action,
+            frame_buffer=self.frame_buffer,
+            save_frames=self.save_frames,
+            activations=sa)
+
+        # Update buffer
+        self.buffer.add_training(observation=o,
+                                 internal_state=internal_state,
+                                 action=action,
+                                 reward=r,
+                                 value=V,
+                                 l_p_action=action_probability,
+                                 actor_rnn_state=rnn_state_actor,
+                                 actor_rnn_state_ref=rnn_state_actor_ref,
+                                 critic_rnn_state=rnn_state_critic,
+                                 critic_rnn_state_ref=rnn_state_critic_ref,
+                                 )
+
+        si_i = si[0][0]
+        si_a = si[0][1]
+        self.buffer.add_logging(mu_i, si_i, mu_a, si_a, 0, 0, 0, 0)
+
+        self.total_steps += 1
+        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
+
     def _training_step_multivariate_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                               rnn_state_critic,
                                               rnn_state_critic_ref):
@@ -362,8 +464,8 @@ class ContinuousPPO(BasePPO):
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
 
     def _training_step_multivariate_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                              rnn_state_critic,
-                                              rnn_state_critic_ref):
+                                                 rnn_state_critic,
+                                                 rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
@@ -660,7 +762,8 @@ class ContinuousPPO(BasePPO):
                 # Compute RNN states for start of each trace.
                 actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, \
                 critic_rnn_state_ref_slice = self.compute_rnn_states(batch_key_points,
-                                                                     observation_buffer[:(batch + 1) * self.learning_params["batch_size"]],
+                                                                     observation_buffer[
+                                                                     :(batch + 1) * self.learning_params["batch_size"]],
                                                                      internal_state_buffer[
                                                                      :(batch + 1) * self.learning_params["batch_size"]],
                                                                      previous_action_buffer[
@@ -711,6 +814,93 @@ class ContinuousPPO(BasePPO):
 
                 average_loss_impulse += np.mean(np.abs(loss_actor_val_impulse))
                 average_loss_angle += np.mean(np.abs(loss_actor_val_angle))
+                average_loss_value += np.abs(loss_critic_val)
+
+            self.buffer.add_loss(average_loss_impulse / self.learning_params["n_updates_per_iteration"],
+                                 average_loss_angle / self.learning_params["n_updates_per_iteration"],
+                                 average_loss_value / self.learning_params["n_updates_per_iteration"])
+
+    def train_network_multivariate2(self):
+        observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
+        log_action_probability_buffer, advantage_buffer, return_buffer, \
+        key_rnn_points = self.buffer.get_episode_buffer()
+
+        number_of_batches = int(math.ceil(observation_buffer.shape[0] / self.learning_params["batch_size"]))
+
+        for batch in range(number_of_batches):
+            # Find steps at start of each trace to compute RNN states
+            batch_key_points = [i for i in key_rnn_points if
+                                batch * self.learning_params["batch_size"] * self.learning_params[
+                                    "trace_length"] <= i < (batch + 1) *
+                                self.learning_params["batch_size"] * self.learning_params["trace_length"]]
+
+            # Get the current batch
+            observation_batch, internal_state_batch, action_batch, previous_action_batch, \
+            log_action_probability_batch, advantage_batch, \
+            return_batch, current_batch_size = self.get_batch_multivariate(batch, observation_buffer,
+                                                                           internal_state_buffer,
+                                                                           action_buffer, previous_action_buffer,
+                                                                           log_action_probability_buffer,
+                                                                           advantage_buffer,
+                                                                           return_buffer)
+
+            # Loss value logging
+            average_loss_value = 0
+            average_loss_impulse = 0
+            average_loss_angle = 0
+
+            for i in range(self.learning_params["n_updates_per_iteration"]):
+                # Compute RNN states for start of each trace.
+                actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, \
+                critic_rnn_state_ref_slice = self.compute_rnn_states(batch_key_points,
+                                                                     observation_buffer[
+                                                                     :(batch + 1) * self.learning_params["batch_size"]],
+                                                                     internal_state_buffer[
+                                                                     :(batch + 1) * self.learning_params["batch_size"]],
+                                                                     previous_action_buffer[
+                                                                     :(batch + 1) * self.learning_params[
+                                                                         "batch_size"]])
+
+                # Optimise critic
+                loss_critic_val, _ = self.sess.run(
+                    [self.critic_network.critic_loss, self.critic_network.optimizer],
+                    feed_dict={self.critic_network.observation: observation_batch,
+                               self.critic_network.prev_actions: previous_action_batch,
+                               self.critic_network.internal_state: internal_state_batch,
+                               self.critic_network.rnn_state_in: critic_rnn_state_slice,
+                               self.critic_network.rnn_state_in_ref: critic_rnn_state_ref_slice,
+
+                               self.critic_network.returns_placeholder: return_batch,
+
+                               self.critic_network.trainLength: self.learning_params["trace_length"],
+                               self.critic_network.batch_size: current_batch_size,
+                               self.critic_network.learning_rate: self.learning_params[
+                                                                      "learning_rate_critic"] * current_batch_size
+
+                               })
+
+                # Optimise actor
+                loss_actor_val, _ = self.sess.run(
+                    [self.actor_network.total_loss,
+                     self.actor_network.optimizer],
+                    feed_dict={self.actor_network.observation: observation_batch,
+                               self.actor_network.prev_actions: previous_action_batch,
+                               self.actor_network.internal_state: internal_state_batch,
+                               self.actor_network.rnn_state_in: actor_rnn_state_slice,
+                               self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
+
+                               self.actor_network.action_placeholder: action_batch,
+                               self.actor_network.old_log_prob: log_action_probability_batch,
+                               self.actor_network.scaled_advantage_placeholder: advantage_batch,
+
+                               self.actor_network.trainLength: self.learning_params["trace_length"],
+                               self.actor_network.batch_size: current_batch_size,
+                               self.actor_network.learning_rate: self.learning_params[
+                                                                     "learning_rate_actor"] * current_batch_size
+                               })
+
+                average_loss_impulse += np.mean(np.abs(loss_actor_val))
+                average_loss_angle += np.mean(np.abs(loss_actor_val))
                 average_loss_value += np.abs(loss_critic_val)
 
             self.buffer.add_loss(average_loss_impulse / self.learning_params["n_updates_per_iteration"],
@@ -879,4 +1069,3 @@ class ContinuousPPO(BasePPO):
             self.buffer.add_loss(average_loss_impulse / self.learning_params["n_updates_per_iteration"],
                                  average_loss_angle / self.learning_params["n_updates_per_iteration"],
                                  average_loss_value / self.learning_params["n_updates_per_iteration"])
-
