@@ -933,7 +933,7 @@ sb_test = [
     {
         "Model Name": "ppo_continuous_sb_test",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone",
-        "Trial Number": 4,
+        "Trial Number": 5,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1245,5 +1245,5 @@ ppo_univariate_buffered = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_continuous_multivariate_sigmas_alone, parallel_jobs=4)
+manager = TrialManager(sb_test, parallel_jobs=4)
 manager.run_priority_loop()

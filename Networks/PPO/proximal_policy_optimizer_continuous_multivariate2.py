@@ -76,7 +76,7 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         self.impulse_output = tf.math.multiply(self.impulse_output, max_impulse, name="impulse_output")
         self.angle_output = tf.math.multiply(self.angle_output, max_angle_change, name="angle_output")
 
-        self.log_prob = self.action_distribution.logp(self.action_output)
+        self.neg_log_prob = -self.action_distribution.logp(self.action_output)
 
         #            ----------        Value Outputs       ----------           #
 
@@ -91,34 +91,29 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         self.action_placeholder = tf.placeholder(shape=[None, 2], dtype=tf.float32, name='action_placeholder')
         self.impulse_placeholder, self.angle_placeholder = tf.split(self.action_placeholder, 2, axis=1)
         self.impulse_placeholder = tf.math.divide(self.impulse_placeholder, max_impulse)
-
         self.angle_placeholder = tf.math.divide(self.angle_placeholder, max_angle_change)
-        self.action_placeholder2 = tf.concat([self.impulse_placeholder, self.angle_placeholder], axis=1)
+        self.normalised_action = tf.concat([self.impulse_placeholder, self.angle_placeholder], axis=1)
 
-        self.new_log_prob = self.action_distribution.logp(self.action_placeholder2)
-
-        self.old_log_prob = tf.placeholder(shape=[None], dtype=tf.float32, name='old_log_prob_impulse')
-
+        self.new_neg_log_prob = -self.action_distribution.logp(self.normalised_action)
+        self.old_neg_log_prob = tf.placeholder(shape=[None], dtype=tf.float32, name='old_log_prob_impulse')
         self.scaled_advantage_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='scaled_advantage')
 
-        self.ratio = tf.exp(self.old_log_prob - self.new_log_prob)  # TODO: Check that log probs are negative.
+        self.ratio = tf.exp(self.old_neg_log_prob - self.new_neg_log_prob)
         self.surrogate_loss_1 = -tf.math.multiply(self.ratio, self.scaled_advantage_placeholder)
         self.surrogate_loss_2 = -tf.math.multiply(
             tf.clip_by_value(self.ratio, 1 - clip_param, 1 + clip_param), self.scaled_advantage_placeholder)
-        self.policy_loss = -tf.reduce_mean(tf.maximum(self.surrogate_loss_1, self.surrogate_loss_2))
-
-        self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
+        self.policy_loss = tf.reduce_mean(tf.maximum(self.surrogate_loss_1, self.surrogate_loss_2))
 
         # Value loss
         self.returns_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='returns')
         self.old_value_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='old_value')
-        self.value_cliprange_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='value_cliprange')
-        self.value_clipped = self.old_value_placeholder + tf.clip_by_value(self.value_output-self.old_value_placeholder, -self.value_cliprange_placeholder, self.value_cliprange_placeholder)
+        # self.value_cliprange_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='value_cliprange')
+        # Clip the different between old and new value NOTE: this depends on the reward scaling
+        self.value_clipped = self.old_value_placeholder + tf.clip_by_value(self.value_output-self.old_value_placeholder, -clip_param, clip_param)
 
         self.critic_loss_1 = tf.squared_difference(tf.squeeze(self.value_output), self.returns_placeholder)
         self.critic_loss_2 = tf.squared_difference(tf.squeeze(self.value_clipped), self.returns_placeholder)
         self.value_loss = .5 * tf.reduce_mean(tf.maximum(self.critic_loss_1, self.critic_loss_2))
-        self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
 
         # Entropy
         self.entropy = tf.reduce_mean(self.action_distribution.entropy())
@@ -126,10 +121,24 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         # Combined loss
         self.entropy_coefficient = 0.01
         self.value_coefficient = 0.5
+        self.max_gradient_norm = 0.5
+
         self.total_loss = self.policy_loss - tf.multiply(self.entropy, self.entropy_coefficient) + \
                           tf.multiply(self.value_loss, self.value_coefficient)
-        self.optimizer = tf.train.AdamOptimizer(self.learning_rate, name='optimizer').minimize(
-            self.total_loss)
+        self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
+
+        # Gradient clipping (for stability)
+        self.model_params = tf.trainable_variables()
+        self.gradients = tf.gradients(self.total_loss, self.model_params)
+        self.gradients, _grad_norm = tf.clip_by_global_norm(self.gradients, self.max_gradient_norm)
+        self.gradients = list(zip(self.gradients, self.model_params))
+
+        self.trainer = tf.train.AdamOptimizer(learning_rate=self.learning_rate, epsilon=1e-5)
+        self.train = self.trainer.apply_gradients(self.gradients)
+
+
+        # self.optimizer = tf.train.AdamOptimizer(self.learning_rate, name='optimizer').minimize(
+        #     self.total_loss)
 
 
 

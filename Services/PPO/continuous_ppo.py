@@ -293,11 +293,11 @@ class ContinuousPPO(BasePPO):
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
 
-        impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, action_probability, mu_i, mu_a, \
+        impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability, mu_i, mu_a, \
         si = self.sess.run(
             [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.value_output,
              self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
-             self.actor_network.log_prob,
+             self.actor_network.neg_log_prob,
              self.actor_network.mu_impulse_combined,
              self.actor_network.mu_angle_combined,
              self.actor_network.sigma_action
@@ -327,7 +327,7 @@ class ContinuousPPO(BasePPO):
                                  action=action,
                                  reward=r,
                                  value=V,
-                                 l_p_action=action_probability,
+                                 l_p_action=neg_log_action_probability,
                                  actor_rnn_state=rnn_state_actor,
                                  actor_rnn_state_ref=rnn_state_actor_ref
                                  )
@@ -655,6 +655,47 @@ class ContinuousPPO(BasePPO):
                log_action_probability_batch, advantage_batch, return_batch, \
                current_batch_size
 
+    def get_batch_multivariate2(self, batch, observation_buffer, internal_state_buffer, action_buffer,
+                               previous_action_buffer,
+                               log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer):
+
+        observation_batch = observation_buffer[
+                            batch * self.batch_size: (batch + 1) * self.batch_size]
+        internal_state_batch = internal_state_buffer[
+                               batch * self.batch_size: (batch + 1) * self.batch_size]
+        action_batch = action_buffer[
+                       batch * self.batch_size: (batch + 1) * self.batch_size]
+        previous_action_batch = previous_action_buffer[
+                                batch * self.batch_size: (batch + 1) * self.batch_size]
+        log_action_probability_batch = log_action_probability_buffer[
+                                       batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params[
+                                           "batch_size"]]
+        advantage_batch = advantage_buffer[
+                          batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
+        return_batch = return_buffer[
+                       batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
+
+        value_batch = value_buffer[
+                       batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
+
+        current_batch_size = observation_batch.shape[0]
+
+        # Stacking for correct network dimensions
+        observation_batch = np.vstack(np.vstack(observation_batch))
+        internal_state_batch = np.vstack(np.vstack(internal_state_batch))
+        action_batch = np.reshape(action_batch[:, :, :],
+                                  (self.learning_params["trace_length"] * current_batch_size, 2))
+        previous_action_batch = np.vstack(np.vstack(previous_action_batch))
+        log_action_probability_batch = log_action_probability_batch.flatten()
+        advantage_batch = np.vstack(advantage_batch).flatten()
+        return_batch = np.vstack(np.vstack(return_batch)).flatten()
+        value_batch = value_batch.flatten()
+
+        return observation_batch, internal_state_batch, action_batch, previous_action_batch, \
+               log_action_probability_batch, advantage_batch, return_batch, value_batch, \
+               current_batch_size
+
+
     def get_batch(self, batch, observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer,
                   log_impulse_probability_buffer, log_angle_probability_buffer, advantage_buffer, return_buffer):
 
@@ -787,7 +828,7 @@ class ContinuousPPO(BasePPO):
 
     def train_network_multivariate2(self):
         observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
-        log_action_probability_buffer, advantage_buffer, return_buffer, \
+        log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
         key_rnn_points = self.buffer.get_episode_buffer()
 
         number_of_batches = int(math.ceil(observation_buffer.shape[0] / self.learning_params["batch_size"]))
@@ -802,20 +843,17 @@ class ContinuousPPO(BasePPO):
             # Get the current batch
             observation_batch, internal_state_batch, action_batch, previous_action_batch, \
             log_action_probability_batch, advantage_batch, \
-            return_batch, current_batch_size = self.get_batch_multivariate(batch, observation_buffer,
+            return_batch, previous_value_batch, current_batch_size = self.get_batch_multivariate2(batch, observation_buffer,
                                                                            internal_state_buffer,
                                                                            action_buffer, previous_action_buffer,
                                                                            log_action_probability_buffer,
                                                                            advantage_buffer,
-                                                                           return_buffer)
+                                                                           return_buffer, value_buffer)
 
             # Loss value logging
             average_loss_value = 0
             average_loss_impulse = 0
             average_loss_angle = 0
-
-            n_updates = 1000/number_of_batches
-            frac = 1.0 - (batch - 1.0) / n_updates
 
             for i in range(self.learning_params["n_updates_per_iteration"]):
                 # Compute RNN states for start of each trace.
@@ -828,11 +866,10 @@ class ContinuousPPO(BasePPO):
                                                                      :(batch + 1) * self.learning_params[
                                                                          "batch_size"]])
 
-                old_value_batch = np.array([0.1 for i in range(current_batch_size)])
-                value_cliprange_batch = np.array([0.2 for i in range(current_batch_size)])
+
                 # Optimise actor
                 loss_actor_val, loss_critic_val, _ = self.sess.run(
-                    [self.actor_network.policy_loss, self.actor_network.value_loss, self.actor_network.optimizer],
+                    [self.actor_network.policy_loss, self.actor_network.value_loss, self.actor_network.train],
                     feed_dict={self.actor_network.observation: observation_batch,
                                self.actor_network.prev_actions: previous_action_batch,
                                self.actor_network.internal_state: internal_state_batch,
@@ -840,12 +877,11 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
 
                                self.actor_network.action_placeholder: action_batch,
-                               self.actor_network.old_log_prob: log_action_probability_batch,
+                               self.actor_network.old_neg_log_prob: log_action_probability_batch,
                                self.actor_network.scaled_advantage_placeholder: advantage_batch,
                                self.actor_network.returns_placeholder: return_batch,
 
-                               self.actor_network.old_value_placeholder: old_value_batch,
-                               self.actor_network.value_cliprange_placeholder: value_cliprange_batch,
+                               self.actor_network.old_value_placeholder: previous_value_batch,
 
                                self.actor_network.trainLength: self.learning_params["trace_length"],
                                self.actor_network.batch_size: current_batch_size,
