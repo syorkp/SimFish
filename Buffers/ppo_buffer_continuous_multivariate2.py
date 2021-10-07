@@ -196,6 +196,9 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         return actor_rnn_state_batch, actor_rnn_state_batch_ref
 
     def calculate_advantages_and_returns(self, normalise_advantage=True):
+        # Advantages = returns-values. Then scaled
+        # mb_advs[step] = last_gae_lam = delta + self.gamma * self.lam * nextnonterminal * last_gae_lam
+        # mb_returns = mb_advs + mb_values
         delta = self.reward_buffer[:-1] + self.gamma * self.value_buffer[1:] - self.value_buffer[:-1]
         advantage = self.discount_cumsum(delta, self.gamma * self.lmbda)
         if normalise_advantage:
