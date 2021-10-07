@@ -95,8 +95,8 @@ env = {'width': 1500,  # arena size
        'max_angle_change': np.pi/5,
        'max_impulse': 10.0,  # Up to 50ish
 
-       'distance_penalty_scaling_factor': 0.001,
-       'angle_penalty_scaling_factor': 0.001,
+       'distance_penalty_scaling_factor': 0.00,
+       'angle_penalty_scaling_factor': 0.00,
        'baseline_penalty': 0.002,
 
        # Policy scaffolding
@@ -143,7 +143,7 @@ params = {'num_actions': 10,  # size of action space
           }
 
 
-directory_name = "ppo_continuous_multivariate_sigmas_alone"
+directory_name = "ppo_continuous_multivariate_sigmas_alone2"
 
 # Ensure Output File Exists
 # Ensure Output File Exists
