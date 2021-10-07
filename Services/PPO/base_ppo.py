@@ -51,13 +51,13 @@ class BasePPO:
         self.init_rnn_state_actor_ref = (
             np.zeros([1, self.actor_network.rnn_dim]),
             np.zeros([1, self.actor_network.rnn_dim]))
-
-        self.init_rnn_state_critic = (
-            np.zeros([1, self.critic_network.rnn_dim]),
-            np.zeros([1, self.critic_network.rnn_dim]))
-        self.init_rnn_state_critic_ref = (
-            np.zeros([1, self.critic_network.rnn_dim]),
-            np.zeros([1, self.critic_network.rnn_dim]))
+        #
+        # self.init_rnn_state_critic = (
+        #     np.zeros([1, self.critic_network.rnn_dim]),
+        #     np.zeros([1, self.critic_network.rnn_dim]))
+        # self.init_rnn_state_critic_ref = (
+        #     np.zeros([1, self.critic_network.rnn_dim]),
+        #     np.zeros([1, self.critic_network.rnn_dim]))
 
     def create_network(self):
         """
