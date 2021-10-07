@@ -63,7 +63,7 @@ class PPONetworkActorMultivariate2(BaseNetwork):
 
         self.action_distribution, self.mu_action, self.sigma_action, self.q_value = \
             self.pdtype.proba_distribution_from_latent(self.action_stream, self.action_stream_ref, self.value_stream,
-                                                       self.value_stream_ref, init_scale=0.01)
+                                                       self.value_stream_ref)
 
         self.mu_impulse_combined, self.mu_angle_combined = tf.split(self.mu_action, 2, axis=1)
 
@@ -76,14 +76,14 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         self.impulse_output = tf.math.multiply(self.impulse_output, max_impulse, name="impulse_output")
         self.angle_output = tf.math.multiply(self.angle_output, max_angle_change, name="angle_output")
 
-        self.neg_log_prob = -self.action_distribution.logp(self.action_output)
+        self.neg_log_prob = self.action_distribution.neglogp(self.action_output)
 
         #            ----------        Value Outputs       ----------           #
 
         self.value_fn_1 = tf.layers.dense(self.value_stream, 1, name='vf')
         self.value_fn_2 = tf.layers.dense(self.value_stream_ref, 1, name='vf', reuse=True)
 
-        self.value_output = tf.math.divide(tf.math.add(self.value_fn_1, self.value_fn_2), 2)
+        self.value_output = tf.math.divide(tf.math.add(self.value_fn_1, self.value_fn_2), 2)  # TODO: DId differently
 
         #            ----------        Loss functions       ---------            #
 
@@ -94,7 +94,7 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         self.angle_placeholder = tf.math.divide(self.angle_placeholder, max_angle_change)
         self.normalised_action = tf.concat([self.impulse_placeholder, self.angle_placeholder], axis=1)
 
-        self.new_neg_log_prob = -self.action_distribution.logp(self.normalised_action)
+        self.new_neg_log_prob = self.action_distribution.neglogp(self.normalised_action)
         self.old_neg_log_prob = tf.placeholder(shape=[None], dtype=tf.float32, name='old_log_prob_impulse')
         self.scaled_advantage_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='scaled_advantage')
 
