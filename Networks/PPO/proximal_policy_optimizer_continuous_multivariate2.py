@@ -100,8 +100,7 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         # self.trainer = tf.train.AdamOptimizer(learning_rate=self.learning_rate, epsilon=1e-5)
         # self.train = self.trainer.apply_gradients(self.gradients)
 
-
-        self.optimizer = tf.train.AdamOptimizer(self.learning_rate, name='optimizer').minimize(
+        self.train = tf.train.AdamOptimizer(self.learning_rate, name='optimizer').minimize(
             self.total_loss)
 
 
