@@ -868,8 +868,8 @@ class ContinuousPPO(BasePPO):
 
 
                 # Optimise actor
-                loss_actor_val, loss_critic_val, _ = self.sess.run(
-                    [self.actor_network.policy_loss, self.actor_network.value_loss, self.actor_network.train],
+                loss_actor_val, loss_critic_val, _, ratio = self.sess.run(
+                    [self.actor_network.policy_loss, self.actor_network.value_loss, self.actor_network.train, self.actor_network.ratio],
                     feed_dict={self.actor_network.observation: observation_batch,
                                self.actor_network.prev_actions: previous_action_batch,
                                self.actor_network.internal_state: internal_state_batch,
@@ -892,6 +892,9 @@ class ContinuousPPO(BasePPO):
                 average_loss_impulse += np.mean(np.abs(loss_actor_val))
                 average_loss_angle += np.mean(np.abs(loss_actor_val))
                 average_loss_value += np.abs(loss_critic_val)
+
+            print("RATIO " + str(np.mean(ratio)))
+            print("ADVANTAGE: " + str(np.mean(advantage_batch)))
 
             self.buffer.add_loss(average_loss_impulse / self.learning_params["n_updates_per_iteration"],
                                  average_loss_angle / self.learning_params["n_updates_per_iteration"],

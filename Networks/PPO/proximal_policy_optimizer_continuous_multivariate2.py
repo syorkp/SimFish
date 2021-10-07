@@ -93,12 +93,12 @@ class PPONetworkActorMultivariate2(BaseNetwork):
 
         # Gradient clipping (for stability)
         self.model_params = tf.trainable_variables()
-        # self.gradients = tf.gradients(self.total_loss, self.model_params)
-        # self.gradients, _grad_norm = tf.clip_by_global_norm(self.gradients, self.max_gradient_norm)
-        # self.gradients = list(zip(self.gradients, self.model_params))
-        #
-        # self.trainer = tf.train.AdamOptimizer(learning_rate=self.learning_rate, epsilon=1e-5)
-        # self.train = self.trainer.apply_gradients(self.gradients)
+        self.gradients = tf.gradients(self.total_loss, self.model_params)
+        self.gradients, _grad_norm = tf.clip_by_global_norm(self.gradients, self.max_gradient_norm)
+        self.gradients = list(zip(self.gradients, self.model_params))
+
+        self.trainer = tf.train.AdamOptimizer(learning_rate=self.learning_rate, epsilon=1e-5)
+        self.train = self.trainer.apply_gradients(self.gradients)
 
         self.train = tf.train.AdamOptimizer(self.learning_rate, name='optimizer').minimize(
             self.total_loss)

@@ -933,7 +933,7 @@ sb_test_v3 = [
     {
         "Model Name": "ppo_continuous_sbv3",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
-        "Trial Number": 1,
+        "Trial Number": 5,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -961,7 +961,7 @@ sb_test_v3 = [
     {
         "Model Name": "ppo_continuous_sbv3",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
-        "Trial Number": 2,
+        "Trial Number": 6,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -989,7 +989,7 @@ sb_test_v3 = [
     {
         "Model Name": "ppo_continuous_sbv3",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
-        "Trial Number": 3,
+        "Trial Number": 7,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1017,7 +1017,7 @@ sb_test_v3 = [
     {
         "Model Name": "ppo_continuous_sbv3",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
-        "Trial Number": 4,
+        "Trial Number": 8,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
