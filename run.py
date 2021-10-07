@@ -929,11 +929,11 @@ ppo_assay_configuration = [
     },
 ]
 
-sb_test_v2 = [
+sb_test_v3 = [
     {
-        "Model Name": "ppo_continuous_sbv2",
+        "Model Name": "ppo_continuous_sbv3",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
-        "Trial Number": 5,
+        "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -959,9 +959,9 @@ sb_test_v2 = [
         "SB Emulator": True
     },
     {
-        "Model Name": "ppo_continuous_sbv2",
+        "Model Name": "ppo_continuous_sbv3",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
-        "Trial Number": 6,
+        "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -987,9 +987,9 @@ sb_test_v2 = [
         "SB Emulator": True
     },
     {
-        "Model Name": "ppo_continuous_sbv2",
+        "Model Name": "ppo_continuous_sbv3",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
-        "Trial Number": 7,
+        "Trial Number": 3,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1015,9 +1015,9 @@ sb_test_v2 = [
         "SB Emulator": True
     },
     {
-        "Model Name": "ppo_continuous_sbv2",
+        "Model Name": "ppo_continuous_sbv3",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
-        "Trial Number": 8,
+        "Trial Number": 4,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1273,5 +1273,5 @@ ppo_univariate_buffered = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(sb_test_v2, parallel_jobs=4)
+manager = TrialManager(sb_test_v3, parallel_jobs=4)
 manager.run_priority_loop()

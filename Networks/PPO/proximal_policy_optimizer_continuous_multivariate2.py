@@ -103,8 +103,6 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         self.train = tf.train.AdamOptimizer(self.learning_rate, name='optimizer').minimize(
             self.total_loss)
 
-
-
     @staticmethod
     def bounded_output(x, lower, upper):
         scale = upper - lower

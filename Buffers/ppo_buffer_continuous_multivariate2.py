@@ -199,12 +199,29 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         # Advantages = returns-values. Then scaled
         # mb_advs[step] = last_gae_lam = delta + self.gamma * self.lam * nextnonterminal * last_gae_lam
         # mb_returns = mb_advs + mb_values
-        delta = self.reward_buffer[:-1] + self.gamma * self.value_buffer[1:] - self.value_buffer[:-1]
-        advantage = self.discount_cumsum(delta, self.gamma * self.lmbda)
-        if normalise_advantage:
-            advantage = (advantage - advantage.mean()) / (advantage.std() + 1e-10)
-        returns = self.discount_cumsum(self.reward_buffer, self.gamma)[:-1]
-        self.advantage_buffer = advantage
+
+
+        # delta = self.reward_buffer[:-1] + self.gamma * self.value_buffer[1:] - self.value_buffer[:-1]
+        # advantage = self.discount_cumsum(delta, self.gamma * self.lmbda)
+        # if normalise_advantage:
+        #     advantage = (advantage - advantage.mean()) / (advantage.std() + 1e-10)
+        # returns = self.discount_cumsum(self.reward_buffer, self.gamma)[:-1]
+        # self.advantage_buffer = advantage
+        # self.return_buffer = returns
+        last_values = self.value_buffer
+        advantages = np.zeros_like(self.reward_buffer)
+        last_gae_lam = 0
+        for step in reversed(range(len(self.observation_buffer))):
+            if step == len(self.observation_buffer) - 1:
+                nextnonterminal = 1.0# - self.dones
+                nextvalues = 0
+            else:
+                nextnonterminal = 1.0# - mb_dones[step + 1]
+                nextvalues = self.value_buffer[step + 1]
+            delta = self.reward_buffer[step] + self.gamma * nextvalues * nextnonterminal - self.value_buffer[step]
+            advantages[step] = last_gae_lam = delta + self.gamma * self.lmbda * nextnonterminal * last_gae_lam
+        returns = advantages + self.value_buffer
+        self.advantage_buffer = advantages
         self.return_buffer = returns
 
         if self.debug:
