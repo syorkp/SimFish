@@ -62,7 +62,7 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         self.old_neg_log_prob = tf.placeholder(shape=[None], dtype=tf.float32, name='old_log_prob_impulse')
         self.scaled_advantage_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='scaled_advantage')
 
-        self.ratio = tf.exp(self.old_neg_log_prob - self.new_neg_log_prob)
+        self.ratio = tf.exp(self.new_neg_log_prob - self.old_neg_log_prob)
         self.surrogate_loss_1 = -tf.math.multiply(self.ratio, self.scaled_advantage_placeholder)
         self.surrogate_loss_2 = -tf.math.multiply(
             tf.clip_by_value(self.ratio, 1 - clip_param, 1 + clip_param), self.scaled_advantage_placeholder)
