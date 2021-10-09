@@ -828,8 +828,8 @@ class ContinuousPPO(BasePPO):
 
     def train_network_multivariate2(self):
         observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
-        log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
-        key_rnn_points = self.buffer.get_episode_buffer()
+            log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
+            key_rnn_points = self.buffer.get_episode_buffer()
 
         number_of_batches = int(math.ceil(observation_buffer.shape[0] / self.learning_params["batch_size"]))
 
@@ -868,8 +868,9 @@ class ContinuousPPO(BasePPO):
 
 
                 # Optimise actor
-                loss_actor_val, loss_critic_val, _, ratio = self.sess.run(
-                    [self.actor_network.policy_loss, self.actor_network.value_loss, self.actor_network.train, self.actor_network.ratio],
+                loss_actor_val, loss_critic_val, total_loss, _, log_action_probability_batch_new, scaled_actions = self.sess.run(
+                    [self.actor_network.policy_loss, self.actor_network.value_loss, self.actor_network.total_loss,
+                     self.actor_network.train, self.actor_network.new_neg_log_prob, self.actor_network.normalised_action],
                     feed_dict={self.actor_network.observation: observation_batch,
                                self.actor_network.prev_actions: previous_action_batch,
                                self.actor_network.internal_state: internal_state_batch,
@@ -889,10 +890,11 @@ class ContinuousPPO(BasePPO):
                                                                      "learning_rate_actor"] * current_batch_size
                                })
 
+
                 average_loss_impulse += np.mean(np.abs(loss_actor_val))
                 average_loss_angle += np.mean(np.abs(loss_actor_val))
                 average_loss_value += np.abs(loss_critic_val)
-            #
+
             # print("RATIO " + str(np.mean(ratio)))
             # print("ADVANTAGE: " + str(np.mean(advantage_batch)))
 

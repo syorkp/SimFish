@@ -14,6 +14,11 @@ class PPONetworkActor(BaseNetwork):
 
         #            ----------        Non-Reflected       ---------            #
 
+        # TODO: Differences from SB: no activation function? Logits inputted to probability distribution.
+        #  Difference in sampling - uses randomorm to select, with no softmax involved.
+        #  With SB version, problem seems to be fixed when action probabiltiy goes down.
+        #  Problem that initial dropff in CS usage due to cost, should use reward scaffolding here.
+
         self.action_values = tf.layers.dense(self.rnn_output, num_actions, activation=tf.nn.sigmoid,
                                              kernel_initializer=tf.orthogonal_initializer,
                                              name=my_scope + '_action_values', trainable=True)

@@ -1,5 +1,6 @@
 import tensorflow.compat.v1 as tf
 import tensorflow_probability as tfp
+from Networks.utils import linear
 
 from Networks.base_network import BaseNetwork
 from Networks.Distributions.reflected_continuous import ReflectedProbabilityDist
@@ -25,13 +26,36 @@ class PPONetworkActorMultivariate2(BaseNetwork):
 
         #            ----------        Combined       ---------            #
 
-        self.action_distribution, self.mu_action, self.sigma_action, self.q_value = \
-            self.pdtype.proba_distribution_from_latent(self.action_stream, self.action_stream_ref, self.value_stream,
-                                                       self.value_stream_ref)
+        # self.action_distribution, self.mu_action, self.sigma_action, self.q_value = \
+        #     self.pdtype.proba_distribution_from_latent(self.action_stream, self.action_stream_ref, self.value_stream,
+        #                                                self.value_stream_ref)
 
-        self.mu_impulse_combined, self.mu_angle_combined = tf.split(self.mu_action, 2, axis=1)
+        # self.mu_action = linear(self.action_stream, 'pi', 2, init_scale=1.0, init_bias=0.0)
+        # self.mu_action_ref = linear(self.action_stream_ref, 'pi', 2, init_scale=1.0, init_bias=0.0)
 
-        self.action_output = self.action_distribution.sample()
+        self.mu_action = tf.layers.dense(self.action_stream, 2, activation=tf.nn.sigmoid,
+                                         kernel_initializer=tf.orthogonal_initializer,
+                                         name=my_scope + '_mu_impulse', trainable=True)
+        self.mu_action_ref = tf.layers.dense(self.action_stream_ref, 2, activation=tf.nn.sigmoid,
+                                             kernel_initializer=tf.orthogonal_initializer,
+                                             name=my_scope + '_mu_impulse', trainable=True, reuse=True)
+
+        # Splitting via action
+        self.mu_impulse, self.mu_angle = tf.split(self.mu_action, 2, 1)
+        self.mu_impulse_ref, self.mu_angle_ref = tf.split(self.mu_action_ref, 2, 1)
+        # Combining
+        self.mu_impulse_combined = tf.divide(tf.add(self.mu_impulse, self.mu_impulse_ref), 2)
+        self.mu_angle_combined = tf.divide(tf.subtract(self.mu_angle, self.mu_angle_ref), 2)
+
+        self.mu_action = tf.concat([self.mu_impulse_combined, self.mu_angle_combined], axis=1)
+
+        self.log_std = tf.get_variable(name='logstd', shape=[1, 2], initializer=tf.zeros_initializer())
+        self.sigma_action = tf.exp(self.log_std)
+
+        self.action_distribution = tfp.distributions.MultivariateNormalDiag(loc=self.mu_action,
+                                                                            scale_diag=self.sigma_action)
+
+        self.action_output = tf.squeeze(self.action_distribution.sample(1), axis=0)
         self.impulse_output, self.angle_output = tf.split(self.action_output, 2, axis=1)
 
         self.impulse_output = tf.clip_by_value(self.impulse_output, 0, 1)
@@ -40,7 +64,7 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         self.impulse_output = tf.math.multiply(self.impulse_output, max_impulse, name="impulse_output")
         self.angle_output = tf.math.multiply(self.angle_output, max_angle_change, name="angle_output")
 
-        self.neg_log_prob = self.action_distribution.neglogp(self.action_output)
+        self.neg_log_prob = -self.action_distribution.log_prob(self.action_output)
 
         #            ----------        Value Outputs       ----------           #
 
@@ -58,11 +82,11 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         self.angle_placeholder = tf.math.divide(self.angle_placeholder, max_angle_change)
         self.normalised_action = tf.concat([self.impulse_placeholder, self.angle_placeholder], axis=1)
 
-        self.new_neg_log_prob = self.action_distribution.neglogp(self.normalised_action)
+        self.new_neg_log_prob = -self.action_distribution.log_prob(self.normalised_action)
         self.old_neg_log_prob = tf.placeholder(shape=[None], dtype=tf.float32, name='old_log_prob_impulse')
         self.scaled_advantage_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='scaled_advantage')
 
-        self.ratio = tf.exp(self.new_neg_log_prob - self.old_neg_log_prob)
+        self.ratio = tf.exp(self.old_neg_log_prob - self.new_neg_log_prob)
         self.surrogate_loss_1 = -tf.math.multiply(self.ratio, self.scaled_advantage_placeholder)
         self.surrogate_loss_2 = -tf.math.multiply(
             tf.clip_by_value(self.ratio, 1 - clip_param, 1 + clip_param), self.scaled_advantage_placeholder)
@@ -73,7 +97,8 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         self.old_value_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='old_value')
         # self.value_cliprange_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='value_cliprange')
         # Clip the different between old and new value NOTE: this depends on the reward scaling
-        self.value_clipped = self.old_value_placeholder + tf.clip_by_value(self.value_output-self.old_value_placeholder, -clip_param, clip_param)
+        self.value_clipped = self.old_value_placeholder + tf.clip_by_value(
+            self.value_output - self.old_value_placeholder, -clip_param, clip_param)
 
         self.critic_loss_1 = tf.squared_difference(tf.squeeze(self.value_output), self.returns_placeholder)
         self.critic_loss_2 = tf.squared_difference(tf.squeeze(self.value_clipped), self.returns_placeholder)
