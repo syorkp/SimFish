@@ -105,15 +105,16 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         self.value_loss = .5 * tf.reduce_mean(tf.maximum(self.critic_loss_1, self.critic_loss_2))
 
         # Entropy
-        self.entropy = tf.reduce_mean(self.action_distribution.entropy())
+        self.entropy = tf.reduce_mean(self.action_distribution.entropy())  # TODO: works with new distribution?
 
         # Combined loss
         self.entropy_coefficient = 0.01
         self.value_coefficient = 0.5
         self.max_gradient_norm = 0.5
 
-        self.total_loss = self.policy_loss - tf.multiply(self.entropy, self.entropy_coefficient) + \
-                          tf.multiply(self.value_loss, self.value_coefficient)
+        # self.total_loss = self.policy_loss - tf.multiply(self.entropy, self.entropy_coefficient) + \
+        #                   tf.multiply(self.value_loss, self.value_coefficient)
+        self.total_loss = self.policy_loss + self.value_loss
         self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
 
         # Gradient clipping (for stability)

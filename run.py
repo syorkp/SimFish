@@ -929,9 +929,9 @@ ppo_assay_configuration = [
     },
 ]
 
-sb_test_v4 = [
+sb_test_v5 = [
     {
-        "Model Name": "ppo_continuous_sbv4",
+        "Model Name": "ppo_continuous_sbv5",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
         "Trial Number": 1,
         "Total Configurations": 3,
@@ -959,7 +959,7 @@ sb_test_v4 = [
         "SB Emulator": True
     },
     {
-        "Model Name": "ppo_continuous_sbv4",
+        "Model Name": "ppo_continuous_sbv5",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
         "Trial Number": 2,
         "Total Configurations": 3,
@@ -987,7 +987,7 @@ sb_test_v4 = [
         "SB Emulator": True
     },
     {
-        "Model Name": "ppo_continuous_sbv4",
+        "Model Name": "ppo_continuous_sbv5",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
         "Trial Number": 3,
         "Total Configurations": 3,
@@ -1015,7 +1015,7 @@ sb_test_v4 = [
         "SB Emulator": True
     },
     {
-        "Model Name": "ppo_continuous_sbv4",
+        "Model Name": "ppo_continuous_sbv5",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
         "Trial Number": 4,
         "Total Configurations": 3,
@@ -1273,5 +1273,5 @@ ppo_univariate_buffered = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(sb_test_v4, parallel_jobs=4)
+manager = TrialManager(sb_test_v5, parallel_jobs=4)
 manager.run_priority_loop()
