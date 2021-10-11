@@ -1156,9 +1156,10 @@ ppo_univariate_buffered = [
         "Full Logs": False,
     }
 ]
-sb_test_vinvertedloss = [
+
+sb_test_state_based_sigmas = [
     {
-        "Model Name": "ppo_continuous_sigma_bounded",
+        "Model Name": "ppo_continuous_state_sigmas",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
         "Trial Number": 1,
         "Total Configurations": 3,
@@ -1186,7 +1187,7 @@ sb_test_vinvertedloss = [
         "SB Emulator": True
     },
     {
-        "Model Name": "ppo_continuous_sigma_bounded",
+        "Model Name": "ppo_continuous_state_sigmas",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
         "Trial Number": 2,
         "Total Configurations": 3,
@@ -1214,7 +1215,7 @@ sb_test_vinvertedloss = [
         "SB Emulator": True
     },
     {
-        "Model Name": "ppo_continuous_sigma_bounded",
+        "Model Name": "ppo_continuous_state_sigmas",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
         "Trial Number": 3,
         "Total Configurations": 3,
@@ -1242,7 +1243,7 @@ sb_test_vinvertedloss = [
         "SB Emulator": True
     },
     {
-        "Model Name": "ppo_continuous_sigma_bounded",
+        "Model Name": "ppo_continuous_state_sigmas",
         "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
         "Trial Number": 4,
         "Total Configurations": 3,
@@ -1385,9 +1386,8 @@ sb_test_bs = [
         "Full Logs": True,
         "SB Emulator": True
     },
-    ]
-
+]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(sb_test_vinvertedloss, parallel_jobs=4)
+manager = TrialManager(sb_test_state_based_sigmas, parallel_jobs=4)
 manager.run_priority_loop()
