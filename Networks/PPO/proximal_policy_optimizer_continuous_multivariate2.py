@@ -71,7 +71,7 @@ class PPONetworkActorMultivariate2(BaseNetwork):
 
         self.mu_action = tf.concat([self.mu_impulse_combined, self.mu_angle_combined], axis=1)
 
-        self.log_std = tf.get_variable(name='logstd', shape=[1, 2], initializer=tf.zeros_initializer())
+        self.log_std = tf.get_variable(name='logstd', shape=[1, 2], initializer=tf.zeros_initializer(), trainable=True)
         self.sigma_action = tf.exp(self.log_std)
 
         self.action_distribution = tfp.distributions.MultivariateNormalDiag(loc=self.mu_action,

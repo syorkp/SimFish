@@ -86,6 +86,7 @@ class PPONetworkActorMultivariate(BaseNetwork):
         # self.sigma_angle_combined = tf.get_variable(name='sigang', shape=[1, 2], initializer=tf.zeros_initializer())
 
         # self.sigma_action = tf.get_variable(name='sigmas', shape=[1, 2], initializer=tf.zeros_initializer())
+        # Note, above is log std.
 
 
         # Multinomial distribution
