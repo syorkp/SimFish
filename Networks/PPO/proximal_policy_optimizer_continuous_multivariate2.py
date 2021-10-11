@@ -33,16 +33,38 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         # self.mu_action = linear(self.action_stream, 'pi', 2, init_scale=1.0, init_bias=0.0)
         # self.mu_action_ref = linear(self.action_stream_ref, 'pi', 2, init_scale=1.0, init_bias=0.0)
 
-        self.mu_action = tf.layers.dense(self.action_stream, 2, activation=tf.nn.sigmoid,
+
+        # V5
+
+        # self.mu_action = tf.layers.dense(self.action_stream, 2, activation=tf.nn.sigmoid,
+        #                                  kernel_initializer=tf.orthogonal_initializer,
+        #                                  name=my_scope + '_mu_impulse', trainable=True)
+        # self.mu_action_ref = tf.layers.dense(self.action_stream_ref, 2, activation=tf.nn.sigmoid,
+        #                                      kernel_initializer=tf.orthogonal_initializer,
+        #                                      name=my_scope + '_mu_impulse', trainable=True, reuse=True)
+        #
+        # # Splitting via action
+        # self.mu_impulse, self.mu_angle = tf.split(self.mu_action, 2, 1)
+        # self.mu_impulse_ref, self.mu_angle_ref = tf.split(self.mu_action_ref, 2, 1)
+        #
+        # V6
+        self.impulse_stream, self.angle_stream = tf.split(self.action_stream, 2, 1)
+        self.impulse_stream_ref, self.angle_stream_ref = tf.split(self.action_stream_ref, 2, 1)
+
+        self.mu_impulse = tf.layers.dense(self.impulse_stream, 1, activation=tf.nn.sigmoid,
                                          kernel_initializer=tf.orthogonal_initializer,
                                          name=my_scope + '_mu_impulse', trainable=True)
-        self.mu_action_ref = tf.layers.dense(self.action_stream_ref, 2, activation=tf.nn.sigmoid,
+        self.mu_impulse_ref = tf.layers.dense(self.impulse_stream_ref, 1, activation=tf.nn.sigmoid,
                                              kernel_initializer=tf.orthogonal_initializer,
                                              name=my_scope + '_mu_impulse', trainable=True, reuse=True)
 
-        # Splitting via action
-        self.mu_impulse, self.mu_angle = tf.split(self.mu_action, 2, 1)
-        self.mu_impulse_ref, self.mu_angle_ref = tf.split(self.mu_action_ref, 2, 1)
+        self.mu_angle = tf.layers.dense(self.angle_stream, 1, activation=tf.nn.tanh,
+                                         kernel_initializer=tf.orthogonal_initializer,
+                                         name=my_scope + '_mu_angle', trainable=True)
+        self.mu_angle_ref = tf.layers.dense(self.angle_stream_ref, 1, activation=tf.nn.tanh,
+                                             kernel_initializer=tf.orthogonal_initializer,
+                                             name=my_scope + '_mu_angle', trainable=True, reuse=True)
+
         # Combining
         self.mu_impulse_combined = tf.divide(tf.add(self.mu_impulse, self.mu_impulse_ref), 2)
         self.mu_angle_combined = tf.divide(tf.subtract(self.mu_angle, self.mu_angle_ref), 2)
@@ -114,17 +136,17 @@ class PPONetworkActorMultivariate2(BaseNetwork):
 
         # self.total_loss = self.policy_loss - tf.multiply(self.entropy, self.entropy_coefficient) + \
         #                   tf.multiply(self.value_loss, self.value_coefficient)
-        self.total_loss = self.policy_loss + self.value_loss
+        self.total_loss = self.policy_loss + tf.multiply(self.value_loss, self.value_coefficient)
         self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
 
         # Gradient clipping (for stability)
         self.model_params = tf.trainable_variables()
-        self.gradients = tf.gradients(self.total_loss, self.model_params)
-        self.gradients, _grad_norm = tf.clip_by_global_norm(self.gradients, self.max_gradient_norm)
-        self.gradients = list(zip(self.gradients, self.model_params))
+        self.model_gradients = tf.gradients(self.total_loss, self.model_params)
+        self.model_gradients, _grad_norm = tf.clip_by_global_norm(self.model_gradients, self.max_gradient_norm)
+        self.model_gradients = list(zip(self.model_gradients, self.model_params))
 
         self.trainer = tf.train.AdamOptimizer(learning_rate=self.learning_rate, epsilon=1e-5)
-        self.train = self.trainer.apply_gradients(self.gradients)
+        self.train = self.trainer.apply_gradients(self.model_gradients)
 
         self.train = tf.train.AdamOptimizer(self.learning_rate, name='optimizer').minimize(
             self.total_loss)
