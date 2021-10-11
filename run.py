@@ -1273,7 +1273,6 @@ sb_test_v6 = [
     ]
 
 
-
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 manager = TrialManager(sb_test_v6, parallel_jobs=4)
 manager.run_priority_loop()

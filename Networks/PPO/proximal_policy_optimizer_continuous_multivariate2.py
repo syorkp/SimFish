@@ -136,7 +136,7 @@ class PPONetworkActorMultivariate2(BaseNetwork):
 
         # self.total_loss = self.policy_loss - tf.multiply(self.entropy, self.entropy_coefficient) + \
         #                   tf.multiply(self.value_loss, self.value_coefficient)
-        self.total_loss = self.policy_loss + tf.multiply(self.value_loss, self.value_coefficient)
+        self.total_loss = -self.policy_loss + tf.multiply(self.value_loss, self.value_coefficient)
         self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
 
         # Gradient clipping (for stability)
