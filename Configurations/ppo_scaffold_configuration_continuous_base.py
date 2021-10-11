@@ -116,7 +116,7 @@ env = {'width': 1500,  # arena size
 
 params = {'num_actions': 10,  # size of action space
           'batch_size': 1,  # How many experience traces to use for each training step.
-          'trace_length': 50,  # How long each experience trace will be when training
+          'trace_length': 1000,  # How long each experience trace will be when training
           'update_freq': 100,  # How often to perform a training step.
           'y': .99,  # Discount factor on the target Q-values
           'startE': 0.2,  # Starting chance of random action
@@ -143,7 +143,7 @@ params = {'num_actions': 10,  # size of action space
           }
 
 
-directory_name = "ppo_continuous_multivariate_sigmas_alone2"
+directory_name = "ppo_continuous_multivariate_large_bs"
 
 # Ensure Output File Exists
 # Ensure Output File Exists

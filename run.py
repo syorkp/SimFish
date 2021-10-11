@@ -1272,11 +1272,11 @@ sb_test_vinvertedloss = [
     ]
 
 
-sb_test_v6 = [
+sb_test_bs = [
     {
-        "Model Name": "ppo_continuous_sbv6",
-        "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
-        "Trial Number": 6,
+        "Model Name": "ppo_continuous_sbvlargebs",
+        "Environment Name": "ppo_continuous_multivariate_large_bs",
+        "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1302,9 +1302,9 @@ sb_test_v6 = [
         "SB Emulator": True
     },
     {
-        "Model Name": "ppo_continuous_sbv6",
-        "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
-        "Trial Number": 7,
+        "Model Name": "ppo_continuous_sbvlargebs",
+        "Environment Name": "ppo_continuous_multivariate_large_bs",
+        "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1330,9 +1330,9 @@ sb_test_v6 = [
         "SB Emulator": True
     },
     {
-        "Model Name": "ppo_continuous_sbv6",
-        "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
-        "Trial Number": 8,
+        "Model Name": "ppo_continuous_sbvlargebs",
+        "Environment Name": "ppo_continuous_multivariate_large_bs",
+        "Trial Number": 3,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1358,9 +1358,9 @@ sb_test_v6 = [
         "SB Emulator": True
     },
     {
-        "Model Name": "ppo_continuous_sbv6",
-        "Environment Name": "ppo_continuous_multivariate_sigmas_alone2",
-        "Trial Number": 9,
+        "Model Name": "ppo_continuous_sbvlargebs",
+        "Environment Name": "ppo_continuous_multivariate_large_bs",
+        "Trial Number": 4,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1389,5 +1389,5 @@ sb_test_v6 = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(sb_test_vinvertedloss, parallel_jobs=4)
+manager = TrialManager(sb_test_bs, parallel_jobs=4)
 manager.run_priority_loop()
