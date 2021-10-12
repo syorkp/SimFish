@@ -5,6 +5,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from Networks.PPO.proximal_policy_optimizer_discrete import PPONetworkActor
+from Networks.PPO.proximal_policy_optimizer_discrete_sb_emulator import PPONetworkActorDiscreteEmulator
 from Services.PPO.base_ppo import BasePPO
 
 tf.disable_v2_behavior()
@@ -31,7 +32,18 @@ class DiscretePPO(BasePPO):
         """
         actor_cell, internal_states = BasePPO.create_network(self)
 
-        self.actor_network = PPONetworkActor(simulation=self.simulation,
+        if self.sb_emulator:
+            self.actor_network = PPONetworkActorDiscreteEmulator(simulation=self.simulation,
+                                             rnn_dim=self.learning_params['rnn_dim_shared'],
+                                             rnn_cell=actor_cell,
+                                             my_scope='actor',
+                                             internal_states=internal_states,
+                                             clip_param=self.environment_params['clip_param'],
+                                             num_actions=self.learning_params['num_actions'],
+                                             epsilon_greedy=self.epsilon_greedy
+                                             )
+        else:
+            self.actor_network = PPONetworkActor(simulation=self.simulation,
                                              rnn_dim=self.learning_params['rnn_dim_shared'],
                                              rnn_cell=actor_cell,
                                              my_scope='actor',
@@ -137,6 +149,82 @@ class DiscretePPO(BasePPO):
         return self._training_step_loop(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                                  rnn_state_critic_ref)
 
+    def _training_step_loop_reduced_logs2(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+                                         rnn_state_critic,
+                                         rnn_state_critic_ref):
+        return self._training_step_loop2(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
+                                 rnn_state_critic_ref)
+
+    def _training_step_loop_full_logs2(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+                                      rnn_state_critic,
+                                      rnn_state_critic_ref):
+        return self._training_step_loop2(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
+                                 rnn_state_critic_ref)
+
+    def _training_step_loop2(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
+                            rnn_state_critic_ref):
+        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
+
+        if self.epsilon_greedy:
+
+            action, updated_rnn_state_actor, updated_rnn_state_actor_ref, action_probabilities = self.sess.run(
+                [self.actor_network.action_output, self.actor_network.rnn_state_shared,
+                 self.actor_network.rnn_state_ref, self.actor_network.action_probabilities
+                 ],
+                feed_dict={self.actor_network.observation: o,
+                           self.actor_network.internal_state: internal_state,
+                           self.actor_network.prev_actions: np.reshape(a, (1, 1)),
+                           self.actor_network.rnn_state_in: rnn_state_actor,
+                           self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                           self.actor_network.batch_size: 1,
+                           self.actor_network.trainLength: 1,
+                           }
+            )
+            if np.random.rand(1) < self.e:
+                action = np.random.randint(0, self.learning_params['num_actions'])
+            probability = action_probabilities[0][action]
+
+            if self.e > self.learning_params['endE']:
+                self.e -= self.step_drop
+        else:
+            action, updated_rnn_state_actor, updated_rnn_state_actor_ref, probability, V = self.sess.run(
+                [self.actor_network.action_output, self.actor_network.rnn_state_shared,
+                 self.actor_network.rnn_state_ref, self.actor_network.neg_log_prob,
+                 self.actor_network.value_output
+                 ],
+                feed_dict={self.actor_network.observation: o,
+                           self.actor_network.internal_state: internal_state,
+                           self.actor_network.prev_actions: np.reshape(a, (1, 1)),
+                           self.actor_network.rnn_state_in: rnn_state_actor,
+                           self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                           self.actor_network.batch_size: 1,
+                           self.actor_network.trainLength: 1,
+                           }
+            )
+
+        # TODO: Add missing value network
+        # Simulation step
+        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+            action=action,
+            frame_buffer=self.frame_buffer,
+            save_frames=self.save_frames,
+            activations=sa)
+
+        # Update buffer
+        self.buffer.add_training(observation=o,
+                                 internal_state=internal_state,
+                                 action=action,
+                                 reward=r,
+                                 value=V,
+                                 l_p_action=probability,
+                                 actor_rnn_state=rnn_state_actor,
+                                 actor_rnn_state_ref=rnn_state_actor_ref,
+                                 critic_rnn_state=rnn_state_critic,
+                                 critic_rnn_state_ref=rnn_state_critic_ref,
+                                 )
+        self.total_steps += 1
+        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0
+
     def _training_step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                             rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
@@ -163,9 +251,9 @@ class DiscretePPO(BasePPO):
             if self.e > self.learning_params['endE']:
                 self.e -= self.step_drop
         else:
-            action, updated_rnn_state_actor, updated_rnn_state_actor_ref, probability = self.sess.run(
+            action, updated_rnn_state_actor, updated_rnn_state_actor_ref, probability, V = self.sess.run(
                 [self.actor_network.action_output, self.actor_network.rnn_state_shared,
-                 self.actor_network.rnn_state_ref, self.actor_network.chosen_action_probability
+                 self.actor_network.rnn_state_ref, self.actor_network.chosen_action_probability, self.actor_network.value_output
                  ],
                 feed_dict={self.actor_network.observation: o,
                            self.actor_network.internal_state: internal_state,
@@ -177,18 +265,21 @@ class DiscretePPO(BasePPO):
                            }
             )
 
-        V, updated_rnn_state_critic, updated_rnn_state_critic_ref = self.sess.run(
-            [self.critic_network.Value_output, self.critic_network.rnn_state_shared,
-             self.critic_network.rnn_state_ref],
-            feed_dict={self.critic_network.observation: o,
-                       self.critic_network.internal_state: internal_state,
-                       self.critic_network.prev_actions: np.reshape(a, (1, 1)),
-                       self.critic_network.rnn_state_in: rnn_state_critic,
-                       self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
-                       self.critic_network.batch_size: 1,
-                       self.critic_network.trainLength: 1,
+        updated_rnn_state_critic, updated_rnn_state_critic_ref, V = self.sess.run(
+            [self.critic_network.rnn_state_shared,
+             self.critic_network.rnn_state_ref,
+             self.actor_network.value_output
+             ],
+            feed_dict={self.actor_network.observation: o,
+                       self.actor_network.internal_state: internal_state,
+                       self.actor_network.prev_actions: np.reshape(a, (1, 1)),
+                       self.actor_network.rnn_state_in: rnn_state_actor,
+                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       self.actor_network.batch_size: 1,
+                       self.actor_network.trainLength: 1,
                        }
         )
+
         # Simulation step
         o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
             action=action,
@@ -307,6 +398,43 @@ class DiscretePPO(BasePPO):
                log_action_probability_batch, advantage_batch, return_batch, \
                current_batch_size
 
+    def get_batch2(self, batch, observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer,
+                  log_action_probability_buffer, advantage_buffer, value_buffer, return_buffer):
+        observation_batch = observation_buffer[
+                            batch * self.batch_size: (batch + 1) * self.batch_size]
+        internal_state_batch = internal_state_buffer[
+                               batch * self.batch_size: (batch + 1) * self.batch_size]
+        action_batch = action_buffer[
+                       batch * self.batch_size: (batch + 1) * self.batch_size]
+        previous_action_batch = previous_action_buffer[
+                                batch * self.batch_size: (batch + 1) * self.batch_size]
+        log_action_probability_batch = log_action_probability_buffer[
+                                       batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params[
+                                           "batch_size"]]
+        advantage_batch = advantage_buffer[
+                          batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
+        return_batch = return_buffer[
+                       batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
+        value_batch = value_buffer[
+                       batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
+        current_batch_size = observation_batch.shape[0]
+
+        # Stacking for correct network dimensions
+        observation_batch = np.vstack(np.vstack(observation_batch))
+        internal_state_batch = np.vstack(np.vstack(internal_state_batch))
+        action_batch = np.reshape(action_batch, (action_batch.shape[0] * action_batch.shape[1], 1))
+        previous_action_batch = np.reshape(previous_action_batch,
+                                           (previous_action_batch.shape[0] * previous_action_batch.shape[1], 1))
+        log_action_probability_batch = log_action_probability_batch.flatten()
+        advantage_batch = np.vstack(advantage_batch).flatten()
+        return_batch = np.vstack(np.vstack(return_batch)).flatten()
+        value_batch = value_batch.flatten()
+
+        return observation_batch, internal_state_batch, action_batch, previous_action_batch, \
+               log_action_probability_batch, advantage_batch, return_batch, value_batch,\
+               current_batch_size
+
+
     def train_network(self):
         observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
         log_action_probability_buffer, advantage_buffer, return_buffer, \
@@ -388,3 +516,72 @@ class DiscretePPO(BasePPO):
 
             self.buffer.add_loss(average_loss_actor / self.learning_params["n_updates_per_iteration"],
                                  average_loss_value / self.learning_params["n_updates_per_iteration"])
+
+    def train_network_2(self):
+        observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
+        log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
+        key_rnn_points = self.buffer.get_episode_buffer()
+
+        number_of_batches = int(math.ceil(observation_buffer.shape[0] / self.learning_params["batch_size"]))
+
+        for batch in range(number_of_batches):
+            # Find steps at start of each trace to compute RNN states
+            batch_key_points = [i for i in key_rnn_points if
+                                batch * self.learning_params["batch_size"] * self.learning_params[
+                                    "trace_length"] <= i < (batch + 1) *
+                                self.learning_params["batch_size"] * self.learning_params["trace_length"]]
+
+            # Get the current batch
+            observation_batch, internal_state_batch, action_batch, previous_action_batch, \
+            log_action_probability_batch, advantage_batch, \
+            return_batch, previous_value_batch, current_batch_size = self.get_batch2(batch, observation_buffer, internal_state_buffer,
+                                                              action_buffer, previous_action_buffer,
+                                                              log_action_probability_buffer,
+                                                              advantage_buffer, value_buffer,
+                                                              return_buffer)
+
+            # Loss value logging
+            average_loss_value = 0
+            average_loss_actor = 0
+
+            for i in range(self.learning_params["n_updates_per_iteration"]):
+                # Compute RNN states for start of each trace.
+                actor_rnn_state_slice, actor_rnn_state_ref_slice = self.compute_rnn_states2(batch_key_points,
+                                                                     observation_buffer[
+                                                                     :(batch + 1) * self.learning_params["batch_size"]],
+                                                                     internal_state_buffer[
+                                                                     :(batch + 1) * self.learning_params["batch_size"]],
+                                                                     previous_action_buffer[
+                                                                     :(batch + 1) * self.learning_params[
+                                                                         "batch_size"]])
+
+
+
+                # Optimise actor
+                actor_loss, critic_loss, _ = self.sess.run(
+                    [self.actor_network.policy_loss, self.actor_network.value_loss, self.actor_network.train],
+                    feed_dict={self.actor_network.observation: observation_batch,
+                               self.actor_network.prev_actions: previous_action_batch,
+                               self.actor_network.internal_state: internal_state_batch,
+                               self.actor_network.rnn_state_in: actor_rnn_state_slice,
+                               self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
+
+                               self.actor_network.action_placeholder: action_batch,
+                               self.actor_network.old_neg_log_prob: log_action_probability_batch,
+                               self.actor_network.scaled_advantage_placeholder: advantage_batch,
+
+                               self.actor_network.returns_placeholder: return_batch,
+                               self.actor_network.old_value_placeholder: previous_value_batch,
+
+                               self.actor_network.trainLength: self.learning_params["trace_length"],
+                               self.actor_network.batch_size: current_batch_size,
+                               self.actor_network.learning_rate: self.learning_params[
+                                                                     "learning_rate_actor"] * current_batch_size
+                               })
+
+                average_loss_actor += np.mean(np.abs(actor_loss))
+                average_loss_value += np.abs(critic_loss)
+
+            self.buffer.add_loss(average_loss_actor / self.learning_params["n_updates_per_iteration"],
+                                 average_loss_value / self.learning_params["n_updates_per_iteration"])
+

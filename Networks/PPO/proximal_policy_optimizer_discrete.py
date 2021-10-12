@@ -64,6 +64,7 @@ class PPONetworkActor(BaseNetwork):
         self.action_placeholder = tf.placeholder(shape=[None, 1], dtype=tf.float32, name='action_placeholder')
 
         self.new_log_prob_action = self.chosen_action_probability  # TODO: Check format - may not be log
+        # TODO: Move chosen action probability here.
         self.old_log_prob_action_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='old_log_prob_angle')
 
         self.scaled_advantage_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='scaled_advantage')

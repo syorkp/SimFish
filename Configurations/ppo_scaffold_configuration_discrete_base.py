@@ -119,7 +119,8 @@ env = {'width': 1500,  # arena size
 
        'sigma_time_constant': 0.000001,
 
-       'clip_param': 0.2
+       'clip_param': 0.2,
+       'cs_required': True
        }
 
 
@@ -152,7 +153,7 @@ params = {'num_actions': 10,  # size of action space
           'lambda': 0.9
           }
 
-directory_name = "ppo_discrete_latest"
+directory_name = "ppo_discrete_emulator"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):

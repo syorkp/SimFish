@@ -13,6 +13,9 @@ import Services.PPO.ppo_training_service_continuous_2 as ppo_training_continuous
 import Services.PPO.ppo_training_service_discrete as ppo_training_discrete
 import Services.PPO.ppo_assay_service_discrete as ppo_assay_discrete
 
+import Services.PPO.ppo_training_service_discrete_2 as ppo_training_discrete2
+
+
 import Services.A2C.a2c_training_service as a2c_training
 import Services.A2C.a2c_assay_service as a2c_assay
 
@@ -143,8 +146,13 @@ class TrialManager:
 
             else:
                 if trial["Learning Algorithm"] == "PPO":
-                    new_job = multiprocessing.Process(target=ppo_training_discrete.ppo_training_target_discrete,
-                                                      args=(trial, total_steps, episode_number, memory_fraction, configuration_index))
+                    if trial["SB Emulator"]:
+                        new_job = multiprocessing.Process(target=ppo_training_discrete2.ppo_training_target_discrete,
+                                                          args=(trial, total_steps, episode_number, memory_fraction,
+                                                                configuration_index))
+                    else:
+                        new_job = multiprocessing.Process(target=ppo_training_discrete.ppo_training_target_discrete,
+                                                          args=(trial, total_steps, episode_number, memory_fraction, configuration_index))
                 elif trial["Learning Algorithm"] == "A2C":
                     print('Cannot use A2C with discrete actions (training mode)')
                     new_job = None
