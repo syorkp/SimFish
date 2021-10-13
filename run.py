@@ -1390,16 +1390,17 @@ sb_test_bs = [
 
 ppo_emulator_discrete = [
     {
-        "Model Name": "ppo_emulator_discrete",
+        "Model Name": "ppo_emulator_discrete_scaffolding",
         "Environment Name": "ppo_discrete_emulator",
         "Trial Number": 1,
-        "Total Configurations": 3,
+        "Total Configurations": 4,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
             "Prey Caught": {
                 "2": 5,
                 "3": 6,
+                "4": 7,
             },
             "Predators Avoided": {
             },
@@ -1418,16 +1419,17 @@ ppo_emulator_discrete = [
         "SB Emulator": True
     },
     {
-        "Model Name": "ppo_emulator_discrete",
+        "Model Name": "ppo_emulator_discrete_scaffolding",
         "Environment Name": "ppo_discrete_emulator",
         "Trial Number": 2,
-        "Total Configurations": 3,
+        "Total Configurations": 4,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
             "Prey Caught": {
                 "2": 5,
                 "3": 6,
+                "4": 7,
             },
             "Predators Avoided": {
             },
@@ -1446,16 +1448,17 @@ ppo_emulator_discrete = [
         "SB Emulator": True
     },
     {
-        "Model Name": "ppo_emulator_discrete",
+        "Model Name": "ppo_emulator_discrete_scaffolding",
         "Environment Name": "ppo_discrete_emulator",
         "Trial Number": 3,
-        "Total Configurations": 3,
+        "Total Configurations": 4,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
             "Prey Caught": {
                 "2": 5,
                 "3": 6,
+                "4": 7,
             },
             "Predators Avoided": {
             },
@@ -1474,16 +1477,17 @@ ppo_emulator_discrete = [
         "SB Emulator": True
     },
     {
-        "Model Name": "ppo_emulator_discrete",
+        "Model Name": "ppo_emulator_discrete_scaffolding",
         "Environment Name": "ppo_discrete_emulator",
         "Trial Number": 4,
-        "Total Configurations": 3,
+        "Total Configurations": 4,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
             "Prey Caught": {
                 "2": 5,
                 "3": 6,
+                "4": 7,
             },
             "Predators Avoided": {
             },
@@ -1501,6 +1505,7 @@ ppo_emulator_discrete = [
         "Full Logs": True,
         "SB Emulator": True
     },
+
     ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")

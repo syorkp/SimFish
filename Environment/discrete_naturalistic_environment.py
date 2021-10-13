@@ -54,10 +54,16 @@ class DiscreteNaturalisticEnvironment(NaturalisticEnvironment):
         self.pred_prey_wall2 = self.space.add_collision_handler(5, 7)
         self.pred_prey_wall2.begin = self.no_collision
 
+        self.cs_required = self.env_variables["cs_required"]
+
     def reset(self):
+        self.cs_required = self.env_variables["cs_required"]
         super().reset()
 
     def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None, impulse=None):
-        self.fish.making_capture = False
+        if self.cs_required:
+            self.fish.making_capture = False
+        else:
+            self.fish.making_capture = True
         return super().simulation_step(action, save_frames, frame_buffer, activations, impulse)
 

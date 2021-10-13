@@ -176,6 +176,10 @@ number = 1
 save_files(number)
 number += 1
 
+env['cs_required'] = True
+save_files(number)
+number += 1
+
 env['prey_impulse'] = 0.02
 save_files(number)
 number += 1
