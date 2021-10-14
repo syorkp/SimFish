@@ -46,6 +46,10 @@ class PPONetworkActor(BaseNetwork):
                                                      name="Action_values_combined")
         self.action_probabilities = tf.nn.softmax(self.action_values_combined)  # BS.TL x An
 
+        # TODO: remove the softmax activation (so that it outputs logits) and then feed those logits into
+        #  tf.distributions.Categorical(logits=logits). Although mathematically equivalent, this can be more robust
+        #  numerically
+
         if epsilon_greedy:
             # Epsilon-greedy
             self.action_output = tf.argmax(self.action_values_combined, 1)  # BS.TL

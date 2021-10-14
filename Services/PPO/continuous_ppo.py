@@ -66,7 +66,8 @@ class ContinuousPPO(BasePPO):
                                                  internal_states=internal_states,
                                                  max_impulse=self.environment_params['max_impulse'],
                                                  max_angle_change=self.environment_params['max_angle_change'],
-                                                 clip_param=self.environment_params['clip_param']
+                                                 clip_param=self.environment_params['clip_param'],
+                                                 beta_impulse=self.learning_params['beta_distribution']
                                                  )
 
     def update_sigmas(self):
