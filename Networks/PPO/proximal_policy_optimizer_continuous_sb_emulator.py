@@ -110,8 +110,11 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         # self.sigma_impulse_combined = tf.divide(tf.add(self.sigma_impulse, self.sigma_impulse_ref), 2)
         # self.sigma_angle_combined = tf.divide(tf.add(self.sigma_angle, self.sigma_angle_ref), 2)
 
-        self.sigma_impulse_combined = tf.placeholder(shape=[None], dtype=tf.float32, name='sigma_impulse_combined')
-        self.sigma_angle_combined = tf.placeholder(shape=[None], dtype=tf.float32, name='sigma_angle_combined')
+        self.sigma_impulse_combined_proto = tf.placeholder(shape=[None], dtype=tf.float32, name='sigma_impulse_combined')
+        self.sigma_angle_combined_proto   = tf.placeholder(shape=[None], dtype=tf.float32, name='sigma_angle_combined')
+
+        self.sigma_impulse_combined = tf.expand_dims(self.sigma_impulse_combined_proto, 1)
+        self.sigma_angle_combined   = tf.expand_dims(self.sigma_angle_combined_proto, 1)
 
         self.mu_action = tf.concat([self.mu_impulse_combined, self.mu_angle_combined], axis=1)
 
