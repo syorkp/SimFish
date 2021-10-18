@@ -6,7 +6,7 @@ import tensorflow.compat.v1 as tf
 
 from Networks.PPO.proximal_policy_optimizer_continuous import PPONetworkActor
 from Networks.PPO.proximal_policy_optimizer_continuous_multivariate import PPONetworkActorMultivariate
-from Networks.PPO.proximal_policy_optimizer_continuous_multivariate2 import PPONetworkActorMultivariate2
+from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator import PPONetworkActorMultivariate2
 from Services.PPO.base_ppo import BasePPO
 
 tf.disable_v2_behavior()
@@ -877,6 +877,9 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.internal_state: internal_state_batch,
                                self.actor_network.rnn_state_in: actor_rnn_state_slice,
                                self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
+
+                               self.actor_network.sigma_impulse_combined: self.impulse_sigma,
+                               self.actor_network.sigma_angle_combined: self.angle_sigma,
 
                                self.actor_network.action_placeholder: action_batch,
                                self.actor_network.old_neg_log_prob: log_action_probability_batch,

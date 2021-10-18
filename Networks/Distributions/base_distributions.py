@@ -176,7 +176,7 @@ class DiagGaussianProbabilityDistribution(ProbabilityDistribution):
         return tf.reduce_sum(self.logstd + .5 * np.log(2.0 * np.pi * np.e), axis=-1)
 
     def sample(self):
-        # Bounds are taken into acount outside this class (during training only)
+        # Bounds are taken into account outside this class (during training only)
         # Otherwise, it changes the distribution and breaks PPO2 for instance
         return self.mean + self.std * tf.random_normal(tf.shape(self.mean),
                                                        dtype=self.mean.dtype)

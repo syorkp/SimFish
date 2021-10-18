@@ -45,10 +45,10 @@ class PPONetworkActor(BaseNetwork):
             # For logging purposes:
             self.mu_impulse = self.mu_impulse_1_combined
             self.mu_impulse_ref = self.mu_impulse_2_combined
-            
+
             self.mu_impulse_combined = tf.divide(tf.add(self.mu_impulse_1_combined, self.mu_impulse_2_combined), 2)
 
-            self.norm_dist_impulse = tfp.distributions.Beta(self.mu_impulse_1_combined, self.mu_impulse_2_combined)
+            self.norm_dist_impulse = tf.distributions.Beta(self.mu_impulse_1_combined, self.mu_impulse_2_combined)
         else:
             self.mu_impulse = tf.layers.dense(self.mu_impulse_stream, 1, activation=tf.nn.sigmoid,
                                               kernel_initializer=tf.orthogonal_initializer,
@@ -65,9 +65,10 @@ class PPONetworkActor(BaseNetwork):
                                                              name="norm_dist_impulse")
 
         self.action_tf_var_impulse = tf.squeeze(self.norm_dist_impulse.sample(1), axis=0)
-        self.action_tf_var_impulse = tf.clip_by_value(self.action_tf_var_impulse, 0, 1)
+        # self.action_tf_var_impulse = tf.clip_by_value(self.action_tf_var_impulse, 0, 1)
         self.impulse_output = tf.math.multiply(self.action_tf_var_impulse, max_impulse, name="impulse_output")
-        self.log_prob_impulse = tf.log(self.norm_dist_impulse.prob(self.action_tf_var_impulse) + 1e-5)
+        # self.log_prob_impulse = tf.log(self.norm_dist_impulse.prob(self.action_tf_var_impulse) + 1e-5)
+        self.log_prob_impulse = self.norm_dist_impulse.log_prob(self.action_tf_var_impulse)
 
         # Combined Actor angle output
         self.mu_angle = tf.layers.dense(self.mu_angle_stream, 1, activation=tf.nn.tanh,
@@ -111,8 +112,10 @@ class PPONetworkActor(BaseNetwork):
         self.impulse_placeholder = tf.placeholder(shape=[None, 1], dtype=tf.float32, name='impulse_placeholder')
         self.angle_placeholder = tf.placeholder(shape=[None, 1], dtype=tf.float32, name='angle_placeholder')
 
-        self.new_log_prob_impulse = tf.log(
-            self.norm_dist_impulse.prob(tf.math.divide(self.impulse_placeholder, max_impulse)) + 1e-5)
+        # self.new_log_prob_impulse = tf.log(
+        #     self.norm_dist_impulse.prob(tf.math.divide(self.impulse_placeholder, max_impulse)) + 1e-5)
+        self.new_log_prob_impulse = self.norm_dist_impulse.log_prob(tf.math.divide(self.impulse_placeholder, max_impulse))
+
         self.new_log_prob_angle = tf.log(
             self.norm_dist_angle.prob(tf.math.divide(self.angle_placeholder, max_angle_change)) + 1e-5)
 

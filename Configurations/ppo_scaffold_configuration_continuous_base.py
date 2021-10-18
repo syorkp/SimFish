@@ -81,7 +81,7 @@ env = {'width': 1500,  # arena size
        'rest_cost': 2,
 
        'capture_swim_extra_cost': 25,
-       'capture_basic_reward': 0.05,
+       'capture_basic_reward': 1000,
        'predator_cost': 100,
 
        'hunger': True,
@@ -134,17 +134,17 @@ params = {'num_actions': 10,  # size of action space
           'learning_rate_actor': 0.000001,
           'learning_rate_critic': 0.000001,
 
-          'n_updates_per_iteration': 5,
+          'n_updates_per_iteration': 4,
           'rnn_state_computation': False,
 
-          'multivariate': False,
-          'beta_distribution': True,
+          'multivariate': True,
+          'beta_distribution': False,
           'gamma': 0.99,
           'lambda': 0.9
           }
 
 
-directory_name = "ppo_continuous_beta"
+directory_name = "ppo_continuous_sbe_sigmas"
 
 # Ensure Output File Exists
 # Ensure Output File Exists

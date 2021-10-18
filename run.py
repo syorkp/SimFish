@@ -1273,10 +1273,10 @@ sb_test_state_based_sigmas = [
     ]
 
 
-sb_test_bs = [
+sb_insigmas_test_bs = [
     {
-        "Model Name": "ppo_continuous_sbvlargebs",
-        "Environment Name": "ppo_continuous_multivariate_large_bs",
+        "Model Name": "ppo_continuous_sbe_insigmas",
+        "Environment Name": "ppo_continuous_sbe_sigmas",
         "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
@@ -1302,90 +1302,90 @@ sb_test_bs = [
         "Full Logs": True,
         "SB Emulator": True
     },
-    {
-        "Model Name": "ppo_continuous_sbvlargebs",
-        "Environment Name": "ppo_continuous_multivariate_large_bs",
-        "Trial Number": 2,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": True
-    },
-    {
-        "Model Name": "ppo_continuous_sbvlargebs",
-        "Environment Name": "ppo_continuous_multivariate_large_bs",
-        "Trial Number": 3,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": True
-    },
-    {
-        "Model Name": "ppo_continuous_sbvlargebs",
-        "Environment Name": "ppo_continuous_multivariate_large_bs",
-        "Trial Number": 4,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": True
-    },
+    # {
+    #     "Model Name": "ppo_continuous_sbe_insigmas",
+    #     "Environment Name": "ppo_continuous_sbe_sigmas",
+    #     "Trial Number": 2,
+    #     "Total Configurations": 3,
+    #     "Episode Transitions": {
+    #     },
+    #     "Conditional Transitions": {
+    #         "Prey Caught": {
+    #             "2": 5,
+    #             "3": 6,
+    #         },
+    #         "Predators Avoided": {
+    #         },
+    #         "Sand Grains Bumped": {
+    #         }
+    #     },
+    #     "Run Mode": "Training",
+    #     "Tethered": False,
+    #     "Realistic Bouts": True,
+    #     "Continuous Actions": True,
+    #     "Learning Algorithm": "PPO",
+    #     "Priority": 2,
+    #     "Using GPU": True,
+    #     "monitor gpu": False,
+    #     "Full Logs": True,
+    #     "SB Emulator": True
+    # },
+    # {
+    #     "Model Name": "ppo_continuous_sbe_insigmas",
+    #     "Environment Name": "ppo_continuous_sbe_sigmas",
+    #     "Trial Number": 3,
+    #     "Total Configurations": 3,
+    #     "Episode Transitions": {
+    #     },
+    #     "Conditional Transitions": {
+    #         "Prey Caught": {
+    #             "2": 5,
+    #             "3": 6,
+    #         },
+    #         "Predators Avoided": {
+    #         },
+    #         "Sand Grains Bumped": {
+    #         }
+    #     },
+    #     "Run Mode": "Training",
+    #     "Tethered": False,
+    #     "Realistic Bouts": True,
+    #     "Continuous Actions": True,
+    #     "Learning Algorithm": "PPO",
+    #     "Priority": 2,
+    #     "Using GPU": True,
+    #     "monitor gpu": False,
+    #     "Full Logs": True,
+    #     "SB Emulator": True
+    # },
+    # {
+    #     "Model Name": "ppo_continuous_sbe_insigmas",
+    #     "Environment Name": "ppo_continuous_sbe_sigmas",
+    #     "Trial Number": 4,
+    #     "Total Configurations": 3,
+    #     "Episode Transitions": {
+    #     },
+    #     "Conditional Transitions": {
+    #         "Prey Caught": {
+    #             "2": 5,
+    #             "3": 6,
+    #         },
+    #         "Predators Avoided": {
+    #         },
+    #         "Sand Grains Bumped": {
+    #         }
+    #     },
+    #     "Run Mode": "Training",
+    #     "Tethered": False,
+    #     "Realistic Bouts": True,
+    #     "Continuous Actions": True,
+    #     "Learning Algorithm": "PPO",
+    #     "Priority": 2,
+    #     "Using GPU": True,
+    #     "monitor gpu": False,
+    #     "Full Logs": True,
+    #     "SB Emulator": True
+    # },
 ]
 
 ppo_emulator_discrete = [
@@ -1546,90 +1546,90 @@ sbppo_load_test = [
 ]
 
 beta_distribution_test = [
-    {
-        "Model Name": "ppo_continuous_beta",
-        "Environment Name": "ppo_continuous_beta",
-        "Trial Number": 1,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": False
-    },
-    {
-        "Model Name": "ppo_continuous_beta",
-        "Environment Name": "ppo_continuous_beta",
-        "Trial Number": 2,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": False
-    },
-    {
-        "Model Name": "ppo_continuous_beta",
-        "Environment Name": "ppo_continuous_beta",
-        "Trial Number": 3,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": False
-    },
+    # {
+    #     "Model Name": "ppo_continuous_beta",
+    #     "Environment Name": "ppo_continuous_beta",
+    #     "Trial Number": 1,
+    #     "Total Configurations": 3,
+    #     "Episode Transitions": {
+    #     },
+    #     "Conditional Transitions": {
+    #         "Prey Caught": {
+    #             "2": 5,
+    #             "3": 6,
+    #         },
+    #         "Predators Avoided": {
+    #         },
+    #         "Sand Grains Bumped": {
+    #         }
+    #     },
+    #     "Run Mode": "Training",
+    #     "Tethered": False,
+    #     "Realistic Bouts": True,
+    #     "Continuous Actions": True,
+    #     "Learning Algorithm": "PPO",
+    #     "Priority": 1,
+    #     "Using GPU": True,
+    #     "monitor gpu": False,
+    #     "Full Logs": True,
+    #     "SB Emulator": False
+    # },
+    # {
+    #     "Model Name": "ppo_continuous_beta",
+    #     "Environment Name": "ppo_continuous_beta",
+    #     "Trial Number": 2,
+    #     "Total Configurations": 3,
+    #     "Episode Transitions": {
+    #     },
+    #     "Conditional Transitions": {
+    #         "Prey Caught": {
+    #             "2": 5,
+    #             "3": 6,
+    #         },
+    #         "Predators Avoided": {
+    #         },
+    #         "Sand Grains Bumped": {
+    #         }
+    #     },
+    #     "Run Mode": "Training",
+    #     "Tethered": False,
+    #     "Realistic Bouts": True,
+    #     "Continuous Actions": True,
+    #     "Learning Algorithm": "PPO",
+    #     "Priority": 1,
+    #     "Using GPU": True,
+    #     "monitor gpu": False,
+    #     "Full Logs": True,
+    #     "SB Emulator": False
+    # },
+    # {
+    #     "Model Name": "ppo_continuous_beta",
+    #     "Environment Name": "ppo_continuous_beta",
+    #     "Trial Number": 3,
+    #     "Total Configurations": 3,
+    #     "Episode Transitions": {
+    #     },
+    #     "Conditional Transitions": {
+    #         "Prey Caught": {
+    #             "2": 5,
+    #             "3": 6,
+    #         },
+    #         "Predators Avoided": {
+    #         },
+    #         "Sand Grains Bumped": {
+    #         }
+    #     },
+    #     "Run Mode": "Training",
+    #     "Tethered": False,
+    #     "Realistic Bouts": True,
+    #     "Continuous Actions": True,
+    #     "Learning Algorithm": "PPO",
+    #     "Priority": 1,
+    #     "Using GPU": True,
+    #     "monitor gpu": False,
+    #     "Full Logs": True,
+    #     "SB Emulator": False
+    # },
     {
         "Model Name": "ppo_continuous_beta",
         "Environment Name": "ppo_continuous_beta",
@@ -1663,5 +1663,5 @@ beta_distribution_test = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(beta_distribution_test, parallel_jobs=4)
+manager = TrialManager(sb_insigmas_test_bs, parallel_jobs=4)
 manager.run_priority_loop()
