@@ -1549,7 +1549,7 @@ beta_distribution_test = [
     {
         "Model Name": "ppo_continuous_beta",
         "Environment Name": "ppo_continuous_beta",
-        "Trial Number": 1,
+        "Trial Number": 5,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1577,7 +1577,7 @@ beta_distribution_test = [
     {
         "Model Name": "ppo_continuous_beta",
         "Environment Name": "ppo_continuous_beta",
-        "Trial Number": 2,
+        "Trial Number": 6,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1605,7 +1605,7 @@ beta_distribution_test = [
     {
         "Model Name": "ppo_continuous_beta",
         "Environment Name": "ppo_continuous_beta",
-        "Trial Number": 3,
+        "Trial Number": 7,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1633,7 +1633,7 @@ beta_distribution_test = [
     {
         "Model Name": "ppo_continuous_beta",
         "Environment Name": "ppo_continuous_beta",
-        "Trial Number": 4,
+        "Trial Number": 8,
         "Total Configurations": 3,
         "Episode Transitions": {
         },

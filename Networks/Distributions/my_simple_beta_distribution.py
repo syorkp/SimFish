@@ -34,6 +34,7 @@ class MySimpleBetaDistribution:
         s2 = tf.math.exp(logx - tf.math.log(tf.math.add(tf.math.exp(logx), tf.math.exp(logy))))
 
         samples = tf.where(W <= 1, x=s1, y=s2)
+        samples = tf.clip_by_value(samples, clip_value_min=0.01, clip_value_max=0.99)
         samples = tf.expand_dims(samples, 1)
         return samples
         # seed1, seed2 = samplers.split_seed(None, salt='beta')
