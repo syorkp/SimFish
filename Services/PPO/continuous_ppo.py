@@ -594,6 +594,10 @@ class ContinuousPPO(BasePPO):
                        self.critic_network.trainLength: 1,
                        }
         )
+        if self.learning_params["beta_distribution"]:
+            impulse = [[impulse[0]]]
+            if impulse[0][0] == 0.0:
+                impulse = [[0.001]]
 
         action = [impulse[0][0], angle[0][0]]
 
@@ -762,11 +766,16 @@ class ContinuousPPO(BasePPO):
                                                               log_angle_probability_buffer, advantage_buffer,
                                                               return_buffer)
 
+            if self.learning_params['beta_distribution']:
+                log_impulse_probability_batch = np.exp(log_impulse_probability_batch)
+                maxli = max(log_impulse_probability_batch) + 1
+                log_impulse_probability_batch = log_impulse_probability_batch/maxli
+                log_impulse_probability_batch = np.log(log_impulse_probability_batch)
+
             # Loss value logging
             average_loss_value = 0
             average_loss_impulse = 0
             average_loss_angle = 0
-
             for i in range(self.learning_params["n_updates_per_iteration"]):
                 # Compute RNN states for start of each trace.
                 actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, \
@@ -778,6 +787,8 @@ class ContinuousPPO(BasePPO):
                                                                      previous_action_buffer[
                                                                      :(batch + 1) * self.learning_params[
                                                                          "batch_size"]])
+
+
 
                 # Optimise critic
                 loss_critic_val, _ = self.sess.run(
@@ -820,10 +831,12 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.learning_rate: self.learning_params[
                                                                      "learning_rate_actor"] * current_batch_size
                                })
-
+                if np.isnan(loss_actor_val_impulse):
+                    x = True
                 average_loss_impulse += np.mean(np.abs(loss_actor_val_impulse))
                 average_loss_angle += np.mean(np.abs(loss_actor_val_angle))
                 average_loss_value += np.abs(loss_critic_val)
+
 
             self.buffer.add_loss(average_loss_impulse / self.learning_params["n_updates_per_iteration"],
                                  average_loss_angle / self.learning_params["n_updates_per_iteration"],

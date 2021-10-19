@@ -191,6 +191,7 @@ class BasePPOBuffer:
         extra_pads = desired_length - buffer.shape[0]
         padding_shape = (extra_pads, ) + shape_of_data
         padding = np.zeros(padding_shape, dtype=float)
+        padding = padding + 0.01
         buffer = np.concatenate((buffer, padding), axis=0)
         return buffer
 
