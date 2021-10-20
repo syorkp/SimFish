@@ -54,8 +54,7 @@ env = {'width': 1500,  # arena size
        'predator_inertia': 40.,
        'predator_size': 100.,
        'predator_impulse': 1.0,
-       'immunity_steps': 65,
-       # number of steps in the beginning of an episode where the fish is immune from predation
+       'immunity_steps': 65, # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 300,  # Distance from the fish at which the predator appears.
        'probability_of_predator': 0.05,  # Probability with which the predator appears at each step.
 
@@ -91,6 +90,7 @@ env = {'width': 1500,  # arena size
 
        'distance_penalty_scaling_factor': 0.001,
        'angle_penalty_scaling_factor': 0.001,
+       'baseline_penalty': 0.002,
        }
 
 

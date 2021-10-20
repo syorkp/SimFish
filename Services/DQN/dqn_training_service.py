@@ -75,15 +75,12 @@ class DQNTrainingService(TrainingService, BaseDQN):
 
         self.buffer = ExperienceBuffer(output_location=self.model_location, buffer_size=self.learning_params["exp_buffer_size"])
 
-    def _run(self):
-        self.create_network()
-        self.init_states()
-        TrainingService._run(self)
-
-
-        # Print saved metrics
-        # print(f"Total training time: {sum(self.training_times)}")
-        # print(f"Total reward: {sum(self.reward_list)}")
+    def run(self):
+        sess = self.create_session()
+        with sess as self.sess:
+            self.create_network()
+            self.init_states()
+            TrainingService._run(self)
 
     def episode_loop(self):
         t0 = time()
@@ -99,6 +96,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
                           sand_grains_bumped=self.simulation.sand_grains_bumped,
                           steps_near_vegetation=self.simulation.steps_near_vegetation
                           )
+        print(f"""Total episode reward: {total_episode_reward}\n""")
 
     def save_episode(self, episode_start_t, all_actions, total_episode_reward, episode_buffer, prey_caught,
                      predators_avoided, sand_grains_bumped, steps_near_vegetation):

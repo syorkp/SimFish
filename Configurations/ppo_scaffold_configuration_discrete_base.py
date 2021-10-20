@@ -57,8 +57,7 @@ env = {'width': 1500,  # arena size
        'predator_inertia': 40.,
        'predator_size': 100.,
        'predator_impulse': 1.0,
-       'immunity_steps': 65,
-       # number of steps in the beginning of an episode where the fish is immune from predation
+       'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 300,  # Distance from the fish at which the predator appears.
        'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
@@ -69,27 +68,19 @@ env = {'width': 1500,  # arena size
        'dark_gain': 0.02,  # gai nof brightness in the dark side
        'light_gain': 1.,  # gain of brightness in the bright side
 
-       # 'forward_swim_cost': 3,
-       # 'routine_turn_cost': 3,
-       # 'capture_swim_cost': 5,
-       # 'j_turn_cost': 2.5,
-       # 'rest_cost': 2,
-       # 'capture_swim_extra_cost': 25,
-
-       'forward_swim_cost': 0,
-       'routine_turn_cost': 0,
-       'capture_swim_cost': 0,
-       'j_turn_cost': 0,
-       'rest_cost': 0,
-       'capture_swim_extra_cost': 0,
-
+       'forward_swim_cost': 3,
        'forward_swim_impulse': 10,
+       'routine_turn_cost': 3,
        'routine_turn_impulse': 5,
        'routine_turn_dir_change': 0.6,
+       'capture_swim_cost': 5,
        'capture_swim_impulse': 5,
+       'j_turn_cost': 2.5,
        'j_turn_impulse': 0.1,
        'j_turn_dir_change': 0.07,
+       'rest_cost': 2,
 
+       'capture_swim_extra_cost': 25,
        'capture_basic_reward': 10000,
        'predator_cost': 100,
 
@@ -110,7 +101,7 @@ env = {'width': 1500,  # arena size
 
        # Policy scaffolding
        'reward_distance': 100,
-       'proximity_reward': 2,
+       'proximity_reward': 0.002,
 
        'max_sigma_impulse': 0.4,
        'max_sigma_angle': 0.4,
@@ -120,9 +111,8 @@ env = {'width': 1500,  # arena size
        'sigma_time_constant': 0.000001,
 
        'clip_param': 0.2,
-       'cs_required': True
+       'cs_required': False
        }
-
 
 params = {'num_actions': 10,  # size of action space
           'batch_size': 1,  # How many experience traces to use for each training step.
@@ -141,19 +131,23 @@ params = {'num_actions': 10,  # size of action space
           'rnn_dim_shared': 512,  # number of rnn cells
           'extra_rnn': False,
 
-          'learning_rate_actor': 0.00002,
-          'learning_rate_critic': 0.00002,
+          'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
+          'learning_rate_actor': 0.000001,
+          'learning_rate_critic': 0.000001,
 
-          'n_updates_per_iteration': 5,
+          'n_updates_per_iteration': 4,
           'rnn_state_computation': False,
 
           'epsilon_greedy': False,
+          'multivariate': False,
+          'beta_distribution': False,
 
           'gamma': 0.99,
-          'lambda': 0.9
+          'lambda': 0.9,
+          'input_sigmas': True
           }
 
-directory_name = "ppo_discrete_emulator"
+directory_name = "ppo_discrete_sbe"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):
@@ -188,4 +182,11 @@ env['prey_impulse'] = 0.05
 save_files(number)
 number += 1
 
+env['prey_jump'] = True
+save_files(number)
+number += 1
+
+env['probability_of_predator'] = 0.01
+save_files(number)
+number += 1
 

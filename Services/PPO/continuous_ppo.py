@@ -44,8 +44,10 @@ class ContinuousPPO(BasePPO):
                                                                   max_impulse=self.environment_params['max_impulse'],
                                                                   max_angle_change=self.environment_params[
                                                                       'max_angle_change'],
-                                                                  clip_param=self.environment_params['clip_param']
+                                                                  clip_param=self.environment_params['clip_param'],
+                                                                  input_sigmas=self.learning_params['input_sigmas']
                                                                   )
+
             else:
                 self.actor_network = PPONetworkActorMultivariate(simulation=self.simulation,
                                                                  rnn_dim=self.learning_params['rnn_dim_shared'],
@@ -55,7 +57,8 @@ class ContinuousPPO(BasePPO):
                                                                  max_impulse=self.environment_params['max_impulse'],
                                                                  max_angle_change=self.environment_params[
                                                                      'max_angle_change'],
-                                                                 clip_param=self.environment_params['clip_param']
+                                                                 clip_param=self.environment_params['clip_param'],
+                                                                 input_sigmas=self.learning_params['input_sigmas']
                                                                  )
 
         else:
@@ -382,6 +385,8 @@ class ContinuousPPO(BasePPO):
             feed_dict={self.actor_network.observation: o,
                        self.actor_network.internal_state: internal_state,
                        self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                       self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
+                       self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
                        self.actor_network.rnn_state_in: rnn_state_actor,
                        self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
@@ -446,6 +451,8 @@ class ContinuousPPO(BasePPO):
             feed_dict={self.actor_network.observation: o,
                        self.actor_network.internal_state: internal_state,
                        self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                       self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
+                       self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
                        self.actor_network.rnn_state_in: rnn_state_actor,
                        self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
@@ -989,6 +996,9 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.internal_state: internal_state_batch,
                                self.actor_network.rnn_state_in: actor_rnn_state_slice,
                                self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
+
+                               self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
+                               self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
 
                                self.actor_network.action_placeholder: action_batch,
                                self.actor_network.old_log_prob: log_action_probability_batch,

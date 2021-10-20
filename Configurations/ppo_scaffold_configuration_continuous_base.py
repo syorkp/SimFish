@@ -56,8 +56,7 @@ env = {'width': 1500,  # arena size
        'predator_inertia': 40.,
        'predator_size': 100.,
        'predator_impulse': 1.0,
-       'immunity_steps': 65,
-       # number of steps in the beginning of an episode where the fish is immune from predation
+       'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 300,  # Distance from the fish at which the predator appears.
        'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
@@ -81,7 +80,7 @@ env = {'width': 1500,  # arena size
        'rest_cost': 2,
 
        'capture_swim_extra_cost': 25,
-       'capture_basic_reward': 1000,
+       'capture_basic_reward': 10000,
        'predator_cost': 100,
 
        'hunger': True,
@@ -110,9 +109,9 @@ env = {'width': 1500,  # arena size
 
        'sigma_time_constant': 0.000001,
 
-       'clip_param': 0.2
+       'clip_param': 0.2,
+       'cs_required': False
        }
-
 
 params = {'num_actions': 10,  # size of action space
           'batch_size': 1,  # How many experience traces to use for each training step.
@@ -131,26 +130,28 @@ params = {'num_actions': 10,  # size of action space
           'rnn_dim_shared': 512,  # number of rnn cells
           'extra_rnn': False,
 
+          'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
           'learning_rate_actor': 0.000001,
           'learning_rate_critic': 0.000001,
 
           'n_updates_per_iteration': 4,
           'rnn_state_computation': False,
 
+          'epsilon_greedy': False,
           'multivariate': True,
           'beta_distribution': False,
+
           'gamma': 0.99,
-          'lambda': 0.9
+          'lambda': 0.9,
+          'input_sigmas': False
           }
 
 
-directory_name = "ppo_continuous_sbe_sigmas"
+directory_name = "ppo_continuous_sbe_es"
 
-# Ensure Output File Exists
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):
     os.makedirs(f"Configurations/Training-Configs/{directory_name}/")
-
 
 # Equal to that given in the file name.
 def save_files(n):
@@ -176,4 +177,10 @@ env['prey_impulse'] = 0.05
 save_files(number)
 number += 1
 
+env['prey_jump'] = True
+save_files(number)
+number += 1
 
+env['probability_of_predator'] = 0.01
+save_files(number)
+number += 1

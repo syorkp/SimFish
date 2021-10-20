@@ -127,8 +127,7 @@ class PPONetworkActor(BaseNetwork):
             tf.clip_by_value(self.angle_ratio, 1 - clip_param, 1 + clip_param), self.scaled_advantage_placeholder)
         self.angle_loss = tf.reduce_mean(tf.maximum(self.angle_surrogate_loss_1, self.angle_surrogate_loss_2))
 
-        # self.total_loss = tf.add(self.impulse_loss, self.angle_loss)
-        self.total_loss = self.angle_loss
+        self.total_loss = tf.add(self.impulse_loss, self.angle_loss)
 
         self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
         # self.optimizer = tf.train.AdamOptimizer(self.learning_rate, name='actor_optimizer_impulse').minimize(

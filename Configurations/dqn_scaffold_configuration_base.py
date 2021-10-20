@@ -7,6 +7,7 @@ Created on Mon Oct  5 07:52:17 2020
 """
 import json
 import os
+import numpy as np
 
 # all distances in pixels
 
@@ -31,13 +32,13 @@ env = {'width': 1500,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 30,
-       'prey_impulse': 0.1,  # impulse each prey receives per step
+       'prey_num': 15,
+       'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
        'prey_max_turning_angle': 0.3,
-       'prey_jump': True,
+       'prey_jump': False,
        'differential_prey': False,
        'prey_cloud_num': 2,
 
@@ -56,10 +57,9 @@ env = {'width': 1500,  # arena size
        'predator_inertia': 40.,
        'predator_size': 100.,
        'predator_impulse': 1.0,
-       'immunity_steps': 65,
-       # number of steps in the beginning of an episode where the fish is immune from predation
+       'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 300,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.05,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -91,8 +91,27 @@ env = {'width': 1500,  # arena size
        'stress': False,
        'stress_compound': 0.9,
 
+       # For continuous Actions space:
+       'max_angle_change': np.pi / 5,
+       'max_impulse': 10.0,  # Up to 50ish
+
        'distance_penalty_scaling_factor': 0.001,
        'angle_penalty_scaling_factor': 0.001,
+       'baseline_penalty': 0.002,
+
+       # Policy scaffolding
+       'reward_distance': 100,
+       'proximity_reward': 0.002,
+
+       'max_sigma_impulse': 0.4,
+       'max_sigma_angle': 0.4,
+       'min_sigma_impulse': 0.1,
+       'min_sigma_angle': 0.1,
+
+       'sigma_time_constant': 0.000001,
+
+       'clip_param': 0.2,
+       'cs_required': False
        }
 
 
@@ -105,8 +124,7 @@ params = {'num_actions': 10,  # size of action space
           'endE': 0.01,  # Final chance of random action
           'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
           'num_episodes': 50000,  # How many episodes of game environment to train network with.
-          # 'pre_train_steps': 50000,  # How many steps of random actions before training begins.
-          'pre_train_steps': 5000,  # How many steps of random actions before training begins.
+          'pre_train_steps': 50000,  # How many steps of random actions before training begins.
           'max_epLength': 1000,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
           'summaryLength': 200,  # Number of epidoes to periodically save for analysis
@@ -115,10 +133,19 @@ params = {'num_actions': 10,  # size of action space
           'extra_rnn': False,
 
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
-          'learning_rate': 0.0001}
+          'learning_rate': 0.000001,
+
+          'epsilon_greedy': True,
+          'multivariate': False,
+          'beta_distribution': False,
+
+          'gamma': 0.99,
+          'lambda': 0.9,
+          'input_sigmas': True
+          }
 
 
-directory_name = "dqn_test"
+directory_name = "dqn_discrete"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):
@@ -141,20 +168,22 @@ number = 1
 save_files(number)
 number += 1
 
-# 2. Reduce mouth size
-env["fish_mouth_size"] = 3
+env['cs_required'] = True
 save_files(number)
 number += 1
 
-
-# 3. Reduce mouth size
-env["fish_mouth_size"] = 2
+env['prey_impulse'] = 0.02
 save_files(number)
 number += 1
 
-
-# 4. Reduce mouth size
-env["fish_mouth_size"] = 1
+env['prey_impulse'] = 0.05
 save_files(number)
 number += 1
 
+env['prey_jump'] = True
+save_files(number)
+number += 1
+
+env['probability_of_predator'] = 0.01
+save_files(number)
+number += 1
