@@ -51,6 +51,7 @@ class PPONetworkActor(BaseNetwork):
             self.mu_impulse_combined = tf.divide(tf.add(self.mu_impulse_1_combined, self.mu_impulse_2_combined), 2)
 
             self.norm_dist_impulse = MySimpleBetaDistribution(self.mu_impulse_1_combined, self.mu_impulse_2_combined)
+
         else:
             self.mu_impulse = tf.layers.dense(self.mu_impulse_stream, 1, activation=tf.nn.sigmoid,
                                               kernel_initializer=tf.orthogonal_initializer,
@@ -67,10 +68,7 @@ class PPONetworkActor(BaseNetwork):
                                                              name="norm_dist_impulse")
 
         self.action_tf_var_impulse = tf.squeeze(self.norm_dist_impulse.sample(1), axis=0)
-        # self.action_tf_var_impulse = tf.clip_by_value(self.action_tf_var_impulse, 0, 1)
         self.impulse_output = tf.math.multiply(self.action_tf_var_impulse, max_impulse, name="impulse_output")
-        # self.log_prob_impulse = tf.log(self.norm_dist_impulse.prob(self.action_tf_var_impulse) + 1e-5)
-
         self.log_prob_impulse = self.norm_dist_impulse.log_prob(self.action_tf_var_impulse)
 
         # Combined Actor angle output
@@ -89,25 +87,6 @@ class PPONetworkActor(BaseNetwork):
         self.action_tf_var_angle = tf.clip_by_value(self.action_tf_var_angle, -1, 1)
         self.angle_output = tf.math.multiply(self.action_tf_var_angle, max_angle_change, name="angle_output")
         self.log_prob_angle = tf.log(self.norm_dist_angle.prob(self.action_tf_var_angle) + 1e-5) - 1e-6
-
-        # self.mu_impulse_combined = self.mu_impulse
-        # self.sigma_impulse_combined = self.sigma_impulse
-        # self.norm_dist_impulse = tf.distributions.Normal(self.mu_impulse_combined, self.sigma_impulse_combined,
-        #                                                  name="norm_dist_impulse")
-        # self.action_tf_var_impulse = tf.squeeze(self.norm_dist_impulse.sample(1), axis=0)
-        # self.action_tf_var_impulse = tf.clip_by_value(self.action_tf_var_impulse, 0, 1)
-        # self.impulse_output = tf.math.multiply(self.action_tf_var_impulse, max_impulse, name="impulse_output")
-        # self.log_prob_impulse = tf.log(self.norm_dist_impulse.prob(self.action_tf_var_impulse) + 1e-5)
-        #
-        # # Combined Actor angle output
-        # self.mu_angle_combined = self.mu_angle
-        # self.sigma_angle_combined = self.sigma_angle
-        # self.norm_dist_angle = tf.distributions.Normal(self.mu_angle_combined, self.sigma_angle_combined,
-        #                                                name="norm_dist_angle")
-        # self.action_tf_var_angle = tf.squeeze(self.norm_dist_angle.sample(1), axis=0)
-        # self.action_tf_var_angle = tf.clip_by_value(self.action_tf_var_angle, -1, 1)
-        # self.angle_output = tf.math.multiply(self.action_tf_var_angle, max_angle_change, name="angle_output")
-        # self.log_prob_angle = tf.log(self.norm_dist_angle.prob(self.action_tf_var_angle) + 1e-5)
 
         #            ----------        Loss functions       ---------            #
 
@@ -148,7 +127,8 @@ class PPONetworkActor(BaseNetwork):
             tf.clip_by_value(self.angle_ratio, 1 - clip_param, 1 + clip_param), self.scaled_advantage_placeholder)
         self.angle_loss = tf.reduce_mean(tf.maximum(self.angle_surrogate_loss_1, self.angle_surrogate_loss_2))
 
-        self.total_loss = tf.add(self.impulse_loss, self.angle_loss)
+        # self.total_loss = tf.add(self.impulse_loss, self.angle_loss)
+        self.total_loss = self.angle_loss
 
         self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
         # self.optimizer = tf.train.AdamOptimizer(self.learning_rate, name='actor_optimizer_impulse').minimize(

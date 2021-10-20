@@ -1547,9 +1547,9 @@ sbppo_load_test = [
 
 beta_distribution_test = [
     {
-        "Model Name": "ppo_continuous_beta",
+        "Model Name": "ppo_continuous_beta_sanity",
         "Environment Name": "ppo_continuous_beta",
-        "Trial Number": 5,
+        "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1575,9 +1575,9 @@ beta_distribution_test = [
         "SB Emulator": False
     },
     {
-        "Model Name": "ppo_continuous_beta",
+        "Model Name": "ppo_continuous_beta_sanity",
         "Environment Name": "ppo_continuous_beta",
-        "Trial Number": 6,
+        "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1603,9 +1603,9 @@ beta_distribution_test = [
         "SB Emulator": False
     },
     {
-        "Model Name": "ppo_continuous_beta",
+        "Model Name": "ppo_continuous_beta_sanity",
         "Environment Name": "ppo_continuous_beta",
-        "Trial Number": 7,
+        "Trial Number": 3,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1631,9 +1631,9 @@ beta_distribution_test = [
         "SB Emulator": False
     },
     {
-        "Model Name": "ppo_continuous_beta",
+        "Model Name": "ppo_continuous_beta_sanity",
         "Environment Name": "ppo_continuous_beta",
-        "Trial Number": 8,
+        "Trial Number": 4,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
