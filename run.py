@@ -1000,5 +1000,5 @@ ppo_continuous_mv_es = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_discrete_sbe, parallel_jobs=4)
+manager = TrialManager(ppo_continuous_sbe_is, parallel_jobs=4)
 manager.run_priority_loop()
