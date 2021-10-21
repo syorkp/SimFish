@@ -135,16 +135,15 @@ dqn_discrete = [
         "Model Name": "dqn_discrete",
         "Environment Name": "dqn_discrete",
         "Trial Number": 1,
-        "Total Configurations": 6,
+        "Total Configurations": 5,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
             "Prey Caught": {
-                "2": 4,
-                "3": 5,
-                "4": 6,
-                "5": 7,
-                "6": 8,
+                "2": 5,
+                "3": 6,
+                "4": 7,
+                "5": 8,
             },
             "Predators Avoided": {
             },
@@ -162,99 +161,98 @@ dqn_discrete = [
         "Full Logs": True,
         "SB Emulator": False
     },
-    # {
-    #     "Model Name": "dqn_discrete",
-    #     "Environment Name": "dqn_discrete",
-    #     "Trial Number": 2,
-    #     "Total Configurations": 6,
-    #     "Episode Transitions": {
-    #     },
-    #     "Conditional Transitions": {
-    #         "Prey Caught": {
-    #             "2": 4,
-    #             "3": 5,
-    #             "4": 6,
-    #             "5": 7,
-    #             "6": 8,
-    #         },
-    #         "Predators Avoided": {
-    #         },
-    #         "Sand Grains Bumped": {
-    #         }
-    #     },
-    #     "Run Mode": "Training",
-    #     "Tethered": False,
-    #     "Realistic Bouts": True,
-    #     "Continuous Actions": False,
-    #     "Learning Algorithm": "DQN",
-    #     "Priority": 2,
-    #     "Using GPU": True,
-    #     "monitor gpu": False,
-    #     "Full Logs": True,
-    #     "SB Emulator": False
-    # },
-    # {
-    #     "Model Name": "dqn_discrete",
-    #     "Environment Name": "dqn_discrete",
-    #     "Trial Number": 3,
-    #     "Total Configurations": 6,
-    #     "Episode Transitions": {
-    #     },
-    #     "Conditional Transitions": {
-    #         "Prey Caught": {
-    #             "2": 4,
-    #             "3": 5,
-    #             "4": 6,
-    #             "5": 7,
-    #             "6": 8,
-    #         },
-    #         "Predators Avoided": {
-    #         },
-    #         "Sand Grains Bumped": {
-    #         }
-    #     },
-    #     "Run Mode": "Training",
-    #     "Tethered": False,
-    #     "Realistic Bouts": True,
-    #     "Continuous Actions": False,
-    #     "Learning Algorithm": "DQN",
-    #     "Priority": 2,
-    #     "Using GPU": True,
-    #     "monitor gpu": False,
-    #     "Full Logs": True,
-    #     "SB Emulator": False
-    # },
-    # {
-    #     "Model Name": "dqn_discrete",
-    #     "Environment Name": "dqn_discrete",
-    #     "Trial Number": 4,
-    #     "Total Configurations": 6,
-    #     "Episode Transitions": {
-    #     },
-    #     "Conditional Transitions": {
-    #         "Prey Caught": {
-    #             "2": 4,
-    #             "3": 5,
-    #             "4": 6,
-    #             "5": 7,
-    #             "6": 8,
-    #         },
-    #         "Predators Avoided": {
-    #         },
-    #         "Sand Grains Bumped": {
-    #         }
-    #     },
-    #     "Run Mode": "Training",
-    #     "Tethered": False,
-    #     "Realistic Bouts": True,
-    #     "Continuous Actions": False,
-    #     "Learning Algorithm": "DQN",
-    #     "Priority": 2,
-    #     "Using GPU": True,
-    #     "monitor gpu": False,
-    #     "Full Logs": True,
-    #     "SB Emulator": False
-    # },
+    {
+        "Model Name": "dqn_discrete",
+        "Environment Name": "dqn_discrete",
+        "Trial Number": 2,
+        "Total Configurations": 5,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 6,
+                "4": 7,
+                "5": 8,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False
+    },
+    {
+        "Model Name": "dqn_discrete",
+        "Environment Name": "dqn_discrete",
+        "Trial Number": 3,
+        "Total Configurations": 5,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 6,
+                "4": 7,
+                "5": 8,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False
+    },
+    {
+        "Model Name": "dqn_discrete",
+        "Environment Name": "dqn_discrete",
+        "Trial Number": 4,
+        "Total Configurations": 5,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 6,
+                "4": 7,
+                "5": 8,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False
+    },
+
+
 ]
 
 ppo_discrete_sbe = [
@@ -998,6 +996,44 @@ ppo_continuous_mv_es = [
         "SB Emulator": False
     },
 ]
+
+ppo_assay = [
+    {
+        "Model Name": "ppo_continuous_sbe_insigmas",
+        "Environment Name": "ppo_continuous_sbe_test",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 5,
+        "Run Mode": "Assay",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "set random seed": False,
+        "Assays": [
+            {
+                "assay id": "Naturalistic-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions"],
+                "ablations": []
+            },
+        ]
+    },
+]
+
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 manager = TrialManager(dqn_discrete, parallel_jobs=4)

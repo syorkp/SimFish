@@ -26,6 +26,7 @@ def plot_capture_sequences_orientation(position, orientation_changes, consumptio
     plt.scatter([p[0] for p in consumption_positions], [p[1] for p in consumption_positions], color="r")
     plt.show()
 
+
 def plot_capture_sequences_impulse(position, impulses, consumption_timestamps):
     # Note that due to the inverse scale in the environment, should be rotated in y axis.
     data = {}
@@ -105,7 +106,7 @@ def extract_consumption_action_sequences(data, n=20):
         prey_c_t.append(prey_capture_timestamps)
     return prey_c_t
 
-# data = load_data("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic-1")
+data = load_data("ppo_continuous_sbe_insigmas-5", "Behavioural-Data-Free", "Naturalistic-1")
 # data = load_data("ppo_continuous_multivariate-7", "MultivariateData", "Naturalistic-1")
 # data = load_data("ppo_multivariate_bptt-2", "MultivariateData", "Naturalistic-1")
 
@@ -116,8 +117,8 @@ def extract_consumption_action_sequences(data, n=20):
 # all_impulses, all_angles, consumption_timestamps, predation_sequences = get_multiple_actions("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic", 8)
 # mu_impulse, mu_angle = get_multiple_means("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic", 8)
 
-all_impulses, all_angles, consumption_timestamps, predation_sequences = get_multiple_actions("ppo_continuous_buffered-2", "MultivariateData", "Naturalistic", 8)
-mu_impulse, mu_angle = get_multiple_means("ppo_continuous_buffered-2", "MultivariateData", "Naturalistic", 8)
+all_impulses, all_angles, consumption_timestamps, predation_sequences = get_multiple_actions("ppo_continuous_sbe_insigmas-5", "Behavioural-Data-Free", "Naturalistic", 1)
+mu_impulse, mu_angle = get_multiple_means("ppo_continuous_sbe_insigmas-5", "Behavioural-Data-Free", "Naturalistic", 1)
 consumption_timestamps = consumption_timestamps.astype(int)
 consumption_timestamps = consumption_timestamps.tolist()
 

@@ -24,6 +24,8 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
                                         assays=trial["Assays"],
                                         set_random_seed=trial["set random seed"],
                                         assay_config_name=trial["Assay Configuration Name"],
+
+                                        sb_emulator=trial["SB Emulator"]
                                         )
     service.run()
 
@@ -31,7 +33,8 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
 class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_environment, assays, set_random_seed, assay_config_name):
+                 config_name, realistic_bouts, continuous_environment, assays, set_random_seed, assay_config_name,
+                 sb_emulator=False):
         """
         Runs a set of assays provided by the run configuraiton.
         """
@@ -57,6 +60,8 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
         self.ppo_version = ContinuousPPO
 
+        self.sb_emulator = sb_emulator
+
     def run(self):
         sess = self.create_session()
         with sess as self.sess:
@@ -67,7 +72,12 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
     def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                   rnn_state_critic_ref):
         if self.multivariate:
-            return self._assay_step_loop_multivariate(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+            if self.sb_emulator:
+                return self._assay_step_loop_multivariate2(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+                                                      rnn_state_critic,
+                                                      rnn_state_critic_ref)
+            else:
+                return self._assay_step_loop_multivariate(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                                       rnn_state_critic,
                                                       rnn_state_critic_ref)
         else:

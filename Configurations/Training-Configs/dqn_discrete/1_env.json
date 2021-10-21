@@ -81,5 +81,5 @@
     "min_sigma_angle": 0.1,
     "sigma_time_constant": 1e-06,
     "clip_param": 0.2,
-    "cs_required": false
+    "cs_required": true
 }

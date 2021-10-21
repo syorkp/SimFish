@@ -6,7 +6,6 @@ Created on Mon Oct  5 07:52:17 2020
 @author: asaph
 """
 import json
-import os
 import numpy as np
 
 # all distances in pixels
@@ -33,7 +32,7 @@ env = {'width': 1500,  # arena size
        'prey_inertia': 40.,
        'prey_size': 4.,
        'prey_num': 15,
-       'prey_impulse': 0.0,  # impulse each prey receives per step
+       'prey_impulse': 0.05,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
@@ -57,7 +56,8 @@ env = {'width': 1500,  # arena size
        'predator_inertia': 40.,
        'predator_size': 100.,
        'predator_impulse': 1.0,
-       'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
+       'immunity_steps': 65,
+       # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 300,  # Distance from the fish at which the predator appears.
        'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
@@ -81,7 +81,7 @@ env = {'width': 1500,  # arena size
        'rest_cost': 2,
 
        'capture_swim_extra_cost': 25,
-       'capture_basic_reward': 10000,
+       'capture_basic_reward': 0.05,
        'predator_cost': 100,
 
        'hunger': True,
@@ -92,7 +92,7 @@ env = {'width': 1500,  # arena size
        'stress_compound': 0.9,
 
        # For continuous Actions space:
-       'max_angle_change': np.pi / 5,
+       'max_angle_change': np.pi/5,
        'max_impulse': 10.0,  # Up to 50ish
 
        'distance_penalty_scaling_factor': 0.001,
@@ -111,13 +111,13 @@ env = {'width': 1500,  # arena size
        'sigma_time_constant': 0.000001,
 
        'clip_param': 0.2,
-       'cs_required': True
+       'cs_required': False
        }
 
 
 params = {'num_actions': 10,  # size of action space
-          'batch_size': 16,  # How many experience traces to use for each training step.
-          'trace_length': 64,  # How long each experience trace will be when training
+          'batch_size': 1,  # How many experience traces to use for each training step.
+          'trace_length': 50,  # How long each experience trace will be when training
           'update_freq': 100,  # How often to perform a training step.
           'y': .99,  # Discount factor on the target Q-values
           'startE': 0.2,  # Starting chance of random action
@@ -127,59 +127,31 @@ params = {'num_actions': 10,  # size of action space
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
           'max_epLength': 1000,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
-          'summaryLength': 200,  # Number of epidoes to periodically save for analysis
+          'summaryLength': 200,  # Number of episodes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
-          'rnn_dim': 512,  # number of rnn cells
+          'rnn_dim_shared': 512,  # number of rnn cells
           'extra_rnn': False,
 
-          'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
-          'learning_rate': 0.000001,
+          'learning_rate_actor': 0.000001,
+          'learning_rate_critic': 0.000001,
 
-          'epsilon_greedy': True,
-          'multivariate': False,
+          'n_updates_per_iteration': 5,
+          'rnn_state_computation': False,
+
+          'epsilon_greedy': False,
+          'multivariate': True,
           'beta_distribution': False,
 
           'gamma': 0.99,
           'lambda': 0.9,
           'input_sigmas': True
+
           }
 
-
-directory_name = "dqn_discrete"
-
-# Ensure Output File Exists
-if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):
-    os.makedirs(f"Configurations/Training-Configs/{directory_name}/")
-
-
 # Equal to that given in the file name.
-def save_files(n):
-    with open(f"Configurations/Training-Configs/{directory_name}/{str(n)}_env.json", 'w') as f:
-        json.dump(env, f, indent=4)
+environment_name = "ppo_continuous_sbe_test"
+with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
+    json.dump(env, f)
 
-    with open(f"Configurations/Training-Configs/{directory_name}/{str(n)}_learning.json", 'w') as f:
-        json.dump(params, f, indent=4)
-
-
-# A. Learn Predator avoidance and prey capture #
-
-# 1 Initial config
-number = 1
-save_files(number)
-number += 1
-
-env['prey_impulse'] = 0.02
-save_files(number)
-number += 1
-
-env['prey_impulse'] = 0.05
-save_files(number)
-number += 1
-
-env['prey_jump'] = True
-save_files(number)
-number += 1
-
-env['probability_of_predator'] = 0.01
-save_files(number)
-number += 1
+with open(f"Configurations/Assay-Configs/{environment_name}_learning.json", 'w') as f:
+    json.dump(params, f)

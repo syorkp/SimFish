@@ -4,6 +4,22 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
+def plot_full_scatter_of_poss_actions():
+    with h5py.File('./bout_distributions.mat', 'r') as fl:
+        p_angle = np.array(fl['p_angle']).T
+        angles = np.array(fl['angles']).T
+        p_dist = np.array(fl['p_dist']).T
+        dists = np.array(fl['dists']).T
+
+        all_p_angle = p_angle.flatten()
+        all_angles = angles.flatten()
+        all_p_dist = p_dist.flatten()
+        all_dists = dists.flatten()
+
+        plt.scatter(all_angles, all_dists)
+        plt.show()
+
+
 def display_pdf_and_cdf(bout_id):
     with h5py.File('./bout_distributions.mat', 'r') as fl:
         p_angle = np.array(fl['p_angle']).T
@@ -78,3 +94,5 @@ def draw_angle_dist(bout_id):
 
 # display_pdf_and_cdf(5)
 # display_pdf_and_cdf(9)
+
+# plot_full_scatter_of_poss_actions()

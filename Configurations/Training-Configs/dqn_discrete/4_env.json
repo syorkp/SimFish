@@ -23,7 +23,7 @@
     "prey_escape_impulse": 2,
     "prey_sensing_distance": 30,
     "prey_max_turning_angle": 0.3,
-    "prey_jump": false,
+    "prey_jump": true,
     "differential_prey": false,
     "prey_cloud_num": 2,
     "sand_grain_mass": 1.0,

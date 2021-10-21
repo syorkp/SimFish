@@ -389,6 +389,6 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
 # get_all_density_plots_all_subsets("ppo_continuous_multivariate-7", "MultivariateData", "Naturalistic", 8)
 # get_all_density_plots_all_subsets("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic", 8)
 # get_all_density_plots_all_subsets("ppo_multivariate_bptt-2", "MultivariateData", "Naturalistic", 8)
-get_all_density_plots_all_subsets("ppo_continuous_buffered-2", "MultivariateData", "Naturalistic", 8)
+get_all_density_plots_all_subsets("ppo_continuous_sbe_insigmas-5", "Behavioural-Data-Free", "Naturalistic", 1)
 
 
