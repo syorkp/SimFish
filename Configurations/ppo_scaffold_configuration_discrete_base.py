@@ -111,7 +111,7 @@ env = {'width': 1500,  # arena size
        'sigma_time_constant': 0.000001,
 
        'clip_param': 0.2,
-       'cs_required': False
+       'cs_required': True
        }
 
 params = {'num_actions': 10,  # size of action space
@@ -167,10 +167,6 @@ def save_files(n):
 
 # 1 Initial config
 number = 1
-save_files(number)
-number += 1
-
-env['cs_required'] = True
 save_files(number)
 number += 1
 
