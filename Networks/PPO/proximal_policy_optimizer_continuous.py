@@ -2,7 +2,6 @@ import tensorflow.compat.v1 as tf
 import tensorflow_probability as tfp
 
 from Networks.base_network import BaseNetwork
-from Networks.Distributions.my_beta_distribution import MyBetaDistribution
 from Networks.Distributions.my_simple_beta_distribution import MySimpleBetaDistribution
 
 tf.disable_v2_behavior()
@@ -129,21 +128,22 @@ class PPONetworkActor(BaseNetwork):
         self.total_loss = tf.add(self.impulse_loss, self.angle_loss)
 
         self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
-        # self.optimizer = tf.train.AdamOptimizer(self.learning_rate, name='actor_optimizer_impulse').minimize(
-        #     self.total_loss)
-        self.max_gradient_norm = 0.5
-
-        # Gradient clipping (for stability)
-        self.model_params = tf.trainable_variables()
-        self.model_gradients = tf.gradients(self.total_loss, self.model_params)
-        self.model_gradients, _grad_norm = tf.clip_by_global_norm(self.model_gradients, self.max_gradient_norm)
-        self.model_gradients = list(zip(self.model_gradients, self.model_params))
-
-        self.trainer = tf.train.AdamOptimizer(learning_rate=self.learning_rate, epsilon=1e-5)
-        self.train = self.trainer.apply_gradients(self.model_gradients)
-
-        self.optimizer = tf.train.AdamOptimizer(self.learning_rate, name='optimizer').minimize(
+        self.optimizer = tf.train.AdamOptimizer(self.learning_rate, name='actor_optimizer_impulse').minimize(
             self.total_loss)
+        # self.max_gradient_norm = 0.5
+        #
+        # # Gradient clipping (for stability)
+        # self.model_params = tf.trainable_variables()
+        # self.model_gradients = tf.gradients(self.total_loss, self.model_params)
+        # self.model_gradients, _grad_norm = tf.clip_by_global_norm(self.model_gradients, self.max_gradient_norm)
+        # self.model_gradients = list(zip(self.model_gradients, self.model_params))
+        #
+        # self.trainer = tf.train.AdamOptimizer(learning_rate=self.learning_rate, epsilon=1e-5)
+        # self.train = self.trainer.apply_gradients(self.model_gradients)
+
+        # TODO: Probably not meant to be there.
+        # self.optimizer = tf.train.AdamOptimizer(self.learning_rate, name='optimizer').minimize(
+        #     self.total_loss)
 
     @staticmethod
     def bounded_output(x, lower, upper):

@@ -165,8 +165,9 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         self.trainer = tf.train.AdamOptimizer(learning_rate=self.learning_rate, epsilon=1e-5)
         self.train = self.trainer.apply_gradients(self.model_gradients)
 
-        self.train = tf.train.AdamOptimizer(self.learning_rate, name='optimizer').minimize(
-            self.total_loss)
+        # TODO: Probably not meant to be there, but changed since main tests.
+        # self.train = tf.train.AdamOptimizer(self.learning_rate, name='optimizer').minimize(
+        #     self.total_loss)  # Two trains?
 
     @staticmethod
     def bounded_output(x, lower, upper):
