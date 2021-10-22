@@ -124,7 +124,7 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
             value_slice = self.pad_slice(self.value_buffer[self.pointer:-2], self.trace_length)
             log_action_probability_slice = self.pad_slice(self.log_action_probability_buffer[self.pointer:-1], self.trace_length)
             advantage_slice = self.pad_slice(self.advantage_buffer[self.pointer:self.pointer+50], self.trace_length)
-            return_slice = self.pad_slice(self.return_buffer[self.pointer:], self.trace_length)
+            return_slice = self.pad_slice(self.return_buffer[self.pointer:self.pointer+50], self.trace_length)
             # actor_rnn_state_slice = self.actor_rnn_state_buffer[self.pointer:-1]
             # actor_rnn_state_ref_slice = self.actor_rnn_state_ref_buffer[self.pointer:-1]
             # critic_rnn_state_slice = self.critic_rnn_state_buffer[self.pointer:-1]
