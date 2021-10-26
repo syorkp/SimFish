@@ -86,6 +86,7 @@ class AssayService(BaseService):
         self.current_episode_max_duration = assay["duration"]
 
         self._episode_loop()
+        self.log_stimuli()
 
         if assay["save frames"]:
             make_gif(self.frame_buffer,
@@ -97,6 +98,16 @@ class AssayService(BaseService):
             self.buffer.calculate_advantages_and_returns()
         self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id)
         print(f"Assay: {assay['assay id']} Completed")
+
+    def log_stimuli(self):
+        stimuli = self.simulation.stimuli_information
+        to_save = {}
+        for stimulus in stimuli.keys():
+            if stimuli[stimulus]:
+                to_save[stimulus] = stimuli[stimulus]
+
+        if to_save:
+            self.stimuli_data.append(to_save)
 
     def create_testing_environment(self, assay):
         """

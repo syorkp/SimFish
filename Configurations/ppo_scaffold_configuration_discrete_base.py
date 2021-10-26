@@ -80,7 +80,7 @@ env = {'width': 1500,  # arena size
        'j_turn_dir_change': 0.07,
        'rest_cost': 2,
 
-       'capture_swim_extra_cost': 25,
+       'capture_swim_extra_cost': 0,
        'capture_basic_reward': 10000,
        'predator_cost': 100,
 
@@ -183,6 +183,10 @@ save_files(number)
 number += 1
 
 env['probability_of_predator'] = 0.01
+save_files(number)
+number += 1
+
+env['capture_swim_extra_cost'] = 25
 save_files(number)
 number += 1
 
