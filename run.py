@@ -1231,10 +1231,6 @@ ppo_data_gathering1 = [
             },
         ]
     },
-]
-
-
-ppo_data_gathering2 = [
     {
         "Model Name": "ppo_continuous_beta_sanity",
         "Environment Name": "ppo_continuous_beta_test",
@@ -1331,6 +1327,7 @@ ppo_data_gathering2 = [
     },
 ]
 
+
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_data_gathering, parallel_jobs=4)
+manager = TrialManager(ppo_data_gathering1, parallel_jobs=4)
 manager.run_priority_loop()
