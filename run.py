@@ -1193,7 +1193,7 @@ ppo_data_gathering1 = [
         "set random seed": False,
         "Assays": [
             {
-                "assay id": "Naturalistic-1",
+                "assay id": "Naturalistic-6",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -1208,7 +1208,7 @@ ppo_data_gathering1 = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-2",
+                "assay id": "Naturalistic-7",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -1223,7 +1223,7 @@ ppo_data_gathering1 = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-3",
+                "assay id": "Naturalistic-8",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -1238,7 +1238,7 @@ ppo_data_gathering1 = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-4",
+                "assay id": "Naturalistic-9",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -1253,7 +1253,7 @@ ppo_data_gathering1 = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-5",
+                "assay id": "Naturalistic-10",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -1287,7 +1287,7 @@ ppo_data_gathering1 = [
         "set random seed": False,
         "Assays": [
             {
-                "assay id": "Naturalistic-1",
+                "assay id": "Naturalistic-6",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -1302,7 +1302,7 @@ ppo_data_gathering1 = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-2",
+                "assay id": "Naturalistic-7",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -1317,7 +1317,7 @@ ppo_data_gathering1 = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-3",
+                "assay id": "Naturalistic-8",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -1332,7 +1332,7 @@ ppo_data_gathering1 = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-4",
+                "assay id": "Naturalistic-9",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -1347,7 +1347,7 @@ ppo_data_gathering1 = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-5",
+                "assay id": "Naturalistic-10",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -1367,5 +1367,5 @@ ppo_data_gathering1 = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_data_gathering, parallel_jobs=4)
+manager = TrialManager(ppo_data_gathering1, parallel_jobs=4)
 manager.run_priority_loop()

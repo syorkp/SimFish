@@ -117,8 +117,12 @@ data = load_data("ppo_continuous_sbe_is-1", "Behavioural-Data-Free", "Naturalist
 # all_impulses, all_angles, consumption_timestamps, predation_sequences = get_multiple_actions("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic", 8)
 # mu_impulse, mu_angle = get_multiple_means("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic", 8)
 
-all_impulses, all_angles, consumption_timestamps, predation_sequences = get_multiple_actions("ppo_continuous_sbe_insigmas-5", "Behavioural-Data-Free", "Naturalistic", 1)
-mu_impulse, mu_angle = get_multiple_means("ppo_continuous_sbe_insigmas-5", "Behavioural-Data-Free", "Naturalistic", 1)
+# all_impulses, all_angles, consumption_timestamps, predation_sequences = get_multiple_actions("ppo_continuous_sbe_is-1", "Behavioural-Data-Free", "Naturalistic", 10)
+# mu_impulse, mu_angle = get_multiple_means("ppo_continuous_sbe_is-1", "Behavioural-Data-Free", "Naturalistic", 10)
+
+all_impulses, all_angles, consumption_timestamps, predation_sequences = get_multiple_actions("ppo_continuous_beta_sanity-3", "Behavioural-Data-Free", "Naturalistic", 5)
+mu_impulse, mu_angle = get_multiple_means("ppo_continuous_beta_sanity-3", "Behavioural-Data-Free", "Naturalistic", 5)
+
 consumption_timestamps = consumption_timestamps.astype(int)
 consumption_timestamps = consumption_timestamps.tolist()
 
