@@ -106,7 +106,7 @@ def extract_consumption_action_sequences(data, n=20):
         prey_c_t.append(prey_capture_timestamps)
     return prey_c_t
 
-data = load_data("ppo_continuous_sbe_insigmas-5", "Behavioural-Data-Free", "Naturalistic-1")
+data = load_data("ppo_continuous_sbe_is-1", "Behavioural-Data-Free", "Naturalistic-1")
 # data = load_data("ppo_continuous_multivariate-7", "MultivariateData", "Naturalistic-1")
 # data = load_data("ppo_multivariate_bptt-2", "MultivariateData", "Naturalistic-1")
 

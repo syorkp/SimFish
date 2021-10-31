@@ -1001,43 +1001,6 @@ ppo_continuous_mv_es = [
     },
 ]
 
-ppo_assay = [
-    {
-        "Model Name": "ppo_continuous_sbe_insigmas",
-        "Environment Name": "ppo_continuous_sbe_test",
-        "Assay Configuration Name": "Behavioural-Data-Free",
-        "Trial Number": 5,
-        "Run Mode": "Assay",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 2,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": True,
-        "set random seed": False,
-        "Assays": [
-            {
-                "assay id": "Naturalistic-1",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": False,
-                "save frames": True,
-                "save stimuli": False,
-                "random positions": False,
-                "reset": False,
-                "background": None,
-                "moving": False,
-                "collisions": True,
-                "recordings": ["rnn state", "environmental positions"],
-                "ablations": []
-            },
-        ]
-    },
-]
-
 ppo_data_gathering = [
     {
         "Model Name": "ppo_continuous_sbe_is",
@@ -1057,7 +1020,7 @@ ppo_data_gathering = [
         "set random seed": False,
         "Assays": [
             {
-                "assay id": "Naturalistic-1",
+                "assay id": "Naturalistic-6",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -1072,7 +1035,7 @@ ppo_data_gathering = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-2",
+                "assay id": "Naturalistic-7",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -1087,7 +1050,7 @@ ppo_data_gathering = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-3",
+                "assay id": "Naturalistic-8",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -1102,7 +1065,7 @@ ppo_data_gathering = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-4",
+                "assay id": "Naturalistic-9",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -1117,7 +1080,82 @@ ppo_data_gathering = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-5",
+                "assay id": "Naturalistic-10",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions"],
+                "ablations": []
+            },
+            {
+                "assay id": "Naturalistic-11",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions"],
+                "ablations": []
+            },
+            {
+                "assay id": "Naturalistic-12",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions"],
+                "ablations": []
+            },
+            {
+                "assay id": "Naturalistic-13",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions"],
+                "ablations": []
+            },
+            {
+                "assay id": "Naturalistic-14",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions"],
+                "ablations": []
+            },
+            {
+                "assay id": "Naturalistic-15",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
@@ -1329,5 +1367,5 @@ ppo_data_gathering1 = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_data_gathering1, parallel_jobs=4)
+manager = TrialManager(ppo_data_gathering, parallel_jobs=4)
 manager.run_priority_loop()
