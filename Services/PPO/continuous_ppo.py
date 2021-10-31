@@ -321,6 +321,12 @@ class ContinuousPPO(BasePPO):
                        self.critic_network.trainLength: 1,
                        }
         )
+
+        if self.learning_params["beta_distribution"]:
+            impulse = [[impulse[0]]]
+            if impulse[0][0] == 0.0:
+                impulse = [[0.001]]
+
         action = [impulse[0][0], angle[0][0]]
 
         o1, given_reward, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=action,
