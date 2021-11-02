@@ -67,6 +67,7 @@ def get_multiple_actions(p1, p2, p3, n=1):
     all_impulses = np.array([])
     all_angles = np.array([])
     predation_sequences = np.array([])
+    predator_presence_timestamps = np.array([])
     for i in range(1, n+1):
         if i > 12:
             data = load_data(p1, f"{p2}-2", f"{p3} {i}")
@@ -75,11 +76,12 @@ def get_multiple_actions(p1, p2, p3, n=1):
         all_impulses = np.concatenate((all_impulses, data["impulse"][1:]))
         all_angles = np.concatenate((all_angles, data["angle"][1:]))
         consumption_timestamps = np.concatenate((consumption_timestamps, [i for i, c in enumerate(data["consumed"]) if c == 1]))
+        predator_presence_timestamps = np.concatenate((predator_presence_timestamps, [i for i, c in enumerate(data["predator_presence"]) if c == 1]))
         x = extract_consumption_action_sequences(data)
         x = [i for s in x for i in s]
         predation_sequences = np.concatenate((predation_sequences, x))
 
-    return all_impulses, all_angles, consumption_timestamps, predation_sequences
+    return all_impulses, all_angles, consumption_timestamps, predation_sequences, predator_presence_timestamps
 
 
 def get_multiple_means(p1, p2, p3, n=1):
@@ -117,11 +119,13 @@ data = load_data("ppo_continuous_sbe_is-1", "Behavioural-Data-Free", "Naturalist
 # all_impulses, all_angles, consumption_timestamps, predation_sequences = get_multiple_actions("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic", 8)
 # mu_impulse, mu_angle = get_multiple_means("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic", 8)
 
-# all_impulses, all_angles, consumption_timestamps, predation_sequences = get_multiple_actions("ppo_continuous_sbe_is-1", "Behavioural-Data-Free", "Naturalistic", 10)
-# mu_impulse, mu_angle = get_multiple_means("ppo_continuous_sbe_is-1", "Behavioural-Data-Free", "Naturalistic", 10)
+all_impulses, all_angles, consumption_timestamps, predation_sequences, predator_presence = get_multiple_actions("ppo_continuous_sbe_is-1", "Behavioural-Data-Free", "Naturalistic", 10)
+mu_impulse, mu_angle = get_multiple_means("ppo_continuous_sbe_is-1", "Behavioural-Data-Free", "Naturalistic", 10)
 
-all_impulses, all_angles, consumption_timestamps, predation_sequences = get_multiple_actions("ppo_continuous_beta_sanity-3", "Behavioural-Data-Free", "Naturalistic", 5)
-mu_impulse, mu_angle = get_multiple_means("ppo_continuous_beta_sanity-3", "Behavioural-Data-Free", "Naturalistic", 5)
+# all_impulses, all_angles, consumption_timestamps, predation_sequences, predator_presence = \
+#     get_multiple_actions("ppo_continuous_beta_sanity-4", "Behavioural-Data-Free", "Naturalistic", 10)
+# mu_impulse, mu_angle = \
+#     get_multiple_means("ppo_continuous_beta_sanity-4", "Behavioural-Data-Free", "Naturalistic", 10)
 
 consumption_timestamps = consumption_timestamps.astype(int)
 consumption_timestamps = consumption_timestamps.tolist()
@@ -137,10 +141,17 @@ plt.clf()
 plt.imshow(heatmap.T, extent=extent, origin='lower')
 plt.show()
 
+mu_impulse = [i * 10 for i in mu_impulse]
+mu_angle = [i * np.pi/5 for i in mu_angle]
 plt.scatter(mu_impulse, mu_angle, alpha=.2)
 consumption_mu_imp = [a for i, a in enumerate(mu_impulse) if i in consumption_timestamps]
 consumption_mu_ang = [a for i, a in enumerate(mu_angle) if i in consumption_timestamps]
 plt.scatter(consumption_mu_imp, consumption_mu_ang, alpha=.2, color="r")
+predator_mu_imp = [a for i, a in enumerate(mu_impulse) if i in predator_presence]
+predator_mu_ang = [a for i, a in enumerate(mu_angle) if i in predator_presence]
+plt.scatter(predator_mu_imp, predator_mu_ang, alpha=.2, color="y")
+plt.xlabel("Mu Impulse")
+plt.ylabel("Mu Angle")
 plt.show()
 
 

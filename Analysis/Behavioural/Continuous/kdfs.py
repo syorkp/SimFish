@@ -25,11 +25,11 @@ def get_nearby_features(data, step, proximity=300):
         if is_in_area:
             nearby_prey_coordinates.append(i)
 
-    # j = data["predator_position"][step]
-    # is_in_area = nearby_area[0][0] <= j[0] <= nearby_area[0][1] and \
-    #                 nearby_area[1][0] <= j[1] <= nearby_area[1][1]
-    # if is_in_area:
-    #     nearby_predator_coordinates.append(j)
+    j = data["predator_positions"][step]
+    is_in_area = nearby_area[0][0] <= j[0] <= nearby_area[0][1] and \
+                    nearby_area[1][0] <= j[1] <= nearby_area[1][1]
+    if is_in_area:
+        nearby_predator_coordinates.append(j)
 
     return nearby_prey_coordinates, nearby_predator_coordinates
 
@@ -375,7 +375,8 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
     # Make the plot
     fig, ax = plt.subplots()
 
-    ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
+    ax.pcolormesh(xi, yi, zi.reshape(
+        xi.shape), cmap='RdBu')
 
     ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
                            pad=0.6, sep=4, linekw=dict(color="crimson"), )
@@ -386,9 +387,8 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
     plt.title(f"Feature: Predator, Action: C-Starts")
     plt.show()
 
-# get_all_density_plots_all_subsets("ppo_continuous_multivariate-7", "MultivariateData", "Naturalistic", 8)
-# get_all_density_plots_all_subsets("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic", 8)
-# get_all_density_plots_all_subsets("ppo_multivariate_bptt-2", "MultivariateData", "Naturalistic", 8)
-get_all_density_plots_all_subsets("ppo_continuous_sbe_is-1", "Behavioural-Data-Free", "Naturalistic", 5)
 
+# get_all_density_plots_all_subsets("ppo_continuous_sbe_is-1", "Behavioural-Data-Free", "Naturalistic", 10)
+
+get_all_density_plots_all_subsets("ppo_continuous_beta_sanity-4", "Behavioural-Data-Free", "Naturalistic", 10)
 
