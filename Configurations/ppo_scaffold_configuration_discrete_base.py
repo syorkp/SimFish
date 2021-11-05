@@ -132,8 +132,8 @@ params = {'num_actions': 10,  # size of action space
           'extra_rnn': False,
 
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
-          'learning_rate_actor': 0.000001,
-          'learning_rate_critic': 0.000001,
+          'learning_rate_actor': 0.0001,
+          'learning_rate_critic': 0.0001,
 
           'n_updates_per_iteration': 4,
           'rnn_state_computation': False,

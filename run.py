@@ -259,7 +259,7 @@ ppo_discrete_sbe = [
     {
         "Model Name": "ppo_discrete_sbe",
         "Environment Name": "ppo_discrete_sbe",
-        "Trial Number": 1,
+        "Trial Number": 5,
         "Total Configurations": 7,
         "Episode Transitions": {
         },
@@ -291,7 +291,7 @@ ppo_discrete_sbe = [
     {
         "Model Name": "ppo_discrete_sbe",
         "Environment Name": "ppo_discrete_sbe",
-        "Trial Number": 2,
+        "Trial Number": 6,
         "Total Configurations": 7,
         "Episode Transitions": {
         },
@@ -323,7 +323,7 @@ ppo_discrete_sbe = [
     {
         "Model Name": "ppo_discrete_sbe",
         "Environment Name": "ppo_discrete_sbe",
-        "Trial Number": 3,
+        "Trial Number": 7,
         "Total Configurations": 7,
         "Episode Transitions": {
         },
@@ -355,7 +355,7 @@ ppo_discrete_sbe = [
     {
         "Model Name": "ppo_discrete_sbe",
         "Environment Name": "ppo_discrete_sbe",
-        "Trial Number": 4,
+        "Trial Number": 8,
         "Total Configurations": 7,
         "Episode Transitions": {
         },
@@ -991,7 +991,6 @@ ppo_beta_normal = [
         "Full Logs": True,
         "SB Emulator": False
     },
-
 ]
 
 ppo_continuous_mv_es = [
@@ -1291,5 +1290,5 @@ ppo_data_gathering = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_discrete, parallel_jobs=4)
+manager = TrialManager(ppo_discrete_sbe, parallel_jobs=4)
 manager.run_priority_loop()
