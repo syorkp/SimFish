@@ -16,7 +16,7 @@
     "rnn_dim": 512,
     "extra_rnn": false,
     "exp_buffer_size": 500,
-    "learning_rate": 1e-06,
+    "learning_rate": 0.0001,
     "epsilon_greedy": true,
     "multivariate": false,
     "beta_distribution": false,

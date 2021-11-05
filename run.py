@@ -134,7 +134,7 @@ dqn_discrete = [
     {
         "Model Name": "dqn_discrete",
         "Environment Name": "dqn_discrete",
-        "Trial Number": 1,
+        "Trial Number": 5,
         "Total Configurations": 5,
         "Episode Transitions": {
         },
@@ -164,7 +164,7 @@ dqn_discrete = [
     {
         "Model Name": "dqn_discrete",
         "Environment Name": "dqn_discrete",
-        "Trial Number": 2,
+        "Trial Number": 6,
         "Total Configurations": 5,
         "Episode Transitions": {
         },
@@ -194,7 +194,7 @@ dqn_discrete = [
     {
         "Model Name": "dqn_discrete",
         "Environment Name": "dqn_discrete",
-        "Trial Number": 3,
+        "Trial Number": 7,
         "Total Configurations": 5,
         "Episode Transitions": {
         },
@@ -224,7 +224,7 @@ dqn_discrete = [
     {
         "Model Name": "dqn_discrete",
         "Environment Name": "dqn_discrete",
-        "Trial Number": 4,
+        "Trial Number": 8,
         "Total Configurations": 5,
         "Episode Transitions": {
         },
@@ -1291,5 +1291,5 @@ ppo_data_gathering = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_beta_normal, parallel_jobs=4)
+manager = TrialManager(dqn_discrete, parallel_jobs=4)
 manager.run_priority_loop()

@@ -133,7 +133,7 @@ params = {'num_actions': 10,  # size of action space
           'extra_rnn': False,
 
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
-          'learning_rate': 0.000001,
+          'learning_rate': 0.0001,
 
           'epsilon_greedy': True,
           'multivariate': False,
