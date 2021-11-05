@@ -1,7 +1,8 @@
 import tensorflow.compat.v1 as tf
 import numpy as np
 
-class BetaNormalMix:
+
+class BetaNormalDistribution:
 
     def __init__(self, concentration1, concentration0, mu, std):
         self.concentration1 = concentration1
@@ -14,6 +15,12 @@ class BetaNormalMix:
         self.force_probs_to_zero_outside_support = True
 
     def sample(self, shape):
+        return tf.concat([self.beta_sample(), self.normal_sample()], axis=1)
+
+    def prob(self, x_beta, x_normal):
+        return self.normal_prob(x_normal) * self.beta_prob(x_beta)
+
+    def beta_sample(self):
         """
         Samples according to Johnk's method
         :param shape:
@@ -40,27 +47,8 @@ class BetaNormalMix:
         samples = tf.clip_by_value(samples, clip_value_min=0.01, clip_value_max=0.99)
         samples = tf.expand_dims(samples, 1)
         return samples
-        # seed1, seed2 = samplers.split_seed(None, salt='beta')
-        # concentration1 = tf.convert_to_tensor(self.concentration1)
-        # concentration0 = tf.convert_to_tensor(self.concentration0)
-        # log_gamma1 = gamma_lib.random_gamma(
-        #     shape=[n], concentration=concentration1, seed=seed1,
-        #     log_space=True)
-        # log_gamma2 = gamma_lib.random_gamma(
-        #     shape=[n], concentration=concentration0, seed=seed2,
-        #     log_space=True)
-        # return tf.math.sigmoid(log_gamma1 - log_gamma2)
 
-    # def log_prob(self, x):
-    #     concentration0 = tf.convert_to_tensor(self.concentration0)
-    #     concentration1 = tf.convert_to_tensor(self.concentration1)
-    #     lp = (self._log_unnormalized_prob(x, concentration1, concentration0) -
-    #           self._log_normalization(concentration1, concentration0))
-    #     # if self.force_probs_to_zero_outside_support:
-    #     #     return tf.where((x >= 0) & (x <= 1), lp, -float('inf'))
-    #     return lp
-
-    def log_prob(self, x):
+    def beta_log_prob(self, x):
         c1 = tf.reshape(self.concentration1, [-1])
         c0 = tf.reshape(self.concentration0, [-1])
         x = tf.reshape(x, [-1])
@@ -78,10 +66,10 @@ class BetaNormalMix:
         log_normalised_prob = tf.expand_dims(log_normalised_prob, 1)
         return log_normalised_prob
 
-    def prob(self, x):
-        return tf.exp(self.log_prob(x))
+    def beta_prob(self, x):
+        return tf.exp(self.beta_log_prob(x))
 
-    def entropy(self):
+    def beta_entropy(self):
         c1 = tf.reshape(self.concentration1, [-1])
         c0 = tf.reshape(self.concentration0, [-1])
 
@@ -94,37 +82,22 @@ class BetaNormalMix:
 
         return entropy
 
-        # concentration1 = tf.convert_to_tensor(self.concentration1)
-        # concentration0 = tf.convert_to_tensor(self.concentration0)
-        # total_concentration = concentration1 + concentration0
-        # return (self._log_normalization(concentration1, concentration0) -
-        #         (concentration1 - 1.) * tf.math.digamma(concentration1) -
-        #         (concentration0 - 1.) * tf.math.digamma(concentration0) +
-        #         (total_concentration - 2.) * tf.math.digamma(total_concentration))
-
-
-    # def _log_normalization(self, concentration1, concentration0):
-    #     return tfp_math.lbeta(concentration1, concentration0)
-    #
-    # def _log_unnormalized_prob(self, x, concentration1, concentration0):
-    #     return (tf.math.xlogy(concentration1 - 1., x) +
-    #             tf.math.xlog1py(concentration0 - 1., -x))
-
-
-    def neglogp(self, x):
-        return 0.5 * tf.reduce_sum(tf.square((x - self.mean) / self.std), axis=-1) \
+    def normal_neglogp(self, x):
+        return 0.5 * tf.reduce_sum(tf.square((x - self.mu) / self.std), axis=-1) \
                + 0.5 * np.log(2.0 * np.pi) * tf.cast(tf.shape(x)[-1], tf.float32) \
-               + tf.reduce_sum(self.logstd, axis=-1)
+               + tf.reduce_sum(tf.math.log(self.std), axis=-1)
+
+    def normal_prob(self, x):
+        return tf.exp(-self.normal_neglogp(x))
 
     def kl(self, other):
-        assert isinstance(other, DiagGaussianProbabilityDistribution)
-        return tf.reduce_sum(other.logstd - self.logstd + (tf.square(self.std) + tf.square(self.mean - other.mean)) /
+        return tf.reduce_sum(other.logstd - tf.math.log(self.std) + (tf.square(self.std) + tf.square(self.mu - other.mean)) /
                              (2.0 * tf.square(other.std)) - 0.5, axis=-1)
 
-    def entropy_normal(self):
-        return tf.reduce_sum(self.logstd + .5 * np.log(2.0 * np.pi * np.e), axis=-1)
+    def normal_entropy(self):
+        return tf.reduce_sum(tf.math.log(self.std) + .5 * np.log(2.0 * np.pi * np.e), axis=-1)
 
-    def sample_normal(self):
+    def normal_sample(self):
         # Bounds are taken into account outside this class (during training only)
         # Otherwise, it changes the distribution and breaks PPO2 for instance
         return self.mu + self.std * tf.random_normal(tf.shape(self.mu),

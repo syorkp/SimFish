@@ -685,7 +685,7 @@ class ContinuousPPO(BasePPO):
                        }
         )
         if self.learning_params["beta_distribution"]:
-            impulse = [[impulse[0]]]
+            impulse = [[impulse[0][0]]]
             if impulse[0][0] == 0.0:
                 impulse = [[0.001]]
 

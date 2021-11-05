@@ -881,17 +881,15 @@ ppo_continuous_uv_is = [
 ppo_beta_normal = [
     {
         "Model Name": "ppo_continuous_beta_normal",
-        "Environment Name": "ppo_continuous_mv_es",
+        "Environment Name": "ppo_continuous_beta",
         "Trial Number": 1,
-        "Total Configurations": 5,
+        "Total Configurations": 3,
         "Episode Transitions": {
         },
         "Conditional Transitions": {
             "Prey Caught": {
                 "2": 5,
                 "3": 6,
-                "4": 7,
-                "5": 8,
             },
             "Predators Avoided": {
             },
@@ -903,7 +901,91 @@ ppo_beta_normal = [
         "Realistic Bouts": True,
         "Continuous Actions": True,
         "Learning Algorithm": "PPO",
-        "Priority": 2,
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False
+    },
+    {
+        "Model Name": "ppo_continuous_beta_normal",
+        "Environment Name": "ppo_continuous_beta",
+        "Trial Number": 2,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 6,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False
+    },
+    {
+        "Model Name": "ppo_continuous_beta_normal",
+        "Environment Name": "ppo_continuous_beta",
+        "Trial Number": 3,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 6,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False
+    },
+    {
+        "Model Name": "ppo_continuous_beta_normal",
+        "Environment Name": "ppo_continuous_beta",
+        "Trial Number": 4,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 6,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
         "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
@@ -1206,7 +1288,6 @@ ppo_data_gathering = [
         ]
     },
 ]
-
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")

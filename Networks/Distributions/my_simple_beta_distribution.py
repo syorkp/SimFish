@@ -1,8 +1,7 @@
 import tensorflow.compat.v1 as tf
-from tensorflow_probability.python import math as tfp_math
 
 
-class MySimpleBetaDistribution:
+class BetaDistribution:
 
     def __init__(self, concentration1, concentration0):
         self.concentration1 = concentration1

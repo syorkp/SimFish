@@ -2,7 +2,8 @@ import tensorflow.compat.v1 as tf
 import tensorflow_probability as tfp
 
 from Networks.base_network import BaseNetwork
-from Networks.Distributions.my_simple_beta_distribution import MySimpleBetaDistribution
+from Networks.Distributions.my_simple_beta_distribution import BetaDistribution
+from Networks.Distributions.beta_normal_mix import BetaNormalDistribution
 
 tf.disable_v2_behavior()
 
@@ -49,8 +50,32 @@ class PPONetworkActor(BaseNetwork):
             self.mu_impulse_ref = self.mu_impulse_2_combined
             self.mu_impulse_combined = tf.divide(tf.add(self.mu_impulse_1_combined, self.mu_impulse_2_combined), 2)
 
-            self.norm_dist_impulse = MySimpleBetaDistribution(self.mu_impulse_1_combined, self.mu_impulse_2_combined)
+            # self.norm_dist_impulse = BetaDistribution(self.mu_impulse_1_combined, self.mu_impulse_2_combined)
 
+            # Additions:
+            self.mu_angle = tf.layers.dense(self.mu_angle_stream, 1, activation=tf.nn.tanh,
+                                            kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_mu_angle',
+                                            trainable=True)
+            self.mu_angle_ref = tf.layers.dense(self.mu_angle_stream_ref, 1, activation=tf.nn.tanh,
+                                                kernel_initializer=tf.orthogonal_initializer,
+                                                name=my_scope + '_mu_angle', reuse=True, trainable=True)
+            self.mu_angle_combined = tf.math.divide(tf.math.subtract(self.mu_angle, self.mu_angle_ref), 2.0,
+                                                    name="mu_angle_combined")
+            self.sigma_angle_combined = tf.placeholder(shape=[None], dtype=tf.float32, name='sigma_angle_combined')
+
+            self.norm_dist_impulse_angle = BetaNormalDistribution(self.mu_impulse_1_combined, self.mu_impulse_2_combined,
+                                                                  self.mu_angle_combined, self.sigma_angle_combined)
+
+            self.action_tf_var_impulse_angle = self.norm_dist_impulse_angle.sample(1)
+            self.action_tf_var_impulse, self.action_tf_var_angle = tf.split(self.action_tf_var_impulse_angle, 2, 1)
+
+            self.impulse_output = tf.math.multiply(self.action_tf_var_impulse, max_impulse, name="impulse_output")
+
+            self.action_tf_var_angle = tf.clip_by_value(self.action_tf_var_angle, -1, 1)
+            self.angle_output = tf.math.multiply(self.action_tf_var_angle, max_angle_change, name="angle_output")
+
+            self.log_prob_impulse = tf.math.log(self.norm_dist_impulse_angle.prob(self.action_tf_var_impulse, self.action_tf_var_angle))
+            self.log_prob_angle = self.log_prob_impulse
         else:
             self.mu_impulse = tf.layers.dense(self.mu_impulse_stream, 1, activation=tf.nn.sigmoid,
                                               kernel_initializer=tf.orthogonal_initializer,
@@ -66,26 +91,28 @@ class PPONetworkActor(BaseNetwork):
             self.norm_dist_impulse = tf.distributions.Normal(self.mu_impulse_combined, self.sigma_impulse_combined,
                                                              name="norm_dist_impulse")
 
-        self.action_tf_var_impulse = tf.squeeze(self.norm_dist_impulse.sample(1), axis=0)
-        self.impulse_output = tf.math.multiply(self.action_tf_var_impulse, max_impulse, name="impulse_output")
-        self.log_prob_impulse = self.norm_dist_impulse.log_prob(self.action_tf_var_impulse)
+            # Following should be outside:
+            self.action_tf_var_impulse = tf.squeeze(self.norm_dist_impulse.sample(1), axis=0)
+            # TODO: Shouldnt be clipping??
+            self.impulse_output = tf.math.multiply(self.action_tf_var_impulse, max_impulse, name="impulse_output")
+            self.log_prob_impulse = self.norm_dist_impulse.log_prob(self.action_tf_var_impulse)
 
-        # Combined Actor angle output
-        self.mu_angle = tf.layers.dense(self.mu_angle_stream, 1, activation=tf.nn.tanh,
-                                        kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_mu_angle',
-                                        trainable=True)
-        self.mu_angle_ref = tf.layers.dense(self.mu_angle_stream_ref, 1, activation=tf.nn.tanh,
-                                            kernel_initializer=tf.orthogonal_initializer,
-                                            name=my_scope + '_mu_angle', reuse=True, trainable=True)
-        self.mu_angle_combined = tf.math.divide(tf.math.subtract(self.mu_angle, self.mu_angle_ref), 2.0,
-                                                name="mu_angle_combined")
-        self.sigma_angle_combined = tf.placeholder(shape=[None], dtype=tf.float32, name='sigma_angle_combined')
-        self.norm_dist_angle = tf.distributions.Normal(self.mu_angle_combined, self.sigma_angle_combined,
-                                                       name="norm_dist_angle")
-        self.action_tf_var_angle = tf.squeeze(self.norm_dist_angle.sample(1), axis=0)
-        self.action_tf_var_angle = tf.clip_by_value(self.action_tf_var_angle, -1, 1)
-        self.angle_output = tf.math.multiply(self.action_tf_var_angle, max_angle_change, name="angle_output")
-        self.log_prob_angle = tf.log(self.norm_dist_angle.prob(self.action_tf_var_angle) + 1e-5)
+            # Combined Actor angle output
+            self.mu_angle = tf.layers.dense(self.mu_angle_stream, 1, activation=tf.nn.tanh,
+                                            kernel_initializer=tf.orthogonal_initializer, name=my_scope + '_mu_angle',
+                                            trainable=True)
+            self.mu_angle_ref = tf.layers.dense(self.mu_angle_stream_ref, 1, activation=tf.nn.tanh,
+                                                kernel_initializer=tf.orthogonal_initializer,
+                                                name=my_scope + '_mu_angle', reuse=True, trainable=True)
+            self.mu_angle_combined = tf.math.divide(tf.math.subtract(self.mu_angle, self.mu_angle_ref), 2.0,
+                                                    name="mu_angle_combined")
+            self.sigma_angle_combined = tf.placeholder(shape=[None], dtype=tf.float32, name='sigma_angle_combined')
+            self.norm_dist_angle = tf.distributions.Normal(self.mu_angle_combined, self.sigma_angle_combined,
+                                                           name="norm_dist_angle")
+            self.action_tf_var_angle = tf.squeeze(self.norm_dist_angle.sample(1), axis=0)
+            self.action_tf_var_angle = tf.clip_by_value(self.action_tf_var_angle, -1, 1)
+            self.angle_output = tf.math.multiply(self.action_tf_var_angle, max_angle_change, name="angle_output")
+            self.log_prob_angle = tf.log(self.norm_dist_angle.prob(self.action_tf_var_angle) + 1e-5)
 
         #            ----------        Loss functions       ---------            #
 
@@ -93,17 +120,17 @@ class PPONetworkActor(BaseNetwork):
         self.impulse_placeholder = tf.placeholder(shape=[None, 1], dtype=tf.float32, name='impulse_placeholder')
         self.angle_placeholder = tf.placeholder(shape=[None, 1], dtype=tf.float32, name='angle_placeholder')
 
-        self.new_log_prob_impulse = self.norm_dist_impulse.log_prob(
-            tf.math.divide(self.impulse_placeholder, max_impulse))
-
         if beta_impulse:
-            self.new_log_prob_impulse = tf.exp(self.new_log_prob_impulse)
-            self.maxnli = tf.math.reduce_max(self.new_log_prob_impulse) + 1
-            self.new_log_prob_impulse = tf.math.divide(self.new_log_prob_impulse, self.maxnli)
-            self.new_log_prob_impulse = tf.math.log(self.new_log_prob_impulse)
-
-        self.new_log_prob_angle = tf.log(
-            self.norm_dist_angle.prob(tf.math.divide(self.angle_placeholder, max_angle_change)) + 1e-5)
+            self.new_log_prob = self.norm_dist_impulse_angle.prob(tf.divide(self.impulse_placeholder, max_impulse),
+                                                                  tf.divide(self.angle_placeholder, max_angle_change))
+            self.maxnli = tf.math.reduce_max(self.new_log_prob) + 1
+            self.new_log_prob = tf.math.divide(self.new_log_prob, self.maxnli)
+            self.new_log_prob = tf.math.log(self.new_log_prob)
+        else:
+            self.new_log_prob_impulse = self.norm_dist_impulse.log_prob(
+                tf.math.divide(self.impulse_placeholder, max_impulse))
+            self.new_log_prob_angle = tf.log(
+                self.norm_dist_angle.prob(tf.math.divide(self.angle_placeholder, max_angle_change)) + 1e-5)
 
         self.old_log_prob_impulse_placeholder = tf.placeholder(shape=[None], dtype=tf.float32,
                                                                name='old_log_prob_impulse')
@@ -113,19 +140,29 @@ class PPONetworkActor(BaseNetwork):
 
         # COMBINED LOSS
 
-        self.impulse_ratio = tf.exp(self.new_log_prob_impulse - self.old_log_prob_impulse_placeholder)
-        self.impulse_surrogate_loss_1 = tf.math.multiply(self.impulse_ratio, self.scaled_advantage_placeholder)
-        self.impulse_surrogate_loss_2 = tf.math.multiply(
-            tf.clip_by_value(self.impulse_ratio, 1 - clip_param, 1 + clip_param), self.scaled_advantage_placeholder)
-        self.impulse_loss = -tf.reduce_mean(tf.minimum(self.impulse_surrogate_loss_1, self.impulse_surrogate_loss_2))
+        if beta_impulse:
+            self.ratio = tf.exp(self.new_log_prob - self.old_log_prob_impulse_placeholder)
+            self.surrogate_loss_1 = tf.math.multiply(self.ratio, self.scaled_advantage_placeholder)
+            self.surrogate_loss_2 = tf.math.multiply(
+                tf.clip_by_value(self.ratio, 1 - clip_param, 1 + clip_param), self.scaled_advantage_placeholder)
 
-        self.angle_ratio = tf.exp(self.new_log_prob_angle - self.old_log_prob_angle_placeholder)
-        self.angle_surrogate_loss_1 = tf.math.multiply(self.angle_ratio, self.scaled_advantage_placeholder)
-        self.angle_surrogate_loss_2 = tf.math.multiply(
-            tf.clip_by_value(self.angle_ratio, 1 - clip_param, 1 + clip_param), self.scaled_advantage_placeholder)
-        self.angle_loss = -tf.reduce_mean(tf.minimum(self.angle_surrogate_loss_1, self.angle_surrogate_loss_2))
+            self.impulse_loss = -tf.reduce_mean(tf.minimum(self.surrogate_loss_1, self.surrogate_loss_2))
+            self.angle_loss = -tf.reduce_mean(tf.minimum(self.surrogate_loss_1, self.surrogate_loss_2))
+            self.total_loss = -tf.reduce_mean(tf.minimum(self.surrogate_loss_1, self.surrogate_loss_2))
+        else:
+            self.impulse_ratio = tf.exp(self.new_log_prob_impulse - self.old_log_prob_impulse_placeholder)
+            self.impulse_surrogate_loss_1 = tf.math.multiply(self.impulse_ratio, self.scaled_advantage_placeholder)
+            self.impulse_surrogate_loss_2 = tf.math.multiply(
+                tf.clip_by_value(self.impulse_ratio, 1 - clip_param, 1 + clip_param), self.scaled_advantage_placeholder)
+            self.impulse_loss = -tf.reduce_mean(tf.minimum(self.impulse_surrogate_loss_1, self.impulse_surrogate_loss_2))
 
-        self.total_loss = tf.add(self.impulse_loss, self.angle_loss)
+            self.angle_ratio = tf.exp(self.new_log_prob_angle - self.old_log_prob_angle_placeholder)
+            self.angle_surrogate_loss_1 = tf.math.multiply(self.angle_ratio, self.scaled_advantage_placeholder)
+            self.angle_surrogate_loss_2 = tf.math.multiply(
+                tf.clip_by_value(self.angle_ratio, 1 - clip_param, 1 + clip_param), self.scaled_advantage_placeholder)
+            self.angle_loss = -tf.reduce_mean(tf.minimum(self.angle_surrogate_loss_1, self.angle_surrogate_loss_2))
+
+            self.total_loss = tf.add(self.impulse_loss, self.angle_loss)
 
         self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
         self.optimizer = tf.train.AdamOptimizer(self.learning_rate, name='actor_optimizer_impulse').minimize(
