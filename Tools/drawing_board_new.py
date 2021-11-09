@@ -2,23 +2,51 @@ import numpy as np
 
 import skimage.draw as draw
 from skimage import io
-import matplotlib.pyplot as plt
 
 from Tools.ray_cast import rays
 
 
-class DrawingBoard:
+class NewDrawingBoard:
 
-    def __init__(self, width, height):
+    def __init__(self, width, height, decay_rate):
 
         self.width = width
         self.height = height
+        self.decay_rate = decay_rate
         self.db = None
         self.erase()
 
-    def get_area_mask(self):
-        """Returns 2D area matrix UV-Red, A"""
-        return self.db[:, :, :3]
+    @staticmethod
+    def apply_mask(board, mask):
+        new_board = np.zeros(board.shape)
+        for channel in range(board.shape[-1]):
+            new_board[:, :, channel] = np.multiply(board[:, :, channel], mask)
+        return new_board
+
+    def create_scatter_mask(self, fish_position):
+        """Creates the scatter mask according to the equation: I(d)=e^(-decay_rate*d), where d is distance from fish,
+        computed here for all coordinates."""
+        mask = np.fromfunction(
+            lambda i, j: np.exp(-self.decay_rate * (((fish_position[0] - i) ** 2 + (fish_position[1] - j) ** 2) ** 0.5)),
+            (self.width, self.height),
+            dtype=float)
+        return mask
+
+    def create_obstruction_mask(self, fish_position):
+        # TODO: Implement. What inputs does it need?
+        return np.ones((self.width, self.height))
+
+    def create_luminance_mask(self):
+        # TODO: implement.
+        return np.ones((self.width, self.height))
+
+    def get_masked_pixels(self, fish_position):
+        A = self.db
+        L = self.create_luminance_mask()
+        O = self.create_obstruction_mask(fish_position)
+        S = self.create_scatter_mask(fish_position)
+        masked_arena = self.apply_mask(self.apply_mask(self.apply_mask(A, L), O), S)
+        return masked_arena
 
     def erase(self, bkg=0):
         if bkg == 0:
@@ -90,6 +118,11 @@ class DrawingBoard:
     def get_size(self):
         return self.width, self.height
 
+    def read_rays(self, xmat, ymat, dark_gain, light_gain, bkg_scatter, dark_col=0):
+        res = rays(xmat.astype(np.int), ymat.astype(np.int), self.db, self.height, self.width, dark_gain, light_gain,
+                   bkg_scatter, dark_col=dark_col)
+        return res
+
     def read(self, xmat, ymat):
         n_arms = xmat.shape[0]
         res = np.zeros((n_arms, 3))
@@ -116,60 +149,8 @@ class DrawingBoard:
         io.show()
 
 
-def apply_mask(board, mask=np.ones((500, 500))/2):
-    new_board = np.zeros(board.shape)
-    for channel in range(board.shape[-1]):
-        new_board[:, :, channel] = np.multiply(board[:, :, channel], mask)
-    return new_board
-
-
-def create_scatter_mask(position=(250, 250), decay_rate=0.01):
-    mask = np.fromfunction(lambda i, j: np.exp(-decay_rate * (((position[0]-i)**2 + (position[1]-j)**2) ** 0.5)), (500, 500), dtype=float)
-    return mask
-
-
-def show_mask(mask):
-    extent = [0, 500, 0, 500]
-
-    plt.clf()
-    plt.imshow(mask, extent=extent, origin='lower')
-    plt.show()
-
-
-def show(board):
-    # board = add_redundant_channel(board)
-    io.imshow(board)
-    io.show()
-
-
-def add_redundant_channel(board):
-    """Adds empty channel for initialisation purposes"""
-    redundant_channel = np.zeros((board.shape[0], board.shape[1], 1))
-    return np.concatenate((board, redundant_channel), axis=2)
-
-
-def remove_green_channel(board):
-    """Removes the green channel, which is not used."""
-    board = np.delete(board, 1, 2)
-    return board
-
-
 if __name__ == "__main__":
     d = DrawingBoard(500, 500)
     d.circle((100, 200), 100, (1, 0, 0))
-    d.line((50, 50), (100, 200), (0, 0, 1))
+    d.line((50, 50), (100, 200), (0, 1, 0))
     d.show()
-    x = d.get_area_mask()
-    x = apply_mask(x)
-    y = create_scatter_mask()
-    x = apply_mask(x, y)
-    x = remove_green_channel(x)
-    x = add_redundant_channel(x)
-    show(x)
-
-
-
-
-
-
-

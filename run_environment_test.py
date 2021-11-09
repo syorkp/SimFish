@@ -14,7 +14,7 @@ Due to PyCharm plots error, currently needs to be run in terminal"""
 try:
     arg = sys.argv[1]
 except IndexError:
-    arg = "example"  # Default arg
+    arg = "continuous_assay"  # Default arg
 
 stimuli = {"prey 1": [
                         {"step": 0,
@@ -36,7 +36,7 @@ with open(file_path, 'r') as f:
 
 # sim_state = ProjectionEnvironment(env, stimuli, tethered=True, draw_screen=True)
 # sim_state = NaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True)
-sim_state = ContinuousNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True)
+sim_state = ContinuousNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=False)
 
 q = False
 d = False
@@ -54,7 +54,7 @@ while not q:
     previous_position = sim_state.fish.body.position
 
     s, r, internal, d, fb = sim_state.simulation_step([impulse, angle])
-
+    print(sim_state.fish.body.angle)
     if angle > 1.0:
         sim_state.reset()
 

@@ -18,11 +18,11 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 class AssayService(BaseService):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_environment, assays, set_random_seed, assay_config_name):
+                 config_name, realistic_bouts, continuous_environment, new_simulation, assays, set_random_seed, assay_config_name):
 
         # Set random seed
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                         config_name, realistic_bouts, continuous_environment)
+                         config_name, realistic_bouts, continuous_environment, new_simulation)
 
         print("AssayService Constructor called")
 
@@ -118,6 +118,7 @@ class AssayService(BaseService):
             if self.continuous_actions:
                 self.simulation = ControlledStimulusEnvironmentContinuous(self.environment_params, assay["stimuli"],
                                                                 self.realistic_bouts,
+                                                                self.new_simulation,
                                                                 tethered=assay["Tethered"],
                                                                 set_positions=assay["set positions"],
                                                                 random=assay["random positions"],
@@ -129,6 +130,7 @@ class AssayService(BaseService):
             else:
                 self.simulation = ControlledStimulusEnvironment(self.environment_params, assay["stimuli"],
                                                                 self.realistic_bouts,
+                                                                self.new_simulation,
                                                                 tethered=assay["Tethered"],
                                                                 set_positions=assay["set positions"],
                                                                 random=assay["random positions"],
@@ -140,15 +142,19 @@ class AssayService(BaseService):
         elif assay["stimulus paradigm"] == "Naturalistic":
             if self.continuous_actions:
                 self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
+                                                                    self.new_simulation,
                                                                     collisions=assay["collisions"])
             else:
-                self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts)
+                self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
+                                                                self.new_simulation,)
 
         else:
             if self.continuous_actions:
-                self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts)
+                self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
+                                                                self.new_simulation,)
             else:
-                self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts)
+                self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
+                                                                self.new_simulation,)
 
     def ablate_units(self, unit_indexes):
         # TODO: Will need to update for new network architecture.

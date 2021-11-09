@@ -18,11 +18,11 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 class TrainingService(BaseService):
     # TODO: Test new configuration savinfg
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_actions, model_exists, episode_transitions,
+                 config_name, realistic_bouts, continuous_actions, new_simulation, model_exists, episode_transitions,
                  total_configurations, conditional_transitions, configuration_index, full_logs):
 
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                         config_name, realistic_bouts, continuous_actions)
+                         config_name, realistic_bouts, continuous_actions, new_simulation)
 
         print("TrainingService Constructor called")
 
@@ -93,9 +93,9 @@ class TrainingService(BaseService):
 
     def create_environment(self):
         if self.continuous_actions:
-            self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts)
+            self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts, self.new_simulation)
         else:
-            self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts)
+            self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts, self.new_simulation)
 
     def check_update_configuration(self):
         next_point = str(self.configuration_index + 1)

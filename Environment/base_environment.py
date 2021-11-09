@@ -5,15 +5,21 @@ from skimage.transform import resize, rescale
 import pymunk
 
 from Tools.drawing_board import DrawingBoard
+from Tools.drawing_board_new import NewDrawingBoard
 
 
 class BaseEnvironment:
     """A base class to represent environments, for extension to ProjectionEnvironment, VVR and Naturalistic
     environment classes."""
 
-    def __init__(self, env_variables, draw_screen):
+    def __init__(self, env_variables, draw_screen, new_simulation):
+        self.new_simulation = new_simulation
+
         self.env_variables = env_variables
-        self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])
+        if self.new_simulation: # TODO: ENV CHANGE
+            self.board = NewDrawingBoard(self.env_variables['width'], self.env_variables['height'], decay_rate=0.01)
+        else:
+            self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])
         self.draw_screen = draw_screen
         self.show_all = False
         self.num_steps = 0
@@ -113,6 +119,8 @@ class BaseEnvironment:
         self.vegetation_shapes = []
 
     def output_frame(self, activations, internal_state, scale=0.25):
+        # TODO: ENV CHANGE or not?
+
         arena = self.board.db * 255.0
         arena[0, :, 0] = np.ones(self.env_variables['width']) * 255
         arena[self.env_variables['height'] - 1, :, 0] = np.ones(self.env_variables['width']) * 255
@@ -370,7 +378,10 @@ class BaseEnvironment:
             np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'],
                               self.env_variables['height'] - (
                                       self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'])))
-        self.predator_shapes[-1].color = (0, 0, 1)
+        if self.new_simulation: # TODO: ENV CHANGE
+            self.predator_shapes[-1].color = (0, 0, 0)
+        else:
+            self.predator_shapes[-1].color = (0, 0, 1)
         self.predator_shapes[-1].collision_type = 5
 
         self.space.add(self.predator_bodies[-1], self.predator_shapes[-1])
@@ -469,7 +480,11 @@ class BaseEnvironment:
         self.predator_body.position = (x_position, y_position)
         self.predator_target = fish_position  # Update so appears where fish will be in a few steps.
 
-        self.predator_shape.color = (0, 0, 1)
+        if self.new_simulation: # TODO: ENV CHANGE
+            self.predator_shape.color = (0, 0, 0)
+        else:
+            self.predator_shape.color = (0, 0, 1)
+
         self.predator_shape.collision_type = 5
         self.predator_shape.filter = pymunk.ShapeFilter(
             mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # Category 2 objects cant collide with predator
@@ -566,7 +581,7 @@ class BaseEnvironment:
             np.random.randint(self.env_variables['vegetation_size'] + self.env_variables['fish_mouth_size'],
                               self.env_variables['height'] - (
                                       self.env_variables['vegetation_size'] + self.env_variables['fish_mouth_size'])))
-        self.vegetation_shapes[-1].color = (0, 1, 0)
+        self.vegetation_shapes[-1].color = (0, 1, 0)  # TODO: ENV CHANGE
         self.vegetation_shapes[-1].collision_type = 1
         self.vegetation_shapes[-1].friction = 1
 

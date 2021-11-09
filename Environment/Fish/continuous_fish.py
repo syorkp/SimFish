@@ -3,8 +3,8 @@ from Environment.Fish.fish import Fish
 
 class ContinuousFish(Fish):
 
-    def __init__(self, board, env_variables, dark_col, realistic_bouts, fish_mass=None):
-        super().__init__(board, env_variables, dark_col, realistic_bouts, fish_mass)
+    def __init__(self, board, env_variables, dark_col, realistic_bouts, new_simulation, fish_mass=None):
+        super().__init__(board, env_variables, dark_col, realistic_bouts, new_simulation, fish_mass)
 
         self.making_capture = True
 

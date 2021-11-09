@@ -1288,7 +1288,38 @@ ppo_data_gathering = [
     },
 ]
 
+phase_1_test_config = [
+    {
+        "Model Name": "ppo_phase_1_test",
+        "Environment Name": "ppo_continuous_sbe_is",
+        "Trial Number": 1,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 6,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True
+    },
+]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_discrete_sbe, parallel_jobs=4)
+manager = TrialManager(phase_1_test_config, parallel_jobs=4)
 manager.run_priority_loop()
