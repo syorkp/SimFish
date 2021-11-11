@@ -292,3 +292,9 @@ class Fish:
         eyes[eyes < 0] = 0
         eyes[eyes > 255] = 255
         return eyes
+
+    def get_all_sectors(self, fish_position_l, fish_position_r, fish_orientation):
+        """To show all channel sectors"""
+        left_sector_vertices = self.left_eye.get_all_sectors(fish_position_l, fish_orientation)
+        right_sector_vertices = self.right_eye.get_all_sectors(fish_position_r, fish_orientation)
+        return left_sector_vertices, right_sector_vertices

@@ -10,7 +10,6 @@ class NaturalisticEnvironment(BaseEnvironment):
     def __init__(self, env_variables, realistic_bouts, new_simulation, draw_screen=False, fish_mass=None, collisions=True):
         super().__init__(env_variables, draw_screen, new_simulation)
 
-
     def reset(self):
         super().reset()
         self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_size'],
@@ -42,6 +41,19 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         for i in range(self.env_variables['vegetation_num']):
             self.create_vegetation()
+
+    def show_new_channel_sectors(self, left_eye_pos, right_eye_pos):
+        left_sectors, right_sectors = self.fish.get_all_sectors([left_eye_pos[0], left_eye_pos[1]], [right_eye_pos[0], right_eye_pos[1]], self.fish.body.angle)
+        field = self.board.db
+        plt.figure(figsize=(20,20))
+        plt.imshow(field)
+        for sector in right_sectors:
+            patch = plt.Polygon(sector, color="r", alpha=0.2)
+            plt.gca().add_patch(patch)
+        for sector in left_sectors:
+            patch = plt.Polygon(sector, color="b", alpha=0.2)
+            plt.gca().add_patch(patch)
+        plt.show()
 
     def simulation_step(self, action, save_frames, frame_buffer, activations, impulse):
 
@@ -132,6 +144,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             +np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
             -np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
 
+        self.show_new_channel_sectors(left_eye_pos, right_eye_pos)
         full_masked_image = self.board.get_masked_pixels(self.fish.body.position)
         print(self.fish.body.angle)
         self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
@@ -163,6 +176,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         left_eye_pos = (
             +np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
             -np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
+
         self.fish.left_eye.read(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
         self.fish.right_eye.read(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 
