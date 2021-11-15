@@ -44,13 +44,20 @@ class NaturalisticEnvironment(BaseEnvironment):
 
     def show_new_channel_sectors(self, left_eye_pos, right_eye_pos):
         left_sectors, right_sectors = self.fish.get_all_sectors([left_eye_pos[0], left_eye_pos[1]], [right_eye_pos[0], right_eye_pos[1]], self.fish.body.angle)
+        l_top_left, l_bottom_left, l_top_right, l_bottom_right = self.fish.left_eye.get_corner_sectors(left_sectors)
+        r_top_left, r_bottom_left, r_top_right, r_bottom_right = self.fish.right_eye.get_corner_sectors(right_sectors)
+
         field = self.board.db
-        plt.figure(figsize=(20,20))
+        plt.figure(figsize=(20, 20))
         plt.imshow(field)
-        for sector in right_sectors:
-            patch = plt.Polygon(sector, color="r", alpha=0.2)
+        for i, sector in enumerate(right_sectors):
+            sector = self.fish.right_eye.get_extra_vertices(i, sector, r_top_left, r_bottom_left, r_top_right, r_bottom_right)
+            # sector = sorted(sector, key=lambda x: x[0])
+            patch = plt.Polygon(sector, closed=True, color="r", alpha=0.2)
             plt.gca().add_patch(patch)
-        for sector in left_sectors:
+        for i, sector in enumerate(left_sectors):
+            sector = self.fish.left_eye.get_extra_vertices(i, sector, l_top_left, l_bottom_left, l_top_right, l_bottom_right)
+            # sector = sorted(sector, key=lambda x: x[0])
             patch = plt.Polygon(sector, color="b", alpha=0.2)
             plt.gca().add_patch(patch)
         plt.show()
@@ -146,7 +153,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         self.show_new_channel_sectors(left_eye_pos, right_eye_pos)
         full_masked_image = self.board.get_masked_pixels(self.fish.body.position)
-        print(self.fish.body.angle)
+
         self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
         self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 
@@ -166,7 +173,25 @@ class NaturalisticEnvironment(BaseEnvironment):
         # TODO: ENV CHANGE
         observation = np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
                                  self.fish.readings_to_photons(self.fish.right_eye.readings)))
+        self.plot_observation(observation)
         return observation
+
+    def plot_observation(self, observation):
+        left_1 = observation[:, :, 0]
+        # left_1 = np.swapaxes(left_1, 0, 1)
+        right_1 = observation[:, :, 1]
+        # right_1 = np.swapaxes(right_1, 0, 1)
+
+        left_1 = np.expand_dims(left_1, 0)
+        right_1 = np.expand_dims(right_1, 0)
+        fig, axs = plt.subplots(2, 1, sharex=True)
+
+        axs[0].imshow(left_1, aspect="auto")
+        axs[0].set_ylabel("Left eye Photoreceptor")
+        axs[1].imshow(right_1, aspect="auto")
+        axs[1].set_ylabel("Right eye Photoreceptor")
+        axs[1].set_xlabel("Step")
+        plt.show()
 
     def resolve_visual_input(self, save_frames, activations, internal_state, frame_buffer):
         # TODO: ENV CHANGE Maybe have additional visual input function?

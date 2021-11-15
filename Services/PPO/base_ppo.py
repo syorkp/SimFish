@@ -1,5 +1,6 @@
 import copy
 import numpy as np
+import pstats
 
 import tensorflow.compat.v1 as tf
 
@@ -113,7 +114,10 @@ class BasePPO:
                     rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
 
             self.step_number += 1
-
+            if self.monitor_performance:
+                ps = pstats.Stats(self.profile)
+                ps.sort_stats("tottime")
+                ps.print_stats(20)
             r, internal_state, o, d, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic, rnn_state_critic_ref = self.step_loop(
                 o=o,
                 internal_state=internal_state,
@@ -129,6 +133,9 @@ class BasePPO:
                 break
 
         self.buffer.tidy()
+
+
+
 
     def compute_rnn_states(self, rnn_key_points, observation_buffer, internal_state_buffer, previous_action_buffer):
         num_actions = self.output_dimensions

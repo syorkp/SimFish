@@ -53,6 +53,13 @@ class NewDrawingBoard:
             self.db = np.zeros((self.height, self.width, 3), dtype=np.double)
         else:
             self.db = np.ones((self.height, self.width, 3), dtype=np.double) * bkg
+        self.draw_walls()
+
+    def draw_walls(self):
+        self.db[0:2, :] = [1, 0, 0]
+        self.db[self.width-1, :] = [1, 0, 0]
+        self.db[:, 0] = [1, 0, 0]
+        self.db[:, self.height-1] = [1, 0, 0]
 
     def apply_light(self, dark_col, dark_gain, light_gain):
         self.db[:, :dark_col] *= dark_gain
