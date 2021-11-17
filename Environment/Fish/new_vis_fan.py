@@ -1,11 +1,9 @@
 import numpy as np
-from skimage.draw import line
 import math
-import cProfile
-import time
-import pstats
 
 from matplotlib import path
+
+from Tools.Sectors.sector_sum import sector_sum
 
 
 class NewVisFan:
@@ -35,11 +33,7 @@ class NewVisFan:
         self.retinal_field_size = retinal_field
         self.photoreceptor_spacing = self.retinal_field_size/self.photoreceptor_num
 
-        # Create matrix A of coordinates (w.h.3.2)
-        # self.all_points = [[[x, y] for x in range(self.width)] for y in range(self.height)]
-        # all_points = np.expand_dims(np.array(all_points), axis=2)
-        # self.rearranged_coordinates = np.repeat(all_points, repeats=3, axis=2)
-        self.all_points = [[x, y] for x in range(1500) for y in range(1500)]
+        # Create matrix A of coordinates (w.h.3.2). Allows checking whether points are in triangles.
         xp, yp = np.meshgrid(range(self.width), range(self.height))
         xp = np.expand_dims(xp, 2)
         yp = np.expand_dims(yp, 2)
@@ -47,6 +41,9 @@ class NewVisFan:
         yp = np.expand_dims(yp, 3)
         coordinates = np.concatenate((xp, yp), 3)
         self.rearranged_coordinates = np.repeat(coordinates, repeats=3, axis=2)
+
+        # For checking points in sector when is quadrilateral. TODO: Find way of doing more efficiently
+        self.all_points = [[x, y] for x in range(1500) for y in range(1500)]
 
     def cartesian(self, bx, by, bangle):
         x = bx + self.dist * np.cos(self.theta + bangle)
@@ -63,34 +60,27 @@ class NewVisFan:
         self.vis_angles = np.linspace(min_angle, max_angle, self.num_arms)
         # self.dist, self.theta = np.meshgrid(self.distances, self.vis_angles)
 
-    def show_points(self, bx, by, bangle):
-        x, y = self.cartesian(bx, by, bangle)
-        x = x.astype(int)
-        y = y.astype(int)
-        for arm in range(x.shape[0]):
-            for pnt in range(x.shape[1]):
-                if not (x[arm, pnt] < 0 or x[arm, pnt] >= self.width or y[arm, pnt] < 0 or y[arm, pnt] >= self.height):
-                    self.board.db[y[arm, pnt], x[arm, pnt], :] = (1, 1, 1)
-
-        [rr, cc] = line(y[0, 0], x[0, 0], y[0, 1], x[0, 1])
-        good_points = np.logical_and.reduce((rr > 0, rr < self.height, cc > 0, cc < self.width))
-        self.board.db[rr[good_points], cc[good_points]] = (1, 1, 1)
-        [rr, cc] = line(y[-1, 0], x[-1, 0], y[-1, 1], x[-1, 1])
-        good_points = np.logical_and.reduce((rr > 0, rr < self.height, cc > 0, cc < self.width))
-        self.board.db[rr[good_points], cc[good_points]] = (1, 1, 1)
-
     def read(self, masked_arena_pixels, fish_x, fish_y, fish_angle):
         all_vertices = self.compute_all_sectors(fish_x, fish_y, fish_angle)
         top_left, bottom_left, top_right, bottom_right = self.get_corner_sectors(all_vertices)
         for i, channel_angle in enumerate(self.vis_angles):
             vertices = all_vertices[i, :, :]
             vertices = self.get_extra_vertices(i, vertices, top_left, bottom_left, top_right, bottom_right)
-            # vertices = self.compute_channel_vertices([fish_x, fish_y], fish_angle, channel_angle, self.photoreceptor_rf_size)
+
             if len(vertices) == 3:
-                segment_sum = self.sum_within_triangle(masked_arena_pixels, vertices)
+                vertices = sorted(vertices, key=lambda x: x[0])
+                segment_sum = sector_sum(self.rearranged_coordinates, np.array(vertices), masked_arena_pixels)
+
+                # segment_sum = self.sum_within_triangle(masked_arena_pixels, vertices)
             else:
-                segment_sum = self.sum_within_polygon(masked_arena_pixels, vertices)
-            # Segment sum by far longest point. - 99% of time.
+                t1 = [vertices[0]] + [vertices[2]] + [vertices[1]]
+                t2 = [vertices[0]] + vertices[2:]
+                # TODO: Fix problem by including lines - will always ignore points on the line.
+                segment_sum1 = self.sum_within_triangle(masked_arena_pixels, t1)
+                segment_sum2 = self.sum_within_triangle(masked_arena_pixels, t2)
+                # segment_sum = self.sum_within_polygon(masked_arena_pixels, vertices)
+                segment_sum = segment_sum1 + segment_sum2
+            print(segment_sum)
             self.readings[i] = segment_sum #* 100000  # TODO: remove scaling once calibrated visual system.
 
     def compute_all_sectors(self, fish_x, fish_y, fish_angle):
@@ -181,73 +171,6 @@ class NewVisFan:
         fish_position_full = np.tile([fish_x, fish_y], (120, 1, 1))
         vertices = np.concatenate((fish_position_full, selected_intersections), axis=1)
         return vertices
-
-    def compute_all_segment_sums(self, all_sectors, masked_arena_pixels):
-        # Sort vertices in ascending order of x value.
-        # vertices = sorted(all_sectors, key=lambda x: x[0][0])
-        all_sectors_x = all_sectors[:, :, 0]
-        sorted_order = np.argsort(all_sectors_x, axis=1)
-        sorted_order = np.expand_dims(sorted_order, 2)
-        sorted_order = np.repeat(sorted_order, 2, 2)
-        static_indices = np.indices((120, 3, 2))
-
-        vertices = all_sectors[static_indices[0], sorted_order, static_indices[2]]
-
-        # Define triangle ABC, which have ascending x values for vertices.
-        xa = vertices[:, 0, 0]
-        xb = vertices[:, 1, 0]
-        xc = vertices[:, 2, 0]
-        ya = vertices[:, 0, 1]
-        yb = vertices[:, 1, 1]
-        yc = vertices[:, 2, 1]
-
-        # Create vectors for triangle sides
-        ab = [xb - xa, yb - ya]
-        bc = [xc - xb, yc - yb]
-        ca = [xa - xc, ya - yc]
-
-        # Create matrix B of triangle vertices (w.h.3.2)
-        repeating_unit = np.array([[xa, ya], [xb, yb], [xc, yc]])
-        repeating_unit = np.rollaxis(repeating_unit, 2, 0)
-        full_field = np.tile(repeating_unit, (1500, 1500, 1, 1, 1))
-        # TODO: check that coordinates are correct in case of differing width and height
-
-        # Compute C = A-B (corresponds to subtracting vertices points from each coordinate in space (w.h.3.2)
-        new_vector_points = self.rearranged_coordinates - full_field
-
-        # Flip C along final axis (so y is where x was previously) (w.h.3.2)
-        new_vector_points_flipped = np.flip(new_vector_points, 3)
-
-        # Create matrix D with repeated triangle side vectors (w.h.3.2)
-        old_vector_points = [ab, bc, ca]
-        old_vector_points = np.tile(old_vector_points, (1500, 1500, 1, 1))
-
-        # Perform E = C * D (w.h.3.2)
-        cross_product_components = new_vector_points_flipped * old_vector_points
-
-        # Subtract y from x values (final axis) from E (w.h.3)
-        cross_product = cross_product_components[:, :, :, 0] - cross_product_components[:, :, :, 1]
-
-        # If points in cross product are negative, set equal to 1, else 0. (w.h.3)
-        cross_product_less_than = (cross_product < 0) * 1
-
-        # Along 3rd axis, sum values.
-        cross_product_boolean_axis = np.sum(cross_product_less_than, axis=2)
-
-        # Set points to 1 if that point cross product sum is 0 or 3.
-        cross_product_boolean_axis_sum = ((cross_product_boolean_axis == 0) | (cross_product_boolean_axis == 3)) * 1
-
-        # Expand enclosed points to dimensions in order to multiply by mask. (w.h.3)
-        sector_points = np.expand_dims(cross_product_boolean_axis_sum, 2)
-        sector_points = np.repeat(sector_points, 3, 2)
-
-        # Multiply enclosion mask by pixel mask (w.h.3)
-        weighted_points = sector_points * masked_arena_pixels
-
-        # Sum values from entire matrix along all but final axis (3)
-        total_sum = weighted_points.sum(axis=(0, 1))
-
-        return total_sum
 
     def compute_channel_vertices(self, eye_position, fish_angle, channel_orientation, channel_rf_size):
         """Given position of an eye, angle of fish, orientation of a channel with respect to the fish, and the angular
@@ -542,3 +465,71 @@ class NewVisFan:
         new_sectors = self.compute_all_sectors(fish_position[0], fish_position[1], fish_orientation)
 
         return new_sectors
+
+    def compute_all_segment_sums(self, all_sectors, masked_arena_pixels):
+        """Not used, causes crash."""
+        # Sort vertices in ascending order of x value.
+        # vertices = sorted(all_sectors, key=lambda x: x[0][0])
+        all_sectors_x = all_sectors[:, :, 0]
+        sorted_order = np.argsort(all_sectors_x, axis=1)
+        sorted_order = np.expand_dims(sorted_order, 2)
+        sorted_order = np.repeat(sorted_order, 2, 2)
+        static_indices = np.indices((120, 3, 2))
+
+        vertices = all_sectors[static_indices[0], sorted_order, static_indices[2]]
+
+        # Define triangle ABC, which have ascending x values for vertices.
+        xa = vertices[:, 0, 0]
+        xb = vertices[:, 1, 0]
+        xc = vertices[:, 2, 0]
+        ya = vertices[:, 0, 1]
+        yb = vertices[:, 1, 1]
+        yc = vertices[:, 2, 1]
+
+        # Create vectors for triangle sides
+        ab = [xb - xa, yb - ya]
+        bc = [xc - xb, yc - yb]
+        ca = [xa - xc, ya - yc]
+
+        # Create matrix B of triangle vertices (w.h.3.2)
+        repeating_unit = np.array([[xa, ya], [xb, yb], [xc, yc]])
+        repeating_unit = np.rollaxis(repeating_unit, 2, 0)
+        full_field = np.tile(repeating_unit, (1500, 1500, 1, 1, 1))
+        # TODO: check that coordinates are correct in case of differing width and height
+
+        # Compute C = A-B (corresponds to subtracting vertices points from each coordinate in space (w.h.3.2)
+        new_vector_points = self.rearranged_coordinates - full_field
+
+        # Flip C along final axis (so y is where x was previously) (w.h.3.2)
+        new_vector_points_flipped = np.flip(new_vector_points, 3)
+
+        # Create matrix D with repeated triangle side vectors (w.h.3.2)
+        old_vector_points = [ab, bc, ca]
+        old_vector_points = np.tile(old_vector_points, (1500, 1500, 1, 1))
+
+        # Perform E = C * D (w.h.3.2)
+        cross_product_components = new_vector_points_flipped * old_vector_points
+
+        # Subtract y from x values (final axis) from E (w.h.3)
+        cross_product = cross_product_components[:, :, :, 0] - cross_product_components[:, :, :, 1]
+
+        # If points in cross product are negative, set equal to 1, else 0. (w.h.3)
+        cross_product_less_than = (cross_product < 0) * 1
+
+        # Along 3rd axis, sum values.
+        cross_product_boolean_axis = np.sum(cross_product_less_than, axis=2)
+
+        # Set points to 1 if that point cross product sum is 0 or 3.
+        cross_product_boolean_axis_sum = ((cross_product_boolean_axis == 0) | (cross_product_boolean_axis == 3)) * 1
+
+        # Expand enclosed points to dimensions in order to multiply by mask. (w.h.3)
+        sector_points = np.expand_dims(cross_product_boolean_axis_sum, 2)
+        sector_points = np.repeat(sector_points, 3, 2)
+
+        # Multiply enclosion mask by pixel mask (w.h.3)
+        weighted_points = sector_points * masked_arena_pixels
+
+        # Sum values from entire matrix along all but final axis (3)
+        total_sum = weighted_points.sum(axis=(0, 1))
+
+        return total_sum
