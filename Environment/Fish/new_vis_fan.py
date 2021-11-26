@@ -1,9 +1,11 @@
 import numpy as np
 import math
+import cupy as cp
 
 from matplotlib import path
 
 from Tools.Sectors.sector_sum import sector_sum
+from Tools.Lines.lines import lines
 
 
 class NewVisFan:
@@ -34,16 +36,16 @@ class NewVisFan:
         self.photoreceptor_spacing = self.retinal_field_size/self.photoreceptor_num
 
         # Create matrix A of coordinates (w.h.3.2). Allows checking whether points are in triangles.
-        xp, yp = np.meshgrid(range(self.width), range(self.height))
-        xp = np.expand_dims(xp, 2)
-        yp = np.expand_dims(yp, 2)
-        xp = np.expand_dims(xp, 3)
-        yp = np.expand_dims(yp, 3)
-        coordinates = np.concatenate((xp, yp), 3)
-        self.rearranged_coordinates = np.repeat(coordinates, repeats=3, axis=2)
+        # xp, yp = np.meshgrid(range(self.width), range(self.height))
+        # xp = np.expand_dims(xp, 2)
+        # yp = np.expand_dims(yp, 2)
+        # xp = np.expand_dims(xp, 3)
+        # yp = np.expand_dims(yp, 3)
+        # coordinates = np.concatenate((xp, yp), 3)
+        # self.rearranged_coordinates = np.repeat(coordinates, repeats=3, axis=2)
 
         # For checking points in sector when is quadrilateral. TODO: Find way of doing more efficiently
-        self.all_points = [[x, y] for x in range(1500) for y in range(1500)]
+        # self.all_points = [[x, y] for x in range(1500) for y in range(1500)]
 
     def cartesian(self, bx, by, bangle):
         x = bx + self.dist * np.cos(self.theta + bangle)
@@ -60,7 +62,7 @@ class NewVisFan:
         self.vis_angles = np.linspace(min_angle, max_angle, self.num_arms)
         # self.dist, self.theta = np.meshgrid(self.distances, self.vis_angles)
 
-    def read(self, masked_arena_pixels, fish_x, fish_y, fish_angle):
+    def segment_method(self, masked_arena_pixels, fish_x, fish_y, fish_angle):
         all_vertices = self.compute_all_sectors(fish_x, fish_y, fish_angle)
         top_left, bottom_left, top_right, bottom_right = self.get_corner_sectors(all_vertices)
         for i, channel_angle in enumerate(self.vis_angles):
@@ -82,6 +84,222 @@ class NewVisFan:
                 segment_sum = segment_sum1 + segment_sum2
             print(segment_sum)
             self.readings[i] = segment_sum #* 100000  # TODO: remove scaling once calibrated visual system.
+
+    def read(self, masked_arena_pixels, fish_x, fish_y, fish_angle):
+        # Lines version:
+        # self.lines_method(masked_arena_pixels, fish_x, fish_y, fish_angle)
+        self.lines_method_cupy(cp.array(masked_arena_pixels), fish_x, fish_y, fish_angle)
+
+        # Old version
+        # self.segment_method(masked_arena_pixels, fish_x, fish_y, fish_angle)
+
+    def lines_method_cupy(self, masked_arena_pixels, fish_x, fish_y, fish_angle, n=20):
+        # Angles with respect to fish (doubled) (120 x n)
+        channel_angles = cp.array(self.vis_angles) + fish_angle
+        channel_angles_surrounding = cp.expand_dims(channel_angles, 1)
+        channel_angles_surrounding = cp.repeat(channel_angles_surrounding, n, 1)
+
+        # Angles of each side (120 x n)
+        rf_offsets = cp.linspace(-self.photoreceptor_rf_size/2, self.photoreceptor_rf_size/2, num=n)
+        channel_angles_surrounding = channel_angles_surrounding + rf_offsets
+
+        # Make sure is in desired range (120 x n) TODO: might need to find way of doing it multiple times e.g. by // operation
+        below_range = (channel_angles_surrounding < 0) * cp.pi * 2
+        channel_angles_surrounding = channel_angles_surrounding + below_range
+        above_range = (channel_angles_surrounding > cp.pi * 2) * -cp.pi*2
+        channel_angles_surrounding = channel_angles_surrounding + above_range
+
+        # Compute m using tan (120 x n)
+        m = cp.tan(channel_angles_surrounding)
+
+        # Compute c (120 x n)
+        c = -m * fish_x
+        c = c + fish_y
+
+        # Compute components of intersections (120 x n x 4)
+        c_exp = cp.expand_dims(c, 2)
+        c_exp = cp.repeat(c_exp, 4, 2)
+
+
+        multiplication_matrix_unit = cp.array([-1, 1, -1, 1])
+        multiplication_matrix = cp.tile(multiplication_matrix_unit, (120, n, 1))
+
+        addition_matrix_unit = cp.array([0, 0, self.height-1, self.width-1])
+        addition_matrix = cp.tile(addition_matrix_unit, (120, n, 1))
+
+        mul1 = cp.array([0, 0, 0, 1])
+        mul1_full = cp.tile(mul1, (120, n, 1))
+        m_mul = cp.expand_dims(m, 2)
+        full_m = cp.repeat(m_mul, 4, 2)
+        m_mul = full_m * mul1_full
+        m_mul[:, :, :3] = 1
+        addition_matrix = addition_matrix * m_mul
+        division_matrix = full_m
+        division_matrix[:, :, 1] = 1
+        division_matrix[:, :, 3] = 1
+
+        intersection_components = ((c_exp * multiplication_matrix) + addition_matrix)/division_matrix
+
+        mul_for_hypothetical = cp.array([[1, 0], [0, 1], [1, 0], [0, 1]])
+        mul_for_hypothetical = cp.tile(mul_for_hypothetical, (120, n, 1, 1))
+        add_for_hypothetical = cp.array([[0, 0], [0, 0], [0, self.width-1], [self.height-1, 0]])
+        add_for_hypothetical = cp.tile(add_for_hypothetical, (120, n, 1, 1))
+
+        intersection_coordinates = cp.expand_dims(intersection_components, 3)
+        intersection_coordinates = cp.repeat(intersection_coordinates, 2, 3)
+        intersection_coordinates = (intersection_coordinates * mul_for_hypothetical) + add_for_hypothetical
+
+        # Compute possible intersections (120 x 2 x 2 x 2)
+        conditional_tiled = cp.array([self.width-1, self.height-1, self.width-1, self.height-1])
+        conditional_tiled = cp.tile(conditional_tiled, (120, n, 1))
+        valid_points_ls = (intersection_components > 0) * 1
+        valid_points_more = (intersection_components < conditional_tiled) * 1
+        valid_points = valid_points_more * valid_points_ls
+        valid_intersection_coordinates = intersection_coordinates[valid_points == 1]
+        valid_intersection_coordinates = cp.reshape(valid_intersection_coordinates, (120, n, 2, 2))
+        # try:
+        #     valid_intersection_coordinates = np.reshape(valid_intersection_coordinates, (120, n, 2, 2))
+        # except ValueError:
+        #     x = True
+
+        # Get intersections (120 x 2)
+        eye_position = cp.array([fish_x, fish_y])
+        possible_vectors = valid_intersection_coordinates - eye_position
+        angles = cp.arctan2(possible_vectors[:, :, :, 1], possible_vectors[:, :, :, 0])
+
+        # Make sure angles are in correct range. TODO: be aware might need to repeat multiple times later
+        below_range = (angles < 0) * cp.pi * 2
+        angles = angles + below_range
+        above_range = (angles > cp.pi * 2) * -cp.pi*2
+        angles = angles + above_range
+
+        angles = cp.round(angles, 2)
+        channel_angles_surrounding = cp.round(channel_angles_surrounding, 2)
+
+        channel_angles_surrounding = cp.expand_dims(channel_angles_surrounding, 2)
+        channel_angles_surrounding = cp.repeat(channel_angles_surrounding, 2, 2)
+
+        same_values = (angles == channel_angles_surrounding) * 1
+        selected_intersections = valid_intersection_coordinates[same_values == 1]
+        selected_intersections = cp.reshape(selected_intersections, (120, n, 1, 2))
+
+        fish_position_full = cp.tile(cp.array([fish_x, fish_y]), (120, n, 1, 1))
+        vertices = cp.concatenate((fish_position_full, selected_intersections), axis=2)
+        vertices_xvals = vertices[:, :, :, 0]
+        vertices_yvals = vertices[:, :, :, 1]
+
+        min_x = cp.min(vertices_xvals, axis=2)
+        max_x = cp.max(vertices_xvals, axis=2)
+        min_y = cp.min(vertices_yvals, axis=2)
+        max_y = cp.max(vertices_yvals, axis=2)
+
+        # self.readings = lines(masked_arena_pixels, m, c, min_x, max_x, min_y, max_y)
+        # self.compute_segment_sums_line(masked_arena_pixels, m, c, min_x, max_x, min_y, max_y)
+        self.compute_segment_sums_line_cupy(masked_arena_pixels, m, c, min_x, max_x, min_y, max_y)
+
+    def lines_method(self, masked_arena_pixels, fish_x, fish_y, fish_angle, n=20):
+        # Angles with respect to fish (doubled) (120 x n)
+        channel_angles = self.vis_angles + fish_angle
+        channel_angles_surrounding = np.expand_dims(channel_angles, 1)
+        channel_angles_surrounding = np.repeat(channel_angles_surrounding, n, 1)
+
+        # Angles of each side (120 x n)
+        rf_offsets = np.linspace(-self.photoreceptor_rf_size/2, self.photoreceptor_rf_size/2, num=n)
+        channel_angles_surrounding = channel_angles_surrounding + rf_offsets
+
+        # Make sure is in desired range (120 x n) TODO: might need to find way of doing it multiple times e.g. by // operation
+        below_range = (channel_angles_surrounding < 0) * np.pi * 2
+        channel_angles_surrounding = channel_angles_surrounding + below_range
+        above_range = (channel_angles_surrounding > np.pi * 2) * -np.pi*2
+        channel_angles_surrounding = channel_angles_surrounding + above_range
+
+        # Compute m using tan (120 x n)
+        m = np.tan(channel_angles_surrounding)
+
+        # Compute c (120 x n)
+        c = -m * fish_x
+        c = c + fish_y
+
+        # Compute components of intersections (120 x n x 4)
+        c_exp = np.expand_dims(c, 2)
+        c_exp = np.repeat(c_exp, 4, 2)
+
+
+        multiplication_matrix_unit = np.array([-1, 1, -1, 1])
+        multiplication_matrix = np.tile(multiplication_matrix_unit, (120, n, 1))
+
+        addition_matrix_unit = np.array([0, 0, self.height-1, self.width-1])
+        addition_matrix = np.tile(addition_matrix_unit, (120, n, 1))
+
+        mul1 = np.array([0, 0, 0, 1])
+        mul1_full = np.tile(mul1, (120, n, 1))
+        m_mul = np.expand_dims(m, 2)
+        full_m = np.repeat(m_mul, 4, 2)
+        m_mul = full_m * mul1_full
+        m_mul[:, :, :3] = 1
+        addition_matrix = addition_matrix * m_mul
+        division_matrix = full_m
+        division_matrix[:, :, 1] = 1
+        division_matrix[:, :, 3] = 1
+
+        intersection_components = ((c_exp * multiplication_matrix) + addition_matrix)/division_matrix
+
+        mul_for_hypothetical = np.array([[1, 0], [0, 1], [1, 0], [0, 1]])
+        mul_for_hypothetical = np.tile(mul_for_hypothetical, (120, n, 1, 1))
+        add_for_hypothetical = np.array([[0, 0], [0, 0], [0, self.width-1], [self.height-1, 0]])
+        add_for_hypothetical = np.tile(add_for_hypothetical, (120, n, 1, 1))
+
+        intersection_coordinates = np.expand_dims(intersection_components, 3)
+        intersection_coordinates = np.repeat(intersection_coordinates, 2, 3)
+        intersection_coordinates = (intersection_coordinates * mul_for_hypothetical) + add_for_hypothetical
+
+        # Compute possible intersections (120 x 2 x 2 x 2)
+        conditional_tiled = np.array([self.width-1, self.height-1, self.width-1, self.height-1])
+        conditional_tiled = np.tile(conditional_tiled, (120, n, 1))
+        valid_points_ls = (intersection_components > 0) * 1
+        valid_points_more = (intersection_components < conditional_tiled) * 1
+        valid_points = valid_points_more * valid_points_ls
+        valid_intersection_coordinates = intersection_coordinates[valid_points == 1]
+        valid_intersection_coordinates = np.reshape(valid_intersection_coordinates, (120, n, 2, 2))
+        # try:
+        #     valid_intersection_coordinates = np.reshape(valid_intersection_coordinates, (120, n, 2, 2))
+        # except ValueError:
+        #     x = True
+
+        # Get intersections (120 x 2)
+        eye_position = np.array([fish_x, fish_y])
+        possible_vectors = valid_intersection_coordinates - eye_position
+        angles = np.arctan2(possible_vectors[:, :, :, 1], possible_vectors[:, :, :, 0])
+
+        # Make sure angles are in correct range. TODO: be aware might need to repeat multiple times later
+        below_range = (angles < 0) * np.pi * 2
+        angles = angles + below_range
+        above_range = (angles > np.pi * 2) * -np.pi*2
+        angles = angles + above_range
+
+        angles = np.round(angles, 2)
+        channel_angles_surrounding = np.round(channel_angles_surrounding, 2)
+
+        channel_angles_surrounding = np.expand_dims(channel_angles_surrounding, 2)
+        channel_angles_surrounding = np.repeat(channel_angles_surrounding, 2, 2)
+
+        same_values = (angles == channel_angles_surrounding) * 1
+        selected_intersections = valid_intersection_coordinates[same_values == 1]
+        selected_intersections = np.reshape(selected_intersections, (120, n, 1, 2))
+
+        fish_position_full = np.tile([fish_x, fish_y], (120, n, 1, 1))
+        vertices = np.concatenate((fish_position_full, selected_intersections), axis=2)
+        vertices_xvals = vertices[:, :, :, 0]
+        vertices_yvals = vertices[:, :, :, 1]
+
+        min_x = np.min(vertices_xvals, axis=2)
+        max_x = np.max(vertices_xvals, axis=2)
+        min_y = np.min(vertices_yvals, axis=2)
+        max_y = np.max(vertices_yvals, axis=2)
+
+        # self.readings = lines(masked_arena_pixels, m, c, min_x, max_x, min_y, max_y)
+        # self.compute_segment_sums_line(masked_arena_pixels, m, c, min_x, max_x, min_y, max_y)
+        self.compute_segment_sums_line(masked_arena_pixels, m, c, min_x, max_x, min_y, max_y)
 
     def compute_all_sectors(self, fish_x, fish_y, fish_angle):
         # Angles with respect to fish (doubled) (120 x 2)
@@ -170,6 +388,7 @@ class NewVisFan:
 
         fish_position_full = np.tile([fish_x, fish_y], (120, 1, 1))
         vertices = np.concatenate((fish_position_full, selected_intersections), axis=1)
+
         return vertices
 
     def compute_channel_vertices(self, eye_position, fish_angle, channel_orientation, channel_rf_size):
@@ -194,7 +413,7 @@ class NewVisFan:
         intersections += self.get_valid_intersections(intersections_a, eye_position, angle_a)
         intersections += self.get_valid_intersections(intersections_b, eye_position, angle_b)
 
-        intersections = self.check_if_needs_corner(intersections)  # TODO: Haven't written yet.
+        intersections = self.check_if_needs_corner(intersections)  # Old, have new method
 
         return intersections
 
@@ -533,3 +752,158 @@ class NewVisFan:
         total_sum = weighted_points.sum(axis=(0, 1))
 
         return total_sum
+
+    @staticmethod
+    def get_points_along_line(m, c, xmin, xmax, ymin, ymax):
+        """Returns all integer points that are touched by line. Looks on both y and x ranges to avoid precision problems."""
+        # Precision is problem.
+        xmin = np.floor(xmin)
+        xmax = np.floor(xmax)
+        ymin = np.floor(ymin)
+        ymax = np.floor(ymax)
+        xrange = np.arange(xmin, xmax+1)
+        yvals = (m * xrange) + c
+        yvals = np.around(yvals)
+        set1 = np.stack((xrange, yvals), axis=-1)
+
+        yrange = np.arange(ymin, ymax+1)
+        xvals = (yrange - c) / m
+        xvals = np.around(xvals)
+        set2 = np.stack((xvals, yrange), axis=-1)
+
+        full_set = np.vstack((set1, set2))
+        full_set = np.unique(full_set, axis=0)
+
+        return full_set
+
+    def compute_segment_sums_line(self, masked_arena_pixels, m, c, xmin, xmax, ymin, ymax):
+        # c = c[:, :, 0]
+        # xmin = np.floor(xmin)
+        # xmax = np.floor(xmax)
+        # ymin = np.floor(ymin)
+        # ymax = np.floor(ymax)
+
+        n_photoreceptors = m.shape[0]
+
+        # Fully vectorised (3x slower than iterative).
+        # x_len = np.max(np.rint(xmax[:, 0] - xmin[:, 0]).astype(int))
+        # y_len = np.max(np.rint(ymax[:, 0] - ymin[:, 0]).astype(int))
+        #
+        # x_ranges = np.linspace(xmin, xmax, x_len)
+        # y_ranges = np.linspace(ymin, ymax, y_len)
+        #
+        # y_values = (m * x_ranges) + c
+        # y_values = np.floor(y_values)
+        # set_1 = np.stack((x_ranges, y_values), axis=-1)
+        # x_values = (y_ranges - c) / m
+        # x_values = np.floor(x_values)
+        # set_2 = np.stack((x_values, y_ranges), axis=-1)
+        # full_set = np.vstack((set_1, set_2))
+        # full_set = full_set.reshape(n_photoreceptors, -1, full_set.shape[-1]).astype(int)
+        #
+        # used_pixels = masked_arena_pixels[full_set[:, :, 0], full_set[:, :, 1]]
+        # total_sum = used_pixels.sum(axis=1)
+        #
+        # self.readings = total_sum
+
+        # Iterative (keep for cython)
+        for i in range(n_photoreceptors):
+
+            # Vectorised
+            x_len = round(xmax[i, 0] - xmin[i, 0])
+            y_len = round(ymax[i, 0] - ymin[i, 0])
+            x_ranges = np.linspace(xmin[i], xmax[i], x_len)
+            y_ranges = np.linspace(ymin[i], ymax[i], y_len)
+
+            y_values = (m[i] * x_ranges) + c[i]
+            y_values = np.floor(y_values)
+            set_1 = np.stack((x_ranges, y_values), axis=-1)
+
+            x_values = (y_ranges - c[i]) / m[i]
+            x_values = np.floor(x_values)
+            set_2 = np.stack((x_values, y_ranges), axis=-1)
+            full_set = np.vstack((set_1, set_2))
+            full_set = full_set.reshape(-1, full_set.shape[-1]).astype(int)
+            # full_set = np.unique(full_set, axis=0)
+
+            used_pixels = masked_arena_pixels[full_set[:, 0], full_set[:, 1]]
+            total_sum = used_pixels.sum(axis=0)
+            self.readings[i] = total_sum
+
+            # photoreceptor_coverage[full_set_unique[:, 0], full_set_unique[:, 1]] = 1
+            # try:
+            #     photoreceptor_coverage[full_set[:, 0], full_set[:, 1]] = 1
+            # except IndexError:
+            #     x = True
+
+            # Iterative (keep for cython)
+            # for j in range(n_lines):
+            #     xrange = np.arange(xmin[i, j], xmax[i, j])
+            #     yrange = np.arange(ymin[i, j], ymax[i, j])
+            #
+            #     yvals = (m[i, j] * xrange) + c[i, j]
+            #     yvals = np.floor(yvals)
+            #     set1 = np.stack((xrange, yvals), axis=-1)
+            #
+            #     xvals = (yrange - c[i, j]) / m[i, j]
+            #     xvals = np.floor(xvals)
+            #     set2 = np.stack((xvals, yrange), axis=-1)
+            #     full_set = np.vstack((set1, set2))
+            #     full_set = np.unique(full_set, axis=0).astype(int)
+            #     photoreceptor_coverage[full_set[:, 0], full_set[:, 1]] = 1
+            #     # try:
+            #     #     photoreceptor_coverage[full_set[:, 0], full_set[:, 1]] = 1
+            #     # except IndexError:
+            #     #    x = True
+
+            # photoreceptor_coverage = np.expand_dims(photoreceptor_coverage, 2)
+            # # photoreceptor_coverage = np.repeat(photoreceptor_coverage, 3, 2)
+            # weighted_points = photoreceptor_coverage * masked_arena_pixels
+            # total_sum = weighted_points.sum(axis=(0, 1))
+
+    def compute_segment_sums_line_cupy(self, masked_arena_pixels, m, c, xmin, xmax, ymin, ymax):
+        n_photoreceptors = m.shape[0]
+        x_len = cp.max(np.rint(xmax[:, 0] - xmin[:, 0]).astype(int))
+        y_len = cp.max(np.rint(ymax[:, 0] - ymin[:, 0]).astype(int))
+
+        x_ranges = cp.linspace(xmin, xmax, int(x_len))
+        y_ranges = cp.linspace(ymin, ymax, int(y_len))
+
+        y_values = (m * x_ranges) + c
+        y_values = cp.floor(y_values)
+        set_1 = cp.stack((x_ranges, y_values), axis=-1)
+        x_values = (y_ranges - c) / m
+        x_values = cp.floor(x_values)
+        set_2 = cp.stack((x_values, y_ranges), axis=-1)
+        full_set = cp.vstack((set_1, set_2))
+        full_set = full_set.reshape(n_photoreceptors, -1, full_set.shape[-1]).astype(int)
+
+        used_pixels = masked_arena_pixels[full_set[:, :, 0], full_set[:, :, 1]]
+        total_sum = used_pixels.sum(axis=1)
+
+        self.readings = total_sum.get()
+
+
+        # for i in range(n_photoreceptors):
+        #
+        #     # Vectorised
+        #     x_len = cp.round(xmax[i, 0] - xmin[i, 0])
+        #     y_len = cp.round(ymax[i, 0] - ymin[i, 0])
+        #
+        #     x_ranges = cp.linspace(xmin[i], xmax[i], int(x_len))
+        #     y_ranges = cp.linspace(ymin[i], ymax[i], int(y_len))
+        #
+        #     y_values = (m[i] * x_ranges) + c[i]
+        #     y_values = cp.floor(y_values)
+        #     set_1 = cp.stack((x_ranges, y_values), axis=-1)
+        #
+        #     x_values = (y_ranges - c[i]) / m[i]
+        #     x_values = cp.floor(x_values)
+        #     set_2 = cp.stack((x_values, y_ranges), axis=-1)
+        #     full_set = cp.vstack((set_1, set_2))
+        #     full_set = full_set.reshape(-1, full_set.shape[-1]).astype(int)
+        #
+        #     used_pixels = masked_arena_pixels[full_set[:, 0], full_set[:, 1]]
+        #     total_sum = used_pixels.sum(axis=0)
+        #     self.readings[i] = total_sum.get()
+

@@ -24,6 +24,10 @@ Uses the following packages:
 * seaborn==0.11.0
 * tensorflow-probability==0.11.0 (0.8 on myriad due to TF compatability)
 
+Changes for local gpu compatability:
+* tensorflow-probability==0.10.1 (not 0.10.0 due to cloudpickle importerror)
+* tensorflow==2.2.0
+
 ## Run Configurations
 
 The run.py file contains example configurations which specify parameters for either mode: training, or experimental.

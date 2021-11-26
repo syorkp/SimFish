@@ -117,10 +117,12 @@ class DrawingBoard:
 
 
 def apply_mask(board, mask=np.ones((500, 500))/2):
-    new_board = np.zeros(board.shape)
-    for channel in range(board.shape[-1]):
-        new_board[:, :, channel] = np.multiply(board[:, :, channel], mask)
-    return new_board
+    # new_board = np.zeros(board.shape)
+    # for channel in range(board.shape[-1]):
+    #     new_board[:, :, channel] = np.multiply(board[:, :, channel], mask)
+    # return new_board
+    mask = np.expand_dims(mask, 2)
+    return board * mask
 
 
 def create_scatter_mask(position=(250, 250), decay_rate=0.01):

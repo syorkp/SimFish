@@ -73,7 +73,9 @@ class NaturalisticEnvironment(BaseEnvironment):
             # To calculate calibration curve.
             reward = self.fish.try_impulse(impulse)
         else:
-            reward = self.fish.take_action(action)
+            # TODO: removed, for debugging.
+            #reward = self.fish.take_action(action)
+            reward = 2.0
 
         # Add policy helper reward to encourage proximity to prey.
         for ii in range(len(self.prey_bodies)):
@@ -151,7 +153,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             +np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
             -np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
 
-        self.show_new_channel_sectors(left_eye_pos, right_eye_pos)
+        # self.show_new_channel_sectors(left_eye_pos, right_eye_pos)
         full_masked_image = self.board.get_masked_pixels(self.fish.body.position)
 
         self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
@@ -173,7 +175,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         # TODO: ENV CHANGE
         observation = np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
                                  self.fish.readings_to_photons(self.fish.right_eye.readings)))
-        self.plot_observation(observation)
+        # self.plot_observation(observation)
         return observation
 
     def plot_observation(self, observation):

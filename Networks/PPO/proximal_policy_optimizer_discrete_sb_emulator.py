@@ -1,5 +1,4 @@
 import tensorflow.compat.v1 as tf
-import tensorflow_probability as tfp
 from Networks.utils import linear
 
 from Networks.base_network import BaseNetwork

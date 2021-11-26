@@ -18,35 +18,43 @@ class NewDrawingBoard:
 
     @staticmethod
     def apply_mask(board, mask):
-        new_board = np.zeros(board.shape)
-        for channel in range(board.shape[-1]):
-            new_board[:, :, channel] = np.multiply(board[:, :, channel], mask)
-        return new_board
+        # TODO: speed up
+        # new_board = np.zeros(board.shape)
+        # for channel in range(board.shape[-1]):
+        #     new_board[:, :, channel] = np.multiply(board[:, :, channel], mask)
+        # return new_board
+        mask = np.expand_dims(mask, 2)
+        return board * mask
+
+    def decay(self, fish_position):
+        return np.exp(-self.decay_rate * (((fish_position[0] - i) ** 2 + (fish_position[1] - j) ** 2) ** 0.5))
 
     def create_scatter_mask(self, fish_position):
         """Creates the scatter mask according to the equation: I(d)=e^(-decay_rate*d), where d is distance from fish,
         computed here for all coordinates."""
         mask = np.fromfunction(
             lambda i, j: np.exp(-self.decay_rate * (((fish_position[0] - i) ** 2 + (fish_position[1] - j) ** 2) ** 0.5)),
-            (self.width, self.height),
+            (self.width, self.height,),
             dtype=float)
+        mask = np.expand_dims(mask, 2)
         return mask
 
     def create_obstruction_mask(self, fish_position):
         # TODO: Implement. What inputs does it need?
-        return np.ones((self.width, self.height))
+        return np.ones((self.width, self.height, 1))
 
     def create_luminance_mask(self):
         # TODO: implement.
-        return np.ones((self.width, self.height))
+        return np.ones((self.width, self.height, 1))
 
     def get_masked_pixels(self, fish_position):
         A = self.db
         L = self.create_luminance_mask()
         O = self.create_obstruction_mask(fish_position)
         S = self.create_scatter_mask(fish_position)
-        masked_arena = self.apply_mask(self.apply_mask(self.apply_mask(A, L), O), S)
-        return masked_arena
+        return A * L * O * S
+        # masked_arena = self.apply_mask(self.apply_mask(self.apply_mask(A, L), O), S)
+        # return masked_arena
 
     def erase(self, bkg=0):
         if bkg == 0:
