@@ -1290,7 +1290,7 @@ ppo_data_gathering = [
 
 phase_1_test_config = [
     {
-        "Model Name": "ppo_phase_1_test",
+        "Model Name": "ppo_jade_phase_1_test",
         "Environment Name": "ppo_continuous_sbe_is",
         "Trial Number": 1,
         "Total Configurations": 3,
