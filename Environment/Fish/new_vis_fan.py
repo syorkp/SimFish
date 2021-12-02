@@ -97,10 +97,10 @@ class NewVisFan:
         # Angles with respect to fish (doubled) (120 x n)
         channel_angles = cp.array(self.vis_angles) + fish_angle
         channel_angles_surrounding = cp.expand_dims(channel_angles, 1)
-        channel_angles_surrounding = cp.repeat(channel_angles_surrounding, n, 1)
+        channel_angles_surrounding = cp.repeat(channel_angles_surrounding, n, 1)  # TODO: Can reducec to use omly once then add fish angle ach time. (also combine with below)
 
         # Angles of each side (120 x n)
-        rf_offsets = cp.linspace(-self.photoreceptor_rf_size/2, self.photoreceptor_rf_size/2, num=n)
+        rf_offsets = cp.linspace(-self.photoreceptor_rf_size/2, self.photoreceptor_rf_size/2, num=n)  # TODO: Use only once.
         channel_angles_surrounding = channel_angles_surrounding + rf_offsets
 
         # Make sure is in desired range (120 x n) TODO: might need to find way of doing it multiple times e.g. by // operation
@@ -119,7 +119,6 @@ class NewVisFan:
         # Compute components of intersections (120 x n x 4)
         c_exp = cp.expand_dims(c, 2)
         c_exp = cp.repeat(c_exp, 4, 2)
-
 
         multiplication_matrix_unit = cp.array([-1, 1, -1, 1])
         multiplication_matrix = cp.tile(multiplication_matrix_unit, (120, n, 1))
@@ -140,30 +139,26 @@ class NewVisFan:
 
         intersection_components = ((c_exp * multiplication_matrix) + addition_matrix)/division_matrix
 
-        mul_for_hypothetical = cp.array([[1, 0], [0, 1], [1, 0], [0, 1]])
-        mul_for_hypothetical = cp.tile(mul_for_hypothetical, (120, n, 1, 1))
-        add_for_hypothetical = cp.array([[0, 0], [0, 0], [0, self.width-1], [self.height-1, 0]])
-        add_for_hypothetical = cp.tile(add_for_hypothetical, (120, n, 1, 1))
+        mul_for_hypothetical = cp.array([[1, 0], [0, 1], [1, 0], [0, 1]])  # TODO: Do only once
+        mul_for_hypothetical = cp.tile(mul_for_hypothetical, (120, n, 1, 1))  # TODO: Do only once
+        add_for_hypothetical = cp.array([[0, 0], [0, 0], [0, self.width-1], [self.height-1, 0]]) # TODO: Do only once
+        add_for_hypothetical = cp.tile(add_for_hypothetical, (120, n, 1, 1))  # TODO: Do only once
 
         intersection_coordinates = cp.expand_dims(intersection_components, 3)
         intersection_coordinates = cp.repeat(intersection_coordinates, 2, 3)
         intersection_coordinates = (intersection_coordinates * mul_for_hypothetical) + add_for_hypothetical
 
         # Compute possible intersections (120 x 2 x 2 x 2)
-        conditional_tiled = cp.array([self.width-1, self.height-1, self.width-1, self.height-1])
-        conditional_tiled = cp.tile(conditional_tiled, (120, n, 1))
+        conditional_tiled = cp.array([self.width-1, self.height-1, self.width-1, self.height-1])  # TODO: Do only once
+        conditional_tiled = cp.tile(conditional_tiled, (120, n, 1))  # TODO: Do only once
         valid_points_ls = (intersection_components > 0) * 1
         valid_points_more = (intersection_components < conditional_tiled) * 1
         valid_points = valid_points_more * valid_points_ls
         valid_intersection_coordinates = intersection_coordinates[valid_points == 1]
         valid_intersection_coordinates = cp.reshape(valid_intersection_coordinates, (120, n, 2, 2))
-        # try:
-        #     valid_intersection_coordinates = np.reshape(valid_intersection_coordinates, (120, n, 2, 2))
-        # except ValueError:
-        #     x = True
 
         # Get intersections (120 x 2)
-        eye_position = cp.array([fish_x, fish_y])
+        eye_position = cp.array([fish_x, fish_y])  # TODO: Do only once
         possible_vectors = valid_intersection_coordinates - eye_position
         angles = cp.arctan2(possible_vectors[:, :, :, 1], possible_vectors[:, :, :, 0])
 
@@ -188,6 +183,7 @@ class NewVisFan:
         vertices_xvals = vertices[:, :, :, 0]
         vertices_yvals = vertices[:, :, :, 1]
 
+        # TODO: Probably faster way of doing below...
         min_x = cp.min(vertices_xvals, axis=2)
         max_x = cp.max(vertices_xvals, axis=2)
         min_y = cp.min(vertices_yvals, axis=2)
@@ -862,7 +858,7 @@ class NewVisFan:
             # total_sum = weighted_points.sum(axis=(0, 1))
 
     def compute_segment_sums_line_cupy(self, masked_arena_pixels, m, c, xmin, xmax, ymin, ymax):
-        n_photoreceptors = m.shape[0]
+        n_photoreceptors = m.shape[0]  # TODO: Do only once
         x_len = cp.max(np.rint(xmax[:, 0] - xmin[:, 0]).astype(int))
         y_len = cp.max(np.rint(ymax[:, 0] - ymin[:, 0]).astype(int))
 
@@ -882,28 +878,3 @@ class NewVisFan:
         total_sum = used_pixels.sum(axis=1)
 
         self.readings = total_sum.get()
-
-
-        # for i in range(n_photoreceptors):
-        #
-        #     # Vectorised
-        #     x_len = cp.round(xmax[i, 0] - xmin[i, 0])
-        #     y_len = cp.round(ymax[i, 0] - ymin[i, 0])
-        #
-        #     x_ranges = cp.linspace(xmin[i], xmax[i], int(x_len))
-        #     y_ranges = cp.linspace(ymin[i], ymax[i], int(y_len))
-        #
-        #     y_values = (m[i] * x_ranges) + c[i]
-        #     y_values = cp.floor(y_values)
-        #     set_1 = cp.stack((x_ranges, y_values), axis=-1)
-        #
-        #     x_values = (y_ranges - c[i]) / m[i]
-        #     x_values = cp.floor(x_values)
-        #     set_2 = cp.stack((x_values, y_ranges), axis=-1)
-        #     full_set = cp.vstack((set_1, set_2))
-        #     full_set = full_set.reshape(-1, full_set.shape[-1]).astype(int)
-        #
-        #     used_pixels = masked_arena_pixels[full_set[:, 0], full_set[:, 1]]
-        #     total_sum = used_pixels.sum(axis=0)
-        #     self.readings[i] = total_sum.get()
-

@@ -44,19 +44,19 @@ class NaturalisticEnvironment(BaseEnvironment):
 
     def show_new_channel_sectors(self, left_eye_pos, right_eye_pos):
         left_sectors, right_sectors = self.fish.get_all_sectors([left_eye_pos[0], left_eye_pos[1]], [right_eye_pos[0], right_eye_pos[1]], self.fish.body.angle)
-        l_top_left, l_bottom_left, l_top_right, l_bottom_right = self.fish.left_eye.get_corner_sectors(left_sectors)
-        r_top_left, r_bottom_left, r_top_right, r_bottom_right = self.fish.right_eye.get_corner_sectors(right_sectors)
+        # l_top_left, l_bottom_left, l_top_right, l_bottom_right = self.fish.left_eye.get_corner_sectors(left_sectors)
+        # r_top_left, r_bottom_left, r_top_right, r_bottom_right = self.fish.right_eye.get_corner_sectors(right_sectors)
 
         field = self.board.db
         plt.figure(figsize=(20, 20))
         plt.imshow(field)
         for i, sector in enumerate(right_sectors):
-            sector = self.fish.right_eye.get_extra_vertices(i, sector, r_top_left, r_bottom_left, r_top_right, r_bottom_right)
+            # sector = self.fish.right_eye.get_extra_vertices(i, sector, r_top_left, r_bottom_left, r_top_right, r_bottom_right)
             # sector = sorted(sector, key=lambda x: x[0])
             patch = plt.Polygon(sector, closed=True, color="r", alpha=0.2)
             plt.gca().add_patch(patch)
         for i, sector in enumerate(left_sectors):
-            sector = self.fish.left_eye.get_extra_vertices(i, sector, l_top_left, l_bottom_left, l_top_right, l_bottom_right)
+            # sector = self.fish.left_eye.get_extra_vertices(i, sector, l_top_left, l_bottom_left, l_top_right, l_bottom_right)
             # sector = sorted(sector, key=lambda x: x[0])
             patch = plt.Polygon(sector, color="b", alpha=0.2)
             plt.gca().add_patch(patch)
@@ -154,8 +154,10 @@ class NaturalisticEnvironment(BaseEnvironment):
             -np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
 
         # self.show_new_channel_sectors(left_eye_pos, right_eye_pos)
-        full_masked_image = self.board.get_masked_pixels(self.fish.body.position)
+        # full_masked_image = self.board.get_masked_pixels(self.fish.body.position)
+        full_masked_image = self.board.get_masked_pixels_cupy(self.fish.body.position)
 
+        # self.fish.eyes.read(full_masked_image, self.fish.body.angle, left_eye_pos, right_eye_pos)
         self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
         self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 
@@ -173,9 +175,11 @@ class NaturalisticEnvironment(BaseEnvironment):
                 plt.pause(0.000001)
 
         # TODO: ENV CHANGE
-        observation = np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
+        observation = cp.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
                                  self.fish.readings_to_photons(self.fish.right_eye.readings)))
+        # observation = np.dstack((self.fish.readings_to_photons(self.fish.eyes.readings)))
         # self.plot_observation(observation)
+
         return observation
 
     def plot_observation(self, observation):
@@ -220,7 +224,6 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.board_image.set_data(self.output_frame(activations, internal_state, scale=0.5) / 255.)
                 plt.pause(0.000001)
 
-        # TODO: ENV CHANGE
         observation = np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
                                  self.fish.readings_to_photons(self.fish.right_eye.readings)))
         return observation

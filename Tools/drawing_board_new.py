@@ -1,4 +1,5 @@
 import numpy as np
+import cupy as cp
 
 import skimage.draw as draw
 from skimage import io
@@ -15,6 +16,19 @@ class NewDrawingBoard:
         self.decay_rate = decay_rate
         self.db = None
         self.erase()
+
+        # Set of coordinates
+        # xp, yp = np.meshgrid(range(self.width), range(self.height))
+        # self.coordinates = np.concatenate((xp, yp), 3)
+
+        # xp, yp = cp.meshgrid(cp.arange(self.width), cp.arange(self.height))
+        self.xp, self.yp = cp.arange(self.width), cp.arange(self.height)
+        # self.coordinates = cp.concatenate((xp, yp), 2)
+
+        # self.scatter = cp.vectorize(lambda i, j, x, y: np.exp(-self.decay_rate * (((x - i) ** 2 + (y - j) ** 2) ** 0.5)))
+
+    def scatter(self, i, j, x, y):
+        return cp.exp(-self.decay_rate * (((x - i) ** 2 + (y - j) ** 2) ** 0.5))
 
     @staticmethod
     def apply_mask(board, mask):
@@ -46,6 +60,13 @@ class NewDrawingBoard:
     def create_luminance_mask(self):
         # TODO: implement.
         return np.ones((self.width, self.height, 1))
+
+    def get_masked_pixels_cupy(self, fish_position):
+        A = cp.array(self.db)
+        L = cp.ones((self.width, self.height, 1))
+        O = cp.ones((self.width, self.height, 1))
+        S = self.scatter(self.xp[:, None], self.yp[:, None], fish_position[0], fish_position[1])
+        return A * L * O * S
 
     def get_masked_pixels(self, fish_position):
         A = self.db

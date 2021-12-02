@@ -1,17 +1,20 @@
 import numpy as np
+import cupy as cp
 import pymunk
 from skimage.transform import resize, rescale
 
 from Environment.Fish.vis_fan import VisFan
 from Environment.Fish.new_vis_fan import NewVisFan
+from Environment.Fish.eyes import Eyes
+from Environment.Fish.eye import Eye
 from Environment.Action_Space.draw_angle_dist import draw_angle_dist
 
 
 class Fish:
-
     """
     Created to simplify the SimState class, while making it easier to have environments with multiple agents in future.
     """
+
     def __init__(self, board, env_variables, dark_col, realistic_bouts, new_simulation, fish_mass=None):
         self.new_simulation = new_simulation
 
@@ -33,7 +36,8 @@ class Fish:
         self.mouth.collision_type = 3
 
         # Head
-        self.head = pymunk.Circle(self.body, env_variables['fish_head_size'], offset=(-env_variables['fish_head_size'], 0))
+        self.head = pymunk.Circle(self.body, env_variables['fish_head_size'],
+                                  offset=(-env_variables['fish_head_size'], 0))
         self.head.color = (0, 1, 0)
         self.head.elasticity = 1.0
         self.head.collision_type = 6
@@ -54,15 +58,29 @@ class Fish:
         self.conv_state = 0
 
         if self.new_simulation:
-            self.left_eye = NewVisFan(board, self.verg_angle, self.retinal_field, True,
-                                   env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
-                                   env_variables['max_vis_dist'], env_variables['dark_gain'],
-                                   env_variables['light_gain'], env_variables['bkg_scatter'], dark_col)
+            # self.left_eye = NewVisFan(board, self.verg_angle, self.retinal_field, True,
+            #                        env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
+            #                        env_variables['max_vis_dist'], env_variables['dark_gain'],
+            #                        env_variables['light_gain'], env_variables['bkg_scatter'], dark_col)
+            #
+            # self.right_eye = NewVisFan(board, self.verg_angle, self.retinal_field, False,
+            #                         env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
+            #                         env_variables['max_vis_dist'], env_variables['dark_gain'],
+            #                         env_variables['light_gain'], env_variables['bkg_scatter'], dark_col)
+            # self.eyes = Eyes(board, self.verg_angle, self.retinal_field,
+            #                  env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
+            #                  env_variables['max_vis_dist'], env_variables['dark_gain'],
+            #                  env_variables['light_gain'], env_variables['bkg_scatter'], dark_col)
 
-            self.right_eye = NewVisFan(board, self.verg_angle, self.retinal_field, False,
-                                    env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
-                                    env_variables['max_vis_dist'], env_variables['dark_gain'],
-                                    env_variables['light_gain'], env_variables['bkg_scatter'], dark_col)
+            self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True,
+                                env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
+                                env_variables['max_vis_dist'], env_variables['dark_gain'],
+                                env_variables['light_gain'], env_variables['bkg_scatter'], dark_col)
+
+            self.right_eye = Eye(board, self.verg_angle, self.retinal_field, False,
+                                 env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
+                                 env_variables['max_vis_dist'], env_variables['dark_gain'],
+                                 env_variables['light_gain'], env_variables['bkg_scatter'], dark_col)
         else:
             self.left_eye = VisFan(board, self.verg_angle, self.retinal_field, True,
                                    env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
@@ -99,12 +117,12 @@ class Fish:
             self.body.angle += self.env_variables['routine_turn_dir_change']
             self.body.apply_impulse_at_local_point((self.env_variables['routine_turn_impulse'], 0))
             self.head.color = (0, 1, 0)
-        elif action == 2:   # Turn left
+        elif action == 2:  # Turn left
             reward = -self.env_variables['routine_turn_cost']
             self.body.angle -= self.env_variables['routine_turn_dir_change']
             self.body.apply_impulse_at_local_point((self.env_variables['routine_turn_impulse'], 0))
             self.head.color = (0, 1, 0)
-        elif action == 3:   # Capture
+        elif action == 3:  # Capture
             reward = -self.env_variables['capture_swim_cost']
             self.body.apply_impulse_at_local_point((self.env_variables['capture_swim_impulse'], 0))
             self.head.color = [1, 0, 1]
@@ -119,7 +137,7 @@ class Fish:
             self.body.angle -= self.env_variables['j_turn_dir_change']
             self.body.apply_impulse_at_local_point((self.env_variables['j_turn_impulse'], 0))
             self.head.color = [1, 1, 1]
-        elif action == 6:   # do nothing:
+        elif action == 6:  # do nothing:
             reward = -self.env_variables['rest_cost']
         # TODO: Create actual actions for the below
         elif action == 7:  # c start right
@@ -161,7 +179,7 @@ class Fish:
         :param distance:
         :return:
         """
-        return (distance*10 - (0.004644*self.env_variables['fish_mass'] + 0.081417))/1.771548
+        return (distance * 10 - (0.004644 * self.env_variables['fish_mass'] + 0.081417)) / 1.771548
 
     def calculate_action_cost(self, angle, distance):
         """
@@ -169,7 +187,8 @@ class Fish:
         cost = 0.05(angle change) + 1.5(distance moved)
         :return:
         """
-        return abs(angle) * self.env_variables['angle_penalty_scaling_factor'] + (distance**2) * self.env_variables['distance_penalty_scaling_factor']
+        return abs(angle) * self.env_variables['angle_penalty_scaling_factor'] + (distance ** 2) * self.env_variables[
+            'distance_penalty_scaling_factor']
 
     def take_realistic_action(self, action):
         if action == 0:  # Slow2
@@ -276,6 +295,7 @@ class Fish:
         return photons
 
     def _readings_to_photons_new(self, readings):
+        # Without CP
         photons = np.random.poisson(readings * self.env_variables['photon_ratio'])
         if self.env_variables['read_noise_sigma'] > 0:
             noise = np.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
@@ -283,11 +303,22 @@ class Fish:
             # photons = photons.clip(0, 255)
         return photons
 
+        # With CP
+        # photons = cp.random.poisson(readings * self.env_variables['photon_ratio'])
+        # if self.env_variables['read_noise_sigma'] > 0:
+        #     noise = cp.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
+        #     photons += noise.astype(int)
+        #     # photons = photons.clip(0, 255)
+        # photons_left, photons_right = np.split(photons.get(), 2)
+        # return photons_left, photons_right
+
     def get_visual_inputs(self):
         left_photons = self.readings_to_photons(self.left_eye.readings)
         right_photons = self.readings_to_photons(self.right_eye.readings)
-        left_eye = resize(np.reshape(left_photons, (1, len(self.left_eye.vis_angles), 3)) * (255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
-        right_eye = resize(np.reshape(right_photons, (1, len(self.right_eye.vis_angles), 3)) * (255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
+        left_eye = resize(np.reshape(left_photons, (1, len(self.left_eye.vis_angles), 3)) * (
+                    255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
+        right_eye = resize(np.reshape(right_photons, (1, len(self.right_eye.vis_angles), 3)) * (
+                    255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
         eyes = np.hstack((left_eye, np.zeros((20, 100, 3)), right_eye))
         eyes[eyes < 0] = 0
         eyes[eyes > 255] = 255
@@ -295,6 +326,8 @@ class Fish:
 
     def get_all_sectors(self, fish_position_l, fish_position_r, fish_orientation):
         """To show all channel sectors"""
-        left_sector_vertices = self.left_eye.get_all_sectors(fish_position_l, fish_orientation)
-        right_sector_vertices = self.right_eye.get_all_sectors(fish_position_r, fish_orientation)
+        left_sector_vertices = self.left_eye.get_sector_vertices(fish_position_l[0], fish_position_l[1], fish_orientation)
+        right_sector_vertices = self.right_eye.get_sector_vertices(fish_position_r[0], fish_position_r[1], fish_orientation)
+        # left_sector_vertices = self.left_eye.get_all_sectors(fish_position_l, fish_orientation)
+        # right_sector_vertices = self.right_eye.get_all_sectors(fish_position_r, fish_orientation)
         return left_sector_vertices, right_sector_vertices
