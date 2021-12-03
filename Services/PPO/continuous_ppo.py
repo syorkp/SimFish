@@ -1,6 +1,5 @@
 import math
 import numpy as np
-import copy
 
 import tensorflow.compat.v1 as tf
 
@@ -376,6 +375,7 @@ class ContinuousPPO(BasePPO):
     def _training_step_multivariate_full_logs2(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                                rnn_state_critic,
                                                rnn_state_critic_ref):
+
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
@@ -866,6 +866,7 @@ class ContinuousPPO(BasePPO):
             average_loss_value = 0
             average_loss_impulse = 0
             average_loss_angle = 0
+
             for i in range(self.learning_params["n_updates_per_iteration"]):
                 # Compute RNN states for start of each trace.
                 actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, \
@@ -927,7 +928,6 @@ class ContinuousPPO(BasePPO):
                 average_loss_angle += np.mean(np.abs(loss_actor_val_angle))
                 average_loss_value += np.abs(loss_critic_val)
 
-
             self.buffer.add_loss(average_loss_impulse / self.learning_params["n_updates_per_iteration"],
                                  average_loss_angle / self.learning_params["n_updates_per_iteration"],
                                  average_loss_value / self.learning_params["n_updates_per_iteration"])
@@ -960,6 +960,8 @@ class ContinuousPPO(BasePPO):
             average_loss_value = 0
             average_loss_impulse = 0
             average_loss_angle = 0
+
+
 
             for i in range(self.learning_params["n_updates_per_iteration"]):
                 # Compute RNN states for start of each trace.
@@ -1039,6 +1041,7 @@ class ContinuousPPO(BasePPO):
             average_loss_value = 0
             average_loss_impulse = 0
             average_loss_angle = 0
+
 
             for i in range(self.learning_params["n_updates_per_iteration"]):
                 # Compute RNN states for start of each trace.

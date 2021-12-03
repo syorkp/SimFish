@@ -1,4 +1,5 @@
 import numpy as np
+import cupy as cp
 import matplotlib.pyplot as plt
 
 from Environment.base_environment import BaseEnvironment
@@ -180,23 +181,21 @@ class NaturalisticEnvironment(BaseEnvironment):
         # observation = np.dstack((self.fish.readings_to_photons(self.fish.eyes.readings)))
         # self.plot_observation(observation)
 
-        return observation
+        return observation.get()
 
     def plot_observation(self, observation):
-        left_1 = observation[:, :, 0]
-        # left_1 = np.swapaxes(left_1, 0, 1)
-        right_1 = observation[:, :, 1]
-        # right_1 = np.swapaxes(right_1, 0, 1)
+        left_1 = observation[:, :, 0].get()
+        right_1 = observation[:, :, 1].get()
 
         left_1 = np.expand_dims(left_1, 0)
         right_1 = np.expand_dims(right_1, 0)
         fig, axs = plt.subplots(2, 1, sharex=True)
 
         axs[0].imshow(left_1, aspect="auto")
-        axs[0].set_ylabel("Left eye Photoreceptor")
+        axs[0].set_ylabel("Left eye")
         axs[1].imshow(right_1, aspect="auto")
-        axs[1].set_ylabel("Right eye Photoreceptor")
-        axs[1].set_xlabel("Step")
+        axs[1].set_ylabel("Right eye")
+        axs[1].set_xlabel("Photoreceptor")
         plt.show()
 
     def resolve_visual_input(self, save_frames, activations, internal_state, frame_buffer):

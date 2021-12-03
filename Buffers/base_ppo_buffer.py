@@ -1,4 +1,3 @@
-
 import h5py
 import scipy.signal as sig
 import numpy as np

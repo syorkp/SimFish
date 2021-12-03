@@ -6,7 +6,7 @@ import math
 class Eye:
 
     def __init__(self, board, verg_angle, retinal_field, is_left, num_arms, min_distance, max_distance, dark_gain,
-                 light_gain, bkg_scatter, dark_col):
+                 light_gain, bkg_scatter, dark_col, photoreceptor_rf_size):
         self.num_arms = num_arms
         self.distances = np.array([min_distance, max_distance])
 
@@ -26,7 +26,7 @@ class Eye:
 
         # TODO: Make parameters:
         self.photoreceptor_num = num_arms
-        self.photoreceptor_rf_size = 0.014
+        self.photoreceptor_rf_size = photoreceptor_rf_size
         self.retinal_field_size = retinal_field
         self.photoreceptor_spacing = self.retinal_field_size/self.photoreceptor_num
 

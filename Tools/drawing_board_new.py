@@ -9,11 +9,12 @@ from Tools.ray_cast import rays
 
 class NewDrawingBoard:
 
-    def __init__(self, width, height, decay_rate):
+    def __init__(self, width, height, decay_rate, photoreceptor_rf_size):
 
         self.width = width
         self.height = height
         self.decay_rate = decay_rate
+        self.photoreceptor_rf_size = photoreceptor_rf_size
         self.db = None
         self.erase()
 
@@ -28,7 +29,15 @@ class NewDrawingBoard:
         # self.scatter = cp.vectorize(lambda i, j, x, y: np.exp(-self.decay_rate * (((x - i) ** 2 + (y - j) ** 2) ** 0.5)))
 
     def scatter(self, i, j, x, y):
-        return cp.exp(-self.decay_rate * (((x - i) ** 2 + (y - j) ** 2) ** 0.5))
+        # scatter = cp.exp(-self.decay_rate * (((x - i) ** 2 + (y - j) ** 2) ** 0.5))
+        # return cp.expand_dims(scatter, 2)
+        positional_mask = (((x - i) ** 2 + (y - j) ** 2) ** 0.5)
+        desired_scatter = cp.exp(-self.decay_rate * positional_mask)
+        implicit_scatter = cp.sin(self.photoreceptor_rf_size) * positional_mask
+        implicit_scatter[implicit_scatter < 1] = 1
+        adjusted_scatter = desired_scatter * implicit_scatter
+        adjusted_scatter = cp.expand_dims(adjusted_scatter, 2)
+        return adjusted_scatter
 
     @staticmethod
     def apply_mask(board, mask):
@@ -65,7 +74,7 @@ class NewDrawingBoard:
         A = cp.array(self.db)
         L = cp.ones((self.width, self.height, 1))
         O = cp.ones((self.width, self.height, 1))
-        S = self.scatter(self.xp[:, None], self.yp[:, None], fish_position[0], fish_position[1])
+        S = self.scatter(self.xp[:, None], self.yp[None, :], fish_position[0], fish_position[1])
         return A * L * O * S
 
     def get_masked_pixels(self, fish_position):

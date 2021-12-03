@@ -1291,7 +1291,7 @@ ppo_data_gathering = [
 phase_1_test_config = [
     {
         "Model Name": "ppo_jade_phase_1_test",
-        "Environment Name": "ppo_continuous_sbe_is",
+        "Environment Name": "ppo_continuous_sbe_is_new_simulation",
         "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {

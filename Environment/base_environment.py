@@ -17,7 +17,9 @@ class BaseEnvironment:
 
         self.env_variables = env_variables
         if self.new_simulation: # TODO: ENV CHANGE
-            self.board = NewDrawingBoard(self.env_variables['width'], self.env_variables['height'], decay_rate=0.01)
+            self.board = NewDrawingBoard(self.env_variables['width'], self.env_variables['height'],
+                                         decay_rate=self.env_variables['decay_rate'],
+                                         photoreceptor_rf_size=self.env_variables['photoreceptor_rf_size'])
         else:
             self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])
         self.draw_screen = draw_screen

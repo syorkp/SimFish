@@ -75,12 +75,14 @@ class Fish:
             self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True,
                                 env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
                                 env_variables['max_vis_dist'], env_variables['dark_gain'],
-                                env_variables['light_gain'], env_variables['bkg_scatter'], dark_col)
+                                env_variables['light_gain'], env_variables['bkg_scatter'], dark_col,
+                                env_variables['photoreceptor_rf_size'])
 
             self.right_eye = Eye(board, self.verg_angle, self.retinal_field, False,
                                  env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
                                  env_variables['max_vis_dist'], env_variables['dark_gain'],
-                                 env_variables['light_gain'], env_variables['bkg_scatter'], dark_col)
+                                 env_variables['light_gain'], env_variables['bkg_scatter'], dark_col,
+                                 env_variables['photoreceptor_rf_size'])
         else:
             self.left_eye = VisFan(board, self.verg_angle, self.retinal_field, True,
                                    env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
@@ -296,9 +298,9 @@ class Fish:
 
     def _readings_to_photons_new(self, readings):
         # Without CP
-        photons = np.random.poisson(readings * self.env_variables['photon_ratio'])
+        photons = cp.random.poisson(readings * self.env_variables['photon_ratio'])
         if self.env_variables['read_noise_sigma'] > 0:
-            noise = np.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
+            noise = cp.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
             photons += noise.astype(int)
             # photons = photons.clip(0, 255)
         return photons

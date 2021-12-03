@@ -110,7 +110,11 @@ env = {'width': 1500,  # arena size
        'sigma_time_constant': 0.000001,
 
        'clip_param': 0.2,
-       'cs_required': False
+       'cs_required': False,
+
+       # New simulation variables
+       'decay_rate': 0.01,
+       'photoreceptor_rf_size': 0.01
        }
 
 params = {'num_actions': 10,  # size of action space
@@ -143,11 +147,11 @@ params = {'num_actions': 10,  # size of action space
 
           'gamma': 0.99,
           'lambda': 0.9,
-          'input_sigmas': False
+          'input_sigmas': True
           }
 
 
-directory_name = "ppo_continuous_sbe_es"
+directory_name = "ppo_continuous_sbe_is_new_simulation"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):
