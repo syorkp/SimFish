@@ -8,8 +8,15 @@ from Environment.Fish.fish import Fish
 
 class NaturalisticEnvironment(BaseEnvironment):
 
-    def __init__(self, env_variables, realistic_bouts, new_simulation, draw_screen=False, fish_mass=None, collisions=True):
-        super().__init__(env_variables, draw_screen, new_simulation)
+    def __init__(self, env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen=False, fish_mass=None, collisions=True):
+        super().__init__(env_variables, draw_screen, new_simulation, using_gpu)
+
+        self.using_gpu = using_gpu
+
+        if using_gpu:
+            self.chosen_math_library = cp
+        else:
+            self.chosen_math_library = np
 
     def reset(self):
         super().reset()
@@ -156,7 +163,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         # self.show_new_channel_sectors(left_eye_pos, right_eye_pos)
         # full_masked_image = self.board.get_masked_pixels(self.fish.body.position)
-        full_masked_image = self.board.get_masked_pixels_cupy(self.fish.body.position)
+        full_masked_image = self.board.get_masked_pixels_cupy(self.fish.body.position, [i.position for i in self.prey_bodies])
 
         # self.fish.eyes.read(full_masked_image, self.fish.body.angle, left_eye_pos, right_eye_pos)
         self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
@@ -176,12 +183,17 @@ class NaturalisticEnvironment(BaseEnvironment):
                 plt.pause(0.000001)
 
         # TODO: ENV CHANGE
-        observation = cp.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
+        observation = self.chosen_math_library.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
                                  self.fish.readings_to_photons(self.fish.right_eye.readings)))
         # observation = np.dstack((self.fish.readings_to_photons(self.fish.eyes.readings)))
         # self.plot_observation(observation)
 
-        return observation.get()
+        if self.using_gpu:
+            # cp._default_memory_pool.free_all_blocks()
+            return observation.get()
+        else:
+            return observation
+
 
     def plot_observation(self, observation):
         left_1 = observation[:, :, 0].get()

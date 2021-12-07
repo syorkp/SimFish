@@ -119,6 +119,7 @@ class AssayService(BaseService):
                 self.simulation = ControlledStimulusEnvironmentContinuous(self.environment_params, assay["stimuli"],
                                                                 self.realistic_bouts,
                                                                 self.new_simulation,
+                                                                self.using_gpu,
                                                                 tethered=assay["Tethered"],
                                                                 set_positions=assay["set positions"],
                                                                 random=assay["random positions"],
@@ -131,6 +132,7 @@ class AssayService(BaseService):
                 self.simulation = ControlledStimulusEnvironment(self.environment_params, assay["stimuli"],
                                                                 self.realistic_bouts,
                                                                 self.new_simulation,
+                                                                self.using_gpu,
                                                                 tethered=assay["Tethered"],
                                                                 set_positions=assay["set positions"],
                                                                 random=assay["random positions"],
@@ -142,19 +144,19 @@ class AssayService(BaseService):
         elif assay["stimulus paradigm"] == "Naturalistic":
             if self.continuous_actions:
                 self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                    self.new_simulation,
+                                                                    self.new_simulation, self.using_gpu,
                                                                     collisions=assay["collisions"])
             else:
                 self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                self.new_simulation,)
+                                                                self.new_simulation, self.using_gpu)
 
         else:
             if self.continuous_actions:
                 self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                self.new_simulation,)
+                                                                self.new_simulation, self.using_gpu)
             else:
                 self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                self.new_simulation,)
+                                                                self.new_simulation, self.using_gpu)
 
     def ablate_units(self, unit_indexes):
         # TODO: Will need to update for new network architecture.

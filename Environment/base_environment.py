@@ -12,14 +12,15 @@ class BaseEnvironment:
     """A base class to represent environments, for extension to ProjectionEnvironment, VVR and Naturalistic
     environment classes."""
 
-    def __init__(self, env_variables, draw_screen, new_simulation):
+    def __init__(self, env_variables, draw_screen, new_simulation, using_gpu):
         self.new_simulation = new_simulation
 
         self.env_variables = env_variables
         if self.new_simulation: # TODO: ENV CHANGE
             self.board = NewDrawingBoard(self.env_variables['width'], self.env_variables['height'],
                                          decay_rate=self.env_variables['decay_rate'],
-                                         photoreceptor_rf_size=self.env_variables['photoreceptor_rf_size'])
+                                         photoreceptor_rf_size=self.env_variables['photoreceptor_rf_size'],
+                                         using_gpu=using_gpu)
         else:
             self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])
         self.draw_screen = draw_screen

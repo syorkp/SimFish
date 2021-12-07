@@ -8,16 +8,16 @@ from Environment.Fish.continuous_fish import ContinuousFish
 
 class ContinuousNaturalisticEnvironment(NaturalisticEnvironment):
 
-    def __init__(self, env_variables, realistic_bouts, new_simulation, draw_screen=False, fish_mass=None, collisions=True):
+    def __init__(self, env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen=False, fish_mass=None, collisions=True):
 
-        super().__init__(env_variables, realistic_bouts, new_simulation, draw_screen, fish_mass, collisions)
+        super().__init__(env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen, fish_mass, collisions)
 
         # Create the fish class instance and add to the space.
         if fish_mass is None:
-            self.fish = ContinuousFish(self.board, env_variables, self.dark_col, realistic_bouts, new_simulation)
+            self.fish = ContinuousFish(self.board, env_variables, self.dark_col, realistic_bouts, new_simulation, using_gpu)
         else:
             # In the event that I am producing a calibration curve for distance moved.
-            self.fish = ContinuousFish(self.board, env_variables, self.dark_col, realistic_bouts, new_simulation, fish_mass=fish_mass)
+            self.fish = ContinuousFish(self.board, env_variables, self.dark_col, realistic_bouts, new_simulation, using_gpu, fish_mass=fish_mass)
 
         self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 

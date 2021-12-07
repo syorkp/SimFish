@@ -1,5 +1,6 @@
 import json
 import cProfile
+import os
 
 import tensorflow.compat.v1 as tf
 
@@ -59,6 +60,9 @@ class BaseService:
 
         # Switchover at start of phase 1
         self.new_simulation = new_simulation
+
+        if not self.using_gpu:
+            os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
     def create_session(self):
         print("Creating Session..")

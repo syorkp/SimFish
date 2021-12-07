@@ -15,7 +15,7 @@ class Fish:
     Created to simplify the SimState class, while making it easier to have environments with multiple agents in future.
     """
 
-    def __init__(self, board, env_variables, dark_col, realistic_bouts, new_simulation, fish_mass=None):
+    def __init__(self, board, env_variables, dark_col, realistic_bouts, new_simulation, using_gpu, fish_mass=None):
         self.new_simulation = new_simulation
 
         # For the purpose of producing a calibration curve.
@@ -76,13 +76,13 @@ class Fish:
                                 env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
                                 env_variables['max_vis_dist'], env_variables['dark_gain'],
                                 env_variables['light_gain'], env_variables['bkg_scatter'], dark_col,
-                                env_variables['photoreceptor_rf_size'])
+                                env_variables['photoreceptor_rf_size'], using_gpu)
 
             self.right_eye = Eye(board, self.verg_angle, self.retinal_field, False,
                                  env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
                                  env_variables['max_vis_dist'], env_variables['dark_gain'],
                                  env_variables['light_gain'], env_variables['bkg_scatter'], dark_col,
-                                 env_variables['photoreceptor_rf_size'])
+                                 env_variables['photoreceptor_rf_size'], using_gpu)
         else:
             self.left_eye = VisFan(board, self.verg_angle, self.retinal_field, True,
                                    env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
@@ -100,7 +100,12 @@ class Fish:
         self.touched_edge = False
         self.touched_predator = False
         self.making_capture = False
-        self.prev_action_impulse = 0
+        self.prev_action_impulse = 0  # TODO: Find out what this does
+
+        if using_gpu:
+            self.chosen_math_library = cp
+        else:
+            self.chosen_math_library = np
 
     def take_action(self, action):
         if self.realistic_bouts:
@@ -298,9 +303,9 @@ class Fish:
 
     def _readings_to_photons_new(self, readings):
         # Without CP
-        photons = cp.random.poisson(readings * self.env_variables['photon_ratio'])
+        photons = self.chosen_math_library.random.poisson(readings * self.env_variables['photon_ratio'])
         if self.env_variables['read_noise_sigma'] > 0:
-            noise = cp.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
+            noise = self.chosen_math_library.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
             photons += noise.astype(int)
             # photons = photons.clip(0, 255)
         return photons
@@ -333,3 +338,4 @@ class Fish:
         # left_sector_vertices = self.left_eye.get_all_sectors(fish_position_l, fish_orientation)
         # right_sector_vertices = self.right_eye.get_all_sectors(fish_position_r, fish_orientation)
         return left_sector_vertices, right_sector_vertices
+

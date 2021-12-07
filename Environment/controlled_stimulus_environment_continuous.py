@@ -16,9 +16,9 @@ class ControlledStimulusEnvironmentContinuous(BaseEnvironment):
     For this environment, the following stimuli are available: prey, predators.
     """
 
-    def __init__(self, env_variables, stimuli, realistic_bouts, new_simulation, tethered=True, set_positions=False, moving=False,
+    def __init__(self, env_variables, stimuli, realistic_bouts, new_simulation, using_gpu, tethered=True, set_positions=False, moving=False,
                  random=False, reset_each_step=False, reset_interval=1, background=None, draw_screen=False):
-        super().__init__(env_variables, draw_screen, new_simulation)
+        super().__init__(env_variables, draw_screen, new_simulation, using_gpu)
 
         if tethered:
             self.fish = ContinuousTetheredFish(self.board, env_variables, self.dark_col, realistic_bouts, new_simulation)
