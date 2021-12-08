@@ -162,8 +162,10 @@ class NaturalisticEnvironment(BaseEnvironment):
             -np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
 
         # self.show_new_channel_sectors(left_eye_pos, right_eye_pos)
-        # full_masked_image = self.board.get_masked_pixels(self.fish.body.position)
         full_masked_image = self.board.get_masked_pixels_cupy(self.fish.body.position, [i.position for i in self.prey_bodies])
+        full_masked_image = full_masked_image
+        # plt.imshow(full_masked_image * 100)
+        # plt.show()
 
         # self.fish.eyes.read(full_masked_image, self.fish.body.angle, left_eye_pos, right_eye_pos)
         self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
@@ -194,10 +196,11 @@ class NaturalisticEnvironment(BaseEnvironment):
         else:
             return observation
 
-
     def plot_observation(self, observation):
-        left_1 = observation[:, :, 0].get()
-        right_1 = observation[:, :, 1].get()
+        if self.using_gpu:
+            observation = observation.get()
+        left_1 = observation[:, :, 0]
+        right_1 = observation[:, :, 1]
 
         left_1 = np.expand_dims(left_1, 0)
         right_1 = np.expand_dims(right_1, 0)

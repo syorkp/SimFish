@@ -1,5 +1,6 @@
 import numpy as np
 import cupy as cp
+import math
 import matplotlib.pyplot as plt
 
 import skimage.draw as draw
@@ -18,6 +19,8 @@ class NewDrawingBoard:
         self.photoreceptor_rf_size = photoreceptor_rf_size
         self.db = None
         self.erase()
+
+        self.n = self.compute_n()
 
         # Set of coordinates
         # xp, yp = np.meshgrid(range(self.width), range(self.height))
@@ -336,9 +339,9 @@ class NewDrawingBoard:
         min_y = self.chosen_math_library.min(vertices_yvals, axis=1)
         max_y = self.chosen_math_library.max(vertices_yvals, axis=1)
 
-        # SEGMENT COMPUTATION  # TODO: Make sure this is enough to cover span.
-        x_lens = self.chosen_math_library.rint(max_x[0] - min_x[0])
-        y_lens = self.chosen_math_library.rint(max_y[0] - min_y[0])
+        # SEGMENT COMPUTATION  # TODO: Consider could faster just to set xlen to width...
+        x_lens = self.chosen_math_library.rint(max_x - min_x)
+        y_lens = self.chosen_math_library.rint(max_y - min_y)
 
         x_len = self.chosen_math_library.max(x_lens)
         y_len = self.chosen_math_library.max(y_lens)
@@ -357,7 +360,7 @@ class NewDrawingBoard:
         full_set = full_set.reshape(-1, 2)
         mask = self.chosen_math_library.ones((1500, 1500), dtype=int)
 
-        mask[full_set[:, 0], full_set[:, 1]] = 0
+        mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
         # plt.imshow(mask)
         # plt.show()
         return mask
@@ -491,9 +494,9 @@ class NewDrawingBoard:
         min_y = np.min(vertices_yvals, axis=1)
         max_y = np.max(vertices_yvals, axis=1)
 
-        # SEGMENT COMPUTATION  # TODO: Make sure this is enough to cover span.
-        x_lens = np.rint(max_x[0] - min_x[0])
-        y_lens = np.rint(max_y[0] - min_y[0])
+        # SEGMENT COMPUTATION  # TODO: Make sure this is enough to cover span.CHANGD HERE
+        x_lens = np.rint(max_x - min_x)
+        y_lens = np.rint(max_y - min_y)
 
         x_len = np.max(x_lens)
         y_len = np.max(y_lens)
@@ -512,9 +515,165 @@ class NewDrawingBoard:
         full_set = full_set.reshape(-1, 2)
         mask = np.ones((1500, 1500), dtype=int)
 
-        mask[full_set[:, 0], full_set[:, 1]] = 0
+        mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
         # plt.imshow(mask)
         # plt.show()
+        return mask
+
+    def create_obstruction_mask_lines_mixed(self, fish_position, prey_locations, predator_locations):
+        n = 20
+        # TODO: Compute n * prey num once.
+
+        n_objects_to_check = len(prey_locations)
+        prey_half_size = 2
+
+        fish_position = np.array(fish_position)
+        prey_locations = np.array(prey_locations)
+
+        relative_positions = prey_locations-fish_position
+
+        prey_distances = (relative_positions[:, 0] ** 2 + relative_positions[:, 1] ** 2) ** 0.5
+        prey_half_angular_size = np.arctan(prey_half_size/prey_distances)
+
+        object_angles = np.arctan(relative_positions[:, 1]/relative_positions[:, 0])
+        object_angles = np.expand_dims(object_angles, 1)
+        object_angles = np.repeat(object_angles, 2, 1)
+
+        rf_offsets = np.expand_dims(prey_half_angular_size, 1)
+        rf_offsets = np.repeat(rf_offsets, 2, 1)
+        rf_offsets = rf_offsets * np.array([-1, 1])
+        object_extremities = object_angles + rf_offsets
+
+        interpolated_line_angles = np.linspace(object_extremities[:, 0], object_extremities[:, 1], n).flatten()
+
+        below_range = (interpolated_line_angles < 0) * np.pi * 2
+        interpolated_line_angles = interpolated_line_angles + below_range
+        above_range = (interpolated_line_angles > np.pi * 2) * - np.pi*2
+        interpolated_line_angles = interpolated_line_angles + above_range
+
+        # Compute m using tan (N_obj x n)
+        m = np.tan(interpolated_line_angles)
+
+        # Compute c (N_obj*n)
+        c = -m * fish_position[0]
+        c = c + fish_position[1]
+
+        # Compute components of intersections (N_obj*n x 4)
+        c_exp = np.expand_dims(c, 1)
+        c_exp = np.repeat(c_exp, 4, 1)
+
+        multiplication_matrix_unit = np.array([-1, 1, -1, 1])
+        multiplication_matrix = np.tile(multiplication_matrix_unit, (n_objects_to_check*n, 1))
+
+        addition_matrix_unit = np.array([0, 0, self.height-1, self.width-1])
+        addition_matrix = np.tile(addition_matrix_unit, (n_objects_to_check*n, 1))
+
+        mul1 = np.array([0, 0, 0, 1])
+        mul1_full = np.tile(mul1, (n_objects_to_check*n, 1))
+        m_mul = np.expand_dims(m, 1)
+        full_m = np.repeat(m_mul, 4, 1)
+        m_mul = full_m * mul1_full
+        m_mul[:, :3] = 1
+        addition_matrix = addition_matrix * m_mul
+        division_matrix = full_m
+        division_matrix[:, 1] = 1
+        division_matrix[:, 3] = 1
+
+        intersection_components = ((c_exp * multiplication_matrix) + addition_matrix)/division_matrix
+
+        mul_for_hypothetical = np.array([[1, 0], [0, 1], [1, 0], [0, 1]])
+        mul_for_hypothetical = np.tile(mul_for_hypothetical, (n_objects_to_check*n, 1, 1))
+        add_for_hypothetical = np.array([[0, 0], [0, 0], [0, self.width-1], [self.height-1, 0]])
+        add_for_hypothetical = np.tile(add_for_hypothetical, (n_objects_to_check*n, 1, 1))
+
+        intersection_coordinates = np.expand_dims(intersection_components, 2)
+        intersection_coordinates = np.repeat(intersection_coordinates, 2, 2)
+        intersection_coordinates = (intersection_coordinates * mul_for_hypothetical) + add_for_hypothetical
+
+        # Compute possible intersections (N_obj n 2 x 2 x 2)
+        conditional_tiled = np.array([self.width-1, self.height-1, self.width-1, self.height-1])
+        conditional_tiled = np.tile(conditional_tiled, (n_objects_to_check*n, 1))
+        valid_points_ls = (intersection_components > 0) * 1
+        valid_points_more = (intersection_components < conditional_tiled) * 1
+        valid_points = valid_points_more * valid_points_ls
+        valid_intersection_coordinates = intersection_coordinates[valid_points == 1]
+
+        # Get intersections (N_obj x 2)
+        eye_position = np.array(fish_position)
+        possible_vectors = valid_intersection_coordinates - eye_position
+        angles = np.arctan2(possible_vectors[:, 1], possible_vectors[:, 0])
+
+        # Make sure angles are in correct range. TODO: be aware might need to repeat multiple times later
+        below_range = (angles < 0) * np.pi * 2
+        angles = angles + below_range
+        above_range = (angles > np.pi * 2) * - np.pi*2
+        angles = angles + above_range
+
+        angles = np.round(angles, 2)
+        channel_angles_surrounding = np.round(interpolated_line_angles, 2)
+        channel_angles_surrounding = np.expand_dims(channel_angles_surrounding, 1)
+        channel_angles_surrounding = np.repeat(channel_angles_surrounding, 2, 1).flatten()
+
+        same_values = (angles == channel_angles_surrounding) * 1
+        selected_intersections = valid_intersection_coordinates[same_values == 1]
+
+        # TODO: replace eye position with computation of vertices
+        # Finding coordinates of object extremities.
+        proj_vector = selected_intersections - fish_position
+        proj_distance = (proj_vector[:, 0] ** 2 + proj_vector[:, 1] ** 2) ** 0.5  # Only really need to do for one as is same distance along.
+        # norm_proj_vector = proj_vector/proj_distance
+        distance_along = (prey_distances ** 2 + prey_half_size ** 2) ** 0.5
+        distance_along = np.expand_dims(distance_along, 1)
+        distance_along = np.repeat(distance_along, n, 1)
+        distance_along = np.swapaxes(distance_along, 0, 1).flatten()
+        distance_along = distance_along + prey_half_size
+
+        fraction_along = distance_along/proj_distance
+        fraction_along = np.expand_dims(fraction_along, 1)
+        fraction_along = np.repeat(fraction_along, 2, 1)
+
+        points_on_prey = proj_vector * fraction_along
+        points_on_prey = fish_position + points_on_prey
+        points_on_prey = np.expand_dims(points_on_prey, 1)
+
+        selected_intersections = np.reshape(selected_intersections, (n_objects_to_check*n, 1, 2))
+
+        vertices = np.concatenate((selected_intersections, points_on_prey), 1)
+        vertices_xvals = vertices[:, :, 0]
+        vertices_yvals = vertices[:, :, 1]
+
+        # INTERPOLATION
+        # TODO: Probably faster way of doing below...
+        min_x = np.min(vertices_xvals, axis=1)
+        max_x = np.max(vertices_xvals, axis=1)
+        min_y = np.min(vertices_yvals, axis=1)
+        max_y = np.max(vertices_yvals, axis=1)
+
+        # SEGMENT COMPUTATION  # TODO: Make sure this is enough to cover span.CHANGD HERE
+        x_lens = np.rint(max_x - min_x)
+        y_lens = np.rint(max_y - min_y)
+
+        x_len = np.max(x_lens)
+        y_len = np.max(y_lens)
+
+        x_ranges = np.linspace(min_x, max_x, int(x_len))
+        y_ranges = np.linspace(min_y, max_y, int(y_len))
+
+        y_values = (m * x_ranges) + c
+        y_values = np.floor(y_values)
+        set_1 = np.stack((x_ranges, y_values), axis=-1)
+        x_values = (y_ranges - c) / m
+        x_values = np.floor(x_values)
+        set_2 = np.stack((x_values, y_ranges), axis=-1)
+        full_set = np.vstack((set_1, set_2)).astype(int)
+        full_set = self.chosen_math_library.array(full_set)
+
+        full_set = full_set.reshape(-1, 2)
+        mask = self.chosen_math_library.ones((1500, 1500), dtype=int)
+
+        mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
+        mask = self.chosen_math_library.expand_dims(mask, 2)
+
         return mask
 
     def create_luminance_mask(self):
@@ -525,10 +684,24 @@ class NewDrawingBoard:
         A = self.chosen_math_library.array(self.db)
         L = self.chosen_math_library.ones((self.width, self.height, 1))
         # O = self.create_obstruction_mask_lines(fish_position, prey_locations, predator_locations)
-        O = cp.array(self.create_obstruction_mask_lines_np(fish_position, prey_locations, predator_locations))
-        O = self.chosen_math_library.expand_dims(O, 2)
-        S = self.scatter(self.xp[:, None], self.yp[None, :], fish_position[0], fish_position[1])
+        # O = self.create_obstruction_mask_lines_np(fish_position, prey_locations, predator_locations)
+        # O = self.chosen_math_library.array(O)
+        O = self.create_obstruction_mask_lines_mixed(fish_position, prey_locations, predator_locations)
+        S = self.scatter(self.xp[:, None], self.yp[None, :], fish_position[1], fish_position[0])
+        # plt.imshow(A)
+        # plt.show()
+        # plt.imshow(O)
+        # plt.show()
+        # plt.imshow(S)
+        # plt.show()
         return A * L * O * S
+
+    def compute_n(self, max_separation=1):
+        max_dist = (self.width**2 + self.height**2)**0.5
+        theta_separation = math.asin(max_separation/max_dist)
+        n = self.photoreceptor_rf_size/theta_separation
+        return 20  # TODO: Change to appropriate value.
+
 
     def get_masked_pixels(self, fish_position):
         A = self.db
@@ -536,8 +709,6 @@ class NewDrawingBoard:
         O = self.create_obstruction_mask(fish_position)
         S = self.create_scatter_mask(fish_position)
         return A * L * O * S
-        # masked_arena = self.apply_mask(self.apply_mask(self.apply_mask(A, L), O), S)
-        # return masked_arena
 
     def erase(self, bkg=0):
         if bkg == 0:
@@ -648,7 +819,7 @@ class NewDrawingBoard:
 
 
 if __name__ == "__main__":
-    d = DrawingBoard(500, 500)
+    d = NewDrawingBoard(500, 500)
     d.circle((100, 200), 100, (1, 0, 0))
     d.line((50, 50), (100, 200), (0, 1, 0))
     d.show()

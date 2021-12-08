@@ -214,7 +214,7 @@ class Eye:
         #     # grid[indexes[:, 0], indexes[:, 1]] = 1
         #     indexes[:, :, :] = 0
             # self.readings[i] = masked_arena_pixels[indexes[:, 0], indexes[:, 1]].sum(axis=0)
-        masked_arena_pixels = masked_arena_pixels[full_set[:, :, 0], full_set[:, :, 1]]
+        masked_arena_pixels = masked_arena_pixels[full_set[:, :, 1], full_set[:, :, 0]]  # NOTE: Inverting x and y to match standard in program.
         total_sum = masked_arena_pixels.sum(axis=1)
         oversampling_ratio = self.chosen_math_library.expand_dims(oversampling_ratio, 1)
         oversampling_ratio = self.chosen_math_library.repeat(oversampling_ratio, 3, 1)
@@ -303,4 +303,4 @@ class Eye:
         max_dist = (self.width**2 + self.height**2)**0.5
         theta_separation = math.asin(max_separation/max_dist)
         n = self.photoreceptor_rf_size/theta_separation
-        return 20  # TODO: Chagne to appropriate value.
+        return 20  # TODO: Change to appropriate value.
