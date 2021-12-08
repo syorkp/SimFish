@@ -5,7 +5,6 @@ import cupy as cp
 from matplotlib import path
 
 from Tools.Sectors.sector_sum import sector_sum
-from Tools.Lines.lines import lines
 
 
 class NewVisFan:
