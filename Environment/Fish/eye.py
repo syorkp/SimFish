@@ -304,5 +304,5 @@ class Eye:
     def compute_n(self, max_separation=1):
         max_dist = (self.width**2 + self.height**2)**0.5
         theta_separation = math.asin(max_separation/max_dist)
-        n = self.photoreceptor_rf_size/theta_separation
-        return int(n)  # TODO: Change to appropriate value.
+        n = (self.photoreceptor_rf_size/theta_separation)/2
+        return int(n)

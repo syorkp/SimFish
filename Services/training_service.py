@@ -1,5 +1,6 @@
 import json
 import os
+import time
 import numpy as np
 import pstats
 
@@ -93,6 +94,7 @@ class TrainingService(BaseService):
                 ps = pstats.Stats(self.profile)
                 ps.sort_stats("tottime")
                 ps.print_stats(20)
+                print(time.time())
 
     def create_environment(self):
         if self.continuous_actions:
