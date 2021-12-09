@@ -20,7 +20,8 @@ class BaseEnvironment:
             self.board = NewDrawingBoard(self.env_variables['width'], self.env_variables['height'],
                                          decay_rate=self.env_variables['decay_rate'],
                                          photoreceptor_rf_size=self.env_variables['photoreceptor_rf_size'],
-                                         using_gpu=using_gpu)
+                                         using_gpu=using_gpu, prey_size=self.env_variables['prey_size'],
+                                         predator_size=self.env_variables['predator_size'])
         else:
             self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])
         self.draw_screen = draw_screen
@@ -250,20 +251,22 @@ class BaseEnvironment:
                 self.prey_cloud_wall_shapes.append(s)
 
     def create_walls(self):
+        # wall_width = 1
+        wall_width = self.env_variables['eyes_biasx']
         static = [
             pymunk.Segment(
                 self.space.static_body,
-                (0, 1), (0, self.env_variables['height']), 1),
+                (0, wall_width), (0, self.env_variables['height']), wall_width),
             pymunk.Segment(
                 self.space.static_body,
-                (1, self.env_variables['height']), (self.env_variables['width'], self.env_variables['height']), 1),
+                (wall_width, self.env_variables['height']), (self.env_variables['width'], self.env_variables['height']), wall_width),
             pymunk.Segment(
                 self.space.static_body,
-                (self.env_variables['width'] - 1, self.env_variables['height']), (self.env_variables['width'] - 1, 1),
-                1),
+                (self.env_variables['width'] - wall_width, self.env_variables['height']), (self.env_variables['width'] - wall_width, wall_width),
+                wall_width),
             pymunk.Segment(
                 self.space.static_body,
-                (1, 1), (self.env_variables['width'], 1), 1)
+                (wall_width, wall_width), (self.env_variables['width'], wall_width), wall_width)
         ]
         for s in static:
             s.friction = 1.
@@ -484,7 +487,7 @@ class BaseEnvironment:
         self.predator_target = fish_position  # Update so appears where fish will be in a few steps.
 
         if self.new_simulation: # TODO: ENV CHANGE
-            self.predator_shape.color = (0, 0, 0)
+            self.predator_shape.color = (0, 0, 1)
         else:
             self.predator_shape.color = (0, 0, 1)
 

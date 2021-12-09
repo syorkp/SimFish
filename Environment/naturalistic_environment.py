@@ -162,12 +162,18 @@ class NaturalisticEnvironment(BaseEnvironment):
             -np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
 
         # self.show_new_channel_sectors(left_eye_pos, right_eye_pos)
-        full_masked_image = self.board.get_masked_pixels_cupy(self.fish.body.position, [i.position for i in self.prey_bodies])
+        if self.predator_body is not None:
+            predator_bodies = [self.predator_body.position]
+        else:
+            predator_bodies = []
+        full_masked_image = self.board.get_masked_pixels_cupy(self.fish.body.position,
+                                                              [i.position for i in self.prey_bodies],
+                                                              predator_bodies
+                                                              )
         full_masked_image = full_masked_image
         # plt.imshow(full_masked_image * 100)
         # plt.show()
 
-        # self.fish.eyes.read(full_masked_image, self.fish.body.angle, left_eye_pos, right_eye_pos)
         self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
         self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 
@@ -184,10 +190,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.board_image.set_data(self.output_frame(activations, internal_state, scale=0.5) / 255.)
                 plt.pause(0.000001)
 
-        # TODO: ENV CHANGE
         observation = self.chosen_math_library.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
                                  self.fish.readings_to_photons(self.fish.right_eye.readings)))
-        # observation = np.dstack((self.fish.readings_to_photons(self.fish.eyes.readings)))
         # self.plot_observation(observation)
 
         if self.using_gpu:

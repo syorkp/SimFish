@@ -127,7 +127,6 @@ class Eye:
         valid_points = valid_points_more * valid_points_ls
         valid_intersection_coordinates = intersection_coordinates[valid_points == 1]
         valid_intersection_coordinates = self.chosen_math_library.reshape(valid_intersection_coordinates, (self.photoreceptor_num, self.n, 2, 2))
-
         # Get intersections (PR_N x 2)
         eye_position = self.chosen_math_library.array([eye_x, eye_y])
         possible_vectors = valid_intersection_coordinates - eye_position
@@ -149,7 +148,6 @@ class Eye:
         same_values = (angles == channel_angles_surrounding) * 1
         selected_intersections = valid_intersection_coordinates[same_values == 1]
         selected_intersections = self.chosen_math_library.reshape(selected_intersections, (self.photoreceptor_num, self.n, 1, 2))
-
         eye_position_full = self.chosen_math_library.tile(eye_position, (self.photoreceptor_num, self.n, 1, 1))
         vertices = self.chosen_math_library.concatenate((eye_position_full, selected_intersections), axis=2)
         vertices_xvals = vertices[:, :, :, 0]
@@ -167,8 +165,6 @@ class Eye:
 
         x_len = self.chosen_math_library.max(x_lens)
         y_len = self.chosen_math_library.max(y_lens)
-
-        oversampling_ratio = (x_lens + y_lens)/(x_len + y_len)
 
         x_ranges = self.chosen_math_library.linspace(min_x, max_x, int(x_len))
         y_ranges = self.chosen_math_library.linspace(min_y, max_y, int(y_len))
@@ -216,9 +212,15 @@ class Eye:
             # self.readings[i] = masked_arena_pixels[indexes[:, 0], indexes[:, 1]].sum(axis=0)
         masked_arena_pixels = masked_arena_pixels[full_set[:, :, 1], full_set[:, :, 0]]  # NOTE: Inverting x and y to match standard in program.
         total_sum = masked_arena_pixels.sum(axis=1)
+
+        # Compute oversampling ratio. This takes account of how many indexes have been computed for each sector, and
+        # scales all by this so there is an even density of pixel counts (otherwise small rays would be counted more).
+        # (PR_N)
+        oversampling_ratio = (x_lens + y_lens)/(x_len + y_len)
         oversampling_ratio = self.chosen_math_library.expand_dims(oversampling_ratio, 1)
         oversampling_ratio = self.chosen_math_library.repeat(oversampling_ratio, 3, 1)
         total_sum = total_sum * (oversampling_ratio/self.n)
+
         total_sum = total_sum / 3
 
         self.readings = total_sum
@@ -303,4 +305,4 @@ class Eye:
         max_dist = (self.width**2 + self.height**2)**0.5
         theta_separation = math.asin(max_separation/max_dist)
         n = self.photoreceptor_rf_size/theta_separation
-        return 20  # TODO: Change to appropriate value.
+        return int(n)  # TODO: Change to appropriate value.

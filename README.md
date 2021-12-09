@@ -28,6 +28,10 @@ Changes for local gpu compatability:
 * tensorflow-probability==0.10.1 (not 0.10.0 due to cloudpickle importerror)
 * tensorflow==2.2.0
 
+Requirements to run in GPU mode:
+* cupy (version respective to installed version of cuda).
+* cuda - On jade computing, must be 9.2 due to incompatibility of their update version of cuda with cupy.
+
 ## Run Configurations
 
 The run.py file contains example configurations which specify parameters for either mode: training, or experimental.
