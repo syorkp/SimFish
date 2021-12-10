@@ -22,6 +22,7 @@ class Eye:
             self.chosen_math_library = np
 
         self.update_angles(verg_angle, retinal_field, is_left)
+        # self.update_angles_strike_zone(verg_angle, retinal_field, is_left)
         self.readings = self.chosen_math_library.zeros((num_arms, 3), 'int')
         self.board = board
         self.dark_gain = dark_gain
@@ -76,6 +77,7 @@ class Eye:
         self.multiplication_matrix = self.chosen_math_library.tile(multiplication_matrix_unit, (self.photoreceptor_num, self.n, 1))
 
     def update_angles(self, verg_angle, retinal_field, is_left):
+        """Set the eyes visual angles."""
         if is_left:
             min_angle = -np.pi / 2 - retinal_field / 2 + verg_angle / 2
             max_angle = -np.pi / 2 + retinal_field / 2 + verg_angle / 2
@@ -84,7 +86,21 @@ class Eye:
             max_angle = np.pi / 2 + retinal_field / 2 - verg_angle / 2
         self.vis_angles = self.chosen_math_library.linspace(min_angle, max_angle, self.num_arms)
 
+    def update_angles_strike_zone(self, verg_angle, retinal_field, is_left):
+        """Set the eyes visual angles, with the option of particular distributions."""
+        if is_left:
+            min_angle = -np.pi / 2 - retinal_field / 2 + verg_angle / 2
+            max_angle = -np.pi / 2 + retinal_field / 2 + verg_angle / 2
+        else:
+            min_angle = np.pi / 2 - retinal_field / 2 - verg_angle / 2
+            max_angle = np.pi / 2 + retinal_field / 2 - verg_angle / 2
+
+        angles = self.chosen_math_library.random.randn(self.num_arms)
+        x = True
+
+
     def read(self, masked_arena_pixels, eye_x, eye_y, fish_angle):
+        """Lines method to return pixel sum for all points for each photoreceptor, over its segment."""
         # Angles with respect to fish (doubled) (PR_N x n)
         channel_angles_surrounding = self.channel_angles_surrounding + fish_angle
 
@@ -152,7 +168,6 @@ class Eye:
         vertices_xvals = vertices[:, :, :, 0]
         vertices_yvals = vertices[:, :, :, 1]
 
-        # TODO: Probably faster way of doing below...
         min_x = self.chosen_math_library.min(vertices_xvals, axis=2)
         max_x = self.chosen_math_library.max(vertices_xvals, axis=2)
         min_y = self.chosen_math_library.min(vertices_yvals, axis=2)
@@ -179,7 +194,6 @@ class Eye:
         full_set = full_set.swapaxes(0, 1)
         full_set = full_set.reshape(self.photoreceptor_num, -1, 2)
 
-
         masked_arena_pixels = masked_arena_pixels[full_set[:, :, 1], full_set[:, :, 0]]  # NOTE: Inverting x and y to match standard in program.
         total_sum = masked_arena_pixels.sum(axis=1)
 
@@ -196,6 +210,7 @@ class Eye:
         self.readings = total_sum
 
     def get_sector_vertices(self, eye_x, eye_y, fish_angle):
+        """Uses lines method to return the vertices of all photoreceptor segments."""
         # Angles with respect to fish (doubled) (PR_N x n)
         channel_angles_surrounding = self.channel_angles_surrounding + fish_angle
 
@@ -276,4 +291,3 @@ class Eye:
         theta_separation = math.asin(max_separation/max_dist)
         n = (self.photoreceptor_rf_size/theta_separation)/2
         return int(n)
- 

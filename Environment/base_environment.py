@@ -16,7 +16,7 @@ class BaseEnvironment:
         self.new_simulation = new_simulation
 
         self.env_variables = env_variables
-        if self.new_simulation: # TODO: ENV CHANGE
+        if self.new_simulation:
             self.board = NewDrawingBoard(self.env_variables['width'], self.env_variables['height'],
                                          decay_rate=self.env_variables['decay_rate'],
                                          photoreceptor_rf_size=self.env_variables['photoreceptor_rf_size'],
@@ -123,8 +123,6 @@ class BaseEnvironment:
         self.vegetation_shapes = []
 
     def output_frame(self, activations, internal_state, scale=0.25):
-        # TODO: ENV CHANGE or not?
-
         arena = self.board.db * 255.0
         arena[0, :, 0] = np.ones(self.env_variables['width']) * 255
         arena[self.env_variables['height'] - 1, :, 0] = np.ones(self.env_variables['width']) * 255
@@ -384,8 +382,9 @@ class BaseEnvironment:
             np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'],
                               self.env_variables['height'] - (
                                       self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'])))
-        if self.new_simulation: # TODO: ENV CHANGE
-            self.predator_shapes[-1].color = (0, 0, 0)
+        if self.new_simulation:  # TODO: ENV CHANGE
+            self.predator_shapes[-1].color = (0, 1, 0)
+            # Made green so still visible to us but not to fish.
         else:
             self.predator_shapes[-1].color = (0, 0, 1)
         self.predator_shapes[-1].collision_type = 5
@@ -486,8 +485,8 @@ class BaseEnvironment:
         self.predator_body.position = (x_position, y_position)
         self.predator_target = fish_position  # Update so appears where fish will be in a few steps.
 
-        if self.new_simulation: # TODO: ENV CHANGE
-            self.predator_shape.color = (0, 0, 1)
+        if self.new_simulation:
+            self.predator_shape.color = (0, 1, 0)
         else:
             self.predator_shape.color = (0, 0, 1)
 

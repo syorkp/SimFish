@@ -81,9 +81,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             # To calculate calibration curve.
             reward = self.fish.try_impulse(impulse)
         else:
-            # TODO: removed, for debugging.
-            #reward = self.fish.take_action(action)
-            reward = 2.0
+            reward = self.fish.take_action(action)
 
         # Add policy helper reward to encourage proximity to prey.
         for ii in range(len(self.prey_bodies)):
@@ -131,8 +129,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                     plt.pause(0.0001)
 
         self.num_steps += 1
-        self.board.erase()  # TODO: ENV CHANGE
-        self.draw_shapes()  # TODO: ENV CHANGE
+        self.board.erase()
+        self.draw_shapes()
 
         # Calculate internal state TODO: Moved this above first of visual input function
         in_light = self.fish.body.position[0] > self.dark_col
@@ -153,7 +151,6 @@ class NaturalisticEnvironment(BaseEnvironment):
         return observation, reward, internal_state, done, frame_buffer
 
     def resolve_visual_input_new(self, save_frames, activations, internal_state, frame_buffer):
-        # TODO: ENV CHANGE Maybe have additional visual input function?
         right_eye_pos = (
             -np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
             +np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
@@ -178,7 +175,6 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 
         if save_frames or self.draw_screen:
-            # TODO: ENV CHANGE
             self.board.erase(bkg=self.env_variables['bkg_scatter'])
             self.draw_shapes()
             self.board.apply_light(self.dark_col, 0.7, 1)
@@ -195,7 +191,6 @@ class NaturalisticEnvironment(BaseEnvironment):
         # self.plot_observation(observation)
 
         if self.using_gpu:
-            # cp._default_memory_pool.free_all_blocks()
             return observation.get()
         else:
             return observation
@@ -230,7 +225,6 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.fish.right_eye.read(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 
         if save_frames or self.draw_screen:
-            # TODO: ENV CHANGE
             self.board.erase(bkg=self.env_variables['bkg_scatter'])
             self.draw_shapes()
             self.board.apply_light(self.dark_col, 0.7, 1)
