@@ -21,8 +21,8 @@ class Eye:
         else:
             self.chosen_math_library = np
 
-        self.update_angles(verg_angle, retinal_field, is_left)
-        # self.update_angles_strike_zone(verg_angle, retinal_field, is_left)
+        # self.update_angles(verg_angle, retinal_field, is_left)
+        self.update_angles_strike_zone(verg_angle, retinal_field, is_left)
         self.readings = self.chosen_math_library.zeros((num_arms, 3), 'int')
         self.board = board
         self.dark_gain = dark_gain
