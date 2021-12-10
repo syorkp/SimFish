@@ -85,7 +85,6 @@ class Eye:
         self.vis_angles = self.chosen_math_library.linspace(min_angle, max_angle, self.num_arms)
 
     def read(self, masked_arena_pixels, eye_x, eye_y, fish_angle):
-        # masked_arena_pixels = cp.array(masked_arena_pixels)  # TODO: Make cp to begin with.
         # Angles with respect to fish (doubled) (PR_N x n)
         channel_angles_surrounding = self.channel_angles_surrounding + fish_angle
 
@@ -133,7 +132,7 @@ class Eye:
 
         angles = self.chosen_math_library.arctan2(possible_vectors[:, :, :, 1], possible_vectors[:, :, :, 0])
 
-        # Make sure angles are in correct range. TODO: be aware might need to repeat multiple times later
+        # Make sure angles are in correct range. TODO: Again, may need multiple times.
         below_range = (angles < 0) * self.chosen_math_library.pi * 2
         angles = angles + below_range
         above_range = (angles > self.chosen_math_library.pi * 2) * -self.chosen_math_library.pi * 2
@@ -180,36 +179,7 @@ class Eye:
         full_set = full_set.swapaxes(0, 1)
         full_set = full_set.reshape(self.photoreceptor_num, -1, 2)
 
-        # grid = np.zeros((self.width, self.height))
-        #
-        # # For investigative purposes
-        # for i in range(self.photoreceptor_num):
-        #     unique, counts = np.unique(full_set[i, :, :].get(), axis=0, return_counts=True)
-        #     # counts = np.expand_dims(counts, 1)
-        #     # frequencies = np.concatenate((unique, counts), axis=1)
-        #     grid[unique[:, 0], unique[:, 1]] = counts*oversampling_ratio[i].get()
-        #     grid = grid/self.n
 
-        # full_set = full_set.reshape(self.photoreceptor_num, -1, 2).astype(int)
-        # grid = np.zeros((self.width, self.height))
-        # grid[full_set[0, :, 0], full_set[0, :, 1]] = 1
-
-        # indexes = cp.zeros((self.width, self.height, 3), dtype=int)
-
-        # self.readings[:, 0] = (masked_arena_pixels[:, :, 0] * selected_points).sum(axis=1)
-        # self.readings[:, 1] = (masked_arena_pixels[:, :, 1] * selected_points).sum(axis=1)
-        # self.readings[:, 2] = (masked_arena_pixels[:, :, 2] * selected_points).sum(axis=1)
-
-        # total_sum = cp.zeros((self.photoreceptor_num, 3))
-
-        # # full_set = full_set.get()
-        # for i in range(self.photoreceptor_num):
-        #     indexes[full_set[i, :, 0], full_set[i, :, 1], :] = 1
-        #     total_sum[i] = (masked_arena_pixels * indexes).sum(axis=(0, 1))
-        #     # indexes = np.unique(full_set[i, :, :], axis=0)
-        #     # grid[indexes[:, 0], indexes[:, 1]] = 1
-        #     indexes[:, :, :] = 0
-            # self.readings[i] = masked_arena_pixels[indexes[:, 0], indexes[:, 1]].sum(axis=0)
         masked_arena_pixels = masked_arena_pixels[full_set[:, :, 1], full_set[:, :, 0]]  # NOTE: Inverting x and y to match standard in program.
         total_sum = masked_arena_pixels.sum(axis=1)
 
@@ -306,3 +276,4 @@ class Eye:
         theta_separation = math.asin(max_separation/max_dist)
         n = (self.photoreceptor_rf_size/theta_separation)/2
         return int(n)
+ 

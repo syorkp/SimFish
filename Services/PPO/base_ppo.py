@@ -114,7 +114,6 @@ class BasePPO:
                     rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
 
             self.step_number += 1
-            print(self.step_number)
             # if self.monitor_performance:
             #     ps = pstats.Stats(self.profile)
             #     ps.sort_stats("tottime")

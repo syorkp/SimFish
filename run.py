@@ -1316,7 +1316,7 @@ phase_1_test_config = [
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
-        "New Simulation": True
+        "New Simulation": False
     },
 ]
 
