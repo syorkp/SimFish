@@ -7,8 +7,8 @@ tf.disable_v2_behavior()
 
 class PPONetworkCritic(BaseNetwork):
 
-    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, outputs_per_step):
-        super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, outputs_per_step)
+    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, outputs_per_step, new_simulation=True):
+        super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, outputs_per_step, new_simulation=new_simulation)
 
         #            ----------        Non-Reflected       ---------            #
 

@@ -7,7 +7,7 @@ class BaseNetwork:
 
     """A base network containing all components used in child networks."""
 
-    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim):
+    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim, new_simulation):
 
         self.num_arms = len(simulation.fish.left_eye.vis_angles)  # Rays for each eye
         self.rnn_dim = rnn_dim
@@ -22,8 +22,12 @@ class BaseNetwork:
         self.prev_actions = tf.placeholder(shape=[None, action_dim], dtype=tf.float32, name='prev_actions')
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
 
-        self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
-        self.reshaped_observation = tf.reshape(self.observation, shape=[-1, self.num_arms, 3, 2],
+        if new_simulation:
+            n_channel_dims = 2
+        else:
+            n_channel_dims = 3
+        self.observation = tf.placeholder(shape=[None, n_channel_dims, 2], dtype=tf.float32, name='obs')
+        self.reshaped_observation = tf.reshape(self.observation, shape=[-1, self.num_arms, n_channel_dims, 2],
                                                name="reshaped_observation")
 
         #            ----------        Non-Reflected       ---------            #

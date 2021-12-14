@@ -34,24 +34,27 @@ class DiscretePPO(BasePPO):
 
         if self.sb_emulator:
             self.actor_network = PPONetworkActorDiscreteEmulator(simulation=self.simulation,
-                                             rnn_dim=self.learning_params['rnn_dim_shared'],
-                                             rnn_cell=actor_cell,
-                                             my_scope='actor',
-                                             internal_states=internal_states,
-                                             clip_param=self.environment_params['clip_param'],
-                                             num_actions=self.learning_params['num_actions'],
-                                             epsilon_greedy=self.epsilon_greedy
-                                             )
+                                                                 rnn_dim=self.learning_params['rnn_dim_shared'],
+                                                                 rnn_cell=actor_cell,
+                                                                 my_scope='actor',
+                                                                 internal_states=internal_states,
+                                                                 clip_param=self.environment_params['clip_param'],
+                                                                 num_actions=self.learning_params['num_actions'],
+                                                                 epsilon_greedy=self.epsilon_greedy,
+                                                                 new_simulation=self.new_simulation,
+
+                                                                 )
         else:
             self.actor_network = PPONetworkActor(simulation=self.simulation,
-                                             rnn_dim=self.learning_params['rnn_dim_shared'],
-                                             rnn_cell=actor_cell,
-                                             my_scope='actor',
-                                             internal_states=internal_states,
-                                             clip_param=self.environment_params['clip_param'],
-                                             num_actions=self.learning_params['num_actions'],
-                                             epsilon_greedy=self.epsilon_greedy
-                                             )
+                                                 rnn_dim=self.learning_params['rnn_dim_shared'],
+                                                 rnn_cell=actor_cell,
+                                                 my_scope='actor',
+                                                 internal_states=internal_states,
+                                                 clip_param=self.environment_params['clip_param'],
+                                                 num_actions=self.learning_params['num_actions'],
+                                                 epsilon_greedy=self.epsilon_greedy,
+                                                 new_simulation=self.new_simulation,
+                                                 )
 
     def _episode_loop(self, a=None):
         a = 0
@@ -141,28 +144,28 @@ class DiscretePPO(BasePPO):
                                          rnn_state_critic,
                                          rnn_state_critic_ref):
         return self._training_step_loop(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
-                                 rnn_state_critic_ref)
+                                        rnn_state_critic_ref)
 
     def _training_step_loop_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                       rnn_state_critic,
                                       rnn_state_critic_ref):
         return self._training_step_loop(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
-                                 rnn_state_critic_ref)
+                                        rnn_state_critic_ref)
 
     def _training_step_loop_reduced_logs2(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                         rnn_state_critic,
-                                         rnn_state_critic_ref):
+                                          rnn_state_critic,
+                                          rnn_state_critic_ref):
         return self._training_step_loop2(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
-                                 rnn_state_critic_ref)
+                                         rnn_state_critic_ref)
 
     def _training_step_loop_full_logs2(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                      rnn_state_critic,
-                                      rnn_state_critic_ref):
+                                       rnn_state_critic,
+                                       rnn_state_critic_ref):
         return self._training_step_loop2(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
-                                 rnn_state_critic_ref)
+                                         rnn_state_critic_ref)
 
     def _training_step_loop2(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
-                            rnn_state_critic_ref):
+                             rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
 
         if self.epsilon_greedy:
@@ -253,7 +256,8 @@ class DiscretePPO(BasePPO):
         else:
             action, updated_rnn_state_actor, updated_rnn_state_actor_ref, probability, V = self.sess.run(
                 [self.actor_network.action_output, self.actor_network.rnn_state_shared,
-                 self.actor_network.rnn_state_ref, self.actor_network.chosen_action_probability, self.actor_network.value_output
+                 self.actor_network.rnn_state_ref, self.actor_network.chosen_action_probability,
+                 self.actor_network.value_output
                  ],
                 feed_dict={self.actor_network.observation: o,
                            self.actor_network.internal_state: internal_state,
@@ -399,7 +403,7 @@ class DiscretePPO(BasePPO):
                current_batch_size
 
     def get_batch2(self, batch, observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer,
-                  log_action_probability_buffer, advantage_buffer, value_buffer, return_buffer):
+                   log_action_probability_buffer, advantage_buffer, value_buffer, return_buffer):
         observation_batch = observation_buffer[
                             batch * self.batch_size: (batch + 1) * self.batch_size]
         internal_state_batch = internal_state_buffer[
@@ -416,7 +420,7 @@ class DiscretePPO(BasePPO):
         return_batch = return_buffer[
                        batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
         value_batch = value_buffer[
-                       batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
+                      batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
         current_batch_size = observation_batch.shape[0]
 
         # Stacking for correct network dimensions
@@ -431,9 +435,8 @@ class DiscretePPO(BasePPO):
         value_batch = value_batch.flatten()
 
         return observation_batch, internal_state_batch, action_batch, previous_action_batch, \
-               log_action_probability_batch, advantage_batch, return_batch, value_batch,\
+               log_action_probability_batch, advantage_batch, return_batch, value_batch, \
                current_batch_size
-
 
     def train_network(self):
         observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
@@ -534,11 +537,13 @@ class DiscretePPO(BasePPO):
             # Get the current batch
             observation_batch, internal_state_batch, action_batch, previous_action_batch, \
             log_action_probability_batch, advantage_batch, \
-            return_batch, previous_value_batch, current_batch_size = self.get_batch2(batch, observation_buffer, internal_state_buffer,
-                                                              action_buffer, previous_action_buffer,
-                                                              log_action_probability_buffer,
-                                                              advantage_buffer, value_buffer,
-                                                              return_buffer)
+            return_batch, previous_value_batch, current_batch_size = self.get_batch2(batch, observation_buffer,
+                                                                                     internal_state_buffer,
+                                                                                     action_buffer,
+                                                                                     previous_action_buffer,
+                                                                                     log_action_probability_buffer,
+                                                                                     advantage_buffer, value_buffer,
+                                                                                     return_buffer)
 
             # Loss value logging
             average_loss_value = 0
@@ -547,15 +552,18 @@ class DiscretePPO(BasePPO):
             for i in range(self.learning_params["n_updates_per_iteration"]):
                 # Compute RNN states for start of each trace.
                 actor_rnn_state_slice, actor_rnn_state_ref_slice = self.compute_rnn_states2(batch_key_points,
-                                                                     observation_buffer[
-                                                                     :(batch + 1) * self.learning_params["batch_size"]],
-                                                                     internal_state_buffer[
-                                                                     :(batch + 1) * self.learning_params["batch_size"]],
-                                                                     previous_action_buffer[
-                                                                     :(batch + 1) * self.learning_params[
-                                                                         "batch_size"]])
-
-
+                                                                                            observation_buffer[
+                                                                                            :(batch + 1) *
+                                                                                             self.learning_params[
+                                                                                                 "batch_size"]],
+                                                                                            internal_state_buffer[
+                                                                                            :(batch + 1) *
+                                                                                             self.learning_params[
+                                                                                                 "batch_size"]],
+                                                                                            previous_action_buffer[
+                                                                                            :(batch + 1) *
+                                                                                             self.learning_params[
+                                                                                                 "batch_size"]])
 
                 # Optimise actor
                 actor_loss, critic_loss, _ = self.sess.run(
@@ -584,4 +592,3 @@ class DiscretePPO(BasePPO):
 
             self.buffer.add_loss(average_loss_actor / self.learning_params["n_updates_per_iteration"],
                                  average_loss_value / self.learning_params["n_updates_per_iteration"])
-

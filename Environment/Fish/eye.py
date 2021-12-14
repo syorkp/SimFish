@@ -2,6 +2,8 @@ import numpy as np
 import cupy as cp
 import math
 
+import matplotlib.pyplot as plt
+
 
 class Eye:
 
@@ -22,8 +24,9 @@ class Eye:
             self.chosen_math_library = np
 
         self.update_angles(verg_angle, retinal_field, is_left)
+        # TODO: Add config handling for strike zone use
         # self.update_angles_strike_zone(verg_angle, retinal_field, is_left)
-        self.readings = self.chosen_math_library.zeros((num_arms, 3), 'int')
+        self.readings = self.chosen_math_library.zeros((num_arms, 2), 'int')
         self.board = board
         self.dark_gain = dark_gain
         self.light_gain = light_gain
@@ -86,18 +89,60 @@ class Eye:
             max_angle = np.pi / 2 + retinal_field / 2 - verg_angle / 2
         self.vis_angles = self.chosen_math_library.linspace(min_angle, max_angle, self.num_arms)
 
+    def sample_half_normal_distribution(self, min_angle, max_angle):
+        # Problem is that fish will find it difficult to learn with such large trial-to-trial variablility in input
+        # distribution, though maybe is realistic. Alternatively, can set random seed for this part?
+        sampled_values = np.random.randn(self.num_arms)
+        sampled_values = [abs(i) for i in sampled_values]
+        scaling_factor = max(sampled_values)
+        sampled_values = sampled_values / scaling_factor
+
+        difference = abs(max_angle - min_angle)
+        sampled_values = sampled_values * difference
+        sampled_values = sampled_values - max_angle
+
+        sampled_values = sampled_values * -1
+
+        return np.array(sorted(sampled_values))
+
+    def create_half_normal_distribution(self, min_angle, max_angle):
+        # IDEA: Could use normal distribution equation to produce a set of differences between values (by dividing array
+        # of 1s by density), then generating difference.
+        # TODO: Handling of mu and sigma
+        # TODO: selection of range based on which parts of normal distribtuion to approximate.
+        mu = 0
+        sigma = 1
+        angle_difference = abs(max_angle - min_angle)
+
+        angle_range = np.linspace(min_angle, max_angle, self.num_arms)
+        frequencies = 1/(sigma * np.sqrt(2 * np.pi)) * np.exp(-(angle_range-mu)**2/(2*sigma**2))
+        differences = 1/frequencies
+        differences[0] = 0
+        total_difference = np.sum(differences)
+        differences = (differences*angle_difference)/total_difference
+        cumulative_differences = np.cumsum(differences)
+        photoreceptor_angles = min_angle + cumulative_differences
+        return photoreceptor_angles
+
     def update_angles_strike_zone(self, verg_angle, retinal_field, is_left):
         """Set the eyes visual angles, with the option of particular distributions."""
+
+        # Half normal distribution
         if is_left:
             min_angle = -np.pi / 2 - retinal_field / 2 + verg_angle / 2
             max_angle = -np.pi / 2 + retinal_field / 2 + verg_angle / 2
+
         else:
             min_angle = np.pi / 2 - retinal_field / 2 - verg_angle / 2
             max_angle = np.pi / 2 + retinal_field / 2 - verg_angle / 2
 
-        angles = self.chosen_math_library.random.randn(self.num_arms)
-        x = True
+        sampled_values = self.sample_half_normal_distribution(min_angle, max_angle)
+        computed_values = self.create_half_normal_distribution(min_angle, max_angle)
 
+        plt.scatter(computed_values, computed_values)
+        plt.show()
+
+        self.vis_angles = self.chosen_math_library.array(computed_values)
 
     def read(self, masked_arena_pixels, eye_x, eye_y, fish_angle):
         """Lines method to return pixel sum for all points for each photoreceptor, over its segment."""
@@ -202,7 +247,7 @@ class Eye:
         # (PR_N)
         oversampling_ratio = (x_lens + y_lens)/(x_len + y_len)
         oversampling_ratio = self.chosen_math_library.expand_dims(oversampling_ratio, 1)
-        oversampling_ratio = self.chosen_math_library.repeat(oversampling_ratio, 3, 1)
+        oversampling_ratio = self.chosen_math_library.repeat(oversampling_ratio, 2, 1)
         total_sum = total_sum * (oversampling_ratio/self.n)
 
         total_sum = total_sum / 3

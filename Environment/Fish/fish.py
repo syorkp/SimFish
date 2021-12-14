@@ -308,15 +308,6 @@ class Fish:
             # photons = photons.clip(0, 255)
         return photons
 
-        # With CP
-        # photons = cp.random.poisson(readings * self.env_variables['photon_ratio'])
-        # if self.env_variables['read_noise_sigma'] > 0:
-        #     noise = cp.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
-        #     photons += noise.astype(int)
-        #     # photons = photons.clip(0, 255)
-        # photons_left, photons_right = np.split(photons.get(), 2)
-        # return photons_left, photons_right
-
     def get_visual_inputs(self):
         left_photons = self.readings_to_photons(self.left_eye.readings)
         right_photons = self.readings_to_photons(self.right_eye.readings)

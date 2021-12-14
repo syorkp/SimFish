@@ -134,8 +134,8 @@ class CategoricalProbabilityDistribution(ProbabilityDistribution):
 
 class PPONetworkActorDiscreteEmulator(BaseNetwork):
 
-    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, clip_param, num_actions, epsilon_greedy=False):
-        super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim=1)
+    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, clip_param, num_actions, epsilon_greedy=False, new_simulation=True):
+        super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim=1, new_simulation=new_simulation)
 
         #            ----------        Non-Reflected       ---------            #
 

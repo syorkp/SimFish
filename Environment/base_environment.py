@@ -308,12 +308,12 @@ class BaseEnvironment:
         self.prey_shapes[-1].elasticity = 1.0
         if not self.env_variables["differential_prey"]:
             self.prey_bodies[-1].position = (
-                np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
+                np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + 40,
                                   self.env_variables['width'] - (
-                                          self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'])),
-                np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
+                                          self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + 40)),
+                np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + 40,
                                   self.env_variables['height'] - (
-                                          self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'])))
+                                          self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + 40)))
         else:
             cloud = random.choice(self.prey_cloud_locations)
             self.prey_bodies[-1].position = (

@@ -44,7 +44,9 @@ class ContinuousPPO(BasePPO):
                                                                   max_angle_change=self.environment_params[
                                                                       'max_angle_change'],
                                                                   clip_param=self.environment_params['clip_param'],
-                                                                  input_sigmas=self.learning_params['input_sigmas']
+                                                                  input_sigmas=self.learning_params['input_sigmas'],
+                                                                  new_simulation=self.new_simulation,
+
                                                                   )
 
             else:
@@ -57,7 +59,9 @@ class ContinuousPPO(BasePPO):
                                                                  max_angle_change=self.environment_params[
                                                                      'max_angle_change'],
                                                                  clip_param=self.environment_params['clip_param'],
-                                                                 input_sigmas=self.learning_params['input_sigmas']
+                                                                 input_sigmas=self.learning_params['input_sigmas'],
+                                                                 new_simulation=self.new_simulation,
+
                                                                  )
 
         else:
@@ -69,7 +73,9 @@ class ContinuousPPO(BasePPO):
                                                  max_impulse=self.environment_params['max_impulse'],
                                                  max_angle_change=self.environment_params['max_angle_change'],
                                                  clip_param=self.environment_params['clip_param'],
-                                                 beta_impulse=self.learning_params['beta_distribution']
+                                                 beta_impulse=self.learning_params['beta_distribution'],
+                                                 new_simulation=self.new_simulation,
+
                                                  )
 
     def update_sigmas(self):

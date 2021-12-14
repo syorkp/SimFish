@@ -163,11 +163,10 @@ class NaturalisticEnvironment(BaseEnvironment):
             predator_bodies = [self.predator_body.position]
         else:
             predator_bodies = []
-        full_masked_image = self.board.get_masked_pixels_cupy(self.fish.body.position,
-                                                              [i.position for i in self.prey_bodies],
-                                                              predator_bodies
-                                                              )
-        full_masked_image = full_masked_image
+        full_masked_image = self.board.get_masked_pixels(self.fish.body.position,
+                                                         [i.position for i in self.prey_bodies],
+                                                         predator_bodies
+                                                         )
         # plt.imshow(full_masked_image * 100)
         # plt.show()
 

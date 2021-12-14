@@ -12,8 +12,8 @@ tf.disable_v2_behavior()
 class PPONetworkActorMultivariate2(BaseNetwork):
 
     def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, max_impulse, max_angle_change,
-                 clip_param, input_sigmas=False):
-        super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim=2)
+                 clip_param, input_sigmas=False, new_simulation=True):
+        super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim=2, new_simulation=new_simulation)
 
         #            ----------        Stream Splitting       ---------            #
 

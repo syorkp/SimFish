@@ -76,12 +76,13 @@ class BasePPO:
 
         if not self.sb_emulator:
             self.critic_network = PPONetworkCritic(simulation=self.simulation,
-                                               rnn_dim=self.learning_params['rnn_dim_shared'],
-                                               rnn_cell=critic_cell,
-                                               my_scope='critic',
-                                               internal_states=internal_states,
-                                               outputs_per_step=output_dimension,
-                                               )
+                                                   rnn_dim=self.learning_params['rnn_dim_shared'],
+                                                   rnn_cell=critic_cell,
+                                                   my_scope='critic',
+                                                   internal_states=internal_states,
+                                                   outputs_per_step=output_dimension,
+                                                   new_simulation=self.new_simulation,
+                                                   )
 
         return actor_cell, internal_states
 
