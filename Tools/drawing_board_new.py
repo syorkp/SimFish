@@ -90,6 +90,7 @@ class NewDrawingBoard:
         n_predators = len(predator_locations)
 
         if n_predators > 0:
+            print("Predator present.")
             predator_relative_positions = predator_locations-fish_position
             predator_distances = (predator_relative_positions[:, 0] ** 2 + predator_relative_positions[:, 1] ** 2) ** 0.5
             predator_half_angular_size = np.arctan(self.predator_radius / predator_distances)

@@ -17,9 +17,11 @@ class BaseEnvironment:
 
         self.env_variables = env_variables
         if self.new_simulation:
+            max_photoreceptor_rf_size = max([self.env_variables['uv_photoreceptor_rf_size'],
+                                             self.env_variables['red_photoreceptor_rf_size']])
             self.board = NewDrawingBoard(self.env_variables['width'], self.env_variables['height'],
                                          decay_rate=self.env_variables['decay_rate'],
-                                         photoreceptor_rf_size=self.env_variables['photoreceptor_rf_size'],
+                                         photoreceptor_rf_size=max_photoreceptor_rf_size,
                                          using_gpu=using_gpu, prey_size=self.env_variables['prey_size'],
                                          predator_size=self.env_variables['predator_size'])
         else:
