@@ -83,5 +83,6 @@
     "clip_param": 0.2,
     "cs_required": false,
     "decay_rate": 0.01,
-    "photoreceptor_rf_size": 0.01
+    "photoreceptor_rf_size": 0.01,
+    "shared_channel_angles": true
 }

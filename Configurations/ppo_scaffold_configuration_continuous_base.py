@@ -114,7 +114,10 @@ env = {'width': 1500,  # arena size
 
        # New simulation variables
        'decay_rate': 0.01,
-       'photoreceptor_rf_size': 0.01
+       'uv_photoreceptor_rf_size': 0.01,
+       'other_photoreceptor_rf_size': 0.01,
+       'shared_channel_angles': True,  # Whether the two channels have the same RF angles (saves computation time)
+       'incorporate_uv_strike_zone': True,
        }
 
 params = {'num_actions': 10,  # size of action space

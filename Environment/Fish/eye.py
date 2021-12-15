@@ -149,11 +149,13 @@ class Eye:
         # Angles with respect to fish (doubled) (PR_N x n)
         channel_angles_surrounding = self.channel_angles_surrounding + fish_angle
 
-        # Make sure is in desired range (PR_N x n) TODO: might need to find way of doing it multiple times e.g. by // operation
-        below_range = (channel_angles_surrounding < 0) * self.chosen_math_library.pi * 2
-        channel_angles_surrounding = channel_angles_surrounding + below_range
-        above_range = (channel_angles_surrounding > self.chosen_math_library.pi * 2) * -self.chosen_math_library.pi * 2
-        channel_angles_surrounding = channel_angles_surrounding + above_range
+        # Make sure is in desired range (PR_N x n)
+        # below_range = (channel_angles_surrounding < 0) * self.chosen_math_library.pi * 2
+        # channel_angles_surrounding = channel_angles_surrounding + below_range
+        # above_range = (channel_angles_surrounding > self.chosen_math_library.pi * 2) * -self.chosen_math_library.pi * 2
+        # channel_angles_surrounding = channel_angles_surrounding + above_range
+        channel_angles_surrounding_scaling = (channel_angles_surrounding // (self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
+        channel_angles_surrounding = channel_angles_surrounding + channel_angles_surrounding_scaling
 
         # Compute m using tan (PR_N x n)
         m = self.chosen_math_library.tan(channel_angles_surrounding)
@@ -193,14 +195,17 @@ class Eye:
 
         angles = self.chosen_math_library.arctan2(possible_vectors[:, :, :, 1], possible_vectors[:, :, :, 0])
 
-        # Make sure angles are in correct range. TODO: Again, may need multiple times.
-        below_range = (angles < 0) * self.chosen_math_library.pi * 2
-        angles = angles + below_range
-        above_range = (angles > self.chosen_math_library.pi * 2) * -self.chosen_math_library.pi * 2
-        angles = angles + above_range
+        # Make sure angles are in correct range.
+        angle_scaling = (angles // (self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
+        angles = angles + angle_scaling
 
-        angles = self.chosen_math_library.round(angles, 2)
-        channel_angles_surrounding = self.chosen_math_library.round(channel_angles_surrounding, 2)
+        # below_range = (angles < 0) * self.chosen_math_library.pi * 2
+        # angles = angles + below_range
+        # above_range = (angles > self.chosen_math_library.pi * 2) * -self.chosen_math_library.pi * 2
+        # angles = angles + above_range
+
+        angles = self.chosen_math_library.round(angles, 3)
+        channel_angles_surrounding = self.chosen_math_library.round(channel_angles_surrounding, 3)
 
         channel_angles_surrounding = self.chosen_math_library.expand_dims(channel_angles_surrounding, 2)
         channel_angles_surrounding = self.chosen_math_library.repeat(channel_angles_surrounding, 2, 2)
@@ -208,6 +213,7 @@ class Eye:
         same_values = (angles == channel_angles_surrounding) * 1
         selected_intersections = valid_intersection_coordinates[same_values == 1]
         selected_intersections = self.chosen_math_library.reshape(selected_intersections, (self.photoreceptor_num, self.n, 1, 2))
+
         eye_position_full = self.chosen_math_library.tile(eye_position, (self.photoreceptor_num, self.n, 1, 1))
         vertices = self.chosen_math_library.concatenate((eye_position_full, selected_intersections), axis=2)
         vertices_xvals = vertices[:, :, :, 0]

@@ -125,10 +125,13 @@ class NewDrawingBoard:
 
         total_lines = interpolated_line_angles.shape[0]
 
-        below_range = (interpolated_line_angles <= 0) * np.pi * 2
-        interpolated_line_angles = interpolated_line_angles + below_range
-        above_range = (interpolated_line_angles > np.pi * 2) * - np.pi*2
-        interpolated_line_angles = interpolated_line_angles + above_range
+        interpolated_line_angles_scaling = (interpolated_line_angles // (np.pi * 2)) * np.pi * -2
+        interpolated_line_angles = interpolated_line_angles + interpolated_line_angles_scaling
+
+        # below_range = (interpolated_line_angles <= 0) * np.pi * 2
+        # interpolated_line_angles = interpolated_line_angles + below_range
+        # above_range = (interpolated_line_angles > np.pi * 2) * - np.pi*2
+        # interpolated_line_angles = interpolated_line_angles + above_range
 
         # Compute m using tan (N_obj x n)
         m = np.tan(interpolated_line_angles)
@@ -183,19 +186,23 @@ class NewDrawingBoard:
         angles = np.arctan2(possible_vectors[:, 1], possible_vectors[:, 0])
 
         # Make sure angles are in correct range. TODO: be aware might need to repeat multiple times later
-        below_range = (angles <= 0) * np.pi * 2
-        angles = angles + below_range
-        above_range = (angles > (np.pi * 2)) * (-np.pi*2)
-        angles = angles + above_range
+        # below_range = (angles <= 0) * np.pi * 2
+        # angles = angles + below_range
+        # above_range = (angles > (np.pi * 2)) * (-np.pi*2)
+        # angles = angles + above_range
+        angles_scaling = (angles // (np.pi * 2)) * np.pi * -2
+        angles = angles + angles_scaling
 
         angles = np.round(angles, 2)
 
         # Add adjustment for features appearing in left of visual field (needed because of angles)
         interpolated_line_angles = interpolated_line_angles + prey_on_left
-        below_range = (interpolated_line_angles <= 0) * np.pi * 2
-        interpolated_line_angles = interpolated_line_angles + below_range
-        above_range = (interpolated_line_angles > (np.pi * 2)) * (-np.pi*2)
-        interpolated_line_angles = interpolated_line_angles + above_range
+        # below_range = (interpolated_line_angles <= 0) * np.pi * 2
+        # interpolated_line_angles = interpolated_line_angles + below_range
+        # above_range = (interpolated_line_angles > (np.pi * 2)) * (-np.pi*2)
+        # interpolated_line_angles = interpolated_line_angles + above_range
+        interpolated_line_angles_scaling = (interpolated_line_angles // (np.pi * 2)) * np.pi * -2
+        interpolated_line_angles = interpolated_line_angles + interpolated_line_angles_scaling
 
         channel_angles_surrounding = np.round(interpolated_line_angles, 2)
         channel_angles_surrounding = np.expand_dims(channel_angles_surrounding, 1)
@@ -209,9 +216,11 @@ class NewDrawingBoard:
         proj_vector = selected_intersections - fish_position
         proj_distance = (proj_vector[:, 0] ** 2 + proj_vector[:, 1] ** 2) ** 0.5  # Only really need to do for one as is same distance along.
 
-        fraction_along = distance_along/proj_distance
-
-
+        try:
+            fraction_along = distance_along/proj_distance
+        except ValueError:
+            x = True
+            print("Value error")
         if np.any(fraction_along > 1):
             print("Error")
             x = True

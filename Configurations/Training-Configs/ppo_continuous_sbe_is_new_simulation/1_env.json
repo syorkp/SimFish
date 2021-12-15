@@ -39,9 +39,9 @@
     "predator_inertia": 40.0,
     "predator_size": 100.0,
     "predator_impulse": 1.0,
-    "immunity_steps": 50,
+    "immunity_steps": 65,
     "distance_from_fish": 300,
-    "probability_of_predator": 0.01,
+    "probability_of_predator": 0.0,
     "dark_light_ratio": 0.0,
     "read_noise_sigma": 5,
     "photon_ratio": 100,
@@ -83,5 +83,6 @@
     "clip_param": 0.2,
     "cs_required": false,
     "decay_rate": 0.01,
-    "photoreceptor_rf_size": 0.01
+    "photoreceptor_rf_size": 0.01,
+    "shared_channel_angles": true
 }

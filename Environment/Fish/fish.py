@@ -56,20 +56,6 @@ class Fish:
         self.conv_state = 0
 
         if self.new_simulation:
-            # self.left_eye = NewVisFan(board, self.verg_angle, self.retinal_field, True,
-            #                        env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
-            #                        env_variables['max_vis_dist'], env_variables['dark_gain'],
-            #                        env_variables['light_gain'], env_variables['bkg_scatter'], dark_col)
-            #
-            # self.right_eye = NewVisFan(board, self.verg_angle, self.retinal_field, False,
-            #                         env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
-            #                         env_variables['max_vis_dist'], env_variables['dark_gain'],
-            #                         env_variables['light_gain'], env_variables['bkg_scatter'], dark_col)
-            # self.eyes = Eyes(board, self.verg_angle, self.retinal_field,
-            #                  env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
-            #                  env_variables['max_vis_dist'], env_variables['dark_gain'],
-            #                  env_variables['light_gain'], env_variables['bkg_scatter'], dark_col)
-
             self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True,
                                 env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
                                 env_variables['max_vis_dist'], env_variables['dark_gain'],
