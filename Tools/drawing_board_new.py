@@ -219,11 +219,12 @@ class NewDrawingBoard:
         try:
             fraction_along = distance_along/proj_distance
         except ValueError:
-            x = True
-            print("Value error")
-        if np.any(fraction_along > 1):
-            print("Error")
-            x = True
+            print(f"Distance along dimensions: {distance_along.shape}")
+            print(f"Proj distance dimensions: {proj_distance.shape}")
+            print(f"Fish position: {fish_position}")
+            print(f"Prey positions: {prey_locations}")
+            print(f"Predator position: {predator_locations}")
+
         fraction_along = np.expand_dims(fraction_along, 1)
         fraction_along = np.repeat(fraction_along, 2, 1)
 

@@ -56,17 +56,20 @@ class Fish:
         self.conv_state = 0
 
         if self.new_simulation:
-            self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True,
-                                env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
-                                env_variables['max_vis_dist'], env_variables['dark_gain'],
-                                env_variables['light_gain'], env_variables['bkg_scatter'], dark_col,
-                                env_variables['photoreceptor_rf_size'], using_gpu)
+            self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True, env_variables, dark_col, using_gpu)
 
-            self.right_eye = Eye(board, self.verg_angle, self.retinal_field, False,
-                                 env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
-                                 env_variables['max_vis_dist'], env_variables['dark_gain'],
-                                 env_variables['light_gain'], env_variables['bkg_scatter'], dark_col,
-                                 env_variables['photoreceptor_rf_size'], using_gpu)
+            self.right_eye = Eye(board, self.verg_angle, self.retinal_field, False, env_variables, dark_col, using_gpu)
+            # self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True,
+            #                     env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
+            #                     env_variables['max_vis_dist'], env_variables['dark_gain'],
+            #                     env_variables['light_gain'], env_variables['bkg_scatter'], dark_col,
+            #                     env_variables['photoreceptor_rf_size'], using_gpu)
+            #
+            # self.right_eye = Eye(board, self.verg_angle, self.retinal_field, False,
+            #                      env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
+            #                      env_variables['max_vis_dist'], env_variables['dark_gain'],
+            #                      env_variables['light_gain'], env_variables['bkg_scatter'], dark_col,
+            #                      env_variables['photoreceptor_rf_size'], using_gpu)
         else:
             self.left_eye = VisFan(board, self.verg_angle, self.retinal_field, True,
                                    env_variables['num_photoreceptors'], env_variables['min_vis_dist'],

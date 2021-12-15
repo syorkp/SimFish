@@ -7,11 +7,9 @@ import matplotlib.pyplot as plt
 
 class Eye:
 
-    def __init__(self, board, verg_angle, retinal_field, is_left, num_arms, min_distance, max_distance, dark_gain,
-                 light_gain, bkg_scatter, dark_col, photoreceptor_rf_size, using_gpu):
-        self.num_arms = num_arms
-        self.distances = np.array([min_distance, max_distance])
-
+    # def __init__(self, board, verg_angle, retinal_field, is_left, num_arms, min_distance, max_distance, dark_gain,
+    #              light_gain, bkg_scatter, dark_col, photoreceptor_rf_size, using_gpu):
+    def __init__(self, board, verg_angle, retinal_field, is_left, env_variables, dark_col, using_gpu):
         self.vis_angles = None
         self.dist = None
         self.theta = None
@@ -23,10 +21,14 @@ class Eye:
         else:
             self.chosen_math_library = np
 
+        if env_variables['shared_photoreceptor_channels']:
+            ...
+        else:
+
         self.update_angles(verg_angle, retinal_field, is_left)
         # TODO: Add config handling for strike zone use
         # self.update_angles_strike_zone(verg_angle, retinal_field, is_left)
-        self.readings = self.chosen_math_library.zeros((num_arms, 2), 'int')
+        self.readings = self.chosen_math_library.zeros((photoreceptor_num, 2), 'int')
         self.board = board
         self.dark_gain = dark_gain
         self.light_gain = light_gain
@@ -36,7 +38,7 @@ class Eye:
         self.width, self.height = self.board.get_size()
 
         # TODO: Make parameters:
-        self.photoreceptor_num = num_arms
+        self.photoreceptor_num = photoreceptor_num
         self.photoreceptor_rf_size = photoreceptor_rf_size
         self.retinal_field_size = retinal_field
         self.photoreceptor_spacing = self.retinal_field_size/self.photoreceptor_num
@@ -87,12 +89,12 @@ class Eye:
         else:
             min_angle = np.pi / 2 - retinal_field / 2 - verg_angle / 2
             max_angle = np.pi / 2 + retinal_field / 2 - verg_angle / 2
-        self.vis_angles = self.chosen_math_library.linspace(min_angle, max_angle, self.num_arms)
+        self.vis_angles = self.chosen_math_library.linspace(min_angle, max_angle, self.photoreceptor_num)
 
     def sample_half_normal_distribution(self, min_angle, max_angle):
         # Problem is that fish will find it difficult to learn with such large trial-to-trial variablility in input
         # distribution, though maybe is realistic. Alternatively, can set random seed for this part?
-        sampled_values = np.random.randn(self.num_arms)
+        sampled_values = np.random.randn(self.photoreceptor_num)
         sampled_values = [abs(i) for i in sampled_values]
         scaling_factor = max(sampled_values)
         sampled_values = sampled_values / scaling_factor
@@ -114,7 +116,7 @@ class Eye:
         sigma = 1
         angle_difference = abs(max_angle - min_angle)
 
-        angle_range = np.linspace(min_angle, max_angle, self.num_arms)
+        angle_range = np.linspace(min_angle, max_angle, self.photoreceptor_num)
         frequencies = 1/(sigma * np.sqrt(2 * np.pi)) * np.exp(-(angle_range-mu)**2/(2*sigma**2))
         differences = 1/frequencies
         differences[0] = 0
