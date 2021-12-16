@@ -285,14 +285,25 @@ class BaseEnvironment:
         print(" Touched edge.")
         new_position_x = self.fish.body.position[0]
         new_position_y = self.fish.body.position[1]
-        if new_position_x < 30:  # Wall d
-            new_position_x += self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
-        elif new_position_x > self.env_variables['width'] - 30:  # wall b
-            new_position_x -= self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
-        if new_position_y < 30:  # wall a
-            new_position_y += self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
-        elif new_position_y > self.env_variables['height'] - 30:  # wall c
-            new_position_y -= self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+        # if new_position_x < 30:  # Wall d
+        #     new_position_x += self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+        # elif new_position_x > self.env_variables['width'] - 30:  # wall b
+        #     new_position_x -= self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+        # if new_position_y < 30:  # wall a
+        #     new_position_y += self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+        # elif new_position_y > self.env_variables['height'] - 30:  # wall c
+        #     new_position_y -= self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+
+        # TODO: Make 30 a buffer region
+        if new_position_x < 40:  # Wall d
+            new_position_x = 40 + self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+        elif new_position_x > self.env_variables['width'] - 40:  # wall b
+            new_position_x = self.env_variables['width'] - (40 + self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"])
+        if new_position_y < 40:  # wall a
+            new_position_y = 40 + self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+        elif new_position_y > self.env_variables['height'] - 40:  # wall c
+            new_position_y = self.env_variables['height'] - (40 + self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"])
+
 
         new_position = pymunk.Vec2d(new_position_x, new_position_y)
         self.fish.body.position = new_position
