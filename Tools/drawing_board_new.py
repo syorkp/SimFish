@@ -38,7 +38,7 @@ class NewDrawingBoard:
         self.add_for_hypothetical = None
         self.compute_repeated_computations()
 
-    def compute_repeated_computations(self, max_line_number=10000):
+    def compute_repeated_computations(self, max_line_number=20000):
         multiplication_matrix_unit = np.array([-1, 1, -1, 1])
         self.multiplication_matrix = np.tile(multiplication_matrix_unit, (max_line_number, 1))
 
