@@ -58,7 +58,6 @@ class NewDrawingBoard:
 
         # Compute angle between fish and prey - where horizontal line is 0, and positive values are in upper field.
         prey_angles = np.arctan(prey_relative_positions[:, 1]/prey_relative_positions[:, 0])
-
         prey_angles = np.expand_dims(prey_angles, 1)
         prey_angles = np.repeat(prey_angles, 2, 1)
 
@@ -75,7 +74,6 @@ class NewDrawingBoard:
         interpolated_line_angles = np.linspace(prey_extremities[:, 0], prey_extremities[:, 1], n_lines_prey).flatten()
 
         # Computing how far along each line prey are.
-        # prey_distance_along = (prey_distances ** 2 + self.prey_radius ** 2) ** 0.5
         prey_distance_along = prey_distances + self.prey_radius
         prey_distance_along = np.expand_dims(prey_distance_along, 1)
         prey_distance_along = np.repeat(prey_distance_along, n_lines_prey, 1)
@@ -126,13 +124,9 @@ class NewDrawingBoard:
 
         total_lines = interpolated_line_angles.shape[0]
 
+        # Ensure all angles are in designated range
         interpolated_line_angles_scaling = (interpolated_line_angles // (np.pi * 2)) * np.pi * -2
         interpolated_line_angles = interpolated_line_angles + interpolated_line_angles_scaling
-
-        # below_range = (interpolated_line_angles <= 0) * np.pi * 2
-        # interpolated_line_angles = interpolated_line_angles + below_range
-        # above_range = (interpolated_line_angles > np.pi * 2) * - np.pi*2
-        # interpolated_line_angles = interpolated_line_angles + above_range
 
         # Compute m using tan (N_obj x n)
         m = np.tan(interpolated_line_angles)
@@ -145,9 +139,11 @@ class NewDrawingBoard:
         c_exp = np.expand_dims(c, 1)
         c_exp = np.repeat(c_exp, 4, 1)
 
+        # TODO: Compute once.
         multiplication_matrix_unit = np.array([-1, 1, -1, 1])
         multiplication_matrix = np.tile(multiplication_matrix_unit, (total_lines, 1))
 
+        # TODO: Compute once.
         addition_matrix_unit = np.array([0, 0, self.height-1, self.width-1])
         addition_matrix = np.tile(addition_matrix_unit, (total_lines, 1))
 
@@ -165,6 +161,7 @@ class NewDrawingBoard:
 
         intersection_components = ((c_exp * multiplication_matrix) + addition_matrix)/division_matrix
 
+        # TODO: Compute once.
         mul_for_hypothetical = np.array([[1, 0], [0, 1], [1, 0], [0, 1]])
         mul_for_hypothetical = np.tile(mul_for_hypothetical, (total_lines, 1, 1))
         add_for_hypothetical = np.array([[0, 0], [0, 0], [0, self.width-1], [self.height-1, 0]])

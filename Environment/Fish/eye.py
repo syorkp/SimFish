@@ -197,7 +197,6 @@ class Eye:
             self.red_readings = self._read(masked_arena_pixels[:, :, 0:1], eye_x, eye_y, channel_angles_surrounding, self.red_photoreceptor_num)
 
             self.readings = self.chosen_math_library.concatenate((self.uv_readings, self.red_readings), axis=1)
-            x = True
 
     def _read(self, masked_arena_pixels, eye_x, eye_y, channel_angles_surrounding, n_channels):
         """Lines method to return pixel sum for all points for each photoreceptor, over its segment."""
@@ -381,6 +380,9 @@ class Eye:
             return vertices.get()
         else:
             return vertices
+
+    def show_points(self):
+        pass
 
     def compute_n(self, photoreceptor_rf_size, max_separation=1):
         max_dist = (self.width**2 + self.height**2)**0.5
