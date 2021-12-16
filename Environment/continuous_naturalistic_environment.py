@@ -60,6 +60,6 @@ class ContinuousNaturalisticEnvironment(NaturalisticEnvironment):
 
     def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None, impulse=None):
         self.fish.making_capture = True
-        print(self.num_steps)
+        print(f"{self.num_steps}: {np.array(self.fish.body.position)}")
         return super().simulation_step(action, save_frames, frame_buffer, activations, impulse)
 
