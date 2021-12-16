@@ -30,6 +30,13 @@ class NewDrawingBoard:
 
         self.xp, self.yp = self.chosen_math_library.arange(self.width), self.chosen_math_library.arange(self.height)
 
+    def compute_repeated_computations(self, max_line_number=1000):
+        multiplication_matrix_unit = np.array([-1, 1, -1, 1])
+        self.multiplication_matrix = np.tile(multiplication_matrix_unit, (max_line_number, 1))
+
+        addition_matrix_unit = np.array([0, 0, self.height-1, self.width-1])
+        self.addition_matrix = np.tile(addition_matrix_unit, (max_line_number, 1))
+
     def scatter(self, i, j, x, y):
         """Computes general scatter, but incorporates effect of implicit scatter from line spread."""
         positional_mask = (((x - i) ** 2 + (y - j) ** 2) ** 0.5)
@@ -139,13 +146,9 @@ class NewDrawingBoard:
         c_exp = np.expand_dims(c, 1)
         c_exp = np.repeat(c_exp, 4, 1)
 
-        # TODO: Compute once.
-        multiplication_matrix_unit = np.array([-1, 1, -1, 1])
-        multiplication_matrix = np.tile(multiplication_matrix_unit, (total_lines, 1))
-
-        # TODO: Compute once.
-        addition_matrix_unit = np.array([0, 0, self.height-1, self.width-1])
-        addition_matrix = np.tile(addition_matrix_unit, (total_lines, 1))
+        # Slicing repeated matrices:
+        multiplication_matrix = self.multiplication_matrix[:total_lines]
+        addition_matrix = self.addition_matrix[:total_lines]
 
         # TODO: Can compute bits once, then clip them with total_lines number.
         mul1 = np.array([0, 0, 0, 1])
