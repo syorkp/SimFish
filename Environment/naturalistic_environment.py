@@ -20,12 +20,12 @@ class NaturalisticEnvironment(BaseEnvironment):
 
     def reset(self):
         super().reset()
-        self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_size'],
-                                                     self.env_variables['width'] - self.env_variables[
-                                                         'fish_mouth_size']),
-                                   np.random.randint(self.env_variables['fish_mouth_size'],
-                                                     self.env_variables['height'] - self.env_variables[
-                                                         'fish_mouth_size']))
+        self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_size'] + 40,
+                                                     self.env_variables['width'] - (self.env_variables[
+                                                         'fish_mouth_size']-40)),
+                                   np.random.randint(self.env_variables['fish_mouth_size'] + 40,
+                                                     self.env_variables['height'] - (self.env_variables[
+                                                         'fish_mouth_size']+40)))
         self.fish.body.angle = np.random.random() * 2 * np.pi
         self.fish.body.velocity = (0, 0)
         if self.env_variables["differential_prey"]:
