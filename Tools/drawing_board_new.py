@@ -30,12 +30,32 @@ class NewDrawingBoard:
 
         self.xp, self.yp = self.chosen_math_library.arange(self.width), self.chosen_math_library.arange(self.height)
 
-    def compute_repeated_computations(self, max_line_number=1000):
+        self.multiplication_matrix = None
+        self.addition_matrix = None
+        self.mul1_full = None
+        self.conditional_tiled = None
+        self.mul_for_hypothetical = None
+        self.add_for_hypothetical = None
+        self.compute_repeated_computations()
+
+    def compute_repeated_computations(self, max_line_number=3000):
         multiplication_matrix_unit = np.array([-1, 1, -1, 1])
         self.multiplication_matrix = np.tile(multiplication_matrix_unit, (max_line_number, 1))
 
         addition_matrix_unit = np.array([0, 0, self.height-1, self.width-1])
         self.addition_matrix = np.tile(addition_matrix_unit, (max_line_number, 1))
+
+        mul1 = np.array([0, 0, 0, 1])
+        self.mul1_full = np.tile(mul1, (max_line_number, 1))
+
+        conditional_tiled = np.array([self.width-1, self.height-1, self.width-1, self.height-1])
+        self.conditional_tiled = np.tile(conditional_tiled, (max_line_number, 1))
+
+        mul_for_hypothetical = np.array([[1, 0], [0, 1], [1, 0], [0, 1]])
+        self.mul_for_hypothetical = np.tile(mul_for_hypothetical, (max_line_number, 1, 1))
+
+        add_for_hypothetical = np.array([[0, 0], [0, 0], [0, self.width-1], [self.height-1, 0]])
+        self.add_for_hypothetical = np.tile(add_for_hypothetical, (max_line_number, 1, 1))
 
     def scatter(self, i, j, x, y):
         """Computes general scatter, but incorporates effect of implicit scatter from line spread."""
@@ -149,10 +169,10 @@ class NewDrawingBoard:
         # Slicing repeated matrices:
         multiplication_matrix = self.multiplication_matrix[:total_lines]
         addition_matrix = self.addition_matrix[:total_lines]
+        mul1_full = self.mul1_full[:total_lines]
+        mul_for_hypothetical = self.mul_for_hypothetical[:total_lines]
+        add_for_hypothetical = self.add_for_hypothetical[:total_lines]
 
-        # TODO: Can compute bits once, then clip them with total_lines number.
-        mul1 = np.array([0, 0, 0, 1])
-        mul1_full = np.tile(mul1, (total_lines, 1))
         m_mul = np.expand_dims(m, 1)
         full_m = np.repeat(m_mul, 4, 1)
         m_mul = full_m * mul1_full
@@ -164,19 +184,13 @@ class NewDrawingBoard:
 
         intersection_components = ((c_exp * multiplication_matrix) + addition_matrix)/division_matrix
 
-        # TODO: Compute once.
-        mul_for_hypothetical = np.array([[1, 0], [0, 1], [1, 0], [0, 1]])
-        mul_for_hypothetical = np.tile(mul_for_hypothetical, (total_lines, 1, 1))
-        add_for_hypothetical = np.array([[0, 0], [0, 0], [0, self.width-1], [self.height-1, 0]])
-        add_for_hypothetical = np.tile(add_for_hypothetical, (total_lines, 1, 1))
-
         intersection_coordinates = np.expand_dims(intersection_components, 2)
         intersection_coordinates = np.repeat(intersection_coordinates, 2, 2)
         intersection_coordinates = (intersection_coordinates * mul_for_hypothetical) + add_for_hypothetical
 
         # Compute possible intersections (N_obj n 2 x 2 x 2)
-        conditional_tiled = np.array([self.width-1, self.height-1, self.width-1, self.height-1])
-        conditional_tiled = np.tile(conditional_tiled, (total_lines, 1))
+        conditional_tiled = self.conditional_tiled[:total_lines]
+
         valid_points_ls = (intersection_components > 0) * 1
         valid_points_more = (intersection_components < conditional_tiled) * 1
         valid_points = valid_points_more * valid_points_ls
@@ -186,11 +200,7 @@ class NewDrawingBoard:
         possible_vectors = valid_intersection_coordinates - fish_position
         angles = np.arctan2(possible_vectors[:, 1], possible_vectors[:, 0])
 
-        # Make sure angles are in correct range. TODO: be aware might need to repeat multiple times later
-        # below_range = (angles <= 0) * np.pi * 2
-        # angles = angles + below_range
-        # above_range = (angles > (np.pi * 2)) * (-np.pi*2)
-        # angles = angles + above_range
+        # Make sure angles are in correct range.
         angles_scaling = (angles // (np.pi * 2)) * np.pi * -2
         angles = angles + angles_scaling
 
@@ -198,10 +208,8 @@ class NewDrawingBoard:
 
         # Add adjustment for features appearing in left of visual field (needed because of angles)
         interpolated_line_angles = interpolated_line_angles + prey_on_left
-        # below_range = (interpolated_line_angles <= 0) * np.pi * 2
-        # interpolated_line_angles = interpolated_line_angles + below_range
-        # above_range = (interpolated_line_angles > (np.pi * 2)) * (-np.pi*2)
-        # interpolated_line_angles = interpolated_line_angles + above_range
+
+        # Make sure angles in correct range.
         interpolated_line_angles_scaling = (interpolated_line_angles // (np.pi * 2)) * np.pi * -2
         interpolated_line_angles = interpolated_line_angles + interpolated_line_angles_scaling
 
