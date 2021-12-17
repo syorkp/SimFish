@@ -85,8 +85,8 @@
     "decay_rate": 0.01,
     "uv_photoreceptor_rf_size": 0.01,
     "red_photoreceptor_rf_size": 0.01,
-    "uv_photoreceptor_num": 120,
+    "uv_photoreceptor_num": 55,
     "red_photoreceptor_num": 120,
-    "shared_photoreceptor_channels": true,
+    "shared_photoreceptor_channels": false,
     "incorporate_uv_strike_zone": true
 }

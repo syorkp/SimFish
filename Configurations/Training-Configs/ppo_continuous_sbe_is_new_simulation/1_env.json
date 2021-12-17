@@ -41,7 +41,7 @@
     "predator_impulse": 1.0,
     "immunity_steps": 65,
     "distance_from_fish": 300,
-    "probability_of_predator": 0.01,
+    "probability_of_predator": 0.0,
     "dark_light_ratio": 0.0,
     "read_noise_sigma": 5,
     "photon_ratio": 100,
@@ -85,8 +85,8 @@
     "decay_rate": 0.01,
     "uv_photoreceptor_rf_size": 0.01,
     "red_photoreceptor_rf_size": 0.01,
-    "uv_photoreceptor_num": 120,
+    "uv_photoreceptor_num": 55,
     "red_photoreceptor_num": 120,
-    "shared_photoreceptor_channels": true,
+    "shared_photoreceptor_channels": false,
     "incorporate_uv_strike_zone": true
 }

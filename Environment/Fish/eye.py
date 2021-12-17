@@ -54,6 +54,7 @@ class Eye:
             self.red_photoreceptor_spacing = self.retinal_field_size / self.red_photoreceptor_num
 
             self.max_photoreceptor_num = max([self.uv_photoreceptor_num, self.red_photoreceptor_num])
+            self.min_photoreceptor_num = min([self.uv_photoreceptor_num, self.red_photoreceptor_num])
 
             if env_variables['incorporate_uv_strike_zone']:
                 self.uv_photoreceptor_angles = self.update_angles_strike_zone(verg_angle, retinal_field, is_left, self.uv_photoreceptor_num)
@@ -65,6 +66,9 @@ class Eye:
             self.red_readings = self.chosen_math_library.zeros((env_variables['red_photoreceptor_num'], 1), 'int')
 
             self.n = self.compute_n(max([self.uv_photoreceptor_rf_size, self.red_photoreceptor_rf_size]))
+
+            self.indices_for_padding = self.chosen_math_library.around(
+                self.chosen_math_library.linspace(0, self.min_photoreceptor_num - 1, self.max_photoreceptor_num)).astype(int)
 
         # Compute repeated measures:
         self.channel_angles_surrounding = None
@@ -182,7 +186,7 @@ class Eye:
         return self.chosen_math_library.array(computed_values)
 
     def read(self, masked_arena_pixels, eye_x, eye_y, fish_angle):
-        if self.shared_photoreceptor_channels:#
+        if self.shared_photoreceptor_channels:
             # Angles with respect to fish (doubled) (PR_N x n)
             channel_angles_surrounding = self.channel_angles_surrounding + fish_angle
             self.readings = self._read(masked_arena_pixels, eye_x, eye_y, channel_angles_surrounding, self.photoreceptor_num)
@@ -196,7 +200,10 @@ class Eye:
             channel_angles_surrounding = self.channel_angles_surrounding_2 + fish_angle
             self.red_readings = self._read(masked_arena_pixels[:, :, 0:1], eye_x, eye_y, channel_angles_surrounding, self.red_photoreceptor_num)
 
-            self.readings = self.chosen_math_library.concatenate((self.uv_readings, self.red_readings), axis=1)
+            if self.red_photoreceptor_num != self.uv_photoreceptor_num:
+                self.pad_observation()
+            else:
+                self.readings = self.chosen_math_library.concatenate((self.uv_readings, self.red_readings), axis=1)
 
     def _read(self, masked_arena_pixels, eye_x, eye_y, channel_angles_surrounding, n_channels):
         """Lines method to return pixel sum for all points for each photoreceptor, over its segment."""
@@ -389,3 +396,16 @@ class Eye:
         theta_separation = math.asin(max_separation/max_dist)
         n = (photoreceptor_rf_size/theta_separation)/2
         return int(n)
+
+    def pad_observation(self):
+        """Makes photoreceptor input from two sources the same dimension by padding out points with their nearest values."""
+        # TODO: Problem with this version - increases input from certain areas (like having areas with greater emphasis)
+
+        if self.uv_photoreceptor_num < self.red_photoreceptor_num:
+            self.readings = self.chosen_math_library.concatenate((self.red_readings, self.uv_readings[self.indices_for_padding]), axis=1)
+        else:
+            self.readings = self.chosen_math_library.concatenate((self.red_readings[self.indices_for_padding], self.uv_readings), axis=1)
+
+
+
+
