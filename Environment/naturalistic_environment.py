@@ -22,7 +22,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         super().reset()
         self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_size'] + 40,
                                                      self.env_variables['width'] - (self.env_variables[
-                                                         'fish_mouth_size']-40)),
+                                                         'fish_mouth_size']+40)),
                                    np.random.randint(self.env_variables['fish_mouth_size'] + 40,
                                                      self.env_variables['height'] - (self.env_variables[
                                                          'fish_mouth_size']+40)))
