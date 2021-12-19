@@ -1,6 +1,7 @@
 import numpy as np
 import cupy as cp
 import math
+from skimage.draw import line
 
 import matplotlib.pyplot as plt
 
@@ -88,12 +89,14 @@ class Eye:
             rf_offsets = self.chosen_math_library.linspace(-self.photoreceptor_rf_size / 2, self.photoreceptor_rf_size / 2, num=self.n)
             self.channel_angles_surrounding = channel_angles_surrounding + rf_offsets
         else:
+            # UV
             channel_angles_surrounding = self.chosen_math_library.expand_dims(self.uv_photoreceptor_angles, 1)
             channel_angles_surrounding = self.chosen_math_library.repeat(channel_angles_surrounding, self.n, 1)
             rf_offsets = self.chosen_math_library.linspace(-self.uv_photoreceptor_rf_size / 2,
                                                            self.uv_photoreceptor_rf_size / 2, num=self.n)
             self.channel_angles_surrounding = channel_angles_surrounding + rf_offsets
 
+            # Red
             channel_angles_surrounding_2 = self.chosen_math_library.expand_dims(self.red_photoreceptor_angles, 1)
             channel_angles_surrounding_2 = self.chosen_math_library.repeat(channel_angles_surrounding_2, self.n, 1)
             rf_offsets_2 = self.chosen_math_library.linspace(-self.red_photoreceptor_rf_size / 2,
@@ -192,11 +195,11 @@ class Eye:
             self.readings = self._read(masked_arena_pixels, eye_x, eye_y, channel_angles_surrounding, self.photoreceptor_num)
         else:
             # TODO: Could be sped up by running both in parallel and splitting the results!
-            # Angles with respect to fish (doubled) (PR_N x n)
+            # UV Angles with respect to fish (doubled) (PR_N x n)
             channel_angles_surrounding = self.channel_angles_surrounding + fish_angle
             self.uv_readings = self._read(masked_arena_pixels[:, :, 1:], eye_x, eye_y, channel_angles_surrounding, self.uv_photoreceptor_num)
 
-            # Angles with respect to fish (doubled) (PR_N x n)
+            # Red Angles with respect to fish (doubled) (PR_N x n)
             channel_angles_surrounding = self.channel_angles_surrounding_2 + fish_angle
             self.red_readings = self._read(masked_arena_pixels[:, :, 0:1], eye_x, eye_y, channel_angles_surrounding, self.red_photoreceptor_num)
 
@@ -310,12 +313,9 @@ class Eye:
 
         return total_sum
 
-    def get_sector_vertices(self, eye_x, eye_y, fish_angle):
+    def get_sector_vertices(self, eye_x, eye_y, fish_angle, channel_angles_surrounding, n_channels):
         # TODO: Make suitable for different sets of photoreceptors
         """Uses lines method to return the vertices of all photoreceptor segments."""
-        # Angles with respect to fish (doubled) (PR_N x n)
-        channel_angles_surrounding = self.channel_angles_surrounding + fish_angle
-
         # Make sure is in desired range (PR_N x n) TODO: might need to find way of doing it multiple times e.g. by // operation
         below_range = (channel_angles_surrounding < 0) * self.chosen_math_library.pi * 2
         channel_angles_surrounding = channel_angles_surrounding + below_range
@@ -335,25 +335,25 @@ class Eye:
 
         m_mul = self.chosen_math_library.expand_dims(m, 2)
         full_m = self.chosen_math_library.repeat(m_mul, 4, 2)
-        m_mul = full_m * self.mul1_full
+        m_mul = full_m * self.mul1_full[:n_channels]
         m_mul[:, :, :3] = 1
-        addition_matrix = self.addition_matrix * m_mul
+        addition_matrix = self.addition_matrix[:n_channels] * m_mul
         division_matrix = full_m
         division_matrix[:, :, 1] = 1
         division_matrix[:, :, 3] = 1
 
-        intersection_components = ((c_exp * self.multiplication_matrix) + addition_matrix) / division_matrix
+        intersection_components = ((c_exp * self.multiplication_matrix[:n_channels]) + addition_matrix) / division_matrix
 
         intersection_coordinates = self.chosen_math_library.expand_dims(intersection_components, 3)
         intersection_coordinates = self.chosen_math_library.repeat(intersection_coordinates, 2, 3)
-        intersection_coordinates = (intersection_coordinates * self.mul_for_hypothetical) + self.add_for_hypothetical
+        intersection_coordinates = (intersection_coordinates * self.mul_for_hypothetical[:n_channels]) + self.add_for_hypothetical[:n_channels]
 
         # Compute possible intersections (PR_N x 2 x 2 x 2)
         valid_points_ls = (intersection_components > 0) * 1
-        valid_points_more = (intersection_components < self.conditional_tiled) * 1
+        valid_points_more = (intersection_components < self.conditional_tiled[:n_channels]) * 1
         valid_points = valid_points_more * valid_points_ls
         valid_intersection_coordinates = intersection_coordinates[valid_points == 1]
-        valid_intersection_coordinates = self.chosen_math_library.reshape(valid_intersection_coordinates, (self.photoreceptor_num, self.n, 2, 2))
+        valid_intersection_coordinates = self.chosen_math_library.reshape(valid_intersection_coordinates, (n_channels, self.n, 2, 2))
 
         # Get intersections (PR_N x 2)
         eye_position = self.chosen_math_library.array([eye_x, eye_y])
@@ -375,12 +375,12 @@ class Eye:
 
         same_values = (angles == channel_angles_surrounding) * 1
         selected_intersections = valid_intersection_coordinates[same_values == 1]
-        selected_intersections = self.chosen_math_library.reshape(selected_intersections, (self.photoreceptor_num, self.n, 1, 2))
+        selected_intersections = self.chosen_math_library.reshape(selected_intersections, (n_channels, self.n, 1, 2))
 
         relevant_intersections_1 = selected_intersections[:, 0, :, :]
         relevant_intersections_2 = selected_intersections[:, self.n-1, :, :]
 
-        eye_position_full = self.chosen_math_library.tile(eye_position, (self.photoreceptor_num, 1, 1))
+        eye_position_full = self.chosen_math_library.tile(eye_position, (n_channels, 1, 1))
         vertices = self.chosen_math_library.concatenate((eye_position_full, relevant_intersections_1, relevant_intersections_2), axis=1)
 
         if self.using_gpu:
@@ -388,8 +388,52 @@ class Eye:
         else:
             return vertices
 
-    def show_points(self):
-        pass
+    def show_points(self, bx, by, fish_angle):
+        """Displays relevant parts of visual system, including (optional):
+        * Channel sectors
+        * Obstruction mask
+        * Scatter mask
+        * Light mask
+        """
+        # UV
+        channel_angles_surrounding = self.channel_angles_surrounding + fish_angle
+        sector_vertices = self.get_sector_vertices(bx, by, fish_angle, channel_angles_surrounding, self.uv_photoreceptor_num)
+        sector_vertices = sector_vertices.astype(int)
+
+        for sector in sector_vertices:
+            [rr, cc] = line(sector[0][1], sector[0][0], sector[1][1], sector[1][0])
+            self.board.db[rr, cc] = (0, 0, 0.5)
+
+            [rr, cc] = line(sector[1][1], sector[1][0], sector[2][1], sector[2][0])
+            self.board.db[rr, cc] = (0, 0, 0.5)
+
+            if len(sector) > 3:
+                [rr, cc] = line(sector[2][1], sector[2][0], sector[3][1], sector[3][0])
+                self.board.db[rr, cc] = (0, 0, 0.5)
+                [rr, cc] = line(sector[3][1], sector[3][0], sector[0][1], sector[0][0])
+            else:
+                [rr, cc] = line(sector[2][1], sector[2][0], sector[0][1], sector[0][0])
+            self.board.db[rr, cc] = (0, 0, 0.5)
+
+        # Red
+        channel_angles_surrounding = self.channel_angles_surrounding_2 + fish_angle
+        sector_vertices = self.get_sector_vertices(bx, by, fish_angle, channel_angles_surrounding, self.red_photoreceptor_num)
+        sector_vertices = sector_vertices.astype(int)
+
+        for sector in sector_vertices:
+            [rr, cc] = line(sector[0][1], sector[0][0], sector[1][1], sector[1][0])
+            self.board.db[rr, cc] = (0.5, 0, 0)
+
+            [rr, cc] = line(sector[1][1], sector[1][0], sector[2][1], sector[2][0])
+            self.board.db[rr, cc] = (0.5, 0, 0)
+
+            if len(sector) > 3:
+                [rr, cc] = line(sector[2][1], sector[2][0], sector[3][1], sector[3][0])
+                self.board.db[rr, cc] = (0.5, 0, 0)
+                [rr, cc] = line(sector[3][1], sector[3][0], sector[0][1], sector[0][0])
+            else:
+                [rr, cc] = line(sector[2][1], sector[2][0], sector[0][1], sector[0][0])
+            self.board.db[rr, cc] = (0.5, 0, 0)
 
     def compute_n(self, photoreceptor_rf_size, max_separation=1):
         max_dist = (self.width**2 + self.height**2)**0.5

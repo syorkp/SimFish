@@ -59,17 +59,6 @@ class Fish:
             self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True, env_variables, dark_col, using_gpu)
 
             self.right_eye = Eye(board, self.verg_angle, self.retinal_field, False, env_variables, dark_col, using_gpu)
-            # self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True,
-            #                     env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
-            #                     env_variables['max_vis_dist'], env_variables['dark_gain'],
-            #                     env_variables['light_gain'], env_variables['bkg_scatter'], dark_col,
-            #                     env_variables['photoreceptor_rf_size'], using_gpu)
-            #
-            # self.right_eye = Eye(board, self.verg_angle, self.retinal_field, False,
-            #                      env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
-            #                      env_variables['max_vis_dist'], env_variables['dark_gain'],
-            #                      env_variables['light_gain'], env_variables['bkg_scatter'], dark_col,
-            #                      env_variables['photoreceptor_rf_size'], using_gpu)
         else:
             self.left_eye = VisFan(board, self.verg_angle, self.retinal_field, True,
                                    env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
@@ -300,11 +289,23 @@ class Fish:
     def get_visual_inputs(self):
         left_photons = self.readings_to_photons(self.left_eye.readings)
         right_photons = self.readings_to_photons(self.right_eye.readings)
-        left_eye = resize(np.reshape(left_photons, (1, len(self.left_eye.vis_angles), 3)) * (
+        left_eye = resize(np.reshape(left_photons, (1, self.left_eye.max_photoreceptor_num, 3)) * (
                     255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
-        right_eye = resize(np.reshape(right_photons, (1, len(self.right_eye.vis_angles), 3)) * (
+        right_eye = resize(np.reshape(right_photons, (1, self.right_eye.max_photoreceptor_num, 3)) * (
                     255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
         eyes = np.hstack((left_eye, np.zeros((20, 100, 3)), right_eye))
+        eyes[eyes < 0] = 0
+        eyes[eyes > 255] = 255
+        return eyes
+
+    def get_visual_inputs_new(self):
+        left_photons = self.readings_to_photons(self.left_eye.readings)
+        right_photons = self.readings_to_photons(self.right_eye.readings)
+        left_eye = resize(np.reshape(left_photons, (1, self.left_eye.max_photoreceptor_num, 2)) * (
+                    255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
+        right_eye = resize(np.reshape(right_photons, (1, self.right_eye.max_photoreceptor_num, 2)) * (
+                    255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
+        eyes = np.hstack((left_eye, np.zeros((20, 100, 2)), right_eye))
         eyes[eyes < 0] = 0
         eyes[eyes > 255] = 255
         return eyes

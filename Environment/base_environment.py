@@ -131,7 +131,12 @@ class BaseEnvironment:
         arena[:, 0, 0] = np.ones(self.env_variables['height']) * 255
         arena[:, self.env_variables['width'] - 1, 0] = np.ones(self.env_variables['height']) * 255
 
-        eyes = self.fish.get_visual_inputs()
+        if self.new_simulation:
+            empty_green_eyes = np.zeros((20, self.env_variables["width"], 1))
+            eyes = self.fish.get_visual_inputs_new()
+            eyes = np.concatenate((eyes[:, :, :1], empty_green_eyes, eyes[:, :, 1:]), axis=2)
+        else:
+            eyes = self.fish.get_visual_inputs()
 
         frame = np.vstack((arena, np.zeros((50, self.env_variables['width'], 3)), eyes))
 
