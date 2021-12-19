@@ -9,7 +9,7 @@ from skimage import io
 
 class NewDrawingBoard:
 
-    def __init__(self, width, height, decay_rate, photoreceptor_rf_size, using_gpu, prey_size=4, predator_size=100):
+    def __init__(self, width, height, decay_rate, photoreceptor_rf_size, using_gpu, visualise_mask, prey_size=4, predator_size=100):
 
         self.width = width
         self.height = height
@@ -17,6 +17,7 @@ class NewDrawingBoard:
         self.photoreceptor_rf_size = photoreceptor_rf_size
         self.db = None
         self.erase()
+        self.using_gpu = using_gpu
 
         self.prey_size = prey_size * 2
         self.prey_radius = prey_size
@@ -37,6 +38,10 @@ class NewDrawingBoard:
         self.mul_for_hypothetical = None
         self.add_for_hypothetical = None
         self.compute_repeated_computations()
+
+        # For debugging purposes
+        self.visualise_mask = visualise_mask
+        self.mask_buffer_time_point = None
 
     def compute_repeated_computations(self, max_line_number=20000):
         multiplication_matrix_unit = np.array([-1, 1, -1, 1])
@@ -300,25 +305,22 @@ class NewDrawingBoard:
         return np.ones((self.width, self.height, 1))
 
     def get_masked_pixels(self, fish_position, prey_locations, predator_locations, visualise_mask=False):
-        visualise_mask = False
-        if visualise_mask:
-            AV = self.chosen_math_library.array(self.db)
         A = self.chosen_math_library.array(np.delete(self.db, 1, axis=2))
         L = self.chosen_math_library.ones((self.width, self.height, 1))
         O = self.create_obstruction_mask_lines_mixed(fish_position, prey_locations, predator_locations)
-        # O = self.chosen_math_library.ones((self.width, self.height, 1))
         S = self.scatter(self.xp[:, None], self.yp[None, :], fish_position[1], fish_position[0])
 
-        if visualise_mask:
-            # plt.imshow(AV)
-            # plt.show()
-            plt.imshow(O)
-            plt.show()
-            # plt.imshow(S)
-            # plt.show()
-            # G = AV * L * O * S
-            # plt.imshow(G)
-            # plt.show()
+        if self.visualise_mask:
+            if self.visualise_mask == "O":
+                self.mask_buffer_time_point = O
+            elif self.visualise_mask == "G":
+                AV = self.chosen_math_library.array(self.db)
+                G = AV * L * O * S
+                self.mask_buffer_time_point = G
+            else:
+                print("Incorrect mask selected for saving")
+            if self.using_gpu:
+                self.mask_buffer_time_point = self.mask_buffer_time_point.get()
 
         return A * L * O * S
 
@@ -336,6 +338,7 @@ class NewDrawingBoard:
         self.draw_walls()
 
     def draw_walls(self):
+        # TODO: Make faster by saving initial
         self.db[0:2, :] = [1, 0, 0]
         self.db[self.width-1, :] = [1, 0, 0]
         self.db[:, 0] = [1, 0, 0]

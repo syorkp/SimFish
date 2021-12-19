@@ -22,7 +22,8 @@ class BaseEnvironment:
             self.board = NewDrawingBoard(self.env_variables['width'], self.env_variables['height'],
                                          decay_rate=self.env_variables['decay_rate'],
                                          photoreceptor_rf_size=max_photoreceptor_rf_size,
-                                         using_gpu=using_gpu, prey_size=self.env_variables['prey_size'],
+                                         using_gpu=using_gpu, visualise_mask=self.env_variables['visualise_mask'],
+                                         prey_size=self.env_variables['prey_size'],
                                          predator_size=self.env_variables['predator_size'])
         else:
             self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])
@@ -86,6 +87,10 @@ class BaseEnvironment:
 
         self.stimuli_information = {}
 
+        # For debugging purposes
+        self.visualise_mask = self.env_variables['visualise_mask']
+        self.mask_buffer = []
+
     def reset(self):
         self.num_steps = 0
         self.fish.hungry = 0
@@ -124,8 +129,18 @@ class BaseEnvironment:
         self.vegetation_bodies = []
         self.vegetation_shapes = []
 
+        self.mask_buffer = []
+
     def output_frame(self, activations, internal_state, scale=0.25):
+        # Saving mask frames (for debugging)
+        if self.visualise_mask:
+            frame = self.board.mask_buffer_time_point * 255.0
+            frame = rescale(frame, scale, multichannel=True, anti_aliasing=True)
+            self.mask_buffer.append(frame)
+            self.board.mask_buffer_point = None
+
         arena = self.board.db * 255.0
+        # TODO: Check if below is still necessary.
         arena[0, :, 0] = np.ones(self.env_variables['width']) * 255
         arena[self.env_variables['height'] - 1, :, 0] = np.ones(self.env_variables['width']) * 255
         arena[:, 0, 0] = np.ones(self.env_variables['height']) * 255

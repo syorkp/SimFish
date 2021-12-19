@@ -61,6 +61,10 @@ class TrainingService(BaseService):
         self.last_episodes_predators_avoided = []
         self.last_episodes_sand_grains_bumped = []
 
+        # For debugging show mask
+        self.visualise_mask = self.environment_params['visualise_mask']
+
+
     def _run(self):
         self.saver = tf.train.Saver(max_to_keep=5)
         self.init = tf.global_variables_initializer()
@@ -227,6 +231,9 @@ class TrainingService(BaseService):
             # Create the GIF
             make_gif(self.frame_buffer, f"{self.model_location}/episodes/episode-{str(self.episode_number)}.gif",
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+            if self.visualise_mask:
+                make_gif(self.simulation.mask_buffer, f"{self.model_location}/episodes/mask-buffer-episode-{str(self.episode_number)}.gif",
+                     duration=len(self.simulation.mask_buffer) * self.learning_params['time_per_step'], true_image=True)
             self.frame_buffer = []
             self.save_frames = False
 

@@ -144,9 +144,9 @@ class NaturalisticEnvironment(BaseEnvironment):
             internal_state = np.array([[in_light]])
 
         if self.new_simulation:
-            observation = self.resolve_visual_input_new(save_frames, activations, internal_state, frame_buffer)
+            observation, frame_buffer = self.resolve_visual_input_new(save_frames, activations, internal_state, frame_buffer)
         else:
-            observation = self.resolve_visual_input(save_frames, activations, internal_state, frame_buffer)
+            observation, frame_buffer = self.resolve_visual_input(save_frames, activations, internal_state, frame_buffer)
 
         return observation, reward, internal_state, done, frame_buffer
 
@@ -190,9 +190,9 @@ class NaturalisticEnvironment(BaseEnvironment):
         # self.plot_observation(observation)
 
         if self.using_gpu:
-            return observation.get()
+            return observation.get(), frame_buffer
         else:
-            return observation
+            return observation, frame_buffer
 
     def plot_observation(self, observation):
         if self.using_gpu:
