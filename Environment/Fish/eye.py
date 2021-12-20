@@ -471,13 +471,23 @@ class Eye:
 
     def pad_observation(self):
         """Makes photoreceptor input from two sources the same dimension by padding out points with their nearest values."""
-
+        # TODO: Note the switching below might be slow... Probably worth writing own function.
         if self.uv_photoreceptor_num < self.red_photoreceptor_num:
             # Using linear interpolation
             # self.readings = self.chosen_math_library.concatenate((self.red_readings, self.uv_readings[self.indices_for_padding]), axis=1)
-            self.readings = self.chosen_math_library.concatenate((self.red_readings, resize(self.uv_readings, self.red_readings.shape)), axis=1)
+            if self.using_gpu:
+                uv_readings = self.uv_readings.get()
+            else:
+                uv_readings = self.uv_readings
+            self.readings = self.chosen_math_library.concatenate((self.red_readings,
+                                                                  self.chosen_math_library.array(resize(uv_readings,
+                                                                                                        (self.red_photoreceptor_num, 1)))), axis=1)
         else:
-            self.readings = self.chosen_math_library.concatenate((resize(self.red_readings, self.uv_readings.shape), self.uv_readings), axis=1)
+            if self.using_gpu:
+                red_readings = self.red_readings.get()
+            else:
+                red_readings = self.red_readings
+            self.readings = self.chosen_math_library.concatenate((resize(red_readings, (self.uv_photoreceptor_num, 1)), self.uv_readings), axis=1)
             # self.readings = self.chosen_math_library.concatenate((self.red_readings[self.indices_for_padding], self.uv_readings), axis=1)
 
         # Used for debugging:
