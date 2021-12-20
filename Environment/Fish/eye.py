@@ -2,6 +2,7 @@ import numpy as np
 import cupy as cp
 import math
 from skimage.draw import line
+from skimage.transform import resize
 
 import matplotlib.pyplot as plt
 
@@ -26,7 +27,11 @@ class Eye:
         self.width, self.height = self.board.get_size()
         self.retinal_field_size = retinal_field
 
+        # To allow padding of channel observations if are of different size
+
         if env_variables['shared_photoreceptor_channels']:
+            if env_variables['uv_photoreceptor_num'] != env_variables['red_photoreceptor_num']:
+                print("Set numbers of UV and Red channels dont match, using UV channel number for both.")
             self.shared_photoreceptor_channels = True
 
             self.photoreceptor_num = env_variables['uv_photoreceptor_num']
@@ -60,7 +65,7 @@ class Eye:
             if env_variables['incorporate_uv_strike_zone']:
                 self.uv_photoreceptor_angles = self.update_angles_strike_zone(verg_angle, retinal_field, is_left, self.uv_photoreceptor_num)
             else:
-                self.uv_photoreceptor_angles = self.update_angles(verg_angle, retinal_field, is_left, self.uv_photoreceptor_num)
+                self.uv_photoreceptor_angles = self.update_angles(verg_angle, retinal_field, is_left, self.uv_photoreceptor_num, True)
             self.red_photoreceptor_angles = self.update_angles(verg_angle, retinal_field, is_left, self.red_photoreceptor_num)
 
             self.uv_readings = self.chosen_math_library.zeros((env_variables['uv_photoreceptor_num'], 1), 'int')
@@ -69,7 +74,8 @@ class Eye:
             self.n = self.compute_n(max([self.uv_photoreceptor_rf_size, self.red_photoreceptor_rf_size]))
 
             self.indices_for_padding = self.chosen_math_library.around(
-                self.chosen_math_library.linspace(0, self.min_photoreceptor_num - 1, self.max_photoreceptor_num)).astype(int)
+                self.chosen_math_library.linspace(0, self.min_photoreceptor_num - 1, self.max_photoreceptor_num)).astype(
+                int)
 
         # Compute repeated measures:
         self.channel_angles_surrounding = None
@@ -123,8 +129,9 @@ class Eye:
         multiplication_matrix_unit = self.chosen_math_library.array([-1, 1, -1, 1])
         self.multiplication_matrix = self.chosen_math_library.tile(multiplication_matrix_unit, (self.max_photoreceptor_num, self.n, 1))
 
-    def update_angles(self, verg_angle, retinal_field, is_left, photoreceptor_num):
-        """Set the eyes visual angles."""
+    def update_angles(self, verg_angle, retinal_field, is_left, photoreceptor_num, is_uv=False):
+        """Set the eyes visual angles to be an even distribution."""
+
         if is_left:
             min_angle = -np.pi / 2 - retinal_field / 2 + verg_angle / 2
             max_angle = -np.pi / 2 + retinal_field / 2 + verg_angle / 2
@@ -166,7 +173,19 @@ class Eye:
         differences = (differences*angle_difference)/total_difference
         cumulative_differences = np.cumsum(differences)
         photoreceptor_angles = min_angle + cumulative_differences
-        return photoreceptor_angles
+
+        # Computing Indices for resampling
+        # hypothetical_angle_range = np.linspace(min_angle, max_angle, self.max_photoreceptor_num)
+        # hypothetical_frequencies = 1/(sigma * np.sqrt(2 * np.pi)) * np.exp(-(hypothetical_angle_range-mu)**2/(2*sigma**2))
+        # hypothetical_differences = 1/hypothetical_frequencies
+        # hypothetical_differences[0] = 0
+        # hypothetical_total_difference = np.sum(hypothetical_differences)
+        # hypothetical_differences = (hypothetical_differences*angle_difference)/hypothetical_total_difference
+        # hypothetical_cumulative_differences = np.cumsum(hypothetical_differences)
+        # hypothetical_photoreceptor_angles = min_angle + hypothetical_cumulative_differences
+        # relative_indices = np.round(((hypothetical_photoreceptor_angles - min(hypothetical_photoreceptor_angles))/angle_difference) * (photoreceptor_num-1)).astype(int)
+
+        return photoreceptor_angles#, relative_indices
 
     def update_angles_strike_zone(self, verg_angle, retinal_field, is_left, photoreceptor_num):
         """Set the eyes visual angles, with the option of particular distributions."""
@@ -185,6 +204,7 @@ class Eye:
 
         # plt.scatter(computed_values, computed_values)
         # plt.show()
+        # self.indices_for_padding_uv = relative_indices
 
         return self.chosen_math_library.array(computed_values)
 
@@ -375,7 +395,15 @@ class Eye:
 
         same_values = (angles == channel_angles_surrounding) * 1
         selected_intersections = valid_intersection_coordinates[same_values == 1]
-        selected_intersections = self.chosen_math_library.reshape(selected_intersections, (n_channels, self.n, 1, 2))
+        try:
+            selected_intersections = self.chosen_math_library.reshape(selected_intersections,
+                                                                      (n_channels, self.n, 1, 2))
+        except ValueError:
+            print(f"Angles: {angles}")
+            print(f"Channel angles durrounding: {channel_angles_surrounding}")
+            print(f"Eye position: {eye_position}")
+            print(f"Fish angle: {fish_angle}")
+            print(f"Number of channels: {n_channels}")
 
         relevant_intersections_1 = selected_intersections[:, 0, :, :]
         relevant_intersections_2 = selected_intersections[:, self.n-1, :, :]
@@ -443,13 +471,59 @@ class Eye:
 
     def pad_observation(self):
         """Makes photoreceptor input from two sources the same dimension by padding out points with their nearest values."""
-        # TODO: Problem with this version - increases input from certain areas (like having areas with greater emphasis)
 
         if self.uv_photoreceptor_num < self.red_photoreceptor_num:
-            self.readings = self.chosen_math_library.concatenate((self.red_readings, self.uv_readings[self.indices_for_padding]), axis=1)
+            # Using linear interpolation
+            # self.readings = self.chosen_math_library.concatenate((self.red_readings, self.uv_readings[self.indices_for_padding]), axis=1)
+            self.readings = self.chosen_math_library.concatenate((self.red_readings, resize(self.uv_readings, self.red_readings.shape)), axis=1)
         else:
-            self.readings = self.chosen_math_library.concatenate((self.red_readings[self.indices_for_padding], self.uv_readings), axis=1)
+            self.readings = self.chosen_math_library.concatenate((resize(self.red_readings, self.uv_readings.shape), self.uv_readings), axis=1)
+            # self.readings = self.chosen_math_library.concatenate((self.red_readings[self.indices_for_padding], self.uv_readings), axis=1)
 
-
-
-
+        # Used for debugging:
+        # empty_dim = np.zeros((1, 120, 1))
+        #
+        # if self.using_gpu:
+        #     observation = self.readings.get()
+        # else:
+        #     observation = self.readings
+        # left_1 = observation[:, :] * 255
+        #
+        # left_1 = np.expand_dims(left_1, 0)
+        # left_1 = np.concatenate((left_1[:, :, :1], empty_dim, left_1[:, :, 1:]), axis=2)
+        # fig, axs = plt.subplots(2, 1, sharex=True)
+        #
+        # if self.using_gpu:
+        #     observation = readings_2.get()
+        # else:
+        #     observation = readings_2
+        # left_2 = observation[:, :] * 255
+        #
+        # left_2 = np.expand_dims(left_2, 0)
+        # left_2 = np.concatenate((left_2[:, :, :1], empty_dim, left_2[:, :, 1:]), axis=2)
+        #
+        #
+        # axs[0].imshow(left_1, aspect="auto")
+        # axs[0].set_ylabel("Left eye")
+        # axs[1].imshow(left_2, aspect="auto")
+        # axs[1].set_ylabel("Left eye")
+        #
+        # axs[1].set_xlabel("Photoreceptor")
+        # plt.show()
+        #
+        # fig, axs = plt.subplots(2, 1, sharex=True)
+        #
+        # if self.using_gpu:
+        #     observation = self.uv_readings.get()
+        # else:
+        #     observation = self.uv_readings
+        # left_3 = observation[:, :] * 255
+        #
+        # empty_dim1 = np.zeros((1, 55, 1))
+        #
+        # left_3 = np.expand_dims(left_3, 0)
+        # left_3 = np.concatenate((empty_dim1, empty_dim1, left_3[:, :, :]), axis=2)
+        #
+        # axs[1].imshow(left_3, aspect="auto")
+        # axs[1].set_ylabel("Left eye")
+        # plt.show()
