@@ -89,5 +89,5 @@
     "red_photoreceptor_num": 120,
     "shared_photoreceptor_channels": false,
     "incorporate_uv_strike_zone": true,
-    "visualise_mask": "O"
+    "visualise_mask": false
 }

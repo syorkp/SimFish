@@ -307,7 +307,10 @@ class NewDrawingBoard:
     def get_masked_pixels(self, fish_position, prey_locations, predator_locations, visualise_mask=False):
         A = self.chosen_math_library.array(np.delete(self.db, 1, axis=2))
         L = self.chosen_math_library.ones((self.width, self.height, 1))
-        O = self.create_obstruction_mask_lines_mixed(fish_position, prey_locations, predator_locations)
+        if len(prey_locations) > 0 or len(predator_locations > 0):
+            O = self.create_obstruction_mask_lines_mixed(fish_position, prey_locations, predator_locations)
+        else:
+            O = self.chosen_math_library.ones((self.width, self.height, 1))
         S = self.scatter(self.xp[:, None], self.yp[None, :], fish_position[1], fish_position[0])
 
         if self.visualise_mask:

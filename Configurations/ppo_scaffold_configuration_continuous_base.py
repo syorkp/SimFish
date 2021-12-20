@@ -120,7 +120,7 @@ env = {'width': 1500,  # arena size
        'red_photoreceptor_num': 120,
        'shared_photoreceptor_channels': False,  # Whether the two channels have the same RF angles (saves computation time)
        'incorporate_uv_strike_zone': True,
-       'visualise_mask': 'O'  # For debugging purposes.
+       'visualise_mask': False  # For debugging purposes.
        }
 
 params = {'num_actions': 10,  # size of action space
