@@ -16,6 +16,7 @@ class NewDrawingBoard:
         self.decay_rate = decay_rate
         self.photoreceptor_rf_size = photoreceptor_rf_size
         self.db = None
+        self.base_db = self.get_base_arena()
         self.erase()
         self.using_gpu = using_gpu
 
@@ -39,7 +40,6 @@ class NewDrawingBoard:
         self.add_for_hypothetical = None
         self.compute_repeated_computations()
 
-        self.base_db = self.get_base_arena(0)
 
         # For debugging purposes
         self.visualise_mask = visualise_mask
