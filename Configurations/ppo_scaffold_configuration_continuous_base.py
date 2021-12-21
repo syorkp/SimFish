@@ -120,7 +120,12 @@ env = {'width': 1500,  # arena size
        'red_photoreceptor_num': 120,
        'shared_photoreceptor_channels': False,  # Whether the two channels have the same RF angles (saves computation time)
        'incorporate_uv_strike_zone': True,
-       'visualise_mask': False  # For debugging purposes.
+       'visualise_mask': False,  # For debugging purposes.
+
+       # For dark noise:
+       'isomerization_frequency': 1.0,  # Average frequency of photoisomerization per second per photoreceptor
+       'isomerization_size': 10,
+       'sim_steps_per_second': 5
        }
 
 params = {'num_actions': 10,  # size of action space

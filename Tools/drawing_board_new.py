@@ -39,6 +39,8 @@ class NewDrawingBoard:
         self.add_for_hypothetical = None
         self.compute_repeated_computations()
 
+        self.base_db = self.get_base_arena(0)
+
         # For debugging purposes
         self.visualise_mask = visualise_mask
         self.mask_buffer_time_point = None
@@ -335,11 +337,23 @@ class NewDrawingBoard:
         return int(n)
 
     def erase(self, bkg=0):
+        self.db = np.copy(self.base_db)
+        # if bkg == 0:
+        #     self.db = np.zeros((self.height, self.width, 3), dtype=np.double)
+        # else:
+        #     self.db = np.ones((self.height, self.width, 3), dtype=np.double) * bkg
+        # self.draw_walls()
+
+    def get_base_arena(self, bkg=0):
         if bkg == 0:
-            self.db = np.zeros((self.height, self.width, 3), dtype=np.double)
+            db = np.zeros((self.height, self.width, 3), dtype=np.double)
         else:
-            self.db = np.ones((self.height, self.width, 3), dtype=np.double) * bkg
-        self.draw_walls()
+            db = np.ones((self.height, self.width, 3), dtype=np.double) * bkg
+        db[0:2, :] = [1, 0, 0]
+        db[self.width-1, :] = [1, 0, 0]
+        db[:, 0] = [1, 0, 0]
+        db[:, self.height-1] = [1, 0, 0]
+        return db
 
     def draw_walls(self):
         # TODO: Make faster by saving initial

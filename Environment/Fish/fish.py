@@ -54,6 +54,7 @@ class Fish:
         self.verg_angle = env_variables['eyes_verg_angle'] * (np.pi / 180)
         self.retinal_field = env_variables['visual_field'] * (np.pi / 180)
         self.conv_state = 0
+        self.isomerization_probability = self.env_variables['isomerization_frequency']/self.env_variables['sim_steps_per_second']
 
         if self.new_simulation:
             self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True, env_variables, dark_col, using_gpu)
@@ -279,11 +280,20 @@ class Fish:
         return photons
 
     def _readings_to_photons_new(self, readings):
-        # Without CP
-        photons = self.chosen_math_library.random.poisson(readings * self.env_variables['photon_ratio'])
-        if self.env_variables['read_noise_sigma'] > 0:
-            noise = self.chosen_math_library.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
-            photons += noise.astype(int)
+        """To simulate dark noise in photoreceptors"""
+        # Dark noise TODO: Make possible to happen multiple times per photoreceptor.
+        # TODO: Change so adds these before any interpolation otherwise may not matter.
+        dark_noise_events = self.chosen_math_library.random.choice([0, 1], size=readings.size,
+                                                                   p=[1-self.isomerization_probability, self.isomerization_probability])
+        dark_noise_events *= self.env_variables['isomerization_size']
+        dark_noise_events = self.chosen_math_library.reshape(dark_noise_events, readings.shape)
+        readings += dark_noise_events
+        photons = readings.astype(int)
+
+        # photons = self.chosen_math_library.random.poisson(readings * self.env_variables['photon_ratio'])
+        # if self.env_variables['read_noise_sigma'] > 0:
+        #     noise = self.chosen_math_library.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
+        #     photons += noise.astype(int)
             # photons = photons.clip(0, 255)
         return photons
 
