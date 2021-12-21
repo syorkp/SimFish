@@ -26,7 +26,9 @@ class BaseEnvironment:
                                          prey_size=self.env_variables['prey_size'],
                                          predator_size=self.env_variables['predator_size'],
                                          visible_scatter=self.env_variables['bkg_scatter'],
-                                         background_grating_frequency=self.env_variables['background_grating_frequency'],)
+                                         background_grating_frequency=self.env_variables['background_grating_frequency'],
+                                         dark_light_ratio=self.env_variables['dark_light_ratio'],
+                                         dark_gain=self.env_variables['dark_gain'])
         else:
             self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])
         self.draw_screen = draw_screen

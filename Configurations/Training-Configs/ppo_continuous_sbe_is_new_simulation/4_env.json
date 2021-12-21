@@ -42,7 +42,7 @@
     "immunity_steps": 65,
     "distance_from_fish": 300,
     "probability_of_predator": 0.0,
-    "dark_light_ratio": 0.0,
+    "dark_light_ratio": 0.1,
     "read_noise_sigma": 5,
     "photon_ratio": 100,
     "bkg_scatter": 0.3,

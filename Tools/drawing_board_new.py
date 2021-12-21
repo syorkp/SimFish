@@ -10,7 +10,10 @@ from skimage import io
 class NewDrawingBoard:
 
     def __init__(self, width, height, decay_rate, photoreceptor_rf_size, using_gpu, visualise_mask, prey_size=4,
-                 predator_size=100, visible_scatter=0.3, background_grating_frequency=50):
+                 predator_size=100, visible_scatter=0.3, background_grating_frequency=50, dark_light_ratio=0.0,
+                 dark_gain=0.01):
+
+        self.using_gpu = using_gpu
 
         if using_gpu:
             self.chosen_math_library = cp
@@ -25,8 +28,8 @@ class NewDrawingBoard:
         self.base_db = self.get_base_arena()
         self.base_db_illuminated = self.get_base_arena(visible_scatter)
         self.background_grating = self.get_background_grating(background_grating_frequency)
+        self.luminance_mask = self.get_luminance_mask(dark_light_ratio, dark_gain)
         self.erase()
-        self.using_gpu = using_gpu
 
         self.prey_size = prey_size * 2
         self.prey_radius = prey_size
@@ -315,9 +318,12 @@ class NewDrawingBoard:
 
         return mask
 
-    def create_luminance_mask(self):
-        # TODO: implement.
-        return np.ones((self.width, self.height, 1))
+    def get_luminance_mask(self, dark_light_ratio, dark_gain):
+        dark_field_length = int(self.width * dark_light_ratio)
+        luminance_mask = self.chosen_math_library.ones((self.width, self.height, 1))
+        luminance_mask[:dark_field_length, :, :] *= dark_gain
+        m = luminance_mask[:, :, 0]
+        return luminance_mask
 
     def get_masked_pixels(self, fish_position, prey_locations, predator_locations):
         # Arena with features
@@ -326,7 +332,8 @@ class NewDrawingBoard:
         # Combine with background grating
         AB = self.chosen_math_library.concatenate((A, self.background_grating), axis=2)
 
-        L = self.chosen_math_library.ones((self.width, self.height, 1))
+        L = self.luminance_mask
+
         if len(prey_locations) > 0 or len(predator_locations > 0):
             O = self.create_obstruction_mask_lines_mixed(fish_position, prey_locations, predator_locations)
         else:
