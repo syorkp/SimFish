@@ -325,9 +325,6 @@ class NewDrawingBoard:
 
         # Combine with background grating
         AB = self.chosen_math_library.concatenate((A, self.background_grating), axis=2)
-        plt.imshow(self.background_grating)
-        plt.show()
-
 
         L = self.chosen_math_library.ones((self.width, self.height, 1))
         if len(prey_locations) > 0 or len(predator_locations > 0):
