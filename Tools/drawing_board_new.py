@@ -281,20 +281,21 @@ class NewDrawingBoard:
         full_set = full_set.reshape(-1, 2)
         mask = self.chosen_math_library.ones((1500, 1500), dtype=int)
 
-        mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
+        # mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
 
         # For debugging:
-        # try:
-        #     mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
-        # except IndexError:
-        #     print("IndexError")
-        #     full_set[full_set > 1499] = 1499
-        #     full_set[full_set < 0] = 0
-        #     mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
-        #
-        #     plt.imshow(mask)
-        #     plt.scatter(prey_locations[:, 0], prey_locations[:, 1])
-        #     plt.show()
+        try:
+            mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
+        except IndexError:
+            print("IndexError")
+            full_set[full_set > 1499] = 1499
+            full_set[full_set < 0] = 0
+            mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
+
+            plt.imshow(mask)
+            plt.scatter(prey_locations[:, 0], prey_locations[:, 1])
+            plt.show()
+            mask = None
 
         mask = self.chosen_math_library.expand_dims(mask, 2)
 

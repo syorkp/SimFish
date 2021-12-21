@@ -336,11 +336,9 @@ class Eye:
     def get_sector_vertices(self, eye_x, eye_y, fish_angle, channel_angles_surrounding, n_channels):
         # TODO: Make suitable for different sets of photoreceptors
         """Uses lines method to return the vertices of all photoreceptor segments."""
-        # Make sure is in desired range (PR_N x n) TODO: might need to find way of doing it multiple times e.g. by // operation
-        below_range = (channel_angles_surrounding < 0) * self.chosen_math_library.pi * 2
-        channel_angles_surrounding = channel_angles_surrounding + below_range
-        above_range = (channel_angles_surrounding > self.chosen_math_library.pi * 2) * -self.chosen_math_library.pi * 2
-        channel_angles_surrounding = channel_angles_surrounding + above_range
+        # Make sure is in desired range (PR_N x n)
+        channel_angles_surrounding_scaling = (channel_angles_surrounding // (self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
+        channel_angles_surrounding = channel_angles_surrounding + channel_angles_surrounding_scaling
 
         # Compute m using tan (PR_N x n)
         m = self.chosen_math_library.tan(channel_angles_surrounding)
@@ -381,11 +379,9 @@ class Eye:
 
         angles = self.chosen_math_library.arctan2(possible_vectors[:, :, :, 1], possible_vectors[:, :, :, 0])
 
-        # Make sure angles are in correct range. TODO: be aware might need to repeat multiple times later
-        below_range = (angles < 0) * self.chosen_math_library.pi * 2
-        angles = angles + below_range
-        above_range = (angles > self.chosen_math_library.pi * 2) * -self.chosen_math_library.pi * 2
-        angles = angles + above_range
+        # Make sure is in desired range (PR_N x n)
+        angles_scaling = (angles // (self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
+        angles = angles + angles_scaling
 
         angles = self.chosen_math_library.round(angles, 2)
         channel_angles_surrounding = self.chosen_math_library.round(channel_angles_surrounding, 2)
