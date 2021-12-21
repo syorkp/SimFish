@@ -9,7 +9,13 @@ from skimage import io
 
 class NewDrawingBoard:
 
-    def __init__(self, width, height, decay_rate, photoreceptor_rf_size, using_gpu, visualise_mask, prey_size=4, predator_size=100):
+    def __init__(self, width, height, decay_rate, photoreceptor_rf_size, using_gpu, visualise_mask, prey_size=4,
+                 predator_size=100, visible_scatter=0.3, background_grating_frequency=50):
+
+        if using_gpu:
+            self.chosen_math_library = cp
+        else:
+            self.chosen_math_library = np
 
         self.width = width
         self.height = height
@@ -17,6 +23,8 @@ class NewDrawingBoard:
         self.photoreceptor_rf_size = photoreceptor_rf_size
         self.db = None
         self.base_db = self.get_base_arena()
+        self.base_db_illuminated = self.get_base_arena(visible_scatter)
+        self.background_grating = self.get_background_grating(background_grating_frequency)
         self.erase()
         self.using_gpu = using_gpu
 
@@ -25,10 +33,6 @@ class NewDrawingBoard:
         self.predator_size = predator_size * 2
         self.predator_radius = predator_size
 
-        if using_gpu:
-            self.chosen_math_library = cp
-        else:
-            self.chosen_math_library = np
 
         self.xp, self.yp = self.chosen_math_library.arange(self.width), self.chosen_math_library.arange(self.height)
 
@@ -40,10 +44,18 @@ class NewDrawingBoard:
         self.add_for_hypothetical = None
         self.compute_repeated_computations()
 
-
         # For debugging purposes
         self.visualise_mask = visualise_mask
         self.mask_buffer_time_point = None
+
+    def get_background_grating(self, frequency):
+        base_unit = self.chosen_math_library.concatenate((self.chosen_math_library.ones((1, frequency)),
+                                                          self.chosen_math_library.zeros((1, frequency))), axis=1)
+        number_required = int(self.width / frequency)
+        full_width = self.chosen_math_library.tile(base_unit, number_required)[:, :self.width]
+        full_arena = self.chosen_math_library.repeat(full_width, self.height, axis=0)
+        full_arena = self.chosen_math_library.expand_dims(full_arena, 2)
+        return full_arena
 
     def compute_repeated_computations(self, max_line_number=20000):
         multiplication_matrix_unit = np.array([-1, 1, -1, 1])
@@ -307,8 +319,16 @@ class NewDrawingBoard:
         # TODO: implement.
         return np.ones((self.width, self.height, 1))
 
-    def get_masked_pixels(self, fish_position, prey_locations, predator_locations, visualise_mask=False):
+    def get_masked_pixels(self, fish_position, prey_locations, predator_locations):
+        # Arena with features
         A = self.chosen_math_library.array(np.concatenate((self.db[:, :, :1], self.db[:, :, 2:]), axis=2))
+
+        # Combine with background grating
+        AB = self.chosen_math_library.concatenate((A, self.background_grating), axis=2)
+        plt.imshow(self.background_grating)
+        plt.show()
+
+
         L = self.chosen_math_library.ones((self.width, self.height, 1))
         if len(prey_locations) > 0 or len(predator_locations > 0):
             O = self.create_obstruction_mask_lines_mixed(fish_position, prey_locations, predator_locations)
@@ -328,7 +348,7 @@ class NewDrawingBoard:
             if self.using_gpu:
                 self.mask_buffer_time_point = self.mask_buffer_time_point.get()
 
-        return A * L * O * S
+        return AB * L * O * S
 
     def compute_n(self, angular_size, max_separation=1):
         max_dist = (self.width**2 + self.height**2)**0.5
@@ -337,14 +357,17 @@ class NewDrawingBoard:
         return int(n)
 
     def erase(self, bkg=0):
-        self.db = np.copy(self.base_db)
+        if bkg == 0:
+            self.db = np.copy(self.base_db)
+        else:
+            self.db = np.copy(self.base_db_illuminated)
         # if bkg == 0:
         #     self.db = np.zeros((self.height, self.width, 3), dtype=np.double)
         # else:
         #     self.db = np.ones((self.height, self.width, 3), dtype=np.double) * bkg
         # self.draw_walls()
 
-    def get_base_arena(self, bkg=0):
+    def get_base_arena(self, bkg=0.0):
         if bkg == 0:
             db = np.zeros((self.height, self.width, 3), dtype=np.double)
         else:

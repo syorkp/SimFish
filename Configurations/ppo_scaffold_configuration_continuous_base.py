@@ -124,8 +124,11 @@ env = {'width': 1500,  # arena size
 
        # For dark noise:
        'isomerization_frequency': 1.0,  # Average frequency of photoisomerization per second per photoreceptor
-       'isomerization_size': 10,
-       'sim_steps_per_second': 5
+       'isomerization_size': 0.1,
+       'sim_steps_per_second': 5,
+
+       # For extra layer motion:
+       'background_grating_frequency': 50,
        }
 
 params = {'num_actions': 10,  # size of action space

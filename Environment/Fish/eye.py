@@ -43,7 +43,7 @@ class Eye:
                 self.photoreceptor_angles = self.update_angles_strike_zone(verg_angle, retinal_field, is_left, self.photoreceptor_num)
             else:
                 self.photoreceptor_angles = self.update_angles(verg_angle, retinal_field, is_left, self.photoreceptor_num)
-            self.readings = self.chosen_math_library.zeros((self.photoreceptor_num, 2), 'int')
+            self.readings = self.chosen_math_library.zeros((self.photoreceptor_num, 3), 'int')  # Three dimensions: Red, UV, and background (red)
 
             self.n = self.compute_n(self.photoreceptor_rf_size)
 
@@ -221,12 +221,13 @@ class Eye:
 
             # Red Angles with respect to fish (doubled) (PR_N x n)
             channel_angles_surrounding = self.channel_angles_surrounding_2 + fish_angle
-            self.red_readings = self._read(masked_arena_pixels[:, :, 0:1], eye_x, eye_y, channel_angles_surrounding, self.red_photoreceptor_num)
+            red_arena_pixels = self.chosen_math_library.concatenate((masked_arena_pixels[:, :, 0:1], masked_arena_pixels[:, :, 2:]), axis=2)
+            self.red_readings = self._read(red_arena_pixels, eye_x, eye_y, channel_angles_surrounding, self.red_photoreceptor_num)
 
             if self.red_photoreceptor_num != self.uv_photoreceptor_num:
                 self.pad_observation()
             else:
-                self.readings = self.chosen_math_library.concatenate((self.uv_readings, self.red_readings), axis=1)
+                self.readings = self.chosen_math_library.concatenate((self.red_readings[:, 0:1], self.uv_readings, self.red_readings[:, 2:]), axis=1)
 
     def _read(self, masked_arena_pixels, eye_x, eye_y, channel_angles_surrounding, n_channels):
         """Lines method to return pixel sum for all points for each photoreceptor, over its segment."""
@@ -483,7 +484,9 @@ class Eye:
                 red_readings = self.red_readings.get()
             else:
                 red_readings = self.red_readings
-            self.readings = self.chosen_math_library.concatenate((resize(red_readings, (self.uv_photoreceptor_num, 1)), self.uv_readings), axis=1)
+            red_field = resize(red_readings[:, 0:1], (self.uv_photoreceptor_num, 1))
+            red_background = resize(red_readings[:, 1:], (self.uv_photoreceptor_num, 1))
+            self.readings = self.chosen_math_library.concatenate((red_field, self.uv_readings, red_background), axis=1)
             # self.readings = self.chosen_math_library.concatenate((self.red_readings[self.indices_for_padding], self.uv_readings), axis=1)
 
         # Used for debugging:

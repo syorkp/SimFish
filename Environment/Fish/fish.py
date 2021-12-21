@@ -285,17 +285,10 @@ class Fish:
         # TODO: Change so adds these before any interpolation otherwise may not matter.
         dark_noise_events = self.chosen_math_library.random.choice([0, 1], size=readings.size,
                                                                    p=[1-self.isomerization_probability, self.isomerization_probability])
-        dark_noise_events *= self.env_variables['isomerization_size']
+        dark_noise_events = dark_noise_events * self.env_variables['isomerization_size']
         dark_noise_events = self.chosen_math_library.reshape(dark_noise_events, readings.shape)
         readings += dark_noise_events
-        photons = readings.astype(int)
-
-        # photons = self.chosen_math_library.random.poisson(readings * self.env_variables['photon_ratio'])
-        # if self.env_variables['read_noise_sigma'] > 0:
-        #     noise = self.chosen_math_library.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
-        #     photons += noise.astype(int)
-            # photons = photons.clip(0, 255)
-        return photons
+        return readings * 100  # TODO: Deal with scaling in more systematic way - store all photoreceptor values over a few trials and find what ranges are and how to scale them properly.
 
     def get_visual_inputs(self):
         left_photons =  self.readings_to_photons(self.left_eye.readings)

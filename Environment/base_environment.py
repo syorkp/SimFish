@@ -24,7 +24,9 @@ class BaseEnvironment:
                                          photoreceptor_rf_size=max_photoreceptor_rf_size,
                                          using_gpu=using_gpu, visualise_mask=self.env_variables['visualise_mask'],
                                          prey_size=self.env_variables['prey_size'],
-                                         predator_size=self.env_variables['predator_size'])
+                                         predator_size=self.env_variables['predator_size'],
+                                         visible_scatter=self.env_variables['bkg_scatter'],
+                                         background_grating_frequency=self.env_variables['background_grating_frequency'],)
         else:
             self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])
         self.draw_screen = draw_screen

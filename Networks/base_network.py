@@ -23,7 +23,7 @@ class BaseNetwork:
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
 
         if new_simulation:
-            n_channel_dims = 2
+            n_channel_dims = 3
         else:
             n_channel_dims = 3
         self.observation = tf.placeholder(shape=[None, n_channel_dims, 2], dtype=tf.float32, name='obs')

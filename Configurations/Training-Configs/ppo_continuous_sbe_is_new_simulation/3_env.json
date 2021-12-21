@@ -91,6 +91,7 @@
     "incorporate_uv_strike_zone": true,
     "visualise_mask": false,
     "isomerization_frequency": 1.0,
-    "isomerization_size": 10,
-    "sim_steps_per_second": 5
+    "isomerization_size": 0.1,
+    "sim_steps_per_second": 5,
+    "background_grating_frequency": 50
 }
