@@ -23,7 +23,7 @@ env = {'width': 1500,  # arena size
        'fish_tail_length': 70.,
        'eyes_verg_angle': 77.,  # in deg
        'visual_field': 163.,  # single eye angular visual field
-       'eyes_biasx': 15,  # distance of eyes from midline
+       'eyes_biasx': 2.5,  # distance of eyes from midline - interretinal distance of 0.5mm
        'num_photoreceptors': 120,  # number of visual 'rays' per eye
        'min_vis_dist': 20,
        'max_vis_dist': 180,
@@ -113,11 +113,11 @@ env = {'width': 1500,  # arena size
        'cs_required': False,
 
        # New simulation variables
-       'decay_rate': 0.01,
-       'uv_photoreceptor_rf_size': 0.01,
-       'red_photoreceptor_rf_size': 0.01,
-       'uv_photoreceptor_num': 55,
-       'red_photoreceptor_num': 120,
+       'decay_rate': 0.01,  # For scatter mask (eyeballed it for practical reasons) # NO DATA YET
+       'uv_photoreceptor_rf_size': 0.014,  # Pi Radians (0.8 degrees) - Yoshimatsu et al. (2019)
+       'red_photoreceptor_rf_size': 0.01,  # NO DATA YET
+       'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
+       'red_photoreceptor_num': 120,  # NO DATA YET
        'shared_photoreceptor_channels': False,  # Whether the two channels have the same RF angles (saves computation time)
        'incorporate_uv_strike_zone': True,
        'strike_zone_sigma': 1,  # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
@@ -125,8 +125,8 @@ env = {'width': 1500,  # arena size
 
        # For dark noise:
        'isomerization_frequency': 1.0,  # Average frequency of photoisomerization per second per photoreceptor
-       'max_isomerization_size': 0.01,
-       'sim_steps_per_second': 5,
+       'max_isomerization_size': 0.01,  # TODO: Calibrated to produce events of similar size to practical visual distance.
+       'sim_steps_per_second': 5,  # For converting isomerization frequency.
 
        # For extra layer motion:
        'background_grating_frequency': 50,
@@ -135,6 +135,10 @@ env = {'width': 1500,  # arena size
        'red_scaling_factor': 0.2,  # max was 3.44
        'uv_scaling_factor': 0.2,  # max was 4.1
        'red_2_scaling_factor': 0.01,  # max was 64.2
+
+       'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
+
+       'displacement_scaling_factor': 0.005,  # Multiplied by previous impulse size to cause displacement of nearby features.
        }
 
 params = {'num_actions': 10,  # size of action space

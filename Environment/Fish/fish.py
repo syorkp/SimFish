@@ -77,7 +77,7 @@ class Fish:
         self.touched_edge = False
         self.touched_predator = False
         self.making_capture = False
-        self.prev_action_impulse = 0  # TODO: Find out what this does
+        self.prev_action_impulse = 0
         self.using_gpu = using_gpu
 
         if using_gpu:
@@ -124,7 +124,8 @@ class Fish:
             self.head.color = [1, 1, 1]
         elif action == 6:  # do nothing:
             reward = -self.env_variables['rest_cost']
-        # TODO: Create actual actions for the below
+
+        # Note that the following are just copies of J-turns to prevent errors. This function is from old version.
         elif action == 7:  # c start right
             reward = -self.env_variables['j_turn_cost']
             self.body.angle += self.env_variables['j_turn_dir_change']
@@ -135,7 +136,6 @@ class Fish:
             self.body.angle -= self.env_variables['j_turn_dir_change']
             self.body.apply_impulse_at_local_point((self.env_variables['j_turn_impulse'], 0))
             self.head.color = [1, 1, 1]
-
         elif action == 9:  # Approach swim.
             reward = -self.env_variables['forward_swim_cost']
             self.body.apply_impulse_at_local_point((self.env_variables['forward_swim_impulse'], 0))
@@ -265,7 +265,6 @@ class Fish:
         return -self.env_variables['j_turn_cost']
 
     def readings_to_photons(self, readings):
-        # TODO: ENV CHANGE HERE
         if self.new_simulation:
             return self._readings_to_photons_new(readings)
         else:
@@ -280,7 +279,7 @@ class Fish:
         return photons
 
     def _readings_to_photons_new(self, readings):
-        """To simulate dark noise in photoreceptors"""
+        """To simulate dark noise in photoreceptors. NO LONGER USED - ACHIEVED IN EYES"""
         # Scaling
         readings[:, 0] *= self.env_variables['red_scaling_factor']
         readings[:, 1] *= self.env_variables['uv_scaling_factor']
@@ -288,7 +287,6 @@ class Fish:
         readings[readings > 1] = 1
 
         # Add dark noise
-        #         # TODO: Change so adds these before any interpolation otherwise may not matter.
         dark_noise_events = self.chosen_math_library.random.choice([0, 1], size=readings.size,
                                                                    p=[1-self.isomerization_probability, self.isomerization_probability]).astype(float)
         variability = self.chosen_math_library.random.rand(readings.size)

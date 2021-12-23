@@ -107,7 +107,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         if self.predator_body is not None:
             self.fish.stress += 0.5
 
-        # TODO: add below to function for clarity.
+        # TODO: Make step elements clearer by having them call their own methods.
         if self.predator_shape is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
                 self.num_steps > self.env_variables['immunity_steps'] and not self.check_fish_near_vegetation():
             self.create_realistic_predator()
@@ -133,7 +133,6 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.fish.touched_predator = False
 
             if self.show_all:
-                # TODO: ENV CHANGE
                 self.board.erase()
                 self.draw_shapes()
                 if self.draw_screen:
@@ -144,7 +143,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.board.erase()
         self.draw_shapes()
 
-        # Calculate internal state TODO: Moved this above first of visual input function
+        # Calculate internal state
         in_light = self.fish.body.position[0] > self.dark_col
         if self.env_variables['hunger'] and self.env_variables['stress']:
             internal_state = np.array([[in_light, self.fish.hungry, self.fish.stress]])
@@ -201,8 +200,10 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.board_image.set_data(self.output_frame(activations, internal_state, scale=0.5) / 255.)
                 plt.pause(0.000001)
 
-        observation = self.chosen_math_library.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
-                                 self.fish.readings_to_photons(self.fish.right_eye.readings)))
+        # observation = self.chosen_math_library.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
+        #                                                self.fish.readings_to_photons(self.fish.right_eye.readings)))
+        observation = self.chosen_math_library.dstack((self.fish.left_eye.readings,
+                                                       self.fish.right_eye.readings))
         # self.plot_observation(observation)
 
         if self.using_gpu:

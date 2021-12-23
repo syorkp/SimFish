@@ -309,25 +309,15 @@ class BaseEnvironment:
         print(" Touched edge.")
         new_position_x = self.fish.body.position[0]
         new_position_y = self.fish.body.position[1]
-        # if new_position_x < 30:  # Wall d
-        #     new_position_x += self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
-        # elif new_position_x > self.env_variables['width'] - 30:  # wall b
-        #     new_position_x -= self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
-        # if new_position_y < 30:  # wall a
-        #     new_y += self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
-        # elif new_position_y > self.env_variables['height'] - 30:  # wall c
-        #     new_position_y -= self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
 
-        # TODO: Make 30 a buffer region
-        if new_position_x < 40:  # Wall d
-            new_position_x = 40 + self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
-        elif new_position_x > self.env_variables['width'] - 40:  # wall b
-            new_position_x = self.env_variables['width'] - (40 + self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"])
-        if new_position_y < 40:  # wall a
-            new_position_y = 40 + self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
-        elif new_position_y > self.env_variables['height'] - 40:  # wall c
-            new_position_y = self.env_variables['height'] - (40 + self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"])
-
+        if new_position_x < self.env_variables['wall_buffer_distance']:  # Wall d
+            new_position_x = self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+        elif new_position_x > self.env_variables['width'] - self.env_variables['wall_buffer_distance']:  # wall b
+            new_position_x = self.env_variables['width'] - (self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"])
+        if new_position_y < self.env_variables['wall_buffer_distance']:  # wall a
+            new_position_y = self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+        elif new_position_y > self.env_variables['height'] - self.env_variables['wall_buffer_distance']:  # wall c
+            new_position_y = self.env_variables['height'] - (self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"])
 
         new_position = pymunk.Vec2d(new_position_x, new_position_y)
         self.fish.body.position = new_position
@@ -346,12 +336,12 @@ class BaseEnvironment:
         self.prey_shapes[-1].elasticity = 1.0
         if not self.env_variables["differential_prey"]:
             self.prey_bodies[-1].position = (
-                np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + 40,
+                np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables['wall_buffer_distance'],
                                   self.env_variables['width'] - (
-                                          self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + 40)),
-                np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + 40,
+                                          self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables['wall_buffer_distance'])),
+                np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables['wall_buffer_distance'],
                                   self.env_variables['height'] - (
-                                          self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + 40)))
+                                          self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables['wall_buffer_distance'])))
         else:
             cloud = random.choice(self.prey_cloud_locations)
             self.prey_bodies[-1].position = (
@@ -380,7 +370,7 @@ class BaseEnvironment:
     def move_prey(self):
         # Not, currently, a prey isn't guaranteed to try to escape if a loud predator is near, only if it was going to
         # move anyway. Should reconsider this in the future.
-        # TODO: largest computational overhead.
+        # TODO: Reduce computational overhead.
         to_move = np.where(np.random.rand(len(self.prey_bodies)) < self.env_variables['prey_impulse_rate'])[0]
         for ii in range(len(to_move)):
             if self.check_proximity(self.prey_bodies[to_move[ii]].position,
@@ -420,7 +410,7 @@ class BaseEnvironment:
             np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'],
                               self.env_variables['height'] - (
                                       self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'])))
-        if self.new_simulation:  # TODO: ENV CHANGE
+        if self.new_simulation:
             self.predator_shapes[-1].color = (0, 1, 0)
             # Made green so still visible to us but not to fish.
         else:
@@ -598,7 +588,7 @@ class BaseEnvironment:
             self.sand_grains_bumped += 1
 
     def get_last_action_magnitude(self):
-        return self.fish.prev_action_impulse / 200  # Scaled down both for mass effects and to make it possible for the prey to be caught. TODO: Consider making this a parameter.
+        return self.fish.prev_action_impulse * self.env_variables['displacement_scaling_factor']  # Scaled down both for mass effects and to make it possible for the prey to be caught.
 
     def displace_sand_grains(self):
         for i, body in enumerate(self.sand_grain_bodies):
@@ -624,7 +614,7 @@ class BaseEnvironment:
             np.random.randint(self.env_variables['vegetation_size'] + self.env_variables['fish_mouth_size'],
                               self.env_variables['height'] - (
                                       self.env_variables['vegetation_size'] + self.env_variables['fish_mouth_size'])))
-        self.vegetation_shapes[-1].color = (0, 1, 0)  # TODO: ENV CHANGE
+        self.vegetation_shapes[-1].color = (0, 1, 0)
         self.vegetation_shapes[-1].collision_type = 1
         self.vegetation_shapes[-1].friction = 1
 

@@ -36,7 +36,6 @@ class NewDrawingBoard:
         self.predator_size = predator_size * 2
         self.predator_radius = predator_size
 
-
         self.xp, self.yp = self.chosen_math_library.arange(self.width), self.chosen_math_library.arange(self.height)
 
         self.multiplication_matrix = None
@@ -80,11 +79,13 @@ class NewDrawingBoard:
         self.add_for_hypothetical = np.tile(add_for_hypothetical, (max_line_number, 1, 1))
 
     def scatter(self, i, j, x, y):
-        """Computes general scatter, but incorporates effect of implicit scatter from line spread."""
-        positional_mask = (((x - i) ** 2 + (y - j) ** 2) ** 0.5)
+        """Computes effects of absorption and scatter, but incorporates effect of implicit scatter from line spread."""
+        positional_mask = (((x - i) ** 2 + (y - j) ** 2) ** 0.5)  # Measure of distance from fish at every point.
         desired_scatter = self.chosen_math_library.exp(-self.decay_rate * positional_mask)
+
         implicit_scatter = self.chosen_math_library.sin(self.photoreceptor_rf_size) * positional_mask
         implicit_scatter[implicit_scatter < 1] = 1
+
         adjusted_scatter = desired_scatter * implicit_scatter
         adjusted_scatter = self.chosen_math_library.expand_dims(adjusted_scatter, 2)
         return adjusted_scatter
@@ -242,19 +243,19 @@ class NewDrawingBoard:
         same_values = (angles == channel_angles_surrounding) * 1
         selected_intersections = valid_intersection_coordinates[same_values == 1]
 
-        # TODO: replace eye position with computation of vertices
         # Finding coordinates of object extremities.
         proj_vector = selected_intersections - fish_position
         proj_distance = (proj_vector[:, 0] ** 2 + proj_vector[:, 1] ** 2) ** 0.5  # Only really need to do for one as is same distance along.
 
-        try:
-            fraction_along = distance_along/proj_distance
-        except ValueError:
-            print(f"Distance along dimensions: {distance_along.shape}")
-            print(f"Proj distance dimensions: {proj_distance.shape}")
-            print(f"Fish position: {fish_position}")
-            print(f"Prey positions: {prey_locations}")
-            print(f"Predator position: {predator_locations}")
+        fraction_along = distance_along / proj_distance
+        # try:
+        #     fraction_along = distance_along/proj_distance
+        # except ValueError:
+        #     print(f"Distance along dimensions: {distance_along.shape}")
+        #     print(f"Proj distance dimensions: {proj_distance.shape}")
+        #     print(f"Fish position: {fish_position}")
+        #     print(f"Prey positions: {prey_locations}")
+        #     print(f"Predator position: {predator_locations}")
 
         fraction_along = np.expand_dims(fraction_along, 1)
         fraction_along = np.repeat(fraction_along, 2, 1)
@@ -276,7 +277,7 @@ class NewDrawingBoard:
         min_y = np.min(vertices_yvals, axis=1)
         max_y = np.max(vertices_yvals, axis=1)
 
-        # SEGMENT COMPUTATION  # TODO: Make sure this is enough to cover span.CHANGD HERE
+        # SEGMENT COMPUTATION
         x_lens = np.rint(max_x - min_x)
         y_lens = np.rint(max_y - min_y)
 
@@ -298,21 +299,21 @@ class NewDrawingBoard:
         full_set = full_set.reshape(-1, 2)
         mask = self.chosen_math_library.ones((1500, 1500), dtype=int)
 
-        # mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
+        mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
 
         # For debugging:
-        try:
-            mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
-        except IndexError:
-            print("IndexError")
-            full_set[full_set > 1499] = 1499
-            full_set[full_set < 0] = 0
-            mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
-
-            plt.imshow(mask)
-            plt.scatter(prey_locations[:, 0], prey_locations[:, 1])
-            plt.show()
-            mask = None
+        # try:
+        #     mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
+        # except IndexError:
+        #     print("IndexError")
+        #     full_set[full_set > 1499] = 1499
+        #     full_set[full_set < 0] = 0
+        #     mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
+        #
+        #     plt.imshow(mask)
+        #     plt.scatter(prey_locations[:, 0], prey_locations[:, 1])
+        #     plt.show()
+        #     mask = None
 
         mask = self.chosen_math_library.expand_dims(mask, 2)
 

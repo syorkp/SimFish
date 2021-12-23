@@ -80,6 +80,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.fish.hungry = 0
 
     def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None):
+        # TODO: Update for new simulation.
         if self.reset_at_interval and self.num_steps % self.reset_interval == 0:
             self.special_reset()
         if frame_buffer is None:
