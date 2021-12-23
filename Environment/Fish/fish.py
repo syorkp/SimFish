@@ -281,14 +281,22 @@ class Fish:
 
     def _readings_to_photons_new(self, readings):
         """To simulate dark noise in photoreceptors"""
-        # Dark noise TODO: Make possible to happen multiple times per photoreceptor.
-        # TODO: Change so adds these before any interpolation otherwise may not matter.
+        # Scaling
+        readings[:, 0] *= self.env_variables['red_scaling_factor']
+        readings[:, 1] *= self.env_variables['uv_scaling_factor']
+        readings[:, 2] *= self.env_variables['red_2_scaling_factor']
+        readings[readings > 1] = 1
+
+        # Add dark noise
+        #         # TODO: Change so adds these before any interpolation otherwise may not matter.
         dark_noise_events = self.chosen_math_library.random.choice([0, 1], size=readings.size,
-                                                                   p=[1-self.isomerization_probability, self.isomerization_probability])
-        dark_noise_events = dark_noise_events * self.env_variables['isomerization_size']
+                                                                   p=[1-self.isomerization_probability, self.isomerization_probability]).astype(float)
+        variability = self.chosen_math_library.random.rand(readings.size)
+        dark_noise_events *= variability
+        dark_noise_events = dark_noise_events * self.env_variables['max_isomerization_size']
         dark_noise_events = self.chosen_math_library.reshape(dark_noise_events, readings.shape)
         readings += dark_noise_events
-        return readings * 100  # TODO: Deal with scaling in more systematic way - store all photoreceptor values over a few trials and find what ranges are and how to scale them properly.
+        return readings
 
     def get_visual_inputs(self):
         left_photons =  self.readings_to_photons(self.left_eye.readings)
@@ -309,9 +317,9 @@ class Fish:
         else:
             left_photons = self.readings_to_photons(self.left_eye.readings)
             right_photons = self.readings_to_photons(self.right_eye.readings)
-        left_eye = resize(np.reshape(left_photons, (1, self.left_eye.max_photoreceptor_num, 2)) * (
+        left_eye = resize(np.reshape(left_photons, (1, self.left_eye.max_photoreceptor_num, 3)) * (
                     255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
-        right_eye = resize(np.reshape(right_photons, (1, self.right_eye.max_photoreceptor_num, 2)) * (
+        right_eye = resize(np.reshape(right_photons, (1, self.right_eye.max_photoreceptor_num, 3)) * (
                     255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
         eyes = np.hstack((left_eye, np.zeros((20, 100, 2)), right_eye))
         eyes[eyes < 0] = 0

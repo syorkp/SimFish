@@ -40,7 +40,7 @@ class Eye:
             self.max_photoreceptor_num = self.photoreceptor_num
 
             if env_variables['incorporate_uv_strike_zone']:
-                self.photoreceptor_angles = self.update_angles_strike_zone(verg_angle, retinal_field, is_left, self.photoreceptor_num)
+                self.photoreceptor_angles = self.update_angles_strike_zone(verg_angle, retinal_field, is_left, self.photoreceptor_num, env_variables["strike_zone_sigma"])
             else:
                 self.photoreceptor_angles = self.update_angles(verg_angle, retinal_field, is_left, self.photoreceptor_num)
             self.readings = self.chosen_math_library.zeros((self.photoreceptor_num, 3), 'int')  # Three dimensions: Red, UV, and background (red)
@@ -63,7 +63,7 @@ class Eye:
             self.min_photoreceptor_num = min([self.uv_photoreceptor_num, self.red_photoreceptor_num])
 
             if env_variables['incorporate_uv_strike_zone']:
-                self.uv_photoreceptor_angles = self.update_angles_strike_zone(verg_angle, retinal_field, is_left, self.uv_photoreceptor_num)
+                self.uv_photoreceptor_angles = self.update_angles_strike_zone(verg_angle, retinal_field, is_left, self.uv_photoreceptor_num, env_variables["strike_zone_sigma"])
             else:
                 self.uv_photoreceptor_angles = self.update_angles(verg_angle, retinal_field, is_left, self.uv_photoreceptor_num, True)
             self.red_photoreceptor_angles = self.update_angles(verg_angle, retinal_field, is_left, self.red_photoreceptor_num)
@@ -156,13 +156,12 @@ class Eye:
 
         return np.array(sorted(sampled_values))
 
-    def create_half_normal_distribution(self, min_angle, max_angle, photoreceptor_num):
+    def create_half_normal_distribution(self, min_angle, max_angle, photoreceptor_num, sigma=1):
         # IDEA: Could use normal distribution equation to produce a set of differences between values (by dividing array
         # of 1s by density), then generating difference.
         # TODO: Handling of mu and sigma
         # TODO: selection of range based on which parts of normal distribtuion to approximate.
         mu = 0
-        sigma = 1
         angle_difference = abs(max_angle - min_angle)
 
         angle_range = np.linspace(min_angle, max_angle, photoreceptor_num)
@@ -187,7 +186,7 @@ class Eye:
 
         return photoreceptor_angles#, relative_indices
 
-    def update_angles_strike_zone(self, verg_angle, retinal_field, is_left, photoreceptor_num):
+    def update_angles_strike_zone(self, verg_angle, retinal_field, is_left, photoreceptor_num, sigma):
         """Set the eyes visual angles, with the option of particular distributions."""
 
         # Half normal distribution
@@ -200,7 +199,7 @@ class Eye:
             max_angle = np.pi / 2 + retinal_field / 2 - verg_angle / 2
 
         # sampled_values = self.sample_half_normal_distribution(min_angle, max_angle, photoreceptor_num)
-        computed_values = self.create_half_normal_distribution(min_angle, max_angle, photoreceptor_num)
+        computed_values = self.create_half_normal_distribution(min_angle, max_angle, photoreceptor_num, sigma)
 
         # plt.scatter(computed_values, computed_values)
         # plt.show()
@@ -217,7 +216,7 @@ class Eye:
             # TODO: Could be sped up by running both in parallel and splitting the results!
             # UV Angles with respect to fish (doubled) (PR_N x n)
             channel_angles_surrounding = self.channel_angles_surrounding + fish_angle
-            self.uv_readings = self._read(masked_arena_pixels[:, :, 1:], eye_x, eye_y, channel_angles_surrounding, self.uv_photoreceptor_num)
+            self.uv_readings = self._read(masked_arena_pixels[:, :, 1:2], eye_x, eye_y, channel_angles_surrounding, self.uv_photoreceptor_num)
 
             # Red Angles with respect to fish (doubled) (PR_N x n)
             channel_angles_surrounding = self.channel_angles_surrounding_2 + fish_angle
@@ -227,7 +226,7 @@ class Eye:
             if self.red_photoreceptor_num != self.uv_photoreceptor_num:
                 self.pad_observation()
             else:
-                self.readings = self.chosen_math_library.concatenate((self.red_readings[:, 0:1], self.uv_readings, self.red_readings[:, 2:]), axis=1)
+                self.readings = self.chosen_math_library.concatenate((self.red_readings[:, 0:1], self.uv_readings, self.red_readings[:, 1:]), axis=1)
 
     def _read(self, masked_arena_pixels, eye_x, eye_y, channel_angles_surrounding, n_channels):
         """Lines method to return pixel sum for all points for each photoreceptor, over its segment."""
@@ -476,9 +475,10 @@ class Eye:
                 uv_readings = self.uv_readings.get()
             else:
                 uv_readings = self.uv_readings
-            self.readings = self.chosen_math_library.concatenate((self.red_readings,
+            self.readings = self.chosen_math_library.concatenate((self.red_readings[:, 0:1],
                                                                   self.chosen_math_library.array(resize(uv_readings,
-                                                                                                        (self.red_photoreceptor_num, 1)))), axis=1)
+                                                                                                        (self.red_photoreceptor_num, 1))),
+                                                                  self.red_readings[:, 1:]), axis=1)
         else:
             if self.using_gpu:
                 red_readings = self.red_readings.get()

@@ -322,7 +322,6 @@ class NewDrawingBoard:
         dark_field_length = int(self.width * dark_light_ratio)
         luminance_mask = self.chosen_math_library.ones((self.width, self.height, 1))
         luminance_mask[:dark_field_length, :, :] *= dark_gain
-        m = luminance_mask[:, :, 0]
         return luminance_mask
 
     def get_masked_pixels(self, fish_position, prey_locations, predator_locations):
@@ -334,7 +333,7 @@ class NewDrawingBoard:
 
         L = self.luminance_mask
 
-        if len(prey_locations) > 0 or len(predator_locations > 0):
+        if len(prey_locations) > 0 or len(predator_locations) > 0:
             O = self.create_obstruction_mask_lines_mixed(fish_position, prey_locations, predator_locations)
         else:
             O = self.chosen_math_library.ones((self.width, self.height, 1))

@@ -314,7 +314,7 @@ class BaseEnvironment:
         # elif new_position_x > self.env_variables['width'] - 30:  # wall b
         #     new_position_x -= self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
         # if new_position_y < 30:  # wall a
-        #     new_position_y += self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+        #     new_y += self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
         # elif new_position_y > self.env_variables['height'] - 30:  # wall c
         #     new_position_y -= self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
 

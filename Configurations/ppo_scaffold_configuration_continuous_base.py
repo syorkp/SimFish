@@ -120,15 +120,21 @@ env = {'width': 1500,  # arena size
        'red_photoreceptor_num': 120,
        'shared_photoreceptor_channels': False,  # Whether the two channels have the same RF angles (saves computation time)
        'incorporate_uv_strike_zone': True,
+       'strike_zone_sigma': 1,  # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
        'visualise_mask': False,  # For debugging purposes.
 
        # For dark noise:
        'isomerization_frequency': 1.0,  # Average frequency of photoisomerization per second per photoreceptor
-       'isomerization_size': 0.1,
+       'max_isomerization_size': 0.01,
        'sim_steps_per_second': 5,
 
        # For extra layer motion:
        'background_grating_frequency': 50,
+
+       # Observation scaling factors (to set CNN inputs into 0 to 1 range):
+       'red_scaling_factor': 0.2,  # max was 3.44
+       'uv_scaling_factor': 0.2,  # max was 4.1
+       'red_2_scaling_factor': 0.01,  # max was 64.2
        }
 
 params = {'num_actions': 10,  # size of action space

@@ -18,7 +18,19 @@ class NaturalisticEnvironment(BaseEnvironment):
         else:
             self.chosen_math_library = np
 
+        # self.mean_observation_vals = [[0, 0, 0]]
+        # self.max_observation_vals = [[0, 0, 0]]
+
     def reset(self):
+        # print(f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
+        # print(f"Mean UV: {sum([i[1] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
+        # print(f"Mean R2: {sum([i[2] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
+        #
+        # print(f"Max R: {max([i[0] for i in self.max_observation_vals])}")
+        # print(f"Max UV: {max([i[1] for i in self.max_observation_vals])}")
+        # print(f"Max R2: {max([i[2] for i in self.max_observation_vals])}")
+        self.mean_observation_vals = [[0, 0, 0]]
+        self.max_observation_vals = [[0, 0, 0]]
         super().reset()
         self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_size'] + 40,
                                                      self.env_variables['width'] - (self.env_variables[
@@ -148,6 +160,10 @@ class NaturalisticEnvironment(BaseEnvironment):
         else:
             observation, frame_buffer = self.resolve_visual_input(save_frames, activations, internal_state, frame_buffer)
 
+        # comb_obs = np.concatenate((observation[:, :, 0], observation[:, :, 1]), axis=0)
+        # self.mean_observation_vals += [np.sum(comb_obs, axis=0)/len(comb_obs)]
+        # self.max_observation_vals += [np.max(comb_obs, axis=0)]
+
         return observation, reward, internal_state, done, frame_buffer
 
     def resolve_visual_input_new(self, save_frames, activations, internal_state, frame_buffer):
@@ -212,7 +228,6 @@ class NaturalisticEnvironment(BaseEnvironment):
         plt.show()
 
     def resolve_visual_input(self, save_frames, activations, internal_state, frame_buffer):
-        # TODO: ENV CHANGE Maybe have additional visual input function?
         right_eye_pos = (
             -np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
             +np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
