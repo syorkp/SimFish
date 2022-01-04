@@ -174,17 +174,14 @@ class NaturalisticEnvironment(BaseEnvironment):
             -np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
 
         # self.show_new_channel_sectors(left_eye_pos, right_eye_pos)
-        if self.predator_body is not None:
-            predator_bodies = [self.predator_body.position]
+        if self.predator_body is not None:  # TODO: Potential speed improvement
+            predator_bodies = np.array([self.predator_body.position])
         else:
-            predator_bodies = []
-        full_masked_image = self.board.get_masked_pixels(self.fish.body.position,
-                                                         [i.position for i in self.prey_bodies],
+            predator_bodies = np.array([])
+        full_masked_image = self.board.get_masked_pixels(np.array(self.fish.body.position),
+                                                         np.array([i.position for i in self.prey_bodies]),
                                                          predator_bodies
                                                          )
-        # plt.imshow(full_masked_image * 100)
-        # plt.show()
-
         self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
         self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 

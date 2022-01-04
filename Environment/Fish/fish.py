@@ -266,7 +266,9 @@ class Fish:
 
     def readings_to_photons(self, readings):
         if self.new_simulation:
-            return self._readings_to_photons_new(readings)
+            # No longer need as is implemented at a prior step.
+            # return self._readings_to_photons_new(readings)
+            return readings
         else:
             return self._readings_to_photons(readings)
 
@@ -319,7 +321,7 @@ class Fish:
                     255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
         right_eye = resize(np.reshape(right_photons, (1, self.right_eye.max_photoreceptor_num, 3)) * (
                     255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
-        eyes = np.hstack((left_eye, np.zeros((20, 100, 2)), right_eye))
+        eyes = np.hstack((left_eye, np.zeros((20, 100, 3)), right_eye))
         eyes[eyes < 0] = 0
         eyes[eyes > 255] = 255
         return eyes

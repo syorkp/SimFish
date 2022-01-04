@@ -60,7 +60,7 @@ env = {'width': 1500,  # arena size
        'distance_from_fish': 300,  # Distance from the fish at which the predator appears.
        'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
-       'dark_light_ratio': 0.1,  # fraction of arena in the dark
+       'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
        'photon_ratio': 100,  # expected number of photons for unit brightness
        'bkg_scatter': 0.3,  # base brightness of the background
@@ -121,7 +121,7 @@ env = {'width': 1500,  # arena size
        'shared_photoreceptor_channels': False,  # Whether the two channels have the same RF angles (saves computation time)
        'incorporate_uv_strike_zone': True,
        'strike_zone_sigma': 1,  # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
-       'visualise_mask': False,  # For debugging purposes.
+       'visualise_mask': "O",  # For debugging purposes.
 
        # For dark noise:
        'isomerization_frequency': 1.0,  # Average frequency of photoisomerization per second per photoreceptor
@@ -151,9 +151,9 @@ params = {'num_actions': 10,  # size of action space
           'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
           'num_episodes': 50000,  # How many episodes of game environment to train network with.
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
-          'max_epLength': 1000,  # The max allowed length of our episode.
+          'max_epLength': 50,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
-          'summaryLength': 200,  # Number of episodes to periodically save for analysis
+          'summaryLength': 1,  # Number of episodes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
           'rnn_dim_shared': 512,  # number of rnn cells
           'extra_rnn': False,

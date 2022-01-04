@@ -232,6 +232,7 @@ class Eye:
 
         else:
             # TODO: Could be sped up by running both in parallel and splitting the results!
+            # TODO: Slight speed improvement by calling scale_readings on all then splitting them in two.
             # UV Angles with respect to fish (doubled) (PR_N x n)
             channel_angles_surrounding = self.channel_angles_surrounding + fish_angle
             uv_readings = self._read(masked_arena_pixels[:, :, 1:2], eye_x, eye_y, channel_angles_surrounding,
@@ -247,7 +248,7 @@ class Eye:
             red_readings = self._read(red_arena_pixels, eye_x, eye_y, channel_angles_surrounding,
                                       self.red_photoreceptor_num)
             red_readings_scaled = self.scale_readings(red_readings,
-                                                      self.env_variables['uv_scaling_factor'],
+                                                      self.env_variables['red_scaling_factor'],
                                                       self.env_variables['red_2_scaling_factor'])
             self.red_readings = self.add_noise_to_readings(red_readings_scaled)
 

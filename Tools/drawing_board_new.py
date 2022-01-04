@@ -2,6 +2,7 @@ import numpy as np
 import cupy as cp
 import math
 import matplotlib.pyplot as plt
+from time import time
 
 import skimage.draw as draw
 from skimage import io
@@ -50,6 +51,9 @@ class NewDrawingBoard:
         self.visualise_mask = visualise_mask
         self.mask_buffer_time_point = None
 
+        # For obstruction mask (reset each time is called).
+        self.empty_mask = self.chosen_math_library.ones((1500, 1500, 1), dtype=int)
+
     def get_background_grating(self, frequency):
         base_unit = self.chosen_math_library.concatenate((self.chosen_math_library.ones((1, frequency)),
                                                           self.chosen_math_library.zeros((1, frequency))), axis=1)
@@ -83,7 +87,9 @@ class NewDrawingBoard:
         positional_mask = (((x - i) ** 2 + (y - j) ** 2) ** 0.5)  # Measure of distance from fish at every point.
         desired_scatter = self.chosen_math_library.exp(-self.decay_rate * positional_mask)
 
-        implicit_scatter = self.chosen_math_library.sin(self.photoreceptor_rf_size) * positional_mask
+        # To offset the effect of reduced sampling further away from fish (an unwanted effect that yielded massive
+        # performance improvements). Should counter them exactly.
+        implicit_scatter = self.chosen_math_library.sin(self.photoreceptor_rf_size) * positional_mask  # TODO: dont need to compute sine each time, make parameter.
         implicit_scatter[implicit_scatter < 1] = 1
 
         adjusted_scatter = desired_scatter * implicit_scatter
@@ -91,11 +97,9 @@ class NewDrawingBoard:
         return adjusted_scatter
 
     def create_obstruction_mask_lines_mixed(self, fish_position, prey_locations, predator_locations):
-        # In future, should consider way to minimise number of lines to draw by using required number specific to each.
-        fish_position = np.array(fish_position)
-
-        # Compute all angles for prey features
-        prey_locations = np.array(prey_locations)
+        # TODO: In future, should consider way to minimise number of lines to draw by using required number specific to each.
+        # Reset empty mask
+        self.empty_mask[:] = 1
 
         # Compute prey positions relative to fish
         prey_relative_positions = prey_locations-fish_position
@@ -128,17 +132,16 @@ class NewDrawingBoard:
         prey_distance_along = np.expand_dims(prey_distance_along, 1)
         prey_distance_along = np.repeat(prey_distance_along, n_lines_prey, 1)
         prey_distance_along = np.swapaxes(prey_distance_along, 0, 1).flatten()
-        distance_along = prey_distance_along
 
         expanded_prey_locations = np.tile(prey_locations, (n_lines_prey, 1))
         prey_on_left = (expanded_prey_locations[:, 0] < fish_position[0]) * np.pi
 
-        # Compute all angles for predator features.
-        predator_locations = np.array(predator_locations)
-        n_predators = len(predator_locations)
+        # Assign to array to include predators if present
+        distance_along = prey_distance_along
+        features_on_left = prey_on_left
 
-        if n_predators > 0:
-            print("Predator present.")
+        if predator_locations.size != 0:
+            # Do the same for predator features.
             predator_relative_positions = predator_locations-fish_position
             predator_distances = (predator_relative_positions[:, 0] ** 2 + predator_relative_positions[:, 1] ** 2) ** 0.5
             predator_half_angular_size = np.arctan(self.predator_radius / predator_distances)
@@ -170,7 +173,7 @@ class NewDrawingBoard:
 
             expanded_predator_locations = np.tile(predator_locations, (n_lines_predator, 1))  # np.concatenate((prey_locations, prey_locations), axis=0)
             predators_on_left = (expanded_predator_locations[:, 0] < fish_position[0]) * np.pi
-            prey_on_left = np.concatenate((prey_on_left, predators_on_left), 0)
+            features_on_left = np.concatenate((features_on_left, predators_on_left), 0)
 
         total_lines = interpolated_line_angles.shape[0]
 
@@ -189,7 +192,7 @@ class NewDrawingBoard:
         c_exp = np.expand_dims(c, 1)
         c_exp = np.repeat(c_exp, 4, 1)
 
-        # Slicing repeated matrices:
+        # Slicing repeated matrices so have correct dimensions.
         multiplication_matrix = self.multiplication_matrix[:total_lines]
         addition_matrix = self.addition_matrix[:total_lines]
         mul1_full = self.mul1_full[:total_lines]
@@ -230,7 +233,7 @@ class NewDrawingBoard:
         angles = np.round(angles, 2)
 
         # Add adjustment for features appearing in left of visual field (needed because of angles)
-        interpolated_line_angles = interpolated_line_angles + prey_on_left
+        interpolated_line_angles = interpolated_line_angles + features_on_left
 
         # Make sure angles in correct range.
         interpolated_line_angles_scaling = (interpolated_line_angles // (np.pi * 2)) * np.pi * -2
@@ -271,7 +274,6 @@ class NewDrawingBoard:
         vertices_yvals = vertices[:, :, 1]
 
         # INTERPOLATION
-        # TODO: Probably faster way of doing below...
         min_x = np.min(vertices_xvals, axis=1)
         max_x = np.max(vertices_xvals, axis=1)
         min_y = np.min(vertices_yvals, axis=1)
@@ -297,9 +299,8 @@ class NewDrawingBoard:
         full_set = self.chosen_math_library.array(full_set)
 
         full_set = full_set.reshape(-1, 2)
-        mask = self.chosen_math_library.ones((1500, 1500), dtype=int)
 
-        mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
+        self.empty_mask[full_set[:, 1], full_set[:, 0]] = 0
 
         # For debugging:
         # try:
@@ -315,9 +316,7 @@ class NewDrawingBoard:
         #     plt.show()
         #     mask = None
 
-        mask = self.chosen_math_library.expand_dims(mask, 2)
-
-        return mask
+        return self.empty_mask
 
     def get_luminance_mask(self, dark_light_ratio, dark_gain):
         dark_field_length = int(self.width * dark_light_ratio)
@@ -332,26 +331,26 @@ class NewDrawingBoard:
         # Combine with background grating
         AB = self.chosen_math_library.concatenate((A, self.background_grating), axis=2)
 
+        # Get the luminance mask
         L = self.luminance_mask
 
-        if len(prey_locations) > 0 or len(predator_locations) > 0:
-            O = self.create_obstruction_mask_lines_mixed(fish_position, prey_locations, predator_locations)
-        else:
+        if prey_locations.size + predator_locations.size == 0:
             O = self.chosen_math_library.ones((self.width, self.height, 1))
+        else:
+            O = self.create_obstruction_mask_lines_mixed(fish_position, prey_locations, predator_locations)
         S = self.scatter(self.xp[:, None], self.yp[None, :], fish_position[1], fish_position[0])
 
-        if self.visualise_mask:
+        if self.visualise_mask:  # TODO: Potential speed improvement.
             if self.visualise_mask == "O":
                 self.mask_buffer_time_point = O
             elif self.visualise_mask == "G":
-                AV = self.chosen_math_library.array(self.db)
+                AV = self.chosen_math_library.concatenate((AB[:, :, 0:1], self.chosen_math_library.array(self.db[:, :, 1:2]), AB[:, :, 1:2]), axis=2)
                 G = AV * L * O * S
                 self.mask_buffer_time_point = G
             else:
                 print("Incorrect mask selected for saving")
             if self.using_gpu:
                 self.mask_buffer_time_point = self.mask_buffer_time_point.get()
-
         return AB * L * O * S
 
     def compute_n(self, angular_size, max_separation=1):

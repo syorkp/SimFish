@@ -517,7 +517,7 @@ class NewDrawingBoard:
         # plt.show()
         return mask
 
-    def get_masked_pixels(self, fish_position):
+    def get_masked_pixels_unused(self, fish_position):
         A = self.db
         L = self.create_luminance_mask()
         O = self.create_obstruction_mask(fish_position)

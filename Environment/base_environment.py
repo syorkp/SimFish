@@ -136,6 +136,7 @@ class BaseEnvironment:
         self.mask_buffer = []
 
     def output_frame(self, activations, internal_state, scale=0.25):
+        # TODO: Can make faster by combining different arrays at end in one step.
         # Saving mask frames (for debugging)
         if self.visualise_mask:
             frame = self.board.mask_buffer_time_point * 255.0
@@ -153,10 +154,11 @@ class BaseEnvironment:
         if self.new_simulation:
             empty_green_eyes = np.zeros((20, self.env_variables["width"], 1))
             eyes = self.fish.get_visual_inputs_new()
-            eyes = np.concatenate((eyes[:, :, :1], empty_green_eyes, eyes[:, :, 1:]), axis=2)
+            eyes = np.concatenate((eyes[:, :, :1], empty_green_eyes, eyes[:, :, 1:2]), axis=2)  # Note removes second red channel.
         else:
             eyes = self.fish.get_visual_inputs()
 
+        eyes *= 255
         frame = np.vstack((arena, np.zeros((50, self.env_variables['width'], 3)), eyes))
 
         this_ac = np.zeros((20, self.env_variables['width'], 3))
