@@ -590,7 +590,8 @@ class NewDrawingBoard:
 
     def get_masked_pixels(self, fish_position, prey_locations, predator_locations):
         # Arena with features
-        A = self.chosen_math_library.array(np.concatenate((self.db[:, :, :1], self.db[:, :, 2:]), axis=2))
+        # A = self.chosen_math_library.array(np.concatenate((self.db[:, :, :1], self.db[:, :, 2:]), axis=2))
+        A = self.chosen_math_library.concatenate((self.db[:, :, :1], self.db[:, :, 2:]), axis=2)
 
         # Combine with background grating
         AB = self.chosen_math_library.concatenate((A, self.background_grating), axis=2)
@@ -613,7 +614,7 @@ class NewDrawingBoard:
                 self.mask_buffer_time_point = O
             elif self.visualise_mask == "G":
                 AV = self.chosen_math_library.concatenate(
-                    (AB[:, :, 0:1], self.chosen_math_library.array(self.db[:, :, 1:2]), AB[:, :, 1:2]), axis=2)
+                    (AB[:, :, 0:1], self.chosen_math_library.array(self.db[:, :, 1:2]), AB[:, :, 1:2]), axis=2)  # TODO: Update here to CP.
                 G = AV * L * O * S
                 self.mask_buffer_time_point = G
             else:
@@ -630,9 +631,9 @@ class NewDrawingBoard:
 
     def erase(self, bkg=0):
         if bkg == 0:
-            self.db = np.copy(self.base_db)
+            self.db = self.chosen_math_library.copy(self.base_db)
         else:
-            self.db = np.copy(self.base_db_illuminated)
+            self.db = self.chosen_math_library.copy(self.base_db_illuminated)
         # if bkg == 0:
         #     self.db = np.zeros((self.height, self.width, 3), dtype=np.double)
         # else:
@@ -641,13 +642,13 @@ class NewDrawingBoard:
 
     def get_base_arena(self, bkg=0.0):
         if bkg == 0:
-            db = np.zeros((self.height, self.width, 3), dtype=np.double)
+            db = self.chosen_math_library.zeros((self.height, self.width, 3), dtype=np.double)
         else:
-            db = np.ones((self.height, self.width, 3), dtype=np.double) * bkg
-        db[0:2, :] = [1, 0, 0]
-        db[self.width - 1, :] = [1, 0, 0]
-        db[:, 0] = [1, 0, 0]
-        db[:, self.height - 1] = [1, 0, 0]
+            db = self.chosen_math_library.ones((self.height, self.width, 3), dtype=np.double) * bkg
+        db[0:2, :] = self.chosen_math_library.array([1, 0, 0])
+        db[self.width - 1, :] = self.chosen_math_library.array([1, 0, 0])
+        db[:, 0] = self.chosen_math_library.array([1, 0, 0])
+        db[:, self.height - 1] = self.chosen_math_library.array([1, 0, 0])
         return db
 
     def draw_walls(self):
@@ -722,7 +723,11 @@ class NewDrawingBoard:
         return self.width, self.height
 
     def show(self):
-        io.imshow(self.db)
+        if self.using_gpu:
+            io.imshow(self.db.get())
+        else:
+            io.imshow(self.db)
+
         io.show()
 
 
