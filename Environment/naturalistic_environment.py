@@ -173,7 +173,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             +np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
             -np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
 
-        # self.show_new_channel_sectors(left_eye_pos, right_eye_pos)
+        # self.show_new_channel_sectors(left_eye_pos, right_eye_pos)  # TODO: Needs to be updated.
         if self.predator_body is not None:  # TODO: Potential speed improvement
             predator_bodies = np.array([self.predator_body.position])
         else:
@@ -197,11 +197,13 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.board_image.set_data(self.output_frame(activations, internal_state, scale=0.5) / 255.)
                 plt.pause(0.000001)
 
-        # observation = self.chosen_math_library.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
-        #                                                self.fish.readings_to_photons(self.fish.right_eye.readings)))
         observation = self.chosen_math_library.dstack((self.fish.left_eye.readings,
                                                        self.fish.right_eye.readings))
-        # self.plot_observation(observation)
+        self.plot_observation(observation)
+
+        field = self.board.db
+        plt.imshow(field)
+        plt.show()
 
         if self.using_gpu:
             return observation.get(), frame_buffer
@@ -211,6 +213,8 @@ class NaturalisticEnvironment(BaseEnvironment):
     def plot_observation(self, observation):
         if self.using_gpu:
             observation = observation.get()
+        observation = np.concatenate((observation[:, 0:1, :], np.zeros((observation.shape[0], 1, observation.shape[2])), observation[:, 1:2, :]), axis=1)
+
         left_1 = observation[:, :, 0]
         right_1 = observation[:, :, 1]
 

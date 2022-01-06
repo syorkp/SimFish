@@ -589,12 +589,18 @@ class NewDrawingBoard:
         return luminance_mask
 
     def get_masked_pixels(self, fish_position, prey_locations, predator_locations):
+        """
+        Returns masked pixels in form W.H.3
+        With Red.UV.Red2
+        """
+
         # Arena with features
         # A = self.chosen_math_library.array(np.concatenate((self.db[:, :, :1], self.db[:, :, 2:]), axis=2))
         A = self.chosen_math_library.concatenate((self.db[:, :, :1], self.db[:, :, 2:]), axis=2)
 
         # Combine with background grating
         AB = self.chosen_math_library.concatenate((A, self.background_grating), axis=2)
+
 
         # Get the luminance mask
         L = self.luminance_mask
@@ -608,6 +614,13 @@ class NewDrawingBoard:
             # O = self.create_obstruction_mask_lines_mixed(fish_position, prey_locations, predator_locations)
 
         S = self.scatter(self.xp[:, None], self.yp[None, :], fish_position[1], fish_position[0])
+
+        # AV = self.chosen_math_library.concatenate(
+        #     (AB[:, :, 0:1], np.array(self.db[:, :, 1:2]), AB[:, :, 1:2]),
+        #     axis=2)
+        # G = AV * L * O * S
+        # plt.imshow(G)
+        # plt.show()
 
         if self.visualise_mask:
             if self.visualise_mask == "O":
@@ -652,7 +665,6 @@ class NewDrawingBoard:
         return db
 
     def draw_walls(self):
-        # TODO: Make faster by saving initial
         self.db[0:2, :] = [1, 0, 0]
         self.db[self.width - 1, :] = [1, 0, 0]
         self.db[:, 0] = [1, 0, 0]

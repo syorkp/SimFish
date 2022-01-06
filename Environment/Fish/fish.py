@@ -29,7 +29,7 @@ class Fish:
 
         # Mouth
         self.mouth = pymunk.Circle(self.body, env_variables['fish_mouth_size'], offset=(0, 0))
-        self.mouth.color = (1, 0, 1)
+        self.mouth.color = (0, 1, 0)
         self.mouth.elasticity = 1.0
         self.mouth.collision_type = 3
 
