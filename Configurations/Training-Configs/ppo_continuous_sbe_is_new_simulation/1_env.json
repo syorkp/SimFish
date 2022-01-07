@@ -62,7 +62,7 @@
     "capture_swim_extra_cost": 25,
     "capture_basic_reward": 10000,
     "predator_cost": 100,
-    "hunger": true,
+    "hunger": false,
     "hunger_inc_tau": 0.1,
     "hunger_dec_tau": 0.7,
     "reafference": false,
@@ -99,5 +99,15 @@
     "uv_scaling_factor": 0.2,
     "red_2_scaling_factor": 0.01,
     "wall_buffer_distance": 40,
-    "displacement_scaling_factor": 0.005
+    "displacement_scaling_factor": 0.005,
+    "ci": 0.01,
+    "ca": 0.01,
+    "cc": 0.2,
+    "baseline_decrease": 0.001,
+    "trajectory_A": 9.0,
+    "trajectory_B": 2.5,
+    "action_reward_scaling": 10,
+    "consumption_reward_scaling": 100,
+    "energy_state": false,
+    "in_light": false
 }

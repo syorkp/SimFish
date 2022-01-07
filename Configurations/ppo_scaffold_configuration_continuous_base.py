@@ -83,7 +83,7 @@ env = {'width': 1500,  # arena size
        'capture_basic_reward': 10000,
        'predator_cost': 100,
 
-       'hunger': True,
+       'hunger': False,
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
        'reafference': False,
@@ -139,6 +139,21 @@ env = {'width': 1500,  # arena size
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
 
        'displacement_scaling_factor': 0.005,  # Multiplied by previous impulse size to cause displacement of nearby features.
+
+       # For new energy state system
+       'ci': 0.01,
+       'ca': 0.01,
+       'cc': 0.2,
+       'baseline_decrease': 0.001,
+       'trajectory_A': 9.0,
+       'trajectory_B': 2.5,
+
+       'action_reward_scaling': 10,  # Arbitrary (practical) hyperparameter for penalty for action
+       'consumption_reward_scaling': 100,  # Arbitrary (practical) hyperparameter for reward for consumption
+
+       'energy_state': False,
+       #For control of in light:
+       'in_light': False,
        }
 
 params = {'num_actions': 10,  # size of action space
@@ -151,7 +166,7 @@ params = {'num_actions': 10,  # size of action space
           'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
           'num_episodes': 50000,  # How many episodes of game environment to train network with.
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
-          'max_epLength': 1000,  # The max allowed length of our episode.
+          'max_epLength': 100,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
           'summaryLength': 1,  # Number of episodes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
@@ -171,7 +186,7 @@ params = {'num_actions': 10,  # size of action space
 
           'gamma': 0.99,
           'lambda': 0.9,
-          'input_sigmas': True
+          'input_sigmas': True,
           }
 
 

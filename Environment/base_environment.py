@@ -91,6 +91,9 @@ class BaseEnvironment:
 
         self.stimuli_information = {}
 
+        # New energy system (log)
+        self.energy_level_log = []
+
         # For debugging purposes
         self.visualise_mask = self.env_variables['visualise_mask']
         self.mask_buffer = []
@@ -103,6 +106,10 @@ class BaseEnvironment:
         self.predators_avoided = 0
         self.sand_grains_bumped = 0
         self.steps_near_vegetation = 0
+        self.energy_level_log = []
+
+        # New energy system:
+        self.fish.energy_level = 1
 
         for i, shp in enumerate(self.prey_shapes):
             self.space.remove(shp, shp.body)

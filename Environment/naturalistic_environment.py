@@ -95,6 +95,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         else:
             reward = self.fish.take_action(action)
 
+
         # Add policy helper reward to encourage proximity to prey.
         for ii in range(len(self.prey_bodies)):
             if self.check_proximity(self.prey_bodies[ii].position, self.env_variables['reward_distance']):
@@ -120,7 +121,8 @@ class NaturalisticEnvironment(BaseEnvironment):
 
             self.space.step(self.env_variables['phys_dt'])
             if self.fish.prey_consumed:
-                reward += self.env_variables['capture_basic_reward'] * self.fish.hungry
+                if not self.new_simulation:
+                    reward += self.env_variables['capture_basic_reward'] * self.fish.hungry
                 self.fish.hungry *= self.env_variables['hunger_dec_tau']
                 if len(self.prey_shapes) == 0:
                     done = True
@@ -139,20 +141,39 @@ class NaturalisticEnvironment(BaseEnvironment):
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5) / 255.)
                     plt.pause(0.0001)
 
+        if self.new_simulation:
+            self.energy_level_log.append(self.fish.energy_level)
+            reward = self.fish.update_energy_level(reward, action[0], action[1], self.prey_consumed_this_step)
+
         self.num_steps += 1
         self.board.erase()
         self.draw_shapes()
 
         # Calculate internal state
-        in_light = self.fish.body.position[0] > self.dark_col
-        if self.env_variables['hunger'] and self.env_variables['stress']:
-            internal_state = np.array([[in_light, self.fish.hungry, self.fish.stress]])
+        internal_state = []
+        if self.env_variables['in_light']:
+            internal_state.append(self.fish.body.position[0] > self.dark_col)
         elif self.env_variables['hunger']:
-            internal_state = np.array([[in_light, self.fish.hungry]])
+            internal_state.append(self.fish.hungry)
         elif self.env_variables['stress']:
-            internal_state = np.array([[in_light, self.fish.stress]])
+            internal_state.append(self.fish.stress)
+        elif self.env_variables['energy_state']:
+            internal_state.append(self.fish.energy_level)
         else:
-            internal_state = np.array([[in_light]])
+            internal_state.append(0)
+        internal_state = np.array([internal_state])
+
+        # OLD:
+        # if self.env_variables['hunger'] and self.env_variables['stress']:
+        #     internal_state = np.array([[in_light, self.fish.hungry, self.fish.stress]])
+        # elif self.env_variables['hunger']:
+        #     internal_state = np.array([[in_light, self.fish.hungry]])
+        # elif self.env_variables['stress']:
+        #     internal_state = np.array([[in_light, self.fish.stress]])
+        # elif self.env_variables['energy_state']:  # TODO: Consider adding for stress as well
+        #     internal_state = np.array([[in_light, self.fish.energy_level]])
+        # else:
+        #     internal_state = np.array([[in_light]])
 
         if self.new_simulation:
             observation, frame_buffer = self.resolve_visual_input_new(save_frames, activations, internal_state, frame_buffer)
@@ -199,11 +220,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         observation = self.chosen_math_library.dstack((self.fish.left_eye.readings,
                                                        self.fish.right_eye.readings))
-        self.plot_observation(observation)
-
-        field = self.board.db
-        plt.imshow(field)
-        plt.show()
+        # self.plot_observation(observation)
 
         if self.using_gpu:
             return observation.get(), frame_buffer

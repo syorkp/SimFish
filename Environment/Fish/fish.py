@@ -80,12 +80,26 @@ class Fish:
         self.prev_action_impulse = 0
         self.using_gpu = using_gpu
 
+        # Energy system (new simulation)
+        self.energy_level = 1.0
+        self.ci = self.env_variables['ci']
+        self.ca = self.env_variables['ca']
+        self.cc = self.env_variables['cc']
+        self.baseline_decrease = self.env_variables['baseline_decrease']
+        self.trajectory_A = self.env_variables['trajectory_A']
+        self.trajectory_A2 = 1/np.exp(self.trajectory_A)
+        self.trajectory_B = self.env_variables['trajectory_B']
+        self.action_reward_scaling = self.env_variables['action_reward_scaling']
+        self.consumption_reward_scaling = self.env_variables['consumption_reward_scaling']
+
         if using_gpu:
             self.chosen_math_library = cp
         else:
             self.chosen_math_library = np
 
     def take_action(self, action):
+        """For discrete fish, overrided by continuous fish class."""
+        # TODO: Build in new simulation version here.
         if self.realistic_bouts:
             return self.take_realistic_action(action)
         else:
@@ -334,3 +348,27 @@ class Fish:
         # right_sector_vertices = self.right_eye.get_all_sectors(fish_position_r, fish_orientation)
         return left_sector_vertices, right_sector_vertices
 
+    def intake_scale(self, energy_level):
+        """Provides nonlinear scaling for consumption reward and energy level change for new simulation"""
+        return np.exp(-self.trajectory_B*energy_level)
+
+    def action_scale(self, energy_level):
+        """Provides nonlinear scaling for action penalty and energy level change for new simulation"""
+        return self.trajectory_A2 * np.exp(self.trajectory_A*energy_level)
+
+    def update_energy_level(self, reward, action, consumption):
+        """Updates the current energy state for discrete fish, overriden for continuous fish."""
+        # TODO: DOESNT WORK YET, need to track impulse and angle - best through attributes.
+        angle = 0.0
+        impulse = 0.0
+
+        intake_s = self.intake_scale(self.energy_level)
+        action_s = self.action_scale(self.energy_level)
+
+        consumption = 1.0 * consumption  # TODO: Make sure this works
+
+        energy_intake = (intake_s*consumption*self.cc)
+        energy_use = (action_s*(self.ci*impulse + self.ca*angle + self.baseline_decrease))
+        self.energy_level += energy_intake - energy_use
+        reward += (energy_intake * self.consumption_reward_scaling) - (energy_use * self.action_reward_scaling)
+        return reward
