@@ -22,6 +22,9 @@ class ContinuousFish(Fish):
     def _take_action(self, action):
         impulse = action[0]
         angle = action[1]
+        self.prev_action_impulse = impulse
+        self.prev_action_angle = angle
+
         distance = self.calculate_distance(impulse)
         reward = - self.calculate_action_cost(angle, distance) - self.env_variables['baseline_penalty']
         self.prev_action_impulse = impulse
@@ -36,16 +39,3 @@ class ContinuousFish(Fish):
         self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
         self.body.angle += angle
         return 0.0
-
-    def update_energy_level(self, reward, impulse, angle, consumption):
-        """Updates the current energy state for continuous fish, overrides in fish class."""
-        intake_s = self.intake_scale(self.energy_level)
-        action_s = self.action_scale(self.energy_level)
-
-        consumption = 1.0 * consumption  # TODO: Make sure this works
-
-        energy_intake = (intake_s * consumption * self.cc)
-        energy_use = (action_s * (self.ci * impulse + self.ca * angle + self.baseline_decrease))
-        self.energy_level += energy_intake - energy_use
-        reward += (energy_intake * self.consumption_reward_scaling) - (energy_use * self.action_reward_scaling)
-        return reward

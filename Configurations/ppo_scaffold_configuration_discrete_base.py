@@ -84,7 +84,7 @@ env = {'width': 1500,  # arena size
        'capture_basic_reward': 10000,
        'predator_cost': 100,
 
-       'hunger': True,
+       'hunger': False,
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
        'reafference': False,
@@ -111,7 +111,54 @@ env = {'width': 1500,  # arena size
        'sigma_time_constant': 0.000001,
 
        'clip_param': 0.2,
-       'cs_required': True
+       'cs_required': True,
+
+       # New simulation variables
+       'decay_rate': 0.01,  # For scatter mask (eyeballed it for practical reasons) # NO DATA YET
+       'uv_photoreceptor_rf_size': 0.014,  # Pi Radians (0.8 degrees) - Yoshimatsu et al. (2019)
+       'red_photoreceptor_rf_size': 0.01,  # NO DATA YET
+       'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
+       'red_photoreceptor_num': 120,  # NO DATA YET
+       'shared_photoreceptor_channels': False,
+       # Whether the two channels have the same RF angles (saves computation time)
+       'incorporate_uv_strike_zone': True,
+       'strike_zone_sigma': 1,
+       # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
+       'visualise_mask': False,  # For debugging purposes.
+
+       # For dark noise:
+       'isomerization_frequency': 1.0,  # Average frequency of photoisomerization per second per photoreceptor
+       'max_isomerization_size': 0.01,
+       # TODO: Calibrated to produce events of similar size to practical visual distance.
+       'sim_steps_per_second': 5,  # For converting isomerization frequency.
+
+       # For extra layer motion:
+       'background_grating_frequency': 50,
+
+       # Observation scaling factors (to set CNN inputs into 0 to 1 range):
+       'red_scaling_factor': 0.2,  # max was 3.44
+       'uv_scaling_factor': 0.2,  # max was 4.1
+       'red_2_scaling_factor': 0.01,  # max was 64.2
+
+       'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
+
+       'displacement_scaling_factor': 0.005,
+       # Multiplied by previous impulse size to cause displacement of nearby features.
+
+       # For new energy state system
+       'ci': 0.01,
+       'ca': 0.01,
+       'cc': 0.2,
+       'baseline_decrease': 0.001,
+       'trajectory_A': 9.0,
+       'trajectory_B': 2.5,
+
+       'action_reward_scaling': 10,  # Arbitrary (practical) hyperparameter for penalty for action
+       'consumption_reward_scaling': 100,  # Arbitrary (practical) hyperparameter for reward for consumption
+
+       'energy_state': True,
+       # For control of in light:
+       'in_light': False,
        }
 
 params = {'num_actions': 10,  # size of action space
@@ -124,7 +171,7 @@ params = {'num_actions': 10,  # size of action space
           'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
           'num_episodes': 50000,  # How many episodes of game environment to train network with.
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
-          'max_epLength': 1000,  # The max allowed length of our episode.
+          'max_epLength': 100,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
           'summaryLength': 200,  # Number of episodes to periodically save for analysis
           'tau': 0.001,  # target network update time constant
@@ -147,7 +194,7 @@ params = {'num_actions': 10,  # size of action space
           'input_sigmas': True
           }
 
-directory_name = "ppo_discrete_sbe"
+directory_name = "ppo_discrete_sbe_new_simulation"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):

@@ -80,7 +80,8 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.fish.hungry = 0
 
     def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None):
-        # TODO: Update for new simulation.
+        self.prey_consumed_this_step = False
+
         if self.reset_at_interval and self.num_steps % self.reset_interval == 0:
             self.special_reset()
         if frame_buffer is None:
@@ -115,6 +116,10 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5)/255.)
                     plt.pause(0.0001)
 
+        if self.new_simulation:
+            self.energy_level_log.append(self.fish.energy_level)
+            reward = self.fish.update_energy_level(reward, action[0], action[1], self.prey_consumed_this_step)
+
         self.fish.body.position = (self.env_variables['width'] / 2, self.env_variables['height'] / 2)
         self.fish.body.angle = 0
         self.fish.body.velocity = (0, 0)
@@ -123,6 +128,21 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.board.erase()
         self.draw_shapes()
 
+        # Calculate internal state
+        internal_state = []
+        if self.env_variables['in_light']:
+            internal_state.append(self.fish.body.position[0] > self.dark_col)
+        elif self.env_variables['hunger']:
+            internal_state.append(self.fish.hungry)
+        elif self.env_variables['stress']:
+            internal_state.append(self.fish.stress)
+        elif self.env_variables['energy_state']:
+            internal_state.append(self.fish.energy_level)
+        else:
+            internal_state.append(0)
+        internal_state = np.array([internal_state])
+
+        # Observation
         right_eye_pos = (-np.cos(np.pi/2-self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
                          +np.sin(np.pi/2-self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
         left_eye_pos = (+np.cos(np.pi/2-self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
@@ -130,17 +150,6 @@ class ControlledStimulusEnvironment(BaseEnvironment):
 
         self.fish.left_eye.read(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
         self.fish.right_eye.read(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
-
-        in_light = self.fish.body.position[0] > self.dark_col
-
-        if self.env_variables['hunger'] and self.env_variables['stress']:
-            internal_state = np.array([[in_light, self.fish.hungry, self.fish.stress]])
-        elif self.env_variables['hunger']:
-            internal_state = np.array([[in_light, self.fish.hungry]])
-        elif self.env_variables['stress']:
-            internal_state = np.array([[in_light, self.fish.stress]])
-        else:
-            internal_state = np.array([[in_light]])
 
         if save_frames or self.draw_screen:
             self.board.erase(bkg=self.env_variables['bkg_scatter'])

@@ -1320,6 +1320,39 @@ phase_1_test_config = [
     },
 ]
 
+phase_1_test_config_discrete = [
+    {
+        "Model Name": "ppo_jade_phase_1_test_discrete",
+        "Environment Name": "ppo_discrete_sbe_new_simulation",
+        "Trial Number": 1,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 6,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True
+    },
+]
+
+
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(phase_1_test_config, parallel_jobs=4)
+manager = TrialManager(phase_1_test_config_discrete, parallel_jobs=4)
 manager.run_priority_loop()

@@ -78,6 +78,7 @@ class Fish:
         self.touched_predator = False
         self.making_capture = False
         self.prev_action_impulse = 0
+        self.prev_action_angle = 0
         self.using_gpu = using_gpu
 
         # Energy system (new simulation)
@@ -193,7 +194,8 @@ class Fish:
         if action == 0:  # Slow2
             angle_change, distance = draw_angle_dist(8)
             reward = -self.calculate_action_cost(angle_change, distance)
-            self.body.angle += np.random.choice([-angle_change, angle_change])
+            self.prev_action_angle = np.random.choice([-angle_change, angle_change])
+            self.body.angle += self.prev_action_angle
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
             self.head.color = (0, 1, 0)
@@ -201,6 +203,7 @@ class Fish:
         elif action == 1:  # RT right
             angle_change, distance = draw_angle_dist(7)
             reward = -self.calculate_action_cost(angle_change, distance)
+            self.prev_action_angle = angle_change
             self.body.angle += angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -209,6 +212,7 @@ class Fish:
         elif action == 2:  # RT left
             angle_change, distance = draw_angle_dist(7)
             reward = -self.calculate_action_cost(angle_change, distance)
+            self.prev_action_angle = -angle_change
             self.body.angle -= angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -217,7 +221,8 @@ class Fish:
         elif action == 3:  # Short capture swim
             angle_change, distance = draw_angle_dist(0)
             reward = -self.calculate_action_cost(angle_change, distance) - self.env_variables['capture_swim_extra_cost']
-            self.body.angle += np.random.choice([-angle_change, angle_change])
+            self.prev_action_angle = np.random.choice([-angle_change, angle_change])
+            self.body.angle += self.prev_action_angle
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
             self.head.color = [1, 0, 1]
@@ -226,6 +231,7 @@ class Fish:
         elif action == 4:  # j turn right
             angle_change, distance = draw_angle_dist(4)
             reward = -self.calculate_action_cost(angle_change, distance)
+            self.prev_action_angle = angle_change
             self.body.angle += angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -234,6 +240,7 @@ class Fish:
         elif action == 5:  # j turn left
             angle_change, distance = draw_angle_dist(4)
             reward = -self.calculate_action_cost(angle_change, distance)
+            self.prev_action_angle = -angle_change
             self.body.angle -= angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -241,11 +248,13 @@ class Fish:
 
         elif action == 6:  # Do nothing
             self.prev_action_impulse = 0
+            self.prev_action_angle = 0
             reward = -self.env_variables['rest_cost']
 
         elif action == 7:  # c start right
             angle_change, distance = draw_angle_dist(5)
             reward = -self.calculate_action_cost(angle_change, distance)
+            self.prev_action_angle = angle_change
             self.body.angle += angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -254,6 +263,7 @@ class Fish:
         elif action == 8:  # c start left
             angle_change, distance = draw_angle_dist(5)
             reward = -self.calculate_action_cost(angle_change, distance)
+            self.prev_action_angle = -angle_change
             self.body.angle -= angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -262,7 +272,8 @@ class Fish:
         elif action == 9:  # Approach swim.
             angle_change, distance = draw_angle_dist(10)
             reward = -self.calculate_action_cost(angle_change, distance)
-            self.body.angle -= angle_change
+            self.prev_action_angle = np.random.choice([-angle_change, angle_change])
+            self.body.angle += self.prev_action_angle
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
             self.head.color = (0, 1, 0)
@@ -356,19 +367,15 @@ class Fish:
         """Provides nonlinear scaling for action penalty and energy level change for new simulation"""
         return self.trajectory_A2 * np.exp(self.trajectory_A*energy_level)
 
-    def update_energy_level(self, reward, action, consumption):
-        """Updates the current energy state for discrete fish, overriden for continuous fish."""
-        # TODO: DOESNT WORK YET, need to track impulse and angle - best through attributes.
-        angle = 0.0
-        impulse = 0.0
-
+    def update_energy_level(self, reward, consumption):
+        """Updates the current energy state for continuous and discrete fish."""
         intake_s = self.intake_scale(self.energy_level)
         action_s = self.action_scale(self.energy_level)
 
-        consumption = 1.0 * consumption  # TODO: Make sure this works
+        consumption = 1.0 * consumption
 
         energy_intake = (intake_s*consumption*self.cc)
-        energy_use = (action_s*(self.ci*impulse + self.ca*angle + self.baseline_decrease))
+        energy_use = (action_s*(self.ci*self.prev_action_impulse + self.ca*self.prev_action_angle + self.baseline_decrease))
         self.energy_level += energy_intake - energy_use
         reward += (energy_intake * self.consumption_reward_scaling) - (energy_use * self.action_reward_scaling)
         return reward

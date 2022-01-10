@@ -121,7 +121,7 @@ env = {'width': 1500,  # arena size
        'shared_photoreceptor_channels': False,  # Whether the two channels have the same RF angles (saves computation time)
        'incorporate_uv_strike_zone': True,
        'strike_zone_sigma': 1,  # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
-       'visualise_mask': "O",  # For debugging purposes.
+       'visualise_mask': False,  # For debugging purposes.
 
        # For dark noise:
        'isomerization_frequency': 1.0,  # Average frequency of photoisomerization per second per photoreceptor
@@ -151,7 +151,7 @@ env = {'width': 1500,  # arena size
        'action_reward_scaling': 10,  # Arbitrary (practical) hyperparameter for penalty for action
        'consumption_reward_scaling': 100,  # Arbitrary (practical) hyperparameter for reward for consumption
 
-       'energy_state': False,
+       'energy_state': True,
        #For control of in light:
        'in_light': False,
        }

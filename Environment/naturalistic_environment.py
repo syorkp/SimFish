@@ -143,7 +143,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         if self.new_simulation:
             self.energy_level_log.append(self.fish.energy_level)
-            reward = self.fish.update_energy_level(reward, action[0], action[1], self.prey_consumed_this_step)
+            reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
 
         self.num_steps += 1
         self.board.erase()
@@ -170,7 +170,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         #     internal_state = np.array([[in_light, self.fish.hungry]])
         # elif self.env_variables['stress']:
         #     internal_state = np.array([[in_light, self.fish.stress]])
-        # elif self.env_variables['energy_state']:  # TODO: Consider adding for stress as well
+        # elif self.env_variables['energy_state']:
         #     internal_state = np.array([[in_light, self.fish.energy_level]])
         # else:
         #     internal_state = np.array([[in_light]])
