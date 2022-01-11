@@ -1292,7 +1292,7 @@ phase_1_test_config = [
     {
         "Model Name": "ppo_jade_phase_1_test",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 5,
+        "Trial Number": 6,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1354,5 +1354,5 @@ phase_1_test_config_discrete = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(phase_1_test_config_discrete, parallel_jobs=4)
+manager = TrialManager(phase_1_test_config, parallel_jobs=4)
 manager.run_priority_loop()

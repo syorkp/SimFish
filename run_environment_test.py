@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import time
 
 import numpy as np
 
@@ -36,7 +37,8 @@ with open(file_path, 'r') as f:
 
 # sim_state = ProjectionEnvironment(env, stimuli, tethered=True, draw_screen=True)
 # sim_state = NaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True)
-sim_state = ContinuousNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=False, using_gpu=False)
+# sim_state = ContinuousNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=False, using_gpu=False)
+sim_state = ContinuousNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=True, using_gpu=False)
 
 q = False
 d = False
@@ -45,9 +47,14 @@ while not q:
     # action = None
     # key = input()
     # action_input = int(key)
-
+    #
     impulse = input()
     angle = input()
+
+    # impulse = 0
+    # angle = 0
+    # time.sleep(0.1)
+
     impulse = float(impulse)
     angle = float(angle)
 

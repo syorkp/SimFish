@@ -18,8 +18,15 @@ class NaturalisticEnvironment(BaseEnvironment):
         else:
             self.chosen_math_library = np
 
+        # For calibrating observation scaling
         # self.mean_observation_vals = [[0, 0, 0]]
         # self.max_observation_vals = [[0, 0, 0]]
+
+        # For currents (new simulation):
+        if self.new_simulation:
+            self.impulse_vector_field = None
+            self.coordinates_in_current = None  # May be used to provide efficient checking. Although vector comp probably faster.
+            self.create_current()
 
     def reset(self):
         # print(f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -29,8 +36,8 @@ class NaturalisticEnvironment(BaseEnvironment):
         # print(f"Max R: {max([i[0] for i in self.max_observation_vals])}")
         # print(f"Max UV: {max([i[1] for i in self.max_observation_vals])}")
         # print(f"Max R2: {max([i[2] for i in self.max_observation_vals])}")
-        self.mean_observation_vals = [[0, 0, 0]]
-        self.max_observation_vals = [[0, 0, 0]]
+        # self.mean_observation_vals = [[0, 0, 0]]
+        # self.max_observation_vals = [[0, 0, 0]]
         super().reset()
         self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_size'] + 40,
                                                      self.env_variables['width'] - (self.env_variables[
@@ -40,6 +47,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                                                          'fish_mouth_size']+40)))
         self.fish.body.angle = np.random.random() * 2 * np.pi
         self.fish.body.velocity = (0, 0)
+        self.impulse_vector_field *= np.random.choice([-1, 1], size=1, p=[0.5, 0.5]).astype(float)
+
         if self.env_variables["differential_prey"]:
             self.prey_cloud_locations = [
                 [np.random.randint(low=120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
@@ -83,7 +92,6 @@ class NaturalisticEnvironment(BaseEnvironment):
         plt.show()
 
     def simulation_step(self, action, save_frames, frame_buffer, activations, impulse):
-
         self.prey_consumed_this_step = False
         self.last_action = action
         if frame_buffer is None:
@@ -116,6 +124,8 @@ class NaturalisticEnvironment(BaseEnvironment):
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.move_prey()
             self.displace_sand_grains()
+            if self.new_simulation and self.env_variables["current_setting"]:
+                self.resolve_currents()
             if self.predator_body is not None:
                 self.move_realistic_predator()
 
@@ -210,8 +220,9 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.board.erase(bkg=self.env_variables['bkg_scatter'])
             self.draw_shapes()
             self.board.apply_light(self.dark_col, 0.7, 1)
-            self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
-            self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
+            if self.env_variables['show_channel_sectors']:
+                self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
+                self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
             if save_frames:
                 frame_buffer.append(self.output_frame(activations, internal_state, scale=0.25))
             if self.draw_screen:
@@ -272,3 +283,132 @@ class NaturalisticEnvironment(BaseEnvironment):
         observation = np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
                                  self.fish.readings_to_photons(self.fish.right_eye.readings)))
         return observation
+
+    def create_current(self):
+        """
+        Creates relevant matrices given defined currents.
+
+        Modes:
+        - Circular - Parameters:
+           * unit diameter (relative to environment, must be <1).
+           * max current strength
+           * Current variance/decay
+           * Max_current_width
+        - Diagonal (could be with or without dispersal)
+        """
+        if self.env_variables["current_setting"] == "Circular":
+            self.create_circular_current()
+        elif self.env_variables["current_setting"] == "Linear":
+            self.create_linear_current()
+        elif self.env_variables["current_setting"] == "Diagonal":
+            self.create_diagonal_current()
+        else:
+            print("Current specified incorrectly. No current created.")
+            self.impulse_vector_field = np.zeros((self.env_variables["width"], self.env_variables["height"], 2))
+
+    def create_circular_current(self):
+        unit_circle_radius = self.env_variables["unit_circle_diameter"]/2
+        circle_width = self.env_variables['current_width']
+        circle_variance = self.env_variables['current_strength_variance']
+        max_current_strength = self.env_variables['max_current_strength']
+
+        arena_center = np.array([self.env_variables["width"]/2, self.env_variables["height"]/2])
+
+        # All coordinates: TODO: Move above
+        xp, yp = np.arange(self.env_variables["width"]), np.arange(self.env_variables["height"])
+        xy, yp = np.meshgrid(xp, yp)
+        xy = np.expand_dims(xy, 2)
+        yp = np.expand_dims(yp, 2)
+        all_coordinates = np.concatenate((xy, yp), axis=2)
+        relative_coordinates = all_coordinates-arena_center  # TO compute coordinates relative to position in center
+        distances_from_center = (relative_coordinates[:, :, 0] ** 2 + relative_coordinates[:, :, 1] ** 2) ** 0.5
+        distances_from_center = np.expand_dims(distances_from_center, 2)
+
+        xy1 = relative_coordinates[:, :, 0]
+        yp1 = relative_coordinates[:, :, 1]
+        u = -yp1/np.sqrt(xy1 ** 2 + yp1 ** 2)
+        v = xy1/np.sqrt(xy1 ** 2 + yp1 ** 2)
+        # u, v = np.meshgrid(u, v)
+        u = np.expand_dims(u, 2)
+        v = np.expand_dims(v, 2)
+        vector_field = np.concatenate((u, v), axis=2)
+
+        ### Impose ND structure
+        # Compute distance from center at each point
+        absolute_distances_from_center = np.absolute(distances_from_center[:, :, 0])
+        normalised_distance_from_center = absolute_distances_from_center/np.max(absolute_distances_from_center)
+        distance_from_talweg = normalised_distance_from_center - unit_circle_radius
+        distance_from_talweg = np.abs(distance_from_talweg)
+        distance_from_talweg = np.expand_dims(distance_from_talweg, 2)
+        talweg_closeness = 1-distance_from_talweg
+        talweg_closeness = (talweg_closeness ** 2) * circle_variance
+        current_strength = (talweg_closeness/np.max(talweg_closeness)) * max_current_strength
+        current_strength = current_strength[:, :, 0]
+
+        # (Distances - optimal_distance). This forms a subtraction matrix which can be related to the variance.
+        adjusted_normalised_distance_from_center = normalised_distance_from_center ** 2
+
+        ### Set cutoffs to 0 outside width
+        inside_radius2 = (unit_circle_radius-(circle_width/2)) ** 2
+        outside_radius2 = (unit_circle_radius+(circle_width/2)) ** 2
+        inside = inside_radius2 < adjusted_normalised_distance_from_center
+        outside = adjusted_normalised_distance_from_center < outside_radius2
+        within_current = inside * outside * 1
+        current_strength = current_strength * within_current
+
+        # Scale vector field
+        current_strength = np.expand_dims(current_strength, 2)
+        vector_field = current_strength * vector_field
+        self.impulse_vector_field = vector_field
+        # plt.streamplot(xy[:, :, 0], yp[:, :, 0], vector_field[:, :, 0], vector_field[:, :, 1])
+        # plt.show()
+
+    def create_diagonal_current(self):
+        ...
+
+    def create_linear_current(self):
+        current_width = self.env_variables['current_width'] * self.env_variables["height"]
+        current_variance = self.env_variables['current_strength_variance']
+        max_current_strength = self.env_variables['max_current_strength']
+
+        # Create vector field all of same vectors moving in x direction
+        vector = np.array([1, 0])
+        vector_field = np.tile(vector, (self.env_variables["width"], self.env_variables["height"], 1))
+
+        # Scale as distance from y=h/2
+        centre = self.env_variables["height"]/2
+        xp, yp = np.arange(self.env_variables["width"]), np.arange(self.env_variables["height"])
+        xy, yp = np.meshgrid(xp, yp)
+        xy = np.expand_dims(xy, 2)
+        # yp = np.expand_dims(yp, 2)
+        # all_coordinates = np.concatenate((xy, yp), axis=2)
+        relative_y_coordinates = yp - centre
+        relative_y_coordinates = np.absolute(relative_y_coordinates)
+        closeness_to_centre = centre - relative_y_coordinates
+        closeness_to_centre = (closeness_to_centre ** 2) * current_variance
+        current_strength = (closeness_to_centre/np.max(closeness_to_centre)) * max_current_strength
+
+        # Cut off outside of width
+        upper_cut_off = int(centre - (current_width/2))
+        lower_cut_off = int(centre + (current_width/2))
+        current_strength[lower_cut_off:, :] = 0
+        current_strength[:upper_cut_off, :] = 0
+        current_strength = np.expand_dims(current_strength, 2)
+
+        # Scale vector field
+        vector_field = vector_field * current_strength
+        self.impulse_vector_field = vector_field
+
+    def resolve_currents(self):
+        """Currents act on prey and fish."""
+        all_feature_coordinates = np.array([self.fish.body.position] + [body.position for body in self.prey_bodies]).astype(int)
+        original_orientations = np.array([self.fish.body.angle] + [body.angle for body in self.prey_bodies])
+        associated_impulse_vectors = self.impulse_vector_field[all_feature_coordinates[:, 0], all_feature_coordinates[:, 1]]
+        self.fish.body.angle = np.pi
+        self.fish.body.apply_impulse_at_local_point((associated_impulse_vectors[0, 1], associated_impulse_vectors[0, 0]))
+        for i, vector in enumerate(associated_impulse_vectors[1:]):
+            self.prey_bodies[i].angle = np.pi
+            self.prey_bodies[i].apply_impulse_at_local_point((vector[1], vector[0]))
+            self.prey_bodies[i].angle = original_orientations[i+1]
+        self.fish.body.angle = original_orientations[0]
+

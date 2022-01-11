@@ -152,8 +152,21 @@ env = {'width': 1500,  # arena size
        'consumption_reward_scaling': 100,  # Arbitrary (practical) hyperparameter for reward for consumption
 
        'energy_state': True,
-       #For control of in light:
+       # For control of in light:
        'in_light': False,
+
+       # Currents
+       'current_setting': "Linear",  # Current setting. If none, should be False. Current options: Circular
+       'max_current_strength': 0.01,  # Arbitrary impulse variable to be calibrated
+       'current_width': 0.2,
+       'current_strength_variance': 1,
+
+       # Circular current options
+       'unit_circle_diameter': 0.7,
+
+       # If want complex or simple GIFS:
+       'show_channel_sectors': False,
+
        }
 
 params = {'num_actions': 10,  # size of action space

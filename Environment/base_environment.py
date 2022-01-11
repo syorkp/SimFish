@@ -506,6 +506,7 @@ class BaseEnvironment:
         return angle_from_fish
 
     def create_realistic_predator(self):
+        # TODO: new simulation changes here.
         self.predator_body = pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia'])
         self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_size'])
         self.predator_shape.elasticity = 1.0
@@ -552,6 +553,7 @@ class BaseEnvironment:
             return False
 
     def move_realistic_predator(self):
+        # TODO: New_simulation changes here.
         if self.check_predator_at_target():
             self.remove_realistic_predator()
             self.predators_avoided += 1

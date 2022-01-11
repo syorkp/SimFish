@@ -109,5 +109,11 @@
     "action_reward_scaling": 10,
     "consumption_reward_scaling": 100,
     "energy_state": true,
-    "in_light": false
+    "in_light": false,
+    "current_setting": "Linear",
+    "max_current_strength": 0.01,
+    "current_width": 0.2,
+    "current_strength_variance": 1,
+    "unit_circle_diameter": 0.7,
+    "show_channel_sectors": false
 }

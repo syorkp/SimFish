@@ -32,7 +32,7 @@ env = {'width': 1500,  # arena size
        'prey_inertia': 40.,
        'prey_size': 4.,
        'prey_num': 15,
-       'prey_impulse': 0.02,  # impulse each prey receives per step
+       'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
@@ -111,7 +111,66 @@ env = {'width': 1500,  # arena size
        'sigma_time_constant': 0.000001,
 
        'clip_param': 0.2,
-       'cs_required': False
+       'cs_required': False,
+
+       # New simulation variables
+       'decay_rate': 0.01,  # For scatter mask (eyeballed it for practical reasons) # NO DATA YET
+       'uv_photoreceptor_rf_size': 0.014,  # Pi Radians (0.8 degrees) - Yoshimatsu et al. (2019)
+       'red_photoreceptor_rf_size': 0.01,  # NO DATA YET
+       'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
+       'red_photoreceptor_num': 120,  # NO DATA YET
+       'shared_photoreceptor_channels': False,
+       # Whether the two channels have the same RF angles (saves computation time)
+       'incorporate_uv_strike_zone': True,
+       'strike_zone_sigma': 1,
+       # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
+       'visualise_mask': False,  # For debugging purposes.
+
+       # For dark noise:
+       'isomerization_frequency': 1.0,  # Average frequency of photoisomerization per second per photoreceptor
+       'max_isomerization_size': 0.01,
+       # TODO: Calibrated to produce events of similar size to practical visual distance.
+       'sim_steps_per_second': 5,  # For converting isomerization frequency.
+
+       # For extra layer motion:
+       'background_grating_frequency': 50,
+
+       # Observation scaling factors (to set CNN inputs into 0 to 1 range):
+       'red_scaling_factor': 0.2,  # max was 3.44
+       'uv_scaling_factor': 0.2,  # max was 4.1
+       'red_2_scaling_factor': 0.01,  # max was 64.2
+
+       'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
+
+       'displacement_scaling_factor': 0.005,
+       # Multiplied by previous impulse size to cause displacement of nearby features.
+
+       # For new energy state system
+       'ci': 0.01,
+       'ca': 0.01,
+       'cc': 0.2,
+       'baseline_decrease': 0.001,
+       'trajectory_A': 9.0,
+       'trajectory_B': 2.5,
+
+       'action_reward_scaling': 10,  # Arbitrary (practical) hyperparameter for penalty for action
+       'consumption_reward_scaling': 100,  # Arbitrary (practical) hyperparameter for reward for consumption
+
+       'energy_state': True,
+       # For control of in light:
+       'in_light': False,
+
+       # Currents
+       'current_setting': "Circular",  # Current setting. If none, should be False. Current options: Circular
+       'max_current_strength': 0.01,  # Arbitrary impulse variable to be calibrated
+       'current_width': 0.2,
+       'current_strength_variance': 1,
+
+       # Circular current options
+       'unit_circle_diameter': 0.7,
+
+       # If want complex or simple GIFS:
+       'show_channel_sectors': False,
        }
 
 
@@ -149,7 +208,7 @@ params = {'num_actions': 10,  # size of action space
           }
 
 # Equal to that given in the file name.
-environment_name = "ppo_continuous_beta_test"
+environment_name = "continuous_assay"
 with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)
 
