@@ -117,9 +117,16 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.fish.stress += 0.5
 
         # TODO: Make step elements clearer by having them call their own methods.
-        if self.predator_shape is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
-                self.num_steps > self.env_variables['immunity_steps'] and not self.check_fish_near_vegetation():
-            self.create_realistic_predator()
+        if self.new_simulation:
+            if self.predator_location is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
+                    self.num_steps > self.env_variables['immunity_steps'] and not self.check_fish_near_vegetation() \
+                    and not self.check_fish_not_near_wall():
+                self.create_realistic_predator()
+        else:
+            if self.predator_shape is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
+                    self.num_steps > self.env_variables['immunity_steps'] and not self.check_fish_near_vegetation() \
+                    and not self.check_fish_not_near_wall():
+                self.create_realistic_predator()
 
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.move_prey()
@@ -154,6 +161,8 @@ class NaturalisticEnvironment(BaseEnvironment):
         if self.new_simulation:
             self.energy_level_log.append(self.fish.energy_level)
             reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
+            if self.predator_body is not None:
+                self.total_predator_steps += 1
 
         self.num_steps += 1
         self.board.erase()

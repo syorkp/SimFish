@@ -58,7 +58,7 @@ env = {'width': 1500,  # arena size
        'predator_impulse': 1.0,
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 300,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.1,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -167,6 +167,12 @@ env = {'width': 1500,  # arena size
        # If want complex or simple GIFS:
        'show_channel_sectors': False,
 
+       # Updated predator. Note, can make some of these arbitrarily high so predator keeps attacking when fish enters a certain region for whole episode.
+       'max_predator_attacks': 5,
+       'further_attack_probability': 0.4,
+       'max_predator_attack_range': 600,
+       'predator_presence_duration_steps': 100,
+
        }
 
 params = {'num_actions': 10,  # size of action space
@@ -179,7 +185,7 @@ params = {'num_actions': 10,  # size of action space
           'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
           'num_episodes': 50000,  # How many episodes of game environment to train network with.
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
-          'max_epLength': 100,  # The max allowed length of our episode.
+          'max_epLength': 200,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
           'summaryLength': 1,  # Number of episodes to periodically save for analysis
           'tau': 0.001,  # target network update time constant

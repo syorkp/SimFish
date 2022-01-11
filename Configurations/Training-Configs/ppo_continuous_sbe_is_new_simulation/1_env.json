@@ -41,7 +41,7 @@
     "predator_impulse": 1.0,
     "immunity_steps": 65,
     "distance_from_fish": 300,
-    "probability_of_predator": 0.0,
+    "probability_of_predator": 0.1,
     "dark_light_ratio": 0.0,
     "read_noise_sigma": 5,
     "photon_ratio": 100,
@@ -115,5 +115,9 @@
     "current_width": 0.2,
     "current_strength_variance": 1,
     "unit_circle_diameter": 0.7,
-    "show_channel_sectors": false
+    "show_channel_sectors": false,
+    "max_predator_attacks": 5,
+    "further_attack_probability": 0.4,
+    "max_predator_attack_range": 600,
+    "predator_presence_duration_steps": 100
 }

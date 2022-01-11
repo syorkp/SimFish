@@ -357,7 +357,7 @@ class A2CAssayService:
     def save_episode_data(self):
         self.episode_summary_data = {
             "Prey Caught": self.simulation.prey_caught,
-            "Predators Avoided": self.simulation.predators_avoided,
+            "Predators Avoided": self.simulation.predator_attacks_avoided,
             "Sand Grains Bumped": self.simulation.sand_grains_bumped,
             "Steps Near Vegetation": self.simulation.steps_near_vegetation
         }

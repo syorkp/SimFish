@@ -92,7 +92,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
                           total_episode_reward=total_episode_reward,
                           episode_buffer=episode_buffer,
                           prey_caught=self.simulation.prey_caught,
-                          predators_avoided=self.simulation.predators_avoided,
+                          predators_avoided=self.simulation.predator_attacks_avoided,
                           sand_grains_bumped=self.simulation.sand_grains_bumped,
                           steps_near_vegetation=self.simulation.steps_near_vegetation
                           )

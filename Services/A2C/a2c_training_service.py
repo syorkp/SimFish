@@ -351,7 +351,7 @@ class A2CTrainingService:
                           all_actions=all_actions,
                           total_episode_reward=total_episode_reward,
                           prey_caught=self.simulation.prey_caught,
-                          predators_avoided=self.simulation.predators_avoided,
+                          predators_avoided=self.simulation.predator_attacks_avoided,
                           sand_grains_bumped=self.simulation.sand_grains_bumped,
                           steps_near_vegetation=self.simulation.steps_near_vegetation,
                           critic_loss=critic_loss_buffer,
