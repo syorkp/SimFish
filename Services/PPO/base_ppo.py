@@ -68,7 +68,8 @@ class BasePPO:
         print("Creating networks...")
         internal_states = sum(
             [1 for x in [self.environment_params['hunger'], self.environment_params['stress'],
-                         self.environment_params['energy_state'], self.environment_params['in_light']] if x is True])
+                         self.environment_params['energy_state'], self.environment_params['in_light'],
+                         self.environment_params['salt']] if x is True])
 
         actor_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
         critic_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)

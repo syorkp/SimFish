@@ -119,5 +119,9 @@
     "max_predator_attacks": 5,
     "further_attack_probability": 0.4,
     "max_predator_attack_range": 600,
-    "predator_presence_duration_steps": 100
+    "predator_presence_duration_steps": 100,
+    "salt": true,
+    "salt_concentration_decay": 0.001,
+    "salt_recovery": 0.01,
+    "max_salt_damage": 0.2
 }

@@ -93,6 +93,9 @@ class Fish:
         self.action_reward_scaling = self.env_variables['action_reward_scaling']
         self.consumption_reward_scaling = self.env_variables['consumption_reward_scaling']
 
+        # Salt health (new simulation)
+        self.salt_health = 1.0
+
         if using_gpu:
             self.chosen_math_library = cp
         else:

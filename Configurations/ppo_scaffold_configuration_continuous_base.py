@@ -173,6 +173,12 @@ env = {'width': 1500,  # arena size
        'max_predator_attack_range': 600,
        'predator_presence_duration_steps': 100,
 
+       # Salt stimuli
+       'salt': True,  # Inclusion of olfactory salt input and salt death.
+       'salt_concentration_decay': 0.001,  # Scale for exponential salt concentration decay from source.
+       'salt_recovery': 0.01,  # Amount by which salt health recovers per step
+       'max_salt_damage': 0.2,  # Salt damage at centre of source.
+
        }
 
 params = {'num_actions': 10,  # size of action space

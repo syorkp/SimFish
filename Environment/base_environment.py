@@ -104,6 +104,10 @@ class BaseEnvironment:
         self.visualise_mask = self.env_variables['visualise_mask']
         self.mask_buffer = []
 
+        if self.env_variables["salt"]:
+            self.salt_gradient = None
+            self.xp, self.yp = np.arange(self.env_variables['width']), np.arange(self.env_variables['height'])
+
     def reset(self):
         self.num_steps = 0
         self.fish.hungry = 0
@@ -139,6 +143,10 @@ class BaseEnvironment:
             self.remaining_predator_attacks = None
             self.total_predator_steps = None
             self.new_attack_due = False
+            # Reset salt gradient
+            if self.env_variables["salt"]:
+                self.reset_salt_gradient()
+                self.fish.salt_health = 1.0
 
         self.prey_shapes = []
         self.prey_bodies = []
@@ -153,6 +161,12 @@ class BaseEnvironment:
         self.vegetation_shapes = []
 
         self.mask_buffer = []
+
+    def reset_salt_gradient(self):
+        salt_source_x = np.random.randint(0, self.env_variables['width'] - 1)
+        salt_source_y = np.random.randint(0, self.env_variables['height'] - 1)
+        salt_distance = (((salt_source_x - self.xp[:, None]) ** 2 + (salt_source_y - self.yp[None, :]) ** 2) ** 0.5)  # Measure of distance from source at every point.
+        self.salt_gradient = np.exp(-self.env_variables["salt_concentration_decay"] * salt_distance) * self.env_variables["max_salt_damage"]
 
     def output_frame(self, activations, internal_state, scale=0.25):
         # TODO: Can make faster by combining different arrays at end in one step.

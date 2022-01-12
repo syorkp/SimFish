@@ -163,6 +163,16 @@ class NaturalisticEnvironment(BaseEnvironment):
             reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
             if self.predator_body is not None:
                 self.total_predator_steps += 1
+            if self.env_variables["salt"]:
+                print(self.fish.salt_health)
+                salt_damage = self.salt_gradient[int(self.fish.body.position[0]), int(self.fish.body.position[1])]
+                self.fish.salt_health = self.fish.salt_health + self.env_variables["salt_recovery"] - salt_damage
+
+                if self.fish.salt_health > 1.0:
+                    self.fish.salt_health = 1.0
+                if self.fish.salt_health < 0:
+                    print("Fish too salty")
+                    done = True
 
         self.num_steps += 1
         self.board.erase()
@@ -172,13 +182,15 @@ class NaturalisticEnvironment(BaseEnvironment):
         internal_state = []
         if self.env_variables['in_light']:
             internal_state.append(self.fish.body.position[0] > self.dark_col)
-        elif self.env_variables['hunger']:
+        if self.env_variables['hunger']:
             internal_state.append(self.fish.hungry)
-        elif self.env_variables['stress']:
+        if self.env_variables['stress']:
             internal_state.append(self.fish.stress)
-        elif self.env_variables['energy_state']:
+        if self.env_variables['energy_state']:
             internal_state.append(self.fish.energy_level)
-        else:
+        if self.env_variables['salt']:
+            internal_state.append(salt_damage)
+        if len(internal_state) == 0:
             internal_state.append(0)
         internal_state = np.array([internal_state])
 

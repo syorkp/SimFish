@@ -56,7 +56,10 @@ class BaseDQN:
         :return: The main network and the target network graphs.
         """
         print("Creating networks...")
-        internal_states = sum([1 for x in [self.environment_params['hunger'], self.environment_params['stress']] if x is True]) + 1
+        internal_states = sum(
+            [1 for x in [self.environment_params['hunger'], self.environment_params['stress'],
+                         self.environment_params['energy_state'], self.environment_params['in_light'],
+                         self.environment_params['salt']] if x is True])
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim'], state_is_tuple=True)
         cell_t = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim'], state_is_tuple=True)
         self.main_QN = QNetwork(self.simulation, self.learning_params['rnn_dim'], cell, 'main', self.learning_params['num_actions'], internal_states=internal_states,
