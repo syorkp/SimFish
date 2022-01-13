@@ -619,8 +619,8 @@ class NewDrawingBoard:
         #     (AB[:, :, 0:1], np.array(self.db[:, :, 1:2]), AB[:, :, 1:2]),
         #     axis=2)
         # G = AV * L * O * S
-        # plt.imshow(G)
-        # plt.show()
+        plt.imshow(self.background_grating)
+        plt.show()
 
         if self.visualise_mask:
             if self.visualise_mask == "O":

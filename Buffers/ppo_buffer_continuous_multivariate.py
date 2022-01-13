@@ -1,6 +1,7 @@
 from Buffers.base_ppo_buffer import BasePPOBuffer
 import numpy as np
 
+
 class PPOBufferContinuousMultivariate(BasePPOBuffer):
     """Buffer for full episode for PPO training, and logging."""
 

@@ -166,7 +166,6 @@ class NaturalisticEnvironment(BaseEnvironment):
             if self.predator_body is not None:
                 self.total_predator_steps += 1
             if self.env_variables["salt"]:
-                print(self.fish.salt_health)
                 salt_damage = self.salt_gradient[int(self.fish.body.position[0]), int(self.fish.body.position[1])]
                 self.fish.salt_health = self.fish.salt_health + self.env_variables["salt_recovery"] - salt_damage
 
@@ -399,7 +398,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         current_variance = self.env_variables['current_strength_variance']
         max_current_strength = self.env_variables['max_current_strength']
 
-        # Create vector field all of same vectors moving in x direction
+        # Create vector field of same vectors moving in x direction
         vector = np.array([1, 0])
         vector_field = np.tile(vector, (self.env_variables["width"], self.env_variables["height"], 1))
 
@@ -407,8 +406,6 @@ class NaturalisticEnvironment(BaseEnvironment):
         centre = self.env_variables["height"]/2
         xp, yp = np.arange(self.env_variables["width"]), np.arange(self.env_variables["height"])
         xy, yp = np.meshgrid(xp, yp)
-        xy = np.expand_dims(xy, 2)
-        # yp = np.expand_dims(yp, 2)
         # all_coordinates = np.concatenate((xy, yp), axis=2)
         relative_y_coordinates = yp - centre
         relative_y_coordinates = np.absolute(relative_y_coordinates)
@@ -431,7 +428,12 @@ class NaturalisticEnvironment(BaseEnvironment):
         """Currents act on prey and fish."""
         all_feature_coordinates = np.array([self.fish.body.position] + [body.position for body in self.prey_bodies]).astype(int)
         original_orientations = np.array([self.fish.body.angle] + [body.angle for body in self.prey_bodies])
-        associated_impulse_vectors = self.impulse_vector_field[all_feature_coordinates[:, 0], all_feature_coordinates[:, 1]]
+
+        try:
+            associated_impulse_vectors = self.impulse_vector_field[all_feature_coordinates[:, 0], all_feature_coordinates[:, 1]]
+        except:
+            x = True
+
         self.fish.body.angle = np.pi
         self.fish.body.apply_impulse_at_local_point((associated_impulse_vectors[0, 1], associated_impulse_vectors[0, 0]))
         for i, vector in enumerate(associated_impulse_vectors[1:]):

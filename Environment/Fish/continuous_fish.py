@@ -5,13 +5,14 @@ from Environment.Fish.fish import Fish
 class ContinuousFish(Fish):
 
     def __init__(self, board, env_variables, dark_col, realistic_bouts, new_simulation, using_gpu, fish_mass=None):
-        super().__init__(board, env_variables, dark_col, realistic_bouts, new_simulation, using_gpu, fish_mass=fish_mass)
+        super().__init__(board, env_variables, dark_col, realistic_bouts, new_simulation, using_gpu,
+                         fish_mass=fish_mass)
 
         self.making_capture = True
         self.new_simulation = new_simulation
 
     def calculate_distance(self, impulse):
-        return (1.771548 * impulse + self.env_variables['fish_mass'] * 0.004644 + 0.081417)/10
+        return (1.771548 * impulse + self.env_variables['fish_mass'] * 0.004644 + 0.081417) / 10
 
     def take_action(self, action):
         """Overrides method for discrete fish"""
@@ -37,8 +38,17 @@ class ContinuousFish(Fish):
         impulse = action[0]
         angle = action[1]
 
-        impulse = np.random.normal(impulse, self.env_variables["impulse_effect_noise_sd"], 1)
-        angle = np.random.normal(angle, self.env_variables["angle_effect_noise_sd"], 1)
+        # Noise from normal and clipping.
+        # impulse = np.clip(np.random.normal(impulse, self.env_variables["impulse_effect_noise_sd"], 1)[0], 0, self.env_variables["max_impulse"])
+        # angle = np.clip(np.random.normal(angle, self.env_variables["angle_effect_noise_sd"], 1)[0],
+        #                 -self.env_variables["max_angle_change"], self.env_variables["max_angle_change"])
+
+        # Noise from uniform, and clipping within valid range.
+        impulse = \
+            np.clip(impulse + (np.random.uniform(-1, 1, 1)[0] * self.env_variables["impulse_effect_noise_scaling"]),
+                    0, self.env_variables["max_impulse"])
+        angle = np.clip(angle + (np.random.uniform(-1, 1, 1)[0] * self.env_variables["angle_effect_noise_scaling"]),
+                        -self.env_variables["max_angle_change"], self.env_variables["max_angle_change"])
 
         self.prev_action_impulse = impulse
         self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))

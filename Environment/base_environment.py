@@ -27,7 +27,8 @@ class BaseEnvironment:
                                          prey_size=self.env_variables['prey_size'],
                                          predator_size=self.env_variables['predator_size'],
                                          visible_scatter=self.env_variables['bkg_scatter'],
-                                         background_grating_frequency=self.env_variables['background_grating_frequency'],
+                                         background_grating_frequency=self.env_variables[
+                                             'background_grating_frequency'],
                                          dark_light_ratio=self.env_variables['dark_light_ratio'],
                                          dark_gain=self.env_variables['dark_gain'])
         else:
@@ -57,14 +58,21 @@ class BaseEnvironment:
         self.prey_cloud_wall_shapes = []
         if self.env_variables["differential_prey"]:
             self.prey_cloud_locations = [
-                [np.random.randint(low=120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
-                                   high=self.env_variables['width'] - (
-                                           self.env_variables['prey_size'] + self.env_variables[
-                                       'fish_mouth_size']) - 120),
-                 np.random.randint(low=120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
-                                   high=self.env_variables['height'] - (
-                                           self.env_variables['prey_size'] + self.env_variables[
-                                       'fish_mouth_size']) - 120)]
+                [np.random.randint(
+                    low=(self.env_variables['birth_rate_region_size'] / 2) + self.env_variables['prey_size'] +
+                        self.env_variables['fish_mouth_size'],
+                    high=self.env_variables['width'] - ((
+                                                                self.env_variables['prey_size'] + self.env_variables[
+                                                            'fish_mouth_size']) + (
+                                                                self.env_variables['birth_rate_region_size'] / 2))),
+                    np.random.randint(
+                        low=(self.env_variables['birth_rate_region_size'] / 2) + self.env_variables['prey_size'] +
+                            self.env_variables['fish_mouth_size'],
+                        high=self.env_variables['height'] - ((
+                                                                     self.env_variables['prey_size'] +
+                                                                     self.env_variables[
+                                                                         'fish_mouth_size']) + (self.env_variables[
+                                                                                                    'birth_rate_region_size'] / 2)))]
                 for cloud in range(self.env_variables["prey_cloud_num"])]
         self.predator_bodies = []
         self.predator_shapes = []
@@ -170,20 +178,26 @@ class BaseEnvironment:
 
     def reproduce_prey(self):
         num_prey = len(self.prey_bodies)
-        p_prey_birth = self.env_variables["birth_rate"]/(num_prey*self.env_variables["birth_rate_current_pop_scaling"])
+        p_prey_birth = self.env_variables["birth_rate"] / (
+                num_prey * self.env_variables["birth_rate_current_pop_scaling"])
         for cloud in self.prey_cloud_locations:
             if np.random.rand(1) < p_prey_birth:
+                print("prey born")
                 new_location = (
-                    np.random.randint(low=cloud[0] - (self.env_variables["birth_rate_region_size"]/2), high=cloud[0] + (self.env_variables["birth_rate_region_size"]/2)),
-                    np.random.randint(low=cloud[1] - (self.env_variables["birth_rate_region_size"]/2), high=cloud[1] + (self.env_variables["birth_rate_region_size"]/2))
+                    np.random.randint(low=cloud[0] - (self.env_variables["birth_rate_region_size"] / 2),
+                                      high=cloud[0] + (self.env_variables["birth_rate_region_size"] / 2)),
+                    np.random.randint(low=cloud[1] - (self.env_variables["birth_rate_region_size"] / 2),
+                                      high=cloud[1] + (self.env_variables["birth_rate_region_size"] / 2))
                 )
                 self.create_prey(new_location)
 
     def reset_salt_gradient(self):
         salt_source_x = np.random.randint(0, self.env_variables['width'] - 1)
         salt_source_y = np.random.randint(0, self.env_variables['height'] - 1)
-        salt_distance = (((salt_source_x - self.xp[:, None]) ** 2 + (salt_source_y - self.yp[None, :]) ** 2) ** 0.5)  # Measure of distance from source at every point.
-        self.salt_gradient = np.exp(-self.env_variables["salt_concentration_decay"] * salt_distance) * self.env_variables["max_salt_damage"]
+        salt_distance = (((salt_source_x - self.xp[:, None]) ** 2 + (
+                salt_source_y - self.yp[None, :]) ** 2) ** 0.5)  # Measure of distance from source at every point.
+        self.salt_gradient = np.exp(-self.env_variables["salt_concentration_decay"] * salt_distance) * \
+                             self.env_variables["max_salt_damage"]
 
     def output_frame(self, activations, internal_state, scale=0.25):
         # TODO: Can make faster by combining different arrays at end in one step.
@@ -204,7 +218,8 @@ class BaseEnvironment:
         if self.new_simulation:
             empty_green_eyes = np.zeros((20, self.env_variables["width"], 1))
             eyes = self.fish.get_visual_inputs_new()
-            eyes = np.concatenate((eyes[:, :, :1], empty_green_eyes, eyes[:, :, 1:2]), axis=2)  # Note removes second red channel.
+            eyes = np.concatenate((eyes[:, :, :1], empty_green_eyes, eyes[:, :, 1:2]),
+                                  axis=2)  # Note removes second red channel.
         else:
             eyes = self.fish.get_visual_inputs()
 
@@ -305,7 +320,7 @@ class BaseEnvironment:
     def build_prey_cloud_walls(self):
         for i in self.prey_cloud_locations:
             wall_edges = [
-            pymunk.Segment(
+                pymunk.Segment(
                     self.space.static_body,
                     (i[0] - 150, i[1] - 150), (i[0] - 150, i[1] + 150), 1),
                 pymunk.Segment(
@@ -335,10 +350,12 @@ class BaseEnvironment:
                 (0, wall_width), (0, self.env_variables['height']), wall_width),
             pymunk.Segment(
                 self.space.static_body,
-                (wall_width, self.env_variables['height']), (self.env_variables['width'], self.env_variables['height']), wall_width),
+                (wall_width, self.env_variables['height']), (self.env_variables['width'], self.env_variables['height']),
+                wall_width),
             pymunk.Segment(
                 self.space.static_body,
-                (self.env_variables['width'] - wall_width, self.env_variables['height']), (self.env_variables['width'] - wall_width, wall_width),
+                (self.env_variables['width'] - wall_width, self.env_variables['height']),
+                (self.env_variables['width'] - wall_width, wall_width),
                 wall_width),
             pymunk.Segment(
                 self.space.static_body,
@@ -358,7 +375,7 @@ class BaseEnvironment:
         return False
 
     def touch_wall(self, arbiter, space, data):
-        if self.new_simulation:
+        if self.new_simulation and not self.env_variables["wall_reflection"]:
             self._touch_wall_new(arbiter, space, data)
         else:
             self._touch_wall(arbiter, space, data)
@@ -368,13 +385,19 @@ class BaseEnvironment:
         new_position_y = self.fish.body.position[1]
 
         if new_position_x < self.env_variables['wall_buffer_distance']:  # Wall d
-            new_position_x = self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+            new_position_x = self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] + \
+                             self.env_variables["fish_tail_length"]
         elif new_position_x > self.env_variables['width'] - self.env_variables['wall_buffer_distance']:  # wall b
-            new_position_x = self.env_variables['width'] - (self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"])
+            new_position_x = self.env_variables['width'] - (
+                    self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] +
+                    self.env_variables["fish_tail_length"])
         if new_position_y < self.env_variables['wall_buffer_distance']:  # wall a
-            new_position_y = self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"]
+            new_position_y = self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] + \
+                             self.env_variables["fish_tail_length"]
         elif new_position_y > self.env_variables['height'] - self.env_variables['wall_buffer_distance']:  # wall c
-            new_position_y = self.env_variables['height'] - (self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] + self.env_variables["fish_tail_length"])
+            new_position_y = self.env_variables['height'] - (
+                    self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] +
+                    self.env_variables["fish_tail_length"])
 
         new_position = pymunk.Vec2d(new_position_x, new_position_y)
         self.fish.body.position = new_position
@@ -392,26 +415,35 @@ class BaseEnvironment:
         self.fish.touched_edge_this_step = True
         return True
 
-
     def create_prey(self, prey_position=None):
         self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
         self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_size']))
         self.prey_shapes[-1].elasticity = 1.0
-        if prey_position is not None:
+        if prey_position is None:
             if not self.env_variables["differential_prey"]:
                 self.prey_bodies[-1].position = (
-                    np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables['wall_buffer_distance'],
-                                      self.env_variables['width'] - (
-                                              self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables['wall_buffer_distance'])),
-                    np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables['wall_buffer_distance'],
-                                      self.env_variables['height'] - (
-                                              self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables['wall_buffer_distance'])))
+                    np.random.randint(
+                        self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables[
+                            'wall_buffer_distance'],
+                        self.env_variables['width'] - (
+                                self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] +
+                                self.env_variables['wall_buffer_distance'])),
+                    np.random.randint(
+                        self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables[
+                            'wall_buffer_distance'],
+                        self.env_variables['height'] - (
+                                self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] +
+                                self.env_variables['wall_buffer_distance'])))
             else:
                 cloud = random.choice(self.prey_cloud_locations)
                 self.prey_bodies[-1].position = (
-                    np.random.randint(low=cloud[0] - (self.env_variables["birth_rate_region_size"]/2), high=cloud[0] + (self.env_variables["birth_rate_region_size"]/2)),
-                    np.random.randint(low=cloud[1] - (self.env_variables["birth_rate_region_size"]/2), high=cloud[1] + (self.env_variables["birth_rate_region_size"]/2))
+                    np.random.randint(low=cloud[0] - (self.env_variables["birth_rate_region_size"] / 2),
+                                      high=cloud[0] + (self.env_variables["birth_rate_region_size"] / 2)),
+                    np.random.randint(low=cloud[1] - (self.env_variables["birth_rate_region_size"] / 2),
+                                      high=cloud[1] + (self.env_variables["birth_rate_region_size"] / 2))
                 )
+        else:
+            self.prey_bodies[-1].position = prey_position
         self.prey_shapes[-1].color = (0, 0, 1)
         self.prey_shapes[-1].collision_type = 2
         self.prey_shapes[-1].filter = pymunk.ShapeFilter(
@@ -420,9 +452,10 @@ class BaseEnvironment:
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
 
         # New prey motion
-        self.paramecia_gaits.append(np.random.choice(1, [0, 1, 2], p=[1-(self.env_variables["p_fast"] + self.env_variables["p_slow"]),
-                                                                      self.env_variables["p_slow"],
-                                                                      self.env_variables["p_fast"]]))
+        self.paramecia_gaits.append(
+            np.random.choice([0, 1, 2], 1, p=[1 - (self.env_variables["p_fast"] + self.env_variables["p_slow"]),
+                                              self.env_variables["p_slow"],
+                                              self.env_variables["p_fast"]])[0])
 
     def check_proximity(self, feature_position, sensing_distance):
         sensing_area = [[feature_position[0] - sensing_distance,
@@ -459,10 +492,13 @@ class BaseEnvironment:
                 self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_impulse'], 0))
 
     def _move_prey_new(self):
-        gaits_to_switch = np.random.choice(len(self.prey_shapes), [0, 1], p=[self.env_variables["p_switch"]])
-        switch_to = np.random.choice(len(self.prey_shapes), [0, 1, 2], p=[1-(self.env_variables["p_slow"]+self.env_variables["p_fast"]),
-                                                                   self.env_variables["p_slow"], self.env_variables["p_fast"]])
-        self.paramecia_gaits = [switch_to[i] if gaits_to_switch[i] else old_gait for i, old_gait in enumerate(self.paramecia_gaits)]
+        gaits_to_switch = np.random.choice([0, 1], len(self.prey_shapes),
+                                           p=[1 - self.env_variables["p_switch"], self.env_variables["p_switch"]])
+        switch_to = np.random.choice([0, 1, 2], len(self.prey_shapes),
+                                     p=[1 - (self.env_variables["p_slow"] + self.env_variables["p_fast"]),
+                                        self.env_variables["p_slow"], self.env_variables["p_fast"]])
+        self.paramecia_gaits = [switch_to[i] if gaits_to_switch[i] else old_gait for i, old_gait in
+                                enumerate(self.paramecia_gaits)]
 
         # Generate impulses
         impulse_types = [0, self.env_variables["slow_speed_paramecia"], self.env_variables["fast_speed_paramecia"]]
@@ -470,8 +506,8 @@ class BaseEnvironment:
 
         # Angles of change - can generate as same for all.
         angle_changes = np.random.uniform(-self.env_variables['prey_max_turning_angle'],
-                                           self.env_variables['prey_max_turning_angle'],
-                                           len(self.prey_shapes))
+                                          self.env_variables['prey_max_turning_angle'],
+                                          len(self.prey_shapes))
 
         for i, prey_body in enumerate(self.prey_bodies):
             if self.check_proximity(prey_body.position, self.env_variables['prey_sensing_distance']):
@@ -483,8 +519,9 @@ class BaseEnvironment:
                     prey_body.angle = original_angle
 
                 # Motion from prey escape
-                if self.env_variables["prey_jump"] and np.random.choice(1, [0, 1], p=[1-self.env_variables["p_escape"],
-                                                                                           self.env_variables["p_escape"]]):
+                if self.env_variables["prey_jump"] and np.random.choice(1, [0, 1],
+                                                                        p=[1 - self.env_variables["p_escape"],
+                                                                           self.env_variables["p_escape"]])[0] == 1:
                     prey_body.apply_impulse_at_local_point((self.env_variables["jump_speed_paramecia"], 0))
 
 
@@ -612,11 +649,11 @@ class BaseEnvironment:
 
         if x_position < buffer_region:
             return True
-        elif x_position > self.env_variables["width"]-buffer_region:
+        elif x_position > self.env_variables["width"] - buffer_region:
             return True
         if y_position < buffer_region:
             return True
-        elif y_position > self.env_variables["height"]-buffer_region:
+        elif y_position > self.env_variables["height"] - buffer_region:
             return True
 
     def create_realistic_predator(self):
@@ -641,9 +678,10 @@ class BaseEnvironment:
         if self.new_simulation:
             self.predator_shape.color = (0, 1, 0)
             self.predator_location = (x_position, y_position)
-            self.remaining_predator_attacks = 1 + np.sum(np.random.choice([0, 1], self.env_variables["max_predator_attacks"]-1,
-                                                                          p=[1.0-self.env_variables["further_attack_probability"],
-                                                                             self.env_variables["further_attack_probability"]]))
+            self.remaining_predator_attacks = 1 + np.sum(
+                np.random.choice([0, 1], self.env_variables["max_predator_attacks"] - 1,
+                                 p=[1.0 - self.env_variables["further_attack_probability"],
+                                    self.env_variables["further_attack_probability"]]))
         else:
             self.predator_shape.color = (0, 0, 1)
 
@@ -673,8 +711,8 @@ class BaseEnvironment:
             return False
 
     def predator_distance_to_fish(self):
-        return ((self.predator_location[0]-self.fish.body.position[0])**2 +
-                (self.predator_location[1]-self.fish.body.position[1])**2) ** 0.5
+        return ((self.predator_location[0] - self.fish.body.position[0]) ** 2 +
+                (self.predator_location[1] - self.fish.body.position[1]) ** 2) ** 0.5
 
     def move_realistic_predator(self):
         # TODO: New_simulation changes here.
@@ -687,11 +725,13 @@ class BaseEnvironment:
             if self.check_predator_outside_walls():
                 self.remaining_predator_attacks -= 1
 
-            if self.predator_distance_to_fish() > self.env_variables["max_predator_attack_range"]:  # If predator out of strike range.
+            if self.predator_distance_to_fish() > self.env_variables[
+                "max_predator_attack_range"]:  # If predator out of strike range.
                 self.predator_body.position = self.predator_location
                 return
 
-            if self.remaining_predator_attacks <= 0 or self.total_predator_steps > self.env_variables["predator_presence_duration_steps"]:
+            if self.remaining_predator_attacks <= 0 or self.total_predator_steps > self.env_variables[
+                "predator_presence_duration_steps"]:
                 self.remove_realistic_predator()
                 return
             else:
@@ -762,7 +802,8 @@ class BaseEnvironment:
             self.sand_grains_bumped += 1
 
     def get_last_action_magnitude(self):
-        return self.fish.prev_action_impulse * self.env_variables['displacement_scaling_factor']  # Scaled down both for mass effects and to make it possible for the prey to be caught.
+        return self.fish.prev_action_impulse * self.env_variables[
+            'displacement_scaling_factor']  # Scaled down both for mass effects and to make it possible for the prey to be caught.
 
     def displace_sand_grains(self):
         for i, body in enumerate(self.sand_grain_bodies):
