@@ -1,3 +1,4 @@
+import copy
 import random
 import numpy as np
 import matplotlib.pyplot as plt
@@ -100,6 +101,9 @@ class BaseEnvironment:
         self.total_predator_steps = None
         self.new_attack_due = False
 
+        # New prey movement
+        self.paramecia_gaits = None
+
         # For debugging purposes
         self.visualise_mask = self.env_variables['visualise_mask']
         self.mask_buffer = []
@@ -147,6 +151,7 @@ class BaseEnvironment:
             if self.env_variables["salt"]:
                 self.reset_salt_gradient()
                 self.fish.salt_health = 1.0
+            self.paramecia_gaits = []
 
         self.prey_shapes = []
         self.prey_bodies = []
@@ -390,6 +395,11 @@ class BaseEnvironment:
 
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
 
+        # New prey motion
+        self.paramecia_gaits.append(np.random.choice(1, [0, 1, 2], p=[1-(self.env_variables["p_fast"] + self.env_variables["p_slow"]),
+                                                                      self.env_variables["p_slow"],
+                                                                      self.env_variables["p_fast"]]))
+
     def check_proximity(self, feature_position, sensing_distance):
         sensing_area = [[feature_position[0] - sensing_distance,
                          feature_position[0] + sensing_distance],
@@ -403,6 +413,12 @@ class BaseEnvironment:
             return False
 
     def move_prey(self):
+        if self.new_simulation:
+            self._move_prey_new()
+        else:
+            self._move_prey()
+
+    def _move_prey(self):
         # Not, currently, a prey isn't guaranteed to try to escape if a loud predator is near, only if it was going to
         # move anyway. Should reconsider this in the future.
         # TODO: Reduce computational overhead.
@@ -418,6 +434,40 @@ class BaseEnvironment:
                 self.prey_bodies[to_move[ii]].angle = self.prey_bodies[to_move[ii]].angle + adjustment
                 self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_impulse'], 0))
 
+    def _move_prey_new(self):
+        gaits_to_switch = np.random.choice(len(self.prey_shapes), [0, 1], p=[self.env_variables["p_switch"]])
+        switch_to = np.random.choice(len(self.prey_shapes), [0, 1, 2], p=[1-(self.env_variables["p_slow"]+self.env_variables["p_fast"]),
+                                                                   self.env_variables["p_slow"], self.env_variables["p_fast"]])
+        self.paramecia_gaits = [switch_to[i] if gaits_to_switch[i] else old_gait for i, old_gait in enumerate(self.paramecia_gaits)]
+
+        # Generate impulses
+        impulse_types = [0, self.env_variables["slow_speed_paramecia"], self.env_variables["fast_speed_paramecia"]]
+        impulses = [impulse_types[gait] for gait in self.paramecia_gaits]
+
+        # Angles of change - can generate as same for all.
+        angle_changes = np.random.uniform(-self.env_variables['prey_max_turning_angle'],
+                                           self.env_variables['prey_max_turning_angle'],
+                                           len(self.prey_shapes))
+
+        for i, prey_body in enumerate(self.prey_bodies):
+            if self.check_proximity(prey_body.position, self.env_variables['prey_sensing_distance']):
+                # Motion from fluid dynamics
+                if self.env_variables["prey_fluid_displacement"]:
+                    original_angle = copy.copy(prey_body.angle)
+                    prey_body.angle = self.fish.body.angle + np.random.uniform(-1, 1)
+                    prey_body.apply_impulse_at_local_point((self.get_last_action_magnitude(), 0))
+                    prey_body.angle = original_angle
+
+                # Motion from prey escape
+                if self.env_variables["prey_jump"] and np.random.choice(1, [0, 1], p=[1-self.env_variables["p_escape"],
+                                                                                           self.env_variables["p_escape"]]):
+                    prey_body.apply_impulse_at_local_point((self.env_variables["jump_speed_paramecia"], 0))
+
+
+            else:
+                prey_body.angle = prey_body.angle + angle_changes[i]
+                prey_body.apply_impulse_at_local_point((impulses[i], 0))
+
     def touch_prey(self, arbiter, space, data):
         if self.fish.making_capture:
             for i, shp in enumerate(self.prey_shapes):
@@ -425,6 +475,7 @@ class BaseEnvironment:
                     space.remove(shp, shp.body)
                     self.prey_shapes.remove(shp)
                     self.prey_bodies.remove(shp.body)
+                    del self.paramecia_gaits[i]
             self.prey_caught += 1
             self.fish.prey_consumed = True
             self.prey_consumed_this_step = True

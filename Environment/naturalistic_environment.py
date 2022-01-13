@@ -103,7 +103,6 @@ class NaturalisticEnvironment(BaseEnvironment):
         else:
             reward = self.fish.take_action(action)
 
-
         # Add policy helper reward to encourage proximity to prey.
         for ii in range(len(self.prey_bodies)):
             if self.check_proximity(self.prey_bodies[ii].position, self.env_variables['reward_distance']):
@@ -161,6 +160,8 @@ class NaturalisticEnvironment(BaseEnvironment):
         if self.new_simulation:
             self.energy_level_log.append(self.fish.energy_level)
             reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
+            if self.fish.energy_level < 0:
+                done = True
             if self.predator_body is not None:
                 self.total_predator_steps += 1
             if self.env_variables["salt"]:

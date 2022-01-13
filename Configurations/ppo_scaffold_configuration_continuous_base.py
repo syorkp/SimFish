@@ -179,6 +179,16 @@ env = {'width': 1500,  # arena size
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
        'max_salt_damage': 0.2,  # Salt damage at centre of source.
 
+       # Complex prey
+       'p_slow': 0.4,
+       'p_fast': 0.2,
+       'p_escape': 0.5,
+       'slow_speed_paramecia': 0.1,
+       'fast_speed_paramecia': 0.2,
+       'jump_speed_paramecia': 0.3,
+       'prey_fluid_displacement': True,
+
+
        }
 
 params = {'num_actions': 10,  # size of action space
