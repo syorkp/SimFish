@@ -188,6 +188,9 @@ env = {'width': 1500,  # arena size
        'jump_speed_paramecia': 0.3,
        'prey_fluid_displacement': True,
 
+       # Motor effect noise (for continuous)
+       'impulse_effect_noise_sd': 0.1,
+       'angle_effect_noise_sd': 0.1,
 
        }
 

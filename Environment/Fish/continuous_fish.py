@@ -1,3 +1,4 @@
+import numpy as np
 from Environment.Fish.fish import Fish
 
 
@@ -35,6 +36,10 @@ class ContinuousFish(Fish):
     def _take_action_new(self, action):
         impulse = action[0]
         angle = action[1]
+
+        impulse = np.random.normal(impulse, self.env_variables["impulse_effect_noise_sd"], 1)
+        angle = np.random.normal(angle, self.env_variables["angle_effect_noise_sd"], 1)
+
         self.prev_action_impulse = impulse
         self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
         self.body.angle += angle
