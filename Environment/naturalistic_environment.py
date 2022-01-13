@@ -60,7 +60,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                                            self.env_variables['prey_size'] + self.env_variables[
                                        'fish_mouth_size']) - 120)]
                 for cloud in range(self.env_variables["prey_cloud_num"])]
-            self.build_prey_cloud_walls()
+            if not self.env_variables["prey_reproduction_mode"]:
+                self.build_prey_cloud_walls()
 
         for i in range(self.env_variables['prey_num']):
             self.create_prey()
@@ -174,6 +175,11 @@ class NaturalisticEnvironment(BaseEnvironment):
                 if self.fish.salt_health < 0:
                     print("Fish too salty")
                     done = True
+            if self.fish.touched_edge_this_step:
+                reward -= self.env_variables["wall_touch_penalty"]
+                self.fish.touched_edge_this_step = False
+            if self.env_variables["prey_reproduction_mode"] and self.env_variables["differential_prey"]:
+                self.reproduce_prey()
 
         self.num_steps += 1
         self.board.erase()

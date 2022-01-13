@@ -96,6 +96,9 @@ class Fish:
         # Salt health (new simulation)
         self.salt_health = 1.0
 
+        # Touch edge - for penalty
+        self.touched_edge_this_step = False
+
         if using_gpu:
             self.chosen_math_library = cp
         else:

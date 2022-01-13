@@ -192,6 +192,16 @@ env = {'width': 1500,  # arena size
        'impulse_effect_noise_sd': 0.1,
        'angle_effect_noise_sd': 0.1,
 
+       # Wall touch penalty
+       'wall_touch_penalty': 0.2,
+
+       # New prey reproduction
+       'prey_reproduction_mode': True,
+       'birth_rate': 0.1,  # Probability per step of new prey appearing at each source.
+       'birth_rate_current_pop_scaling': 1,  # Scales birth rate according to number of prey currently present (1 is no scaling).
+       'birth_rate_region_size': 240,  # In circle
+
+
        }
 
 params = {'num_actions': 10,  # size of action space

@@ -59,7 +59,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.moving_stimuli = moving
 
         self.edge_col = self.space.add_collision_handler(1, 3)
-        self.edge_col.begin = self.touch_edge
+        self.edge_col.begin = self.touch_wall
         self.background = background
         self.pred_fish_col = self.space.add_collision_handler(3, 5)
         self.pred_fish_col.begin = self.no_collision

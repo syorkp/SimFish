@@ -32,7 +32,7 @@ class DiscreteNaturalisticEnvironment(NaturalisticEnvironment):
             self.pred_col.begin = self.touch_predator
 
         self.edge_col = self.space.add_collision_handler(1, 3)
-        self.edge_col.begin = self.touch_edge
+        self.edge_col.begin = self.touch_wall
 
         self.edge_pred_col = self.space.add_collision_handler(1, 5)
         self.edge_pred_col.begin = self.remove_realistic_predator

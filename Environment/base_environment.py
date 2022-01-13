@@ -116,6 +116,7 @@ class BaseEnvironment:
         self.num_steps = 0
         self.fish.hungry = 0
         self.fish.stress = 1
+        self.fish.touched_edge_this_step = False
         self.prey_caught = 0
         self.predator_attacks_avoided = 0
         self.sand_grains_bumped = 0
@@ -166,6 +167,17 @@ class BaseEnvironment:
         self.vegetation_shapes = []
 
         self.mask_buffer = []
+
+    def reproduce_prey(self):
+        num_prey = len(self.prey_bodies)
+        p_prey_birth = self.env_variables["birth_rate"]/(num_prey*self.env_variables["birth_rate_current_pop_scaling"])
+        for cloud in self.prey_cloud_locations:
+            if np.random.rand(1) < p_prey_birth:
+                new_location = (
+                    np.random.randint(low=cloud[0] - (self.env_variables["birth_rate_region_size"]/2), high=cloud[0] + (self.env_variables["birth_rate_region_size"]/2)),
+                    np.random.randint(low=cloud[1] - (self.env_variables["birth_rate_region_size"]/2), high=cloud[1] + (self.env_variables["birth_rate_region_size"]/2))
+                )
+                self.create_prey(new_location)
 
     def reset_salt_gradient(self):
         salt_source_x = np.random.randint(0, self.env_variables['width'] - 1)
@@ -345,8 +357,13 @@ class BaseEnvironment:
     def no_collision(arbiter, space, data):
         return False
 
-    def touch_edge(self, arbiter, space, data):
-        print(" Touched edge.")
+    def touch_wall(self, arbiter, space, data):
+        if self.new_simulation:
+            self._touch_wall_new(arbiter, space, data)
+        else:
+            self._touch_wall(arbiter, space, data)
+
+    def _touch_wall(self, arbiter, space, data):
         new_position_x = self.fish.body.position[0]
         new_position_y = self.fish.body.position[1]
 
@@ -370,24 +387,31 @@ class BaseEnvironment:
         self.fish.touched_edge = True
         return True
 
-    def create_prey(self):
+    def _touch_wall_new(self, arbiter, space, data):
+        self.fish.touched_edge = True
+        self.fish.touched_edge_this_step = True
+        return True
+
+
+    def create_prey(self, prey_position=None):
         self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
         self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_size']))
         self.prey_shapes[-1].elasticity = 1.0
-        if not self.env_variables["differential_prey"]:
-            self.prey_bodies[-1].position = (
-                np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables['wall_buffer_distance'],
-                                  self.env_variables['width'] - (
-                                          self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables['wall_buffer_distance'])),
-                np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables['wall_buffer_distance'],
-                                  self.env_variables['height'] - (
-                                          self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables['wall_buffer_distance'])))
-        else:
-            cloud = random.choice(self.prey_cloud_locations)
-            self.prey_bodies[-1].position = (
-                np.random.randint(low=cloud[0] - 120, high=cloud[0] + 120),
-                np.random.randint(low=cloud[1] - 120, high=cloud[1] + 120)
-            )
+        if prey_position is not None:
+            if not self.env_variables["differential_prey"]:
+                self.prey_bodies[-1].position = (
+                    np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables['wall_buffer_distance'],
+                                      self.env_variables['width'] - (
+                                              self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables['wall_buffer_distance'])),
+                    np.random.randint(self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables['wall_buffer_distance'],
+                                      self.env_variables['height'] - (
+                                              self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables['wall_buffer_distance'])))
+            else:
+                cloud = random.choice(self.prey_cloud_locations)
+                self.prey_bodies[-1].position = (
+                    np.random.randint(low=cloud[0] - (self.env_variables["birth_rate_region_size"]/2), high=cloud[0] + (self.env_variables["birth_rate_region_size"]/2)),
+                    np.random.randint(low=cloud[1] - (self.env_variables["birth_rate_region_size"]/2), high=cloud[1] + (self.env_variables["birth_rate_region_size"]/2))
+                )
         self.prey_shapes[-1].color = (0, 0, 1)
         self.prey_shapes[-1].collision_type = 2
         self.prey_shapes[-1].filter = pymunk.ShapeFilter(
