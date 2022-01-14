@@ -18,5 +18,10 @@ def plot_full_scatter_of_poss_actions():
 
         plt.scatter(all_angles, all_dists)
         plt.show()
+        heatmap, xedges, yedges = np.histogram2d(all_angles, all_dists, bins=500)
+        extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
+        plt.clf()
+        plt.imshow(heatmap.T, origin='lower')
+        plt.show()
 
 plot_full_scatter_of_poss_actions()

@@ -424,6 +424,10 @@ class NaturalisticEnvironment(BaseEnvironment):
         vector_field = vector_field * current_strength
         self.impulse_vector_field = vector_field
 
+        plt.streamplot(xy[:, :], yp[:, :], vector_field[:, :, 0], vector_field[:, :, 1])
+        plt.ylim(0, 1500)
+        plt.show()
+
     def resolve_currents(self):
         """Currents act on prey and fish."""
         all_feature_coordinates = np.array([self.fish.body.position] + [body.position for body in self.prey_bodies]).astype(int)

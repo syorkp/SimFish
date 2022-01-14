@@ -58,7 +58,7 @@ env = {'width': 1500,  # arena size
        'predator_impulse': 1.0,
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 300,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.01,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.05,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -121,7 +121,7 @@ env = {'width': 1500,  # arena size
        'shared_photoreceptor_channels': False,  # Whether the two channels have the same RF angles (saves computation time)
        'incorporate_uv_strike_zone': True,
        'strike_zone_sigma': 1,  # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
-       'visualise_mask': "O",  # For debugging purposes.
+       'visualise_mask': False,  # For debugging purposes.
 
        # For dark noise:
        'isomerization_frequency': 1.0,  # Average frequency of photoisomerization per second per photoreceptor
@@ -156,7 +156,7 @@ env = {'width': 1500,  # arena size
        'in_light': False,
 
        # Currents
-       'current_setting': "Circular",  # Current setting. If none, should be False. Current options: Circular
+       'current_setting': "Linear",  # Current setting. If none, should be False. Current options: Circular
        'max_current_strength': 0.01,  # Arbitrary impulse variable to be calibrated
        'current_width': 0.2,
        'current_strength_variance': 1,
@@ -204,8 +204,6 @@ env = {'width': 1500,  # arena size
        'birth_rate': 0.1,  # Probability per step of new prey appearing at each source.
        'birth_rate_current_pop_scaling': 1,  # Scales birth rate according to number of prey currently present (1 is no scaling).
        'birth_rate_region_size': 240,  # Same square as before for simplicity
-
-
        }
 
 params = {'num_actions': 10,  # size of action space
@@ -218,7 +216,7 @@ params = {'num_actions': 10,  # size of action space
           'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
           'num_episodes': 50000,  # How many episodes of game environment to train network with.
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
-          'max_epLength': 100,  # The max allowed length of our episode.
+          'max_epLength': 200,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
           'summaryLength': 1,  # Number of episodes to periodically save for analysis
           'tau': 0.001,  # target network update time constant

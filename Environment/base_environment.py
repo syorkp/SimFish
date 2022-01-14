@@ -182,7 +182,6 @@ class BaseEnvironment:
                 num_prey * self.env_variables["birth_rate_current_pop_scaling"])
         for cloud in self.prey_cloud_locations:
             if np.random.rand(1) < p_prey_birth:
-                print("prey born")
                 new_location = (
                     np.random.randint(low=cloud[0] - (self.env_variables["birth_rate_region_size"] / 2),
                                       high=cloud[0] + (self.env_variables["birth_rate_region_size"] / 2)),
