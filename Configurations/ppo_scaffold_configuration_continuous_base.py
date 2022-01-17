@@ -58,7 +58,7 @@ env = {'width': 1500,  # arena size
        'predator_impulse': 1.0,
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 300,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.05,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.01,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -141,10 +141,10 @@ env = {'width': 1500,  # arena size
        'displacement_scaling_factor': 0.005,  # Multiplied by previous impulse size to cause displacement of nearby features.
 
        # For new energy state system
-       'ci': 0.01,
-       'ca': 0.01,
-       'cc': 0.2,
-       'baseline_decrease': 0.001,
+       'ci': 0.001,
+       'ca': 0.001,
+       'cc': 0.02,
+       'baseline_decrease': 0.0005,
        'trajectory_A': 9.0,
        'trajectory_B': 2.5,
 

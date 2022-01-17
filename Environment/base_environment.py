@@ -208,7 +208,7 @@ class BaseEnvironment:
             self.board.mask_buffer_point = None
 
         arena = self.board.db * 255.0
-        # TODO: Check if below is still necessary.
+
         arena[0, :, 0] = np.ones(self.env_variables['width']) * 255
         arena[self.env_variables['height'] - 1, :, 0] = np.ones(self.env_variables['width']) * 255
         arena[:, 0, 0] = np.ones(self.env_variables['height']) * 255
@@ -656,7 +656,6 @@ class BaseEnvironment:
             return True
 
     def create_realistic_predator(self):
-        # TODO: new simulation changes here.
         self.predator_body = pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia'])
         self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_size'])
         self.predator_shape.elasticity = 1.0
@@ -684,8 +683,7 @@ class BaseEnvironment:
         else:
             self.predator_shape.color = (0, 0, 1)
 
-        # self.predator_shape.collision_type = 5
-        self.predator_shape.collision_type = 9
+        self.predator_shape.collision_type = 5
         self.predator_shape.filter = pymunk.ShapeFilter(
             mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # Category 2 objects cant collide with predator
 
@@ -714,7 +712,6 @@ class BaseEnvironment:
                 (self.predator_location[1] - self.fish.body.position[1]) ** 2) ** 0.5
 
     def move_realistic_predator(self):
-        # TODO: New_simulation changes here.
         if self.new_simulation:
             if self.check_predator_at_target():
                 self.remaining_predator_attacks -= 1

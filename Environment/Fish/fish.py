@@ -297,9 +297,7 @@ class Fish:
 
     def readings_to_photons(self, readings):
         if self.new_simulation:
-            # No longer need as is implemented at a prior step.
-            # return self._readings_to_photons_new(readings)
-            return readings
+            return self._readings_to_photons_new(readings)
         else:
             return self._readings_to_photons(readings)
 
@@ -312,22 +310,13 @@ class Fish:
         return photons
 
     def _readings_to_photons_new(self, readings):
-        """To simulate dark noise in photoreceptors. NO LONGER USED - ACHIEVED IN EYES"""
-        # Scaling
-        readings[:, 0] *= self.env_variables['red_scaling_factor']
-        readings[:, 1] *= self.env_variables['uv_scaling_factor']
-        readings[:, 2] *= self.env_variables['red_2_scaling_factor']
-        readings[readings > 1] = 1
-
-        # Add dark noise
-        dark_noise_events = self.chosen_math_library.random.choice([0, 1], size=readings.size,
-                                                                   p=[1-self.isomerization_probability, self.isomerization_probability]).astype(float)
-        variability = self.chosen_math_library.random.rand(readings.size)
-        dark_noise_events *= variability
-        dark_noise_events = dark_noise_events * self.env_variables['max_isomerization_size']
-        dark_noise_events = self.chosen_math_library.reshape(dark_noise_events, readings.shape)
-        readings += dark_noise_events
-        return readings
+        """To simulate shot noise."""
+        photons = np.random.poisson(readings * self.env_variables['photon_ratio'])
+        if self.env_variables['read_noise_sigma'] > 0:
+            noise = np.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
+            photons += noise.astype(int)
+            # photons = photons.clip(0, 255)
+        return photons
 
     def get_visual_inputs(self):
         left_photons =  self.readings_to_photons(self.left_eye.readings)
@@ -375,13 +364,15 @@ class Fish:
 
     def update_energy_level(self, reward, consumption):
         """Updates the current energy state for continuous and discrete fish."""
+        consumption = 1.0 * consumption
+        unscaled_consumption = consumption * self.cc
+        unscaled_energy_use = self.ci*self.prev_action_impulse + self.ca*self.prev_action_angle + self.baseline_decrease
+        self.energy_level += unscaled_consumption - unscaled_energy_use
+
+        # Nonlinear reward scaling
         intake_s = self.intake_scale(self.energy_level)
         action_s = self.action_scale(self.energy_level)
-
-        consumption = 1.0 * consumption
-
-        energy_intake = (intake_s*consumption*self.cc)
-        energy_use = (action_s*(self.ci*self.prev_action_impulse + self.ca*self.prev_action_angle + self.baseline_decrease))
-        self.energy_level += energy_intake - energy_use
+        energy_intake = (intake_s*unscaled_consumption)
+        energy_use = (action_s*unscaled_energy_use)
         reward += (energy_intake * self.consumption_reward_scaling) - (energy_use * self.action_reward_scaling)
         return reward
