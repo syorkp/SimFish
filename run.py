@@ -1290,9 +1290,9 @@ ppo_data_gathering = [
 
 phase_1_test_config = [
     {
-        "Model Name": "ppo_jade_phase_1_test",
+        "Model Name": "ppo_myriad_test",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 11,
+        "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1312,7 +1312,7 @@ phase_1_test_config = [
         "Continuous Actions": True,
         "Learning Algorithm": "PPO",
         "Priority": 1,
-        "Using GPU": False,
+        "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,

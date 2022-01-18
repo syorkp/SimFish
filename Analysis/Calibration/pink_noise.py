@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def smoothNoise(x, y, width, height, noise):
     fractX = x - int(x)
     fractY = y - int(y)
@@ -11,6 +12,7 @@ def smoothNoise(x, y, width, height, noise):
 
     x2 = (x1 + width - 1) % width
     y2 = (y1 + height - 1) % height
+
     value = 0.0
     value += fractX * fractY * noise[y1, x1]
     value += (1-fractX) * fractY * noise[y1, x2]
@@ -18,6 +20,7 @@ def smoothNoise(x, y, width, height, noise):
     value += (1-fractX) * (1-fractY) * noise[y2, x2]
 
     return value
+
 
 def turbulence(x, y, width, height, size, noise):
     value = 0.0
@@ -36,6 +39,7 @@ def marble_texture(width, height, x, y):
     # Generate these randomly so grid can have any orientation.
     xPeriod = 5.0
     yPeriod = 10.0
+
     turbPower = 1.0
     turbSize = 162.0
 
@@ -52,8 +56,58 @@ def marble_texture(width, height, x, y):
     plt.show()
 
 
-marble_texture(1500, 1500, 0.01, 0.1)
+def vectorised_marble_texture(width, height):
+    # Generate these randomly so grid can have any orientation.
+    xPeriod = np.random.uniform(0.0, 10.0)
+    yPeriod = np.random.uniform(0.0, 10.0)
 
+    # Calibrate these to be best for no direction and detectability.
+    turbPower = 1.0
+    turbSize = 162.0-
+
+    noise = np.absolute(np.random.randn(1500, 1500))
+    xp, yp = np.arange(width), np.arange(height)
+    xy, py = np.meshgrid(xp, yp)
+    xy = np.expand_dims(xy, 2)
+    py = np.expand_dims(py, 2)
+    coords = np.concatenate((xy, py), axis=2)
+
+    xy_values = (coords[:, :, 0] * xPeriod / width) + (coords[:, :, 1] * yPeriod / height)
+    size = turbSize
+
+    turbulence = np.zeros((width, height))
+
+    while size >= 1:
+        reduced_coords = coords / size
+
+        fractX = reduced_coords[:, :, 0] - reduced_coords[:, :, 0].astype(int)
+        fractY = reduced_coords[:, :, 1] - reduced_coords[:, :, 1].astype(int)
+
+        x1 = (reduced_coords[:, :, 0].astype(int) + width) % width
+        y1 = (reduced_coords[:, :, 1].astype(int) + height) % height
+
+        x2 = (x1 + width - 1) % width
+        y2 = (y1 + height - 1) % height
+
+        value = np.zeros((width, height))
+        value += fractX * fractY * noise[y1, x1]
+        value += (1 - fractX) * fractY * noise[y1, x2]
+        value += fractX * (1 - fractY) * noise[y2, x1]
+        value += (1 - fractX) * (1 - fractY) * noise[y2, x2]
+
+        turbulence += value * size
+        size /= 2.0
+
+    turbulence = 128 * turbulence / turbSize
+    xy_values += turbPower * turbulence/256.0
+    new_grating = 256 * np.abs(np.sin(xy_values * 3.14159))
+    plt.imshow(new_grating)
+    plt.show()
+
+    return new_grating
+
+# marble_texture(1500, 1500, 0.01, 0.1)
+vectorised_marble_texture(1500, 1500)
 
 def get_background_grating(frequency, width, height):
     base_unit = np.concatenate((np.ones((1, frequency)),

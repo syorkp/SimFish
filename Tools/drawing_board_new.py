@@ -54,7 +54,14 @@ class NewDrawingBoard:
         # For obstruction mask (reset each time is called).
         self.empty_mask = self.chosen_math_library.ones((1500, 1500, 1), dtype=int)
 
-    def get_background_grating(self, frequency):
+    def get_background_grating(self, frequency, linear=False):
+        if linear:
+            return self.linear_texture(frequency)
+        else:
+            return self.vectorised_marble_texture()
+
+    def linear_texture(self, frequency):
+        """Simple linear repeating grating"""
         base_unit = self.chosen_math_library.concatenate((self.chosen_math_library.ones((1, frequency)),
                                                           self.chosen_math_library.zeros((1, frequency))), axis=1)
         number_required = int(self.width / frequency)
@@ -62,6 +69,55 @@ class NewDrawingBoard:
         full_arena = self.chosen_math_library.repeat(full_width, self.height, axis=0)
         full_arena = self.chosen_math_library.expand_dims(full_arena, 2)
         return full_arena
+
+    def vectorised_marble_texture(self):
+        # TODO: Can be made much more efficient through none repeating computations.
+        # Generate these randomly so grid can have any orientation.
+        xPeriod = self.chosen_math_library.random.uniform(0.0, 10.0)
+        yPeriod = self.chosen_math_library.random.uniform(0.0, 10.0)
+
+        # TODO: Calibrate these to be best for no direction and detectability.
+        turbPower = 1.0
+        turbSize = 162.0
+
+        noise = self.chosen_math_library.absolute(self.chosen_math_library.random.randn(self.width, self.height))
+        xp, yp = self.chosen_math_library.arange(self.width), self.chosen_math_library.arange(self.height)
+        xy, py = self.chosen_math_library.meshgrid(xp, yp)
+        xy = self.chosen_math_library.expand_dims(xy, 2)
+        py = self.chosen_math_library.expand_dims(py, 2)
+        coords = self.chosen_math_library.concatenate((xy, py), axis=2)
+
+        xy_values = (coords[:, :, 0] * xPeriod / self.width) + (coords[:, :, 1] * yPeriod / self.height)
+        size = turbSize
+
+        turbulence = self.chosen_math_library.zeros((self.width, self.height))
+
+        while size >= 1:
+            reduced_coords = coords / size
+
+            fractX = reduced_coords[:, :, 0] - reduced_coords[:, :, 0].astype(int)
+            fractY = reduced_coords[:, :, 1] - reduced_coords[:, :, 1].astype(int)
+
+            x1 = (reduced_coords[:, :, 0].astype(int) + self.width) % self.width
+            y1 = (reduced_coords[:, :, 1].astype(int) + self.height) % self.height
+
+            x2 = (x1 + self.width - 1) % self.width
+            y2 = (y1 + self.height - 1) % self.height
+
+            value = self.chosen_math_library.zeros((self.width, self.height))
+            value += fractX * fractY * noise[y1, x1]
+            value += (1 - fractX) * fractY * noise[y1, x2]
+            value += fractX * (1 - fractY) * noise[y2, x1]
+            value += (1 - fractX) * (1 - fractY) * noise[y2, x2]
+
+            turbulence += value * size
+            size /= 2.0
+
+        turbulence = 128 * turbulence / turbSize
+        xy_values += turbPower * turbulence / 256.0
+        new_grating = 256 * self.chosen_math_library.abs(self.chosen_math_library.sin(xy_values * 3.14159))
+
+        return new_grating
 
     # def compute_repeated_computations(self, max_line_number=20000):
     #     multiplication_matrix_unit = np.array([-1, 1, -1, 1])
@@ -650,6 +706,8 @@ class NewDrawingBoard:
             self.db = self.chosen_math_library.copy(self.base_db)
         else:
             self.db = self.chosen_math_library.copy(self.base_db_illuminated)
+
+        self.background_grating = self.get_background_grating()
         # if bkg == 0:
         #     self.db = np.zeros((self.height, self.width, 3), dtype=np.double)
         # else:
