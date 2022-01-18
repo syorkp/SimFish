@@ -707,7 +707,7 @@ class NewDrawingBoard:
         else:
             self.db = self.chosen_math_library.copy(self.base_db_illuminated)
 
-        self.background_grating = self.get_background_grating()
+        self.background_grating = self.get_background_grating(0)
         # if bkg == 0:
         #     self.db = np.zeros((self.height, self.width, 3), dtype=np.double)
         # else:
