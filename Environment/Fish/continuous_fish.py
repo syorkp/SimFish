@@ -38,17 +38,12 @@ class ContinuousFish(Fish):
         impulse = action[0]
         angle = action[1]
 
-        # Noise from normal and clipping.
-        # impulse = np.clip(np.random.normal(impulse, self.env_variables["impulse_effect_noise_sd"], 1)[0], 0, self.env_variables["max_impulse"])
-        # angle = np.clip(np.random.normal(angle, self.env_variables["angle_effect_noise_sd"], 1)[0],
-        #                 -self.env_variables["max_angle_change"], self.env_variables["max_angle_change"])
+        # Noise from uniform. TODO: Be aware during debugging that there is no clipping
+        impulse_deviation = np.random.uniform(-1, 1, 1)[0] * self.env_variables["impulse_effect_noise_scaling"] * impulse
+        impulse = impulse + impulse_deviation
 
-        # Noise from uniform, and clipping within valid range.
-        impulse = \
-            np.clip(impulse + (np.random.uniform(-1, 1, 1)[0] * self.env_variables["impulse_effect_noise_scaling"]),
-                    0, self.env_variables["max_impulse"])
-        angle = np.clip(angle + (np.random.uniform(-1, 1, 1)[0] * self.env_variables["angle_effect_noise_scaling"]),
-                        -self.env_variables["max_angle_change"], self.env_variables["max_angle_change"])
+        angle_deviation = np.random.uniform(-1, 1, 1)[0] * self.env_variables["angle_effect_noise_scaling"] * abs(angle)
+        angle = angle + angle_deviation
 
         self.prev_action_impulse = impulse
         self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))

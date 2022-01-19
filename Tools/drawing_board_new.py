@@ -116,8 +116,8 @@ class NewDrawingBoard:
         turbulence = 128 * turbulence / turbSize
         xy_values += turbPower * turbulence / 256.0
         new_grating = 256 * self.chosen_math_library.abs(self.chosen_math_library.sin(xy_values * 3.14159))
-        new_grating /= np.max(new_grating)  # Normalise
-        new_grating = np.expand_dims(new_grating, 2)
+        new_grating /= self.chosen_math_library.max(new_grating)  # Normalise
+        new_grating = self.chosen_math_library.expand_dims(new_grating, 2)
 
         return new_grating
 
