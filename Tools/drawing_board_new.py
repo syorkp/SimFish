@@ -202,7 +202,7 @@ class NewDrawingBoard:
         n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2)
 
         # Create array of angles between prey extremities to form lines. (Prey_num * n_lines_prey)
-        interpolated_line_angles = np.linspace(prey_extremities[:, 0], prey_extremities[:, 1], n_lines_prey).flatten()
+        interpolated_line_angles = self.chosen_math_library.linspace(prey_extremities[:, 0], prey_extremities[:, 1], n_lines_prey).flatten()
 
         # Computing how far along each line prey are.  (Prey_num * n_lines_prey)
         prey_distance_along = prey_distances + self.prey_radius
