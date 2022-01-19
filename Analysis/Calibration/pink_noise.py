@@ -63,7 +63,7 @@ def vectorised_marble_texture(width, height):
 
     # Calibrate these to be best for no direction and detectability.
     turbPower = 1.0
-    turbSize = 162.0-
+    turbSize = 162.0
 
     noise = np.absolute(np.random.randn(1500, 1500))
     xp, yp = np.arange(width), np.arange(height)

@@ -58,7 +58,7 @@ class NewDrawingBoard:
         if linear:
             return self.linear_texture(frequency)
         else:
-            return self.vectorised_marble_texture()
+            return self.marble_texture()
 
     def linear_texture(self, frequency):
         """Simple linear repeating grating"""
@@ -70,7 +70,7 @@ class NewDrawingBoard:
         full_arena = self.chosen_math_library.expand_dims(full_arena, 2)
         return full_arena
 
-    def vectorised_marble_texture(self):
+    def marble_texture(self):
         # TODO: Can be made much more efficient through none repeating computations.
         # Generate these randomly so grid can have any orientation.
         xPeriod = self.chosen_math_library.random.uniform(0.0, 10.0)
@@ -116,6 +116,8 @@ class NewDrawingBoard:
         turbulence = 128 * turbulence / turbSize
         xy_values += turbPower * turbulence / 256.0
         new_grating = 256 * self.chosen_math_library.abs(self.chosen_math_library.sin(xy_values * 3.14159))
+        new_grating /= np.max(new_grating)  # Normalise
+        new_grating = np.expand_dims(new_grating, 2)
 
         return new_grating
 
