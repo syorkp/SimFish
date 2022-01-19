@@ -141,5 +141,7 @@
     "prey_reproduction_mode": true,
     "birth_rate": 0.1,
     "birth_rate_current_pop_scaling": 1,
-    "birth_rate_region_size": 240
+    "birth_rate_region_size": 240,
+    "prey_safe_duration": 100,
+    "p_prey_death": 0.1
 }

@@ -120,6 +120,9 @@ class BaseEnvironment:
             self.salt_gradient = None
             self.xp, self.yp = np.arange(self.env_variables['width']), np.arange(self.env_variables['height'])
 
+        if self.env_variables["prey_reproduction_mode"]:
+            self.prey_ages = []
+
     def reset(self):
         self.num_steps = 0
         self.fish.hungry = 0
@@ -175,6 +178,9 @@ class BaseEnvironment:
         self.vegetation_shapes = []
 
         self.mask_buffer = []
+
+        if self.env_variables["prey_reproduction_mode"]:
+            self.prey_ages = []
 
     def reproduce_prey(self):
         num_prey = len(self.prey_bodies)
@@ -450,11 +456,14 @@ class BaseEnvironment:
 
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
 
-        # New prey motion
+        # New prey motion TODO: Check doesnt mess with base version.
         self.paramecia_gaits.append(
             np.random.choice([0, 1, 2], 1, p=[1 - (self.env_variables["p_fast"] + self.env_variables["p_slow"]),
                                               self.env_variables["p_slow"],
                                               self.env_variables["p_fast"]])[0])
+
+        if self.env_variables["prey_reproduction_mode"]:
+            self.prey_ages.append(0)
 
     def check_proximity(self, feature_position, sensing_distance):
         sensing_area = [[feature_position[0] - sensing_distance,
@@ -535,6 +544,8 @@ class BaseEnvironment:
                     space.remove(shp, shp.body)
                     self.prey_shapes.remove(shp)
                     self.prey_bodies.remove(shp.body)
+                    if self.env_variables["prey_reproduction_mode"]:
+                        del self.prey_ages[i]
                     del self.paramecia_gaits[i]
             self.prey_caught += 1
             self.fish.prey_consumed = True
@@ -543,6 +554,13 @@ class BaseEnvironment:
             return False
         else:
             return True
+
+    def remove_prey(self, prey_index):
+        self.space.remove(self.prey_shapes[prey_index], self.prey_shapes[prey_index].body)
+        del self.prey_shapes[prey_index]
+        del self.prey_bodies[prey_index]
+        del self.prey_ages[prey_index]
+        del self.paramecia_gaits[prey_index]
 
     def create_predator(self):
         self.predator_bodies.append(

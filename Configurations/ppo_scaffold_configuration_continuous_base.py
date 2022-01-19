@@ -58,7 +58,7 @@ env = {'width': 1500,  # arena size
        'predator_impulse': 1.0,
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 300,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.01,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -202,8 +202,10 @@ env = {'width': 1500,  # arena size
        # New prey reproduction
        'prey_reproduction_mode': True,
        'birth_rate': 0.1,  # Probability per step of new prey appearing at each source.
-       'birth_rate_current_pop_scaling': 1,  # Scales birth rate according to number of prey currently present (1 is no scaling).
+       'birth_rate_current_pop_scaling': 1,  # Sets scaling of birth rate according to number of prey currently present
        'birth_rate_region_size': 240,  # Same square as before for simplicity
+       'prey_safe_duration': 100,
+       'p_prey_death': 0.1,
        }
 
 params = {'num_actions': 10,  # size of action space

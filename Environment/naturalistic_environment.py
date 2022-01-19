@@ -179,6 +179,10 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.fish.touched_edge_this_step = False
             if self.env_variables["prey_reproduction_mode"] and self.env_variables["differential_prey"]:
                 self.reproduce_prey()
+                for i, age in enumerate(self.prey_ages):
+                    age += 1
+                    if age > self.env_variables["prey_safe_duration"] and np.random.rand(1) < self.env_variables["p_prey_death"]:
+                        self.remove_prey(i)
 
         self.num_steps += 1
         self.board.erase()
