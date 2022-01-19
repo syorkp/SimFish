@@ -164,6 +164,7 @@ class BaseEnvironment:
                 self.reset_salt_gradient()
                 self.fish.salt_health = 1.0
             self.paramecia_gaits = []
+            self.board.reset()
 
         self.prey_shapes = []
         self.prey_bodies = []
@@ -538,15 +539,56 @@ class BaseEnvironment:
                 prey_body.apply_impulse_at_local_point((impulses[i], 0))
 
     def touch_prey(self, arbiter, space, data):
+        if self.new_simulation:
+            return self.touch_prey_new(arbiter, space, data)
+        else:
+            return self.touch_prey_old(arbiter, space, data)
+
+    def touch_prey_new(self, arbiter, space, data):
+        valid_capture = False
+        if self.fish.capture_possible:
+            for i, shp in enumerate(self.prey_shapes):
+                if shp == arbiter.shapes[0]:
+                    # Check if angles line up.
+                    prey_position = self.prey_bodies[i].position
+                    fish_position = self.fish.body.position
+                    vector = prey_position-fish_position  # Taking fish as origin
+                    angle = np.arctan(vector[1]/vector[0])
+                    if angle < 0:
+                        angle += (np.pi * 2)
+                    fish_orientation = (self.fish.body.angle % (2 *np.pi))
+                    print(f"Computed angle: {angle}")
+                    print(f"Fish angle: {fish_orientation}")
+                    self.board.show()
+                    # Normalise so both in same reference frame
+                    deviation = abs(fish_orientation-angle)
+                    if deviation < self.env_variables["capture_angle_deviation_allowance"]:
+                        print("Successful capture \n")
+                        valid_capture = True
+                        space.remove(shp, shp.body)
+                        self.prey_shapes.remove(shp)
+                        self.prey_bodies.remove(shp.body)
+                        del self.paramecia_gaits[i]
+                        if self.env_variables["prey_reproduction_mode"]:
+                            del self.prey_ages[i]
+                    else:
+                        print("Failed capture \n")
+            if valid_capture:
+                self.prey_caught += 1
+                self.fish.prey_consumed = True
+                self.prey_consumed_this_step = True
+
+            return False
+        else:
+            return True
+
+    def touch_prey_old(self, arbiter, space, data):
         if self.fish.making_capture:
             for i, shp in enumerate(self.prey_shapes):
                 if shp == arbiter.shapes[0]:
                     space.remove(shp, shp.body)
                     self.prey_shapes.remove(shp)
                     self.prey_bodies.remove(shp.body)
-                    if self.env_variables["prey_reproduction_mode"]:
-                        del self.prey_ages[i]
-                    del self.paramecia_gaits[i]
             self.prey_caught += 1
             self.fish.prey_consumed = True
             self.prey_consumed_this_step = True
@@ -561,6 +603,7 @@ class BaseEnvironment:
         del self.prey_bodies[prey_index]
         del self.prey_ages[prey_index]
         del self.paramecia_gaits[prey_index]
+
 
     def create_predator(self):
         self.predator_bodies.append(

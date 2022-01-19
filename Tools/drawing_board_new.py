@@ -139,7 +139,9 @@ class NewDrawingBoard:
     #
     #     add_for_hypothetical = np.array([[0, 0], [0, 0], [0, self.width - 1], [self.height - 1, 0]])
     #     self.add_for_hypothetical = np.tile(add_for_hypothetical, (max_line_number, 1, 1))
-    def compute_repeated_computations(self, max_line_number=20000):
+
+    def compute_repeated_computations(self, max_line_number=50000):
+        # TODO: make max line number scale with number of prey
         multiplication_matrix_unit = self.chosen_math_library.array([-1, 1, -1, 1])
         self.multiplication_matrix = self.chosen_math_library.tile(multiplication_matrix_unit, (max_line_number, 1))
 
@@ -286,6 +288,7 @@ class NewDrawingBoard:
         m_mul = self.chosen_math_library.expand_dims(m, 1)
         full_m = self.chosen_math_library.repeat(m_mul, 4, 1)
         m_mul = full_m * mul1_full
+
         m_mul[:, :3] = 1
         addition_matrix = addition_matrix * m_mul
         division_matrix = full_m
@@ -703,13 +706,16 @@ class NewDrawingBoard:
         n = (angular_size / theta_separation) / 2
         return int(n)
 
+    def reset(self):
+        """To be called at start of episode"""
+        self.background_grating = self.get_background_grating(0)
+
     def erase(self, bkg=0):
         if bkg == 0:
             self.db = self.chosen_math_library.copy(self.base_db)
         else:
             self.db = self.chosen_math_library.copy(self.base_db_illuminated)
 
-        self.background_grating = self.get_background_grating(0)
         # if bkg == 0:
         #     self.db = np.zeros((self.height, self.width, 3), dtype=np.double)
         # else:

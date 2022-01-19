@@ -31,14 +31,14 @@ env = {'width': 1500,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 15,
+       'prey_num': 50,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
        'prey_max_turning_angle': 0.3,
        'prey_jump': False,
-       'differential_prey': True,
+       'differential_prey': False,
        'prey_cloud_num': 2,
 
        'sand_grain_mass': 1.,
@@ -206,6 +206,10 @@ env = {'width': 1500,  # arena size
        'birth_rate_region_size': 240,  # Same square as before for simplicity
        'prey_safe_duration': 100,
        'p_prey_death': 0.1,
+
+       # Complex capture swim dynamics
+       'fraction_capture_permitted': 1.0,  # Should be 1.0 if no temporal restriction imposed.
+       'capture_angle_deviation_allowance': np.pi,  # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
        }
 
 params = {'num_actions': 10,  # size of action space
@@ -218,7 +222,7 @@ params = {'num_actions': 10,  # size of action space
           'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
           'num_episodes': 50000,  # How many episodes of game environment to train network with.
           'pre_train_steps': 50000,  # How many steps of random actions before training begins.
-          'max_epLength': 200,  # The max allowed length of our episode.
+          'max_epLength': 1000,  # The max allowed length of our episode.
           'time_per_step': 0.03,  # Length of each step used in gif creation
           'summaryLength': 1,  # Number of episodes to periodically save for analysis
           'tau': 0.001,  # target network update time constant

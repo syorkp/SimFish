@@ -27,6 +27,9 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.impulse_vector_field = None
             self.coordinates_in_current = None  # May be used to provide efficient checking. Although vector comp probably faster.
             self.create_current()
+            self.capture_fraction = int(self.env_variables["phys_steps_per_sim_step"] * self.env_variables['fraction_capture_permitted'])
+            self.capture_start = int((self.env_variables['phys_steps_per_sim_step'] - self.capture_fraction) / 2)
+            self.capture_end = self.capture_start + self.capture_fraction
 
     def reset(self):
         # print(f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -48,6 +51,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.fish.body.angle = np.random.random() * 2 * np.pi
         self.fish.body.velocity = (0, 0)
         self.impulse_vector_field *= np.random.choice([-1, 1], size=1, p=[0.5, 0.5]).astype(float)
+        self.fish.capture_possible = False
 
         if self.env_variables["differential_prey"]:
             self.prey_cloud_locations = [
@@ -133,6 +137,10 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.displace_sand_grains()
             if self.new_simulation and self.env_variables["current_setting"]:
                 self.resolve_currents()
+                if self.fish.making_capture and self.capture_start < micro_step < self.capture_end:
+                    self.fish.capture_possible = True
+                else:
+                    self.fish.capture_possible = False
             if self.predator_body is not None:
                 self.move_realistic_predator()
 
@@ -179,9 +187,10 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.fish.touched_edge_this_step = False
             if self.env_variables["prey_reproduction_mode"] and self.env_variables["differential_prey"]:
                 self.reproduce_prey()
+                self.prey_ages = [age + 1 for age in self.prey_ages]
                 for i, age in enumerate(self.prey_ages):
-                    age += 1
                     if age > self.env_variables["prey_safe_duration"] and np.random.rand(1) < self.env_variables["p_prey_death"]:
+                        print("Removed prey")
                         self.remove_prey(i)
 
         self.num_steps += 1

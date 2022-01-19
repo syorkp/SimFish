@@ -77,6 +77,7 @@ class Fish:
         self.touched_edge = False
         self.touched_predator = False
         self.making_capture = False
+        self.capture_possible = False
         self.prev_action_impulse = 0
         self.prev_action_angle = 0
         self.using_gpu = using_gpu
