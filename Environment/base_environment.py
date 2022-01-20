@@ -556,9 +556,8 @@ class BaseEnvironment:
                     angle = np.arctan(vector[1]/vector[0])
                     if angle < 0:
                         angle += (np.pi * 2)
-                    fish_orientation = (self.fish.body.angle % (2 *np.pi))
-                    print(f"Computed angle: {angle}")
-                    print(f"Fish angle: {fish_orientation}")
+                    fish_orientation = (self.fish.body.angle % (2 * np.pi))
+
                     self.board.show()
                     # Normalise so both in same reference frame
                     deviation = abs(fish_orientation-angle)
