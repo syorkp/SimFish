@@ -338,6 +338,7 @@ class Fish:
         else:
             left_photons = self.readings_to_photons(self.left_eye.readings)
             right_photons = self.readings_to_photons(self.right_eye.readings)
+
         left_eye = resize(np.reshape(left_photons, (1, self.left_eye.max_photoreceptor_num, 3)) * (
                     255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
         right_eye = resize(np.reshape(right_photons, (1, self.right_eye.max_photoreceptor_num, 3)) * (

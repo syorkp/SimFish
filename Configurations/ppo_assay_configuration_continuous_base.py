@@ -56,10 +56,10 @@ env = {'width': 1500,  # arena size
        'predator_inertia': 40.,
        'predator_size': 100.,
        'predator_impulse': 1.0,
-       'immunity_steps': 65,
+       'immunity_steps': 0,
        # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 300,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.1,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -171,6 +171,57 @@ env = {'width': 1500,  # arena size
 
        # If want complex or simple GIFS:
        'show_channel_sectors': False,
+
+       # Updated predator. Note, can make some of these arbitrarily high so predator keeps attacking when fish enters a certain region for whole episode.
+       'max_predator_attacks': 5,
+       'further_attack_probability': 0.4,
+       'max_predator_attack_range': 600,
+       'predator_presence_duration_steps': 100,
+
+       # Salt stimuli
+       'salt': True,  # Inclusion of olfactory salt input and salt death.
+       'salt_concentration_decay': 0.001,  # Scale for exponential salt concentration decay from source.
+       'salt_recovery': 0.01,  # Amount by which salt health recovers per step
+       'max_salt_damage': 0.02,  # Salt damage at centre of source.
+
+       # Complex prey
+       'p_slow': 0.4,
+       'p_fast': 0.2,
+       'p_escape': 0.5,
+       'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
+       'slow_speed_paramecia': 0.01,
+       'fast_speed_paramecia': 0.02,
+       'jump_speed_paramecia': 0.03,
+       'prey_fluid_displacement': True,
+
+       # Motor effect noise (for continuous)
+       'impulse_effect_noise_sd': 0.01,
+       'angle_effect_noise_sd': 0.01,
+       'impulse_effect_noise_scaling': 0.5,  # Corresponds to the max noise deviation in either direction
+       'angle_effect_noise_scaling': 0.5,  # Corresponds to the max noise deviation in either direction
+
+       # Wall touch penalty
+       'wall_touch_penalty': 0.2,
+       'wall_reflection': True,
+
+       # New prey reproduction
+       'prey_reproduction_mode': True,
+       'birth_rate': 0.1,  # Probability per step of new prey appearing at each source.
+       'birth_rate_current_pop_scaling': 1,  # Sets scaling of birth rate according to number of prey currently present
+       'birth_rate_region_size': 240,  # Same square as before for simplicity
+       'prey_safe_duration': 100,
+       'p_prey_death': 0.1,
+
+       # Complex capture swim dynamics
+       'fraction_capture_permitted': 1.0,  # Should be 1.0 if no temporal restriction imposed.
+       'capture_angle_deviation_allowance': np.pi,
+       # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
+
+       # First complex predator attack is loom
+       'predator_first_attack_loom': True,
+       'initial_predator_size': 20,  # Size in degrees
+       'final_predator_size': 200,  # "
+       'duration_of_loom': 10,  # Number of steps for which loom occurs.
        }
 
 

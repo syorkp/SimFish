@@ -142,7 +142,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                 else:
                     self.fish.capture_possible = False
             if self.predator_body is not None:
-                self.move_realistic_predator()
+                self.move_realistic_predator(micro_step)
 
             self.space.step(self.env_variables['phys_dt'])
             if self.fish.prey_consumed:

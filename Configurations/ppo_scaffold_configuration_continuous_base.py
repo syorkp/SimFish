@@ -58,7 +58,7 @@ env = {'width': 1500,  # arena size
        'predator_impulse': 1.0,
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 300,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.1,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -210,6 +210,12 @@ env = {'width': 1500,  # arena size
        # Complex capture swim dynamics
        'fraction_capture_permitted': 1.0,  # Should be 1.0 if no temporal restriction imposed.
        'capture_angle_deviation_allowance': np.pi,  # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
+
+       # First complex predator attack is loom
+       'predator_first_attack_loom': True,
+       'initial_predator_size': 20,  # Size in degrees
+       'final_predator_size': 200,  # "
+       'duration_of_loom': 10,  # Number of steps for which loom occurs.
        }
 
 params = {'num_actions': 10,  # size of action space

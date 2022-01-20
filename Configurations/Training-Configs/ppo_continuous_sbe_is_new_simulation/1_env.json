@@ -41,7 +41,7 @@
     "predator_impulse": 1.0,
     "immunity_steps": 65,
     "distance_from_fish": 300,
-    "probability_of_predator": 0.0,
+    "probability_of_predator": 0.1,
     "dark_light_ratio": 0.0,
     "read_noise_sigma": 5,
     "photon_ratio": 100,
@@ -145,5 +145,9 @@
     "prey_safe_duration": 100,
     "p_prey_death": 0.1,
     "fraction_capture_permitted": 1.0,
-    "capture_angle_deviation_allowance": 3.141592653589793
+    "capture_angle_deviation_allowance": 3.141592653589793,
+    "predator_first_attack_loom": true,
+    "initial_predator_size": 20,
+    "final_predator_size": 200,
+    "duration_of_loom": 10
 }
