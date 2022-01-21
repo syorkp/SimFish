@@ -312,6 +312,8 @@ class Fish:
 
     def _readings_to_photons_new(self, readings):
         """To simulate shot noise."""
+        if self.using_gpu:
+            readings = readings.get()
         photons = np.random.poisson(readings * self.env_variables['photon_ratio'])
         if self.env_variables['read_noise_sigma'] > 0:
             noise = np.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
