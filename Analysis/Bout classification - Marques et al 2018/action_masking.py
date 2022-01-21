@@ -111,7 +111,7 @@ xi = np.linspace(np.min(actions[:, 0]),np.max(actions[:, 0]),100)
 yi = np.linspace(np.min(actions[:, 1]),np.max(actions[:, 1]),100)
 xi, yi = np.meshgrid(xi, yi)
 zi = griddata(actions, log_density_of_original, (xi, yi), method="linear")
-plt.pcolormesh(xi,yi,zi)
+plt.pcolormesh(xi, yi, zi)
 plt.show()
 
 # Visualise KDF for larger range
