@@ -571,11 +571,14 @@ class BaseEnvironment:
                     fish_position = self.fish.body.position
                     vector = prey_position - fish_position  # Taking fish as origin
                     angle = np.arctan(vector[1] / vector[0])
-                    if angle < 0:
-                        print("UR quadrent.")
-                        angle += (np.pi * 2)
                     if vector[0] < 0 and vector[1] < 0:
                         print("UL quadrent")
+                        angle += np.pi
+                    elif vector[1] < 0:
+                        print("UR quadrent.")
+                        angle += (np.pi * 2)
+                    elif vector[0] < 0:
+                        print("BL quadrent.")
                         angle += np.pi
                     fish_orientation = (self.fish.body.angle % (2 * np.pi))
 

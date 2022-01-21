@@ -96,12 +96,17 @@ dist_angles_radians = (np.absolute(dist_angles)/180) * np.pi
 # action_range = np.concatenate((ang, imp), axis=2)
 # action_range = action_range.reshape(-1, action_range.shape[-1])
 #
-# impulse = np.expand_dims(impulse, 1)
-# dist_angles_radians = np.expand_dims(dist_angles_radians, 1)
-# actions = np.concatenate((impulse, dist_angles_radians), axis=1)
-# kde = KernelDensity(bandwidth=20, kernel='gaussian').fit(actions)
-# log_density_of_original = kde.score_samples(actions)
-#
+impulse = np.expand_dims(impulse, 1)
+dist_angles_radians = np.expand_dims(dist_angles_radians, 1)
+actions = np.concatenate((impulse, dist_angles_radians), axis=1)
+kde = KernelDensity(bandwidth=20, kernel='gaussian').fit(actions)
+log_density_of_original = kde.score_samples(actions)
+params = kde.get_params()
+
+new_kde = KernelDensity(bandwidth=20, kernel='gaussian').set_params(params)
+
+x = True
+
 # plt.scatter(impulse[:, 0], log_density_of_original)
 # plt.show()
 #

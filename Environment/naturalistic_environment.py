@@ -167,22 +167,27 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         if self.new_simulation:
             reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
+
+            # Energy level
             if self.env_variables["energy_state"]:
                 self.energy_level_log.append(self.fish.energy_level)
                 if self.fish.energy_level < 0:
                     print("Fish ran out of energy")
                     done = True
-            if self.predator_body is not None:
-                self.total_predator_steps += 1
+
+            # Salt health
             if self.env_variables["salt"]:
                 salt_damage = self.salt_gradient[int(self.fish.body.position[0]), int(self.fish.body.position[1])]
                 self.fish.salt_health = self.fish.salt_health + self.env_variables["salt_recovery"] - salt_damage
-
                 if self.fish.salt_health > 1.0:
                     self.fish.salt_health = 1.0
                 if self.fish.salt_health < 0:
                     print("Fish too salty")
                     done = True
+
+            if self.predator_body is not None:
+                self.total_predator_steps += 1
+
             if self.fish.touched_edge_this_step:
                 reward -= self.env_variables["wall_touch_penalty"]
                 self.fish.touched_edge_this_step = False
