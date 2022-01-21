@@ -390,10 +390,7 @@ class NewDrawingBoard:
         full_set = self.chosen_math_library.vstack((set_1, set_2)).astype(int)
 
         full_set = full_set.reshape(-1, 2)
-        try:
-            self.empty_mask[full_set[:, 1], full_set[:, 0]] = 0
-        except:
-            x = True
+        self.empty_mask[full_set[:, 1], full_set[:, 0]] = 0
 
 
         # For debugging:

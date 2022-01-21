@@ -334,12 +334,12 @@ class Fish:
         return eyes
 
     def get_visual_inputs_new(self):
-        if self.using_gpu:
-            left_photons = self.readings_to_photons(self.left_eye.readings).get()
-            right_photons = self.readings_to_photons(self.right_eye.readings).get()
-        else:
-            left_photons = self.readings_to_photons(self.left_eye.readings)
-            right_photons = self.readings_to_photons(self.right_eye.readings)
+        # if self.using_gpu:
+        #     left_photons = self.readings_to_photons(self.left_eye.readings).get()
+        #     right_photons = self.readings_to_photons(self.right_eye.readings).get()
+        # else:
+        left_photons = self.readings_to_photons(self.left_eye.readings)
+        right_photons = self.readings_to_photons(self.right_eye.readings)
 
         left_eye = resize(np.reshape(left_photons, (1, self.left_eye.max_photoreceptor_num, 3)) * (
                     255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
