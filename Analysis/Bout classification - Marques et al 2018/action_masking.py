@@ -5,6 +5,10 @@ from sklearn.neighbors import KernelDensity
 from scipy.interpolate import griddata
 import matplotlib
 import h5py
+import tensorflow.compat.v1 as tf
+import tensorflow_probability as tfp
+
+tf.disable_v2_behavior()
 
 # f = h5py.File('BoutMapCenters_kNN4_74Kins4dims_1.75Smooth_slow_3000_auto_4roc_merged11.mat', 'r')
 # data = f.get('data/variable1')
@@ -86,41 +90,52 @@ dist_angles_radians = (np.absolute(dist_angles)/180) * np.pi
 # plt.show()
 
 # Computing kernel density
-ang, imp = np.linspace(0, 500, 500), np.linspace(0, 20, 500)
-ang, imp = np.meshgrid(ang, imp)
-ang, imp = np.expand_dims(ang, 2), np.expand_dims(imp, 2)
-action_range = np.concatenate((ang, imp), axis=2)
-action_range = action_range.reshape(-1, action_range.shape[-1])
-
-impulse = np.expand_dims(impulse, 1)
-dist_angles_radians = np.expand_dims(dist_angles_radians, 1)
-actions = np.concatenate((impulse, dist_angles_radians), axis=1)
-kde = KernelDensity(bandwidth=5, kernel='gaussian').fit(actions)
-
-# plt.scatter(impulse[:, 0], log_density)
+# ang, imp = np.linspace(0, 500, 500), np.linspace(0, 20, 500)
+# ang, imp = np.meshgrid(ang, imp)
+# ang, imp = np.expand_dims(ang, 2), np.expand_dims(imp, 2)
+# action_range = np.concatenate((ang, imp), axis=2)
+# action_range = action_range.reshape(-1, action_range.shape[-1])
+#
+# impulse = np.expand_dims(impulse, 1)
+# dist_angles_radians = np.expand_dims(dist_angles_radians, 1)
+# actions = np.concatenate((impulse, dist_angles_radians), axis=1)
+# kde = KernelDensity(bandwidth=20, kernel='gaussian').fit(actions)
+# log_density_of_original = kde.score_samples(actions)
+#
+# plt.scatter(impulse[:, 0], log_density_of_original)
 # plt.show()
 #
-# plt.scatter(dist_angles_radians[:, 0], log_density)
+# plt.scatter(dist_angles_radians[:, 0], log_density_of_original)
 # plt.show()
-
-
-# # Visualise KDF for all original data points
-log_density_of_original = kde.score_samples(actions)
 #
-xi = np.linspace(np.min(actions[:, 0]),np.max(actions[:, 0]),100)
-yi = np.linspace(np.min(actions[:, 1]),np.max(actions[:, 1]),100)
-xi, yi = np.meshgrid(xi, yi)
-zi = griddata(actions, log_density_of_original, (xi, yi), method="linear")
-plt.pcolormesh(xi, yi, zi)
-plt.show()
+#
+# # # Visualise KDF for all original data points
+# log_density_of_original = kde.score_samples(actions)
+# #
+# xi = np.linspace(np.min(actions[:, 0]),np.max(actions[:, 0]),100)
+# yi = np.linspace(np.min(actions[:, 1]),np.max(actions[:, 1]),100)
+# xi, yi = np.meshgrid(xi, yi)
+# zi = griddata(actions, log_density_of_original, (xi, yi), method="linear")
+# plt.pcolormesh(xi, yi, zi)
+# plt.show()
+#
+# # Visualise KDF for larger range
+# log_density = kde.score_samples(action_range)
+#
+# xi = np.linspace(np.min(action_range[:, 0]),np.max(action_range[:, 0]),100)
+# yi = np.linspace(np.min(action_range[:, 1]),np.max(action_range[:, 1]),100)
+# xi, yi = np.meshgrid(xi, yi)
+# zi = griddata(action_range, log_density, (xi, yi), method="linear")
+# plt.pcolormesh(xi, yi, zi)
+# plt.show()
+#
 
-# Visualise KDF for larger range
-log_density = kde.score_samples(action_range)
 
-xi = np.linspace(np.min(action_range[:, 0]),np.max(action_range[:, 0]),100)
-yi = np.linspace(np.min(action_range[:, 1]),np.max(action_range[:, 1]),100)
-xi, yi = np.meshgrid(xi, yi)
-zi = griddata(action_range, log_density, (xi, yi), method="linear")
-plt.pcolormesh(xi, yi, zi)
-plt.show()
+#                         TENSORFLOW Cutoff
+
+
+
+#                         TENSORFLOW KDE
+
+
 

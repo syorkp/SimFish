@@ -403,6 +403,7 @@ class BaseEnvironment:
             self._touch_wall(arbiter, space, data)
 
     def _touch_wall(self, arbiter, space, data):
+        print(f"Fish touched wall: {self.fish.body.position}")
         new_position_x = self.fish.body.position[0]
         new_position_y = self.fish.body.position[1]
 
@@ -571,7 +572,11 @@ class BaseEnvironment:
                     vector = prey_position - fish_position  # Taking fish as origin
                     angle = np.arctan(vector[1] / vector[0])
                     if angle < 0:
+                        print("UR quadrent.")
                         angle += (np.pi * 2)
+                    if vector[0] < 0 and vector[1] < 0:
+                        print("UL quadrent")
+                        angle += np.pi
                     fish_orientation = (self.fish.body.angle % (2 * np.pi))
 
                     # Normalise so both in same reference frame
@@ -587,6 +592,12 @@ class BaseEnvironment:
                             del self.prey_ages[i]
                     else:
                         print("Failed capture \n")
+                        print(f"""Prey position: {prey_position}
+                        Fish position: {fish_position}
+                        Fish orientation: {fish_orientation}
+                        Computed orientation: {angle}
+                        """)
+
             if valid_capture:
                 self.prey_caught += 1
                 self.fish.prey_consumed = True

@@ -166,10 +166,12 @@ class NaturalisticEnvironment(BaseEnvironment):
                     plt.pause(0.0001)
 
         if self.new_simulation:
-            self.energy_level_log.append(self.fish.energy_level)
             reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
-            if self.fish.energy_level < 0:
-                done = True
+            if self.env_variables["energy_state"]:
+                self.energy_level_log.append(self.fish.energy_level)
+                if self.fish.energy_level < 0:
+                    print("Fish ran out of energy")
+                    done = True
             if self.predator_body is not None:
                 self.total_predator_steps += 1
             if self.env_variables["salt"]:
