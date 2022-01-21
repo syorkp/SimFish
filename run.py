@@ -1312,8 +1312,8 @@ phase_1_test_config = [
         "Continuous Actions": True,
         "Learning Algorithm": "PPO",
         "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": True,
+        "Using GPU": False,
+        "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
         "New Simulation": True
