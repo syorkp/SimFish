@@ -775,7 +775,6 @@ class BaseEnvironment:
     def grow_loom_predator(self):
         self.loom_predator_current_size += (self.env_variables["final_predator_size"] - self.env_variables[
             "initial_predator_size"]) / self.env_variables["duration_of_loom"]
-        print(f"Loom predator size: {self.loom_predator_current_size}")
         # Remove the predator as it appears
         self.space.remove(self.predator_shape, self.predator_shape.body)
 

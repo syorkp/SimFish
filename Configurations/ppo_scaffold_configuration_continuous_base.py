@@ -31,7 +31,7 @@ env = {'width': 1500,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,
-       'prey_num': 50,
+       'prey_num': 20,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
@@ -58,7 +58,7 @@ env = {'width': 1500,  # arena size
        'predator_impulse': 1.0,
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 300,  # Distance from the fish at which the predator appears.
-       'probability_of_predator': 0.1,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 5,  # gaussian noise added to photon count
@@ -151,12 +151,12 @@ env = {'width': 1500,  # arena size
        'action_reward_scaling': 10,  # Arbitrary (practical) hyperparameter for penalty for action
        'consumption_reward_scaling': 100,  # Arbitrary (practical) hyperparameter for reward for consumption
 
-       'energy_state': True,
+       'energy_state': False,
        # For control of in light:
        'in_light': False,
 
        # Currents
-       'current_setting': "Linear",  # Current setting. If none, should be False. Current options: Circular
+       'current_setting': "Circular",  # Current setting. If none, should be False. Current options: Circular
        'max_current_strength': 0.01,  # Arbitrary impulse variable to be calibrated
        'current_width': 0.2,
        'current_strength_variance': 1,
