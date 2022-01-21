@@ -115,6 +115,8 @@ class BaseEnvironment:
         # For debugging purposes
         self.visualise_mask = self.env_variables['visualise_mask']
         self.mask_buffer = []
+        self.using_gpu = using_gpu
+
 
         if self.env_variables["salt"]:
             self.salt_gradient = None
@@ -222,7 +224,10 @@ class BaseEnvironment:
             self.mask_buffer.append(frame)
             self.board.mask_buffer_point = None
 
-        arena = self.board.db * 255.0
+        if self.using_gpu:
+            arena = self.board.db.get() * 255.0
+        else:
+            arena = self.board.db * 255.0
 
         arena[0, :, 0] = np.ones(self.env_variables['width']) * 255
         arena[self.env_variables['height'] - 1, :, 0] = np.ones(self.env_variables['width']) * 255

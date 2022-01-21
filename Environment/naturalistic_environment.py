@@ -11,7 +11,6 @@ class NaturalisticEnvironment(BaseEnvironment):
     def __init__(self, env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen=False, fish_mass=None, collisions=True):
         super().__init__(env_variables, draw_screen, new_simulation, using_gpu)
 
-        self.using_gpu = using_gpu
 
         if using_gpu:
             self.chosen_math_library = cp
