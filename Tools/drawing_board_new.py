@@ -140,8 +140,8 @@ class NewDrawingBoard:
     #     add_for_hypothetical = np.array([[0, 0], [0, 0], [0, self.width - 1], [self.height - 1, 0]])
     #     self.add_for_hypothetical = np.tile(add_for_hypothetical, (max_line_number, 1, 1))
 
-    def compute_repeated_computations(self, max_line_number=20000):
-        # TODO: make max line number scale with number of prey
+    def compute_repeated_computations(self, max_line_number=50000):
+        # TODO: make max line number scale with number of prey and predators.
         multiplication_matrix_unit = self.chosen_math_library.array([-1, 1, -1, 1])
         self.multiplication_matrix = self.chosen_math_library.tile(multiplication_matrix_unit, (max_line_number, 1))
 

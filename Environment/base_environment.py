@@ -550,7 +550,6 @@ class BaseEnvironment:
                                                                            self.env_variables["p_escape"]])[0] == 1:
                     prey_body.apply_impulse_at_local_point((self.env_variables["jump_speed_paramecia"], 0))
 
-
             else:
                 prey_body.angle = prey_body.angle + angle_changes[i]
                 prey_body.apply_impulse_at_local_point((impulses[i], 0))
@@ -570,20 +569,34 @@ class BaseEnvironment:
                     prey_position = self.prey_bodies[i].position
                     fish_position = self.fish.body.position
                     vector = prey_position - fish_position  # Taking fish as origin
+
+                    # Will generate values between -pi/2 and pi/2 which require adjustment depending on quadrant.
                     angle = np.arctan(vector[1] / vector[0])
+
                     if vector[0] < 0 and vector[1] < 0:
+                        # Generates postiive angle from left x axis clockwise.
                         print("UL quadrent")
                         angle += np.pi
                     elif vector[1] < 0:
+                        # Generates negative angle from right x axis anticlockwise.
                         print("UR quadrent.")
-                        angle += (np.pi * 2)
+                        angle = angle + (np.pi * 2)
                     elif vector[0] < 0:
+                        # Generates negative angle from left x axis anticlockwise.
                         print("BL quadrent.")
-                        angle += np.pi
+                        angle = angle + np.pi
+
+                    # Angle ends up being between 0 and 2pi as clockwise from right x axis. Same frame as fish angle:
                     fish_orientation = (self.fish.body.angle % (2 * np.pi))
 
                     # Normalise so both in same reference frame
                     deviation = abs(fish_orientation - angle)
+                    if deviation > np.pi:
+                        # Need to account for cases where one angle is very high, while other is very low, as these
+                        # angles can be close together. Can do this by summing angles and subtracting from 2 pi.
+                        # TODO: NOT CHECKED THIS WORKS YET.
+
+                        deviation = abs((2*np.pi)-(fish_orientation+angle))
                     if deviation < self.env_variables["capture_angle_deviation_allowance"]:
                         print("Successful capture \n")
                         valid_capture = True

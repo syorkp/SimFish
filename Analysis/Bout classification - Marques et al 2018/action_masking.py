@@ -1,14 +1,15 @@
 import numpy as np
 import scipy.io
+from scipy import stats
 import matplotlib.pyplot as plt
 from sklearn.neighbors import KernelDensity
 from scipy.interpolate import griddata
 import matplotlib
 import h5py
-import tensorflow.compat.v1 as tf
-import tensorflow_probability as tfp
+# import tensorflow.compat.v1 as tf
+# import tensorflow_probability as tfp
 
-tf.disable_v2_behavior()
+# tf.disable_v2_behavior()
 
 # f = h5py.File('BoutMapCenters_kNN4_74Kins4dims_1.75Smooth_slow_3000_auto_4roc_merged11.mat', 'r')
 # data = f.get('data/variable1')
@@ -102,9 +103,39 @@ actions = np.concatenate((impulse, dist_angles_radians), axis=1)
 kde = KernelDensity(bandwidth=20, kernel='gaussian').fit(actions)
 log_density_of_original = kde.score_samples(actions)
 params = kde.get_params()
+z = np.abs(stats.zscore(actions, axis=None))
+# z = z[:, 0] + z[:, 1]
+outliers = actions[z[:, 0]>1.5 or z[:, 1]>1.5]
 
-new_kde = KernelDensity(bandwidth=20, kernel='gaussian').set_params(params)
+plt.scatter(actions[:, 0], actions[:, 1], alpha=0.2)
+plt.scatter(outliers[:, 0], outliers[:, 1], alpha=0.2, color="r")
+plt.ylabel("Full Angle (Radians)")
+plt.xlabel("Impulse")
+plt.show()
 
+class TFTest:
+
+    def __init__(self, distance_x_inc_glide, distance_y_inc_glide, dist_angles):
+        distance = (distance_x_inc_glide ** 2 + distance_y_inc_glide ** 2) ** 0.5
+
+        impulse = (distance * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
+        dist_angles_radians = (np.absolute(dist_angles) / 180) * np.pi
+
+        impulse = np.expand_dims(impulse, 1)
+        dist_angles_radians = np.expand_dims(dist_angles_radians, 1)
+        actions = np.concatenate((impulse, dist_angles_radians), axis=1)
+        self.kde = KernelDensity(bandwidth=20, kernel='gaussian').fit(actions)
+
+    def value_through_kdf(self, x):
+        log_prob = self.kde.score(x)
+        prob = np.exp(log_prob)
+
+sess = tf.Session()
+with sess as sess:
+
+    init = tf.global_variables_initializer()
+    trainables = tf.trainable_variables()
+    sess.run(init)
 x = True
 
 # plt.scatter(impulse[:, 0], log_density_of_original)
