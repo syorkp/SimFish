@@ -457,7 +457,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         except:
             print("Feature coordinates out of range, exception thrown.")
             print(f"Feature coordinates: {all_feature_coordinates}")
-            x = True
+            associated_impulse_vectors = np.array([[0.0, 0.0] for i in range(all_feature_coordinates.shape[0])])
 
         self.fish.body.angle = np.pi
         self.fish.body.apply_impulse_at_local_point((associated_impulse_vectors[0, 1], associated_impulse_vectors[0, 0]))

@@ -1292,7 +1292,7 @@ phase_1_test_config = [
     {
         "Model Name": "ppo_myriad_test",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 8,
+        "Trial Number": 9,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
