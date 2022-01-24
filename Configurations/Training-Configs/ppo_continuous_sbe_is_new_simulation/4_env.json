@@ -110,7 +110,7 @@
     "consumption_reward_scaling": 100,
     "energy_state": false,
     "in_light": false,
-    "current_setting": "Circular",
+    "current_setting": "Linear",
     "max_current_strength": 0.01,
     "current_width": 0.2,
     "current_strength_variance": 1,

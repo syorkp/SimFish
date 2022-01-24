@@ -156,7 +156,7 @@ env = {'width': 1500,  # arena size
        'in_light': False,
 
        # Currents
-       'current_setting': "Circular",  # Current setting. If none, should be False. Current options: Circular
+       'current_setting': "Linear",  # Current setting. If none, should be False. Current options: Circular, Linear
        'max_current_strength': 0.01,  # Arbitrary impulse variable to be calibrated
        'current_width': 0.2,
        'current_strength_variance': 1,

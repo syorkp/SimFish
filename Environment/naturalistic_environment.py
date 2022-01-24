@@ -346,8 +346,8 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.create_circular_current()
         elif self.env_variables["current_setting"] == "Linear":
             self.create_linear_current()
-        elif self.env_variables["current_setting"] == "Diagonal":
-            self.create_diagonal_current()
+        # elif self.env_variables["current_setting"] == "Diagonal":
+        #     self.create_diagonal_current()
         else:
             print("Current specified incorrectly. No current created.")
             self.impulse_vector_field = np.zeros((self.env_variables["width"], self.env_variables["height"], 2))
@@ -405,7 +405,12 @@ class NaturalisticEnvironment(BaseEnvironment):
         # Scale vector field
         current_strength = np.expand_dims(current_strength, 2)
         vector_field = current_strength * vector_field
+
+        # Prevent middle index being Nan, which causes error.
+        vector_field[int(self.env_variables["width"]/2), int(self.env_variables["height"]/2)] = 0
+
         self.impulse_vector_field = vector_field
+
         # plt.streamplot(xy[:, :, 0], yp[:, :, 0], vector_field[:, :, 0], vector_field[:, :, 1])
         # plt.show()
 
