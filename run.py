@@ -1292,7 +1292,7 @@ phase_1_test_config = [
     {
         "Model Name": "ppo_myriad_test",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 9,
+        "Trial Number": 10,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1312,7 +1312,7 @@ phase_1_test_config = [
         "Continuous Actions": True,
         "Learning Algorithm": "PPO",
         "Priority": 1,
-        "Using GPU": False,
+        "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,

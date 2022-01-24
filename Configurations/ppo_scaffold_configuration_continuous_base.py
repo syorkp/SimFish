@@ -32,7 +32,7 @@ env = {'width': 1500,  # arena size
        'prey_inertia': 40.,
        'prey_size': 4.,
        'prey_num': 20,
-       'prey_impulse': 0.0,  # impulse each prey receives per step
+       'prey_impulse': 0.01,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
@@ -156,7 +156,7 @@ env = {'width': 1500,  # arena size
        'in_light': False,
 
        # Currents
-       'current_setting': "Linear",  # Current setting. If none, should be False. Current options: Circular, Linear
+       'current_setting': False,  # Current setting. If none, should be False. Current options: Circular, Linear
        'max_current_strength': 0.01,  # Arbitrary impulse variable to be calibrated
        'current_width': 0.2,
        'current_strength_variance': 1,
@@ -174,26 +174,26 @@ env = {'width': 1500,  # arena size
        'predator_presence_duration_steps': 100,
 
        # Salt stimuli
-       'salt': True,  # Inclusion of olfactory salt input and salt death.
+       'salt': False,  # Inclusion of olfactory salt input and salt death.
        'salt_concentration_decay': 0.001,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
        'max_salt_damage': 0.02,  # Salt damage at centre of source.
 
        # Complex prey
-       'p_slow': 0.4,
-       'p_fast': 0.2,
+       'p_slow': 0.3,
+       'p_fast': 0.01,
        'p_escape': 0.5,
        'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
        'slow_speed_paramecia': 0.01,
        'fast_speed_paramecia': 0.02,
        'jump_speed_paramecia': 0.03,
-       'prey_fluid_displacement': True,
+       'prey_fluid_displacement': False,
 
        # Motor effect noise (for continuous)
        'impulse_effect_noise_sd': 0.01,
        'angle_effect_noise_sd': 0.01,
-       'impulse_effect_noise_scaling': 0.5,  # Corresponds to the max noise deviation in either direction
-       'angle_effect_noise_scaling': 0.5,  # Corresponds to the max noise deviation in either direction
+       'impulse_effect_noise_scaling': 0.0,  # Corresponds to the max noise deviation in either direction
+       'angle_effect_noise_scaling': 0.0,  # Corresponds to the max noise deviation in either direction
 
        # Wall touch penalty
        'wall_touch_penalty': 0.2,
