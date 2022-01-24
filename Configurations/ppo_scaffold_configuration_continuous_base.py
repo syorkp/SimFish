@@ -153,7 +153,7 @@ env = {'width': 1500,  # arena size
 
        'energy_state': False,
        # For control of in light:
-       'in_light': False,
+       'in_light': True,
 
        # Currents
        'current_setting': False,  # Current setting. If none, should be False. Current options: Circular, Linear
