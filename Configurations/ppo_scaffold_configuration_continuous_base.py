@@ -180,14 +180,14 @@ env = {'width': 1500,  # arena size
        'max_salt_damage': 0.02,  # Salt damage at centre of source.
 
        # Complex prey
-       'p_slow': 0.3,
-       'p_fast': 0.01,
+       'p_slow': 0.6,
+       'p_fast': 0.1,
        'p_escape': 0.5,
        'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
        'slow_speed_paramecia': 0.01,
        'fast_speed_paramecia': 0.02,
        'jump_speed_paramecia': 0.03,
-       'prey_fluid_displacement': False,
+       'prey_fluid_displacement': True,
 
        # Motor effect noise (for continuous)
        'impulse_effect_noise_sd': 0.01,

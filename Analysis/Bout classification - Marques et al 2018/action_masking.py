@@ -188,6 +188,18 @@ plt.show()
 bw_ml_x = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 0], var_type='c', bw='cv_ml')
 bw_ml_y = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
 probs = bw_ml_x.pdf(actions[:, 0]) * bw_ml_y.pdf(actions[:, 1])
+
+# Thresholding
+probs[probs < 0.05] = 0
+probs[probs > 0.05] = 1
+# Multiply by integral.
+
+plt.scatter(impulse[:, 0], probs)
+plt.show()
+
+plt.scatter(dist_angles_radians[:, 0], probs)
+plt.show()
+
 fig = plt.figure(figsize=(12, 12))
 ax = fig.add_subplot(projection='3d')
 ax.scatter(impulse[:, 0], dist_angles_radians[:, 0], probs)
