@@ -469,8 +469,8 @@ class BaseEnvironment:
             self.prey_bodies[-1].position = prey_position
         self.prey_shapes[-1].color = (0, 0, 1)
         self.prey_shapes[-1].collision_type = 2
-        self.prey_shapes[-1].filter = pymunk.ShapeFilter(
-            mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # prevents collisions with predator
+        # self.prey_shapes[-1].filter = pymunk.ShapeFilter(
+        #     mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # prevents collisions with predator
 
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
 
@@ -562,6 +562,8 @@ class BaseEnvironment:
 
     def touch_prey_new(self, arbiter, space, data):
         valid_capture = False
+        print("TOUCHED PREY")
+
         if self.fish.capture_possible:
             for i, shp in enumerate(self.prey_shapes):
                 if shp == arbiter.shapes[0]:

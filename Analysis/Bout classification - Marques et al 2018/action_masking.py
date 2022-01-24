@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 import scipy.io
 from scipy import stats
@@ -133,16 +134,16 @@ params = kde.get_params()
 model = DBSCAN(eps=0.8125, min_samples=5).fit(actions)
 colors = model.labels_
 moutliers = actions[model.labels_ == -1]
-plt.scatter(actions[:, 0], actions[:, 1], c=colors, alpha=0.9)
-plt.show()
-
-plt.scatter(actions[:, 0], actions[:, 1], alpha=0.3)
-plt.scatter(moutliers[:, 0], moutliers[:, 1], color="r", alpha=0.3)
-plt.show()
-
+# plt.scatter(actions[:, 0], actions[:, 1], c=colors, alpha=0.9)
+# plt.show()
+#
+# plt.scatter(actions[:, 0], actions[:, 1], alpha=0.3)
+# plt.scatter(moutliers[:, 0], moutliers[:, 1], color="r", alpha=0.3)
+# plt.show()
+#
 sorted_actions = actions[model.labels_ != -1]
-plt.scatter(sorted_actions[:, 0], sorted_actions[:, 1], color="r", alpha=0.3)
-plt.show()
+# plt.scatter(sorted_actions[:, 0], sorted_actions[:, 1], color="r", alpha=0.3)
+# plt.show()
 
 # Extra step - cut off negative impulse values
 sorted_actions = sorted_actions[sorted_actions[:, 0] >= 0]
@@ -161,16 +162,16 @@ log_density_of_original = kde_sorted.score_samples(actions)
 # plt.pcolormesh(xi, yi, zi)
 # plt.show()
 
-plt.scatter(impulse[:, 0], np.exp(log_density_of_original))
-plt.show()
-
-plt.scatter(dist_angles_radians[:, 0], np.exp(log_density_of_original))
-plt.show()
-
-fig = plt.figure(figsize=(12, 12))
-ax = fig.add_subplot(projection='3d')
-ax.scatter(impulse[:, 0], dist_angles_radians[:, 0], np.exp(log_density_of_original))
-plt.show()
+# plt.scatter(impulse[:, 0], np.exp(log_density_of_original))
+# plt.show()
+#
+# plt.scatter(dist_angles_radians[:, 0], np.exp(log_density_of_original))
+# plt.show()
+#
+# fig = plt.figure(figsize=(12, 12))
+# ax = fig.add_subplot(projection='3d')
+# ax.scatter(impulse[:, 0], dist_angles_radians[:, 0], np.exp(log_density_of_original))
+# plt.show()
 
 
 # Jointplot
@@ -184,45 +185,54 @@ plt.show()
 # plt.show()
 
 # KDF 2
+indices_of_valid = (model.labels_ != -1) * 1
 
 bw_ml_x = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 0], var_type='c', bw='cv_ml')
 bw_ml_y = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
 probs = bw_ml_x.pdf(actions[:, 0]) * bw_ml_y.pdf(actions[:, 1])
+probs2 = copy.copy(probs)
 
-# Thresholding
-probs[probs < 0.05] = 0
-probs[probs > 0.05] = 1
-# Multiply by integral.
-
-plt.scatter(impulse[:, 0], probs)
-plt.show()
-
-plt.scatter(dist_angles_radians[:, 0], probs)
-plt.show()
 
 fig = plt.figure(figsize=(12, 12))
 ax = fig.add_subplot(projection='3d')
 ax.scatter(impulse[:, 0], dist_angles_radians[:, 0], probs)
 plt.show()
 
+# Thresholding
+print(f"Total inliers: {np.sum(indices_of_valid)}")
+current_best = [0, 0]
+for threshold in np.linspace(0.00005, 0.0001, 1000):
+    probs2[probs < threshold] = 0
+    probs2[probs > threshold] = 1
+    match = np.sum((probs2 == indices_of_valid) * 1)
+    if match > current_best[1]:
+        current_best = [threshold, match]
+    print(f"Computed inliers for {threshold}: {np.sum(probs2)}")
 
+    if np.array_equal(indices_of_valid, probs2):
+        print(f"FOUND Threshold {threshold}")
 
-class TFTest:
+print(f"Best: {current_best}")
 
-    def __init__(self, distance_x_inc_glide, distance_y_inc_glide, dist_angles):
-        distance = (distance_x_inc_glide ** 2 + distance_y_inc_glide ** 2) ** 0.5
+probs2[probs < 0.0000729] = 0
+probs2[probs > 0.0000729] = 1
+sames = (probs2 == indices_of_valid) * 1
+print(np.sum(sames))
+print(actions.shape[0])
+# Multiply by integral.
 
-        impulse = (distance * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
-        dist_angles_radians = (np.absolute(dist_angles) / 180) * np.pi
+plt.scatter(impulse[:, 0], probs2)
+plt.show()
 
-        impulse = np.expand_dims(impulse, 1)
-        dist_angles_radians = np.expand_dims(dist_angles_radians, 1)
-        actions = np.concatenate((impulse, dist_angles_radians), axis=1)
-        self.kde = KernelDensity(bandwidth=20, kernel='gaussian').fit(actions)
+plt.scatter(dist_angles_radians[:, 0], probs2)
+plt.show()
 
-    def value_through_kdf(self, x):
-        log_prob = self.kde.score(x)
-        prob = np.exp(log_prob)
+fig = plt.figure(figsize=(12, 12))
+ax = fig.add_subplot(projection='3d')
+ax.scatter(impulse[:, 0], dist_angles_radians[:, 0], probs2)
+plt.show()
+
+x = True
 
 # sess = tf.Session()
 # with sess as sess:

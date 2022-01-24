@@ -49,7 +49,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                                                          'fish_mouth_size']+40)))
         self.fish.body.angle = np.random.random() * 2 * np.pi
         self.fish.body.velocity = (0, 0)
-        self.impulse_vector_field *= np.random.choice([-1, 1], size=1, p=[0.5, 0.5]).astype(float)
+        if self.env_variables["current_setting"]:
+            self.impulse_vector_field *= np.random.choice([-1, 1], size=1, p=[0.5, 0.5]).astype(float)
         self.fish.capture_possible = False
 
         if self.env_variables["differential_prey"]:
@@ -134,8 +135,9 @@ class NaturalisticEnvironment(BaseEnvironment):
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.move_prey()
             self.displace_sand_grains()
-            if self.new_simulation and self.env_variables["current_setting"]:
-                self.resolve_currents()
+            if self.new_simulation:
+                if self.env_variables["current_setting"]:
+                    self.resolve_currents()
                 if self.fish.making_capture and self.capture_start < micro_step < self.capture_end:
                     self.fish.capture_possible = True
                 else:
@@ -144,6 +146,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.move_realistic_predator(micro_step)
 
             self.space.step(self.env_variables['phys_dt'])
+
             if self.fish.prey_consumed:
                 if not self.new_simulation:
                     reward += self.env_variables['capture_basic_reward'] * self.fish.hungry
@@ -349,8 +352,8 @@ class NaturalisticEnvironment(BaseEnvironment):
         # elif self.env_variables["current_setting"] == "Diagonal":
         #     self.create_diagonal_current()
         else:
-            print("Current specified incorrectly. No current created.")
-            self.impulse_vector_field = np.zeros((self.env_variables["width"], self.env_variables["height"], 2))
+            print("No current specified.")
+            # self.impulse_vector_field = np.zeros((self.env_variables["width"], self.env_variables["height"], 2))
 
     def create_circular_current(self):
         unit_circle_radius = self.env_variables["unit_circle_diameter"]/2

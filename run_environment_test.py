@@ -62,8 +62,8 @@ while not q:
 
     s, r, internal, d, fb = sim_state.simulation_step([impulse, angle])
     print(sim_state.fish.body.angle)
-    if angle > 1.0:
-        sim_state.reset()
+    # if angle > 1.0:
+    #     sim_state.reset()
 
     if d:
         sim_state.reset()
