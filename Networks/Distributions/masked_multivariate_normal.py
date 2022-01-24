@@ -40,9 +40,13 @@ class MaskedMultivariateNormal(MultivariateNormalDiag):
         val = MultivariateNormalDiag.sample(shape)
 
     def log_prob(self, action):
+        # Normalisation - for 1000x1000 sampling FOR 12x350, total sum was 70343. Oversampling =5000/21.
         probs = self.kde_impulse.pdf(action[:, 0]) * self.kde_angle.pdf(action[:, 1])
-        probs[probs < 0.0002] = 0
-        probs[probs > 0.0002] = 1
+        probs[probs < 0.0000237337] = 0
+        probs[probs > 0.0000237337] = 1/295.4406
+
+
+
 
     def prob(self, action):
         raise NotImplementedError

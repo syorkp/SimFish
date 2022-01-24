@@ -184,6 +184,7 @@ log_density_of_original = kde_sorted.score_samples(actions)
 #
 # plt.show()
 
+
 # KDF 2
 indices_of_valid = (model.labels_ != -1) * 1
 
@@ -198,39 +199,61 @@ ax = fig.add_subplot(projection='3d')
 ax.scatter(impulse[:, 0], dist_angles_radians[:, 0], probs)
 plt.show()
 
-# Thresholding
-print(f"Total inliers: {np.sum(indices_of_valid)}")
-current_best = [0, 0]
-for threshold in np.linspace(0.00005, 0.0001, 1000):
-    probs2[probs < threshold] = 0
-    probs2[probs > threshold] = 1
-    match = np.sum((probs2 == indices_of_valid) * 1)
-    if match > current_best[1]:
-        current_best = [threshold, match]
-    print(f"Computed inliers for {threshold}: {np.sum(probs2)}")
 
-    if np.array_equal(indices_of_valid, probs2):
-        print(f"FOUND Threshold {threshold}")
+# Thresholding                                       Best: [2.3733733733733735e-05, 8183]
+# print(f"Total inliers: {np.sum(indices_of_valid)}")
+# current_best = [0, 0]
+# for threshold in np.linspace(0.000005, 0.0001, 1000):
+#     probs2[probs < threshold] = 0
+#     probs2[probs > threshold] = 1
+#     match = np.sum((probs2 == indices_of_valid) * 1)
+#     if match > current_best[1]:
+#         current_best = [threshold, match]
+#     print(f"Computed inliers for {threshold}: {np.sum(probs2)}")
+#
+#     if np.array_equal(indices_of_valid, probs2):
+#         print(f"FOUND Threshold {threshold}")
 
-print(f"Best: {current_best}")
+# print(f"Best: {current_best}")
+#
+# probs2[probs < 0.0000729] = 0
+# probs2[probs > 0.0000729] = 1
+# sames = (probs2 == indices_of_valid) * 1
+# print(np.sum(sames))
+# print(actions.shape[0])
+# # Multiply by integral.
+#
+# plt.scatter(impulse[:, 0], probs2)
+# plt.show()
+#
+# plt.scatter(dist_angles_radians[:, 0], probs2)
+# plt.show()
+#
+# fig = plt.figure(figsize=(12, 12))
+# ax = fig.add_subplot(projection='3d')
+# ax.scatter(impulse[:, 0], dist_angles_radians[:, 0], probs2)
+# plt.show()
 
-probs2[probs < 0.0000729] = 0
-probs2[probs > 0.0000729] = 1
-sames = (probs2 == indices_of_valid) * 1
-print(np.sum(sames))
-print(actions.shape[0])
-# Multiply by integral.
+#                     Integrating distribution
 
-plt.scatter(impulse[:, 0], probs2)
-plt.show()
+# Number of should have samples = 12 x 350
+# Number of should have samples = 12 x 350
+possible_impulse = np.linspace(0, 350, 1000)   # Divide total by 100
+possible_angle = np.linspace(0, 12, 1000)   # Divide total by 100
+possible_impulse, possible_angle = np.meshgrid(possible_angle, possible_impulse)
+possible_impulse, possible_angle = possible_impulse.flatten(), possible_angle.flatten()
 
-plt.scatter(dist_angles_radians[:, 0], probs2)
-plt.show()
+probs = bw_ml_x.pdf(possible_angle) * bw_ml_y.pdf(possible_impulse)
 
-fig = plt.figure(figsize=(12, 12))
-ax = fig.add_subplot(projection='3d')
-ax.scatter(impulse[:, 0], dist_angles_radians[:, 0], probs2)
-plt.show()
+probs[probs < 0.0000729] = 0
+probs[probs > 0.0000729] = 1
+
+print(np.sum(probs))
+
+
+
+
+
 
 x = True
 
