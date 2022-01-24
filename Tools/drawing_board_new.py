@@ -39,6 +39,11 @@ class NewDrawingBoard:
 
         self.xp, self.yp = self.chosen_math_library.arange(self.width), self.chosen_math_library.arange(self.height)
 
+        if self.using_gpu:
+            self.max_lines_num = 50000
+        else:
+            self.max_lines_num = 20000
+
         self.multiplication_matrix = None
         self.addition_matrix = None
         self.mul1_full = None
@@ -121,44 +126,24 @@ class NewDrawingBoard:
 
         return new_grating
 
-    # def compute_repeated_computations(self, max_line_number=20000):
-    #     multiplication_matrix_unit = np.array([-1, 1, -1, 1])
-    #     self.multiplication_matrix = np.tile(multiplication_matrix_unit, (max_line_number, 1))
-    #
-    #     addition_matrix_unit = np.array([0, 0, self.height - 1, self.width - 1])
-    #     self.addition_matrix = np.tile(addition_matrix_unit, (max_line_number, 1))
-    #
-    #     mul1 = np.array([0, 0, 0, 1])
-    #     self.mul1_full = np.tile(mul1, (max_line_number, 1))
-    #
-    #     conditional_tiled = np.array([self.width - 1, self.height - 1, self.width - 1, self.height - 1])
-    #     self.conditional_tiled = np.tile(conditional_tiled, (max_line_number, 1))
-    #
-    #     mul_for_hypothetical = np.array([[1, 0], [0, 1], [1, 0], [0, 1]])
-    #     self.mul_for_hypothetical = np.tile(mul_for_hypothetical, (max_line_number, 1, 1))
-    #
-    #     add_for_hypothetical = np.array([[0, 0], [0, 0], [0, self.width - 1], [self.height - 1, 0]])
-    #     self.add_for_hypothetical = np.tile(add_for_hypothetical, (max_line_number, 1, 1))
-
-    def compute_repeated_computations(self, max_line_number=50000):
-        # TODO: make max line number scale with number of prey and predators.
+    def compute_repeated_computations(self):
         multiplication_matrix_unit = self.chosen_math_library.array([-1, 1, -1, 1])
-        self.multiplication_matrix = self.chosen_math_library.tile(multiplication_matrix_unit, (max_line_number, 1))
+        self.multiplication_matrix = self.chosen_math_library.tile(multiplication_matrix_unit, (self.max_lines_num, 1))
 
         addition_matrix_unit = self.chosen_math_library.array([0, 0, self.height - 1, self.width - 1])
-        self.addition_matrix = self.chosen_math_library.tile(addition_matrix_unit, (max_line_number, 1))
+        self.addition_matrix = self.chosen_math_library.tile(addition_matrix_unit, (self.max_lines_num, 1))
 
         mul1 = self.chosen_math_library.array([0, 0, 0, 1])
-        self.mul1_full = self.chosen_math_library.tile(mul1, (max_line_number, 1))
+        self.mul1_full = self.chosen_math_library.tile(mul1, (self.max_lines_num, 1))
 
         conditional_tiled = self.chosen_math_library.array([self.width - 1, self.height - 1, self.width - 1, self.height - 1])
-        self.conditional_tiled = self.chosen_math_library.tile(conditional_tiled, (max_line_number, 1))
+        self.conditional_tiled = self.chosen_math_library.tile(conditional_tiled, (self.max_lines_num, 1))
 
         mul_for_hypothetical = self.chosen_math_library.array([[1, 0], [0, 1], [1, 0], [0, 1]])
-        self.mul_for_hypothetical = self.chosen_math_library.tile(mul_for_hypothetical, (max_line_number, 1, 1))
+        self.mul_for_hypothetical = self.chosen_math_library.tile(mul_for_hypothetical, (self.max_lines_num, 1, 1))
 
         add_for_hypothetical = self.chosen_math_library.array([[0, 0], [0, 0], [0, self.width - 1], [self.height - 1, 0]])
-        self.add_for_hypothetical = self.chosen_math_library.tile(add_for_hypothetical, (max_line_number, 1, 1))
+        self.add_for_hypothetical = self.chosen_math_library.tile(add_for_hypothetical, (self.max_lines_num, 1, 1))
 
     def scatter(self, i, j, x, y):
         """Computes effects of absorption and scatter, but incorporates effect of implicit scatter from line spread."""
@@ -201,7 +186,7 @@ class NewDrawingBoard:
         prey_extremities = prey_angles + prey_rf_offsets
 
         # Number of lines to project through prey or predators, determined by width, height, and size of features. (1)
-        n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2)
+        n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2, len(prey_locations))
 
         # Create array of angles between prey extremities to form lines. (Prey_num * n_lines_prey)
         interpolated_line_angles = self.chosen_math_library.linspace(prey_extremities[:, 0], prey_extremities[:, 1], n_lines_prey).flatten()
@@ -240,7 +225,7 @@ class NewDrawingBoard:
             predator_extremities = predator_angles_expanded + predator_rf_offsets
 
             # Number of lines to project through prey or predators, determined by width, height, and size of features.
-            n_lines_predator = self.compute_n(self.chosen_math_library.max(predator_half_angular_size) * 2)
+            n_lines_predator = self.compute_n(self.chosen_math_library.max(predator_half_angular_size) * 2, 1)
             predator_interpolated_line_angles = self.chosen_math_library.linspace(predator_extremities[:, 0], predator_extremities[:, 1],
                                                             n_lines_predator).flatten()
 
@@ -697,10 +682,12 @@ class NewDrawingBoard:
                 self.mask_buffer_time_point = self.mask_buffer_time_point.get()
         return AB * L * O * S
 
-    def compute_n(self, angular_size, max_separation=1):
+    def compute_n(self, angular_size, number_of_this_feature, max_separation=1):
         max_dist = (self.width ** 2 + self.height ** 2) ** 0.5
         theta_separation = math.asin(max_separation / max_dist)
         n = (angular_size / theta_separation) / 2
+        if n * number_of_this_feature > self.max_lines_num:
+            n = n/2
         return int(n)
 
     def reset(self):

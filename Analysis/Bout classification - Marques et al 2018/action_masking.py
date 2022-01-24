@@ -8,6 +8,9 @@ import matplotlib
 import h5py
 # import tensorflow.compat.v1 as tf
 # import tensorflow_probability as tfp
+from sklearn.cluster import DBSCAN
+import statsmodels.api as sm
+import seaborn as sns
 
 # tf.disable_v2_behavior()
 
@@ -103,15 +106,94 @@ actions = np.concatenate((impulse, dist_angles_radians), axis=1)
 kde = KernelDensity(bandwidth=20, kernel='gaussian').fit(actions)
 log_density_of_original = kde.score_samples(actions)
 params = kde.get_params()
-z = np.abs(stats.zscore(actions, axis=None))
-# z = z[:, 0] + z[:, 1]
-outliers = actions[z[:, 0]>1.5 or z[:, 1]>1.5]
 
-plt.scatter(actions[:, 0], actions[:, 1], alpha=0.2)
-plt.scatter(outliers[:, 0], outliers[:, 1], alpha=0.2, color="r")
-plt.ylabel("Full Angle (Radians)")
-plt.xlabel("Impulse")
+#             OUTLIER IDENTIFICATION
+
+# Z-score based
+# z = np.abs(stats.zscore(actions, axis=None))
+# # z = z[:, 0] + z[:, 1]
+# outliers = actions[z[:, 0]>1.5 or z[:, 1]>1.5]
+
+
+# for i, s in enumerate(range(1, 20)):
+#     figure, axs = plt.subplots(3, 3)
+#     figure.set_size_inches(18, 18)
+#     for j, ep in enumerate(np.linspace(0.5, 1.0, 9)):
+#         model = DBSCAN(eps=ep, min_samples=s).fit(actions)
+#         colors = model.labels_
+#
+#         axs[j//3, j%3].scatter(actions[:, 0], actions[:, 1], c=colors, alpha=0.9)
+#         # plt.scatter(outliers[:, 0], outliers[:, 1], alpha=0.2, color="r")
+#         axs[j//3, j%3].set_ylabel("Full Angle (Radians)")
+#         axs[j//3, j%3].set_xlabel(f"Impulse,Samples: {s}, eps: {ep}")
+#     plt.show()
+
+
+# Best parameters; 1.0, 5    -    0.775, 4   -    5, 0.6625       -      5, 0.8125
+model = DBSCAN(eps=0.8125, min_samples=5).fit(actions)
+colors = model.labels_
+moutliers = actions[model.labels_ == -1]
+plt.scatter(actions[:, 0], actions[:, 1], c=colors, alpha=0.9)
 plt.show()
+
+plt.scatter(actions[:, 0], actions[:, 1], alpha=0.3)
+plt.scatter(moutliers[:, 0], moutliers[:, 1], color="r", alpha=0.3)
+plt.show()
+
+sorted_actions = actions[model.labels_ != -1]
+plt.scatter(sorted_actions[:, 0], sorted_actions[:, 1], color="r", alpha=0.3)
+plt.show()
+
+# Extra step - cut off negative impulse values
+sorted_actions = sorted_actions[sorted_actions[:, 0] >= 0]
+sorted_actions = sorted_actions[sorted_actions[:, 1] >= 0]
+
+#                      Final KDE Formation
+
+kde_sorted = KernelDensity(bandwidth=20, kernel='exponential').fit(sorted_actions)
+
+log_density_of_original = kde_sorted.score_samples(actions)
+#
+# xi = np.linspace(np.min(actions[:, 0]), np.max(actions[:, 0]), 100)
+# yi = np.linspace(np.min(actions[:, 1]), np.max(actions[:, 1]), 100)
+# xi, yi = np.meshgrid(xi, yi)
+# zi = griddata(actions, log_density_of_original, (xi, yi), method="linear")
+# plt.pcolormesh(xi, yi, zi)
+# plt.show()
+
+plt.scatter(impulse[:, 0], np.exp(log_density_of_original))
+plt.show()
+
+plt.scatter(dist_angles_radians[:, 0], np.exp(log_density_of_original))
+plt.show()
+
+fig = plt.figure(figsize=(12, 12))
+ax = fig.add_subplot(projection='3d')
+ax.scatter(impulse[:, 0], dist_angles_radians[:, 0], np.exp(log_density_of_original))
+plt.show()
+
+
+# Jointplot
+
+# action_data = {"x": actions[:, 0], "y": actions[:, 1]}
+# g = sns.jointplot(x="x", y="y", data=action_data, kind="kde")
+#
+# g.plot_joint(plt.scatter, c="w")
+# g.ax_joint.collections[0].set_alpha(0)
+#
+# plt.show()
+
+# KDF 2
+
+bw_ml_x = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 0], var_type='c', bw='cv_ml')
+bw_ml_y = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
+probs = bw_ml_x.pdf(actions[:, 0]) * bw_ml_y.pdf(actions[:, 1])
+fig = plt.figure(figsize=(12, 12))
+ax = fig.add_subplot(projection='3d')
+ax.scatter(impulse[:, 0], dist_angles_radians[:, 0], probs)
+plt.show()
+
+
 
 class TFTest:
 
@@ -130,13 +212,13 @@ class TFTest:
         log_prob = self.kde.score(x)
         prob = np.exp(log_prob)
 
-sess = tf.Session()
-with sess as sess:
-
-    init = tf.global_variables_initializer()
-    trainables = tf.trainable_variables()
-    sess.run(init)
-x = True
+# sess = tf.Session()
+# with sess as sess:
+#
+#     init = tf.global_variables_initializer()
+#     trainables = tf.trainable_variables()
+#     sess.run(init)
+# x = True
 
 # plt.scatter(impulse[:, 0], log_density_of_original)
 # plt.show()

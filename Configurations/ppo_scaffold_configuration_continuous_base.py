@@ -32,7 +32,7 @@ env = {'width': 1500,  # arena size
        'prey_inertia': 40.,
        'prey_size': 4.,
        'prey_num': 20,
-       'prey_impulse': 0.01,  # impulse each prey receives per step
+       'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
@@ -153,7 +153,7 @@ env = {'width': 1500,  # arena size
 
        'energy_state': False,
        # For control of in light:
-       'in_light': True,
+       'in_light': False,
 
        # Currents
        'current_setting': False,  # Current setting. If none, should be False. Current options: Circular, Linear
