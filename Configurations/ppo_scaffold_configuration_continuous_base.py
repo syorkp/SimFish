@@ -18,8 +18,8 @@ env = {'width': 1500,  # arena size
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step
 
        'fish_mass': 140.,
-       'fish_mouth_size': 4.,
-       'fish_head_size': 10.,
+       'fish_mouth_size': 4.,   # FINAL VALUE - 0.2mm diameter, so 1.
+       'fish_head_size': 2.5,   # Old - 10
        'fish_tail_length': 70.,
        'eyes_verg_angle': 77.,  # in deg
        'visual_field': 163.,  # single eye angular visual field
@@ -30,7 +30,7 @@ env = {'width': 1500,  # arena size
 
        'prey_mass': 1.,
        'prey_inertia': 40.,
-       'prey_size': 4.,
+       'prey_size': 4.,   # FINAL VALUE - 0.2mm diameter, so 1.
        'prey_num': 20,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
@@ -216,6 +216,9 @@ env = {'width': 1500,  # arena size
        'initial_predator_size': 20,  # Size in degrees
        'final_predator_size': 200,  # "
        'duration_of_loom': 10,  # Number of steps for which loom occurs.
+
+       # Action mask
+       'impose_action_mask': True,
        }
 
 params = {'num_actions': 10,  # size of action space

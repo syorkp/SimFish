@@ -46,7 +46,8 @@ class ContinuousPPO(BasePPO):
                                                                   clip_param=self.environment_params['clip_param'],
                                                                   input_sigmas=self.learning_params['input_sigmas'],
                                                                   new_simulation=self.new_simulation,
-
+                                                                  impose_action_mask=self.environment_params[
+                                                                      'impose_action_mask'],
                                                                   )
 
             else:
@@ -61,7 +62,7 @@ class ContinuousPPO(BasePPO):
                                                                  clip_param=self.environment_params['clip_param'],
                                                                  input_sigmas=self.learning_params['input_sigmas'],
                                                                  new_simulation=self.new_simulation,
-
+                                                                 impose_action_mask=self.environment_params['impose_action_mask'],
                                                                  )
 
         else:
@@ -75,6 +76,7 @@ class ContinuousPPO(BasePPO):
                                                  clip_param=self.environment_params['clip_param'],
                                                  beta_impulse=self.learning_params['beta_distribution'],
                                                  new_simulation=self.new_simulation,
+                                                 impose_action_mask=self.environment_params['impose_action_mask'],
 
                                                  )
 

@@ -6,7 +6,7 @@
     "phys_steps_per_sim_step": 100,
     "fish_mass": 140.0,
     "fish_mouth_size": 4.0,
-    "fish_head_size": 10.0,
+    "fish_head_size": 2.5,
     "fish_tail_length": 70.0,
     "eyes_verg_angle": 77.0,
     "visual_field": 163.0,
@@ -149,5 +149,6 @@
     "predator_first_attack_loom": true,
     "initial_predator_size": 20,
     "final_predator_size": 200,
-    "duration_of_loom": 10
+    "duration_of_loom": 10,
+    "impose_action_mask": true
 }

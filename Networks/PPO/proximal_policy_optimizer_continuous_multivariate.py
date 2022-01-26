@@ -2,6 +2,7 @@ import tensorflow.compat.v1 as tf
 import tensorflow_probability as tfp
 
 from Networks.base_network import BaseNetwork
+from Networks.Distributions.masked_multivariate_normal import MaskedMultivariateNormal
 
 tf.disable_v2_behavior()
 
@@ -9,7 +10,7 @@ tf.disable_v2_behavior()
 class PPONetworkActorMultivariate(BaseNetwork):
 
     def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, max_impulse, max_angle_change,
-                 clip_param, input_sigmas=False, new_simulation=True):
+                 clip_param, input_sigmas=False, new_simulation=True, impose_action_mask=False):
         super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim=2, new_simulation=new_simulation)
 
         #            ----------        Stream Splitting       ---------            #
@@ -88,9 +89,14 @@ class PPONetworkActorMultivariate(BaseNetwork):
         #            ----------        Form Distribution Estimations       ---------            #
 
         # Multinomial distribution
-        self.action_distribution = tfp.distributions.MultivariateNormalDiag(loc=self.mu_action, scale_diag=self.sigma_action)
+        if impose_action_mask:
+            self.action_distribution = MaskedMultivariateNormal(loc=self.mu_action, scale_diag=self.sigma_action)
+            self.action_output = tf.squeeze(self.action_distribution.sample_masked(1), axis=0)
 
-        self.action_output = tf.squeeze(self.action_distribution.sample(1), axis=0)
+        else:
+            self.action_distribution = tfp.distributions.MultivariateNormalDiag(loc=self.mu_action, scale_diag=self.sigma_action)
+            self.action_output = tf.squeeze(self.action_distribution.sample(1), axis=0)
+
         self.impulse_output, self.angle_output = tf.split(self.action_output, 2, axis=1)
 
         self.impulse_output = tf.clip_by_value(self.impulse_output, 0, 1)

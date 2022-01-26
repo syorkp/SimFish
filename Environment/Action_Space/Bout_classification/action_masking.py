@@ -293,12 +293,3 @@ x = True
 # plt.show()
 #
 
-
-#                         TENSORFLOW Cutoff
-
-
-
-#                         TENSORFLOW KDE
-
-
-
