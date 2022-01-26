@@ -403,7 +403,7 @@ class BaseEnvironment:
             self._touch_wall(arbiter, space, data)
 
     def _touch_wall(self, arbiter, space, data):
-        print(f"Fish touched wall: {self.fish.body.position}")
+        # print(f"Fish touched wall: {self.fish.body.position}")
         new_position_x = self.fish.body.position[0]
         new_position_y = self.fish.body.position[1]
 
@@ -562,7 +562,6 @@ class BaseEnvironment:
 
     def touch_prey_new(self, arbiter, space, data):
         valid_capture = False
-        print("TOUCHED PREY")
 
         if self.fish.capture_possible:
             for i, shp in enumerate(self.prey_shapes):
@@ -577,15 +576,15 @@ class BaseEnvironment:
 
                     if vector[0] < 0 and vector[1] < 0:
                         # Generates postiive angle from left x axis clockwise.
-                        print("UL quadrent")
+                        # print("UL quadrent")
                         angle += np.pi
                     elif vector[1] < 0:
                         # Generates negative angle from right x axis anticlockwise.
-                        print("UR quadrent.")
+                        # print("UR quadrent.")
                         angle = angle + (np.pi * 2)
                     elif vector[0] < 0:
                         # Generates negative angle from left x axis anticlockwise.
-                        print("BL quadrent.")
+                        # print("BL quadrent.")
                         angle = angle + np.pi
 
                     # Angle ends up being between 0 and 2pi as clockwise from right x axis. Same frame as fish angle:
@@ -600,7 +599,7 @@ class BaseEnvironment:
 
                         deviation = abs((2*np.pi)-(fish_orientation+angle))
                     if deviation < self.env_variables["capture_angle_deviation_allowance"]:
-                        print("Successful capture \n")
+                        # print("Successful capture \n")
                         valid_capture = True
                         space.remove(shp, shp.body)
                         self.prey_shapes.remove(shp)

@@ -94,6 +94,9 @@ dist_angles_radians = (np.absolute(dist_angles)/180) * np.pi
 # plt.ylabel("Impulse")
 # plt.show()
 
+impulse = impulse/10.0
+dist_angles_radians = dist_angles_radians / (np.pi/5)
+
 # Computing kernel density
 # ang, imp = np.linspace(0, 500, 500), np.linspace(0, 20, 500)
 # ang, imp = np.meshgrid(ang, imp)
@@ -187,10 +190,11 @@ log_density_of_original = kde_sorted.score_samples(actions)
 
 # KDF 2
 indices_of_valid = (model.labels_ != -1) * 1
-
-bw_ml_x = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 0], var_type='c', bw='cv_ml')
-bw_ml_y = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
-probs = bw_ml_x.pdf(actions[:, 0]) * bw_ml_y.pdf(actions[:, 1])
+sorted_actions = np.array([sorted_actions])
+actions = np.array([actions])
+bw_ml_x = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, :100, 0], var_type='c', bw='cv_ml')
+bw_ml_y = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, :100, 1], var_type='c', bw='cv_ml')
+probs = bw_ml_x.pdf(actions[:, :, 0]) * bw_ml_y.pdf(actions[:, :, 1])
 probs2 = copy.copy(probs)
 
 
@@ -201,20 +205,20 @@ plt.show()
 
 
 # Thresholding                                       Best: [2.3733733733733735e-05, 8183]
-# print(f"Total inliers: {np.sum(indices_of_valid)}")
-# current_best = [0, 0]
-# for threshold in np.linspace(0.000005, 0.0001, 1000):
-#     probs2[probs < threshold] = 0
-#     probs2[probs > threshold] = 1
-#     match = np.sum((probs2 == indices_of_valid) * 1)
-#     if match > current_best[1]:
-#         current_best = [threshold, match]
-#     print(f"Computed inliers for {threshold}: {np.sum(probs2)}")
-#
-#     if np.array_equal(indices_of_valid, probs2):
-#         print(f"FOUND Threshold {threshold}")
+print(f"Total inliers: {np.sum(indices_of_valid)}")
+current_best = [0, 0]
+for threshold in np.linspace(0.000005, 0.0001, 1000):
+    probs2[probs < threshold] = 0
+    probs2[probs > threshold] = 1
+    match = np.sum((probs2 == indices_of_valid) * 1)
+    if match > current_best[1]:
+        current_best = [threshold, match]
+        print(f"Computed inliers for {threshold}: {match}")
 
-# print(f"Best: {current_best}")
+    if np.array_equal(indices_of_valid, probs2):
+        print(f"FOUND Threshold {threshold}")
+
+print(f"Best: {current_best}")
 #
 # probs2[probs < 0.0000729] = 0
 # probs2[probs > 0.0000729] = 1
