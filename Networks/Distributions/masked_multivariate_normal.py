@@ -42,26 +42,31 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
         # self.kde_impulse = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 0], var_type='c', bw='cv_ml')
         # self.kde_angle = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
         print("Creating action mask...")
-        self.kde_impulse = sm.nonparametric.KDEMultivariate(data=sorted_actions[:100, 0], var_type='c', bw='cv_ml')
-        self.kde_angle = sm.nonparametric.KDEMultivariate(data=sorted_actions[:100:, 1], var_type='c', bw='cv_ml')
+        self.kde_impulse = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 0], var_type='c', bw='cv_ml')
+        self.kde_angle = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
 
     def get_sample_masked_weights(self, actions, shape):
         probs = self.kde_impulse.pdf(actions[:, :, 0]) * self.kde_angle.pdf(np.absolute(actions[:, :, 1]))
 
-        # positive_impulses = (actions[0, :, 0] > 0) * 1
-        # probs = probs * positive_impulses
-        #
-        # # Step function on probs TODO: Find out why this makes negative impulses more likely.
-        # probs[probs < 0.0000389489489] = 0
-        # probs[probs > 0.0000389489489] = 1
+        # Dis-allow negative impulses
+        positive_impulses = ((actions[:, :, 0] > 0) * 1)[:, 0]
+        probs = probs * positive_impulses
+
+        # # Step function on probs
+        probs[probs < 0.0000389489489] = 0
+        probs[probs > 0.0000389489489] = 1
 
         integral = np.sum(probs)
-        indices_chosen = np.random.choice(actions.shape[0], size=shape, p=probs/integral, replace=False)
+        probs = probs/integral
+
+        indices_chosen = np.random.choice(actions.shape[0], size=shape, p=probs, replace=False)
         actions_chosen = actions[indices_chosen, :, :]
+        # return actions_chosen, probs, positive_impulses
         return actions_chosen
 
     def sample_masked(self, shape):
         preliminary_samples = self.sample(shape * 10)
+        # chosen_samples, self.probs, self.positive_imp = tf.numpy_function(self.get_sample_masked_weights, [self.preliminary_samples, shape], [tf.float32, tf.float64, tf.int64])
         chosen_samples = tf.numpy_function(self.get_sample_masked_weights, [preliminary_samples, shape], tf.float32)
         return chosen_samples
 

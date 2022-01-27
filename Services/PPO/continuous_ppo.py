@@ -388,8 +388,6 @@ class ContinuousPPO(BasePPO):
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
 
-        # TODO: Remove usage printing.
-
         impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability, mu_i, mu_a, \
         si = self.sess.run(
             [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.value_output,
@@ -397,8 +395,9 @@ class ContinuousPPO(BasePPO):
              self.actor_network.neg_log_prob,
              self.actor_network.mu_impulse_combined,
              self.actor_network.mu_angle_combined,
-             self.actor_network.sigma_action
-             ],
+             self.actor_network.sigma_action,],
+             # self.actor_network.action_distribution.preliminary_samples, self.actor_network.action_distribution.probs, self.actor_network.action_distribution.positive_imp],
+
             feed_dict={self.actor_network.observation: o,
                        self.actor_network.internal_state: internal_state,
                        self.actor_network.prev_actions: np.reshape(a, (1, 2)),
@@ -410,6 +409,11 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.trainLength: 1,
                        }
         )
+        # sam[:, :, 1] *= np.pi/5  # (180/np.pi) *
+        # sam[:, :, 0] *= 10
+        # for i, s in enumerate(sam):
+        #     print(f"Sample: {s}, Probability: {pro[i]}, Positive imp: {pimp[i]}")
+        # print(" ")
 
         action = [impulse[0][0], angle[0][0]]
 
@@ -464,7 +468,7 @@ class ContinuousPPO(BasePPO):
         #                self.actor_network.trainLength: 1,
         #                }
         # )
-
+        # TODO: Get rid of sam and pro
         impulse, angle, updated_rnn_state_actor, updated_rnn_state_actor_ref, action_probability, mu_i, mu_a, \
         si, mu1, mu1_ref, mu_a1, mu_a_ref = self.sess.run(
             [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.rnn_state_shared,
@@ -473,8 +477,9 @@ class ContinuousPPO(BasePPO):
              self.actor_network.mu_impulse_combined,
              self.actor_network.mu_angle_combined,
              self.actor_network.sigma_action, self.actor_network.mu_impulse, self.actor_network.mu_impulse_ref,
-             self.actor_network.mu_angle, self.actor_network.mu_angle_ref
-             ],
+             self.actor_network.mu_angle, self.actor_network.mu_angle_ref,
+            ],
+
             feed_dict={self.actor_network.observation: o,
                        self.actor_network.internal_state: internal_state,
                        self.actor_network.prev_actions: np.reshape(a, (1, 2)),
@@ -985,10 +990,11 @@ class ContinuousPPO(BasePPO):
                                                                          "batch_size"]])
 
 
-                # Optimise actor
+                # Optimise actor TODO: Get rid fo sampled and probs
                 loss_actor_val, loss_critic_val, total_loss, _, log_action_probability_batch_new, scaled_actions = self.sess.run(
                     [self.actor_network.policy_loss, self.actor_network.value_loss, self.actor_network.total_loss,
                      self.actor_network.train, self.actor_network.new_neg_log_prob, self.actor_network.normalised_action],
+
                     feed_dict={self.actor_network.observation: observation_batch,
                                self.actor_network.prev_actions: previous_action_batch,
                                self.actor_network.internal_state: internal_state_batch,
@@ -1010,7 +1016,6 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.learning_rate: self.learning_params[
                                                                      "learning_rate_actor"] * current_batch_size
                                })
-
 
                 average_loss_impulse += np.mean(np.abs(loss_actor_val))
                 average_loss_angle += np.mean(np.abs(loss_actor_val))

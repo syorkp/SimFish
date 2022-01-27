@@ -86,6 +86,8 @@ class NewDrawingBoard:
         turbSize = 162.0
 
         noise = self.chosen_math_library.absolute(self.chosen_math_library.random.randn(self.width, self.height))
+
+        # TODO: Stop repeating the following:
         xp, yp = self.chosen_math_library.arange(self.width), self.chosen_math_library.arange(self.height)
         xy, py = self.chosen_math_library.meshgrid(xp, yp)
         xy = self.chosen_math_library.expand_dims(xy, 2)
@@ -95,8 +97,10 @@ class NewDrawingBoard:
         xy_values = (coords[:, :, 0] * xPeriod / self.width) + (coords[:, :, 1] * yPeriod / self.height)
         size = turbSize
 
+        # TODO: Stop repeating the following:
         turbulence = self.chosen_math_library.zeros((self.width, self.height))
 
+        # TODO: Stop repeating the following:
         while size >= 1:
             reduced_coords = coords / size
 
