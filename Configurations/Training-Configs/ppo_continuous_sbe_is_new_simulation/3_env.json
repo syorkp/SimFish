@@ -150,5 +150,7 @@
     "initial_predator_size": 20,
     "final_predator_size": 200,
     "duration_of_loom": 10,
-    "impose_action_mask": true
+    "impose_action_mask": true,
+    "angle_scaling": 0.6283185307179586,
+    "impulse_scaling": 10.0
 }

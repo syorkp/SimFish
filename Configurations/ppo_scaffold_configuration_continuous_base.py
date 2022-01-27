@@ -219,6 +219,9 @@ env = {'width': 1500,  # arena size
 
        # Action mask
        'impose_action_mask': True,
+       # Scaling of impulse and angle from 0-1 initialised distribution TODO: Should set higher to allow full exploration of angle range.
+       'angle_scaling': np.pi / 5,
+       'impulse_scaling': 10.0,
        }
 
 params = {'num_actions': 10,  # size of action space

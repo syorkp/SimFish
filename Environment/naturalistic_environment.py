@@ -99,7 +99,6 @@ class NaturalisticEnvironment(BaseEnvironment):
     def simulation_step(self, action, save_frames, frame_buffer, activations, impulse):
         self.prey_consumed_this_step = False
         self.last_action = action
-        print(action)
         if frame_buffer is None:
             frame_buffer = []
 
