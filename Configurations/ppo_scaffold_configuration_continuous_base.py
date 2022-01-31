@@ -80,7 +80,7 @@ env = {'width': 1500,  # arena size
        'rest_cost': 2,
 
        'capture_swim_extra_cost': 25,
-       'capture_basic_reward': 10000,
+       'capture_basic_reward': 250,  # Formerly 10,000
        'predator_cost': 100,
 
        'hunger': False,
