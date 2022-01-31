@@ -86,11 +86,12 @@ class Fish:
         self.energy_level = 1.0
         self.ci = self.env_variables['ci']
         self.ca = self.env_variables['ca']
-        self.cc = self.env_variables['cc']
         self.baseline_decrease = self.env_variables['baseline_decrease']
         self.trajectory_A = self.env_variables['trajectory_A']
         self.trajectory_A2 = 1/np.exp(self.trajectory_A)
         self.trajectory_B = self.env_variables['trajectory_B']
+        self.trajectory_B2 = 1/np.exp(self.trajectory_B)
+
         self.action_reward_scaling = self.env_variables['action_reward_scaling']
         self.consumption_reward_scaling = self.env_variables['consumption_reward_scaling']
 
@@ -360,7 +361,7 @@ class Fish:
 
     def intake_scale(self, energy_level):
         """Provides nonlinear scaling for consumption reward and energy level change for new simulation"""
-        return np.exp(-self.trajectory_B*energy_level)
+        return self.trajectory_B2 * np.exp(-self.trajectory_B*energy_level)
 
     def action_scale(self, energy_level):
         """Provides nonlinear scaling for action penalty and energy level change for new simulation"""
@@ -368,8 +369,7 @@ class Fish:
 
     def update_energy_level(self, reward, consumption):
         """Updates the current energy state for continuous and discrete fish."""
-        consumption = 1.0 * consumption
-        unscaled_consumption = consumption * self.cc
+        unscaled_consumption = 1.0 * consumption
         unscaled_energy_use = self.ci*self.prev_action_impulse + self.ca*self.prev_action_angle + self.baseline_decrease
         self.energy_level += unscaled_consumption - unscaled_energy_use
 
@@ -379,4 +379,8 @@ class Fish:
         energy_intake = (intake_s*unscaled_consumption)
         energy_use = (action_s*unscaled_energy_use)
         reward += (energy_intake * self.consumption_reward_scaling) - (energy_use * self.action_reward_scaling)
+        if consumption:
+            print(f"Energy level: {self.energy_level}")
+            print(f"Capture reward: {(energy_intake * self.consumption_reward_scaling)}")
+            print(f"Energy use penalty: {- (energy_use * self.action_reward_scaling)}")
         return reward

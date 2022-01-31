@@ -1290,9 +1290,9 @@ ppo_data_gathering = [
 
 phase_1_test_config = [
     {
-        "Model Name": "ppo_action_mask_test",
+        "Model Name": "ppo_hyperparameter_tuning",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 4,
+        "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
         },

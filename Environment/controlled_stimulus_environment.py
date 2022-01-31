@@ -116,7 +116,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5)/255.)
                     plt.pause(0.0001)
 
-        if self.new_simulation:
+        if self.new_simulation and self.env_variables['energy_state']:
             self.energy_level_log.append(self.fish.energy_level)
             reward = self.fish.update_energy_level(reward, action[0], action[1], self.prey_consumed_this_step)
 

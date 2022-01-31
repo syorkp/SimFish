@@ -148,7 +148,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.space.step(self.env_variables['phys_dt'])
 
             if self.fish.prey_consumed:
-                if not self.new_simulation:
+                if not self.env_variables["energy_state"]:
                     reward += self.env_variables['capture_basic_reward'] * self.fish.hungry
                 self.fish.hungry *= self.env_variables['hunger_dec_tau']
                 if len(self.prey_shapes) == 0:
@@ -169,10 +169,9 @@ class NaturalisticEnvironment(BaseEnvironment):
                     plt.pause(0.0001)
 
         if self.new_simulation:
-            reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
-
             # Energy level
             if self.env_variables["energy_state"]:
+                reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
                 self.energy_level_log.append(self.fish.energy_level)
                 if self.fish.energy_level < 0:
                     print("Fish ran out of energy")

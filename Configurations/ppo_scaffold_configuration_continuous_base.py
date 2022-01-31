@@ -80,7 +80,7 @@ env = {'width': 1500,  # arena size
        'rest_cost': 2,
 
        'capture_swim_extra_cost': 25,
-       'capture_basic_reward': 250,  # Formerly 10,000
+       'capture_basic_reward': 10000,  # Used only in old simulation.
        'predator_cost': 100,
 
        'hunger': False,
@@ -141,15 +141,14 @@ env = {'width': 1500,  # arena size
        'displacement_scaling_factor': 0.005,  # Multiplied by previous impulse size to cause displacement of nearby features.
 
        # For new energy state system
-       'ci': 0.001,
-       'ca': 0.001,
-       'cc': 0.02,
-       'baseline_decrease': 0.0005,
-       'trajectory_A': 9.0,
+       'ci': 0.01,
+       'ca': 0.01,
+       'baseline_decrease': 0.005,
+       'trajectory_A': 5.0,
        'trajectory_B': 2.5,
 
        'action_reward_scaling': 10,  # Arbitrary (practical) hyperparameter for penalty for action
-       'consumption_reward_scaling': 100,  # Arbitrary (practical) hyperparameter for reward for consumption
+       'consumption_reward_scaling': 1000000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
        'energy_state': False,
        # For control of in light:
