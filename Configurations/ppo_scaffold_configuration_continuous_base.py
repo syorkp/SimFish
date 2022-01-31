@@ -287,7 +287,7 @@ env['prey_impulse'] = 0.05
 save_files(number)
 number += 1
 
-env['prey_jump'] = True
+env['energy_state'] = True
 save_files(number)
 number += 1
 
