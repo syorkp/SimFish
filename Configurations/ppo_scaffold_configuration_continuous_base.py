@@ -20,7 +20,7 @@ env = {'width': 1500,  # arena size
        'fish_mass': 140.,
        'fish_mouth_size': 4.,   # FINAL VALUE - 0.2mm diameter, so 1.
        'fish_head_size': 2.5,   # Old - 10
-       'fish_tail_length': 70.,
+       'fish_tail_length': 41.5,  # Old: 70
        'eyes_verg_angle': 77.,  # in deg
        'visual_field': 163.,  # single eye angular visual field
        'eyes_biasx': 2.5,  # distance of eyes from midline - interretinal distance of 0.5mm
@@ -36,7 +36,7 @@ env = {'width': 1500,  # arena size
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
-       'prey_max_turning_angle': 0.3,
+       'prey_max_turning_angle': 0.1,  # Max angle change every 2ms in pi radians
        'prey_jump': False,
        'differential_prey': False,
        'prey_cloud_num': 2,
@@ -54,10 +54,10 @@ env = {'width': 1500,  # arena size
 
        'predator_mass': 10.,
        'predator_inertia': 40.,
-       'predator_size': 100.,
-       'predator_impulse': 1.0,
+       'predator_size': 43.5,  # To be 8.7mm in diameter, formerly 100
+       'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
-       'distance_from_fish': 300,  # Distance from the fish at which the predator appears.
+       'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
        'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
@@ -115,12 +115,12 @@ env = {'width': 1500,  # arena size
        # New simulation variables
        'decay_rate': 0.01,  # For scatter mask (eyeballed it for practical reasons) # NO DATA YET
        'uv_photoreceptor_rf_size': 0.014,  # Pi Radians (0.8 degrees) - Yoshimatsu et al. (2019)
-       'red_photoreceptor_rf_size': 0.01,  # NO DATA YET
-       'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
-       'red_photoreceptor_num': 120,  # NO DATA YET
+       'red_photoreceptor_rf_size': 0.014,  # Kept same
+       'uv_photoreceptor_num': 56,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
+       'red_photoreceptor_num': 64,  # NO DATA YET
        'shared_photoreceptor_channels': False,  # Whether the two channels have the same RF angles (saves computation time)
        'incorporate_uv_strike_zone': True,
-       'strike_zone_sigma': 1,  # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
+       'strike_zone_sigma': 1.4,  # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
        'visualise_mask': False,  # For debugging purposes.
 
        # For dark noise:
@@ -183,9 +183,9 @@ env = {'width': 1500,  # arena size
        'p_fast': 0.1,
        'p_escape': 0.5,
        'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
-       'slow_speed_paramecia': 0.01,
-       'fast_speed_paramecia': 0.02,
-       'jump_speed_paramecia': 0.03,
+       'slow_speed_paramecia': 0.0037,  # Impulse to generate 0.5mms-1 for given prey mass
+       'fast_speed_paramecia': 0.0074,  # Impulse to generate 1.0mms-1 for given prey mass
+       'jump_speed_paramecia': 0.074,  # Impulse to generate 10.0mms-1 for given prey mass
        'prey_fluid_displacement': True,
 
        # Motor effect noise (for continuous)
@@ -211,7 +211,7 @@ env = {'width': 1500,  # arena size
        'capture_angle_deviation_allowance': np.pi,  # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
 
        # First complex predator attack is loom
-       'predator_first_attack_loom': True,
+       'predator_first_attack_loom': False,
        'initial_predator_size': 20,  # Size in degrees
        'final_predator_size': 200,  # "
        'duration_of_loom': 10,  # Number of steps for which loom occurs.

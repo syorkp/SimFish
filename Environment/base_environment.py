@@ -117,7 +117,6 @@ class BaseEnvironment:
         self.mask_buffer = []
         self.using_gpu = using_gpu
 
-
         if self.env_variables["salt"]:
             self.salt_gradient = None
             self.xp, self.yp = np.arange(self.env_variables['width']), np.arange(self.env_variables['height'])
@@ -532,7 +531,8 @@ class BaseEnvironment:
 
         # Angles of change - can generate as same for all.
         angle_changes = np.random.uniform(-self.env_variables['prey_max_turning_angle'],
-                                          self.env_variables['prey_max_turning_angle'],
+                                          self.
+                                          env_variables['prey_max_turning_angle'],
                                           len(self.prey_shapes))
 
         for i, prey_body in enumerate(self.prey_bodies):
