@@ -701,6 +701,7 @@ class Eye:
         """Makes photoreceptor input from two sources the same dimension by padding out points with their nearest values."""
         # TODO: Note the switching below might be slow... Probably worth writing own function.
         if self.expand_observation:
+            # Test
             if self.using_gpu:
                 uv_readings = self.uv_readings.get()
                 red_readings = self.red_readings.get()
