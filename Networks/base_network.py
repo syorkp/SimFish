@@ -9,7 +9,7 @@ class BaseNetwork:
 
     def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim, new_simulation):
 
-        self.num_arms = simulation.fish.left_eye.max_photoreceptor_num  # Rays for each eye
+        self.num_arms = simulation.fish.left_eye.observation_size  # Rays for each eye
         self.rnn_dim = rnn_dim
 
         self.trainLength = tf.placeholder(dtype=tf.int32, shape=[], name="train_length")

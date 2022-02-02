@@ -88,6 +88,14 @@ class Eye:
                                                   self.max_photoreceptor_num)).astype(
                 int)
 
+        # Decide whether to pad observation to larger factor than either size (avoids conv layer bug)
+        if self.max_photoreceptor_num < self.env_variables['minimum_observation_size']:
+            self.expand_observation = True
+            self.observation_size = self.env_variables['minimum_observation_size']
+        else:
+            self.expand_observation = False
+            self.observation_size = self.max_photoreceptor_num
+
         # Compute repeated measures:
         self.channel_angles_surrounding = None
         self.channel_angles_surrounding_red = None
@@ -692,29 +700,44 @@ class Eye:
     def pad_observation(self):
         """Makes photoreceptor input from two sources the same dimension by padding out points with their nearest values."""
         # TODO: Note the switching below might be slow... Probably worth writing own function.
-        if self.uv_photoreceptor_num < self.red_photoreceptor_num:
-            # Using linear interpolation
-            # self.readings = self.chosen_math_library.concatenate((self.red_readings, self.uv_readings[self.indices_for_padding]), axis=1)
-
+        if self.expand_observation:
             if self.using_gpu:
                 uv_readings = self.uv_readings.get()
+                red_readings = self.red_readings.get()
+
             else:
                 uv_readings = self.uv_readings
-            self.readings = self.chosen_math_library.concatenate((self.red_readings[:, 0:1],
-                                                                  self.chosen_math_library.array(resize(uv_readings,
-                                                                                                        (
-                                                                                                        self.red_photoreceptor_num,
-                                                                                                        1))),
-                                                                  self.red_readings[:, 1:]), axis=1)
-        else:
-            if self.using_gpu:
-                red_readings = self.red_readings.get()
-            else:
                 red_readings = self.red_readings
-            red_field = resize(red_readings[:, 0:1], (self.uv_photoreceptor_num, 1))
-            red_background = resize(red_readings[:, 1:], (self.uv_photoreceptor_num, 1))
-            self.readings = self.chosen_math_library.concatenate((red_field, self.uv_readings, red_background), axis=1)
-            # self.readings = self.chosen_math_library.concatenate((self.red_readings[self.indices_for_padding], self.uv_readings), axis=1)
+
+            red_field = self.chosen_math_library.array(resize(red_readings[:, 0:1], (self.env_variables['minimum_observation_size'], 1)))
+            uv = self.chosen_math_library.array(resize(uv_readings, (self.env_variables['minimum_observation_size'], 1)))
+            red_background = self.chosen_math_library.array(resize(red_readings[:, 1:], (self.env_variables['minimum_observation_size'], 1)))
+            self.readings = self.chosen_math_library.concatenate((red_field, uv, red_background), axis=1)
+
+        else:
+            if self.uv_photoreceptor_num < self.red_photoreceptor_num:
+                # Using linear interpolation
+                # self.readings = self.chosen_math_library.concatenate((self.red_readings, self.uv_readings[self.indices_for_padding]), axis=1)
+
+                if self.using_gpu:
+                    uv_readings = self.uv_readings.get()
+                else:
+                    uv_readings = self.uv_readings
+                self.readings = self.chosen_math_library.concatenate((self.red_readings[:, 0:1],
+                                                                      self.chosen_math_library.array(resize(uv_readings,
+                                                                                                            (
+                                                                                                            self.red_photoreceptor_num,
+                                                                                                            1))),
+                                                                      self.red_readings[:, 1:]), axis=1)
+            else:
+                if self.using_gpu:
+                    red_readings = self.red_readings.get()
+                else:
+                    red_readings = self.red_readings
+                red_field = self.chosen_math_library.array(resize(red_readings[:, 0:1], (self.uv_photoreceptor_num, 1)))
+                red_background = self.chosen_math_library.array(resize(red_readings[:, 1:], (self.uv_photoreceptor_num, 1)))
+                self.readings = self.chosen_math_library.concatenate((red_field, self.uv_readings, red_background), axis=1)
+                # self.readings = self.chosen_math_library.concatenate((self.red_readings[self.indices_for_padding], self.uv_readings), axis=1)
 
         # Used for debugging:
         # empty_dim = np.zeros((1, 120, 1))
