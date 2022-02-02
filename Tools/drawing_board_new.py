@@ -651,7 +651,6 @@ class NewDrawingBoard:
         # Combine with background grating
         AB = self.chosen_math_library.concatenate((A, self.background_grating), axis=2)
 
-
         # Get the luminance mask
         L = self.luminance_mask
 
