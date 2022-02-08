@@ -248,7 +248,8 @@ class Eye:
                                                   self.env_variables['red_scaling_factor'],
                                                   self.env_variables['uv_scaling_factor'],
                                                   self.env_variables['red_2_scaling_factor'])
-            self.readings = self.add_noise_to_readings(scaled_readings)
+            # self.readings = self.add_noise_to_readings(scaled_readings)
+            self.readings = scaled_readings
 
         else:
             # UV Angles with respect to fish (doubled) (PR_N x n)
@@ -283,13 +284,13 @@ class Eye:
                                                            n_channels_uv=self.uv_photoreceptor_num,
                                                            n_channels_red=self.red_photoreceptor_num)
 
-            uv_readings_scaled = self.scale_readings(uv_readings,
+            self.uv_readings = self.scale_readings(uv_readings,
                                                      self.env_variables['uv_scaling_factor'])
-            self.uv_readings = self.add_noise_to_readings(uv_readings_scaled)
-            red_readings_scaled = self.scale_readings(red_readings,
+            # self.uv_readings = self.add_noise_to_readings(uv_readings_scaled)
+            self.red_readings = self.scale_readings(red_readings,
                                                       self.env_variables['red_scaling_factor'],
                                                       self.env_variables['red_2_scaling_factor'])
-            self.red_readings = self.add_noise_to_readings(red_readings_scaled)
+            # self.red_readings = self.add_noise_to_readings(red_readings_scaled)
 
             if self.red_photoreceptor_num != self.uv_photoreceptor_num:
                 self.pad_observation()
@@ -547,7 +548,7 @@ class Eye:
         return readings
 
     def add_noise_to_readings(self, readings):
-        """Adds dark noise to readings"""
+        """Adds dark noise to readings. Not currently used."""
         dark_noise_events = self.chosen_math_library.random.choice([0, 1], size=readings.size,
                                                                    p=[1-self.isomerization_probability,
                                                                       self.isomerization_probability]

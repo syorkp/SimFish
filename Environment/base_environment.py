@@ -595,7 +595,6 @@ class BaseEnvironment:
                     if deviation > np.pi:
                         # Need to account for cases where one angle is very high, while other is very low, as these
                         # angles can be close together. Can do this by summing angles and subtracting from 2 pi.
-                        # TODO: NOT CHECKED THIS WORKS YET.
 
                         deviation = abs((2*np.pi)-(fish_orientation+angle))
                     if deviation < self.env_variables["capture_angle_deviation_allowance"]:

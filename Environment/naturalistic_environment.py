@@ -277,8 +277,10 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.board_image.set_data(self.output_frame(activations, internal_state, scale=0.5) / 255.)
                 plt.pause(0.000001)
 
-        observation = self.chosen_math_library.dstack((self.fish.left_eye.readings,
-                                                       self.fish.right_eye.readings))
+        # observation = self.chosen_math_library.dstack((self.fish.left_eye.readings,
+        #                                                self.fish.right_eye.readings))
+        observation = self.chosen_math_library.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
+                                                       self.fish.readings_to_photons(self.fish.right_eye.readings)))
         # self.plot_observation(observation)
 
         if self.using_gpu:

@@ -308,7 +308,7 @@ class Fish:
         if self.env_variables['read_noise_sigma'] > 0:
             noise = np.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
             photons += noise.astype(int)
-            # photons = photons.clip(0, 255)
+        photons = photons.clip(0, 255)
         return photons
 
     def _readings_to_photons_new(self, readings):
@@ -319,7 +319,7 @@ class Fish:
         if self.env_variables['read_noise_sigma'] > 0:
             noise = np.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
             photons += noise.astype(int)
-            photons = photons.clip(0, 255)
+        photons = photons.clip(0, 255)
         return photons
 
     def get_visual_inputs(self):

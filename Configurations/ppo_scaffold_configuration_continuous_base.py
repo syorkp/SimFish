@@ -61,7 +61,7 @@ env = {'width': 1500,  # arena size
        'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
-       'read_noise_sigma': 5,  # gaussian noise added to photon count
+       'read_noise_sigma': 0,  # gaussian noise added to photon count. Formerly 5.
        'photon_ratio': 100,  # expected number of photons for unit brightness
        'bkg_scatter': 0.3,  # base brightness of the background
        'dark_gain': 0.02,  # gai nof brightness in the dark side

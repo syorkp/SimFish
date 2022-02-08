@@ -56,7 +56,7 @@ env = {'width': 1500,  # arena size
        'predator_inertia': 40.,
        'predator_size': 43.5,  # To be 8.7mm in diameter, formerly 100
        'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
-       'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
+       'immunity_steps': 0,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
        'probability_of_predator': 0.1,  # Probability with which the predator appears at each step.
 

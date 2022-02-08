@@ -49,35 +49,36 @@ def update_angles_strike_zone(verg_angle, retinal_field, is_left, photoreceptor_
     plt.scatter(computed_values, [1 for i in range(len(computed_values))])
     plt.show()
 
-    plt.hist(computed_values, bins=20)
+    plt.hist(computed_values, bins=100)
     plt.title(f"Sigma: {sigma}")
     plt.show()
     # self.indices_for_padding_uv = relative_indices
 
     return computed_values
 
-# for i in np.linspace(0.5, 2.5, 10):
-#     update_angles_strike_zone(77. * (np.pi / 180), 163. * (np.pi / 180), True, 55, i)
+
+for i in np.linspace(1.5, 2.5, 10):
+    update_angles_strike_zone(77. * (np.pi / 180), 163. * (np.pi / 180), True, 10000, i)
 
 
-ipl_positions = np.loadtxt("./Zimmerman/doi_10.5061_dryad.5bc8vd7__v1/Processed data/IPLPositions_GCaMP2.txt", dtype=float)[:, 0]
-clusters = np.loadtxt("./Zimmerman/doi_10.5061_dryad.5bc8vd7__v1/Processed data/ClusterIndex_GCaMP2.txt", dtype=float)
-cluster_class = np.loadtxt("./Zimmerman/doi_10.5061_dryad.5bc8vd7__v1/Processed data/ClusterClass2.txt", dtype=int)
+# ipl_positions = np.loadtxt("./Zimmerman/doi_10.5061_dryad.5bc8vd7__v1/Processed data/IPLPositions_GCaMP2.txt", dtype=float)[:, 0]
+# clusters = np.loadtxt("./Zimmerman/doi_10.5061_dryad.5bc8vd7__v1/Processed data/ClusterIndex_GCaMP2.txt", dtype=float)
+# cluster_class = np.loadtxt("./Zimmerman/doi_10.5061_dryad.5bc8vd7__v1/Processed data/ClusterClass2.txt", dtype=int)
+#
+# with open("./Zimmerman/doi_10.5061_dryad.5bc8vd7__v1/Processed data/ClusterIndex_GCaMP2.txt") as f:
+#     lines = f.readlines()
+#     n_cols = len(f.readline().split(","))
 
-with open("./Zimmerman/doi_10.5061_dryad.5bc8vd7__v1/Processed data/ClusterIndex_GCaMP2.txt") as f:
-    lines = f.readlines()
-    n_cols = len(f.readline().split(","))
+# lines = np.array([25 if line == "\n" else int(line) for line in lines]).astype(int)
+# uv_clusters = [2, 3]
+# added_clusters = np.array([cluster_class[line] for line in lines])[:6542]
+# # indexes_of_uv = [i if (cluster_class[line]==2) else None for i, line in enumerate(lines)]
+# relevant_positions = np.concatenate((ipl_positions[added_clusters == 2], ipl_positions[added_clusters == 3]), axis=0)
+# x = True
 
-lines = np.array([25 if line == "\n" else int(line) for line in lines]).astype(int)
-uv_clusters = [2, 3]
-added_clusters = np.array([cluster_class[line] for line in lines])[:6542]
-# indexes_of_uv = [i if (cluster_class[line]==2) else None for i, line in enumerate(lines)]
-relevant_positions = np.concatenate((ipl_positions[added_clusters == 2], ipl_positions[added_clusters == 3]), axis=0)
-x = True
-
-plt.hist(relevant_positions, bins=20)
-plt.show()
-
-plt.hist(ipl_positions, bins=20)
-plt.show()
+# plt.hist(relevant_positions, bins=20)
+# plt.show()
+#
+# plt.hist(ipl_positions, bins=20)
+# plt.show()
 

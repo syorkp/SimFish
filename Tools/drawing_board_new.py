@@ -714,10 +714,10 @@ class NewDrawingBoard:
             db = self.chosen_math_library.zeros((self.height, self.width, 3), dtype=np.double)
         else:
             db = self.chosen_math_library.ones((self.height, self.width, 3), dtype=np.double) * bkg
-        db[0:2, :] = self.chosen_math_library.array([1, 0, 0])
-        db[self.width - 1, :] = self.chosen_math_library.array([1, 0, 0])
-        db[:, 0] = self.chosen_math_library.array([1, 0, 0])
-        db[:, self.height - 1] = self.chosen_math_library.array([1, 0, 0])
+        db[1:2, :] = self.chosen_math_library.array([1, 0, 0])
+        db[self.width - 2:self.width - 1, :] = self.chosen_math_library.array([1, 0, 0])
+        db[:, 1:2] = self.chosen_math_library.array([1, 0, 0])
+        db[:, self.height - 2:self.height - 1] = self.chosen_math_library.array([1, 0, 0])
         return db
 
     def draw_walls(self):
