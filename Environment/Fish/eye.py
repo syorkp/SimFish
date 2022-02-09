@@ -110,6 +110,12 @@ class Eye:
         self.channel_angles_surrounding_stacked = self.chosen_math_library.concatenate((self.channel_angles_surrounding,
                                                                                         self.channel_angles_surrounding_red), axis=0)
 
+        self.snr = []
+        self.red_signal_fail = []
+        self.uv_signal_fail = []
+        self.red2_signal_fail = []
+
+
     def get_repeated_computations(self):
         if self.shared_photoreceptor_channels:
             channel_angles_surrounding = self.chosen_math_library.expand_dims(self.photoreceptor_angles, 1)
@@ -284,13 +290,13 @@ class Eye:
                                                            n_channels_uv=self.uv_photoreceptor_num,
                                                            n_channels_red=self.red_photoreceptor_num)
 
-            self.uv_readings = self.scale_readings(uv_readings,
+            uv_readings_scaled = self.scale_readings(uv_readings,
                                                      self.env_variables['uv_scaling_factor'])
-            # self.uv_readings = self.add_noise_to_readings(uv_readings_scaled)
-            self.red_readings = self.scale_readings(red_readings,
+            self.uv_readings = self.add_noise_to_readings(uv_readings_scaled)
+            red_readings_scaled = self.scale_readings(red_readings,
                                                       self.env_variables['red_scaling_factor'],
                                                       self.env_variables['red_2_scaling_factor'])
-            # self.red_readings = self.add_noise_to_readings(red_readings_scaled)
+            self.red_readings = self.add_noise_to_readings(red_readings_scaled)
 
             if self.red_photoreceptor_num != self.uv_photoreceptor_num:
                 self.pad_observation()
@@ -544,21 +550,58 @@ class Eye:
             if readings_scaling_factor_3:
                 readings[:, 2] *= readings_scaling_factor_3
 
-        readings[readings > 1] = 1
+        # readings[readings > 1] = 1
         return readings
 
     def add_noise_to_readings(self, readings):
-        """Adds dark noise to readings. Not currently used."""
-        dark_noise_events = self.chosen_math_library.random.choice([0, 1], size=readings.size,
-                                                                   p=[1-self.isomerization_probability,
-                                                                      self.isomerization_probability]
-                                                                   ).astype(float)
-        variability = self.chosen_math_library.random.rand(readings.size)
-        dark_noise_events *= variability
-        dark_noise_events = dark_noise_events * self.env_variables['max_isomerization_size']
-        dark_noise_events = self.chosen_math_library.reshape(dark_noise_events, readings.shape)
-        readings += dark_noise_events
-        return readings
+        """As specified, adds shot, read, and/or dark noise to readings."""
+
+        if self.env_variables["shot_noise"]:
+            photons = self.chosen_math_library.random.poisson(readings)
+
+            # paramecia_pixels = readings[readings[:, 1] > 0, 1]
+            # paramecia_readings = photons[readings[:, 1] > 0, 1]
+            # noise = np.absolute(paramecia_readings - paramecia_pixels)
+            # snr = np.mean(1-np.absolute(noise/(paramecia_pixels+noise)))
+            # self.snr.append(snr)
+            # print(f"SNR for paramecia {np.mean(1-np.absolute(noise/paramecia_pixels))}")
+
+            if photons.shape[1] == 1:
+                uv_set_to_zero = self.chosen_math_library.sum(((photons[:, 0] == 0) * (readings[:, 0] > 0)))
+                num_uv = self.chosen_math_library.sum((readings[:, 0] > 0) * 1)
+                self.uv_signal_fail.append(uv_set_to_zero/num_uv)
+                # print(f"UV points set to zero: {self.chosen_math_library.sum(uv_set_to_zero)}, of {num_uv}")
+
+            else:
+                red_set_to_zero = self.chosen_math_library.sum(((photons[:, 0] == 0) * (readings[:, 0] > 0)))
+                num_red = self.chosen_math_library.sum((readings[:, 0] > 0)*1)
+                self.red_signal_fail.append(red_set_to_zero/num_red)
+
+                red2_set_to_zero = self.chosen_math_library.sum(((photons[:, 1] == 0) * (readings[:, 1] > 0)))
+                num_red2 = self.chosen_math_library.sum((readings[:, 1] > 0)*1)
+                self.red2_signal_fail.append(red2_set_to_zero/num_red2)
+
+                # print(f"Red points set to zero: {self.chosen_math_library.sum(red_set_to_zero)}, of {num_red}")
+                # print(f"Red2 points set to zero: {self.chosen_math_library.sum(red2_set_to_zero)}, of {num_red2}")
+        else:
+            photons = readings
+
+        if self.env_variables['read_noise_sigma'] > 0:
+            noise = np.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
+            photons += noise.astype(int)
+
+        if self.env_variables["isomerization_frequency"] > 0:
+            dark_noise_events = self.chosen_math_library.random.choice([0, 1], size=readings.size,
+                                                                       p=[1-self.isomerization_probability,
+                                                                          self.isomerization_probability]
+                                                                       ).astype(float)
+            variability = self.chosen_math_library.random.rand(readings.size)
+            dark_noise_events *= variability
+            dark_noise_events = dark_noise_events * self.env_variables['max_isomerization_size']
+            dark_noise_events = self.chosen_math_library.reshape(dark_noise_events, readings.shape)
+            photons += dark_noise_events
+
+        return photons
 
     def get_sector_vertices(self, eye_x, eye_y, channel_angles_surrounding, n_channels):
         """Uses lines method to return the vertices of all photoreceptor segments."""

@@ -312,14 +312,21 @@ class Fish:
         return photons
 
     def _readings_to_photons_new(self, readings):
-        """To simulate shot noise."""
+        """Rounds down observations to form array of discrete photon events."""
         if self.using_gpu:
             readings = readings.get()
-        photons = np.random.poisson(readings * self.env_variables['photon_ratio'])
-        if self.env_variables['read_noise_sigma'] > 0:
-            noise = np.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
-            photons += noise.astype(int)
+
+        if np.max(readings) > 255:  # TODO: Remove after debugging
+            print(f"""Base value exceeded 255.
+
+Max Red: {np.max(readings[:, 0])}
+Max UV: {np.max(readings[:, 1])}
+Max Red2: {np.max(readings[:, 2])}
+            """)
+
+        photons = np.floor(readings).astype(int)
         photons = photons.clip(0, 255)
+
         return photons
 
     def get_visual_inputs(self):

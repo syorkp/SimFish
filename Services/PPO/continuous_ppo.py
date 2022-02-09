@@ -448,6 +448,60 @@ class ContinuousPPO(BasePPO):
         self.total_steps += 1
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0
 
+    def _training_step_multivariate_reduced_logs2(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+                                               rnn_state_critic,
+                                               rnn_state_critic_ref):
+
+        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
+        a = [a[0] / self.environment_params['max_impulse'],
+             a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
+
+        impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability = self.sess.run(
+            [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.value_output,
+             self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
+             self.actor_network.neg_log_prob],
+             # self.actor_network.action_distribution.preliminary_samples, self.actor_network.action_distribution.probs, self.actor_network.action_distribution.positive_imp],
+
+            feed_dict={self.actor_network.observation: o,
+                       self.actor_network.internal_state: internal_state,
+                       self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                       self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
+                       self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
+                       self.actor_network.rnn_state_in: rnn_state_actor,
+                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       self.actor_network.batch_size: 1,
+                       self.actor_network.trainLength: 1,
+                       }
+        )
+        # sam[:, :, 1] *= np.pi/5  # (180/np.pi) *
+        # sam[:, :, 0] *= 10
+        # for i, s in enumerate(sam):
+        #     print(f"Sample: {s}, Probability: {pro[i]}, Positive imp: {pimp[i]}")
+        # print(" ")
+
+        action = [impulse[0][0], angle[0][0]]
+
+        # Simulation step
+        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+            action=action,
+            frame_buffer=self.frame_buffer,
+            save_frames=self.save_frames,
+            activations=sa)
+
+        # Update buffer
+        self.buffer.add_training(observation=o,
+                                 internal_state=internal_state,
+                                 action=action,
+                                 reward=r,
+                                 value=V,
+                                 l_p_action=neg_log_action_probability,
+                                 actor_rnn_state=rnn_state_actor,
+                                 actor_rnn_state_ref=rnn_state_actor_ref
+                                 )
+
+        self.total_steps += 1
+        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0
+
     def _training_step_multivariate_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                               rnn_state_critic,
                                               rnn_state_critic_ref):

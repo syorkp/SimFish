@@ -30,6 +30,8 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.capture_start = int((self.env_variables['phys_steps_per_sim_step'] - self.capture_fraction) / 2)
             self.capture_end = self.capture_start + self.capture_fraction
 
+        self.paramecia_distances = []
+
     def reset(self):
         # print(f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
         # print(f"Mean UV: {sum([i[1] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -75,6 +77,26 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         for i in range(self.env_variables['vegetation_num']):
             self.create_vegetation()
+
+        # TODO: Remove
+        with open("Analysis/Calibration/SNR/distances2.npy", "wb") as f:
+            np.save(f, self.paramecia_distances)
+        # with open("snrs_left.npy", "wb") as f:
+        #     np.save(f, self.fish.left_eye.snr)
+        # with open("snrs_right.npy", "wb") as f:
+        #     np.save(f, self.fish.right_eye.snr)
+        with open("Analysis/Calibration/SNR/red_fail_left.npy", "wb") as f:
+            np.save(f, self.fish.left_eye.red_signal_fail)
+        with open("Analysis/Calibration/SNR/red_fail_right.npy", "wb") as f:
+            np.save(f, self.fish.right_eye.red_signal_fail)
+        with open("Analysis/Calibration/SNR/uv_fail_left.npy", "wb") as f:
+            np.save(f, self.fish.left_eye.uv_signal_fail)
+        with open("Analysis/Calibration/SNR/uv_fail_right.npy", "wb") as f:
+            np.save(f, self.fish.right_eye.uv_signal_fail)
+        with open("Analysis/Calibration/SNR/red2_fail_left.npy", "wb") as f:
+            np.save(f, self.fish.left_eye.red2_signal_fail)
+        with open("Analysis/Calibration/SNR/red2_fail_right.npy", "wb") as f:
+            np.save(f, self.fish.right_eye.red2_signal_fail)
 
     def show_new_channel_sectors(self, left_eye_pos, right_eye_pos):
         left_sectors, right_sectors = self.fish.get_all_sectors([left_eye_pos[0], left_eye_pos[1]], [right_eye_pos[0], right_eye_pos[1]], self.fish.body.angle)
@@ -282,6 +304,10 @@ class NaturalisticEnvironment(BaseEnvironment):
         observation = self.chosen_math_library.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
                                                        self.fish.readings_to_photons(self.fish.right_eye.readings)))
         # self.plot_observation(observation)
+        distance = ((self.fish.body.position[0]-self.prey_bodies[-1].position[0])**2 +
+                    (self.fish.body.position[1]-self.prey_bodies[-1].position[1])**2) ** 0.5
+
+        self.paramecia_distances.append(distance)
 
         if self.using_gpu:
             return observation.get(), frame_buffer

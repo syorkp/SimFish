@@ -31,7 +31,7 @@ env = {'width': 1500,  # arena size
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 4.,   # FINAL VALUE - 0.2mm diameter, so 1.
-       'prey_num': 20,
+       'prey_num': 1,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
@@ -113,7 +113,7 @@ env = {'width': 1500,  # arena size
        'cs_required': False,
 
        # New simulation variables
-       'decay_rate': 0.01,  # For scatter mask (eyeballed it for practical reasons) # NO DATA YET
+       'decay_rate': 0.0006,  # For scatter mask (eyeballed it for practical reasons) # NO DATA YET
        'uv_photoreceptor_rf_size': 0.014,  # Pi Radians (0.8 degrees) - Yoshimatsu et al. (2019)
        'red_photoreceptor_rf_size': 0.014,  # Kept same
        'uv_photoreceptor_num': 56,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
@@ -124,17 +124,17 @@ env = {'width': 1500,  # arena size
        'visualise_mask': False,  # For debugging purposes.
 
        # For dark noise:
-       'isomerization_frequency': 1.0,  # Average frequency of photoisomerization per second per photoreceptor
+       'isomerization_frequency': 0.0,  # Average frequency of photoisomerization per second per photoreceptor
        'max_isomerization_size': 0.01,  # TODO: Calibrated to produce events of similar size to practical visual distance.
        'sim_steps_per_second': 5,  # For converting isomerization frequency.
 
        # For extra layer motion:
        'background_grating_frequency': 50,
 
-       # Observation scaling factors (to set CNN inputs into 0 to 1 range):
-       'red_scaling_factor': 0.2,  # max was 3.44
-       'uv_scaling_factor': 0.2,  # max was 4.1
-       'red_2_scaling_factor': 0.01,  # max was 64.2
+       # Observation scaling factors (to set CNN inputs into 0 to 255 range):
+       'red_scaling_factor': 0.5,  # max was 100 without scaling
+       'uv_scaling_factor': 3,  # max was 40 without scaling
+       'red_2_scaling_factor': 0.018,  # max was 12000 without scaling
 
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
 
@@ -217,12 +217,14 @@ env = {'width': 1500,  # arena size
        'duration_of_loom': 10,  # Number of steps for which loom occurs.
 
        # Action mask
-       'impose_action_mask': True,
+       'impose_action_mask': False,
        # Scaling of impulse and angle from 0-1 initialised distribution TODO: Should set higher to allow full exploration of angle range.
        'angle_scaling': np.pi / 5,
        'impulse_scaling': 10.0,
 
        'minimum_observation_size': 100,  # Parameter to determine padded observation size (avoids conv layer size bug).
+
+       'shot_noise': True,  # Whether to model observation of individual photons as a poisson process.
        }
 
 params = {'num_actions': 10,  # size of action space

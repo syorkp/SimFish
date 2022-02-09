@@ -561,6 +561,7 @@ class BaseEnvironment:
             return self.touch_prey_old(arbiter, space, data)
 
     def touch_prey_new(self, arbiter, space, data):
+        return # TODO: REMOVE
         valid_capture = False
 
         if self.fish.capture_possible:

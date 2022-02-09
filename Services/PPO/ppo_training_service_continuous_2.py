@@ -116,7 +116,7 @@ Total episode reward: {self.total_episode_reward}\n""")
                                                                   rnn_state_actor_ref, rnn_state_critic,
                                                                   rnn_state_critic_ref)
             else:
-                return self._training_step_multivariate_reduced_logs(o, internal_state, a, rnn_state_actor,
+                return self._training_step_multivariate_reduced_logs2(o, internal_state, a, rnn_state_actor,
                                                                      rnn_state_actor_ref, rnn_state_critic,
                                                                      rnn_state_critic_ref)
         else:
