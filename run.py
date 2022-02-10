@@ -1292,7 +1292,7 @@ phase_1_test_config = [
     {
         "Model Name": "ppo_visual_data_gathering",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 1,
+        "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1313,8 +1313,8 @@ phase_1_test_config = [
         "Learning Algorithm": "PPO",
         "Priority": 1,
         "Using GPU": False,
-        "monitor gpu": False,
-        "Full Logs": False ,
+        "monitor gpu": True,
+        "Full Logs": False,
         "SB Emulator": True,
         "New Simulation": True
     },
