@@ -549,6 +549,7 @@ class Eye:
             readings[:, 1] *= readings_scaling_factor_2
             if readings_scaling_factor_3:
                 readings[:, 2] *= readings_scaling_factor_3
+        # print(np.max(readings, axis=0))
 
         # readings[readings > 1] = 1
         return readings
