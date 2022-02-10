@@ -1292,7 +1292,7 @@ phase_1_test_config = [
     {
         "Model Name": "ppo_visual_data_gathering",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 4,
+        "Trial Number": 5,
         "Total Configurations": 3,
         "Episode Transitions": {
         },

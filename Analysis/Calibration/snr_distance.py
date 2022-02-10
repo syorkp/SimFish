@@ -27,7 +27,7 @@ np_load_old = np.load
 np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
 
 
-file = "SNR3"
+file = "SNR2"
 
 with open(f'{file}/distances2.npy', 'rb') as outfile:
     distances = np.load(outfile)
@@ -78,6 +78,7 @@ def remove_distances_over(distances, red_fail_left, red_fail_right, uv_fail_left
 
 distances, red_fail_left, red_fail_right, uv_fail_left, uv_fail_right, red2_fail_left, red2_fail_right = remove_distances_over(distances, red_fail_left, red_fail_right, uv_fail_left, uv_fail_right, red2_fail_left,
                           red2_fail_right)
+distances = distances/10
 
 distances1 = distances[~np.isnan(red_fail_left)]
 red_fail_left = red_fail_left[~np.isnan(red_fail_left)]
@@ -89,8 +90,9 @@ red_fail_left = np.concatenate((red_fail_left, red2_fail_right), axis=0)
 
 z = np.polyfit(distances1, red_fail_left, 1)
 p = np.poly1d(z)
-plt.plot(distances1, p(distances1), c="r")
+print(p)
 
+plt.plot(distances1, p(distances1), c="r")
 plt.scatter(distances1, red_fail_left, alpha=0.2)
 plt.show()
 
@@ -105,8 +107,12 @@ uv_fail_right = uv_fail_right[~np.isnan(uv_fail_right)]
 distances1 = np.concatenate((distances1, distances2), axis=0)
 uv_fail_left = np.concatenate((uv_fail_left, uv_fail_right), axis=0)
 
-distances1 = distances1[uv_fail_left != 0]
-uv_fail_left = uv_fail_left[uv_fail_left != 0]
+uv_fail_left = uv_fail_left[distances1 < 40]
+distances1 = distances1[distances1 < 40]
+
+
+# distances1 = distances1[uv_fail_left != 0]
+# uv_fail_left = uv_fail_left[uv_fail_left != 0]
 
 # hist1, _ = np.histogram(distances1,range=(0,1500), bins=100)
 # hist2, _ = np.histogram(distances3,range=(0, 1500), bins=100)
@@ -118,15 +124,12 @@ uv_fail_left = uv_fail_left[uv_fail_left != 0]
 # plt.hist(distances3, bins=100)
 # plt.show()
 
-
-plt.hist(distances1, bins=100)
-plt.show()
-
-
 z = np.polyfit(distances1, uv_fail_left, 1)
 p = np.poly1d(z)
-plt.plot(distances1, p(distances1), c="r")
 
+print(p)
+
+plt.plot(distances1, p(distances1), c="r")
 plt.scatter(distances1, uv_fail_left, alpha=0.2)
 plt.show()
 
@@ -142,8 +145,9 @@ red2_fail_left = np.concatenate((red2_fail_left, red2_fail_right), axis=0)
 
 z = np.polyfit(distances1, red2_fail_left, 1)
 p = np.poly1d(z)
-plt.plot(distances1, p(distances1), c="r")
+print(p)
 
+plt.plot(distances1, p(distances1), c="r")
 plt.scatter(distances1, red2_fail_left, alpha=0.2)
 plt.show()
 
