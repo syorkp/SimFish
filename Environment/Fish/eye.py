@@ -569,17 +569,17 @@ class Eye:
             if photons.shape[1] == 1:
                 uv_set_to_zero = self.chosen_math_library.sum(((photons[:, 0] == 0) * (readings[:, 0] > 0)))
                 num_uv = self.chosen_math_library.sum((readings[:, 0] > 0) * 1)
-                self.uv_signal_fail.append(np.array(uv_set_to_zero/num_uv)[0])
+                self.uv_signal_fail.append(np.array([uv_set_to_zero/num_uv])[0])
                 # print(f"UV points set to zero: {self.chosen_math_library.sum(uv_set_to_zero)}, of {num_uv}")
 
             else:
                 red_set_to_zero = self.chosen_math_library.sum(((photons[:, 0] == 0) * (readings[:, 0] > 0)))
                 num_red = self.chosen_math_library.sum((readings[:, 0] > 0)*1)
-                self.red_signal_fail.append(np.array(red_set_to_zero/num_red)[0])
+                self.red_signal_fail.append(np.array([red_set_to_zero/num_red])[0])
 
                 red2_set_to_zero = self.chosen_math_library.sum(((photons[:, 1] == 0) * (readings[:, 1] > 0)))
                 num_red2 = self.chosen_math_library.sum((readings[:, 1] > 0)*1)
-                self.red2_signal_fail.append(np.array(red2_set_to_zero/num_red2)[0])
+                self.red2_signal_fail.append(np.array([red2_set_to_zero/num_red2])[0])
 
                 # print(f"Red points set to zero: {self.chosen_math_library.sum(red_set_to_zero)}, of {num_red}")
                 # print(f"Red2 points set to zero: {self.chosen_math_library.sum(red2_set_to_zero)}, of {num_red2}")
