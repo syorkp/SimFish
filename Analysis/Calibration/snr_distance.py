@@ -23,26 +23,31 @@ import matplotlib.pyplot as plt
 #
 # plt.show()
 
+np_load_old = np.load
+np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
 
-with open('SNR/distances2.npy', 'rb') as outfile:
+
+file = "SNR3"
+
+with open(f'{file}/distances2.npy', 'rb') as outfile:
     distances = np.load(outfile)
 
-with open('SNR/red_fail_left.npy', 'rb') as outfile:
+with open(f'{file}/red_fail_left.npy', 'rb') as outfile:
     red_fail_left = np.load(outfile)
 
-with open('SNR/red_fail_right.npy', 'rb') as outfile:
+with open(f'{file}/red_fail_right.npy', 'rb') as outfile:
     red_fail_right = np.load(outfile)
 
-with open('SNR/uv_fail_left.npy', 'rb') as outfile:
+with open(f'{file}/uv_fail_left.npy', 'rb') as outfile:
     uv_fail_left = np.load(outfile)
 
-with open('SNR/uv_fail_right.npy', 'rb') as outfile:
+with open(f'{file}/uv_fail_right.npy', 'rb') as outfile:
     uv_fail_right = np.load(outfile)
 
-with open('SNR/red2_fail_left.npy', 'rb') as outfile:
+with open(f'{file}/red2_fail_left.npy', 'rb') as outfile:
     red2_fail_left = np.load(outfile)
 
-with open('SNR/red2_fail_right.npy', 'rb') as outfile:
+with open(f'{file}/red2_fail_right.npy', 'rb') as outfile:
     red2_fail_right = np.load(outfile)
 
 # distances = np.expand_dims(distances, 1)
@@ -50,6 +55,29 @@ with open('SNR/red2_fail_right.npy', 'rb') as outfile:
 # distances = distances.flatten()
 
 # Red
+if file != "SNR1":
+    red_fail_left = np.array([i.get() for i in red_fail_left])
+    red_fail_right = np.array([i.get() for i in red_fail_right])
+    uv_fail_left = np.array([i.get() for i in uv_fail_left])
+    uv_fail_right = np.array([i.get() for i in uv_fail_right])
+    red2_fail_left = np.array([i.get() for i in red2_fail_left])
+    red2_fail_right = np.array([i.get() for i in red2_fail_right])
+
+
+def remove_distances_over(distances, red_fail_left, red_fail_right, uv_fail_left, uv_fail_right, red2_fail_left,
+                          red2_fail_right, distance=1500):
+    red_fail_left = red_fail_left[distances < distance]
+    red_fail_right = red_fail_right[distances < distance]
+    uv_fail_left = uv_fail_left[distances < distance]
+    uv_fail_right = uv_fail_right[distances < distance]
+    red2_fail_left = red2_fail_left[distances < distance]
+    red2_fail_right = red2_fail_right[distances < distance]
+    distances = distances[distances < distance]
+    return distances, red_fail_left, red_fail_right, uv_fail_left, uv_fail_right, red2_fail_left, red2_fail_right
+
+
+distances, red_fail_left, red_fail_right, uv_fail_left, uv_fail_right, red2_fail_left, red2_fail_right = remove_distances_over(distances, red_fail_left, red_fail_right, uv_fail_left, uv_fail_right, red2_fail_left,
+                          red2_fail_right)
 
 distances1 = distances[~np.isnan(red_fail_left)]
 red_fail_left = red_fail_left[~np.isnan(red_fail_left)]
@@ -76,6 +104,9 @@ uv_fail_right = uv_fail_right[~np.isnan(uv_fail_right)]
 
 distances1 = np.concatenate((distances1, distances2), axis=0)
 uv_fail_left = np.concatenate((uv_fail_left, uv_fail_right), axis=0)
+
+distances1 = distances1[uv_fail_left > 0]
+uv_fail_left = uv_fail_left[uv_fail_left > 0]
 
 z = np.polyfit(distances1, uv_fail_left, 1)
 p = np.poly1d(z)
