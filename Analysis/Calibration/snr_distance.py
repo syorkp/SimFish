@@ -27,7 +27,7 @@ np_load_old = np.load
 np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
 
 
-file = "SNR3"
+file = "SNR4"
 
 with open(f'{file}/distances2.npy', 'rb') as outfile:
     distances = np.load(outfile)
@@ -55,7 +55,7 @@ with open(f'{file}/red2_fail_right.npy', 'rb') as outfile:
 # distances = distances.flatten()
 
 # Red
-if file != "SNR1":
+if file != "SNR":
     red_fail_left = np.array([i.get() for i in red_fail_left])
     red_fail_right = np.array([i.get() for i in red_fail_right])
     uv_fail_left = np.array([i.get() for i in uv_fail_left])
@@ -105,8 +105,23 @@ uv_fail_right = uv_fail_right[~np.isnan(uv_fail_right)]
 distances1 = np.concatenate((distances1, distances2), axis=0)
 uv_fail_left = np.concatenate((uv_fail_left, uv_fail_right), axis=0)
 
-distances1 = distances1[uv_fail_left > 0]
-uv_fail_left = uv_fail_left[uv_fail_left > 0]
+distances3 = distances1[uv_fail_left != 0]
+uv_fail_left2 = uv_fail_left[uv_fail_left != 0]
+
+hist1, _ = np.histogram(distances1,range=(0,1500), bins=100)
+hist2, _ = np.histogram(distances3,range=(0, 1500), bins=100)
+
+diff = np.absolute(hist1 - hist2)
+plt.plot(diff)
+plt.show()
+
+plt.hist(distances3, bins=100)
+plt.show()
+
+
+plt.hist(distances1, bins=100)
+plt.show()
+
 
 z = np.polyfit(distances1, uv_fail_left, 1)
 p = np.poly1d(z)

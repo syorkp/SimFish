@@ -133,7 +133,7 @@ env = {'width': 1500,  # arena size
 
        # Observation scaling factors (to set CNN inputs into 0 to 255 range):
        'red_scaling_factor': 0.5,  # max was 100 without scaling
-       'uv_scaling_factor': 3,  # max was 40 without scaling
+       'uv_scaling_factor': 0.1,  # max was 40 without scaling
        'red_2_scaling_factor': 0.018,  # max was 12000 without scaling
 
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
