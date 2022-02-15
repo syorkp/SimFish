@@ -1,18 +1,21 @@
 import tensorflow.compat.v1 as tf
 import tensorflow_probability as tfp
 
-from Networks.base_network import BaseNetwork
+from Networks.dynamic_base_network import DynamicBaseNetwork
 from Networks.Distributions.masked_multivariate_normal import MaskedMultivariateNormal
 
 tf.disable_v2_behavior()
 
 
-class PPONetworkActorMultivariate2(BaseNetwork):
+class PPONetworkActorMultivariate2Dynamic(DynamicBaseNetwork):
 
     def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, max_impulse, max_angle_change,
                  clip_param, input_sigmas=False, new_simulation=True, impose_action_mask=False, impulse_scaling=None,
-                 angle_scaling=None):
-        super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim=2, new_simulation=new_simulation)
+                 angle_scaling=None, base_network_layers=None, modular_network_layers=None, ops=None, connectivity=None,
+                 reflected=None):
+        super().__init__(simulation, my_scope, internal_states, action_dim=2, new_simulation=new_simulation,
+                         base_network_layers=base_network_layers, modular_network_layers=modular_network_layers, ops=ops,
+                         connectivity=connectivity, reflected=reflected)
 
         #            ----------        Stream Splitting       ---------            #
 

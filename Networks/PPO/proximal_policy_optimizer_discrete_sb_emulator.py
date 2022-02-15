@@ -2,7 +2,6 @@ import tensorflow.compat.v1 as tf
 from Networks.utils import linear
 
 from Networks.base_network import BaseNetwork
-from Networks.Distributions.reflected_continuous import ReflectedProbabilityDist
 
 tf.disable_v2_behavior()
 

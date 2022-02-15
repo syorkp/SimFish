@@ -1290,9 +1290,9 @@ ppo_data_gathering = [
 
 phase_1_test_config = [
     {
-        "Model Name": "ppo_visual_data_gathering",
+        "Model Name": "dynamic_network_test",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 5,
+        "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1312,7 +1312,7 @@ phase_1_test_config = [
         "Continuous Actions": True,
         "Learning Algorithm": "PPO",
         "Priority": 1,
-        "Using GPU": True,
+        "Using GPU": False,
         "monitor gpu": False,
         "Full Logs": False,
         "SB Emulator": True,

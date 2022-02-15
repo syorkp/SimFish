@@ -1,0 +1,188 @@
+import tensorflow.compat.v1 as tf
+
+tf.disable_v2_behavior()
+
+
+def flatten_list(t):
+    return [item for sublist in t for item in sublist]
+
+
+class DynamicBaseNetwork:
+
+    def __init__(self, simulation, my_scope, internal_states, action_dim, new_simulation, base_network_layers,
+                 modular_network_layers, ops, connectivity, reflected):
+
+        self.resolve_connectivity(base_network_layers, modular_network_layers, ops, connectivity)
+
+        # Network parameters
+        self.photoreceptor_num = simulation.fish.left_eye.observation_size  # Photoreceptor num per channel in each eye
+        self.train_length = tf.placeholder(dtype=tf.int32, shape=[], name="train_length")
+        self.batch_size = tf.placeholder(dtype=tf.int32, shape=[], name='batch_size')
+        self.scope = my_scope
+
+        # Network inputs
+        self.prev_actions = tf.placeholder(shape=[None, action_dim], dtype=tf.float32, name='prev_actions')
+        self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
+        self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='observation')
+        self.reshaped_observation = tf.reshape(self.observation, shape=[-1, self.photoreceptor_num, 3, 2],
+                                               name="reshaped_observation")
+
+        self.rnn_cells = self.create_rnns(base_network_layers, modular_network_layers)
+
+        # Contains all layers to be referenced.
+        self.network_graph = {"observation": self.reshaped_observation,
+                              "internal_state": self.internal_state,
+                              "prev_actions": self.prev_actions}
+        self.initialize_network(base_network_layers, modular_network_layers, ops, connectivity, self.network_graph)
+
+        if reflected:
+            print("Building reflected graph")
+            self.reflected_network_graph = {"observation": self.reshaped_observation,
+                                            "internal_state": self.internal_state,
+                                            "prev_actions": self.prev_actions}
+            self.initialize_network(base_network_layers, modular_network_layers, ops, connectivity, self.reflected_network_graph, reflected=True)
+
+        # Name the outputs
+        self.rnn_output = self.network_graph["output_layer"]
+        if reflected:
+            self.rnn_output_ref = self.reflected_network_graph["output_layer_right"]
+
+    def perform_op(self, op, network_graph, reflected):
+        # if op[0] == "eye_split":
+        #     self.network_graph[op[2][0]] = self.network_graph[op[1][0]][:, :, :, 0]
+        #     self.network_graph[op[2][1]] = self.network_graph[op[1][0]][:, :, :, 1]
+        # elif op[0] == "flatten":
+        #     self.network_graph[op[2][0]] = tf.layers.flatten(self.network_graph[op[1][0]], name=op[2][0])
+        # elif op[0] == "concatenate":
+        #     self.network_graph[op[2][0]] = tf.concat([self.network_graph[op[1][i]] for i in range(len(op[1]))], 1,
+        #                                              name=op[2][0])
+        # else:
+        #     print(f"Undefined op: {op[0]}")
+        if op[0] == "eye_split":
+            network_graph[op[2][0]] = network_graph[op[1][0]][:, :, :, 0]
+            network_graph[op[2][1]] = network_graph[op[1][0]][:, :, :, 1]
+
+            if reflected:
+                network_graph[op[2][0]] = tf.reverse(network_graph[op[1][0]][:, :, :, 0], [1])
+                network_graph[op[2][1]] = tf.reverse(network_graph[op[1][0]][:, :, :, 1], [1])
+
+        elif op[0] == "flatten":
+            network_graph[op[2][0]] = tf.layers.flatten(network_graph[op[1][0]], name=self.scope + "_" + op[2][0])
+        elif op[0] == "concatenate":
+            network_graph[op[2][0]] = tf.concat([network_graph[op[1][i]] for i in range(len(op[1]))], 1,
+                                                name=self.scope + "_" + op[2][0])
+        else:
+            print(f"Undefined op: {op[0]}")
+
+    def create_layer(self, layer_name, layer_input, connection_type, layer_parameters, network_graph, reflected):
+        # TODO: build in different levels of connection
+
+        # if layer_parameters[0] == "conv1d":
+        #     filters, kernel_size, strides = layer_parameters[1:]
+        #     self.network_graph[layer_name] = tf.layers.conv1d(inputs=self.network_graph[layer_input],
+        #                                                       filters=filters,
+        #                                                       kernel_size=kernel_size, strides=strides, padding='valid',
+        #                                                       activation=tf.nn.relu, name=self.scope + "_" + layer_name)
+        # elif layer_parameters[0] == "dense":
+        #     units = layer_parameters[1]
+        #     self.network_graph[layer_name] = tf.layers.dense(self.network_graph[layer_input], units,
+        #                                                      activation=tf.nn.relu,
+        #                                                      kernel_initializer=tf.orthogonal_initializer,
+        #                                                      trainable=True, name=self.scope + "_" + layer_name)
+        #
+        # elif layer_parameters[0] == "dynamic_rnn":
+        #     units = layer_parameters[1]
+        #     rnn_cell = tf.nn.rnn_cell.LSTMCell(num_units=units, state_is_tuple=True)
+        #     rnn_state_in = rnn_cell.zero_state(self.train_length, tf.float32)
+        #
+        #     self.network_graph[layer_name], self.network_graph[layer_name + "_shared"] = tf.nn.dynamic_rnn(
+        #         inputs=self.network_graph[layer_input], cell=rnn_cell,
+        #         dtype=tf.float32,
+        #         initial_state=rnn_state_in,
+        #         trainable=True, name=self.scope + "_" + layer_name)
+        # else:
+        #     print(f"Undefined layer: {layer_parameters[0]}")
+
+        if layer_parameters[0] == "conv1d":
+            filters, kernel_size, strides = layer_parameters[1:]
+            network_graph[layer_name] = tf.layers.conv1d(inputs=network_graph[layer_input],
+                                                         filters=filters,
+                                                         kernel_size=kernel_size, strides=strides, padding='valid',
+                                                         activation=tf.nn.relu, name=self.scope + "_" + layer_name,
+                                                         reuse=reflected)
+        elif layer_parameters[0] == "dense":
+            units = layer_parameters[1]
+            network_graph[layer_name] = tf.layers.dense(network_graph[layer_input], units,
+                                                        activation=tf.nn.relu,
+                                                        kernel_initializer=tf.orthogonal_initializer,
+                                                        trainable=True, name=self.scope + "_" + layer_name,
+                                                        reuse=reflected)
+
+        elif layer_parameters[0] == "dynamic_rnn":
+            network_graph[layer_name], network_graph[layer_name + "_shared"] = tf.nn.dynamic_rnn(
+                inputs=self.network_graph[layer_input], cell=self.rnn_cells[layer_name],
+                dtype=tf.float32,
+                initial_state=self.rnn_cells[layer_name].zero_state(self.train_length, tf.float32),
+                trainable=True, name=self.scope + "_" + layer_name)
+        else:
+            print(f"Undefined layer: {layer_parameters[0]}")
+
+    def initialize_network(self, layers, modular_layers, ops, connectivity, network_graph, reflected=False):
+        layers = {**layers, **modular_layers}
+        final_name = None
+        while True:
+
+            op_to_remove = None
+            for i in range(len(ops)):
+                op = ops[i]
+                if op[1] <= list(network_graph.keys()):
+                    self.perform_op(op, network_graph, reflected)
+                    final_name = op[2]
+                    op_to_remove = i
+                    break
+            if op_to_remove is not None:
+                del ops[op_to_remove]
+
+            layer_to_remove = None
+            for layer in layers.keys():
+                for connection in connectivity:
+                    if connection[1][1] == layer:
+                        if connection[1][0] in list(network_graph.keys()):
+                            self.create_layer(layer, connection[1][0], connection[0], layers[layer], network_graph, reflected)
+                            layer_to_remove = layer
+                            break
+            if layer_to_remove is not None:
+                del layers[layer_to_remove]
+
+            if not layers and not modular_layers and not ops and not connectivity:
+                if not isinstance(final_name, str):
+                    final_name = final_name[0]
+
+                network_graph["output_layer"] = network_graph[final_name]
+                return
+
+    @staticmethod
+    def resolve_connectivity(base_network_layers, modular_network_layers, ops, connectivity):
+        """Through running through indicated connections, ensuring there are no impossible connections and that all
+        referenced inputs are indicated. Also display warnings when layers of network have no input on output."""
+        all_layer_names = list(base_network_layers.keys()) + list(modular_network_layers.keys()) + [item for l in
+                                                                                        [v[2] for v in ops] for item
+                                                                                        in l]
+
+        connectivity_required_layers = flatten_list([[v[1]] for v in connectivity])
+        connectivity_required_layers = flatten_list(connectivity_required_layers)
+
+        for con in connectivity_required_layers:
+            if con not in all_layer_names:
+                raise Exception(f"Error, connectivity requirements dont match given layers: {con} not defined")
+
+    @staticmethod
+    def create_rnns(base_network_layers, modular_network_layers):
+        rnn_units = {}
+        layers = {**base_network_layers, **modular_network_layers}
+
+        for layer in layers.keys():
+            if layers[layer][0] == "dynamic_rnn":
+                rnn_units[layers[layer][0]] = tf.nn.rnn_cell.LSTMCell(num_units=layers[layer][1], state_is_tuple=True)
+
+        return rnn_units

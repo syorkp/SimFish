@@ -1,6 +1,5 @@
 import copy
 import numpy as np
-import pstats
 
 import tensorflow.compat.v1 as tf
 

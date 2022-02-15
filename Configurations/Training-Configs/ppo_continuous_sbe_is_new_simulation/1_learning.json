@@ -25,5 +25,177 @@
     "beta_distribution": false,
     "gamma": 0.99,
     "lambda": 0.9,
-    "input_sigmas": true
+    "input_sigmas": true,
+    "reflected": true,
+    "base_network_layers": {
+        "conv1l": [
+            "conv1d",
+            16,
+            16,
+            4
+        ],
+        "conv2l": [
+            "conv1d",
+            8,
+            8,
+            2
+        ],
+        "conv3l": [
+            "conv1d",
+            8,
+            4,
+            1
+        ],
+        "conv4l": [
+            "conv1d",
+            64,
+            4,
+            1
+        ],
+        "conv1r": [
+            "conv1d",
+            16,
+            16,
+            4
+        ],
+        "conv2r": [
+            "conv1d",
+            8,
+            8,
+            2
+        ],
+        "conv3r": [
+            "conv1d",
+            8,
+            4,
+            1
+        ],
+        "conv4r": [
+            "conv1d",
+            64,
+            4,
+            1
+        ],
+        "rgc": [
+            "dense",
+            512
+        ],
+        "optic_tectum": [
+            "dynamic_rnn",
+            512
+        ]
+    },
+    "modular_network_layers": {},
+    "ops": [
+        [
+            "eye_split",
+            [
+                "observation"
+            ],
+            [
+                "left_eye",
+                "right_eye"
+            ]
+        ],
+        [
+            "flatten",
+            [
+                "conv4l"
+            ],
+            [
+                "conv4l_flat"
+            ]
+        ],
+        [
+            "flatten",
+            [
+                "conv4r"
+            ],
+            [
+                "conv4r_flat"
+            ]
+        ],
+        [
+            "concatenate",
+            [
+                "conv4l",
+                "conv4r"
+            ],
+            [
+                "conv_with_states"
+            ]
+        ]
+    ],
+    "connectivity": [
+        [
+            "full",
+            [
+                "left_eye",
+                "conv1l"
+            ]
+        ],
+        [
+            "full",
+            [
+                "conv1l",
+                "conv2l"
+            ]
+        ],
+        [
+            "full",
+            [
+                "conv2l",
+                "conv3l"
+            ]
+        ],
+        [
+            "full",
+            [
+                "conv3l",
+                "conv4l"
+            ]
+        ],
+        [
+            "full",
+            [
+                "right_eye",
+                "conv1r"
+            ]
+        ],
+        [
+            "full",
+            [
+                "conv1r",
+                "conv2r"
+            ]
+        ],
+        [
+            "full",
+            [
+                "conv2r",
+                "conv3r"
+            ]
+        ],
+        [
+            "full",
+            [
+                "conv3r",
+                "conv4r"
+            ]
+        ],
+        [
+            "full",
+            [
+                "conv_with_states",
+                "rgc"
+            ]
+        ],
+        [
+            "full",
+            [
+                "rgc",
+                "optic_tectum"
+            ]
+        ]
+    ]
 }

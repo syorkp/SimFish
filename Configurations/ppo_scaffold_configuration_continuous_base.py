@@ -7,6 +7,7 @@ Created on Mon Oct  5 07:52:17 2020
 """
 import json
 import os
+from Networks.test_network_config import connectivity, reflected, base_network_layers, modular_network_layers, ops
 
 # all distances in pixels
 import numpy as np
@@ -263,6 +264,14 @@ params = {'num_actions': 10,  # size of action space
           'gamma': 0.99,
           'lambda': 0.9,
           'input_sigmas': True,
+
+          # Dynamic network construction
+          'reflected': reflected,
+          'base_network_layers': base_network_layers,
+          'modular_network_layers': modular_network_layers,
+          'ops': ops,
+          'connectivity': connectivity,
+
           }
 
 

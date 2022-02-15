@@ -1,8 +1,6 @@
 import tensorflow.compat.v1 as tf
-import tensorflow_probability as tfp
 
 from Networks.base_network import BaseNetwork
-from Networks.Distributions.my_simple_beta_distribution import BetaDistribution
 from Networks.Distributions.beta_normal_mix import BetaNormalDistribution
 
 tf.disable_v2_behavior()
