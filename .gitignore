@@ -8,6 +8,7 @@ Training-Output
 /Analysis/Calibration/Zimmerman/
 /Analysis/Calibration/Prey-Tracking/
 /Analysis/Calibration/Image/
+/Analysis/Calibration/SNR/
 /Analysis/__pycache__/
 
 /Environment/__pycache__/

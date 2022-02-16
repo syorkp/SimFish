@@ -27,7 +27,7 @@ np_load_old = np.load
 np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
 
 
-file = "SNR7"
+file = "SNR/SNR7"
 
 with open(f'{file}/distances2.npy', 'rb') as outfile:
     distances = np.load(outfile)

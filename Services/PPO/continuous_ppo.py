@@ -503,7 +503,6 @@ class ContinuousPPO(BasePPO):
         # print(" ")
 
         action = [impulse[0][0], angle[0][0]]
-        print(action)
 
         # Simulation step
         o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
