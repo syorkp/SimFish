@@ -107,6 +107,7 @@ class ContinuousPPO(BasePPO):
                                                  impose_action_mask=self.environment_params['impose_action_mask'],
 
                                                  )
+        print("Created network")
 
     def update_sigmas(self):
         # Exponential scale
@@ -161,7 +162,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.rnn_state_in: rnn_state_actor,
                        self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
-                       self.actor_network.trainLength: 1,
+                       self.actor_network.train_length: 1,
                        }
         )
 
@@ -238,7 +239,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.rnn_state_in: rnn_state_actor,
                        self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
-                       self.actor_network.trainLength: 1,
+                       self.actor_network.train_length: 1,
                        }
         )
 
@@ -257,7 +258,7 @@ class ContinuousPPO(BasePPO):
                        self.critic_network.rnn_state_in: rnn_state_critic,
                        self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
                        self.critic_network.batch_size: 1,
-                       self.critic_network.trainLength: 1,
+                       self.critic_network.train_length: 1,
                        }
         )
         action = [impulse[0][0], angle[0][0]]
@@ -332,7 +333,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.rnn_state_in: rnn_state_actor,
                        self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
-                       self.actor_network.trainLength: 1,
+                       self.actor_network.train_length: 1,
                        self.actor_network.sigma_impulse_combined: self.impulse_sigma,
                        self.actor_network.sigma_angle_combined: self.angle_sigma,
                        }
@@ -353,7 +354,7 @@ class ContinuousPPO(BasePPO):
                        self.critic_network.rnn_state_in: rnn_state_critic,
                        self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
                        self.critic_network.batch_size: 1,
-                       self.critic_network.trainLength: 1,
+                       self.critic_network.train_length: 1,
                        }
         )
 
@@ -434,7 +435,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.rnn_state_in: rnn_state_actor,
                        self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
-                       self.actor_network.trainLength: 1,
+                       self.actor_network.train_length: 1,
                        }
         )
         # sam[:, :, 1] *= np.pi/5  # (180/np.pi) *
@@ -492,7 +493,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.rnn_state_in: rnn_state_actor,
                        self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
-                       self.actor_network.trainLength: 1,
+                       self.actor_network.train_length: 1,
                        }
         )
         # sam[:, :, 1] *= np.pi/5  # (180/np.pi) *
@@ -502,6 +503,7 @@ class ContinuousPPO(BasePPO):
         # print(" ")
 
         action = [impulse[0][0], angle[0][0]]
+        print(action)
 
         # Simulation step
         o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
@@ -547,7 +549,7 @@ class ContinuousPPO(BasePPO):
         #                self.actor_network.rnn_state_in: rnn_state_actor,
         #                self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
         #                self.actor_network.batch_size: 1,
-        #                self.actor_network.trainLength: 1,
+        #                self.actor_network.train_length: 1,
         #                }
         # )
         # TODO: Get rid of sam and pro
@@ -570,7 +572,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.rnn_state_in: rnn_state_actor,
                        self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
-                       self.actor_network.trainLength: 1,
+                       self.actor_network.train_length: 1,
                        }
         )
 
@@ -583,7 +585,7 @@ class ContinuousPPO(BasePPO):
                        self.critic_network.rnn_state_in: rnn_state_critic,
                        self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
                        self.critic_network.batch_size: 1,
-                       self.critic_network.trainLength: 1,
+                       self.critic_network.train_length: 1,
                        }
         )
 
@@ -636,7 +638,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.rnn_state_in: rnn_state_actor,
                        self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
-                       self.actor_network.trainLength: 1,
+                       self.actor_network.train_length: 1,
                        }
         )
 
@@ -649,7 +651,7 @@ class ContinuousPPO(BasePPO):
                        self.critic_network.rnn_state_in: rnn_state_critic,
                        self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
                        self.critic_network.batch_size: 1,
-                       self.critic_network.trainLength: 1,
+                       self.critic_network.train_length: 1,
                        }
         )
 
@@ -698,7 +700,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.sigma_impulse_combined: self.impulse_sigma,
                        self.actor_network.sigma_angle_combined: self.angle_sigma,
                        self.actor_network.batch_size: 1,
-                       self.actor_network.trainLength: 1,
+                       self.actor_network.train_length: 1,
                        }
         )
 
@@ -711,7 +713,7 @@ class ContinuousPPO(BasePPO):
                        self.critic_network.rnn_state_in: rnn_state_critic,
                        self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
                        self.critic_network.batch_size: 1,
-                       self.critic_network.trainLength: 1,
+                       self.critic_network.train_length: 1,
                        }
         )
 
@@ -765,7 +767,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.sigma_impulse_combined: self.impulse_sigma,
                        self.actor_network.sigma_angle_combined: self.angle_sigma,
                        self.actor_network.batch_size: 1,
-                       self.actor_network.trainLength: 1,
+                       self.actor_network.train_length: 1,
                        }
         )
 
@@ -778,7 +780,7 @@ class ContinuousPPO(BasePPO):
                        self.critic_network.rnn_state_in: rnn_state_critic,
                        self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
                        self.critic_network.batch_size: 1,
-                       self.critic_network.trainLength: 1,
+                       self.critic_network.train_length: 1,
                        }
         )
         if self.learning_params["beta_distribution"]:
@@ -989,7 +991,7 @@ class ContinuousPPO(BasePPO):
 
                                self.critic_network.returns_placeholder: return_batch,
 
-                               self.critic_network.trainLength: self.learning_params["trace_length"],
+                               self.critic_network.train_length: self.learning_params["trace_length"],
                                self.critic_network.batch_size: current_batch_size,
                                self.critic_network.learning_rate: self.learning_params[
                                                                       "learning_rate_critic"] * current_batch_size
@@ -1014,7 +1016,7 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.old_log_prob_angle_placeholder: log_angle_probability_batch,
                                self.actor_network.scaled_advantage_placeholder: advantage_batch,
 
-                               self.actor_network.trainLength: self.learning_params["trace_length"],
+                               self.actor_network.train_length: self.learning_params["trace_length"],
                                self.actor_network.batch_size: current_batch_size,
                                self.actor_network.learning_rate: self.learning_params[
                                                                      "learning_rate_actor"] * current_batch_size
@@ -1093,7 +1095,7 @@ class ContinuousPPO(BasePPO):
 
                                self.actor_network.old_value_placeholder: previous_value_batch,
 
-                               self.actor_network.trainLength: self.learning_params["trace_length"],
+                               self.actor_network.train_length: self.learning_params["trace_length"],
                                self.actor_network.batch_size: current_batch_size,
                                self.actor_network.learning_rate: self.learning_params[
                                                                      "learning_rate_actor"] * current_batch_size
@@ -1163,7 +1165,7 @@ class ContinuousPPO(BasePPO):
 
                                self.critic_network.returns_placeholder: return_batch,
 
-                               self.critic_network.trainLength: self.learning_params["trace_length"],
+                               self.critic_network.train_length: self.learning_params["trace_length"],
                                self.critic_network.batch_size: current_batch_size,
                                self.critic_network.learning_rate: self.learning_params[
                                                                       "learning_rate_critic"] * current_batch_size
@@ -1187,7 +1189,7 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.old_log_prob: log_action_probability_batch,
                                self.actor_network.scaled_advantage_placeholder: advantage_batch,
 
-                               self.actor_network.trainLength: self.learning_params["trace_length"],
+                               self.actor_network.train_length: self.learning_params["trace_length"],
                                self.actor_network.batch_size: current_batch_size,
                                self.actor_network.learning_rate: self.learning_params[
                                                                      "learning_rate_actor"] * current_batch_size
@@ -1243,7 +1245,7 @@ class ContinuousPPO(BasePPO):
 
                                self.critic_network.returns_placeholder: np.vstack(return_slice).flatten(),
 
-                               self.critic_network.trainLength: current_batch_size,
+                               self.critic_network.train_length: current_batch_size,
                                self.critic_network.batch_size: 1,
                                })
 
@@ -1265,7 +1267,7 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.old_log_prob_angle_placeholder: log_angle_probability_slice.flatten(),
                                self.actor_network.scaled_advantage_placeholder: np.vstack(advantage_slice).flatten(),
 
-                               self.actor_network.trainLength: current_batch_size,
+                               self.actor_network.train_length: current_batch_size,
                                self.actor_network.batch_size: 1,
                                })
 

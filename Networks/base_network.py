@@ -12,11 +12,11 @@ class BaseNetwork:
         self.num_arms = simulation.fish.left_eye.observation_size  # Rays for each eye
         self.rnn_dim = rnn_dim
 
-        self.trainLength = tf.placeholder(dtype=tf.int32, shape=[], name="train_length")
+        self.train_length = tf.placeholder(dtype=tf.int32, shape=[], name="train_length")
         self.batch_size = tf.placeholder(dtype=tf.int32, shape=[], name='batch_size')
 
-        self.rnn_state_in = rnn_cell.zero_state(self.trainLength, tf.float32)
-        self.rnn_state_in_ref = rnn_cell.zero_state(self.trainLength, tf.float32)
+        self.rnn_state_in = rnn_cell.zero_state(self.train_length, tf.float32)
+        self.rnn_state_in_ref = rnn_cell.zero_state(self.train_length, tf.float32)
 
         # Networks Inputs
         self.prev_actions = tf.placeholder(shape=[None, action_dim], dtype=tf.float32, name='prev_actions')
@@ -64,7 +64,7 @@ class BaseNetwork:
         self.rnn_in = tf.layers.dense(self.conv_with_states, self.rnn_dim, activation=tf.nn.relu,
                                       kernel_initializer=tf.orthogonal_initializer,
                                       trainable=True, name=my_scope + '_rnn_in')
-        self.convFlat = tf.reshape(self.rnn_in, [self.batch_size, self.trainLength, self.rnn_dim],
+        self.convFlat = tf.reshape(self.rnn_in, [self.batch_size, self.train_length, self.rnn_dim],
                                    name="flattened_shared_rnn_input")
 
         self.rnn, self.rnn_state_shared = tf.nn.dynamic_rnn(inputs=self.convFlat, cell=rnn_cell,
@@ -113,7 +113,7 @@ class BaseNetwork:
         self.rnn_in_ref = tf.layers.dense(self.conv_with_states_ref, self.rnn_dim, activation=tf.nn.relu,
                                           kernel_initializer=tf.orthogonal_initializer,
                                           trainable=True, name=my_scope + '_rnn_in', reuse=True)
-        self.convFlat_ref = tf.reshape(self.rnn_in_ref, [self.batch_size, self.trainLength, self.rnn_dim])
+        self.convFlat_ref = tf.reshape(self.rnn_in_ref, [self.batch_size, self.train_length, self.rnn_dim])
 
         self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell,
                                                              dtype=tf.float32,

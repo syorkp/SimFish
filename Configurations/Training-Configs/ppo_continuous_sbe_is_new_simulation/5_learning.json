@@ -11,7 +11,7 @@
     "pre_train_steps": 50000,
     "max_epLength": 1000,
     "time_per_step": 0.03,
-    "summaryLength": 100,
+    "summaryLength": 1,
     "tau": 0.001,
     "rnn_dim_shared": 512,
     "extra_rnn": false,
@@ -86,8 +86,8 @@
         ]
     },
     "modular_network_layers": {},
-    "ops": [
-        [
+    "ops": {
+        "eye_split": [
             "eye_split",
             [
                 "observation"
@@ -97,7 +97,7 @@
                 "right_eye"
             ]
         ],
-        [
+        "flatten1": [
             "flatten",
             [
                 "conv4l"
@@ -106,7 +106,7 @@
                 "conv4l_flat"
             ]
         ],
-        [
+        "flatten2": [
             "flatten",
             [
                 "conv4r"
@@ -115,17 +115,19 @@
                 "conv4r_flat"
             ]
         ],
-        [
+        "join_eyes": [
             "concatenate",
             [
-                "conv4l",
-                "conv4r"
+                "conv4l_flat",
+                "conv4r_flat",
+                "internal_state",
+                "prev_actions"
             ],
             [
                 "conv_with_states"
             ]
         ]
-    ],
+    },
     "connectivity": [
         [
             "full",
