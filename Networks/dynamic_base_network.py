@@ -46,11 +46,19 @@ class DynamicBaseNetwork:
             self.initialize_network(copy.copy(base_network_layers), copy.copy(modular_network_layers), copy.copy(ops), connectivity, self.reflected_network_graph, reflected=True)
 
         # Name the outputs
-        self.rnn_output = self.network_graph["output_layer"]
+        self.processing_network_output = self.network_graph["output_layer"]
+
+        if reflected:
+            self.processing_network_output_ref = self.reflected_network_graph["output_layer"]
+
+        self.initialize_rnn_states(reflected)
+
+    def initialize_rnn_states(self, reflected):
+        # TODO: Set up to work for multiple RNNs.
         self.rnn_state_shared = self.network_graph["optic_tectum_shared"]
         self.rnn_state_in = self.rnn_cell_states["optic_tectum"]
+
         if reflected:
-            self.rnn_output_ref = self.reflected_network_graph["output_layer"]
             self.rnn_state_ref = self.network_graph["optic_tectum_shared"]
             self.rnn_state_in_ref = self.rnn_cell_states["optic_tectum_ref"]
 
@@ -94,14 +102,20 @@ class DynamicBaseNetwork:
                 state_layer_name = layer_name + "_ref"
             else:
                 state_layer_name = layer_name
-            network_graph[layer_input + "_reshaped"] = tf.reshape(self.network_graph[layer_input],
-                                                                  [self.batch_size, self.train_length, layer_parameters[1]])
+            units = layer_parameters[1]
+            self.network_graph[layer_input + "_inputs"] = tf.layers.dense(network_graph[layer_input], units,
+                                                        activation=tf.nn.relu,
+                                                        kernel_initializer=tf.orthogonal_initializer,
+                                                        trainable=True, name=self.scope + "_" + layer_name + "_inputs",
+                                                        reuse=reflected)
+            network_graph[layer_input + "_reshaped"] = tf.reshape(self.network_graph[layer_input + "_inputs"],
+                                                                  [self.batch_size, self.train_length, units])
             network_graph[layer_name + "_dyn"], network_graph[layer_name + "_shared"] = tf.nn.dynamic_rnn(
                 inputs=network_graph[layer_input + "_reshaped"], cell=self.rnn_cells[layer_name],
                 dtype=tf.float32,
                 initial_state=self.rnn_cell_states[state_layer_name],
                 scope=self.scope + "_" + state_layer_name)
-            network_graph[layer_name] = tf.reshape(network_graph[layer_name + "_dyn"], shape=[-1, layer_parameters[1]])
+            network_graph[layer_name] = tf.reshape(network_graph[layer_name + "_dyn"], shape=[-1, units])
         else:
             print(f"Undefined layer: {layer_parameters[0]}")
 
@@ -136,7 +150,7 @@ class DynamicBaseNetwork:
             if layer_to_remove is not None:
                 del layers[layer_to_remove]
 
-            if not layers and not modular_layers and not ops:
+            if not layers and not ops:
                 if not isinstance(final_name, str):
                     final_name = final_name[0]
 
@@ -161,6 +175,7 @@ class DynamicBaseNetwork:
     def create_rnns(self, base_network_layers, modular_network_layers, reflected):
         rnn_units = {}
         rnn_cell_states = {}
+        rnn_dim = None
         layers = {**base_network_layers, **modular_network_layers}
 
         for layer in layers.keys():

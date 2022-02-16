@@ -19,8 +19,8 @@ class PPONetworkActorMultivariate2Dynamic(DynamicBaseNetwork):
 
         #            ----------        Stream Splitting       ---------            #
 
-        self.action_stream, self.value_stream = tf.split(self.rnn_output, 2, 1)
-        self.action_stream_ref, self.value_stream_ref = tf.split(self.rnn_output_ref, 2, 1)
+        self.action_stream, self.value_stream = tf.split(self.processing_network_output, 2, 1)
+        self.action_stream_ref, self.value_stream_ref = tf.split(self.processing_network_output_ref, 2, 1)
 
         if input_sigmas:
             self.impulse_stream, self.angle_stream = tf.split(self.action_stream, 2, 1)

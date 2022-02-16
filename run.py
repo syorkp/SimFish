@@ -1288,38 +1288,6 @@ ppo_data_gathering = [
     },
 ]
 
-phase_1_test_config = [
-    {
-        "Model Name": "dynamic_network_test",
-        "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 1,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": False,
-        "SB Emulator": True,
-        "New Simulation": True
-    },
-]
-
 phase_1_test_config_discrete = [
     {
         "Model Name": "ppo_jade_phase_1_test_discrete",
@@ -1347,6 +1315,38 @@ phase_1_test_config_discrete = [
         "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True
+    },
+]
+
+phase_1_test_config = [
+    {
+        "Model Name": "modular_network_1",
+        "Environment Name": "ppo_continuous_sbe_is_new_simulation",
+        "Trial Number": 1,
+        "Total Configurations": 3,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 6,
+            },
+            "Predators Avoided": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": False,
         "SB Emulator": True,
         "New Simulation": True
     },
