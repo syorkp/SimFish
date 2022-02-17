@@ -1322,7 +1322,7 @@ phase_1_test_config_discrete = [
 
 phase_1_test_config = [
     {
-        "Model Name": "stateless_network",
+        "Model Name": "modular_network_2",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
         "Trial Number": 1,
         "Total Configurations": 3,
@@ -1351,38 +1351,9 @@ phase_1_test_config = [
         "New Simulation": True
     },
     {
-        "Model Name": "stateless_network",
+        "Model Name": "modular_network_2",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
         "Trial Number": 2,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": False,
-        "SB Emulator": True,
-        "New Simulation": True
-    },
-    {
-        "Model Name": "stateless_network",
-        "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 3,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
