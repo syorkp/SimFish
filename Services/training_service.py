@@ -64,6 +64,11 @@ class TrainingService(BaseService):
         # For debugging show mask
         self.visualise_mask = self.environment_params['visualise_mask']
 
+        rnns = [layer for layer in self.learning_params["base_network_layers"].keys() if
+                self.learning_params["base_network_layers"][layer][0] == "dynamic_rnn"] + \
+               [layer for layer in self.learning_params["modular_network_layers"].keys() if
+                self.learning_params["modular_network_layers"][layer][0] == "dynamic_rnn"]
+        self.rnn_in_network = True if len(rnns) > 0 else False
 
     def _run(self):
         self.saver = tf.train.Saver(max_to_keep=5)

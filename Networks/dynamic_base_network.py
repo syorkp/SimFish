@@ -29,6 +29,12 @@ class DynamicBaseNetwork:
         self.reshaped_observation = tf.reshape(self.observation, shape=[-1, self.photoreceptor_num, 3, 2],
                                                name="reshaped_observation")
 
+        # Record of processing step layers
+        self.base_network_layers = base_network_layers
+        self.modular_network_layers = modular_network_layers
+        self.ops = ops
+        self.connectivity = connectivity
+
         self.rnn_cells, self.rnn_cell_states, self.rnn_dim = self.create_rnns(base_network_layers, modular_network_layers, reflected)
 
 
@@ -53,14 +59,23 @@ class DynamicBaseNetwork:
 
         self.initialize_rnn_states(reflected)
 
+    def get_rnn_state_shapes(self):
+        rnn_layers_base = [layer for layer in self.base_network_layers.keys() if self.base_network_layers[layer][0] == "dynamic_rnn"]
+        rnn_layers_modular = [layer for layer in self.modular_network_layers.keys() if self.modular_network_layers[layer][0] == "dynamic_rnn"]
+        layer_sizes = [self.base_network_layers[layer][1] for layer in rnn_layers_base] + [self.modular_network_layers[layer][1] for layer in rnn_layers_modular]
+        return layer_sizes
+
     def initialize_rnn_states(self, reflected):
-        # TODO: Set up to work for multiple RNNs.
-        self.rnn_state_shared = self.network_graph["optic_tectum_shared"]
-        self.rnn_state_in = self.rnn_cell_states["optic_tectum"]
+        rnn_layers_base = [layer for layer in self.base_network_layers.keys() if self.base_network_layers[layer][0] == "dynamic_rnn"]
+        rnn_layers_modular = [layer for layer in self.modular_network_layers.keys() if self.modular_network_layers[layer][0] == "dynamic_rnn"]
+        rnn_layers = rnn_layers_base + rnn_layers_modular
+
+        self.rnn_state_shared = tuple(self.network_graph[layer + "_shared"] for layer in rnn_layers)
+        self.rnn_state_in = tuple(self.rnn_cell_states[layer] for layer in rnn_layers)
 
         if reflected:
-            self.rnn_state_ref = self.network_graph["optic_tectum_shared"]
-            self.rnn_state_in_ref = self.rnn_cell_states["optic_tectum_ref"]
+            self.rnn_state_ref = tuple(self.reflected_network_graph[layer + "_shared"] for layer in rnn_layers)
+            self.rnn_state_in_ref = tuple(self.rnn_cell_states[layer + "_ref"] for layer in rnn_layers)
 
     def perform_op(self, op, network_graph, reflected):
         if op[0] == "eye_split":

@@ -17,7 +17,7 @@ base_network_layers = {
     "conv3r": ['conv1d', 8, 4, 1],
     "conv4r": ['conv1d', 64, 4, 1],
 
-    "rgc": ["dense", 512],  # Units
+    # "rgc": ["dense", 512],  # Units
     "optic_tectum": ["dynamic_rnn", 512],  # Units
 }
 
@@ -46,8 +46,6 @@ connectivity = [
     ["full", ["conv2r", "conv3r"]],
     ["full", ["conv3r", "conv4r"]],
 
-    ["full", ["conv_with_states", "rgc"]],
-    ["full", ["rgc", "optic_tectum"]],
-
+    ["full", ["conv_with_states", "optic_tectum"]],
 ]
 

@@ -35,43 +35,54 @@ class ContinuousPPO(BasePPO):
         actor_cell, internal_states = BasePPO.create_network(self)
 
         if self.multivariate:
-            # self.actor_network = PPONetworkActorMultivariate2(simulation=self.simulation,
-            #                                                   rnn_dim=self.learning_params['rnn_dim_shared'],
-            #                                                   rnn_cell=actor_cell,
-            #                                                   my_scope='actor',
-            #                                                   internal_states=internal_states,
-            #                                                   max_impulse=self.environment_params['max_impulse'],
-            #                                                   max_angle_change=self.environment_params[
-            #                                                       'max_angle_change'],
-            #                                                   clip_param=self.environment_params['clip_param'],
-            #                                                   input_sigmas=self.learning_params['input_sigmas'],
-            #                                                   new_simulation=self.new_simulation,
-            #                                                   impose_action_mask=self.environment_params[
-            #                                                       'impose_action_mask'],
-            #                                                   impulse_scaling=self.environment_params['impulse_scaling'],
-            #                                                   angle_scaling=self.environment_params['angle_scaling'],
-            #                                                   )
-            self.actor_network = PPONetworkActorMultivariate2Dynamic(simulation=self.simulation,
-                                                              rnn_dim=self.learning_params['rnn_dim_shared'],
-                                                              rnn_cell=actor_cell,
-                                                              my_scope='actor',
-                                                              internal_states=internal_states,
-                                                              max_impulse=self.environment_params['max_impulse'],
-                                                              max_angle_change=self.environment_params[
-                                                                  'max_angle_change'],
-                                                              clip_param=self.environment_params['clip_param'],
-                                                              input_sigmas=self.learning_params['input_sigmas'],
-                                                              new_simulation=self.new_simulation,
-                                                              impose_action_mask=self.environment_params[
-                                                                  'impose_action_mask'],
-                                                              impulse_scaling=self.environment_params['impulse_scaling'],
-                                                              angle_scaling=self.environment_params['angle_scaling'],
-                                                              base_network_layers=self.learning_params['base_network_layers'],
-                                                              modular_network_layers=self.learning_params['modular_network_layers'],
-                                                              ops=self.learning_params['ops'],
-                                                              connectivity=self.learning_params['connectivity'],
-                                                              reflected=self.learning_params['reflected'],
-                                                              )
+            if self.new_simulation:
+                self.actor_network = PPONetworkActorMultivariate2Dynamic(simulation=self.simulation,
+                                                                         rnn_dim=self.learning_params['rnn_dim_shared'],
+                                                                         rnn_cell=actor_cell,
+                                                                         my_scope='actor',
+                                                                         internal_states=internal_states,
+                                                                         max_impulse=self.environment_params[
+                                                                             'max_impulse'],
+                                                                         max_angle_change=self.environment_params[
+                                                                             'max_angle_change'],
+                                                                         clip_param=self.environment_params[
+                                                                             'clip_param'],
+                                                                         input_sigmas=self.learning_params[
+                                                                             'input_sigmas'],
+                                                                         new_simulation=self.new_simulation,
+                                                                         impose_action_mask=self.environment_params[
+                                                                             'impose_action_mask'],
+                                                                         impulse_scaling=self.environment_params[
+                                                                             'impulse_scaling'],
+                                                                         angle_scaling=self.environment_params[
+                                                                             'angle_scaling'],
+                                                                         base_network_layers=self.learning_params[
+                                                                             'base_network_layers'],
+                                                                         modular_network_layers=self.learning_params[
+                                                                             'modular_network_layers'],
+                                                                         ops=self.learning_params['ops'],
+                                                                         connectivity=self.learning_params[
+                                                                             'connectivity'],
+                                                                         reflected=self.learning_params['reflected'],
+                                                                         )
+            else:
+                self.actor_network = PPONetworkActorMultivariate2(simulation=self.simulation,
+                                                                  rnn_dim=self.learning_params['rnn_dim_shared'],
+                                                                  rnn_cell=actor_cell,
+                                                                  my_scope='actor',
+                                                                  internal_states=internal_states,
+                                                                  max_impulse=self.environment_params['max_impulse'],
+                                                                  max_angle_change=self.environment_params[
+                                                                      'max_angle_change'],
+                                                                  clip_param=self.environment_params['clip_param'],
+                                                                  input_sigmas=self.learning_params['input_sigmas'],
+                                                                  new_simulation=self.new_simulation,
+                                                                  impose_action_mask=self.environment_params[
+                                                                      'impose_action_mask'],
+                                                                  impulse_scaling=self.environment_params['impulse_scaling'],
+                                                                  angle_scaling=self.environment_params['angle_scaling'],
+                                                                  )
+
             if self.sb_emulator:
                 pass
 
@@ -479,11 +490,31 @@ class ContinuousPPO(BasePPO):
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
 
+        # normal_feed_dict = {self.actor_network.observation: o,
+        #                     self.actor_network.internal_state: internal_state,
+        #                     self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+        #                     self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
+        #                     self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
+        #                     self.actor_network.batch_size: 1,
+        #                     self.actor_network.train_length: 1,
+        #                     }
+        #
+        # rnn_layers = self.actor_network.rnn_cells.keys()
+        # rnn_state_feed_dict = {
+        #     self.actor_network.network_graph[layer]: rnn_state_actor[i] for i, layer in enumerate(rnn_layers)
+        # }
+        # rnn_state_feed_dict_reflected = {
+        #     self.actor_network.reflected_network_graph[layer]: rnn_state_actor_ref[i] for i, layer in enumerate(rnn_layers)
+        # }
+
         impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability = self.sess.run(
             [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.value_output,
              self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
              self.actor_network.neg_log_prob],
              # self.actor_network.action_distribution.preliminary_samples, self.actor_network.action_distribution.probs, self.actor_network.action_distribution.positive_imp],
+
+            # feed_dict= {**normal_feed_dict, **rnn_state_feed_dict, **rnn_state_feed_dict_reflected}
+
 
             feed_dict={self.actor_network.observation: o,
                        self.actor_network.internal_state: internal_state,
