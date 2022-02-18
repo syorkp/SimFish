@@ -82,7 +82,11 @@
         ]
     },
     "modular_network_layers": {
-        "optic_tectum": [
+        "pretectum": [
+            "dynamic_rnn",
+            512
+        ],
+        "deep_brain": [
             "dynamic_rnn",
             512
         ]
@@ -126,22 +130,22 @@
                 "conv_joined"
             ]
         ],
-        "rnn_inputs": [
+        "deep_brain_inputs": [
             "concatenate",
             [
                 "internal_state",
-                "prev_actions",
-                "conv_joined"
+                "prev_actions"
             ],
             [
-                "rnn_inputs"
+                "deep_brain_inputs"
             ]
         ],
         "final_layer_inputs": [
             "concatenate",
             [
                 "conv_joined",
-                "optic_tectum"
+                "pretectum",
+                "deep_brain"
             ],
             [
                 "final_layer_inputs"
@@ -208,8 +212,15 @@
         [
             "full",
             [
-                "rnn_inputs",
-                "optic_tectum"
+                "deep_brain_inputs",
+                "deep_brain"
+            ]
+        ],
+        [
+            "full",
+            [
+                "conv_joined",
+                "pretectum"
             ]
         ],
         [
