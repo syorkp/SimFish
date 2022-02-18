@@ -59,6 +59,8 @@ class BasePPOBuffer:
             self.critic_conv3r_buffer = []
             self.critic_conv4r_buffer = []
 
+            self.rnn_layer_names = []
+
     def reset(self):
         self.action_buffer = []
         self.observation_buffer = []

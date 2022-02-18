@@ -559,37 +559,40 @@ class Eye:
 
         if self.env_variables["shot_noise"]:
             photons = self.chosen_math_library.random.poisson(readings)
-
-            # paramecia_pixels = readings[readings[:, 1] > 0, 1]
-            # paramecia_readings = photons[readings[:, 1] > 0, 1]
-            # noise = np.absolute(paramecia_readings - paramecia_pixels)
-            # snr = np.mean(1-np.absolute(noise/(paramecia_pixels+noise)))
-            # self.snr.append(snr)
-            # print(f"SNR for paramecia {np.mean(1-np.absolute(noise/paramecia_pixels))}")
-
-            if photons.shape[1] == 1:
-                uv_set_to_zero = self.chosen_math_library.sum(((photons[:, 0] == 0) * (readings[:, 0] > 0)))
-                num_uv = self.chosen_math_library.sum((readings[:, 0] > 0) * 1)
-                self.uv_signal_fail.append(np.array([uv_set_to_zero/num_uv])[0])
-                # print(f"UV points set to zero: {self.chosen_math_library.sum(uv_set_to_zero)}, of {num_uv}")
-
-            else:
-                red_set_to_zero = self.chosen_math_library.sum(((photons[:, 0] == 0) * (readings[:, 0] > 0)))
-                num_red = self.chosen_math_library.sum((readings[:, 0] > 0)*1)
-                self.red_signal_fail.append(np.array([red_set_to_zero/num_red])[0])
-
-                red2_set_to_zero = self.chosen_math_library.sum(((photons[:, 1] == 0) * (readings[:, 1] > 0)))
-                num_red2 = self.chosen_math_library.sum((readings[:, 1] > 0)*1)
-                self.red2_signal_fail.append(np.array([red2_set_to_zero/num_red2])[0])
-
-                # print(f"Red points set to zero: {self.chosen_math_library.sum(red_set_to_zero)}, of {num_red}")
-                # print(f"Red2 points set to zero: {self.chosen_math_library.sum(red2_set_to_zero)}, of {num_red2}")
+            # shot_noise_difference = self.chosen_math_library.abs(readings - photons)
         else:
             photons = readings
 
+        # print(f"Prey photons: {np.max(readings)}")
+
         if self.env_variables['read_noise_sigma'] > 0:
-            noise = np.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
+            noise = self.chosen_math_library.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
             photons += noise.astype(int)
+            photons = self.chosen_math_library.clip(photons, 0, 255)
+
+        # noise = shot_noise_difference + self.chosen_math_library.abs(noise)
+        # mean_signal = self.chosen_math_library.sum(readings, axis=0)
+        # noise = noise * (readings > 0) * 1
+        # mean_noise = self.chosen_math_library.sum(noise, axis=0)
+        # snr = mean_signal/mean_noise
+        # if photons.shape[1] == 1:
+        #     # uv_set_to_zero = self.chosen_math_library.sum(((photons[:, 0] == 0) * (readings[:, 0] > 0)))
+        #     # num_uv = self.chosen_math_library.sum((readings[:, 0] > 0) * 1)
+        #     # self.uv_signal_fail.append(np.array([uv_set_to_zero / num_uv])[0])
+        #     self.uv_signal_fail.append(snr)
+        # else:
+        #     # red_set_to_zero = self.chosen_math_library.sum(((photons[:, 0] == 0) * (readings[:, 0] > 0)))
+        #     # num_red = self.chosen_math_library.sum((readings[:, 0] > 0) * 1)
+        #     # self.red_signal_fail.append(np.array([red_set_to_zero / num_red])[0])
+        #
+        #     self.red_signal_fail.append(snr[0])
+        #
+        #     # red2_set_to_zero = self.chosen_math_library.sum(((photons[:, 1] == 0) * (readings[:, 1] > 0)))
+        #     # num_red2 = self.chosen_math_library.sum((readings[:, 1] > 0) * 1)
+        #     # self.red2_signal_fail.append(np.array([red2_set_to_zero / num_red2])[0])
+        #
+        #     self.red2_signal_fail.append(snr[1])
+
 
         if self.env_variables["isomerization_frequency"] > 0:
             dark_noise_events = self.chosen_math_library.random.choice([0, 1], size=readings.size,

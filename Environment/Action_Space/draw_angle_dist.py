@@ -86,6 +86,8 @@ def draw_angle_dist(bout_id):
         return chosen_angle, chosen_dist
 
 
+# display_pdf_and_cdf(0)
+
 # for i in range(0, 13):
 #     display_pdf_and_cdf(i)
 #     print(i)

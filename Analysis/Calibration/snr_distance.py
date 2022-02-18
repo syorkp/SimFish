@@ -27,7 +27,7 @@ np_load_old = np.load
 np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
 
 
-file = "SNR/SNR7"
+file = "SNR/SNR9"
 
 with open(f'{file}/distances2.npy', 'rb') as outfile:
     distances = np.load(outfile)
@@ -55,7 +55,7 @@ with open(f'{file}/red2_fail_right.npy', 'rb') as outfile:
 # distances = distances.flatten()
 
 # Red
-if file != "SNR":
+if file != "SNR/SNR9":
     red_fail_left = np.array([i.get() for i in red_fail_left])
     red_fail_right = np.array([i.get() for i in red_fail_right])
     uv_fail_left = np.array([i.get() for i in uv_fail_left])
@@ -96,6 +96,8 @@ plt.plot(distances1, p(distances1), c="r")
 plt.scatter(distances1, red_fail_left, alpha=0.2)
 plt.show()
 
+uv_fail_left = uv_fail_left[:, 0]
+uv_fail_right = uv_fail_right[:, 0]
 
 # UV
 

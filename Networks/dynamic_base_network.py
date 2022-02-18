@@ -70,6 +70,8 @@ class DynamicBaseNetwork:
         rnn_layers_modular = [layer for layer in self.modular_network_layers.keys() if self.modular_network_layers[layer][0] == "dynamic_rnn"]
         rnn_layers = rnn_layers_base + rnn_layers_modular
 
+        self.rnn_layer_names = rnn_layers
+
         self.rnn_state_shared = tuple(self.network_graph[layer + "_shared"] for layer in rnn_layers)
         self.rnn_state_in = tuple(self.rnn_cell_states[layer] for layer in rnn_layers)
 

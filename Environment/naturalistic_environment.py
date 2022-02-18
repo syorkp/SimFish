@@ -85,7 +85,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         # #     np.save(f, self.fish.left_eye.snr)
         # # with open("snrs_right.npy", "wb") as f:
         # #     np.save(f, self.fish.right_eye.snr)
-        # with open("Analysis/Calibration/SNR/red_fail_left.npy", "wb") as f:
+        # with open("Analysis/Calibraton/SNR/red_fail_left.npy", "wb") as f:
         #     np.save(f, self.fish.left_eye.red_signal_fail)
         # with open("Analysis/Calibration/SNR/red_fail_right.npy", "wb") as f:
         #     np.save(f, self.fish.right_eye.red_signal_fail)
@@ -306,8 +306,8 @@ class NaturalisticEnvironment(BaseEnvironment):
         # self.plot_observation(observation)
         distance = ((self.fish.body.position[0]-self.prey_bodies[-1].position[0])**2 +
                     (self.fish.body.position[1]-self.prey_bodies[-1].position[1])**2) ** 0.5
-
-        self.paramecia_distances.append(distance)
+        # print(f"Prey Distance: {distance}\n")
+        # self.paramecia_distances.append(distance)
 
         if self.using_gpu:
             return observation.get(), frame_buffer

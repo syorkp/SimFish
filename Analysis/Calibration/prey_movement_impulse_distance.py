@@ -41,7 +41,11 @@ class TestEnvironment:
         self.space.damping = self.env_variables['drag']
 
     def create_prey(self, prey_position=None):
-        self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
+
+        inertia = pymunk.moment_for_circle(140., 0, 2.5, (0, 0))
+        self.prey_bodies.append(pymunk.Body(1., inertia))
+
+        # self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
         self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_size']))
         self.prey_shapes[-1].elasticity = 1.0
         self.prey_bodies[-1].position = prey_position
@@ -112,17 +116,23 @@ class TestEnvironment:
     def move_predator(self):
         self.predator_bodies[0].apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
 
-    def run(self, num_sim_steps=500):
-        # self.create_prey([100, 100])
-
-        self.create_predator([100, 100])
-
+    def run(self, num_sim_steps=200):
+        self.create_prey([100, 100])
+        import matplotlib.pyplot as plt
+        # self.create_predator([100, 100])
+        self.prey_bodies[0].apply_impulse_at_local_point((2.97, 0))
+        position = []
         for micro_step in range(num_sim_steps):
             # self._move_prey_new()
-            self.move_predator()
+            # self.move_predator()
+            position.append(np.array(self.prey_bodies[0].position))
             self.space.step(self.env_variables['phys_dt'])
-
-        print(self.predator_bodies[0].position)
+        position = np.array(position)
+        distance = position - np.array([100, 100])
+        distance = (distance[:, 0] ** 2 + distance[:, 1] ** 2) ** 0.5
+        plt.plot(distance)
+        plt.show()
+        print(self.prey_bodies[0].position)
 
 
 env = TestEnvironment()

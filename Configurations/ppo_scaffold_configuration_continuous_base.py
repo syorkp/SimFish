@@ -58,10 +58,10 @@ env = {'width': 1500,  # arena size
        'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
-       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.1,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
-       'read_noise_sigma': 0,  # gaussian noise added to photon count. Formerly 5.
+       'read_noise_sigma': 10,  # gaussian noise added to photon count. Formerly 5.
        'photon_ratio': 100,  # expected number of photons for unit brightness
        'bkg_scatter': 0.3,  # base brightness of the background
        'dark_gain': 0.02,  # gai nof brightness in the dark side
@@ -132,14 +132,9 @@ env = {'width': 1500,  # arena size
        'background_grating_frequency': 50,
 
        # # Observation scaling factors (to set CNN inputs into 0 to 255 range):
-       # 'red_scaling_factor': 0.5,  # max was 100 without scaling
-       # 'uv_scaling_factor': 3,  # max was 40 without scaling
-       # 'red_2_scaling_factor': 0.018,  # max was 12000 without scaling
-
-       # Observation scaling factors (to set visual discrimination distance based on shot noise - divided all by 5) TODO: Note, if using same for all should switch to being the light gain, so this sets the full visual discrimination distance.
-       'red_scaling_factor': 0.001,  # max was 100 without scaling
-       'uv_scaling_factor': 0.01,  # max was 40 without scaling
-       'red_2_scaling_factor': 0.00001,  # max was 12000 without scaling
+       'red_scaling_factor': 0.5,  # max was 100 without scaling
+       'uv_scaling_factor': 3,  # max was 40 without scaling
+       'red_2_scaling_factor': 0.018,  # max was 12000 without scaling
 
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
 
