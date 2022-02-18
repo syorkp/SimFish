@@ -76,12 +76,17 @@
             4,
             1
         ],
+        "rgc": [
+            "dense",
+            512
+        ]
+    },
+    "modular_network_layers": {
         "optic_tectum": [
             "dynamic_rnn",
             512
         ]
     },
-    "modular_network_layers": {},
     "ops": {
         "eye_split": [
             "eye_split",
@@ -115,12 +120,31 @@
             "concatenate",
             [
                 "conv4l_flat",
-                "conv4r_flat",
-                "internal_state",
-                "prev_actions"
+                "conv4r_flat"
             ],
             [
-                "conv_with_states"
+                "conv_joined"
+            ]
+        ],
+        "rnn_inputs": [
+            "concatenate",
+            [
+                "internal_state",
+                "prev_actions",
+                "conv_joined"
+            ],
+            [
+                "rnn_inputs"
+            ]
+        ],
+        "final_layer_inputs": [
+            "concatenate",
+            [
+                "conv_joined",
+                "optic_tectum"
+            ],
+            [
+                "final_layer_inputs"
             ]
         ]
     },
@@ -184,8 +208,15 @@
         [
             "full",
             [
-                "conv_with_states",
+                "rnn_inputs",
                 "optic_tectum"
+            ]
+        ],
+        [
+            "full",
+            [
+                "final_layer_inputs",
+                "rgc"
             ]
         ]
     ]
