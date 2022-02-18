@@ -228,7 +228,7 @@ env = {'width': 1500,  # arena size
        }
 
 
-from Networks.modular_network_2 import connectivity, reflected, base_network_layers, modular_network_layers, ops
+from Networks.original_network import connectivity, reflected, base_network_layers, modular_network_layers, ops
 
 params = {'num_actions': 10,  # size of action space
           'batch_size': 1,  # How many experience traces to use for each training step.
