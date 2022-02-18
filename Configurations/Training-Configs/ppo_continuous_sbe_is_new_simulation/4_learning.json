@@ -76,21 +76,12 @@
             4,
             1
         ],
-        "rgc": [
-            "dense",
-            512
-        ]
-    },
-    "modular_network_layers": {
-        "pretectum": [
-            "dynamic_rnn",
-            512
-        ],
-        "deep_brain": [
+        "optic_tectum": [
             "dynamic_rnn",
             512
         ]
     },
+    "modular_network_layers": {},
     "ops": {
         "eye_split": [
             "eye_split",
@@ -124,31 +115,12 @@
             "concatenate",
             [
                 "conv4l_flat",
-                "conv4r_flat"
-            ],
-            [
-                "conv_joined"
-            ]
-        ],
-        "deep_brain_inputs": [
-            "concatenate",
-            [
+                "conv4r_flat",
                 "internal_state",
                 "prev_actions"
             ],
             [
-                "deep_brain_inputs"
-            ]
-        ],
-        "final_layer_inputs": [
-            "concatenate",
-            [
-                "conv_joined",
-                "pretectum",
-                "deep_brain"
-            ],
-            [
-                "final_layer_inputs"
+                "conv_with_states"
             ]
         ]
     },
@@ -212,22 +184,8 @@
         [
             "full",
             [
-                "deep_brain_inputs",
-                "deep_brain"
-            ]
-        ],
-        [
-            "full",
-            [
-                "conv_joined",
-                "pretectum"
-            ]
-        ],
-        [
-            "full",
-            [
-                "final_layer_inputs",
-                "rgc"
+                "conv_with_states",
+                "optic_tectum"
             ]
         ]
     ]
