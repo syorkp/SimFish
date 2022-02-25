@@ -22,9 +22,6 @@ class TrainingService(BaseService):
                  config_name, realistic_bouts, continuous_actions, new_simulation, model_exists, episode_transitions,
                  total_configurations, conditional_transitions, configuration_index, full_logs):
 
-        # TODO: Random seed Remove!
-        # np.random.seed(404)
-
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                          config_name, realistic_bouts, continuous_actions, new_simulation)
 

@@ -1,5 +1,6 @@
 import json
 import cProfile
+import numpy as np
 import os
 
 import tensorflow.compat.v1 as tf
@@ -88,4 +89,6 @@ class BaseService:
             params = json.load(f)
         with open(f"{self.current_configuration_location}_env.json", 'r') as f:
             env = json.load(f)
+
+
         return params, env

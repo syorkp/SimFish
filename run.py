@@ -1344,41 +1344,41 @@ phase_1_test_config = [
         "Continuous Actions": True,
         "Learning Algorithm": "PPO",
         "Priority": 1,
-        "Using GPU": True,
+        "Using GPU": False,
         "monitor gpu": False,
         "Full Logs": False,
         "SB Emulator": True,
         "New Simulation": True
     },
-    {
-        "Model Name": "stateless_network",
-        "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 2,
-        "Total Configurations": 3,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 6,
-            },
-            "Predators Avoided": {
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": False,
-        "SB Emulator": True,
-        "New Simulation": True
-    },
+    # {
+    #     "Model Name": "stateless_network",
+    #     "Environment Name": "ppo_continuous_sbe_is_new_simulation",
+    #     "Trial Number": 2,
+    #     "Total Configurations": 3,
+    #     "Episode Transitions": {
+    #     },
+    #     "Conditional Transitions": {
+    #         "Prey Caught": {
+    #             "2": 5,
+    #             "3": 6,
+    #         },
+    #         "Predators Avoided": {
+    #         },
+    #         "Sand Grains Bumped": {
+    #         }
+    #     },
+    #     "Run Mode": "Training",
+    #     "Tethered": False,
+    #     "Realistic Bouts": True,
+    #     "Continuous Actions": True,
+    #     "Learning Algorithm": "PPO",
+    #     "Priority": 1,
+    #     "Using GPU": True,
+    #     "monitor gpu": False,
+    #     "Full Logs": False,
+    #     "SB Emulator": True,
+    #     "New Simulation": True
+    # },
 ]
 
 

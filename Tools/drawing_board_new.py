@@ -12,7 +12,7 @@ class NewDrawingBoard:
 
     def __init__(self, width, height, decay_rate, photoreceptor_rf_size, using_gpu, visualise_mask, prey_size=4,
                  predator_size=100, visible_scatter=0.3, background_grating_frequency=50, dark_light_ratio=0.0,
-                 dark_gain=0.01):
+                 dark_gain=0.01, light_gain=1.0):
 
         self.using_gpu = using_gpu
 
@@ -24,13 +24,14 @@ class NewDrawingBoard:
         self.width = width
         self.height = height
         self.decay_rate = decay_rate
+        self.light_gain = light_gain
         self.photoreceptor_rf_size = photoreceptor_rf_size
         self.db = None
         self.base_db = self.get_base_arena()
         self.base_db_illuminated = self.get_base_arena(visible_scatter)
         self.background_grating = self.get_background_grating(background_grating_frequency)
         self.luminance_mask = self.get_luminance_mask(dark_light_ratio, dark_gain)
-        self.erase()
+        self.erase(visible_scatter)
 
         self.prey_size = prey_size * 2
         self.prey_radius = prey_size
@@ -379,8 +380,10 @@ class NewDrawingBoard:
         full_set = self.chosen_math_library.vstack((set_1, set_2)).astype(int)
 
         full_set = full_set.reshape(-1, 2)
-        self.empty_mask[full_set[:, 1], full_set[:, 0]] = 0
-
+        try:
+            self.empty_mask[full_set[:, 1], full_set[:, 0]] = 0
+        except IndexError:
+            x = True
 
         # For debugging:
         # try:
@@ -636,6 +639,7 @@ class NewDrawingBoard:
         dark_field_length = int(self.width * dark_light_ratio)
         luminance_mask = self.chosen_math_library.ones((self.width, self.height, 1))
         luminance_mask[:dark_field_length, :, :] *= dark_gain
+        luminance_mask[dark_field_length:, :, :] *= self.light_gain
         return luminance_mask
 
     def get_masked_pixels(self, fish_position, prey_locations, predator_locations):
@@ -683,6 +687,7 @@ class NewDrawingBoard:
                 print("Incorrect mask selected for saving")
             if self.using_gpu:
                 self.mask_buffer_time_point = self.mask_buffer_time_point.get()
+
         return AB * L * O * S
 
     def compute_n(self, angular_size, number_of_this_feature, max_separation=1):
@@ -713,7 +718,7 @@ class NewDrawingBoard:
         if bkg == 0:
             db = self.chosen_math_library.zeros((self.height, self.width, 3), dtype=np.double)
         else:
-            db = self.chosen_math_library.ones((self.height, self.width, 3), dtype=np.double) * bkg
+            db = (self.chosen_math_library.ones((self.height, self.width, 3), dtype=np.double) * bkg)/self.light_gain
         db[1:2, :] = self.chosen_math_library.array([1, 0, 0])
         db[self.width - 2:self.width - 1, :] = self.chosen_math_library.array([1, 0, 0])
         db[:, 1:2] = self.chosen_math_library.array([1, 0, 0])

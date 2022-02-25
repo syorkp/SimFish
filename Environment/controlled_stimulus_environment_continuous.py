@@ -110,7 +110,7 @@ class ControlledStimulusEnvironmentContinuous(BaseEnvironment):
             if self.fish.touched_edge:
                 self.fish.touched_edge = False
             if self.show_all:
-                self.board.erase()
+                self.board.erase(bkg=self.env_variables['bkg_scatter'])
                 self.draw_shapes()
                 if self.draw_screen:
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5)/255.)
@@ -121,7 +121,7 @@ class ControlledStimulusEnvironmentContinuous(BaseEnvironment):
         self.fish.body.velocity = (0, 0)
 
         self.num_steps += 1
-        self.board.erase()
+        self.board.erase(bkg=self.env_variables['bkg_scatter'])
         self.draw_shapes()
 
         right_eye_pos = (-np.cos(np.pi/2-self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],

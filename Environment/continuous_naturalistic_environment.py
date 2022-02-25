@@ -9,7 +9,7 @@ from Environment.Fish.continuous_fish import ContinuousFish
 class ContinuousNaturalisticEnvironment(NaturalisticEnvironment):
 
     def __init__(self, env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen=False, fish_mass=None, collisions=True):
-
+        np.random.seed(404)
         super().__init__(env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen, fish_mass, collisions)
 
         # Create the fish class instance and add to the space.
@@ -59,6 +59,7 @@ class ContinuousNaturalisticEnvironment(NaturalisticEnvironment):
         super().reset()
 
     def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None, impulse=None):
+        np.random.seed(404)
         self.fish.making_capture = True
         # print(f"{self.num_steps}: {np.array(self.fish.body.position)}")
         return super().simulation_step(action, save_frames, frame_buffer, activations, impulse)

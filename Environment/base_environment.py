@@ -14,10 +14,20 @@ class BaseEnvironment:
     environment classes."""
 
     def __init__(self, env_variables, draw_screen, new_simulation, using_gpu):
+        np.random.seed(404) # TODO: Remove
         self.new_simulation = new_simulation
 
         self.env_variables = env_variables
         if self.new_simulation:
+            # Rescale bkg_scatter to avoid disruption for larger fields
+
+            model = np.poly1d([1.32283913e-18, -4.10522256e-14, 4.92470049e-10, -2.86744090e-06, 8.22376164e-03,
+                               4.07923942e-01])  # TODO: Keep parameters updated
+            self.env_variables["bkg_scatter"] = self.env_variables["bkg_scatter"] / (
+                        model(self.env_variables["width"]) / model(1500))
+            print(f"New bkg scatter: {self.env_variables['bkg_scatter']}")
+
+
             max_photoreceptor_rf_size = max([self.env_variables['uv_photoreceptor_rf_size'],
                                              self.env_variables['red_photoreceptor_rf_size']])
             self.board = NewDrawingBoard(self.env_variables['width'], self.env_variables['height'],
@@ -30,7 +40,8 @@ class BaseEnvironment:
                                          background_grating_frequency=self.env_variables[
                                              'background_grating_frequency'],
                                          dark_light_ratio=self.env_variables['dark_light_ratio'],
-                                         dark_gain=self.env_variables['dark_gain'])
+                                         dark_gain=self.env_variables['dark_gain'],
+                                         light_gain=self.env_variables['light_gain'])
         else:
             self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])
         self.draw_screen = draw_screen
@@ -494,9 +505,9 @@ class BaseEnvironment:
         else:
             return False
 
-    def move_prey(self):
+    def move_prey(self, micro_step):
         if self.new_simulation:
-            self._move_prey_new()
+            self._move_prey_new(micro_step)
         else:
             self._move_prey()
 
@@ -516,7 +527,7 @@ class BaseEnvironment:
                 self.prey_bodies[to_move[ii]].angle = self.prey_bodies[to_move[ii]].angle + adjustment
                 self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_impulse'], 0))
 
-    def _move_prey_new(self):
+    def _move_prey_new(self, micro_step):
         gaits_to_switch = np.random.choice([0, 1], len(self.prey_shapes),
                                            p=[1 - self.env_variables["p_switch"], self.env_variables["p_switch"]])
         switch_to = np.random.choice([0, 1, 2], len(self.prey_shapes),
@@ -529,19 +540,32 @@ class BaseEnvironment:
         impulse_types = [0, self.env_variables["slow_speed_paramecia"], self.env_variables["fast_speed_paramecia"]]
         impulses = [impulse_types[gait] for gait in self.paramecia_gaits]
 
-        # Angles of change - can generate as same for all.
-        angle_changes = np.random.uniform(-self.env_variables['prey_max_turning_angle'],
-                                          self.
-                                          env_variables['prey_max_turning_angle'],
-                                          len(self.prey_shapes))
+        if micro_step == 0:
+            # Angles of change
+            angle_changes = np.random.uniform(-self.env_variables['prey_max_turning_angle'],
+                                              self.env_variables['prey_max_turning_angle'],
+                                              len(self.prey_shapes))
+
+            # Large angle changes
+            large_turns = np.random.uniform(-np.pi, np.pi, len(self.prey_shapes))
+            turns_implemented = np.random.choice([0, 1], len(self.prey_shapes), p=[1-self.env_variables["p_reorient"],
+                                                                                   self.env_variables["p_reorient"]])
+            angle_changes = angle_changes + (large_turns * turns_implemented)
 
         for i, prey_body in enumerate(self.prey_bodies):
             if self.check_proximity(prey_body.position, self.env_variables['prey_sensing_distance']):
                 # Motion from fluid dynamics
                 if self.env_variables["prey_fluid_displacement"]:
+                    distance_vector = prey_body.position - self.fish.body.position
+                    distance = (distance_vector[0] ** 2 + distance_vector[1] ** 2) ** 0.5
+                    distance_scaling = np.exp(-distance)
+
                     original_angle = copy.copy(prey_body.angle)
                     prey_body.angle = self.fish.body.angle + np.random.uniform(-1, 1)
-                    prey_body.apply_impulse_at_local_point((self.get_last_action_magnitude(), 0))
+                    impulse_for_prey = (self.get_last_action_magnitude()/self.env_variables["known_max_fish_i"]) * \
+                                        self.env_variables["displacement_scaling_factor"] * distance_scaling
+
+                    prey_body.apply_impulse_at_local_point((impulse_for_prey, 0))
                     prey_body.angle = original_angle
 
                 # Motion from prey escape
@@ -551,7 +575,9 @@ class BaseEnvironment:
                     prey_body.apply_impulse_at_local_point((self.env_variables["jump_speed_paramecia"], 0))
 
             else:
-                prey_body.angle = prey_body.angle + angle_changes[i]
+                if micro_step == 0:
+                    prey_body.angle = prey_body.angle + angle_changes[i]
+
                 prey_body.apply_impulse_at_local_point((impulses[i], 0))
 
     def touch_prey(self, arbiter, space, data):
@@ -561,6 +587,7 @@ class BaseEnvironment:
             return self.touch_prey_old(arbiter, space, data)
 
     def touch_prey_new(self, arbiter, space, data):
+        return
         valid_capture = False
 
         if self.fish.capture_possible:

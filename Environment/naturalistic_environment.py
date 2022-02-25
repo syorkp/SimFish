@@ -33,6 +33,8 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.paramecia_distances = []
 
     def reset(self):
+        np.random.seed(404) # TODO: Remove
+
         # print(f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
         # print(f"Mean UV: {sum([i[1] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
         # print(f"Mean R2: {sum([i[2] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -155,7 +157,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.create_realistic_predator()
 
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
-            self.move_prey()
+            self.move_prey(micro_step)
             self.displace_sand_grains()
             if self.new_simulation:
                 if self.env_variables["current_setting"]:
@@ -184,7 +186,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.fish.touched_predator = False
 
             if self.show_all:
-                self.board.erase()
+                self.board.erase(bkg=self.env_variables['bkg_scatter'])
                 self.draw_shapes()
                 if self.draw_screen:
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5) / 255.)
@@ -224,7 +226,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                         self.remove_prey(i)
 
         self.num_steps += 1
-        self.board.erase()
+        self.board.erase(bkg=self.env_variables['bkg_scatter'])
         self.draw_shapes()
 
         # Calculate internal state

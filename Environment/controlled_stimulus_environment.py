@@ -110,7 +110,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
             if self.fish.touched_edge:
                 self.fish.touched_edge = False
             if self.show_all:
-                self.board.erase()
+                self.board.erase(bkg=self.env_variables['bkg_scatter'])
                 self.draw_shapes()
                 if self.draw_screen:
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5)/255.)
@@ -125,7 +125,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.fish.body.velocity = (0, 0)
 
         self.num_steps += 1
-        self.board.erase()
+        self.board.erase(bkg=self.env_variables['bkg_scatter'])
         self.draw_shapes()
 
         # Calculate internal state

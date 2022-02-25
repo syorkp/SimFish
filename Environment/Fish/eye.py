@@ -115,7 +115,6 @@ class Eye:
         self.uv_signal_fail = []
         self.red2_signal_fail = []
 
-
     def get_repeated_computations(self):
         if self.shared_photoreceptor_channels:
             channel_angles_surrounding = self.chosen_math_library.expand_dims(self.photoreceptor_angles, 1)
@@ -254,7 +253,7 @@ class Eye:
                                                   self.env_variables['red_scaling_factor'],
                                                   self.env_variables['uv_scaling_factor'],
                                                   self.env_variables['red_2_scaling_factor'])
-            # self.readings = self.add_noise_to_readings(scaled_readings)
+            self.readings = self.add_noise_to_readings(scaled_readings)
             self.readings = scaled_readings
 
         else:
@@ -293,6 +292,7 @@ class Eye:
             uv_readings_scaled = self.scale_readings(uv_readings,
                                                      self.env_variables['uv_scaling_factor'])
             self.uv_readings = self.add_noise_to_readings(uv_readings_scaled)
+
             red_readings_scaled = self.scale_readings(red_readings,
                                                       self.env_variables['red_scaling_factor'],
                                                       self.env_variables['red_2_scaling_factor'])
@@ -303,6 +303,7 @@ class Eye:
             else:
                 self.readings = self.chosen_math_library.concatenate(
                     (self.red_readings[:, 0:1], self.uv_readings, self.red_readings[:, 1:]), axis=1)
+            x = True
 
     def _read(self, masked_arena_pixels, eye_x, eye_y, channel_angles_surrounding, n_channels):
         """Lines method to return pixel sum for all points for each photoreceptor, over its segment."""
@@ -556,40 +557,26 @@ class Eye:
 
     def add_noise_to_readings(self, readings):
         """As specified, adds shot, read, and/or dark noise to readings."""
-
         if self.env_variables["shot_noise"]:
             photons = self.chosen_math_library.random.poisson(readings)
-            # shot_noise_difference = self.chosen_math_library.abs(readings - photons)
+            shot_noise_difference = self.chosen_math_library.abs(readings - photons)
+            snr = 1 - np.mean(shot_noise_difference/(photons+1), axis=1)
         else:
             photons = readings
-
-        # print(f"Prey photons: {np.max(readings)}")
 
         if self.env_variables['read_noise_sigma'] > 0:
             noise = self.chosen_math_library.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
             photons += noise.astype(int)
             photons = self.chosen_math_library.clip(photons, 0, 255)
 
-        # noise = shot_noise_difference + self.chosen_math_library.abs(noise)
-        # mean_signal = self.chosen_math_library.sum(readings, axis=0)
-        # noise = noise * (readings > 0) * 1
-        # mean_noise = self.chosen_math_library.sum(noise, axis=0)
-        # snr = mean_signal/mean_noise
         # if photons.shape[1] == 1:
-        #     # uv_set_to_zero = self.chosen_math_library.sum(((photons[:, 0] == 0) * (readings[:, 0] > 0)))
-        #     # num_uv = self.chosen_math_library.sum((readings[:, 0] > 0) * 1)
-        #     # self.uv_signal_fail.append(np.array([uv_set_to_zero / num_uv])[0])
+        #     print(f"Max photons: {np.max(readings[:, 0])}")
+        #
         #     self.uv_signal_fail.append(snr)
         # else:
-        #     # red_set_to_zero = self.chosen_math_library.sum(((photons[:, 0] == 0) * (readings[:, 0] > 0)))
-        #     # num_red = self.chosen_math_library.sum((readings[:, 0] > 0) * 1)
-        #     # self.red_signal_fail.append(np.array([red_set_to_zero / num_red])[0])
         #
         #     self.red_signal_fail.append(snr[0])
         #
-        #     # red2_set_to_zero = self.chosen_math_library.sum(((photons[:, 1] == 0) * (readings[:, 1] > 0)))
-        #     # num_red2 = self.chosen_math_library.sum((readings[:, 1] > 0) * 1)
-        #     # self.red2_signal_fail.append(np.array([red2_set_to_zero / num_red2])[0])
         #
         #     self.red2_signal_fail.append(snr[1])
 
@@ -757,6 +744,9 @@ class Eye:
             else:
                 uv_readings = self.uv_readings
                 red_readings = self.red_readings
+
+            uv_readings = uv_readings.astype(float)
+            red_readings = red_readings.astype(float)
 
             red_field = self.chosen_math_library.array(resize(red_readings[:, 0:1], (self.env_variables['minimum_observation_size'], 1)))
             uv = self.chosen_math_library.array(resize(uv_readings, (self.env_variables['minimum_observation_size'], 1)))

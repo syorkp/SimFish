@@ -36,7 +36,7 @@ env = {'width': 1500,  # arena size
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
-       'prey_max_turning_angle': 0.1,  # Max angle change every 2ms in pi radians
+       'prey_max_turning_angle': 0.1,  # Max angle change every 2ms in pi radians - This is the turn that happens every step, designed to replicate linear wavy movement.
        'prey_jump': False,
        'differential_prey': False,
        'prey_cloud_num': 2,
@@ -61,10 +61,10 @@ env = {'width': 1500,  # arena size
        'probability_of_predator': 0.1,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
-       'read_noise_sigma': 10,  # gaussian noise added to photon count. Formerly 5.
+       'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'photon_ratio': 100,  # expected number of photons for unit brightness
-       'bkg_scatter': 0.3,  # base brightness of the background
-       'dark_gain': 0.02,  # gai nof brightness in the dark side
+       'bkg_scatter': 0.01,  # base brightness of the background
+       'dark_gain': 0.02,  # gain of brightness in the dark side
        'light_gain': 1.,  # gain of brightness in the bright side
 
        'forward_swim_cost': 3,
@@ -132,13 +132,14 @@ env = {'width': 1500,  # arena size
        'background_grating_frequency': 50,
 
        # # Observation scaling factors (to set CNN inputs into 0 to 255 range):
-       'red_scaling_factor': 0.5,  # max was 100 without scaling
-       'uv_scaling_factor': 3,  # max was 40 without scaling
+       'red_scaling_factor': 1,  # max was 100 without scaling
+       'uv_scaling_factor': 1,  # max was 40 without scaling
        'red_2_scaling_factor': 0.018,  # max was 12000 without scaling
 
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
 
        'displacement_scaling_factor': 0.005,  # Multiplied by previous impulse size to cause displacement of nearby features.
+       'known_max_fish_i': 30,
 
        # For new energy state system
        'ci': 0.01,
@@ -183,16 +184,17 @@ env = {'width': 1500,  # arena size
        'p_fast': 0.1,
        'p_escape': 0.5,
        'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
+       'p_reorient': 0.001,
        'slow_speed_paramecia': 0.0037,  # Impulse to generate 0.5mms-1 for given prey mass
        'fast_speed_paramecia': 0.0074,  # Impulse to generate 1.0mms-1 for given prey mass
        'jump_speed_paramecia': 0.074,  # Impulse to generate 10.0mms-1 for given prey mass
        'prey_fluid_displacement': True,
 
        # Motor effect noise (for continuous)
-       'impulse_effect_noise_sd': 0.01,
-       'angle_effect_noise_sd': 0.01,
-       'impulse_effect_noise_scaling': 0.0,  # Corresponds to the max noise deviation in either direction
-       'angle_effect_noise_scaling': 0.0,  # Corresponds to the max noise deviation in either direction
+       'impulse_effect_noise_sd_x': 0,  # 0.98512558,
+       'impulse_effect_noise_sd_c': 0,  # 0.06,
+       'angle_effect_noise_sd_x': 0,  # 0.86155083,
+       'angle_effect_noise_sd_c': 0,  # 0.0010472,
 
        # Wall touch penalty
        'wall_touch_penalty': 0.2,
@@ -217,7 +219,7 @@ env = {'width': 1500,  # arena size
        'duration_of_loom': 10,  # Number of steps for which loom occurs.
 
        # Action mask
-       'impose_action_mask': True,
+       'impose_action_mask': False,
        # Scaling of impulse and angle from 0-1 initialised distribution TODO: Should set higher to allow full exploration of angle range.
        'angle_scaling': np.pi / 5,
        'impulse_scaling': 10.0,

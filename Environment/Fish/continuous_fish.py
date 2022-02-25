@@ -38,12 +38,14 @@ class ContinuousFish(Fish):
         impulse = action[0]
         angle = action[1]
 
-        # Noise from uniform. TODO: Be aware during debugging that there is no clipping
-        impulse_deviation = np.random.uniform(-1, 1, 1)[0] * self.env_variables["impulse_effect_noise_scaling"] * impulse
+        # Noise from uniform.
+        impulse_deviation = np.absolute(np.random.normal(0, self.env_variables["impulse_effect_noise_sd_x"])) * abs(impulse) + \
+                            self.env_variables["impulse_effect_noise_sd_c"]
         impulse_deviation = impulse_deviation.item()
         impulse = impulse + impulse_deviation
 
-        angle_deviation = np.random.uniform(-1, 1, 1)[0] * self.env_variables["angle_effect_noise_scaling"] * abs(angle)
+        angle_deviation = np.absolute(np.random.normal(0, self.env_variables["angle_effect_noise_sd_x"])) * abs(angle) + \
+                            self.env_variables["angle_effect_noise_sd_c"]
         angle_deviation = angle_deviation.item()
         angle = angle + float(angle_deviation)
 

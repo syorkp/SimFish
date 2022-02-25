@@ -120,7 +120,7 @@ class TestEnvironment:
         self.create_prey([100, 100])
         import matplotlib.pyplot as plt
         # self.create_predator([100, 100])
-        self.prey_bodies[0].apply_impulse_at_local_point((2.97, 0))
+        self.prey_bodies[0].apply_impulse_at_local_point((0.06, 0))
         position = []
         for micro_step in range(num_sim_steps):
             # self._move_prey_new()
