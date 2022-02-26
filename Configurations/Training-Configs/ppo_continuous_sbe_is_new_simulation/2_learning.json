@@ -76,8 +76,8 @@
             4,
             1
         ],
-        "rgc": [
-            "dense",
+        "optic_tectum": [
+            "dynamic_rnn",
             512
         ]
     },
@@ -185,7 +185,7 @@
             "full",
             [
                 "conv_with_states",
-                "rgc"
+                "optic_tectum"
             ]
         ]
     ]

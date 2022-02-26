@@ -316,13 +316,13 @@ class Fish:
         if self.using_gpu:
             readings = readings.get()
 
-        if np.max(readings) > 255:  # TODO: Remove after debugging
-            print(f"""Base value exceeded 255.
-
-Max Red: {np.max(readings[:, 0])}
-Max UV: {np.max(readings[:, 1])}
-Max Red2: {np.max(readings[:, 2])}
-            """)
+#         if np.max(readings) > 255:  # TODO: Remove after debugging
+#             print(f"""Base value exceeded 255.
+#
+# Max Red: {np.max(readings[:, 0])}
+# Max UV: {np.max(readings[:, 1])}
+# Max Red2: {np.max(readings[:, 2])}
+#             """)
 
         photons = np.floor(readings).astype(int)
         photons = photons.clip(0, 255)

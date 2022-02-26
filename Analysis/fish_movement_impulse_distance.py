@@ -4,8 +4,6 @@ Finding relationship between prey impulse and distance moved.
 
 import numpy as np
 import pymunk
-import matplotlib.pyplot as plt
-
 
 class TestEnvironment:
 
@@ -17,16 +15,13 @@ class TestEnvironment:
 
             'prey_inertia': 40.,
             'prey_size': 4.,  # FINAL VALUE - 0.2mm diameter, so 1.
-            'prey_max_turning_angle': 0.04,
-
-            'p_slow': 1.0,
-            'p_fast': 0.0,
-            'p_escape': 0.0,
+            'p_slow': 0.6,
+            'p_fast': 0.1,
+            'p_escape': 0.5,
             'p_switch': 0.0,  # Corresponds to 1/average duration of movement type.
-            'p_reorient': 0.001,
-            'slow_speed_paramecia': 0.0037,  # Impulse to generate 0.5mms-1 for given prey mass
-            'fast_speed_paramecia': 0.0074,  # Impulse to generate 1.0mms-1 for given prey mass
-            'jump_speed_paramecia': 0.074,  # Impulse to generate 10.0mms-1 for given prey mass
+            'slow_speed_paramecia': 0.01,
+            'fast_speed_paramecia': 0.02,
+            'jump_speed_paramecia': 0.03,
             'prey_fluid_displacement': True,
 
             'predator_mass': 10.,
@@ -46,7 +41,11 @@ class TestEnvironment:
         self.space.damping = self.env_variables['drag']
 
     def create_prey(self, prey_position=None):
-        self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
+
+        inertia = pymunk.moment_for_circle(140., 0, 2.5, (0, 0))
+        self.prey_bodies.append(pymunk.Body(1., inertia))
+
+        # self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
         self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_size']))
         self.prey_shapes[-1].elasticity = 1.0
         self.prey_bodies[-1].position = prey_position
@@ -62,9 +61,9 @@ class TestEnvironment:
         #     np.random.choice([0, 1, 2], 1, p=[1 - (self.env_variables["p_fast"] + self.env_variables["p_slow"]),
         #                                       self.env_variables["p_slow"],
         #                                       self.env_variables["p_fast"]])[0])
-        self.paramecia_gaits.append(1)
+        self.paramecia_gaits.append(2)
 
-    def _move_prey_new(self, micro_step):
+    def _move_prey_new(self):
             # gaits_to_switch = np.random.choice([0, 1], len(self.prey_shapes),
             #                                    p=[1 - self.env_variables["p_switch"], self.env_variables["p_switch"]])
             # switch_to = np.random.choice([0, 1, 2], len(self.prey_shapes),
@@ -78,12 +77,11 @@ class TestEnvironment:
             impulses = [impulse_types[gait] for gait in self.paramecia_gaits]
 
             # Angles of change - can generate as same for all.
-            if micro_step == 0:
-                angle_changes = np.random.uniform(-self.env_variables['prey_max_turning_angle'],
-                                                  self.
-                                                  env_variables['prey_max_turning_angle'],
-                                                  len(self.prey_shapes))
-
+            # angle_changes = np.random.uniform(-self.env_variables['prey_max_turning_angle'],
+            #                                   self.
+            #                                   env_variables['prey_max_turning_angle'],
+            #                                   len(self.prey_shapes))
+            #
             for i, prey_body in enumerate(self.prey_bodies):
                 # if self.check_proximity(prey_body.position, self.env_variables['prey_sensing_distance']):
                 #     # Motion from fluid dynamics
@@ -101,9 +99,7 @@ class TestEnvironment:
                 #
                 # else:
                 #     prey_body.angle = prey_body.angle + angle_changes[i]
-                prey_body.apply_impulse_at_local_point((impulses[i], 0))
-                if micro_step == 0:
-                    prey_body.angle = prey_body.angle + angle_changes[i]
+                    prey_body.apply_impulse_at_local_point((impulses[i], 0))
 
     def create_predator(self, prey_position=None):
         self.predator_bodies.append(pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia']))
@@ -122,29 +118,22 @@ class TestEnvironment:
 
     def run(self, num_sim_steps=200):
         self.create_prey([100, 100])
+        import matplotlib.pyplot as plt
         # self.create_predator([100, 100])
+        self.prey_bodies[0].apply_impulse_at_local_point((0.06, 0))
         position = []
         for micro_step in range(num_sim_steps):
-            self._move_prey_new(micro_step)
+            # self._move_prey_new()
             # self.move_predator()
             position.append(np.array(self.prey_bodies[0].position))
             self.space.step(self.env_variables['phys_dt'])
         position = np.array(position)
         distance = position - np.array([100, 100])
         distance = (distance[:, 0] ** 2 + distance[:, 1] ** 2) ** 0.5
-        # plt.plot(distance)
-        # plt.show()
+        plt.plot(distance)
+        plt.show()
         print(self.prey_bodies[0].position)
-        return np.array(self.prey_bodies[0].position)
+
 
 env = TestEnvironment()
-
-positions = []
-for i in range(100):
-    pos = env.run()
-    positions.append(pos)
-
-
-positions = np.array(positions)
-plt.scatter(positions[:, 0], positions[:, 1])
-plt.show()
+env.run()

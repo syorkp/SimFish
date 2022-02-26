@@ -35,8 +35,8 @@ env = {'width': 1500,  # arena size
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
-       'prey_sensing_distance': 30,
-       'prey_max_turning_angle': 0.1,  # Max angle change every 2ms in pi radians - This is the turn that happens every step, designed to replicate linear wavy movement.
+       'prey_sensing_distance': 20,
+       'prey_max_turning_angle': 0.04,  # Max angle change every 2ms in pi radians - This is the turn that happens every step, designed to replicate linear wavy movement.
        'prey_jump': False,
        'differential_prey': False,
        'prey_cloud_num': 2,
@@ -63,7 +63,7 @@ env = {'width': 1500,  # arena size
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'photon_ratio': 100,  # expected number of photons for unit brightness
-       'bkg_scatter': 0.01,  # base brightness of the background
+       'bkg_scatter': 0.002,  # base brightness of the background
        'dark_gain': 0.02,  # gain of brightness in the dark side
        'light_gain': 1.,  # gain of brightness in the bright side
 
@@ -120,7 +120,7 @@ env = {'width': 1500,  # arena size
        'red_photoreceptor_num': 64,  # NO DATA YET
        'shared_photoreceptor_channels': False,  # Whether the two channels have the same RF angles (saves computation time)
        'incorporate_uv_strike_zone': True,
-       'strike_zone_sigma': 1.4,  # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
+       'strike_zone_sigma': 1.5,  # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
        'visualise_mask': False,  # For debugging purposes.
 
        # For dark noise:
@@ -138,8 +138,8 @@ env = {'width': 1500,  # arena size
 
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
 
-       'displacement_scaling_factor': 0.005,  # Multiplied by previous impulse size to cause displacement of nearby features.
-       'known_max_fish_i': 30,
+       'displacement_scaling_factor': 0.018,  # Multiplied by previous impulse size to cause displacement of nearby features.
+       'known_max_fish_i': 20,  # TODO: Determine
 
        # For new energy state system
        'ci': 0.01,
@@ -180,11 +180,11 @@ env = {'width': 1500,  # arena size
        'max_salt_damage': 0.02,  # Salt damage at centre of source.
 
        # Complex prey
-       'p_slow': 0.6,
-       'p_fast': 0.1,
+       'p_slow': 1.0,
+       'p_fast': 0.0,
        'p_escape': 0.5,
        'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
-       'p_reorient': 0.001,
+       'p_reorient': 0.04,
        'slow_speed_paramecia': 0.0037,  # Impulse to generate 0.5mms-1 for given prey mass
        'fast_speed_paramecia': 0.0074,  # Impulse to generate 1.0mms-1 for given prey mass
        'jump_speed_paramecia': 0.074,  # Impulse to generate 10.0mms-1 for given prey mass
@@ -219,7 +219,7 @@ env = {'width': 1500,  # arena size
        'duration_of_loom': 10,  # Number of steps for which loom occurs.
 
        # Action mask
-       'impose_action_mask': False,
+       'impose_action_mask': True,
        # Scaling of impulse and angle from 0-1 initialised distribution TODO: Should set higher to allow full exploration of angle range.
        'angle_scaling': np.pi / 5,
        'impulse_scaling': 10.0,
@@ -230,7 +230,7 @@ env = {'width': 1500,  # arena size
        }
 
 
-from Networks.stateless_network_1 import connectivity, reflected, base_network_layers, modular_network_layers, ops
+from Networks.original_network import connectivity, reflected, base_network_layers, modular_network_layers, ops
 
 params = {'num_actions': 10,  # size of action space
           'batch_size': 1,  # How many experience traces to use for each training step.

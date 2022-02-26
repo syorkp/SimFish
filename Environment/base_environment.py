@@ -14,7 +14,6 @@ class BaseEnvironment:
     environment classes."""
 
     def __init__(self, env_variables, draw_screen, new_simulation, using_gpu):
-        np.random.seed(404) # TODO: Remove
         self.new_simulation = new_simulation
 
         self.env_variables = env_variables
@@ -587,7 +586,6 @@ class BaseEnvironment:
             return self.touch_prey_old(arbiter, space, data)
 
     def touch_prey_new(self, arbiter, space, data):
-        return
         valid_capture = False
 
         if self.fish.capture_possible:

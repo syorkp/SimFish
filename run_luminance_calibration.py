@@ -28,15 +28,15 @@ n_steps = 2000
 
 with open(file_path, 'r') as f:
     env = json.load(f)
-env["light_gain"] = 0.4
-env["bkg_scatter"] = 0.002
+env["light_gain"] = 1.0
+env["bkg_scatter"] = 0.0008
 
 env2 = copy.deepcopy(env)
 env2["bkg_scatter"] = 0
 env2["shot_noise"] = False
 
 env3 = copy.deepcopy(env)
-env3["light_gain"] = 0.8
+env3["light_gain"] = 0.2
 
 env4 = copy.deepcopy(env3)
 env4["bkg_scatter"] = 0
