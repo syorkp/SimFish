@@ -17,7 +17,7 @@ def display_snr(luminance, bk):
 
     uv_ok = np.isfinite(uv)
 
-    uv = uv[uv_ok] * 2
+    uv = uv[uv_ok]
     distances = distances[uv_ok]
 
     z = np.polyfit(distances, uv, 2)
@@ -51,8 +51,35 @@ def display_distinguishability_score(luminance, bk):
     plt.show()
 
 
-def display_parameter_relationship():
-    ...
+def display_parameter_relationships(bkg_scatter_values, luminance_values):
+    m_values = np.zeros((len(bkg_scatter_values), len(luminance_values)))
+    c_values = np.zeros((len(bkg_scatter_values), len(luminance_values)))
+
+    for b, bkg in enumerate(bkg_scatter_values):
+        for l, lum in enumerate(luminance_values):
+            with open(f"LuminanceCalibration/UVDistance-L{lum}-S0.0006-W1500-BK{bkg}.npy", "rb") as f:
+                distances = np.load(f)
+
+            with open(f"LuminanceCalibration/UVSNR-L{lum}-S0.0006-W1500-BK{bkg}.npy", "rb") as f:
+                uv = np.load(f)
+
+            uv_ok = np.isfinite(uv)
+
+            uv = uv[uv_ok]
+            distances = distances[uv_ok]
+
+            model = np.polyfit(distances, uv, 1)
+
+            m_values[b, l] = model[0]
+            c_values[b, l] = model[1]
+    plt.plot(bkg_scatter_values, m_values[:, 0])
+    plt.show()
+
+    plt.plot(bkg_scatter_values, c_values[:, 0])
+    plt.show()
+
+display_parameter_relationships([0.0008, 0.0015, 0.002], [1.0, 0.8, 0.4, 0.2])
+
 
 # display_snr(1.0, 0.005)
 # display_snr(0.5, 0.005)
