@@ -119,7 +119,7 @@ def get_bout_parameters(frame_start, frame_end, bout_data, position_frames, x_po
 # Physical parameters: pxpermm - 24.8, 12.987; rate - 700fps/m; radius - 280
 # For translation to mm, divide by 12.987 as in videos
 
-visstim, position_frames, x_position, y_position, ori, timebase, bouts = load_data("aq2.mat")
+visstim, position_frames, x_position, y_position, ori, timebase, bouts = load_data("aq.mat")
 
 # ori = flatten_orientation(ori)
 
@@ -144,23 +144,26 @@ for trial in range(visstim.shape[1]):
     if start_frame > min_frame and end_frame < max_frame and visstim[1, trial] == 3 and visstim[2, trial] == 1:
         distance, orientation, position_during = get_distance_and_ori_change_within_frames(start_frame, end_frame, position_frames, x_position, y_position, ori, timebase)
         bout_durations, bout_delta_angle, bout_distances = get_bout_parameters(start_frame, end_frame, bouts, position_frames, x_position, y_position)
+
         if len(bout_durations) > 1:
             durations.append(bout_durations[1])
             angles.append(bout_delta_angle[1])
             distances.append(bout_distances[1])
-        # if position_during.shape[0] > 0:
-        #     print(f"Trial: {trial}, length: {len(distance)}")
-        #     motion_vector = position_during[0, :] - position_during[-1, :]
-        #     directions.append(motion_vector)
-        #     # plt.plot(range(len(distance)), distance)
-        #     # plt.show()
-        #     #
-        #     # plt.plot(range(len(orientation)), orientation)
-        #     # plt.show()
-        #
-        #     plt.scatter(position_during[:, 0], position_during[:, 1], c=range(len(position_during[:, 0])), alpha=0.02)
-        #     # plt.title(f"{trial}, {direction}")
-        #     # plt.show()
+
+        if position_during.shape[0] > 0:
+            print(f"Trial: {trial}, length: {len(distance)}")
+            motion_vector = position_during[0, :] - position_during[-1, :]
+            directions.append(motion_vector)
+
+            # plt.plot(range(len(distance)), distance)
+            # plt.show()
+            #
+            # plt.plot(range(len(orientation)), orientation)
+            # plt.show()
+
+            plt.scatter(position_during[:, 0], position_during[:, 1], c=range(len(position_during[:, 0])), alpha=0.02)
+            plt.title(f"{trial}, {direction}")
+            plt.show()
 
 plt.hist(durations, bins=30)
 plt.show()

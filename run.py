@@ -1324,7 +1324,7 @@ phase_1_test_config = [
     {
         "Model Name": "calibration_test",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 5,
+        "Trial Number": 7,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1344,7 +1344,7 @@ phase_1_test_config = [
         "Continuous Actions": True,
         "Learning Algorithm": "PPO",
         "Priority": 1,
-        "Using GPU": True,
+        "Using GPU": False,
         "monitor gpu": False,
         "Full Logs": False,
         "SB Emulator": True,
@@ -1353,7 +1353,7 @@ phase_1_test_config = [
     {
         "Model Name": "calibration_test",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 6,
+        "Trial Number": 8,
         "Total Configurations": 3,
         "Episode Transitions": {
         },

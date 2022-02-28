@@ -68,6 +68,7 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
 
     def sample_masked(self, shape):
         preliminary_samples = self.sample(shape * 10)
+        self.preliminary_samples = preliminary_samples
         # chosen_samples, self.probs, self.positive_imp = tf.numpy_function(self.get_sample_masked_weights, [self.preliminary_samples, shape], [tf.float32, tf.float64, tf.int64])
         chosen_samples = tf.numpy_function(self.get_sample_masked_weights, [preliminary_samples, shape], tf.float32)
         return chosen_samples
