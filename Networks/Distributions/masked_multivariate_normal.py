@@ -56,7 +56,7 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
         probs[probs < 0.0000389489489] = 0
         probs[probs > 0.0000389489489] = 1
 
-        integral = np.sum(probs)
+        integral = np.nansum(probs)
         probs = probs/integral
 
         indices_chosen = np.random.choice(actions.shape[0], size=shape, p=probs, replace=False)

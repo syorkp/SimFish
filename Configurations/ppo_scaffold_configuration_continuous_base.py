@@ -58,7 +58,7 @@ env = {'width': 1500,  # arena size
        'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
-       'probability_of_predator': 0.1,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
