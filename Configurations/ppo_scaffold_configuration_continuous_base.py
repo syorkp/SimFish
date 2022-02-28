@@ -219,7 +219,7 @@ env = {'width': 1500,  # arena size
        'duration_of_loom': 10,  # Number of steps for which loom occurs.
 
        # Action mask
-       'impose_action_mask': True,
+       'impose_action_mask': False,
        # Scaling of impulse and angle from 0-1 initialised distribution TODO: Should set higher to allow full exploration of angle range.
        'angle_scaling': np.pi / 5,
        'impulse_scaling': 10.0,

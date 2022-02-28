@@ -1324,7 +1324,7 @@ phase_1_test_config = [
     {
         "Model Name": "calibration_test",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 3,
+        "Trial Number": 5,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1353,7 +1353,7 @@ phase_1_test_config = [
     {
         "Model Name": "calibration_test",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 4,
+        "Trial Number": 6,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
