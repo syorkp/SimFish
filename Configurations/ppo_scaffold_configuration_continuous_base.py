@@ -125,7 +125,7 @@ env = {'width': 1500,  # arena size
 
        # For dark noise:
        'isomerization_frequency': 0.0,  # Average frequency of photoisomerization per second per photoreceptor
-       'max_isomerization_size': 0.01,  # TODO: Calibrated to produce events of similar size to practical visual distance.
+       'max_isomerization_size': 0.01,
        'sim_steps_per_second': 5,  # For converting isomerization frequency.
 
        # For extra layer motion:

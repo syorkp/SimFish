@@ -9,10 +9,11 @@ Training-Output
 /Analysis/Calibration/Prey-Tracking/
 /Analysis/Calibration/Image/
 /Analysis/Calibration/SNR/
-/Analysis/Calibration/Motor-Noise-Data/
+/Analysis/Calibration/MotorEffectNoise/Motor-Noise-Data/
 /Analysis/__pycache__/
 /Analysis/Calibration/LuminanceCalibration/
-/Analysis/Calibration/Bolton et al. (2019)/
+/Analysis/Calibration/MotorEffectNoise/Bolton et al. (2019)/
+/Analysis/Calibration/MotorEffectNoise/Marques
 
 /Environment/__pycache__/
 /Environment/Fish/__pycache__/

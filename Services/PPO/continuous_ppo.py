@@ -527,7 +527,6 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.train_length: 1,
                        }
         )
-        print(psamples)
         # sam[:, :, 1] *= np.pi/5  # (180/np.pi) *
         # sam[:, :, 0] *= 10
         # for i, s in enumerate(sam):
@@ -922,7 +921,6 @@ class ContinuousPPO(BasePPO):
                log_action_probability_batch, advantage_batch, return_batch, value_batch, \
                current_batch_size
 
-
     def get_batch(self, batch, observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer,
                   log_impulse_probability_buffer, log_angle_probability_buffer, advantage_buffer, return_buffer):
 
@@ -1063,6 +1061,7 @@ class ContinuousPPO(BasePPO):
                                  average_loss_value / self.learning_params["n_updates_per_iteration"])
 
     def train_network_multivariate2(self):
+        print("Training step started")
         observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
             log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
             key_rnn_points = self.buffer.get_episode_buffer()
