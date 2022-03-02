@@ -25,9 +25,6 @@ class BaseService:
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_actions, new_simulation):
 
-        if using_gpu:
-            delete_nv_folder()
-
         self.monitor_performance = True  # TODO: make parameter
         if self.monitor_performance:
             self.profile = cProfile.Profile()
@@ -87,6 +84,8 @@ class BaseService:
         if self.using_gpu:
             # options = tf.GPUOptions(per_process_gpu_memory_fraction=self.memory_fraction)
             # config = tf.ConfigProto(gpu_options=options)
+
+            delete_nv_folder()
             config = tf.ConfigProto()
             config.gpu_options.allow_growth = True
         else:
