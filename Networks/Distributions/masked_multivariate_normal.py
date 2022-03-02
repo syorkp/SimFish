@@ -11,7 +11,7 @@ import tensorflow.compat.v1 as tf
 class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
 
     def __init__(self, loc, scale_diag, impulse_scaling, angle_scaling):
-        super().__init__(loc=loc, scale_diag=scale_diag)
+        super().__init__(loc=loc, scale_diag=scale_diag, allow_nan_stats=False)
 
         # Compute KDF here.
         mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
@@ -47,11 +47,11 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
 
     def get_sample_masked_weights(self, actions, shape):
         probs = self.kde_impulse.pdf(actions[:, :, 0]) * self.kde_angle.pdf(np.absolute(actions[:, :, 1]))
-        probs = np.nan_to_num(probs)
 
         # Dis-allow negative impulses
         positive_impulses = ((actions[:, :, 0] > 0) * 1)[:, 0]
         probs = probs * positive_impulses
+        probs = np.nan_to_num(probs)
 
         # # Step function on probs
         probs[probs < 0.0000389489489] = 0
