@@ -94,13 +94,13 @@ env = {'width': 1500,  # arena size
        'max_angle_change': np.pi/5,
        'max_impulse': 10.0,  # Up to 50ish
 
-       'distance_penalty_scaling_factor': 1.0,
-       'angle_penalty_scaling_factor': 0.5,
+       'distance_penalty_scaling_factor': 1.0,  # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
+       'angle_penalty_scaling_factor': 0.5,  # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
        'baseline_penalty': 0.002,
 
        # Policy scaffolding
        'reward_distance': 100,
-       'proximity_reward': 0.002,
+       'proximity_reward': 0.0,
 
        'max_sigma_impulse': 0.4,
        'max_sigma_angle': 0.4,
@@ -151,12 +151,12 @@ env = {'width': 1500,  # arena size
        'action_reward_scaling': 10,  # Arbitrary (practical) hyperparameter for penalty for action
        'consumption_reward_scaling': 1000000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
-       'energy_state': False,
+       'energy_state': True,
        # For control of in light:
        'in_light': False,
 
        # Currents
-       'current_setting': False,  # Current setting. If none, should be False. Current options: Circular, Linear
+       'current_setting': "Circular",  # Current setting. If none, should be False. Current options: Circular, Linear
        'max_current_strength': 0.01,  # Arbitrary impulse variable to be calibrated
        'current_width': 0.2,
        'current_strength_variance': 1,
@@ -274,7 +274,7 @@ params = {'num_actions': 10,  # size of action space
           }
 
 
-directory_name = "ppo_continuous_sbe_is_new_simulation"
+directory_name = "ppo_continuous_sbe_is_final_calib"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):
