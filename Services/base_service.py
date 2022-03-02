@@ -13,7 +13,12 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 def delete_nv_folder():
     location = "./../../.nv"
-    shutil.rmtree(location)
+    if os.path.isdir(location):
+        print("Correct dir, removing")
+        shutil.rmtree(location)
+        if os.path.isdir(location):
+            print("Failed...")
+
 
 class BaseService:
 
