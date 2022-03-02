@@ -27,7 +27,7 @@ class TrainingService(BaseService):
 
         print("TrainingService Constructor called")
 
-        # Configuration
+        # Configuration1
         self.total_configurations = total_configurations
         self.episode_transitions = episode_transitions
         self.conditional_transitions = conditional_transitions

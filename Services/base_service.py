@@ -12,6 +12,7 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 
 def delete_nv_folder():
+    print(os.path.dirname(os.path.abspath(__file__)))
     location = "./../../.nv"
     if os.path.isdir(location):
         print("Correct dir, removing")
