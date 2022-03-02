@@ -144,7 +144,7 @@ env = {'width': 1500,  # arena size
        # For new energy state system
        'ci': 0.01,
        'ca': 0.01,
-       'baseline_decrease': 0.005,
+       'baseline_decrease': 0.0005,
        'trajectory_A': 5.0,
        'trajectory_B': 2.5,
 
