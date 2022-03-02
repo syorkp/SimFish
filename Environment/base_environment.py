@@ -587,7 +587,7 @@ class BaseEnvironment:
 
     def touch_prey_new(self, arbiter, space, data):
         valid_capture = False
-
+        # return # TODO: Remove
         if self.fish.capture_possible:
             for i, shp in enumerate(self.prey_shapes):
                 if shp == arbiter.shapes[0]:

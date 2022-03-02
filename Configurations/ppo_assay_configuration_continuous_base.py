@@ -30,7 +30,7 @@ env = {'width': 1500,  # arena size
 
        'prey_mass': 1.,
        'prey_inertia': 40.,
-       'prey_size': 4.,   # FINAL VALUE - 0.2mm diameter, so 1.
+       'prey_size': 1.,   # FINAL VALUE - 0.2mm diameter, so 1.
        'prey_num': 1,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
@@ -63,9 +63,9 @@ env = {'width': 1500,  # arena size
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'photon_ratio': 100,  # expected number of photons for unit brightness
-       'bkg_scatter': 0.001,  # base brightness of the background
+       'bkg_scatter': 0.0005,  # base brightness of the background
        'dark_gain': 0.02,  # gai nof brightness in the dark side
-       'light_gain': 1.,  # gain of brightness in the bright side
+       'light_gain': 0.33,  # gain of brightness in the bright side
 
        'forward_swim_cost': 3,
        'forward_swim_impulse': 10,
@@ -191,10 +191,10 @@ env = {'width': 1500,  # arena size
        'prey_fluid_displacement': True,
 
        # Motor effect noise (for continuous)
-       'impulse_effect_noise_sd_x': 0.98512558,
-       'impulse_effect_noise_sd_c': 0.06,
-       'angle_effect_noise_sd_x': 0.86155083,
-       'angle_effect_noise_sd_c': 0.0010472,
+       'impulse_effect_noise_sd_x': 0, # 0.98512558,
+       'impulse_effect_noise_sd_c': 0, # 0.06,
+       'angle_effect_noise_sd_x': 0, # 0.86155083,
+       'angle_effect_noise_sd_c': 0, # 0.0010472,
 
        # Wall touch penalty
        'wall_touch_penalty': 0.2,

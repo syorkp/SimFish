@@ -1322,9 +1322,9 @@ phase_1_test_config_discrete = [
 
 phase_1_test_config = [
     {
-        "Model Name": "calibration_test",
+        "Model Name": "calibration_test_am",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 8,
+        "Trial Number": 1,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1351,9 +1351,9 @@ phase_1_test_config = [
         "New Simulation": True
     },
     {
-        "Model Name": "calibration_test",
+        "Model Name": "calibration_test_am",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 9,
+        "Trial Number": 2,
         "Total Configurations": 3,
         "Episode Transitions": {
         },

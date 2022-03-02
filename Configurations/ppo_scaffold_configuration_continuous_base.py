@@ -296,18 +296,18 @@ number = 1
 save_files(number)
 number += 1
 
-env['prey_impulse'] = 0.02
+env['prey_impulse'] = 0.0#2
 save_files(number)
 number += 1
 
-env['prey_impulse'] = 0.05
+env['prey_impulse'] = 0.0#5
 save_files(number)
 number += 1
 
-env['energy_state'] = True
+env['energy_state'] = False#True
 save_files(number)
 number += 1
 
-env['probability_of_predator'] = 0.01
+env['probability_of_predator'] = 0.0#1
 save_files(number)
 number += 1

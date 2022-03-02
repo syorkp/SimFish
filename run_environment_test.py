@@ -60,8 +60,17 @@ while not q:
 
     previous_position = sim_state.fish.body.position
 
+    distance = ((previous_position[0] - sim_state.prey_bodies[-1].position[0]) ** 2 +
+                (previous_position[1] - sim_state.prey_bodies[-1].position[1]) ** 2) ** 0.5
+
     s, r, internal, d, fb = sim_state.simulation_step([impulse, angle])
-    print(sim_state.fish.body.angle)
+
+    l_uv = s[:, 1, 0]
+    r_uv = s[:, 1, 1]
+
+    print(f"Max L at {np.argmax(l_uv)}, Max R at {np.argmax(r_uv)}")
+
+    print(distance)
     # if angle > 1.0:
     #     sim_state.reset()
 

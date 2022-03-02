@@ -72,10 +72,29 @@ def display_parameter_relationships(bkg_scatter_values, luminance_values):
 
             m_values[b, l] = model[0]
             c_values[b, l] = model[1]
+
     plt.plot(bkg_scatter_values, m_values[:, 0])
     plt.show()
 
     plt.plot(bkg_scatter_values, c_values[:, 0])
+    plt.show()
+
+    plt.plot(bkg_scatter_values, m_values[:, 1])
+    plt.show()
+
+    plt.plot(bkg_scatter_values, c_values[:, 1])
+    plt.show()
+
+    plt.plot(bkg_scatter_values, m_values[:, 2])
+    plt.show()
+
+    plt.plot(bkg_scatter_values, c_values[:, 2])
+    plt.show()
+
+    plt.plot(bkg_scatter_values, m_values[:, 3])
+    plt.show()
+
+    plt.plot(bkg_scatter_values, c_values[:, 3])
     plt.show()
 
 display_parameter_relationships([0.0008, 0.0015, 0.002], [1.0, 0.8, 0.4, 0.2])
