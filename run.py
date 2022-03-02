@@ -4,16 +4,34 @@ from datetime import datetime
 
 from Services.trial_manager import TrialManager
 
-# Ensure Output File Exists
+# Ensure output directories exist
 if not os.path.exists("./Training-Output/"):
     os.makedirs("./Output/")
 
 if not os.path.exists("./Assay-Output/"):
     os.makedirs("./Assay-Output/")
 
+# Setting .nv location to prevent GPU error
+if not os.path.exists("./GPU-Caches/"):
+    os.makedirs("./GPU-Caches/")
+
+directory = "./GPU-Caches/"
+existing_caches = [os.path.join(o) for o in os.listdir(directory) if os.path.isdir(os.path.join(directory,o))]
+
+if len(existing_caches) > 0:
+    caches_as_int = [int(o) for o in existing_caches]
+    last_cache_number = max(caches_as_int)
+    os.makedirs(f"./GPU-Caches/{last_cache_number + 1}")
+    os.environ["__GL_SHADER_DISK_CACHE_PATH"] = f"./GPU-Caches/{last_cache_number+1}/"
+else:
+    os.makedirs(f"./GPU-Caches/{1}")
+    os.environ["__GL_SHADER_DISK_CACHE_PATH"] = f"./GPU-Caches/{1}/"
+
+
+# Loading VRV configs
+
 with open("./Run-Configurations/VRV_CONFIG.json", "r") as file:
     vrv_config = json.load(file)
-
 
 ppo_beta_configuration = [
     {
@@ -1324,7 +1342,7 @@ phase_1_test_config = [
     {
         "Model Name": "calibration_test_am",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 1,
+        "Trial Number": 3,
         "Total Configurations": 3,
         "Episode Transitions": {
         },
@@ -1353,7 +1371,7 @@ phase_1_test_config = [
     {
         "Model Name": "calibration_test_am",
         "Environment Name": "ppo_continuous_sbe_is_new_simulation",
-        "Trial Number": 2,
+        "Trial Number": 4,
         "Total Configurations": 3,
         "Episode Transitions": {
         },

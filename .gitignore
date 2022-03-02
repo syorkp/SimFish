@@ -1,6 +1,7 @@
 venv
 Assay-Output
 Training-Output
+GPU-Caches
 
 /Analysis/Training-Data/Action-Use-Data/
 /Analysis/Training-Data/Metrics
