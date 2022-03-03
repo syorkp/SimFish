@@ -142,8 +142,8 @@ env = {'width': 1500,  # arena size
        'known_max_fish_i': 20,  # TODO: Determine
 
        # For new energy state system
-       'ci': 0.01,
-       'ca': 0.01,
+       'ci': 0.0001,
+       'ca': 0.0001,
        'baseline_decrease': 0.0005,
        'trajectory_A': 5.0,
        'trajectory_B': 2.5,
