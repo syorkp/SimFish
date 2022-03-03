@@ -63,9 +63,9 @@ env = {'width': 1500,  # arena size
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'photon_ratio': 100,  # expected number of photons for unit brightness
-       'bkg_scatter': 0.002,  # base brightness of the background
-       'dark_gain': 0.02,  # gain of brightness in the dark side
-       'light_gain': 1.,  # gain of brightness in the bright side
+       'bkg_scatter': 0.00001,  # base brightness of the background
+       'dark_gain': 0.38,  # gain of brightness in the dark side
+       'light_gain': .5,  # gain of brightness in the bright side
 
        'forward_swim_cost': 3,
        'forward_swim_impulse': 10,
@@ -133,7 +133,7 @@ env = {'width': 1500,  # arena size
 
        # # Observation scaling factors (to set CNN inputs into 0 to 255 range):
        'red_scaling_factor': 1,  # max was 100 without scaling
-       'uv_scaling_factor': 1,  # max was 40 without scaling
+       'uv_scaling_factor': 50.0,  # max was 40 without scaling (for larger prey)
        'red_2_scaling_factor': 0.018,  # max was 12000 without scaling
 
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
@@ -149,7 +149,7 @@ env = {'width': 1500,  # arena size
        'trajectory_B': 2.5,
 
        'action_reward_scaling': 10,  # Arbitrary (practical) hyperparameter for penalty for action
-       'consumption_reward_scaling': 1000000,  # Arbitrary (practical) hyperparameter for reward for consumption
+       'consumption_reward_scaling': 10000000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
        'energy_state': True,
        # For control of in light:

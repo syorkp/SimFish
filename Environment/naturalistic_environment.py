@@ -247,6 +247,8 @@ class NaturalisticEnvironment(BaseEnvironment):
         return observation, reward, internal_state, done, frame_buffer
 
     def resolve_visual_input_new(self, save_frames, activations, internal_state, frame_buffer):
+
+
         right_eye_pos = (
             -np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
             +np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])

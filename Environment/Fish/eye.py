@@ -706,7 +706,7 @@ class Eye:
                 [rr, cc] = line(sector[2][1], sector[2][0], sector[0][1], sector[0][0])
             self.board.db[rr, cc] = (0, 0, 0.5)
 
-        # Red
+       # Red
         channel_angles_surrounding = self.channel_angles_surrounding_red + fish_angle
         sector_vertices = self.get_sector_vertices(bx, by, channel_angles_surrounding, self.red_photoreceptor_num)
         sector_vertices = sector_vertices.astype(int)

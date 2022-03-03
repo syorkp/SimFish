@@ -116,7 +116,7 @@ def get_percentage_discriminable(distances_absent, distances_present, absent_poi
 
 
 distances_stimulus_present_1, distances_stimulus_present_2, distances_stimulus_absent_1, distances_stimulus_absent_2, \
-stimulus_present_1, stimulus_present_2, stimulus_absent_1, stimulus_absent_2 = load_data(0.0005, [1.0, 0.5])
+stimulus_present_1, stimulus_present_2, stimulus_absent_1, stimulus_absent_2 = load_data(0.00051, [1.0, 0.5])
 
 plot_magnitudes(distances_stimulus_present_1, distances_stimulus_present_2, distances_stimulus_absent_1,
                 distances_stimulus_absent_2, stimulus_present_1, stimulus_present_2, stimulus_absent_1,

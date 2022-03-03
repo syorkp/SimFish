@@ -12,20 +12,20 @@ if not os.path.exists("./Assay-Output/"):
     os.makedirs("./Assay-Output/")
 
 # Setting .nv location to prevent GPU error
-if not os.path.exists("./GPU-Caches/"):
-    os.makedirs("./GPU-Caches/")
-
-directory = "./GPU-Caches/"
-existing_caches = [os.path.join(o) for o in os.listdir(directory) if os.path.isdir(os.path.join(directory,o))]
-
-if len(existing_caches) > 0:
-    caches_as_int = [int(o) for o in existing_caches]
-    last_cache_number = max(caches_as_int)
-    os.makedirs(f"./GPU-Caches/{last_cache_number + 1}")
-    os.environ["__GL_SHADER_DISK_CACHE_PATH"] = f"./GPU-Caches/{last_cache_number+1}/"
-else:
-    os.makedirs(f"./GPU-Caches/{1}")
-    os.environ["__GL_SHADER_DISK_CACHE_PATH"] = f"./GPU-Caches/{1}/"
+# if not os.path.exists("./GPU-Caches/"):
+#     os.makedirs("./GPU-Caches/")
+#
+# directory = "./GPU-Caches/"
+# existing_caches = [os.path.join(o) for o in os.listdir(directory) if os.path.isdir(os.path.join(directory,o))]
+#
+# if len(existing_caches) > 0:
+#     caches_as_int = [int(o) for o in existing_caches]
+#     last_cache_number = max(caches_as_int)
+#     os.makedirs(f"./GPU-Caches/{last_cache_number + 1}")
+#     os.environ["__GL_SHADER_DISK_CACHE_PATH"] = f"./GPU-Caches/{last_cache_number+1}/"
+# else:
+#     os.makedirs(f"./GPU-Caches/{1}")
+#     os.environ["__GL_SHADER_DISK_CACHE_PATH"] = f"./GPU-Caches/{1}/"
 
 
 # Loading VRV configs

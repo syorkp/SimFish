@@ -63,9 +63,9 @@ env = {'width': 1500,  # arena size
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'photon_ratio': 100,  # expected number of photons for unit brightness
-       'bkg_scatter': 0.0005,  # base brightness of the background
+       'bkg_scatter': 0.00001,  # base brightness of the background
        'dark_gain': 0.02,  # gai nof brightness in the dark side
-       'light_gain': 0.33,  # gain of brightness in the bright side
+       'light_gain': 1.,  # gain of brightness in the bright side
 
        'forward_swim_cost': 3,
        'forward_swim_impulse': 10,

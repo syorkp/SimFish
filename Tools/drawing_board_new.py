@@ -380,10 +380,8 @@ class NewDrawingBoard:
         full_set = self.chosen_math_library.vstack((set_1, set_2)).astype(int)
 
         full_set = full_set.reshape(-1, 2)
-        try:
-            self.empty_mask[full_set[:, 1], full_set[:, 0]] = 0
-        except IndexError:
-            x = True
+
+        self.empty_mask[full_set[:, 1], full_set[:, 0]] = 0
 
         # For debugging:
         # try:
@@ -687,7 +685,7 @@ class NewDrawingBoard:
                 print("Incorrect mask selected for saving")
             if self.using_gpu:
                 self.mask_buffer_time_point = self.mask_buffer_time_point.get()
-
+        x = (AB * L * O * S)[:, :, 1]
         return AB * L * O * S
 
     def compute_n(self, angular_size, number_of_this_feature, max_separation=1):

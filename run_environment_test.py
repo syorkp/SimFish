@@ -68,9 +68,8 @@ while not q:
     l_uv = s[:, 1, 0]
     r_uv = s[:, 1, 1]
 
-    print(f"Max L at {np.argmax(l_uv)}, Max R at {np.argmax(r_uv)}")
-
-    print(distance)
+    print(sim_state.prey_bodies[-1].position)
+    print(previous_position)
     # if angle > 1.0:
     #     sim_state.reset()
 
