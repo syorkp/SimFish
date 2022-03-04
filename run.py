@@ -1458,5 +1458,5 @@ calibration_test_config = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(calibration_test_config, parallel_jobs=2)
+manager = TrialManager(calibration_test_config, parallel_jobs=4)
 manager.run_priority_loop()
