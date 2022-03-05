@@ -43,7 +43,7 @@ from sklearn.linear_model import LinearRegression
 # FISH TRACK
 
 def load_fish_data():
-    fish_track_data = np.genfromtxt("Prey-Tracking/fish_track.csv", delimiter=',')
+    fish_track_data = np.genfromtxt("Particle-Tracking-Data/fish_track.csv", delimiter=',')
 
     # track_id_spots = spot_data1[4:, 2]
     fish_track_id_tracks = fish_track_data[4:, 2]
@@ -147,7 +147,7 @@ ordered_timestamps = np.concatenate((ordered_timestamps[0:1]-1, ordered_timestam
 
 def get_proximal_paramecia(fish_track_full, fish_timestamps_full):
     max_distance = 100
-    paramecia_tracks = np.genfromtxt("Prey-Tracking/tracks_1.csv", delimiter=',')
+    paramecia_tracks = np.genfromtxt("Particle-Tracking-Data/tracks_1.csv", delimiter=',')
     # limited_paramecia_tracks = np.genfromtxt("Prey-Tracking/tracks_0-5000.csv", delimiter=',')
 
     paramecia_id_tracks = paramecia_tracks[4:, 2]
@@ -195,7 +195,7 @@ def get_proximal_paramecia(fish_track_full, fish_timestamps_full):
 
 
 def get_full_paramecia_data():
-    paramecia_tracks = np.genfromtxt("Prey-Tracking/tracks_1.csv", delimiter=',')
+    paramecia_tracks = np.genfromtxt("Particle-Tracking-Data/tracks_1.csv", delimiter=',')
     paramecia_id_tracks = paramecia_tracks[4:, 2]
     paramecia_positions = paramecia_tracks[4:, 4:6]
     paramecia_timestamps = paramecia_tracks[4:, 7]
@@ -217,25 +217,25 @@ def get_full_paramecia_data():
 
 # Loading dynamics
 
-with open('Prey-Tracking/proximal_paramecia_timestamps2.npy', 'rb') as outfile:
+with open('Particle-Tracking-Data/proximal_paramecia_timestamps2.npy', 'rb') as outfile:
     proximal_paramecia_timestamps = np.load(outfile)
 
-with open('Prey-Tracking/proximal_paramecia_identities2.npy', 'rb') as outfile:
+with open('Particle-Tracking-Data/proximal_paramecia_identities2.npy', 'rb') as outfile:
     proximal_paramecia_identities = np.load(outfile)
 
-with open('Prey-Tracking/proximal_paramecia_positions.npy', 'rb') as outfile:
+with open('Particle-Tracking-Data/proximal_paramecia_positions.npy', 'rb') as outfile:
     proximal_paramecia_positions = np.load(outfile)
 
-with open('Prey-Tracking/fish_track_full.npy', 'rb') as outfile:
+with open('Particle-Tracking-Data/fish_track_full.npy', 'rb') as outfile:
     fish_track_full = np.load(outfile)
 
-with open('Prey-Tracking/full_paramecia_positions.npy', 'rb') as outfile:
+with open('Particle-Tracking-Data/full_paramecia_positions.npy', 'rb') as outfile:
     full_paramecia_positions = np.load(outfile)
 
-with open('Prey-Tracking/full_paramecia_id_tracks.npy', 'rb') as outfile:
+with open('Particle-Tracking-Data/full_paramecia_id_tracks.npy', 'rb') as outfile:
     full_paramecia_id_tracks = np.load(outfile)
 
-with open('Prey-Tracking/full_paramecia_timestamps.npy', 'rb') as outfile:
+with open('Particle-Tracking-Data/full_paramecia_timestamps.npy', 'rb') as outfile:
     full_paramecia_timestamps = np.load(outfile)
 
 

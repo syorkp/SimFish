@@ -685,7 +685,7 @@ class NewDrawingBoard:
                 print("Incorrect mask selected for saving")
             if self.using_gpu:
                 self.mask_buffer_time_point = self.mask_buffer_time_point.get()
-        x = (AB * L * O * S)[:, :, 1]
+        # x = (AB * L * O * S)[:, :, 1]
         return AB * L * O * S
 
     def compute_n(self, angular_size, number_of_this_feature, max_separation=1):

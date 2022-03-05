@@ -1403,7 +1403,7 @@ calibration_test_config = [
     {
         "Model Name": "calibration_test_am_final",
         "Environment Name": "ppo_continuous_sbe_is_final_calib",
-        "Trial Number": 1,
+        "Trial Number": 3,
         "Total Configurations": 1,
         "Episode Transitions": {
         },
@@ -1430,7 +1430,7 @@ calibration_test_config = [
     {
         "Model Name": "calibration_test_am_final",
         "Environment Name": "ppo_continuous_sbe_is_final_calib",
-        "Trial Number": 2,
+        "Trial Number": 4,
         "Total Configurations": 1,
         "Episode Transitions": {
         },

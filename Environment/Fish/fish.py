@@ -54,7 +54,8 @@ class Fish:
         self.verg_angle = env_variables['eyes_verg_angle'] * (np.pi / 180)
         self.retinal_field = env_variables['visual_field'] * (np.pi / 180)
         self.conv_state = 0
-        self.isomerization_probability = self.env_variables['isomerization_frequency']/self.env_variables['sim_steps_per_second']
+        self.isomerization_probability = self.env_variables['isomerization_frequency'] / self.env_variables[
+            'sim_steps_per_second']
 
         if self.new_simulation:
             self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True, env_variables, dark_col, using_gpu)
@@ -88,9 +89,9 @@ class Fish:
         self.ca = self.env_variables['ca']
         self.baseline_decrease = self.env_variables['baseline_decrease']
         self.trajectory_A = self.env_variables['trajectory_A']
-        self.trajectory_A2 = 1/np.exp(self.trajectory_A)
+        self.trajectory_A2 = 1 / np.exp(self.trajectory_A)
         self.trajectory_B = self.env_variables['trajectory_B']
-        self.trajectory_B2 = 1/np.exp(self.trajectory_B)
+        self.trajectory_B2 = 1 / np.exp(self.trajectory_B)
 
         self.action_reward_scaling = self.env_variables['action_reward_scaling']
         self.consumption_reward_scaling = self.env_variables['consumption_reward_scaling']
@@ -316,13 +317,13 @@ class Fish:
         if self.using_gpu:
             readings = readings.get()
 
-#         if np.max(readings) > 255:  # TODO: Remove after debugging
-#             print(f"""Base value exceeded 255.
-#
-# Max Red: {np.max(readings[:, 0])}
-# Max UV: {np.max(readings[:, 1])}
-# Max Red2: {np.max(readings[:, 2])}
-#             """)
+        #         if np.max(readings) > 255:  # TODO: Remove after debugging
+        #             print(f"""Base value exceeded 255.
+        #
+        # Max Red: {np.max(readings[:, 0])}
+        # Max UV: {np.max(readings[:, 1])}
+        # Max Red2: {np.max(readings[:, 2])}
+        #             """)
 
         photons = np.floor(readings).astype(int)
         photons = photons.clip(0, 255)
@@ -333,9 +334,9 @@ class Fish:
         left_photons = self.readings_to_photons(self.left_eye.readings)
         right_photons = self.readings_to_photons(self.right_eye.readings)
         left_eye = resize(np.reshape(left_photons, (1, self.left_eye.max_photoreceptor_num, 3)) * (
-                    255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
+                255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
         right_eye = resize(np.reshape(right_photons, (1, self.right_eye.max_photoreceptor_num, 3)) * (
-                    255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
+                255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
         eyes = np.hstack((left_eye, np.zeros((20, 100, 3)), right_eye))
         eyes[eyes < 0] = 0
         eyes[eyes > 255] = 255
@@ -350,9 +351,9 @@ class Fish:
         right_photons = self.readings_to_photons(self.right_eye.readings)
 
         left_eye = resize(np.reshape(left_photons, (1, self.left_eye.observation_size, 3)) * (
-                    255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
+                255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
         right_eye = resize(np.reshape(right_photons, (1, self.right_eye.observation_size, 3)) * (
-                    255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
+                255 / self.env_variables['photon_ratio']), (20, self.env_variables['width'] / 2 - 50))
         eyes = np.hstack((left_eye, np.zeros((20, 100, 3)), right_eye))
         eyes[eyes < 0] = 0
         eyes[eyes > 255] = 255
@@ -360,31 +361,35 @@ class Fish:
 
     def get_all_sectors(self, fish_position_l, fish_position_r, fish_orientation):
         """To show all channel sectors"""
-        left_sector_vertices = self.left_eye.get_sector_vertices(fish_position_l[0], fish_position_l[1], fish_orientation)
-        right_sector_vertices = self.right_eye.get_sector_vertices(fish_position_r[0], fish_position_r[1], fish_orientation)
+        left_sector_vertices = self.left_eye.get_sector_vertices(fish_position_l[0], fish_position_l[1],
+                                                                 fish_orientation)
+        right_sector_vertices = self.right_eye.get_sector_vertices(fish_position_r[0], fish_position_r[1],
+                                                                   fish_orientation)
         # left_sector_vertices = self.left_eye.get_all_sectors(fish_position_l, fish_orientation)
         # right_sector_vertices = self.right_eye.get_all_sectors(fish_position_r, fish_orientation)
         return left_sector_vertices, right_sector_vertices
 
     def intake_scale(self, energy_level):
         """Provides nonlinear scaling for consumption reward and energy level change for new simulation"""
-        return self.trajectory_B2 * np.exp(-self.trajectory_B*energy_level)
+        return self.trajectory_B2 * np.exp(-self.trajectory_B * energy_level)
 
     def action_scale(self, energy_level):
         """Provides nonlinear scaling for action penalty and energy level change for new simulation"""
-        return self.trajectory_A2 * np.exp(self.trajectory_A*energy_level)
+        return self.trajectory_A2 * np.exp(self.trajectory_A * energy_level)
 
     def update_energy_level(self, reward, consumption):
         """Updates the current energy state for continuous and discrete fish."""
         unscaled_consumption = 1.0 * consumption
-        unscaled_energy_use = self.ci*self.prev_action_impulse + self.ca*self.prev_action_angle + self.baseline_decrease
+        unscaled_energy_use = self.ci * self.prev_action_impulse + self.ca * self.prev_action_angle + self.baseline_decrease
         self.energy_level += unscaled_consumption - unscaled_energy_use
+        if self.energy_level > 1.0:
+            self.energy_level = 1.0
 
         # Nonlinear reward scaling
         intake_s = self.intake_scale(self.energy_level)
         action_s = self.action_scale(self.energy_level)
-        energy_intake = (intake_s*unscaled_consumption)
-        energy_use = (action_s*unscaled_energy_use)
+        energy_intake = (intake_s * unscaled_consumption)
+        energy_use = (action_s * unscaled_energy_use)
         reward += (energy_intake * self.consumption_reward_scaling) - (energy_use * self.action_reward_scaling)
         if consumption:
             print(f"Energy level: {self.energy_level}")

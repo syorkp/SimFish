@@ -50,8 +50,10 @@ bout = bout_inf_final_array[:, 133]
 # Discount all those ignored in action mask.
 actions, stim, bouts = remove_outliers(distances, dist_angles, stim, bout)
 
-for i in range(20):
-    get_parameters_for_stimulation(actions, stim, i, bouts)
+nums = []
+for i in range(int(max(stim))):
+    nums.append(len(actions[stim == i]))
+    # get_parameters_for_stimulation(actions, stim, i, bouts)
 
 
 

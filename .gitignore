@@ -6,16 +6,17 @@ GPU-Caches
 /Analysis/Training-Data/Action-Use-Data/
 /Analysis/Training-Data/Metrics
 /Analysis/Action-Choice-Data/
-/Analysis/Calibration/Zimmerman/
-/Analysis/Calibration/Prey-Tracking/
-/Analysis/Calibration/Image/
-/Analysis/Calibration/SNR/
-/Analysis/Calibration/MotorEffectNoise/Motor-Noise-Data/
 /Analysis/__pycache__/
-/Analysis/Calibration/LuminanceCalibration/
-/Analysis/Calibration/LuminanceCalibration2/
-/Analysis/Calibration/MotorEffectNoise/Bolton et al. (2019)/
-/Analysis/Calibration/MotorEffectNoise/Marques
+
+/Analysis/Calibration/Zimmerman/
+/Analysis/Calibration/Prey-Tracking/Particle-Tracking-Data/
+/Analysis/Calibration/Image/
+/Analysis/Calibration/Visual-Distance/SNR/
+/Analysis/Calibration/Motor-Effect-Noise/Motor-Noise-Data/
+/Analysis/Calibration/Visual-Distance/LuminanceCalibration/
+/Analysis/Calibration/Visual-Distance/LuminanceCalibration2/
+/Analysis/Calibration/Motor-Effect-Noise/Bolton et al. (2019)/
+/Analysis/Calibration/Motor-Effect-Noise/Marques
 
 /Environment/__pycache__/
 /Environment/Fish/__pycache__/

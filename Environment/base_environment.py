@@ -279,7 +279,7 @@ class BaseEnvironment:
         frame = rescale(frame, scale, multichannel=True, anti_aliasing=True)
         return frame
 
-    def draw_shapes(self):
+    def draw_shapes(self, visualisation=False):
         self.board.fish_shape(self.fish.body.position, self.env_variables['fish_mouth_size'],
                               self.env_variables['fish_head_size'], self.env_variables['fish_tail_length'],
                               self.fish.mouth.color, self.fish.head.color, self.fish.body.angle)
@@ -287,7 +287,10 @@ class BaseEnvironment:
         if len(self.prey_bodies) > 0:
             px = np.round(np.array([pr.position[0] for pr in self.prey_bodies])).astype(int)
             py = np.round(np.array([pr.position[1] for pr in self.prey_bodies])).astype(int)
-            rrs, ccs = self.board.multi_circles(px, py, self.env_variables['prey_size'])
+            if visualisation:
+                rrs, ccs = self.board.multi_circles(px, py, self.env_variables['prey_size_visualisation'])
+            else:
+                rrs, ccs = self.board.multi_circles(px, py, self.env_variables['prey_size'])
 
             try:
                 self.board.db[rrs, ccs] = self.prey_shapes[0].color
@@ -302,7 +305,7 @@ class BaseEnvironment:
                     print(f"Fix needs to be tuned: PX: {max(px)}, PY: {max(py)}")
                 self.prey_bodies.pop(lost_index)
                 self.prey_shapes.pop(lost_index)
-                self.draw_shapes()
+                self.draw_shapes(visualisation=visualisation)
 
         if len(self.sand_grain_bodies) > 0:
             px = np.round(np.array([pr.position[0] for pr in self.sand_grain_bodies])).astype(int)
@@ -322,7 +325,7 @@ class BaseEnvironment:
                     print(f"Fix needs to be tuned: PX: {max(px)}, PY: {max(py)}")
                 self.sand_grain_bodies.pop(lost_index)
                 self.sand_grain_shapes.pop(lost_index)
-                self.draw_shapes()
+                self.draw_shapes(visualisation=visualisation)
 
         for i, pr in enumerate(self.predator_bodies):
             self.board.circle(pr.position, self.env_variables['predator_size'], self.predator_shapes[i].color)

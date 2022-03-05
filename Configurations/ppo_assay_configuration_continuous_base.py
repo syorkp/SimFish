@@ -30,7 +30,7 @@ env = {'width': 1500,  # arena size
 
        'prey_mass': 1.,
        'prey_inertia': 40.,
-       'prey_size': 1.,   # FINAL VALUE - 0.2mm diameter, so 1.
+       'prey_size': 1.,
        'prey_num': 1,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
@@ -63,9 +63,9 @@ env = {'width': 1500,  # arena size
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'photon_ratio': 100,  # expected number of photons for unit brightness
-       'bkg_scatter': 0.00001,  # base brightness of the background
+       'bkg_scatter': 0.0001,  # base brightness of the background
        'dark_gain': 0.02,  # gai nof brightness in the dark side
-       'light_gain': 1.,  # gain of brightness in the bright side
+       'light_gain': 1.0,  # gain of brightness in the bright side
 
        'forward_swim_cost': 3,
        'forward_swim_impulse': 10,
@@ -114,10 +114,10 @@ env = {'width': 1500,  # arena size
 
        # New simulation variables
        'decay_rate': 0.0006,  # For scatter mask (eyeballed it for practical reasons) # NO DATA YET
-       'uv_photoreceptor_rf_size': 0.014,  # Pi Radians (0.8 degrees) - Yoshimatsu et al. (2019)
-       'red_photoreceptor_rf_size': 0.014,  # Kept same
-       'uv_photoreceptor_num': 56,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
-       'red_photoreceptor_num': 64,  # NO DATA YET
+       'uv_photoreceptor_rf_size': 0.0128,  # Pi Radians (0.8 degrees) - Yoshimatsu et al. (2019)
+       'red_photoreceptor_rf_size': 0.0128,  # Kept same
+       'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
+       'red_photoreceptor_num': 64,
        'shared_photoreceptor_channels': False,  # Whether the two channels have the same RF angles (saves computation time)
        'incorporate_uv_strike_zone': True,
        'strike_zone_sigma': 1.4,  # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
@@ -133,7 +133,7 @@ env = {'width': 1500,  # arena size
 
        # # Observation scaling factors (to set CNN inputs into 0 to 255 range):
        'red_scaling_factor': 1,  # max was 100 without scaling
-       'uv_scaling_factor': 1,  # max was 40 without scaling
+       'uv_scaling_factor': 10,  # max was 40 without scaling
        'red_2_scaling_factor': 0.018,  # max was 12000 without scaling
 
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
@@ -227,6 +227,9 @@ env = {'width': 1500,  # arena size
        'minimum_observation_size': 100,  # Parameter to determine padded observation size (avoids conv layer size bug).
 
        'shot_noise': True,  # Whether to model observation of individual photons as a poisson process.
+
+       # For GIFs and test, as otherwise wouldnt be able to see paramecia
+       'prey_size_visualisation': 4.
        }
 
 
