@@ -11,35 +11,15 @@ import os
 # all distances in pixels
 import numpy as np
 
-env = {'width': 1500,  # arena size
-       'height': 1500,
-       'drag': 0.7,  # water drag
-       'phys_dt': 0.1,  # physics time step
-       'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step
 
-       'fish_mass': 140.,
-       'fish_mouth_size': 4.,   # FINAL VALUE - 0.2mm diameter, so 1.
-       'fish_head_size': 2.5,   # Old - 10
-       'fish_tail_length': 41.5,  # Old: 70
-       'eyes_verg_angle': 77.,  # in deg
-       'visual_field': 163.,  # single eye angular visual field
-       'eyes_biasx': 2.5,  # distance of eyes from midline - interretinal distance of 0.5mm
+
+env = {
+       # Old Simulation (Parameters ignored in new simulation)
        'num_photoreceptors': 120,  # number of visual 'rays' per eye
        'min_vis_dist': 20,
        'max_vis_dist': 180,
 
-       'prey_mass': 1.,
-       'prey_inertia': 40.,
-       'prey_size': 1.,   # FINAL VALUE - 0.1mm diameter, so 1.
-       'prey_num': 20,
-       'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
-       'prey_escape_impulse': 2,
-       'prey_sensing_distance': 20,
-       'prey_max_turning_angle': 0.04,  # Max angle change every 2ms in pi radians - This is the turn that happens every step, designed to replicate linear wavy movement.
-       'prey_jump': False,
-       'differential_prey': False,
-       'prey_cloud_num': 2,
 
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
@@ -52,20 +32,7 @@ env = {'width': 1500,  # arena size
        'vegetation_num': 0,
        'vegetation_effect_distance': 150,
 
-       'predator_mass': 10.,
-       'predator_inertia': 40.,
-       'predator_size': 43.5,  # To be 8.7mm in diameter, formerly 100
-       'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
-       'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
-       'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
-       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
-
-       'dark_light_ratio': 0.0,  # fraction of arena in the dark
-       'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'photon_ratio': 100,  # expected number of photons for unit brightness
-       'bkg_scatter': 0.0001,  # base brightness of the background
-       'dark_gain': 0.38,  # gain of brightness in the dark side
-       'light_gain': .5,  # gain of brightness in the bright side
 
        'forward_swim_cost': 3,
        'forward_swim_impulse': 10,
@@ -81,24 +48,66 @@ env = {'width': 1500,  # arena size
 
        'capture_swim_extra_cost': 25,
        'capture_basic_reward': 10000,  # Used only in old simulation.
+
+       'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
+       'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
+
+       'distance_penalty_scaling_factor': 1.0,  # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
+       'angle_penalty_scaling_factor': 0.5,  # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
+
+       # Shared
+       'width': 1500,  # arena size
+       'height': 1500,
+       'drag': 0.7,  # water drag
+       'phys_dt': 0.1,  # physics time step
+       'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step
+
+       'fish_mass': 140.,
+       'fish_mouth_size': 4.,  # FINAL VALUE - 0.2mm diameter, so 1.
+       'fish_head_size': 2.5,  # Old - 10
+       'fish_tail_length': 41.5,  # Old: 70
+       'eyes_verg_angle': 77.,  # in deg
+       'visual_field': 163.,  # single eye angular visual field
+       'eyes_biasx': 2.5,  # distance of eyes from midline - interretinal distance of 0.5mm
+
+       'prey_mass': 1.,
+       'prey_inertia': 40.,
+       'prey_size': 1.,   # FINAL VALUE - 0.1mm diameter, so 1.
+       'prey_num': 20,
+       'prey_impulse': 0.0,  # impulse each prey receives per step
+       'prey_escape_impulse': 2,
+       'prey_sensing_distance': 20,
+       'prey_max_turning_angle': 0.04,  # Max angle change every 2ms in pi radians - This is the turn that happens every step, designed to replicate linear wavy movement.
+       'prey_jump': False,
+       'differential_prey': False,
+       'prey_cloud_num': 2,
+
+       'predator_mass': 10.,
+       'predator_inertia': 40.,
+       'predator_size': 43.5,  # To be 8.7mm in diameter, formerly 100
+       'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
+       'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
+       'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
+       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
+
+       'dark_light_ratio': 0.0,  # fraction of arena in the dark
+       'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
+       'bkg_scatter': 0.0001,  # base brightness of the background
+       'dark_gain': 0.38,  # gain of brightness in the dark side
+       'light_gain': .5,  # gain of brightness in the bright side
+
        'predator_cost': 100,
 
        'hunger': False,
-       'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
-       'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
        'reafference': False,
        'stress': False,
        'stress_compound': 0.9,
 
        # For continuous Actions space:
-       'max_angle_change': np.pi/5,
+       'max_angle_change': np.pi / 5,
        'max_impulse': 10.0,  # Up to 50ish
 
-       'distance_penalty_scaling_factor': 1.0,  # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
-       'angle_penalty_scaling_factor': 0.5,  # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
        'baseline_penalty': 0.002,
-
-       # Policy scaffolding
        'reward_distance': 100,
        'proximity_reward': 0.0,
 
@@ -106,14 +115,31 @@ env = {'width': 1500,  # arena size
        'max_sigma_angle': 0.4,
        'min_sigma_impulse': 0.1,
        'min_sigma_angle': 0.1,
-
        'sigma_time_constant': 0.000001,
 
        'clip_param': 0.2,
        'cs_required': False,
 
-       # New simulation variables
+       # New Simulation
+
+       # Debugging
+       'visualise_mask': False,  # For debugging purposes.
+
+       # Environment
        'decay_rate': 0.0006,
+       'sim_steps_per_second': 5,  # For converting isomerization frequency.
+       'background_grating_frequency': 50,  # For extra layer motion:
+       'displacement_scaling_factor': 0.018,  # Multiplied by previous impulse size to cause displacement of nearby features.
+       'known_max_fish_i': 20,  # TODO: Determine
+
+       # Arbiterary scaling
+       # # Observation scaling factors (to set CNN inputs into 0 to 255 range):
+       'red_scaling_factor': 1,  # max was 100 without scaling
+       'uv_scaling_factor': 10,  # max was 40 without scaling
+       'red_2_scaling_factor': 0.018,  # max was 12000 without scaling
+       'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
+
+       # Fish Visual System
        'uv_photoreceptor_rf_size': 0.0128,  # Pi Radians (0.8 degrees) - Yoshimatsu et al. (2019)
        'red_photoreceptor_rf_size': 0.0128,  # Kept same
        'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
@@ -121,27 +147,12 @@ env = {'width': 1500,  # arena size
        'shared_photoreceptor_channels': False,  # Whether the two channels have the same RF angles (saves computation time)
        'incorporate_uv_strike_zone': True,
        'strike_zone_sigma': 1.5,  # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
-       'visualise_mask': False,  # For debugging purposes.
 
        # For dark noise:
        'isomerization_frequency': 0.0,  # Average frequency of photoisomerization per second per photoreceptor
        'max_isomerization_size': 0.01,
-       'sim_steps_per_second': 5,  # For converting isomerization frequency.
 
-       # For extra layer motion:
-       'background_grating_frequency': 50,
-
-       # # Observation scaling factors (to set CNN inputs into 0 to 255 range):
-       'red_scaling_factor': 1,  # max was 100 without scaling
-       'uv_scaling_factor': 10,  # max was 40 without scaling
-       'red_2_scaling_factor': 0.018,  # max was 12000 without scaling
-
-       'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
-
-       'displacement_scaling_factor': 0.018,  # Multiplied by previous impulse size to cause displacement of nearby features.
-       'known_max_fish_i': 20,  # TODO: Determine
-
-       # For new energy state system
+       # Energy state and hunger-based rewards
        'ci': 0.0001,
        'ca': 0.0001,
        'baseline_decrease': 0.0005,
@@ -229,8 +240,6 @@ env = {'width': 1500,  # arena size
 
        'shot_noise': True,  # Whether to model observation of individual photons as a poisson process.
        }
-
-
 from Networks.original_network import connectivity, reflected, base_network_layers, modular_network_layers, ops
 
 params = {'num_actions': 10,  # size of action space

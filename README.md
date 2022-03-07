@@ -23,6 +23,8 @@ Uses the following packages:
 * Cython==0.29.21
 * seaborn==0.11.0
 * tensorflow-probability==0.11.0 (0.8 on myriad due to TF compatability)
+* sklearn
+* statsmodels
 
 Changes for local gpu compatability:
 * tensorflow-probability==0.10.1 (not 0.10.0 due to cloudpickle importerror)

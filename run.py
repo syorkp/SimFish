@@ -30,8 +30,8 @@ if not os.path.exists("./Assay-Output/"):
 
 # Loading VRV configs
 
-with open("./Run-Configurations/VRV_CONFIG.json", "r") as file:
-    vrv_config = json.load(file)
+# with open("./Run-Configurations/VRV_CONFIG.json", "r") as file:
+#     vrv_config = json.load(file)
 
 ppo_beta_configuration = [
     {
