@@ -6,7 +6,7 @@ from Services.trial_manager import TrialManager
 
 # Ensure output directories exist
 if not os.path.exists("./Training-Output/"):
-    os.makedirs("./Output/")
+    os.makedirs("./Training-Output/")
 
 if not os.path.exists("./Assay-Output/"):
     os.makedirs("./Assay-Output/")
