@@ -65,10 +65,10 @@ while not q:
     l_uv = s[:, 1, 0]
     r_uv = s[:, 1, 1]
 
-    print(sim_state.prey_bodies[-1].position)
-    print(sim_state.fish.body.position)
+    print(f"Prey position: {np.array(sim_state.prey_bodies[-1].position)}")
+    print(f"Fish position: {np.array(sim_state.fish.body.position)}")
     print(f"Distance: {distance}")
-    print(np.max(s[:, 1, :]))
+    print(f"Max UV: {np.max(s[:, 1, :])}")
     print(f"Max stimulus at L: {np.argmax(s[:, 1, 0])} and R: {np.argmax(s[:, 1, 1])}")
     print("\n")
 

@@ -12,7 +12,7 @@ class NewDrawingBoard:
 
     def __init__(self, width, height, decay_rate, photoreceptor_rf_size, using_gpu, visualise_mask, prey_size=4,
                  predator_size=100, visible_scatter=0.3, background_grating_frequency=50, dark_light_ratio=0.0,
-                 dark_gain=0.01, light_gain=1.0):
+                 dark_gain=0.01, light_gain=1.0, red_occlusion_gain=1.0, uv_occlusion_gain=1.0, red2_occlusion_gain=1.0):
 
         self.using_gpu = using_gpu
 
@@ -38,6 +38,15 @@ class NewDrawingBoard:
         self.predator_size = predator_size * 2
         self.predator_radius = predator_size
 
+        self.red_occlusion_gain = red_occlusion_gain
+        self.uv_occlusion_gain = uv_occlusion_gain
+        self.red2_occlusion_gain = red2_occlusion_gain
+
+        if self.red_occlusion_gain != self.uv_occlusion_gain or self.uv_occlusion_gain != self.red2_occlusion_gain:
+            self.differential_occlusion_gain = True
+        else:
+            self.differential_occlusion_gain = False
+
         self.xp, self.yp = self.chosen_math_library.arange(self.width), self.chosen_math_library.arange(self.height)
 
         if self.using_gpu:
@@ -58,7 +67,7 @@ class NewDrawingBoard:
         self.mask_buffer_time_point = None
 
         # For obstruction mask (reset each time is called).
-        self.empty_mask = self.chosen_math_library.ones((1500, 1500, 1), dtype=int)
+        self.empty_mask = self.chosen_math_library.ones((1500, 1500, 1), dtype=np.float64)
 
     def get_background_grating(self, frequency, linear=False):
         if linear:
@@ -168,7 +177,7 @@ class NewDrawingBoard:
     def create_obstruction_mask_lines_cupy(self, fish_position, prey_locations, predator_locations):
         """Must use both numpy and cupy as otherwise GPU runs out of memory."""
         # Reset empty mask
-        self.empty_mask[:] = 1
+        self.empty_mask[:] = 1.0
 
         # Compute prey positions relative to fish (Prey_num, 2)
         prey_relative_positions = prey_locations - fish_position
@@ -381,7 +390,7 @@ class NewDrawingBoard:
 
         full_set = full_set.reshape(-1, 2)
 
-        self.empty_mask[full_set[:, 1], full_set[:, 0]] = 0
+        self.empty_mask[full_set[:, 1], full_set[:, 0]] = 0.0
 
         # For debugging:
         # try:
@@ -657,12 +666,21 @@ class NewDrawingBoard:
         L = self.luminance_mask
 
         if prey_locations.size + predator_locations.size == 0:
-            O = self.chosen_math_library.ones((self.width, self.height, 1))
+            O = self.chosen_math_library.ones((self.width, self.height, 1), dtype=np.float64)
         else:
             O = self.create_obstruction_mask_lines_cupy(self.chosen_math_library.array(fish_position),
                                                         self.chosen_math_library.array(prey_locations),
                                                         self.chosen_math_library.array(predator_locations))
             # O = self.create_obstruction_mask_lines_mixed(fish_position, prey_locations, predator_locations)
+
+        if self.differential_occlusion_gain:
+            occluded = O[:, :, 0] == 0.0
+            O = self.chosen_math_library.concatenate((O, O, O), axis=2)
+            O[:, :, 0] += occluded * self.red_occlusion_gain
+            O[:, :, 1] += occluded * self.uv_occlusion_gain
+            O[:, :, 2] += occluded * self.red2_occlusion_gain
+        else:
+            O[O == 0] = self.red_occlusion_gain
 
         S = self.scatter(self.xp[:, None], self.yp[None, :], fish_position[1], fish_position[0])
 

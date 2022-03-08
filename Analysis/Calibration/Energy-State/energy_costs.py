@@ -68,7 +68,8 @@ def get_trajectory(consumptions, impulses, angles, ci, ca, consumption_energy_ga
         reward.append((energy_intake * consumption_reward_scaling) - (energy_use * action_reward_scaling))
         action_penalty.append(energy_use)
 
-    plt.plot()
+
+    print(f"Total reward: {np.sum(reward)}")
 
     steps = [i for i in range(num_steps)]
 
@@ -82,21 +83,66 @@ def get_trajectory(consumptions, impulses, angles, ci, ca, consumption_energy_ga
     plt.show()
 
 
+def get_returns_from_investment(ci, ca, baseline_decrease, trajectory_A, trajectory_B, consumption_energy_gain,
+                                action_reward_scaling, consumption_reward_scaling, impulses, angles):
+    """Compute action reward penalties, and consumption returns to find level where worth it."""
+    energy_level = 1.0
+    num_steps = len(impulses)
+
+    trajectory_A2 = 1/np.exp(trajectory_A)
+    trajectory_B2 = 1/np.exp(trajectory_B)
+
+    total_reward = 0
+
+    for step in range(num_steps):
+        # Energy
+        if step == num_steps - 1:
+            unscaled_consumption = consumption_energy_gain * 1
+        else:
+            unscaled_consumption = 0
+        unscaled_energy_use = ci * impulses[step] + ca * angles[step] + baseline_decrease
+        energy_level += unscaled_consumption - unscaled_energy_use
+        if energy_level > 1.0:
+            energy_level = 1.0
+
+        # Reward
+        intake_s = intake_scale(energy_level, trajectory_B, trajectory_B2)
+        action_s = action_scale(energy_level, trajectory_A, trajectory_A2)
+        energy_intake = (intake_s * unscaled_consumption)
+        energy_use = (action_s * unscaled_energy_use)
+
+        total_reward += ((energy_intake * consumption_reward_scaling) - (energy_use * action_reward_scaling))
+
+    print(total_reward)
+
+
+# Chosen parameters
+
+ci = 0.0001
+ca = 0.0001
+baseline_decrease = 0.0003
+trajectory_A = 5.0
+trajectory_B = 2.5
+consumption_energy_gain = 1.0
+action_reward_scaling = 1942
+consumption_reward_scaling = 50000
+
+
+# Computing return from investment
+steps = 500
+impulses = np.random.uniform(4, 6, steps)
+angles = np.random.uniform(-1, 1, steps)
+get_returns_from_investment(ci, ca, baseline_decrease, trajectory_A, trajectory_B, consumption_energy_gain,
+                                action_reward_scaling, consumption_reward_scaling, impulses, angles)
+
+
+# Modelling an episode
+
 steps = 1000
 consumptions = np.random.choice([0, 1], steps, p=[1-0.002, 0.002])
 # consumptions = np.random.choice([0, 1], steps, p=[1-0.0, 0.0])
 impulses = np.random.uniform(0, 20, steps)
 angles = np.random.uniform(-1, 1, steps)
-
-
-ci = 0.0001
-ca = 0.0001
-baseline_decrease = 0.0005
-trajectory_A = 5.0
-trajectory_B = 2.5
-consumption_energy_gain = 1.0
-action_reward_scaling = 10000
-consumption_reward_scaling = 50000
 
 get_trajectory(consumptions, impulses, angles, ci, ca, consumption_energy_gain, baseline_decrease, trajectory_A,
                    trajectory_B, action_reward_scaling, consumption_reward_scaling,  num_steps=steps)

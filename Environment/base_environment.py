@@ -40,7 +40,11 @@ class BaseEnvironment:
                                              'background_grating_frequency'],
                                          dark_light_ratio=self.env_variables['dark_light_ratio'],
                                          dark_gain=self.env_variables['dark_gain'],
-                                         light_gain=self.env_variables['light_gain'])
+                                         light_gain=self.env_variables['light_gain'],
+                                         red_occlusion_gain=self.env_variables['red_occlusion_gain'],
+                                         uv_occlusion_gain=self.env_variables['uv_occlusion_gain'],
+                                         red2_occlusion_gain=self.env_variables['red2_occlusion_gain']
+                                         )
         else:
             self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])
         self.draw_screen = draw_screen
