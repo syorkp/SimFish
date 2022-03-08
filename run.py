@@ -1401,7 +1401,7 @@ phase_1_test_config = [
 
 calibration_test_config = [
     {
-        "Model Name": "parameterised_speed_test_normal",
+        "Model Name": "parameterised_speed_test_fast",
         "Environment Name": "ppo_continuous_sbe_is_final_calib",
         "Trial Number": 1,
         "Total Configurations": 1,
@@ -1428,7 +1428,7 @@ calibration_test_config = [
         "New Simulation": True
     },
     {
-        "Model Name": "parameterised_speed_test_normal",
+        "Model Name": "parameterised_speed_test_fast",
         "Environment Name": "ppo_continuous_sbe_is_final_calib",
         "Trial Number": 2,
         "Total Configurations": 1,
