@@ -325,8 +325,15 @@ class Fish:
         # Max Red2: {np.max(readings[:, 2])}
         #             """)
 
+        # Re-scale
+        # readings[:, 0, :] /= self.env_variables["red_scaling_factor"]
+        # readings[:, 1] /= self.env_variables["uv_scaling_factor"]
+        # readings[:, 2, :] /= self.env_variables["red2_scaling_factor"]
+
+        # readings[:, 1] /= (max(readings[:, 1])/ 255)
         photons = np.floor(readings).astype(int)
-        photons = photons.clip(0, 255)
+
+        # photons = photons.clip(0, 255)
 
         return photons
 
@@ -381,9 +388,6 @@ class Fish:
         """Updates the current energy state for continuous and discrete fish."""
         unscaled_consumption = 1.0 * consumption
         unscaled_energy_use = self.ci * self.prev_action_impulse + self.ca * self.prev_action_angle + self.baseline_decrease
-        self.energy_level += unscaled_consumption - unscaled_energy_use
-        if self.energy_level > 1.0:
-            self.energy_level = 1.0
 
         # Nonlinear reward scaling
         intake_s = self.intake_scale(self.energy_level)
@@ -391,6 +395,11 @@ class Fish:
         energy_intake = (intake_s * unscaled_consumption)
         energy_use = (action_s * unscaled_energy_use)
         reward += (energy_intake * self.consumption_reward_scaling) - (energy_use * self.action_reward_scaling)
+
+        self.energy_level += unscaled_consumption - unscaled_energy_use
+        if self.energy_level > 1.0:
+            self.energy_level = 1.0
+
         if consumption:
             print(f"Energy level: {self.energy_level}")
             print(f"Capture reward: {(energy_intake * self.consumption_reward_scaling)}")

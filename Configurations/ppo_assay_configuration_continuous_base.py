@@ -63,7 +63,7 @@ env = {'width': 1500,  # arena size
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'photon_ratio': 100,  # expected number of photons for unit brightness
-       'bkg_scatter': 0.00001,  # base brightness of the background
+       'bkg_scatter': 0.00019,  # base brightness of the background
        'dark_gain': 0.02,  # gai nof brightness in the dark side
        'light_gain': 1.0,  # gain of brightness in the bright side
 
@@ -120,7 +120,7 @@ env = {'width': 1500,  # arena size
        'red_photoreceptor_num': 64,
        'shared_photoreceptor_channels': False,  # Whether the two channels have the same RF angles (saves computation time)
        'incorporate_uv_strike_zone': True,
-       'strike_zone_sigma': 1.4,  # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
+       'strike_zone_sigma': 1.5,  # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
        'visualise_mask': False,  # For debugging purposes.
 
        # For dark noise:
@@ -133,11 +133,11 @@ env = {'width': 1500,  # arena size
 
        # # Observation scaling factors (to set CNN inputs into 0 to 255 range):
        'red_scaling_factor': 1,  # max was 100 without scaling
-       'uv_scaling_factor': 50,  # max was 40 without scaling
+       'uv_scaling_factor': 1000000,  # max was 40 without scaling
        'red_2_scaling_factor': 0.018,  # max was 12000 without scaling
-       'red_occlusion_gain': 1.0,
-       'uv_occlusion_gain': 0.5,
-       'red2_occlusion_gain': 1.0,
+       'red_occlusion_gain': 0.0,
+       'uv_occlusion_gain': 1.0,
+       'red2_occlusion_gain': 0.0,
 
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
 

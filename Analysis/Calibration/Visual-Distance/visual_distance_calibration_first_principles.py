@@ -57,6 +57,10 @@ def compute_distinguishability(prey_stimulus, max_noise_stimulus):
     for p in range(min_pixels, max_pixels):
         pa = poisson.pmf(p, prey_stimulus)
         pb = poisson.pmf(p, max_noise_stimulus)
+        if pa == 0:
+            pa += 0.000000001
+        if pb == 0:
+            pb += 0.000000001
         distinguishability += pa * (pa/(pa + pb))
     return distinguishability
 
@@ -66,13 +70,13 @@ def compute_distinguishability_old(prey_stimulus, max_noise_stimulus):
     return distinguishability
 
 
-def plot_distinguishability_against_distance(max_distance, bkg_scatter, luminance, scaling_factor, uv_occlusion_gain):
+def plot_distinguishability_against_distance(max_distance, bkg_scatter, luminance, scaling_factor, uv_occlusion_gain, max_curve_distance=1000):
     rf_size = 0.0128
     decay_constant = 0.0006
     prey_size = 1
 
     distinguishability_scores = []
-    distances = np.linspace(10, max_distance, 100)
+    distances = np.linspace(10, max_curve_distance, 10)
 
     uv_prey_photons = []
     uv_scatter_photons = []
@@ -207,7 +211,7 @@ def plot_distinguishability_against_luminance_two_distances(visual_distance_full
     with open(
             f"distinguishability_scores_partial.npy",
             "wb") as f:
-        np.save(f, np.array(distinguishability_scores_full))
+        np.save(f, np.array(distinguishability_scores_partial))
 
     with open(
             f"distinguishability_scores_full.npy",
@@ -228,8 +232,8 @@ def plot_distinguishability_against_luminance_two_distances(visual_distance_full
 max_distance = 1500
 bkg_scatter = 0.00019
 full_l = 1.0
-normal_l = 0.272
-dark_l = 0.270
+normal_l = 0.27212121212121215
+dark_l = 0.2693939393939394
 scaling_factor = 1000000
 uv_occlusion_gain = 1.0
 visual_distance_full = 34
@@ -239,7 +243,7 @@ min_luminance = 0.25
 max_luminance = 0.28
 
 
-# plot_distinguishability_against_luminance_two_distances(visual_distance_full, visual_distance_partial, max_distance, bkg_scatter, scaling_factor, uv_occlusion_gain, min_luminance, max_luminance)
+plot_distinguishability_against_luminance_two_distances(visual_distance_full, visual_distance_partial, max_distance, bkg_scatter, scaling_factor, uv_occlusion_gain, min_luminance, max_luminance)
 
 
 # plot_distinguishability_against_luminance(visual_distance_full, max_distance, bkg_scatter, scaling_factor, uv_occlusion_gain, min_luminance, max_luminance)
@@ -248,5 +252,5 @@ max_luminance = 0.28
 plot_distinguishability_against_distance(max_distance, bkg_scatter, full_l, scaling_factor, uv_occlusion_gain)
 plot_distinguishability_against_distance(max_distance, bkg_scatter, normal_l, scaling_factor, uv_occlusion_gain)
 plot_distinguishability_against_distance(max_distance, bkg_scatter, dark_l, scaling_factor, uv_occlusion_gain)
-
-
+#
+#

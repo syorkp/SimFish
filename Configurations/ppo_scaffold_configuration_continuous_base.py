@@ -83,7 +83,7 @@ env = {
        # This is the turn (pi radians) that happens every step, designed to replicate linear wavy movement.
        'prey_fluid_displacement': True,
        'prey_jump': False,
-       'differential_prey': True,
+       'differential_prey': False,
        'prey_cloud_num': 2,
 
        'predator_mass': 10.,
@@ -221,14 +221,14 @@ env = {
        'consumption_energy_gain': 1.0,
 
        # Reward
-       'action_reward_scaling': 1942,  # Arbitrary (practical) hyperparameter for penalty for action
+       'action_reward_scaling': 1000, #1942,  # Arbitrary (practical) hyperparameter for penalty for action
        'consumption_reward_scaling': 50000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
        'wall_reflection': True,
        'wall_touch_penalty': 0.2,
 
        # Currents
-       'current_setting': "Circular",  # Current setting. If none, should be False. Current options: Circular, Linear
+       'current_setting': False,  # Current setting. If none, should be False. Current options: Circular, Linear
        'max_current_strength': 0.01,  # Arbitrary impulse variable to be calibrated
        'current_width': 0.2,
        'current_strength_variance': 1,
@@ -268,8 +268,8 @@ params = {
        # Learning (PPO only)
        'n_updates_per_iteration': 4,
        'rnn_state_computation': False,
-       'learning_rate_actor': 0.0001,  # Formerly 0.000001
-       'learning_rate_critic': 0.0001,  # Formerly 0.000001
+       'learning_rate_actor': 0.00001,  # Formerly 0.000001
+       'learning_rate_critic': 0.00001,  # Formerly 0.000001
 
        # Learning (PPO discrete only)
        'epsilon_greedy': False,
