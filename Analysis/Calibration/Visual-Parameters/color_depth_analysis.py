@@ -34,7 +34,7 @@ def plot_decay(decay_constant=0.001):
     plt.show()
 
 
-im = Image.open('Image/AVG_Measurements.png')
+im = Image.open('../Image/AVG_Measurements.png')
 pix = im.load()
 
 line = get_intensity_decay(348, 632, 26, 955, pix)

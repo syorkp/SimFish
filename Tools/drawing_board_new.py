@@ -164,6 +164,10 @@ class NewDrawingBoard:
         positional_mask = (((x - i) ** 2 + (y - j) ** 2) ** 0.5)  # Measure of distance from fish at every point.
         desired_scatter = self.chosen_math_library.exp(-self.decay_rate * positional_mask)
 
+        plt.imshow(desired_scatter)
+        plt.colorbar()
+        plt.show()
+
         # To offset the effect of reduced sampling further away from fish (an unwanted effect that yielded massive
         # performance improvements). Should counter them exactly.
         implicit_scatter = self.chosen_math_library.sin(
@@ -682,7 +686,9 @@ class NewDrawingBoard:
         else:
             O[O == 0] = self.red_occlusion_gain
 
+
         S = self.scatter(self.xp[:, None], self.yp[None, :], fish_position[1], fish_position[0])
+
 
         # AV = self.chosen_math_library.concatenate(
         #     (AB[:, :, 0:1], np.array(self.db[:, :, 1:2]), AB[:, :, 1:2]),

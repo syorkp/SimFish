@@ -89,13 +89,14 @@ distance = (distance_x_inc_glide**2 + distance_y_inc_glide**2)**0.5
 # # Convert impulse for specific mass
 impulse = (distance * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
 dist_angles_radians = (np.absolute(dist_angles)/180) * np.pi
-# plt.scatter(dist_angles_radians, impulse, alpha=0.2)
-# plt.xlabel("Full Angle (Radians)")
-# plt.ylabel("Impulse")
-# plt.show()
+plt.scatter(dist_angles_radians, impulse, alpha=0.2)
+plt.xlabel("Angle (pi radians)")
+plt.ylabel("Impulse")
+plt.show()
 
-impulse = impulse/10.0
-dist_angles_radians = dist_angles_radians / (np.pi/5)
+# Scale as scaled in PPO
+# impulse = impulse#/10.0
+# dist_angles_radians = dist_angles_radians# / (np.pi/5)
 
 # Computing kernel density
 # ang, imp = np.linspace(0, 500, 500), np.linspace(0, 20, 500)
@@ -137,12 +138,15 @@ params = kde.get_params()
 model = DBSCAN(eps=0.8125, min_samples=5).fit(actions)
 colors = model.labels_
 moutliers = actions[model.labels_ == -1]
+
 # plt.scatter(actions[:, 0], actions[:, 1], c=colors, alpha=0.9)
 # plt.show()
 #
-# plt.scatter(actions[:, 0], actions[:, 1], alpha=0.3)
-# plt.scatter(moutliers[:, 0], moutliers[:, 1], color="r", alpha=0.3)
-# plt.show()
+plt.scatter(actions[:, 1], actions[:, 0], alpha=0.3)
+plt.scatter(moutliers[:, 1], moutliers[:, 0], color="r", alpha=0.3)
+plt.xlabel("Angle (pi radians)")
+plt.ylabel("Impulse")
+plt.show()
 #
 sorted_actions = actions[model.labels_ != -1]
 # plt.scatter(sorted_actions[:, 0], sorted_actions[:, 1], color="r", alpha=0.3)
@@ -192,15 +196,18 @@ log_density_of_original = kde_sorted.score_samples(actions)
 indices_of_valid = (model.labels_ != -1) * 1
 sorted_actions = np.array([sorted_actions])
 actions = np.array([actions])
-bw_ml_x = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, :100, 0], var_type='c', bw='cv_ml')
-bw_ml_y = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, :100, 1], var_type='c', bw='cv_ml')
+bw_ml_x = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, :, 0], var_type='c', bw='cv_ml')
+bw_ml_y = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, :, 1], var_type='c', bw='cv_ml')
 probs = bw_ml_x.pdf(actions[:, :, 0]) * bw_ml_y.pdf(actions[:, :, 1])
 probs2 = copy.copy(probs)
 
 
 fig = plt.figure(figsize=(12, 12))
 ax = fig.add_subplot(projection='3d')
-ax.scatter(impulse[:, 0], dist_angles_radians[:, 0], probs)
+ax.scatter(dist_angles_radians[:, 0], impulse[:, 0], probs)
+ax.set_ylabel("Impulse")
+ax.set_xlabel("Angle (pi radians)")
+ax.set_zlabel("Probability density")
 plt.show()
 
 
@@ -217,7 +224,7 @@ for threshold in np.linspace(0.000005, 0.0001, 1000):
 
     if np.array_equal(indices_of_valid, probs2):
         print(f"FOUND Threshold {threshold}")
-
+#
 print(f"Best: {current_best}")
 #
 # probs2[probs < 0.0000729] = 0
@@ -241,16 +248,23 @@ print(f"Best: {current_best}")
 #                     Integrating distribution
 
 # Number of should have samples = 12 x 350
-# Number of should have samples = 12 x 350
 possible_impulse = np.linspace(0, 350, 1000)   # Divide total by 100
 possible_angle = np.linspace(0, 12, 1000)   # Divide total by 100
 possible_impulse, possible_angle = np.meshgrid(possible_angle, possible_impulse)
 possible_impulse, possible_angle = possible_impulse.flatten(), possible_angle.flatten()
 
-probs = bw_ml_x.pdf(possible_angle) * bw_ml_y.pdf(possible_impulse)
+# probs = bw_ml_x.pdf(possible_angle) * bw_ml_y.pdf(possible_impulse)
 
 probs[probs < 0.0000729] = 0
 probs[probs > 0.0000729] = 1
+
+fig = plt.figure(figsize=(12, 12))
+ax = fig.add_subplot(projection='3d')
+ax.scatter(dist_angles_radians[:, 0], impulse[:, 0], probs)
+ax.set_ylabel("Impulse")
+ax.set_xlabel("Angle (pi radians)")
+ax.set_zlabel("Probability density")
+plt.show()
 
 print(np.sum(probs))
 
