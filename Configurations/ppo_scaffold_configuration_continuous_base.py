@@ -268,8 +268,8 @@ params = {
        # Learning (PPO only)
        'n_updates_per_iteration': 4,
        'rnn_state_computation': False,
-       'learning_rate_actor': 0.0001,  # Formerly 0.000001
-       'learning_rate_critic': 0.0001,  # Formerly 0.000001
+       'learning_rate_actor': 0.000001,  # Formerly 0.000001
+       'learning_rate_critic': 0.000001,  # Formerly 0.000001
 
        # Learning (PPO discrete only)
        'epsilon_greedy': False,
