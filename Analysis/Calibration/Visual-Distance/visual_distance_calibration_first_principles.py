@@ -244,7 +244,7 @@ max_luminance = 0.2721
 
 
 plot_distinguishability_against_distance(max_distance, bkg_scatter, full_l, scaling_factor, uv_occlusion_gain)
-plot_distinguishability_against_distance(max_luminance, bkg_scatter, full_l, scaling_factor, uv_occlusion_gain)
+plot_distinguishability_against_distance(max_distance, bkg_scatter, max_luminance, scaling_factor, uv_occlusion_gain)
 
 plot_distinguishability_against_luminance_two_distances(visual_distance_full, visual_distance_partial, max_distance, bkg_scatter, scaling_factor, uv_occlusion_gain, min_luminance, max_luminance)
 
