@@ -1,12 +1,12 @@
 import os
 import shutil
 # Remove GPU Cache
-if os.path.exists("../../.nv"):
+if os.path.exists("../.nv"):
     print("Directory exists, removed it")
-    shutil.rmtree("../../.nv")
+    shutil.rmtree("../.nv")
 else:
     print("Directory didnt exist")
-    d = '../..'
+    d = '..'
     print([os.path.join(d, o) for o in os.listdir(d)
                         if os.path.isdir(os.path.join(d,o))])
 import json
@@ -1467,5 +1467,5 @@ calibration_test_config = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(data_gathering_config, parallel_jobs=4)
+manager = TrialManager(calibration_test_config, parallel_jobs=4)
 manager.run_priority_loop()
