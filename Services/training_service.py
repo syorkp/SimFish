@@ -54,6 +54,10 @@ class TrainingService(BaseService):
         self.reward_list = []
         self.full_logs = full_logs
 
+        # For config scaffolding
+
+        self.previous_config_switch = self.episode_number
+
         self.last_episodes_prey_caught = []
         self.last_episodes_predators_avoided = []
         self.last_episodes_sand_grains_bumped = []
@@ -134,12 +138,16 @@ class TrainingService(BaseService):
                     np.mean(self.last_episodes_sand_grains_bumped) > self.conditional_transitions["Sand Grains Bumped"][next_point]:
                 switch_criteria_met = True
 
+            if self.episode_number - self.previous_config_switch < 20:
+                switch_criteria_met = False
+
         if switch_criteria_met:
             self.configuration_index = int(next_point)
             self.switched_configuration = True
             print(f"{self.model_id}: Changing configuration to configuration {self.configuration_index}")
             self.current_configuration_location = f"./Configurations/Training-Configs/{self.config_name}/{str(self.configuration_index)}"
             self.learning_params, self.environment_params = self.load_configuration_files()
+            self.previous_config_switch = self.episode_number
             self.create_environment()
         else:
             self.switched_configuration = False
@@ -175,17 +183,20 @@ class TrainingService(BaseService):
         prey_caught_summary = tf.Summary(value=[tf.Summary.Value(tag="prey caught", simple_value=prey_caught)])
         self.writer.add_summary(prey_caught_summary, self.episode_number)
 
-        predators_avoided_summary = tf.Summary(
-            value=[tf.Summary.Value(tag="predators avoided", simple_value=predators_avoided)])
-        self.writer.add_summary(predators_avoided_summary, self.episode_number)
+        if self.environment_params["probability_of_predator"] > 0:
+            predators_avoided_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="predators avoided", simple_value=predators_avoided)])
+            self.writer.add_summary(predators_avoided_summary, self.episode_number)
 
-        sand_grains_bumped_summary = tf.Summary(
-            value=[tf.Summary.Value(tag="attempted sand grain captures", simple_value=sand_grains_bumped)])
-        self.writer.add_summary(sand_grains_bumped_summary, self.episode_number)
+        if self.environment_params["sand_grain_num"] > 0:
+            sand_grains_bumped_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="attempted sand grain captures", simple_value=sand_grains_bumped)])
+            self.writer.add_summary(sand_grains_bumped_summary, self.episode_number)
 
-        steps_near_vegetation_summary = tf.Summary(
-            value=[tf.Summary.Value(tag="steps near vegetation", simple_value=steps_near_vegetation)])
-        self.writer.add_summary(steps_near_vegetation_summary, self.episode_number)
+        if self.environment_params["vegetation_num"] > 0:
+            steps_near_vegetation_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="steps near vegetation", simple_value=steps_near_vegetation)])
+            self.writer.add_summary(steps_near_vegetation_summary, self.episode_number)
 
         # Normalised Logs
         if self.environment_params["prey_num"] != 0:
@@ -247,4 +258,185 @@ class TrainingService(BaseService):
 
         self.reward_list.append(total_episode_reward)
 
+    def _save_episode_continuous_variables(self):
+        impulses = self.buffer.action_buffer[:, 0]
+        mean_impulse = np.mean(impulses)
+        max_impulse = np.max(impulses)
+        min_impulse = np.min(impulses)
+        impulse_summary = tf.Summary(value=[tf.Summary.Value(tag="mean impulse", simple_value=mean_impulse)])
+        self.writer.add_summary(impulse_summary, self.episode_number)
+        impulse_summary = tf.Summary(value=[tf.Summary.Value(tag="max impulse", simple_value=max_impulse)])
+        self.writer.add_summary(impulse_summary, self.episode_number)
+        impulse_summary = tf.Summary(value=[tf.Summary.Value(tag="min impulse", simple_value=min_impulse)])
+        self.writer.add_summary(impulse_summary, self.episode_number)
 
+        angles = self.buffer.action_buffer[:, 1]
+        mean_angle = np.mean(angles)
+        max_angle = np.max(angles)
+        min_angle = np.min(angles)
+        angle_summary = tf.Summary(value=[tf.Summary.Value(tag="mean angle", simple_value=mean_angle)])
+        self.writer.add_summary(angle_summary, self.episode_number)
+        angle_summary = tf.Summary(value=[tf.Summary.Value(tag="max angle", simple_value=max_angle)])
+        self.writer.add_summary(angle_summary, self.episode_number)
+        angle_summary = tf.Summary(value=[tf.Summary.Value(tag="min angle", simple_value=min_angle)])
+        self.writer.add_summary(angle_summary, self.episode_number)
+
+        # # Value Summary
+        values = self.buffer.value_buffer
+        mean_value = np.mean(values)
+        max_value = np.max(values)
+        min_value = np.min(values)
+        value_summary = tf.Summary(value=[tf.Summary.Value(tag="mean value", simple_value=mean_value)])
+        self.writer.add_summary(value_summary, self.episode_number)
+        value_summary = tf.Summary(value=[tf.Summary.Value(tag="max value", simple_value=max_value)])
+        self.writer.add_summary(value_summary, self.episode_number)
+        value_summary = tf.Summary(value=[tf.Summary.Value(tag="min value", simple_value=min_value)])
+        self.writer.add_summary(value_summary, self.episode_number)
+
+        if self.full_logs:
+            # Save Loss
+            mean_critic_loss = np.mean(self.buffer.critic_loss_buffer)
+            max_critic_loss = np.max(self.buffer.critic_loss_buffer)
+            min_critic_loss = np.min(self.buffer.critic_loss_buffer)
+            critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean critic_loss", simple_value=mean_critic_loss)])
+            self.writer.add_summary(critic_loss_summary, self.episode_number)
+            critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max critic_loss", simple_value=max_critic_loss)])
+            self.writer.add_summary(critic_loss_summary, self.episode_number)
+            critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min critic_loss", simple_value=min_critic_loss)])
+            self.writer.add_summary(critic_loss_summary, self.episode_number)
+
+
+            mean_impulse_loss = np.mean(self.buffer.impulse_loss_buffer)
+            max_impulse_loss = np.max(self.buffer.impulse_loss_buffer)
+            min_impulse_loss = np.min(self.buffer.impulse_loss_buffer)
+            impulse_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean impulse_loss", simple_value=mean_impulse_loss)])
+            self.writer.add_summary(impulse_loss_summary, self.episode_number)
+            impulse_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max impulse_loss", simple_value=max_impulse_loss)])
+            self.writer.add_summary(impulse_loss_summary, self.episode_number)
+            impulse_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min impulse_loss", simple_value=min_impulse_loss)])
+            self.writer.add_summary(impulse_loss_summary, self.episode_number)
+
+            mean_angle_loss = np.mean(self.buffer.angle_loss_buffer)
+            max_angle_loss = np.max(self.buffer.angle_loss_buffer)
+            min_angle_loss = np.min(self.buffer.angle_loss_buffer)
+            angle_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean angle_loss", simple_value=mean_angle_loss)])
+            self.writer.add_summary(angle_loss_summary, self.episode_number)
+            angle_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max angle_loss", simple_value=max_angle_loss)])
+            self.writer.add_summary(angle_loss_summary, self.episode_number)
+            angle_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min angle_loss", simple_value=min_angle_loss)])
+            self.writer.add_summary(angle_loss_summary, self.episode_number)
+
+            # Saving Parameters for Testing
+            mean_mu_i = np.mean(self.buffer.mu_i)
+            max_mu_i = np.max(self.buffer.mu_i)
+            min_mu_i = np.min(self.buffer.mu_i)
+            mu_i = tf.Summary(value=[tf.Summary.Value(tag="mean mu_i", simple_value=mean_mu_i)])
+            self.writer.add_summary(mu_i, self.episode_number)
+            mu_i = tf.Summary(value=[tf.Summary.Value(tag="max mu_i", simple_value=max_mu_i)])
+            self.writer.add_summary(mu_i, self.episode_number)
+            mu_i = tf.Summary(value=[tf.Summary.Value(tag="min mu_i", simple_value=min_mu_i)])
+            self.writer.add_summary(mu_i, self.episode_number)
+
+            mean_si_i = np.mean(self.buffer.si_i)
+            max_si_i = np.max(self.buffer.si_i)
+            min_si_i = np.min(self.buffer.si_i)
+            si_i = tf.Summary(value=[tf.Summary.Value(tag="mean si_i", simple_value=mean_si_i)])
+            self.writer.add_summary(si_i, self.episode_number)
+            si_i = tf.Summary(value=[tf.Summary.Value(tag="max si_i", simple_value=max_si_i)])
+            self.writer.add_summary(si_i, self.episode_number)
+            si_i = tf.Summary(value=[tf.Summary.Value(tag="min si_i", simple_value=min_si_i)])
+            self.writer.add_summary(si_i, self.episode_number)
+
+            mean_mu_a = np.mean(self.buffer.mu_a)
+            max_mu_a = np.max(self.buffer.mu_a)
+            min_mu_a = np.min(self.buffer.mu_a)
+            mu_a = tf.Summary(value=[tf.Summary.Value(tag="mean mu_a", simple_value=mean_mu_a)])
+            self.writer.add_summary(mu_a, self.episode_number)
+            mu_a = tf.Summary(value=[tf.Summary.Value(tag="max mu_a", simple_value=max_mu_a)])
+            self.writer.add_summary(mu_a, self.episode_number)
+            mu_a = tf.Summary(value=[tf.Summary.Value(tag="min mu_a", simple_value=min_mu_a)])
+            self.writer.add_summary(mu_a, self.episode_number)
+
+            mean_si_a = np.mean(self.buffer.si_a)
+            max_si_a = np.max(self.buffer.si_a)
+            min_si_a = np.min(self.buffer.si_a)
+            si_a = tf.Summary(value=[tf.Summary.Value(tag="mean si_a", simple_value=mean_si_a)])
+            self.writer.add_summary(si_a, self.episode_number)
+            si_a = tf.Summary(value=[tf.Summary.Value(tag="max si_a", simple_value=max_si_a)])
+            self.writer.add_summary(si_a, self.episode_number)
+            si_a = tf.Summary(value=[tf.Summary.Value(tag="min si_a", simple_value=min_si_a)])
+            self.writer.add_summary(si_a, self.episode_number)
+
+        #                OLD
+
+        # Action Summary
+        # impulses = [action[0] for action in self.buffer.action_buffer]
+        # for step in range(0, len(impulses), 5):
+        #     impulse_summary = tf.Summary(value=[tf.Summary.Value(tag="impulse magnitude", simple_value=impulses[step])])
+        #     self.writer.add_summary(impulse_summary, self.total_steps - len(impulses) + step)
+        #
+        # angles = [action[1] for action in self.buffer.action_buffer]
+        # for step in range(0, len(angles), 5):
+        #     angles_summary = tf.Summary(value=[tf.Summary.Value(tag="angle magnitude", simple_value=angles[step])])
+        #     self.writer.add_summary(angles_summary, self.total_steps - len(angles) + step)
+
+        # if self.full_logs:
+        #     # Save Loss
+        #     for step in range(0, len(self.buffer.critic_loss_buffer)):
+        #         critic_loss_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="critic loss", simple_value=self.buffer.critic_loss_buffer[step])])
+        #         self.writer.add_summary(critic_loss_summary,
+        #                                 self.total_steps - len(angles) + step * self.learning_params["batch_size"])
+        #
+        #     for step in range(0, len(self.buffer.impulse_loss_buffer)):
+        #         impulse_loss_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="impulse loss", simple_value=self.buffer.impulse_loss_buffer[step])])
+        #         self.writer.add_summary(impulse_loss_summary,
+        #                                 self.total_steps - len(angles) + step * self.learning_params["batch_size"])
+        #
+        #     for step in range(0, len(self.buffer.angle_loss_buffer)):
+        #         angle_loss_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="angle loss", simple_value=self.buffer.angle_loss_buffer[step])])
+        #         self.writer.add_summary(angle_loss_summary,
+        #                                 self.total_steps - len(angles) + step * self.learning_params["batch_size"])
+        #
+        #     # Saving Parameters for Testing
+        #     for step in range(0, len(self.buffer.mu_i_buffer)):
+        #         mu_i_loss_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="mu_impulse", simple_value=self.buffer.mu_i_buffer[step])])
+        #         self.writer.add_summary(mu_i_loss_summary, self.total_steps - len(self.buffer.mu_i_buffer) + step)
+        #
+        #     for step in range(0, len(self.buffer.si_i_buffer)):
+        #         si_i_loss_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="sigma_impulse", simple_value=self.buffer.si_i_buffer[step])])
+        #         self.writer.add_summary(si_i_loss_summary, self.total_steps - len(self.buffer.si_i_buffer) + step)
+        #
+        #     for step in range(0, len(self.buffer.mu_a_buffer)):
+        #         mu_a_loss_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="mu_angle", simple_value=self.buffer.mu_a_buffer[step])])
+        #         self.writer.add_summary(mu_a_loss_summary, self.total_steps - len(self.buffer.mu_a_buffer) + step)
+        #
+        #     for step in range(0, len(self.buffer.si_a_buffer)):
+        #         si_a_loss_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="sigma_angle", simple_value=self.buffer.si_a_buffer[step])])
+        #         self.writer.add_summary(si_a_loss_summary, self.total_steps - len(self.buffer.si_a_buffer) + step)
+        #
+        #     for step in range(0, len(self.buffer.mu1_buffer)):
+        #         mu1_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="mu_impulse_base", simple_value=self.buffer.mu1_buffer[step])])
+        #         self.writer.add_summary(mu1_summary, self.total_steps - len(self.buffer.mu1_buffer) + step)
+        #
+        #     for step in range(0, len(self.buffer.mu1_ref_buffer)):
+        #         mu1_ref_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="mu_impulse_ref_base", simple_value=self.buffer.mu1_ref_buffer[step])])
+        #         self.writer.add_summary(mu1_ref_summary, self.total_steps - len(self.buffer.mu1_ref_buffer) + step)
+        #
+        #     for step in range(0, len(self.buffer.mu_a1_buffer)):
+        #         mu1_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="mu_angle_base", simple_value=self.buffer.mu_a1_buffer[step])])
+        #         self.writer.add_summary(mu1_summary, self.total_steps - len(self.buffer.mu_a1_buffer) + step)
+        #
+        #     for step in range(0, len(self.buffer.mu_a_ref_buffer)):
+        #         mu1_ref_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="mu_angle_ref_base", simple_value=self.buffer.mu_a_ref_buffer[step])])
+        #         self.writer.add_summary(mu1_ref_summary, self.total_steps - len(self.buffer.mu_a_ref_buffer) + step)

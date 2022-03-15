@@ -711,7 +711,7 @@ class NewDrawingBoard:
     def compute_n(self, angular_size, number_of_this_feature, max_separation=1):
         max_dist = (self.width ** 2 + self.height ** 2) ** 0.5
         theta_separation = math.asin(max_separation / max_dist)
-        n = (angular_size / theta_separation) / 2
+        n = (angular_size / theta_separation)# / 2
         if n * number_of_this_feature > self.max_lines_num:
             n = n/2
         return int(n)

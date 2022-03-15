@@ -74,7 +74,7 @@ env = {#                            Old Simulation (Parameters ignored in new si
        'prey_inertia': 40.,
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-       'prey_num': 20,
+       'prey_num': 1,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
@@ -95,7 +95,7 @@ env = {#                            Old Simulation (Parameters ignored in new si
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
-       'bkg_scatter': 0.00001,  # base brightness of the background
+       'bkg_scatter': 0.00019,  # base brightness of the background
        'dark_gain': 0.38,  # gain of brightness in the dark side
        'light_gain': 1.0,  # gain of brightness in the bright side
 
@@ -180,10 +180,10 @@ env = {#                            Old Simulation (Parameters ignored in new si
 
        # Visual system scaling factors (to set CNN inputs into 0 to 255 range):
        'red_scaling_factor': 1,  # max was 100 without scaling
-       'uv_scaling_factor': 50,  # max was 40 without scaling
+       'uv_scaling_factor': 1000000,  # max was 40 without scaling
        'red_2_scaling_factor': 0.018,  # max was 12000 without scaling
        'red_occlusion_gain': 1.0,
-       'uv_occlusion_gain': 0.5,
+       'uv_occlusion_gain': 0.0,
        'red2_occlusion_gain': 1.0,
 
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.

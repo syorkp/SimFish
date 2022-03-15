@@ -136,85 +136,86 @@ Total episode reward: {self.total_episode_reward}\n""")
 
         TrainingService._save_episode(self, episode_start_t, total_episode_reward, prey_caught,
                                       predators_avoided, sand_grains_bumped, steps_near_vegetation)
+        TrainingService._save_episode_continuous_variables(self)
 
         output_data = {"episode_number": self.episode_number, "total_steps": self.total_steps, "configuration_index": self.configuration_index}
         with open(f"{self.model_location}/saved_parameters.json", "w") as file:
             json.dump(output_data, file)
+        #
+        # # Action Summary
+        # impulses = [action[0] for action in self.buffer.action_buffer]
+        # for step in range(0, len(impulses), 5):
+        #     impulse_summary = tf.Summary(value=[tf.Summary.Value(tag="impulse magnitude", simple_value=impulses[step])])
+        #     self.writer.add_summary(impulse_summary, self.total_steps - len(impulses) + step)
+        #
+        # angles = [action[1] for action in self.buffer.action_buffer]
+        # for step in range(0, len(angles), 5):
+        #     angles_summary = tf.Summary(value=[tf.Summary.Value(tag="angle magnitude", simple_value=angles[step])])
+        #     self.writer.add_summary(angles_summary, self.total_steps - len(angles) + step)
+        #
+        # # # Value Summary
+        # for step in range(0, len(self.buffer.value_buffer)):
+        #     value_summary = tf.Summary(
+        #         value=[tf.Summary.Value(tag="value_predictions", simple_value=self.buffer.value_buffer[step])])
+        #     self.writer.add_summary(value_summary, self.total_steps - len(self.buffer.value_buffer) + step)
 
-        # Action Summary
-        impulses = [action[0] for action in self.buffer.action_buffer]
-        for step in range(0, len(impulses), 5):
-            impulse_summary = tf.Summary(value=[tf.Summary.Value(tag="impulse magnitude", simple_value=impulses[step])])
-            self.writer.add_summary(impulse_summary, self.total_steps - len(impulses) + step)
-
-        angles = [action[1] for action in self.buffer.action_buffer]
-        for step in range(0, len(angles), 5):
-            angles_summary = tf.Summary(value=[tf.Summary.Value(tag="angle magnitude", simple_value=angles[step])])
-            self.writer.add_summary(angles_summary, self.total_steps - len(angles) + step)
-
-        # Value Summary
-        for step in range(0, len(self.buffer.value_buffer)):
-            value_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="value_predictions", simple_value=self.buffer.value_buffer[step])])
-            self.writer.add_summary(value_summary, self.total_steps - len(self.buffer.value_buffer) + step)
-
-        if self.full_logs:
-            # Save Loss
-            for step in range(0, len(self.buffer.critic_loss_buffer)):
-                critic_loss_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="critic loss", simple_value=self.buffer.critic_loss_buffer[step])])
-                self.writer.add_summary(critic_loss_summary,
-                                        self.total_steps - len(angles) + step * self.learning_params["batch_size"])
-
-            for step in range(0, len(self.buffer.impulse_loss_buffer)):
-                impulse_loss_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="impulse loss", simple_value=self.buffer.impulse_loss_buffer[step])])
-                self.writer.add_summary(impulse_loss_summary,
-                                        self.total_steps - len(angles) + step * self.learning_params["batch_size"])
-
-            for step in range(0, len(self.buffer.angle_loss_buffer)):
-                angle_loss_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="angle loss", simple_value=self.buffer.angle_loss_buffer[step])])
-                self.writer.add_summary(angle_loss_summary,
-                                        self.total_steps - len(angles) + step * self.learning_params["batch_size"])
-
-            # Saving Parameters for Testing
-            for step in range(0, len(self.buffer.mu_i_buffer)):
-                mu_i_loss_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="mu_impulse", simple_value=self.buffer.mu_i_buffer[step])])
-                self.writer.add_summary(mu_i_loss_summary, self.total_steps - len(self.buffer.mu_i_buffer) + step)
-
-            for step in range(0, len(self.buffer.si_i_buffer)):
-                si_i_loss_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="sigma_impulse", simple_value=self.buffer.si_i_buffer[step])])
-                self.writer.add_summary(si_i_loss_summary, self.total_steps - len(self.buffer.si_i_buffer) + step)
-
-            for step in range(0, len(self.buffer.mu_a_buffer)):
-                mu_a_loss_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="mu_angle", simple_value=self.buffer.mu_a_buffer[step])])
-                self.writer.add_summary(mu_a_loss_summary, self.total_steps - len(self.buffer.mu_a_buffer) + step)
-
-            for step in range(0, len(self.buffer.si_a_buffer)):
-                si_a_loss_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="sigma_angle", simple_value=self.buffer.si_a_buffer[step])])
-                self.writer.add_summary(si_a_loss_summary, self.total_steps - len(self.buffer.si_a_buffer) + step)
-
-            for step in range(0, len(self.buffer.mu1_buffer)):
-                mu1_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="mu_impulse_base", simple_value=self.buffer.mu1_buffer[step])])
-                self.writer.add_summary(mu1_summary, self.total_steps - len(self.buffer.mu1_buffer) + step)
-
-            for step in range(0, len(self.buffer.mu1_ref_buffer)):
-                mu1_ref_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="mu_impulse_ref_base", simple_value=self.buffer.mu1_ref_buffer[step])])
-                self.writer.add_summary(mu1_ref_summary, self.total_steps - len(self.buffer.mu1_ref_buffer) + step)
-
-            for step in range(0, len(self.buffer.mu_a1_buffer)):
-                mu1_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="mu_angle_base", simple_value=self.buffer.mu_a1_buffer[step])])
-                self.writer.add_summary(mu1_summary, self.total_steps - len(self.buffer.mu_a1_buffer) + step)
-
-            for step in range(0, len(self.buffer.mu_a_ref_buffer)):
-                mu1_ref_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="mu_angle_ref_base", simple_value=self.buffer.mu_a_ref_buffer[step])])
-                self.writer.add_summary(mu1_ref_summary, self.total_steps - len(self.buffer.mu_a_ref_buffer) + step)
+        # if self.full_logs:
+        #     # Save Loss
+        #     for step in range(0, len(self.buffer.critic_loss_buffer)):
+        #         critic_loss_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="critic loss", simple_value=self.buffer.critic_loss_buffer[step])])
+        #         self.writer.add_summary(critic_loss_summary,
+        #                                 self.total_steps - len(angles) + step * self.learning_params["batch_size"])
+        #
+        #     for step in range(0, len(self.buffer.impulse_loss_buffer)):
+        #         impulse_loss_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="impulse loss", simple_value=self.buffer.impulse_loss_buffer[step])])
+        #         self.writer.add_summary(impulse_loss_summary,
+        #                                 self.total_steps - len(angles) + step * self.learning_params["batch_size"])
+        #
+        #     for step in range(0, len(self.buffer.angle_loss_buffer)):
+        #         angle_loss_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="angle loss", simple_value=self.buffer.angle_loss_buffer[step])])
+        #         self.writer.add_summary(angle_loss_summary,
+        #                                 self.total_steps - len(angles) + step * self.learning_params["batch_size"])
+        #
+        #     # Saving Parameters for Testing
+        #     for step in range(0, len(self.buffer.mu_i_buffer)):
+        #         mu_i_loss_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="mu_impulse", simple_value=self.buffer.mu_i_buffer[step])])
+        #         self.writer.add_summary(mu_i_loss_summary, self.total_steps - len(self.buffer.mu_i_buffer) + step)
+        #
+        #     for step in range(0, len(self.buffer.si_i_buffer)):
+        #         si_i_loss_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="sigma_impulse", simple_value=self.buffer.si_i_buffer[step])])
+        #         self.writer.add_summary(si_i_loss_summary, self.total_steps - len(self.buffer.si_i_buffer) + step)
+        #
+        #     for step in range(0, len(self.buffer.mu_a_buffer)):
+        #         mu_a_loss_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="mu_angle", simple_value=self.buffer.mu_a_buffer[step])])
+        #         self.writer.add_summary(mu_a_loss_summary, self.total_steps - len(self.buffer.mu_a_buffer) + step)
+        #
+        #     for step in range(0, len(self.buffer.si_a_buffer)):
+        #         si_a_loss_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="sigma_angle", simple_value=self.buffer.si_a_buffer[step])])
+        #         self.writer.add_summary(si_a_loss_summary, self.total_steps - len(self.buffer.si_a_buffer) + step)
+        #
+        #     for step in range(0, len(self.buffer.mu1_buffer)):
+        #         mu1_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="mu_impulse_base", simple_value=self.buffer.mu1_buffer[step])])
+        #         self.writer.add_summary(mu1_summary, self.total_steps - len(self.buffer.mu1_buffer) + step)
+        #
+        #     for step in range(0, len(self.buffer.mu1_ref_buffer)):
+        #         mu1_ref_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="mu_impulse_ref_base", simple_value=self.buffer.mu1_ref_buffer[step])])
+        #         self.writer.add_summary(mu1_ref_summary, self.total_steps - len(self.buffer.mu1_ref_buffer) + step)
+        #
+        #     for step in range(0, len(self.buffer.mu_a1_buffer)):
+        #         mu1_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="mu_angle_base", simple_value=self.buffer.mu_a1_buffer[step])])
+        #         self.writer.add_summary(mu1_summary, self.total_steps - len(self.buffer.mu_a1_buffer) + step)
+        #
+        #     for step in range(0, len(self.buffer.mu_a_ref_buffer)):
+        #         mu1_ref_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="mu_angle_ref_base", simple_value=self.buffer.mu_a_ref_buffer[step])])
+        #         self.writer.add_summary(mu1_ref_summary, self.total_steps - len(self.buffer.mu_a_ref_buffer) + step)

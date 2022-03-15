@@ -304,7 +304,6 @@ class Eye:
             else:
                 self.readings = self.chosen_math_library.concatenate(
                     (self.red_readings[:, 0:1], self.uv_readings, self.red_readings[:, 1:]), axis=1)
-            x = True
 
     def _read(self, masked_arena_pixels, eye_x, eye_y, channel_angles_surrounding, n_channels):
         """Lines method to return pixel sum for all points for each photoreceptor, over its segment."""
@@ -707,7 +706,7 @@ class Eye:
                 [rr, cc] = line(sector[2][1], sector[2][0], sector[0][1], sector[0][0])
             self.board.db[rr, cc] = (0, 0, 0.5)
 
-       # Red
+        # Red
         channel_angles_surrounding = self.channel_angles_surrounding_red + fish_angle
         sector_vertices = self.get_sector_vertices(bx, by, channel_angles_surrounding, self.red_photoreceptor_num)
         sector_vertices = sector_vertices.astype(int)
@@ -731,7 +730,7 @@ class Eye:
     def compute_n(self, photoreceptor_rf_size, max_separation=1):
         max_dist = (self.width ** 2 + self.height ** 2) ** 0.5
         theta_separation = math.asin(max_separation / max_dist)
-        n = (photoreceptor_rf_size / theta_separation) / 2
+        n = (photoreceptor_rf_size / theta_separation)# / 2
         return int(n)
 
     def pad_observation(self):

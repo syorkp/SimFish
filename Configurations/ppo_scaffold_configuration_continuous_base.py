@@ -81,7 +81,7 @@ env = {
        'prey_sensing_distance': 20,
        'prey_max_turning_angle': 0.04,
        # This is the turn (pi radians) that happens every step, designed to replicate linear wavy movement.
-       'prey_fluid_displacement': True,
+       'prey_fluid_displacement': False,
        'prey_jump': False,
        'differential_prey': False,
        'prey_cloud_num': 2,
@@ -103,20 +103,20 @@ env = {
        'predator_cost': 1000,
 
        'hunger': False,
-       'reafference': False,
+       'reafference': True,
        'stress': False,
        'stress_compound': 0.9,
 
        # For continuous Actions space:
-       'max_angle_change': np.pi / 5,
-       'max_impulse': 10.0,  # Up to 50ish
+       'max_angle_change': 4,  # Formerly np.pi / 5,
+       'max_impulse': 10.0,  # Formerly 10
 
        'baseline_penalty': 0.002,
        'reward_distance': 100,
-       'proximity_reward': 0.0,
+       'proximity_reward': 0.002,
 
-       'max_sigma_impulse': 0.4,
-       'max_sigma_angle': 0.4,
+       'max_sigma_impulse': 0.3,  # Formerly 0.4
+       'max_sigma_angle': 0.3,  # Formerly 0.4
        'min_sigma_impulse': 0.1,
        'min_sigma_angle': 0.1,
        'sigma_time_constant': 0.000001,
@@ -147,7 +147,7 @@ env = {
        'background_grating_frequency': 50,  # For extra layer motion:
        'displacement_scaling_factor': 0.018,
        # Multiplied by previous impulse size to cause displacement of nearby features.
-       'known_max_fish_i': 20,  # TODO: Determine
+       'known_max_fish_i': 100,  # TODO: Determine
 
        # Prey movement
        'p_slow': 1.0,
@@ -155,7 +155,7 @@ env = {
        'p_escape': 0.5,
        'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
        'p_reorient': 0.04,
-       'slow_speed_paramecia': 0.0037,  # Impulse to generate 0.5mms-1 for given prey mass
+       'slow_speed_paramecia': 0, #0.0037,  # Impulse to generate 0.5mms-1 for given prey mass
        'fast_speed_paramecia': 0.0074,  # Impulse to generate 1.0mms-1 for given prey mass
        'jump_speed_paramecia': 0.074,  # Impulse to generate 10.0mms-1 for given prey mass
 
@@ -191,9 +191,9 @@ env = {
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
 
        # Arbitrary fish parameters
-       # Scaling of impulse and angle from 0-1 initialised distribution TODO: Should set higher to allow full exploration of angle range.
-       'angle_scaling': np.pi / 5,
-       'impulse_scaling': 10.0,
+       # Scaling of impulse and angle from 0-1 initialised distribution
+       'angle_scaling': 4,  # Formerly np.pi /
+       'impulse_scaling': 10.0,  # Should end up being 100
 
        # Fish Visual System
        'uv_photoreceptor_rf_size': 0.0128,  # Pi Radians (0.73 degrees) - Yoshimatsu et al. (2019)
@@ -222,8 +222,8 @@ env = {
        'consumption_energy_gain': 1.0,
 
        # Reward
-       'action_reward_scaling': 0, #1942,  # Arbitrary (practical) hyperparameter for penalty for action
-       'consumption_reward_scaling': 50000,  # Arbitrary (practical) hyperparameter for reward for consumption
+       'action_reward_scaling': 0,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
+       'consumption_reward_scaling': 100000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
        'wall_reflection': True,
        'wall_touch_penalty': 0.2,
@@ -269,8 +269,8 @@ params = {
        # Learning (PPO only)
        'n_updates_per_iteration': 4,
        'rnn_state_computation': False,
-       'learning_rate_actor': 0.00001,  # Formerly 0.000001
-       'learning_rate_critic': 0.00001,  # Formerly 0.000001
+       'learning_rate_actor': 0.000001,  # Formerly 0.000001
+       'learning_rate_critic': 0.000001,  # Formerly 0.000001
 
        # Learning (PPO discrete only)
        'epsilon_greedy': False,
@@ -300,7 +300,7 @@ params = {
 
 }
 
-directory_name = "ppo_continuous_sbe_is_final_calib"
+directory_name = "ppo_continuous_sbe_is_scaffold_1"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):
@@ -323,18 +323,34 @@ number = 1
 save_files(number)
 number += 1
 
-env['prey_impulse'] = 0.0  # 2
+# Steps to incentivise Prey capture
+env['slow_speed_paramecia'] = 0.0037
 save_files(number)
 number += 1
 
-env['prey_impulse'] = 0.0  # 5
+env['prey_fluid_displacement'] = True  # 5
 save_files(number)
 number += 1
 
-env['energy_state'] = False  # True
+env['fish_mouth_size'] = 2
 save_files(number)
 number += 1
 
-env['probability_of_predator'] = 0.0  # 1
+env['fish_mouth_size'] = 1
+save_files(number)
+number += 1
+
+# Steps to incentivise predator avoidance.
+env['probability_of_predator'] = 0.01  # 1
+save_files(number)
+number += 1
+
+# Steps to incentivise navigation
+env['salt'] = True
+save_files(number)
+number += 1
+
+# Steps to incentivise phototaxis
+env['dark_light_ratio'] = 0.5
 save_files(number)
 number += 1
