@@ -507,10 +507,10 @@ class ContinuousPPO(BasePPO):
         #     self.actor_network.reflected_network_graph[layer]: rnn_state_actor_ref[i] for i, layer in enumerate(rnn_layers)
         # }
 
-        impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability, psamples = self.sess.run(
+        impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability = self.sess.run(
             [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.value_output,
              self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
-             self.actor_network.neg_log_prob, self.actor_network.action_distribution.preliminary_samples],
+             self.actor_network.neg_log_prob],
              # self.actor_network.action_distribution.preliminary_samples, self.actor_network.action_distribution.probs, self.actor_network.action_distribution.positive_imp],
 
             # feed_dict= {**normal_feed_dict, **rnn_state_feed_dict, **rnn_state_feed_dict_reflected}

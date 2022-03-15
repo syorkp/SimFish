@@ -275,6 +275,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             if self.env_variables['show_channel_sectors']:
                 self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
                 self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
+
             if save_frames:
                 frame_buffer.append(self.output_frame(activations, internal_state, scale=0.25))
             if self.draw_screen:
@@ -286,8 +287,8 @@ class NaturalisticEnvironment(BaseEnvironment):
         observation = self.chosen_math_library.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
                                                        self.fish.readings_to_photons(self.fish.right_eye.readings)))
         # self.plot_observation(observation)
-        distance = ((self.fish.body.position[0]-self.prey_bodies[-1].position[0])**2 +
-                    (self.fish.body.position[1]-self.prey_bodies[-1].position[1])**2) ** 0.5
+        # distance = ((self.fish.body.position[0]-self.prey_bodies[-1].position[0])**2 +
+        #             (self.fish.body.position[1]-self.prey_bodies[-1].position[1])**2) ** 0.5
         # print(f"Prey Distance: {distance}\n")
         # self.paramecia_distances.append(distance)
 

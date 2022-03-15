@@ -1,6 +1,7 @@
 """
 Finding relationship between prey impulse and distance moved.
 """
+import copy
 
 import numpy as np
 import pymunk
@@ -16,8 +17,8 @@ class TestEnvironment:
             'drag': 0.7,  # water drag
 
             'prey_inertia': 40.,
-            'prey_size': 4.,  # FINAL VALUE - 0.2mm diameter, so 1.
-            'prey_max_turning_angle': 0.04,
+            'prey_size': 1.,  # FINAL VALUE - 0.2mm diameter, so 1.
+            'prey_max_turning_angle': 0.3,
 
             'p_slow': 1.0,
             'p_fast': 0.0,
@@ -33,6 +34,7 @@ class TestEnvironment:
             'predator_inertia': 40.,
             'predator_size': 87.,  # To be 8.7mm in diameter, formerly 100
             'predator_impulse': 1.0,
+            "displacement_scaling_factor": 0.018,
         }
         self.prey_bodies = []
         self.prey_shapes = []
@@ -52,6 +54,7 @@ class TestEnvironment:
         self.prey_bodies[-1].position = prey_position
         self.prey_shapes[-1].color = (0, 0, 1)
         self.prey_shapes[-1].collision_type = 2
+        self.prey_bodies[-1].angle = np.pi/4
         # self.prey_shapes[-1].filter = pymunk.ShapeFilter(
         #     mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # prevents collisions with predator
 
@@ -64,7 +67,7 @@ class TestEnvironment:
         #                                       self.env_variables["p_fast"]])[0])
         self.paramecia_gaits.append(1)
 
-    def _move_prey_new(self, micro_step):
+    def _move_prey_new(self, micro_step, fish_impulse):
             # gaits_to_switch = np.random.choice([0, 1], len(self.prey_shapes),
             #                                    p=[1 - self.env_variables["p_switch"], self.env_variables["p_switch"]])
             # switch_to = np.random.choice([0, 1, 2], len(self.prey_shapes),
@@ -85,6 +88,15 @@ class TestEnvironment:
                                                   len(self.prey_shapes))
 
             for i, prey_body in enumerate(self.prey_bodies):
+                if fish_impulse:
+                    distance_scaling = np.exp(-1)
+                    original_angle = copy.copy(prey_body.angle)
+                    prey_body.angle = original_angle + 3/2
+                    impulse_for_prey = (5/20) * \
+                                        self.env_variables["displacement_scaling_factor"] * distance_scaling
+                    prey_body.apply_impulse_at_local_point((impulse_for_prey, 0))
+                    prey_body.angle = original_angle
+
                 # if self.check_proximity(prey_body.position, self.env_variables['prey_sensing_distance']):
                 #     # Motion from fluid dynamics
                 #     if self.env_variables["prey_fluid_displacement"]:
@@ -120,12 +132,13 @@ class TestEnvironment:
     def move_predator(self):
         self.predator_bodies[0].apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
 
-    def run(self, num_sim_steps=200):
+    def run(self, num_sim_steps=200, fish_impulse=False):
         self.create_prey([100, 100])
         # self.create_predator([100, 100])
         position = []
         for micro_step in range(num_sim_steps):
-            self._move_prey_new(micro_step)
+            self._move_prey_new(micro_step, fish_impulse)
+            # fish_impulse = False
             # self.move_predator()
             position.append(np.array(self.prey_bodies[0].position))
             self.space.step(self.env_variables['phys_dt'])
@@ -134,17 +147,43 @@ class TestEnvironment:
         distance = (distance[:, 0] ** 2 + distance[:, 1] ** 2) ** 0.5
         # plt.plot(distance)
         # plt.show()
-        print(self.prey_bodies[0].position)
-        return np.array(self.prey_bodies[0].position)
+        return position
 
+
+
+np.random.seed(303)
 env = TestEnvironment()
-
-positions = []
-for i in range(100):
-    pos = env.run()
-    positions.append(pos)
+positions = np.zeros((0, 2))
+fish_impulse = False
+for i in range(50):
+    pos = env.run(200, fish_impulse)
+    positions = np.concatenate((np.array(positions), pos), axis=0)
 
 
 positions = np.array(positions)
+positions /= 10
 plt.scatter(positions[:, 0], positions[:, 1])
+plt.axis("scaled")
+plt.xlabel("X Distance (mm)")
+plt.ylabel("Y Distance (mm)")
+plt.show()
+
+np.random.seed(303)
+env = TestEnvironment()
+positions = np.zeros((0, 2))
+fish_impulse = False
+for i in range(50):
+    if i == 25:
+        fish_impulse = True
+    pos = env.run(200, fish_impulse)
+    positions = np.concatenate((np.array(positions), pos), axis=0)
+    fish_impulse = False
+
+
+positions = np.array(positions)
+positions /= 10
+plt.scatter(positions[:, 0], positions[:, 1])
+plt.axis("scaled")
+plt.xlabel("X Distance (mm)")
+plt.ylabel("Y Distance (mm)")
 plt.show()

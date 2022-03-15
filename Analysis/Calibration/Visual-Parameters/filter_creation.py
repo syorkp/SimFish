@@ -116,7 +116,7 @@ class DrawingBoard:
         io.show()
 
 
-def apply_mask(board, mask=np.ones((500, 500))/2):
+def apply_mask(board, mask=np.ones((1500, 1500))/2):
     # new_board = np.zeros(board.shape)
     # for channel in range(board.shape[-1]):
     #     new_board[:, :, channel] = np.multiply(board[:, :, channel], mask)
@@ -125,8 +125,8 @@ def apply_mask(board, mask=np.ones((500, 500))/2):
     return board * mask
 
 
-def create_scatter_mask(position=(250, 250), decay_rate=0.01):
-    mask = np.fromfunction(lambda i, j: np.exp(-decay_rate * (((position[0]-i)**2 + (position[1]-j)**2) ** 0.5)), (500, 500), dtype=float)
+def create_scatter_mask(position=(250, 250), decay_rate=0.0001):
+    mask = np.fromfunction(lambda i, j: np.exp(-decay_rate * (((position[0]-i)**2 + (position[1]-j)**2) ** 0.5)), (1500, 1500), dtype=float)
     return mask
 
 
@@ -157,13 +157,14 @@ def remove_green_channel(board):
 
 
 if __name__ == "__main__":
-    d = DrawingBoard(500, 500)
+    d = DrawingBoard(1500, 1500)
     d.circle((100, 200), 100, (1, 0, 0))
     d.line((50, 50), (100, 200), (0, 0, 1))
     d.show()
     x = d.get_area_mask()
     x = apply_mask(x)
     y = create_scatter_mask()
+    show_mask(y)
     x = apply_mask(x, y)
     x = remove_green_channel(x)
     x = add_redundant_channel(x)

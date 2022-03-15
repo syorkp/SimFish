@@ -74,12 +74,18 @@ def get_trajectory(consumptions, impulses, angles, ci, ca, consumption_energy_ga
     steps = [i for i in range(num_steps)]
 
     plt.plot(steps, reward)
+    plt.xlabel("Step")
+    plt.ylabel("Reward")
     plt.show()
 
     plt.plot(steps, action_penalty)
+    plt.xlabel("Step")
+    plt.ylabel("Action Penalty")
     plt.show()
 
     plt.plot(steps, energy_log)
+    plt.xlabel("Step")
+    plt.ylabel("Energy Level")
     plt.show()
 
 
@@ -116,6 +122,37 @@ def get_returns_from_investment(ci, ca, baseline_decrease, trajectory_A, traject
     print(total_reward)
 
 
+def rewards_vs_energy_state(trajectory_A, trajectory_B,):
+    energy_states = np.linspace(0, 1, 100)
+
+    trajectory_A2 = 1/np.exp(trajectory_A)
+    trajectory_B2 = 1/np.exp(trajectory_B)
+
+    intake_ss = []
+    action_ss = []
+
+    for energy_level in energy_states:
+        intake_s = intake_scale(energy_level, trajectory_B, trajectory_B2)
+        action_s = action_scale(energy_level, trajectory_A, trajectory_A2)
+
+        intake_ss.append(intake_s)
+        action_ss.append(action_s)
+
+    intake_ss = np.array(intake_ss) * 1/max(intake_ss)
+    plt.plot(energy_states, intake_ss)
+    plt.xlabel("Energy Level")
+    plt.ylabel("Consumption reward scaling")
+    plt.show()
+
+    plt.plot(energy_states, action_ss)
+    plt.xlabel("Energy Level")
+    plt.ylabel("Action penalty scaling")
+    plt.show()
+
+
+
+
+
 # Chosen parameters
 
 ci = 0.0001
@@ -146,6 +183,8 @@ angles = np.random.uniform(-1, 1, steps)
 
 get_trajectory(consumptions, impulses, angles, ci, ca, consumption_energy_gain, baseline_decrease, trajectory_A,
                    trajectory_B, action_reward_scaling, consumption_reward_scaling,  num_steps=steps)
+
+rewards_vs_energy_state(trajectory_A, trajectory_B)
 
 # results = np.array([[calculate_reward_and_cost(i)] for i in np.linspace(0, 1.0, 1000)])
 #

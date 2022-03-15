@@ -1,5 +1,15 @@
-import json
 import os
+import shutil
+# Remove GPU Cache
+if os.path.exists("../../.nv"):
+    print("Directory exists, removed it")
+    shutil.rmtree("../../.nv")
+else:
+    print("Directory didnt exist")
+    d = '../..'
+    print([os.path.join(d, o) for o in os.listdir(d)
+                        if os.path.isdir(os.path.join(d,o))])
+import json
 from datetime import datetime
 
 from Services.trial_manager import TrialManager
@@ -1401,7 +1411,7 @@ phase_1_test_config = [
 
 calibration_test_config = [
     {
-        "Model Name": "parameterised_speed_test_faster",
+        "Model Name": "parameterised_speed_test_fast",
         "Environment Name": "ppo_continuous_sbe_is_final_calib",
         "Trial Number": 1,
         "Total Configurations": 1,
@@ -1428,7 +1438,7 @@ calibration_test_config = [
         "New Simulation": True
     },
     {
-        "Model Name": "parameterised_speed_test_faster",
+        "Model Name": "parameterised_speed_test_fast",
         "Environment Name": "ppo_continuous_sbe_is_final_calib",
         "Trial Number": 2,
         "Total Configurations": 1,
@@ -1456,7 +1466,6 @@ calibration_test_config = [
     },
 ]
 
-
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(calibration_test_config, parallel_jobs=4)
+manager = TrialManager(data_gathering_config, parallel_jobs=4)
 manager.run_priority_loop()

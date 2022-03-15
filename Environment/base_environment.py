@@ -866,9 +866,13 @@ class BaseEnvironment:
         else:
             return False
 
-    def predator_distance_to_fish(self):
+    def predator_base_distance_to_fish(self):
         return ((self.predator_location[0] - self.fish.body.position[0]) ** 2 +
                 (self.predator_location[1] - self.fish.body.position[1]) ** 2) ** 0.5
+
+    def predator_distance_to_fish(self):
+        return ((self.predator_body.position[0] - self.fish.body.position[0]) ** 2 +
+                (self.predator_body.position[1] - self.fish.body.position[1]) ** 2) ** 0.5
 
     def _move_realistic_predator_old(self):
         if self.check_predator_at_target():
@@ -920,7 +924,7 @@ class BaseEnvironment:
                 self.remaining_predator_attacks -= 1
 
             # If predator out of strike range.
-            if self.predator_distance_to_fish() > self.env_variables["max_predator_attack_range"]:
+            if self.predator_base_distance_to_fish() > self.env_variables["max_predator_attack_range"]:
                 self.predator_body.position = self.predator_location
                 return
 
@@ -932,6 +936,10 @@ class BaseEnvironment:
                 if self.new_attack_due and self.check_fish_not_near_wall():
                     self.new_attack_due = False
                     self.initiate_repeated_predator_attack()
+
+            # Update predator target
+            if self.predator_distance_to_fish() > self.env_variables["max_predator_reorient_distance"]:
+                self.predator_target = np.array(self.fish.body.position)
 
             self.predator_body.angle = np.pi / 2 - np.arctan2(
                 self.predator_target[0] - self.predator_body.position[0],

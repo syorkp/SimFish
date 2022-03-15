@@ -170,7 +170,8 @@ env = {
        # Predators - Repeated attacks in localised region. Note, can make some of these arbitrarily high so predator keeps attacking when fish enters a certain region for whole episode.
        'max_predator_attacks': 5,
        'further_attack_probability': 0.4,
-       'max_predator_attack_range': 600,
+       'max_predator_attack_range': 2000,
+       'max_predator_reorient_distance': 400,
        'predator_presence_duration_steps': 100,
 
        # Predator - Expanding disc
@@ -183,9 +184,9 @@ env = {
        'red_scaling_factor': 1,  # max was 100 without scaling
        'uv_scaling_factor': 50,  # max was 40 without scaling
        'red_2_scaling_factor': 0.018,  # max was 12000 without scaling
-       'red_occlusion_gain': 1.0,
-       'uv_occlusion_gain': 0.5,
-       'red2_occlusion_gain': 1.0,
+       'red_occlusion_gain': 0.0,
+       'uv_occlusion_gain': 0.0,
+       'red2_occlusion_gain': 0.0,
 
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
 
@@ -268,8 +269,8 @@ params = {
        # Learning (PPO only)
        'n_updates_per_iteration': 4,
        'rnn_state_computation': False,
-       'learning_rate_actor': 0.0001,  # Formerly 0.000001
-       'learning_rate_critic': 0.0001,  # Formerly 0.000001
+       'learning_rate_actor': 0.00001,  # Formerly 0.000001
+       'learning_rate_critic': 0.00001,  # Formerly 0.000001
 
        # Learning (PPO discrete only)
        'epsilon_greedy': False,
