@@ -155,8 +155,8 @@ def rewards_vs_energy_state(trajectory_A, trajectory_B,):
 
 # Chosen parameters
 
-ci = 0.0001
-ca = 0.0001
+ci = 0.0002
+ca = 0.0002
 baseline_decrease = 0.0003
 trajectory_A = 5.0
 trajectory_B = 2.5

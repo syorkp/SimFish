@@ -104,6 +104,11 @@ class NaturalisticEnvironment(BaseEnvironment):
         if frame_buffer is None:
             frame_buffer = []
 
+        if self.env_variables["show_previous_actions"]:
+            self.action_buffer.append(action)
+            self.position_buffer.append(np.array(self.fish.body.position))
+            self.fish_angle_buffer.append(self.fish.body.angle)
+
         if impulse is not None:
             # To calculate calibration curve.
             reward = self.fish.try_impulse(impulse)

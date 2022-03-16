@@ -139,6 +139,8 @@ env = {#                            Old Simulation (Parameters ignored in new si
        # GIFs and debugging
        'visualise_mask': False,  # For debugging purposes.
        'show_channel_sectors': False,
+       'show_fish_body_energy_state': True,
+       'show_previous_actions': 10,  # False if not, otherwise the number of actions to save.
 
        # Environment
        'decay_rate': 0.0006,

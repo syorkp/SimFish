@@ -35,8 +35,8 @@ def model_episode(consumptions, impulses, angles, ca, ci, cc, baseline, duration
     plt.show()
 
 
-ca = 0.01
-ci = 0.01
+ca = 0.02
+ci = 0.02
 cc = 0.2
 baseline_decrease = 0.001
 B = np.linspace(0, 10, 10)  # GO with 5 for now.

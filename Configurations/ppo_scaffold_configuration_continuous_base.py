@@ -11,6 +11,59 @@ import os
 # all distances in pixels
 import numpy as np
 
+from Networks.original_network import connectivity, reflected, base_network_layers, modular_network_layers, ops
+
+params = {
+       # Learning (Universal)
+       'batch_size': 1,  # How many experience traces to use for each training step.
+       'trace_length': 50,  # How long each experience trace will be when training
+       'num_episodes': 50000,  # How many episodes of game environment to train network with.
+       'max_epLength': 1000,  # The max allowed length of our episode.
+
+       # Learning (DQN Only)
+       'update_freq': 100,  # How often to perform a training step.
+       'y': .99,  # Discount factor on the target Q-values
+       'startE': 0.2,  # Starting chance of random action
+       'endE': 0.01,  # Final chance of random action
+       'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
+       'pre_train_steps': 50000,  # How many steps of random actions before training begins.
+       'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
+       'tau': 0.001,  # target network update time constant
+
+       # Learning (PPO only)
+       'n_updates_per_iteration': 4,
+       'rnn_state_computation': False,
+       'learning_rate_actor': 0.000001,  # Formerly 0.000001
+       'learning_rate_critic': 0.000001,  # Formerly 0.000001
+
+       # Learning (PPO discrete only)
+       'epsilon_greedy': False,
+
+       # Learning (PPO Continuous Only)
+       'multivariate': True,
+       'beta_distribution': False,
+       'gamma': 0.99,
+       'lambda': 0.9,
+       'input_sigmas': True,
+
+       # Discrete Action Space
+       'num_actions': 10,  # size of action space
+
+       # Saving and video parameters
+       'time_per_step': 0.03,  # Length of each step used in gif creation
+       'summaryLength': 200,  # Number of episodes to periodically save for analysis
+       'rnn_dim_shared': 512,  # number of rnn cells
+       'extra_rnn': False,
+
+       # Dynamic network construction
+       'reflected': reflected,
+       'base_network_layers': base_network_layers,
+       'modular_network_layers': modular_network_layers,
+       'ops': ops,
+       'connectivity': connectivity,
+
+}
+
 env = {
        #                            Old Simulation (Parameters ignored in new simulation)
        'num_photoreceptors': 120,  # number of visual 'rays' per eye
@@ -108,8 +161,8 @@ env = {
        'stress_compound': 0.9,
 
        # For continuous Actions space:
-       'max_angle_change': 4,  # Formerly np.pi / 5,
-       'max_impulse': 10.0,  # Formerly 10
+       'max_angle_change': 1,  # Final 4, Formerly np.pi / 5,
+       'max_impulse': 10.0,  # Final 100
 
        'baseline_penalty': 0.002,
        'reward_distance': 100,
@@ -140,6 +193,8 @@ env = {
        # GIFs and debugging
        'visualise_mask': False,  # For debugging purposes.
        'show_channel_sectors': False,
+       'show_fish_body_energy_state': True,
+       'show_previous_actions': 200,  # False if not, otherwise the number of actions to save.
 
        # Environment
        'decay_rate': 0.0006,
@@ -147,7 +202,7 @@ env = {
        'background_grating_frequency': 50,  # For extra layer motion:
        'displacement_scaling_factor': 0.018,
        # Multiplied by previous impulse size to cause displacement of nearby features.
-       'known_max_fish_i': 100,  # TODO: Determine
+       'known_max_fish_i': 100,
 
        # Prey movement
        'p_slow': 1.0,
@@ -192,7 +247,7 @@ env = {
 
        # Arbitrary fish parameters
        # Scaling of impulse and angle from 0-1 initialised distribution
-       'angle_scaling': 4,  # Formerly np.pi /
+       'angle_scaling': 2,  # Final 4, Formerly np.pi / 5
        'impulse_scaling': 10.0,  # Should end up being 100
 
        # Fish Visual System
@@ -214,8 +269,8 @@ env = {
        'max_isomerization_size': 0.0,
 
        # Energy state and hunger-based rewards
-       'ci': 0.0001,
-       'ca': 0.0001,
+       'ci': 0.0002,
+       'ca': 0.0002,
        'baseline_decrease': 0.0003,
        'trajectory_A': 5.0,
        'trajectory_B': 2.5,
@@ -247,60 +302,7 @@ env = {
        # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
 
 }
-from Networks.original_network import connectivity, reflected, base_network_layers, modular_network_layers, ops
-
-params = {
-       # Learning (Universal)
-       'batch_size': 1,  # How many experience traces to use for each training step.
-       'trace_length': 50,  # How long each experience trace will be when training
-       'num_episodes': 50000,  # How many episodes of game environment to train network with.
-       'max_epLength': 1000,  # The max allowed length of our episode.
-
-       # Learning (DQN Only)
-       'update_freq': 100,  # How often to perform a training step.
-       'y': .99,  # Discount factor on the target Q-values
-       'startE': 0.2,  # Starting chance of random action
-       'endE': 0.01,  # Final chance of random action
-       'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
-       'pre_train_steps': 50000,  # How many steps of random actions before training begins.
-       'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
-       'tau': 0.001,  # target network update time constant
-
-       # Learning (PPO only)
-       'n_updates_per_iteration': 4,
-       'rnn_state_computation': False,
-       'learning_rate_actor': 0.000001,  # Formerly 0.000001
-       'learning_rate_critic': 0.000001,  # Formerly 0.000001
-
-       # Learning (PPO discrete only)
-       'epsilon_greedy': False,
-
-       # Learning (PPO Continuous Only)
-       'multivariate': True,
-       'beta_distribution': False,
-       'gamma': 0.99,
-       'lambda': 0.9,
-       'input_sigmas': True,
-
-       # Discrete Action Space
-       'num_actions': 10,  # size of action space
-
-       # Saving
-       'time_per_step': 0.03,  # Length of each step used in gif creation
-       'summaryLength': 200,  # Number of episodes to periodically save for analysis
-       'rnn_dim_shared': 512,  # number of rnn cells
-       'extra_rnn': False,
-
-       # Dynamic network construction
-       'reflected': reflected,
-       'base_network_layers': base_network_layers,
-       'modular_network_layers': modular_network_layers,
-       'ops': ops,
-       'connectivity': connectivity,
-
-}
-
-directory_name = "ppo_continuous_sbe_is_scaffold_1"
+directory_name = "ppo_continuous_sbe_is_scaffold_2"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):

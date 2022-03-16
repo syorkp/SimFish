@@ -142,6 +142,11 @@ class BaseEnvironment:
         self.first_attack = False
         self.loom_predator_current_size = None
 
+        # For visualisation of previous actions
+        self.action_buffer = []
+        self.position_buffer = []
+        self.fish_angle_buffer = []
+
     def reset(self):
         self.num_steps = 0
         self.fish.hungry = 0
@@ -205,6 +210,9 @@ class BaseEnvironment:
         self.vegetation_shapes = []
 
         self.mask_buffer = []
+        self.action_buffer = []
+        self.position_buffer = []
+        self.fish_angle_buffer = []
 
     def reproduce_prey(self):
         num_prey = len(self.prey_bodies)
@@ -283,18 +291,40 @@ class BaseEnvironment:
         frame = rescale(frame, scale, multichannel=True, anti_aliasing=True)
         return frame
 
-    def draw_shapes(self, visualisation=False):
+    def draw_shapes(self, visualisation):
+        if visualisation:
+            if self.env_variables["show_previous_actions"]:
+                self._draw_past_actions(self.env_variables["show_previous_actions"])
+            self._draw_shapes_environmental(visualisation, self.env_variables['prey_size_visualisation'])
+        else:
+            self._draw_shapes_environmental(visualisation, self.env_variables['prey_size'])
+
+    def _draw_past_actions(self, n_actions_to_show):
+        while len(self.action_buffer) > n_actions_to_show:
+            self.action_buffer.pop(0)
+        while len(self.position_buffer) > n_actions_to_show:
+            self.position_buffer.pop(0)
+        while len(self.fish_angle_buffer) > n_actions_to_show:
+            self.fish_angle_buffer.pop(0)
+
+        for i, a in enumerate(self.action_buffer):
+            action_colour = (1 * ((i+1)/len(self.action_buffer)), 0, 0)
+            self.board.show_action(a[0], a[1], self.fish_angle_buffer[i], self.position_buffer[i][0], self.position_buffer[i][1], action_colour)
+
+    def _draw_shapes_environmental(self, visualisation, prey_size):
+        if self.env_variables["show_fish_body_energy_state"]:
+            fish_body_colour = (1-self.fish.energy_level, self.fish.energy_level, 0)
+        else:
+            fish_body_colour = self.fish.head.color
+
         self.board.fish_shape(self.fish.body.position, self.env_variables['fish_mouth_size'],
                               self.env_variables['fish_head_size'], self.env_variables['fish_tail_length'],
-                              self.fish.mouth.color, self.fish.head.color, self.fish.body.angle)
+                              self.fish.mouth.color, fish_body_colour, self.fish.body.angle)
 
         if len(self.prey_bodies) > 0:
             px = np.round(np.array([pr.position[0] for pr in self.prey_bodies])).astype(int)
             py = np.round(np.array([pr.position[1] for pr in self.prey_bodies])).astype(int)
-            if visualisation:
-                rrs, ccs = self.board.multi_circles(px, py, self.env_variables['prey_size_visualisation'])
-            else:
-                rrs, ccs = self.board.multi_circles(px, py, self.env_variables['prey_size'])
+            rrs, ccs = self.board.multi_circles(px, py, prey_size)
 
             try:
                 self.board.db[rrs, ccs] = self.prey_shapes[0].color
