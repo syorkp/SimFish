@@ -806,8 +806,12 @@ class NewDrawingBoard:
         ccs = np.tile(cc, (len(cx), 1)) + np.tile(np.reshape(cx, (len(cx), 1)), (1, len(cc)))
         return rrs, ccs
 
-    def show_action(self, impulse, angle, fish_angle, x_position, y_position, colour):
+    def show_action_continuous(self, impulse, angle, fish_angle, x_position, y_position, colour):
         rr, cc = draw.ellipse(int(y_position), int(x_position), (abs(angle) * 3) + 3, (impulse*0.5) + 3, rotation=-fish_angle)
+        self.db[rr, cc, :] = colour
+
+    def show_action_discrete(self, fish_angle, x_position, y_position, colour):
+        rr, cc = draw.ellipse(int(y_position), int(x_position), 5, 3, rotation=-fish_angle)
         self.db[rr, cc, :] = colour
 
     def line(self, p1, p2, color):

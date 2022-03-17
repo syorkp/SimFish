@@ -308,8 +308,14 @@ class BaseEnvironment:
             self.fish_angle_buffer.pop(0)
 
         for i, a in enumerate(self.action_buffer):
-            action_colour = (1 * ((i+1)/len(self.action_buffer)), 0, 0)
-            self.board.show_action(a[0], a[1], self.fish_angle_buffer[i], self.position_buffer[i][0], self.position_buffer[i][1], action_colour)
+            if self.continuous_actions:
+                action_colour = (1 * ((i+1)/len(self.action_buffer)), 0, 0)
+                self.board.show_action_continuous(a[0], a[1], self.fish_angle_buffer[i], self.position_buffer[i][0],
+                                       self.position_buffer[i][1], action_colour)
+            else:
+                action_colour = self.fish.head.color
+                self.board.show_action_discrete(self.fish_angle_buffer[i], self.position_buffer[i][0],
+                                       self.position_buffer[i][1], action_colour)
 
     def _draw_shapes_environmental(self, visualisation, prey_size):
         if self.env_variables["show_fish_body_energy_state"]:

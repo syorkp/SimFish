@@ -55,6 +55,8 @@ class ContinuousNaturalisticEnvironment(NaturalisticEnvironment):
         self.pred_prey_wall2 = self.space.add_collision_handler(5, 7)
         self.pred_prey_wall2.begin = self.no_collision
 
+        self.continuous_actions = True
+
     def reset(self):
         # np.random.seed(404)  # TODO: Remove
 

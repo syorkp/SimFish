@@ -66,6 +66,8 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.prey_fish_col = self.space.add_collision_handler(3, 2)
         self.prey_fish_col.begin = self.no_collision
 
+        self.continuous_actions = False
+
     def reset(self):
         super().reset()
         self.fish.body.position = (self.env_variables['width']/2, self.env_variables['height']/2)

@@ -56,6 +56,8 @@ class DiscreteNaturalisticEnvironment(NaturalisticEnvironment):
 
         self.cs_required = self.env_variables["cs_required"]
 
+        self.continuous_actions = False
+
     def reset(self):
         self.cs_required = self.env_variables["cs_required"]
         super().reset()
