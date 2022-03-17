@@ -11,6 +11,7 @@
     "sand_grain_displacement_distance": 20,
     "vegetation_size": 100.0,
     "show_previous_actions": 200,
+    "show_fish_body_energy_state": true,
     "vegetation_num": 0,
     "vegetation_effect_distance": 150,
     "photon_ratio": 100,
