@@ -1612,6 +1612,79 @@ scaffold_training_config_2 = [
     },
 ]
 
+scaffold_training_config_2b = [
+    {
+        "Model Name": "scaffold_version_2",
+        "Environment Name": "ppo_continuous_sbe_is_scaffold_2",
+        "Trial Number": 3,
+        "Total Configurations": 8,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 5,
+                "4": 6,
+                "5": 6,
+                "6": 7,
+                "8": 8,
+                "9": 8,
+            },
+            "Predators Avoided": {
+                "7": 4
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True
+    },
+    {
+        "Model Name": "scaffold_version_2",
+        "Environment Name": "ppo_continuous_sbe_is_scaffold_2",
+        "Trial Number": 4,
+        "Total Configurations": 8,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 5,
+                "4": 6,
+                "5": 6,
+                "6": 7,
+                "8": 8,
+                "9": 8,
+            },
+            "Predators Avoided": {
+                "7": 4
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True
+    },
+]
+
 data_gathering = [
     {
         "Model Name": "data_gathering_new",
@@ -1651,5 +1724,5 @@ data_gathering = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(scaffold_training_config_1, parallel_jobs=4)
+manager = TrialManager(scaffold_training_config, parallel_jobs=4)
 manager.run_priority_loop()
