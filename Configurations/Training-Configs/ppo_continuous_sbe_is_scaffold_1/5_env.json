@@ -15,6 +15,7 @@
     "photon_ratio": 100,
     "forward_swim_cost": 3,
     "forward_swim_impulse": 10,
+    "show_previous_actions": 200,
     "routine_turn_cost": 3,
     "routine_turn_impulse": 5,
     "routine_turn_dir_change": 0.6,

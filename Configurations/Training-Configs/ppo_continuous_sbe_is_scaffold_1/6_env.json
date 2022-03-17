@@ -18,6 +18,7 @@
     "routine_turn_cost": 3,
     "routine_turn_impulse": 5,
     "routine_turn_dir_change": 0.6,
+    "show_previous_actions": 200,
     "capture_swim_cost": 5,
     "capture_swim_impulse": 5,
     "j_turn_cost": 2.5,

@@ -9,6 +9,7 @@
     "sand_grain_num": 0,
     "sand_grain_displacement_impulse_scaling_factor": 0.5,
     "sand_grain_displacement_distance": 20,
+    "show_previous_actions": 200,
     "vegetation_size": 100.0,
     "vegetation_num": 0,
     "vegetation_effect_distance": 150,

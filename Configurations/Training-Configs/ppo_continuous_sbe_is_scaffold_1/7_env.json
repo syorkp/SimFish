@@ -12,6 +12,7 @@
     "vegetation_size": 100.0,
     "vegetation_num": 0,
     "vegetation_effect_distance": 150,
+    "show_previous_actions": 200,
     "photon_ratio": 100,
     "forward_swim_cost": 3,
     "forward_swim_impulse": 10,
