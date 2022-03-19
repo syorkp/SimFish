@@ -1871,5 +1871,5 @@ data_gathering_config = [{
 }
 ]
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(scaffold_training_config, parallel_jobs=4)
+manager = TrialManager(scaffold_training_config_2b, parallel_jobs=4)
 manager.run_priority_loop()
