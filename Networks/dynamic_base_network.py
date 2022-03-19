@@ -37,7 +37,6 @@ class DynamicBaseNetwork:
 
         self.rnn_cells, self.rnn_cell_states, self.rnn_dim = self.create_rnns(base_network_layers, modular_network_layers, reflected)
 
-
         # Contains all layers to be referenced.
         self.network_graph = {"observation": self.reshaped_observation,
                               "internal_state": self.internal_state,

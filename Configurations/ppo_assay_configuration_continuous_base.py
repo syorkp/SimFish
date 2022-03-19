@@ -11,7 +11,61 @@ import numpy as np
 # all distances in pixels
 
 
-env = {#                            Old Simulation (Parameters ignored in new simulation)
+from Networks.original_network import connectivity, reflected, base_network_layers, modular_network_layers, ops
+
+params = {
+       # Learning (Universal)
+       'batch_size': 1,  # How many experience traces to use for each training step.
+       'trace_length': 50,  # How long each experience trace will be when training
+       'num_episodes': 50000,  # How many episodes of game environment to train network with.
+       'max_epLength': 1000,  # The max allowed length of our episode.
+
+       # Learning (DQN Only)
+       'update_freq': 100,  # How often to perform a training step.
+       'y': .99,  # Discount factor on the target Q-values
+       'startE': 0.2,  # Starting chance of random action
+       'endE': 0.01,  # Final chance of random action
+       'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
+       'pre_train_steps': 50000,  # How many steps of random actions before training begins.
+       'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
+       'tau': 0.001,  # target network update time constant
+
+       # Learning (PPO only)
+       'n_updates_per_iteration': 4,
+       'rnn_state_computation': False,
+       'learning_rate_actor': 0.000001,  # Formerly 0.000001
+       'learning_rate_critic': 0.000001,  # Formerly 0.000001
+
+       # Learning (PPO discrete only)
+       'epsilon_greedy': False,
+
+       # Learning (PPO Continuous Only)
+       'multivariate': True,
+       'beta_distribution': False,
+       'gamma': 0.99,
+       'lambda': 0.9,
+       'input_sigmas': True,
+
+       # Discrete Action Space
+       'num_actions': 10,  # size of action space
+
+       # Saving and video parameters
+       'time_per_step': 0.03,  # Length of each step used in gif creation
+       'summaryLength': 200,  # Number of episodes to periodically save for analysis
+       'rnn_dim_shared': 512,  # number of rnn cells
+       'extra_rnn': False,
+
+       # Dynamic network construction
+       'reflected': reflected,
+       'base_network_layers': base_network_layers,
+       'modular_network_layers': modular_network_layers,
+       'ops': ops,
+       'connectivity': connectivity,
+
+}
+
+env = {
+       #                            Old Simulation (Parameters ignored in new simulation)
        'num_photoreceptors': 120,  # number of visual 'rays' per eye
        'min_vis_dist': 20,
        'max_vis_dist': 180,
@@ -74,13 +128,13 @@ env = {#                            Old Simulation (Parameters ignored in new si
        'prey_inertia': 40.,
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-       'prey_num': 1,
+       'prey_num': 20,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
        'prey_max_turning_angle': 0.04,
        # This is the turn (pi radians) that happens every step, designed to replicate linear wavy movement.
-       'prey_fluid_displacement': True,
+       'prey_fluid_displacement': False,
        'prey_jump': False,
        'differential_prey': False,
        'prey_cloud_num': 2,
@@ -95,27 +149,27 @@ env = {#                            Old Simulation (Parameters ignored in new si
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
-       'bkg_scatter': 0.00019,  # base brightness of the background
+       'bkg_scatter': 0.00001,  # base brightness of the background
        'dark_gain': 0.38,  # gain of brightness in the dark side
        'light_gain': 1.0,  # gain of brightness in the bright side
 
        'predator_cost': 1000,
 
        'hunger': False,
-       'reafference': False,
+       'reafference': True,
        'stress': False,
        'stress_compound': 0.9,
 
        # For continuous Actions space:
-       'max_angle_change': np.pi / 5,
-       'max_impulse': 10.0,  # Up to 50ish
+       'max_angle_change': 1,  # Final 4, Formerly np.pi / 5,
+       'max_impulse': 10.0,  # Final 100
 
        'baseline_penalty': 0.002,
        'reward_distance': 100,
-       'proximity_reward': 0.0,
+       'proximity_reward': 0.002,
 
-       'max_sigma_impulse': 0.4,
-       'max_sigma_angle': 0.4,
+       'max_sigma_impulse': 0.3,  # Formerly 0.4
+       'max_sigma_angle': 0.3,  # Formerly 0.4
        'min_sigma_impulse': 0.1,
        'min_sigma_angle': 0.1,
        'sigma_time_constant': 0.000001,
@@ -126,7 +180,7 @@ env = {#                            Old Simulation (Parameters ignored in new si
        #                                  New Simulation
 
        # Action mask
-       'impose_action_mask': True,
+       'impose_action_mask': False,
 
        # Sensory inputs
        'energy_state': True,
@@ -140,7 +194,7 @@ env = {#                            Old Simulation (Parameters ignored in new si
        'visualise_mask': False,  # For debugging purposes.
        'show_channel_sectors': False,
        'show_fish_body_energy_state': True,
-       'show_previous_actions': 10,  # False if not, otherwise the number of actions to save.
+       'show_previous_actions': 200,  # False if not, otherwise the number of actions to save.
 
        # Environment
        'decay_rate': 0.0006,
@@ -148,7 +202,7 @@ env = {#                            Old Simulation (Parameters ignored in new si
        'background_grating_frequency': 50,  # For extra layer motion:
        'displacement_scaling_factor': 0.018,
        # Multiplied by previous impulse size to cause displacement of nearby features.
-       'known_max_fish_i': 20,  # TODO: Determine
+       'known_max_fish_i': 100,
 
        # Prey movement
        'p_slow': 1.0,
@@ -156,7 +210,7 @@ env = {#                            Old Simulation (Parameters ignored in new si
        'p_escape': 0.5,
        'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
        'p_reorient': 0.04,
-       'slow_speed_paramecia': 0.0037,  # Impulse to generate 0.5mms-1 for given prey mass
+       'slow_speed_paramecia': 0, #0.0037,  # Impulse to generate 0.5mms-1 for given prey mass
        'fast_speed_paramecia': 0.0074,  # Impulse to generate 1.0mms-1 for given prey mass
        'jump_speed_paramecia': 0.074,  # Impulse to generate 10.0mms-1 for given prey mass
 
@@ -171,7 +225,8 @@ env = {#                            Old Simulation (Parameters ignored in new si
        # Predators - Repeated attacks in localised region. Note, can make some of these arbitrarily high so predator keeps attacking when fish enters a certain region for whole episode.
        'max_predator_attacks': 5,
        'further_attack_probability': 0.4,
-       'max_predator_attack_range': 600,
+       'max_predator_attack_range': 2000,
+       'max_predator_reorient_distance': 400,
        'predator_presence_duration_steps': 100,
 
        # Predator - Expanding disc
@@ -182,18 +237,18 @@ env = {#                            Old Simulation (Parameters ignored in new si
 
        # Visual system scaling factors (to set CNN inputs into 0 to 255 range):
        'red_scaling_factor': 1,  # max was 100 without scaling
-       'uv_scaling_factor': 1000000,  # max was 40 without scaling
+       'uv_scaling_factor': 50,  # max was 40 without scaling
        'red_2_scaling_factor': 0.018,  # max was 12000 without scaling
-       'red_occlusion_gain': 1.0,
+       'red_occlusion_gain': 0.0,
        'uv_occlusion_gain': 0.0,
-       'red2_occlusion_gain': 1.0,
+       'red2_occlusion_gain': 0.0,
 
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
 
        # Arbitrary fish parameters
-       # Scaling of impulse and angle from 0-1 initialised distribution TODO: Should set higher to allow full exploration of angle range.
-       'angle_scaling': np.pi / 5,
-       'impulse_scaling': 10.0,
+       # Scaling of impulse and angle from 0-1 initialised distribution
+       'angle_scaling': 2,  # Final 4, Formerly np.pi / 5
+       'impulse_scaling': 10.0,  # Should end up being 100
 
        # Fish Visual System
        'uv_photoreceptor_rf_size': 0.0128,  # Pi Radians (0.73 degrees) - Yoshimatsu et al. (2019)
@@ -214,16 +269,16 @@ env = {#                            Old Simulation (Parameters ignored in new si
        'max_isomerization_size': 0.0,
 
        # Energy state and hunger-based rewards
-       'ci': 0.0001,
-       'ca': 0.0001,
+       'ci': 0.0002,
+       'ca': 0.0002,
        'baseline_decrease': 0.0003,
        'trajectory_A': 5.0,
        'trajectory_B': 2.5,
        'consumption_energy_gain': 1.0,
 
        # Reward
-       'action_reward_scaling': 1000, #1942,  # Arbitrary (practical) hyperparameter for penalty for action
-       'consumption_reward_scaling': 50000,  # Arbitrary (practical) hyperparameter for reward for consumption
+       'action_reward_scaling': 0,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
+       'consumption_reward_scaling': 100000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
        'wall_reflection': True,
        'wall_touch_penalty': 0.2,
@@ -246,41 +301,7 @@ env = {#                            Old Simulation (Parameters ignored in new si
        'capture_angle_deviation_allowance': np.pi,
        # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
 
-       }
-
-
-params = {'num_actions': 10,  # size of action space
-          'batch_size': 1,  # How many experience traces to use for each training step.
-          'trace_length': 50,  # How long each experience trace will be when training
-          'update_freq': 100,  # How often to perform a training step.
-          'y': .99,  # Discount factor on the target Q-values
-          'startE': 0.2,  # Starting chance of random action
-          'endE': 0.01,  # Final chance of random action
-          'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
-          'num_episodes': 50000,  # How many episodes of game environment to train network with.
-          'pre_train_steps': 50000,  # How many steps of random actions before training begins.
-          'max_epLength': 1000,  # The max allowed length of our episode.
-          'time_per_step': 0.03,  # Length of each step used in gif creation
-          'summaryLength': 200,  # Number of episodes to periodically save for analysis
-          'tau': 0.001,  # target network update time constant
-          'rnn_dim_shared': 512,  # number of rnn cells
-          'extra_rnn': False,
-
-          'learning_rate_actor': 0.000001,
-          'learning_rate_critic': 0.000001,
-
-          'n_updates_per_iteration': 5,
-          'rnn_state_computation': False,
-
-          'epsilon_greedy': False,
-          'multivariate': False,
-          'beta_distribution': True,
-
-          'gamma': 0.99,
-          'lambda': 0.9,
-          'input_sigmas': True
-
-          }
+}
 
 # Equal to that given in the file name.
 environment_name = "continuous_assay"

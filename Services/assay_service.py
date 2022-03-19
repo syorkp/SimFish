@@ -40,9 +40,9 @@ class AssayService(BaseService):
 
         # Create environment so that network has access
         if self.continuous_actions:
-            self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts)
+            self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts, new_simulation, using_gpu)
         else:
-            self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts)
+            self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts, new_simulation, using_gpu)
 
         # Metadata
         self.episode_number = episode_number
@@ -83,8 +83,15 @@ class AssayService(BaseService):
         self.save_episode_data()
 
     def perform_assay(self, assay):
-        self.assay_output_data_format = {key: None for key in assay["recordings"]}
-        self.buffer.recordings = assay["recordings"]
+        self.assay_output_data_format = {key: None for key in assay["behavioural recordings"] + assay["network recordings"]}
+        self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
+        # if assay["visualise network states"]:
+        #     if "convolutional layers" not in self.buffer.recordings:
+        #         self.buffer.recordings.append("convolutional layers")
+        #     if "rnn state" not in self.buffer.recordings:
+        #         self.buffer.recordings.append("rnn state")
+        #     self.design_network_states_gif()   # TODO: Use this to create some kind of config - with start indices, widths, etc.
+
         self.current_episode_max_duration = assay["duration"]
 
         self._episode_loop()
@@ -94,6 +101,11 @@ class AssayService(BaseService):
             make_gif(self.frame_buffer,
                      f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+        # if assay["visualise network states"]:
+        #     network_states_frames = self.build_network_states_gif()
+        #     make_gif(network_states_frames,
+        #              f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}-Network-States.gif",
+        #              duration=len(network_states_frames) * self.learning_params['time_per_step'], true_image=True)
         self.frame_buffer = []
 
         if "reward assessments" in self.buffer.recordings:
@@ -212,7 +224,7 @@ class AssayService(BaseService):
         return sand_grain_positions, prey_positions, predator_position, vegetation_positions
 
     def create_output_data_storage(self, assay):
-        self.output_data = {key: [] for key in assay["recordings"]}
+        self.output_data = {key: [] for key in assay["behavioural recordings"] + assay["network recordings"]}
         self.output_data["step"] = []
 
     def save_episode_data(self):
@@ -252,3 +264,72 @@ class AssayService(BaseService):
         self.frame_buffer = []
         with open(f"{self.data_save_location}/{assay['assay id']}.json", "w") as output_file:
             json.dump(self.assay_output_data, output_file)
+
+    def design_network_states_gif(self):
+        """Allow to infer shape and design gif in any case."""
+        ...
+
+    def build_network_states_gif(self):
+        observation_buffer = np.array(self.buffer.observation_buffer)
+        internal_state_buffer = np.array(self.buffer.internal_state_buffer)
+
+        conv1l_buffer = np.array(self.buffer.actor_conv1l_buffer)
+        conv2l_buffer = np.array(self.buffer.actor_conv2l_buffer)
+        conv3l_buffer = np.array(self.buffer.actor_conv3l_buffer)
+        conv4l_buffer = np.array(self.buffer.actor_conv4l_buffer)
+        conv1r_buffer = np.array(self.buffer.actor_conv1r_buffer)
+        conv2r_buffer = np.array(self.buffer.actor_conv2r_buffer)
+        conv3r_buffer = np.array(self.buffer.actor_conv3r_buffer)
+        conv4r_buffer = np.array(self.buffer.actor_conv4r_buffer)
+        rnn_state_buffer = np.array(self.buffer.actor_rnn_state_buffer)
+
+        action_buffer = np.array(self.buffer.action_buffer)
+        value_buffer = np.array(self.buffer.value_buffer)
+
+        num_frames = observation_buffer.shape[0]
+
+        layer_names = ["conv1l",
+                       "conv2l",
+                       "conv3l",
+                       "conv4l",
+                       "conv1r",
+                       "conv2r",
+                       "conv3r",
+                       "conv4r",
+                       "RNN"
+                       ]
+
+
+        conv1l_unit_number = conv1l_buffer.shape[1]
+        conv2l_unit_number = conv2l_buffer.shape[1]
+        conv3l_unit_number = conv3l_buffer.shape[1]
+        conv4l_unit_number = conv4l_buffer.shape[1]
+        conv1r_unit_number = conv1r_buffer.shape[1]
+        conv2r_unit_number = conv2r_buffer.shape[1]
+        conv3r_unit_number = conv3r_buffer.shape[1]
+        conv4r_unit_number = conv4r_buffer.shape[1]
+        rnn_state_unit_number = rnn_state_buffer.shape[1]
+
+        width = int(rnn_state_unit_number/2 + (2 * 50))
+
+        l_observation_start_index = (10, int((width/4) - (observation_buffer.shape[1]/2)))
+        r_observation_start_index = (10, int((3 * width/4) - (observation_buffer.shape[1]/2)))
+        conv1l_start_index = (20, int((width/4) - (conv1l_unit_number/2)))
+        conv2l_start_index = (20, int((3 * width/4) - (conv2l_unit_number/2)))
+        conv3l_start_index = (30, int((width/4) - (conv3l_unit_number/2)))
+        conv4l_start_index = (30, int((3 * width/4) - (conv4l_unit_number/2)))
+        conv1r_start_index = (40, int((width/4) - (conv1r_unit_number/2)))
+        conv2r_start_index = (40, int((3 * width/4) - (conv2r_unit_number/2)))
+        conv3r_start_index = (50, int((width/4) - (conv3r_unit_number/2)))
+        conv4r_start_index = (50, int((3 * width/4) - (conv4r_unit_number/2)))
+        rnn_state_start_index = (60, 50)
+        rnn2_state_start_index = (70, 50)
+
+        frames = np.zeros((width, 100, num_frames))
+
+        for frame_num in range(num_frames):
+            # frames[l_observation_start_index[0], l_observation_start_index[1]:l_observation_start_index[1]+observation_buffer.shape[1], frame_num] = observation_buffer[frame_num, ]
+            frames[conv1l_start_index[0], conv1l_start_index[1]:conv1l_start_index[1] + conv1l_buffer.shape[1], frame_num]
+
+            ...
+

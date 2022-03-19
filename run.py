@@ -1,5 +1,6 @@
 import os
 import shutil
+
 # Remove GPU Cache
 if os.path.exists("../.nv"):
     print("Directory exists, removed it")
@@ -8,11 +9,12 @@ else:
     print("Directory didnt exist")
     d = '..'
     print([os.path.join(d, o) for o in os.listdir(d)
-                        if os.path.isdir(os.path.join(d,o))])
+           if os.path.isdir(os.path.join(d, o))])
 import json
 from datetime import datetime
 
 from Services.trial_manager import TrialManager
+from Configurations.Networks.original_network import base_network_layers, ops, connectivity
 
 # Ensure output directories exist
 if not os.path.exists("./Training-Output/"):
@@ -279,7 +281,6 @@ dqn_discrete = [
         "Full Logs": True,
         "SB Emulator": False
     },
-
 
 ]
 
@@ -1831,6 +1832,44 @@ scaffold_training_config_2d = [
     },
 ]
 
+data_gathering_config = [{
+    "Model Name": "parameterised_speed_test_fast",
+    "Environment Name": "continuous_assay",
+    "Assay Configuration Name": "Behavioural-Data-Free",
+    "Trial Number": 1,
+    "Run Mode": "Assay",
+    "Tethered": False,
+    "Realistic Bouts": True,
+    "Continuous Actions": True,
+    "Learning Algorithm": "PPO",
+    "Priority": 2,
+    "Using GPU": False,
+    "monitor gpu": False,
+    "Full Logs": True,
+    "SB Emulator": True,
+    "set random seed": False,
+    "New Simulation": True,
+
+    "Assays": [
+        {
+            "assay id": "Naturalistic-1",
+            "stimulus paradigm": "Naturalistic",
+            "duration": 1000,
+            "Tethered": False,
+            "save frames": True,
+            "save stimuli": False,
+            "random positions": False,
+            "reset": False,
+            "background": None,
+            "moving": False,
+            "collisions": True,
+            "behavioural recordings": ["environmental positions", "observation"],
+            "network recordings": [layer for layer in base_network_layers.keys()] + ["left_eye", "right_eye"],  # Same organisation as ablations
+            "ablations": []
+        },
+    ]
+}
+]
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(scaffold_training_config_2d, parallel_jobs=4)
+manager = TrialManager(scaffold_training_config, parallel_jobs=4)
 manager.run_priority_loop()

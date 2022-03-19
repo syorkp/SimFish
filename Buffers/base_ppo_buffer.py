@@ -84,6 +84,7 @@ class BasePPOBuffer:
             self.vegetation_position_buffer = []
             self.fish_angle_buffer = []
 
+            # Old method
             self.actor_conv1l_buffer = []
             self.actor_conv2l_buffer = []
             self.actor_conv3l_buffer = []
@@ -217,6 +218,14 @@ class BasePPOBuffer:
             del assay_group[key]
             assay_group.create_dataset(key, data=data)
 
+    def init_assay_recordings(self, recordings, network_recordings):
+        self.recordings = recordings
+        self.unit_recordings = {i: [] for i in network_recordings}
+
+    def make_desired_recordings(self, network_layers):
+        for l in self.unit_recordings.keys():
+            self.unit_recordings[l].append(network_layers[l][0])
+
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id):
         hdf5_file = h5py.File(f"{data_save_location}/{assay_configuration_id}.h5", "a")
 
@@ -233,6 +242,9 @@ class BasePPOBuffer:
         if "rnn state" in self.recordings:
             self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
             # self.create_data_group("rnn_state_critic", np.array(self.critic_rnn_state_buffer), assay_group)
+
+        for layer in self.unit_recordings.keys():
+            self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
 
         if "environmental positions" in self.recordings:
             self.create_data_group("impulse", np.array(self.action_buffer)[:, 0], assay_group)

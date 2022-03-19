@@ -123,6 +123,7 @@ class PPOTrainingServiceDiscrete2(TrainingService, DiscretePPO):
 
         TrainingService._save_episode(self, episode_start_t, total_episode_reward, prey_caught,
                                       predators_avoided, sand_grains_bumped, steps_near_vegetation)
+        TrainingService._save_episode_discrete_variables(self)
 
         output_data = {"epsilon": self.e, "episode_number": self.episode_number, "total_steps": self.total_steps, "configuration_index": self.configuration_index}
         with open(f"{self.model_location}/saved_parameters.json", "w") as file:
@@ -134,23 +135,23 @@ class PPOTrainingServiceDiscrete2(TrainingService, DiscretePPO):
             a_freq = tf.Summary(value=[tf.Summary.Value(tag="action " + str(act), simple_value=action_freq)])
             self.writer.add_summary(a_freq, self.total_steps)
 
-        # Value Summary
-        for step in range(0, len(self.buffer.value_buffer)):
-            value_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="value_predictions", simple_value=self.buffer.value_buffer[step])])
-            self.writer.add_summary(value_summary, self.total_steps - len(self.buffer.value_buffer) + step)
-
-        if self.full_logs:
-            # Save Loss
-            for step in range(0, len(self.buffer.critic_loss_buffer)):
-                critic_loss_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="critic loss", simple_value=self.buffer.critic_loss_buffer[step])])
-                self.writer.add_summary(critic_loss_summary,
-                                        self.total_steps - len(self.buffer.action_buffer) + step * self.learning_params[
-                                            "batch_size"])
-            for step in range(0, len(self.buffer.actor_loss_buffer)):
-                actor_loss_summary = tf.Summary(
-                    value=[tf.Summary.Value(tag="critic loss", simple_value=self.buffer.actor_loss_buffer[step])])
-                self.writer.add_summary(actor_loss_summary,
-                                        self.total_steps - len(self.buffer.action_buffer) + step * self.learning_params[
-                                            "batch_size"])
+        # # Value Summary
+        # for step in range(0, len(self.buffer.value_buffer)):
+        #     value_summary = tf.Summary(
+        #         value=[tf.Summary.Value(tag="value_predictions", simple_value=self.buffer.value_buffer[step])])
+        #     self.writer.add_summary(value_summary, self.total_steps - len(self.buffer.value_buffer) + step)
+        #
+        # if self.full_logs:
+        #     # Save Loss
+        #     for step in range(0, len(self.buffer.critic_loss_buffer)):
+        #         critic_loss_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="critic loss", simple_value=self.buffer.critic_loss_buffer[step])])
+        #         self.writer.add_summary(critic_loss_summary,
+        #                                 self.total_steps - len(self.buffer.action_buffer) + step * self.learning_params[
+        #                                     "batch_size"])
+        #     for step in range(0, len(self.buffer.actor_loss_buffer)):
+        #         actor_loss_summary = tf.Summary(
+        #             value=[tf.Summary.Value(tag="critic loss", simple_value=self.buffer.actor_loss_buffer[step])])
+        #         self.writer.add_summary(actor_loss_summary,
+        #                                 self.total_steps - len(self.buffer.action_buffer) + step * self.learning_params[
+        #                                     "batch_size"])

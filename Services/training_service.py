@@ -258,6 +258,40 @@ class TrainingService(BaseService):
 
         self.reward_list.append(total_episode_reward)
 
+    def _save_episode_discrete_variables(self):
+        values = self.buffer.value_buffer
+        mean_value = np.mean(values)
+        max_value = np.max(values)
+        min_value = np.min(values)
+        value_summary = tf.Summary(value=[tf.Summary.Value(tag="mean value", simple_value=mean_value)])
+        self.writer.add_summary(value_summary, self.episode_number)
+        value_summary = tf.Summary(value=[tf.Summary.Value(tag="max value", simple_value=max_value)])
+        self.writer.add_summary(value_summary, self.episode_number)
+        value_summary = tf.Summary(value=[tf.Summary.Value(tag="min value", simple_value=min_value)])
+        self.writer.add_summary(value_summary, self.episode_number)
+
+        if self.full_logs:
+            # Save Loss
+            mean_critic_loss = np.mean(self.buffer.critic_loss_buffer)
+            max_critic_loss = np.max(self.buffer.critic_loss_buffer)
+            min_critic_loss = np.min(self.buffer.critic_loss_buffer)
+            critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean critic_loss", simple_value=mean_critic_loss)])
+            self.writer.add_summary(critic_loss_summary, self.episode_number)
+            critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max critic_loss", simple_value=max_critic_loss)])
+            self.writer.add_summary(critic_loss_summary, self.episode_number)
+            critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min critic_loss", simple_value=min_critic_loss)])
+            self.writer.add_summary(critic_loss_summary, self.episode_number)
+
+            mean_actor_loss = np.mean(self.buffer.actor_loss_buffer)
+            max_actor_loss = np.max(self.buffer.actor_loss_buffer)
+            min_actor_loss = np.min(self.buffer.actor_loss_buffer)
+            actor_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean actor_loss", simple_value=mean_actor_loss)])
+            self.writer.add_summary(actor_loss_summary, self.episode_number)
+            actor_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max actor_loss", simple_value=max_actor_loss)])
+            self.writer.add_summary(actor_loss_summary, self.episode_number)
+            actor_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min actor_loss", simple_value=min_actor_loss)])
+            self.writer.add_summary(actor_loss_summary, self.episode_number)
+
     def _save_episode_continuous_variables(self):
         impulses = self.buffer.action_buffer[:, 0]
         mean_impulse = np.mean(impulses)

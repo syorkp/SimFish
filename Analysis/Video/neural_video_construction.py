@@ -1,0 +1,139 @@
+import copy
+import numpy as np
+
+from Analysis.load_data import load_data
+from Configurations.Networks.original_network import base_network_layers, ops, connectivity
+from Tools.make_gif import make_gif
+
+
+def get_num_layers_upstream(layer, connectivity_graph):
+    for connection in connectivity_graph:
+        if layer == connection[1][1]:
+            return 1 + get_num_layers_upstream(connection[1][0], connectivity_graph)
+    else:
+        return 0
+
+
+def convert_ops_to_graph(operations):
+    connections = []
+    for op in operations.keys():
+        inputs = operations[op][1]
+        outputs = operations[op][2]
+
+        if len(inputs) == 1:
+            for output in outputs:
+                connections.append([op, [inputs[0], output]])
+        else:
+            for input in inputs:
+                connections.append([op, [input, outputs[0]]])
+
+    return connections
+
+
+def self_normalise_network_activity(neural_activity):
+    for unit in range(neural_activity.shape[1]):
+        activity_points = neural_activity[:, unit]
+        max_activity = np.max(activity_points)
+        min_activity = np.min(activity_points)
+        difference = max_activity - min_activity
+        neural_activity[:, unit] *= 255 / difference
+    return neural_activity
+
+
+def rejig_layers_upstream(layers_upstream):
+    layers_upstream2 = copy.copy(layers_upstream)
+    for i, l in enumerate(layers_upstream):
+        if l - 1 in layers_upstream or l == 0:
+            pass
+        else:
+            layers_upstream2[i] -= 1
+            return rejig_layers_upstream(layers_upstream2)
+    return layers_upstream
+
+
+def tidy_layers_upstream(layers_upstream):
+    min_layers_upstream = min(layers_upstream)
+    layers_upstream = [layer - min_layers_upstream for layer in layers_upstream]
+    return rejig_layers_upstream(layers_upstream)
+
+
+def create_network_gif(neural_data, connectivity_graph):
+    layer_space = 100
+
+    layers = neural_data.keys()
+    layer_widths = []
+    layers_upstream = []
+    for i, layer in enumerate(layers):
+        units = neural_data[layer].shape[1:]
+        units = units[0]
+        layer_widths.append(units)
+        t = neural_data[layer].shape[0]
+        num_upstream = get_num_layers_upstream(layer, connectivity_graph)
+        layers_upstream.append(num_upstream)
+
+    layer_order = tidy_layers_upstream(layers_upstream)
+
+    width = max(layer_widths)
+    height = len(set(layer_order)) * layer_space
+
+    base_display = np.zeros((t, height, width, 3))
+
+    for l, layer in enumerate(layers):
+        position = layer_order[l]
+        num_units = layer_widths[l]
+
+        in_parallel = layer_order.count(position)
+        first_occurrence = True
+        if in_parallel == 2:
+            in_parallel = True
+            positions_up_to = layer_order[:l + 1]
+            if positions_up_to.count(position) == 2:
+                first_occurrence = False
+        else:
+            in_parallel = False
+
+        h_index = int((position * layer_space) + layer_space / 2)
+
+        if in_parallel:
+            buffer_each_side = int(((width / 2) - num_units) / 2)
+        else:
+            buffer_each_side = int((width - num_units) / 2)
+
+        if first_occurrence:
+            w_index = int(buffer_each_side)
+        else:
+            w_index = int((width / 2) + buffer_each_side)
+
+        layer_neural_data = neural_data[layer]
+        if "eye" not in layer:
+            layer_neural_data = np.expand_dims(layer_neural_data, len(layer_neural_data.shape))
+            layer_neural_data = np.repeat(layer_neural_data, 3, axis=len(layer_neural_data.shape) - 1)
+        else:
+            layer_neural_data = np.concatenate((self_normalise_network_activity(layer_neural_data[:, :, 0:1]),
+                                                np.zeros((layer_neural_data.shape[0], layer_neural_data.shape[1], 1)),
+                                                self_normalise_network_activity(layer_neural_data[:, :, 1:2])), axis=2)
+
+        if len(layer_neural_data.shape) == 3:
+            layer_neural_data = self_normalise_network_activity(layer_neural_data)
+            base_display[:, h_index, w_index:w_index + num_units, :] = layer_neural_data
+        else:
+            in_layers = neural_data[layer].shape[-1]
+            for sub_layer in range(in_layers):
+                desired_data = layer_neural_data[:, :, sub_layer]
+                desired_data = self_normalise_network_activity(desired_data)
+                desired_data = np.expand_dims(desired_data, 1)
+                base_display[:, h_index:h_index + sub_layer, w_index:w_index + num_units, :] = desired_data
+
+        if in_parallel:
+            base_display[:, int(position * layer_space): int((position * layer_space) + layer_space),
+                         int(width / 2 - 2):int(width / 2 + 2)] = (0, 255, 0)
+
+    make_gif(base_display, f"test.gif",
+             duration=t * 0.03,
+             true_image=True)
+
+
+data = load_data("parameterised_speed_test_fast-1", "Behavioural-Data-Free", "Naturalistic-1")
+network_data = {key: data[key] for key in list(base_network_layers.keys()) + ["left_eye", "right_eye"]}
+ops = convert_ops_to_graph(ops)
+create_network_gif(network_data, connectivity + ops)
