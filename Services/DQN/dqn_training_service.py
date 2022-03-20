@@ -26,6 +26,7 @@ def training_target(trial, epsilon, total_steps, episode_number, memory_fraction
                                   realistic_bouts=trial["Realistic Bouts"],
                                   continuous_actions=trial["Continuous Actions"],
                                   epsilon=epsilon,
+                                  new_simulation=trial["New Simulation"],
 
                                   model_exists=trial["Model Exists"],
                                   episode_transitions=trial["Episode Transitions"],
@@ -40,7 +41,7 @@ def training_target(trial, epsilon, total_steps, episode_number, memory_fraction
 class DQNTrainingService(TrainingService, BaseDQN):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_actions, epsilon, model_exists, episode_transitions,
+                 config_name, realistic_bouts, continuous_actions, new_simulation, epsilon, model_exists, episode_transitions,
                  total_configurations, conditional_transitions, configuration_index, full_logs):
         super().__init__(model_name=model_name, trial_number=trial_number,
                          total_steps=total_steps, episode_number=episode_number,
@@ -48,6 +49,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
                          memory_fraction=memory_fraction, config_name=config_name,
                          realistic_bouts=realistic_bouts,
                          continuous_actions=continuous_actions,
+                         new_simulation=new_simulation,
                          model_exists=model_exists,
                          episode_transitions=episode_transitions,
                          total_configurations=total_configurations,
