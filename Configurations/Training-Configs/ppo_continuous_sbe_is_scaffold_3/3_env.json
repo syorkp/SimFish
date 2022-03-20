@@ -130,7 +130,7 @@
     "uv_occlusion_gain": 1.0,
     "red2_occlusion_gain": 0.0,
     "wall_buffer_distance": 40,
-    "angle_scaling": 2,
+    "angle_scaling": 1,
     "impulse_scaling": 10.0,
     "uv_photoreceptor_rf_size": 0.0133,
     "red_photoreceptor_rf_size": 0.0133,

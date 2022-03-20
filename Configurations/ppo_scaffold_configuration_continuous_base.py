@@ -247,7 +247,7 @@ env = {
 
        # Arbitrary fish parameters
        # Scaling of impulse and angle from 0-1 initialised distribution
-       'angle_scaling': 2,  # Final 4, Formerly np.pi / 5
+       'angle_scaling': 1,  # Final 4, Formerly np.pi / 5
        'impulse_scaling': 10.0,  # Should end up being 100
 
        # Fish Visual System
