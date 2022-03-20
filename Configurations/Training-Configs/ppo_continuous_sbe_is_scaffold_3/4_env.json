@@ -61,7 +61,7 @@
     "predator_impulse": 0.39,
     "immunity_steps": 65,
     "distance_from_fish": 498,
-    "probability_of_predator": 0.0,
+    "probability_of_predator": 0.01,
     "dark_light_ratio": 0.0,
     "read_noise_sigma": 0.0,
     "bkg_scatter": 0.03,
