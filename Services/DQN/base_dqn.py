@@ -61,11 +61,11 @@ class BaseDQN:
                          self.environment_params['energy_state'], self.environment_params['in_light'],
                          self.environment_params['salt']] if x is True])
         internal_states = max(internal_states, 1)
-        cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim'], state_is_tuple=True)
-        cell_t = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim'], state_is_tuple=True)
-        self.main_QN = QNetwork(self.simulation, self.learning_params['rnn_dim'], cell, 'main', self.learning_params['num_actions'], internal_states=internal_states,
+        cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
+        cell_t = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
+        self.main_QN = QNetwork(self.simulation, self.learning_params['rnn_dim_shared'], cell, 'main', self.learning_params['num_actions'], internal_states=internal_states,
                            learning_rate=self.learning_params['learning_rate'], extra_layer=self.learning_params['extra_rnn'])
-        self.target_QN = QNetwork(self.simulation, self.learning_params['rnn_dim'], cell_t, 'target', self.learning_params['num_actions'], internal_states=internal_states,
+        self.target_QN = QNetwork(self.simulation, self.learning_params['rnn_dim_shared'], cell_t, 'target', self.learning_params['num_actions'], internal_states=internal_states,
                              learning_rate=self.learning_params['learning_rate'], extra_layer=self.learning_params['extra_rnn'])
 
     def episode_loop(self):
