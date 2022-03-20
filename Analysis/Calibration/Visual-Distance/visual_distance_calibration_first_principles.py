@@ -3,6 +3,19 @@ import matplotlib.pyplot as plt
 from scipy.stats import poisson
 
 
+def scatter_signal_all(max_d, rf_size, bkg_scatter):
+    d_range = np.linspace(1, max_d, max_d-1)
+
+    point_width = 2 * d_range * np.tan(rf_size / 2)
+    distance_scaling = np.exp(-0.0006 * d_range) * bkg_scatter
+    point_width = np.clip(point_width, 1, 10000)
+    point_width += (point_width > 1) * 2
+    point_width = np.floor(point_width).astype(int)
+    photons = np.sum(distance_scaling * point_width)
+
+    return photons
+
+
 def get_max_scatter_photons(bkg_scatter, distance, rf_size, decay_constant):
     photons = 0
 
@@ -71,7 +84,7 @@ def compute_distinguishability_old(prey_stimulus, max_noise_stimulus):
 
 
 def plot_distinguishability_against_distance(max_distance, bkg_scatter, luminance, scaling_factor, uv_occlusion_gain, max_curve_distance=1000):
-    rf_size = 0.0128
+    rf_size = 0.0133
     decay_constant = 0.0006
     prey_size = 1
 
@@ -229,31 +242,44 @@ def plot_distinguishability_against_luminance_two_distances(visual_distance_full
         np.save(f, np.array(uv_stimulus_photons_partial))
 
 
-max_distance = 1500
-bkg_scatter = 0.00019
-full_l = 1.0
-normal_l = 0.27212121212121215
-dark_l = 0.2693939393939394
-scaling_factor = 1000000
+#                 OLD
+
+# max_distance = 1500
+# bkg_scatter = 0.00019
+# full_l = 1.0
+# normal_l = 0.27212121212121215
+# dark_l = 0.2693939393939394
+# scaling_factor = 1000000
+# uv_occlusion_gain = 1.0
+# visual_distance_full = 34
+# visual_distance_partial = 100
+#
+# min_luminance = 0.25
+# max_luminance = 0.2721
+#
+#
+# plot_distinguishability_against_distance(max_distance, bkg_scatter, full_l, scaling_factor, uv_occlusion_gain)
+# plot_distinguishability_against_distance(max_distance, bkg_scatter, max_luminance, scaling_factor, uv_occlusion_gain)
+#
+# plot_distinguishability_against_luminance_two_distances(visual_distance_full, visual_distance_partial, max_distance, bkg_scatter, scaling_factor, uv_occlusion_gain, min_luminance, max_luminance)
+#
+#
+# # plot_distinguishability_against_luminance(visual_distance_full, max_distance, bkg_scatter, scaling_factor, uv_occlusion_gain, min_luminance, max_luminance)
+# # plot_distinguishability_against_luminance(visual_distance_partial, max_distance, bkg_scatter, scaling_factor, uv_occlusion_gain, min_luminance, max_luminance)
+# #
+# plot_distinguishability_against_distance(max_distance, bkg_scatter, full_l, scaling_factor, uv_occlusion_gain)
+# plot_distinguishability_against_distance(max_distance, bkg_scatter, normal_l, scaling_factor, uv_occlusion_gain)
+# plot_distinguishability_against_distance(max_distance, bkg_scatter, dark_l, scaling_factor, uv_occlusion_gain)
+
+L1 = 250
+max_distance = 2000
+bkg_scatter = 0.003
+scaling_factor = 1
 uv_occlusion_gain = 1.0
 visual_distance_full = 34
 visual_distance_partial = 100
-
-min_luminance = 0.25
-max_luminance = 0.2721
-
-
-plot_distinguishability_against_distance(max_distance, bkg_scatter, full_l, scaling_factor, uv_occlusion_gain)
-plot_distinguishability_against_distance(max_distance, bkg_scatter, max_luminance, scaling_factor, uv_occlusion_gain)
-
+min_luminance = 300
+max_luminance = 0
+plot_distinguishability_against_distance(max_distance, bkg_scatter, L1, scaling_factor, uv_occlusion_gain)
 plot_distinguishability_against_luminance_two_distances(visual_distance_full, visual_distance_partial, max_distance, bkg_scatter, scaling_factor, uv_occlusion_gain, min_luminance, max_luminance)
 
-
-# plot_distinguishability_against_luminance(visual_distance_full, max_distance, bkg_scatter, scaling_factor, uv_occlusion_gain, min_luminance, max_luminance)
-# plot_distinguishability_against_luminance(visual_distance_partial, max_distance, bkg_scatter, scaling_factor, uv_occlusion_gain, min_luminance, max_luminance)
-#
-plot_distinguishability_against_distance(max_distance, bkg_scatter, full_l, scaling_factor, uv_occlusion_gain)
-plot_distinguishability_against_distance(max_distance, bkg_scatter, normal_l, scaling_factor, uv_occlusion_gain)
-plot_distinguishability_against_distance(max_distance, bkg_scatter, dark_l, scaling_factor, uv_occlusion_gain)
-#
-#
