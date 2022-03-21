@@ -115,6 +115,44 @@ class Fish:
         else:
             return self.take_basic_action(action)
 
+    def get_action_colour(self, action):
+        """Returns the (R, G, B) for associated actions"""
+        if action == 0:  # Slow2
+            action_colour = (0, 1, 0)
+
+        elif action == 1:  # RT right
+            action_colour = (0, 1, 0)
+
+        elif action == 2:  # RT left
+            action_colour = (0, 1, 0)
+
+        elif action == 3:  # Short capture swim
+            action_colour = (1, 0, 1)
+
+        elif action == 4:  # j turn right
+            action_colour = (1, 1, 1)
+
+        elif action == 5:  # j turn left
+            action_colour = (1, 1, 1)
+
+        elif action == 6:  # Do nothing
+            action_colour = (0, 0, 0)
+
+        elif action == 7:  # c start right
+            action_colour = (1, 0, 0)
+
+        elif action == 8:  # c start left
+            action_colour = (1, 0, 0)
+
+        elif action == 9:  # Approach swim.
+            action_colour = (0, 1, 0)
+
+        else:
+            action_colour = (0, 0, 0)
+            print("Invalid action given")
+
+        return action_colour
+
     def take_basic_action(self, action):
         """Original version"""
         if action == 0:  # Swim forward
