@@ -117,7 +117,7 @@ env = {
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
 
        'fish_mass': 140.,
-       'fish_mouth_size': 4.,  # FINAL VALUE - 0.2mm diameter, so 1.
+       'fish_mouth_size': 6.,  # FINAL VALUE - 0.2mm diameter, so 1.
        'fish_head_size': 2.5,  # Old - 10
        'fish_tail_length': 41.5,  # Old: 70
        'eyes_verg_angle': 77.,  # in deg
@@ -128,7 +128,7 @@ env = {
        'prey_inertia': 40.,
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-       'prey_num': 20,
+       'prey_num': 30,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
@@ -145,13 +145,13 @@ env = {
        'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
-       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.01,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
-       'bkg_scatter': 0.00001,  # base brightness of the background
+       'bkg_scatter': 0.03,  # base brightness of the background FORMERLY 0.00001
        'dark_gain': 0.38,  # gain of brightness in the dark side
-       'light_gain': 1.0,  # gain of brightness in the bright side
+       'light_gain': 200.0,  # gain of brightness in the bright side
 
        'predator_cost': 1000,
 
@@ -180,7 +180,7 @@ env = {
        #                                  New Simulation
 
        # Action mask
-       'impose_action_mask': False,
+       'impose_action_mask': True,
 
        # Sensory inputs
        'energy_state': True,
@@ -197,7 +197,7 @@ env = {
        'show_previous_actions': 200,  # False if not, otherwise the number of actions to save.
 
        # Environment
-       'decay_rate': 0.0006,
+       'decay_rate': 0.006,  # Formerly 0.0006
        'sim_steps_per_second': 5,  # For converting isomerization frequency.
        'background_grating_frequency': 50,  # For extra layer motion:
        'displacement_scaling_factor': 0.018,
@@ -210,7 +210,7 @@ env = {
        'p_escape': 0.5,
        'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
        'p_reorient': 0.04,
-       'slow_speed_paramecia': 0, #0.0037,  # Impulse to generate 0.5mms-1 for given prey mass
+       'slow_speed_paramecia': 0.0037,  # Impulse to generate 0.5mms-1 for given prey mass
        'fast_speed_paramecia': 0.0074,  # Impulse to generate 1.0mms-1 for given prey mass
        'jump_speed_paramecia': 0.074,  # Impulse to generate 10.0mms-1 for given prey mass
 
@@ -237,22 +237,22 @@ env = {
 
        # Visual system scaling factors (to set CNN inputs into 0 to 255 range):
        'red_scaling_factor': 1,  # max was 100 without scaling
-       'uv_scaling_factor': 50,  # max was 40 without scaling
-       'red_2_scaling_factor': 0.018,  # max was 12000 without scaling
-       'red_occlusion_gain': 0.0,
-       'uv_occlusion_gain': 0.0,
+       'uv_scaling_factor': 1, #50,  # max was 40 without scaling
+       'red_2_scaling_factor': 0.1, #0.018,  # max was 12000 without scaling
+       'red_occlusion_gain': 0.0,  # 0 Being complete construction.
+       'uv_occlusion_gain': 1.0,
        'red2_occlusion_gain': 0.0,
 
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
 
        # Arbitrary fish parameters
        # Scaling of impulse and angle from 0-1 initialised distribution
-       'angle_scaling': 2,  # Final 4, Formerly np.pi / 5
+       'angle_scaling': 1,  # Final 4, Formerly np.pi / 5
        'impulse_scaling': 10.0,  # Should end up being 100
 
        # Fish Visual System
-       'uv_photoreceptor_rf_size': 0.0128,  # Pi Radians (0.73 degrees) - Yoshimatsu et al. (2019)
-       'red_photoreceptor_rf_size': 0.0128,  # Kept same
+       'uv_photoreceptor_rf_size': 0.0133,  # Pi Radians (0.76 degrees) - Yoshimatsu et al. (2019)
+       'red_photoreceptor_rf_size': 0.0133,  # Kept same
        'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
        'red_photoreceptor_num': 63,
        'minimum_observation_size': 100,  # Parameter to determine padded observation size (avoids conv layer size bug).
@@ -302,6 +302,7 @@ env = {
        # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
 
 }
+
 
 # Equal to that given in the file name.
 environment_name = "continuous_assay"

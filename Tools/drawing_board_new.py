@@ -807,7 +807,8 @@ class NewDrawingBoard:
         return rrs, ccs
 
     def show_action_continuous(self, impulse, angle, fish_angle, x_position, y_position, colour):
-        rr, cc = draw.ellipse(int(y_position), int(x_position), (abs(angle) * 3) + 3, (impulse*0.5) + 3, rotation=-fish_angle)
+        # rr, cc = draw.ellipse(int(y_position), int(x_position), (abs(angle) * 3) + 3, (impulse*0.5) + 3, rotation=-fish_angle)
+        rr, cc = draw.ellipse(int(y_position), int(x_position), 3, (impulse*0.5) + 3, rotation=-fish_angle)
         self.db[rr, cc, :] = colour
 
     def show_action_discrete(self, fish_angle, x_position, y_position, colour):
