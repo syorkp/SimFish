@@ -246,9 +246,6 @@ env = {
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
 
        # Arbitrary fish parameters
-       # Scaling of impulse and angle from 0-1 initialised distribution
-       'angle_scaling': 1,  # Final 4, Formerly np.pi / 5
-       'impulse_scaling': 10.0,  # Should end up being 100
 
        # Fish Visual System
        'uv_photoreceptor_rf_size': 0.0133,  # Pi Radians (0.76 degrees) - Yoshimatsu et al. (2019)

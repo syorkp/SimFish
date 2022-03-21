@@ -52,10 +52,6 @@ class ContinuousPPO(BasePPO):
                                                                          new_simulation=self.new_simulation,
                                                                          impose_action_mask=self.environment_params[
                                                                              'impose_action_mask'],
-                                                                         impulse_scaling=self.environment_params[
-                                                                             'impulse_scaling'],
-                                                                         angle_scaling=self.environment_params[
-                                                                             'angle_scaling'],
                                                                          base_network_layers=self.learning_params[
                                                                              'base_network_layers'],
                                                                          modular_network_layers=self.learning_params[
@@ -79,8 +75,6 @@ class ContinuousPPO(BasePPO):
                                                                   new_simulation=self.new_simulation,
                                                                   impose_action_mask=self.environment_params[
                                                                       'impose_action_mask'],
-                                                                  impulse_scaling=self.environment_params['impulse_scaling'],
-                                                                  angle_scaling=self.environment_params['angle_scaling'],
                                                                   )
 
             if self.sb_emulator:

@@ -313,7 +313,7 @@ class BaseEnvironment:
                 self.board.show_action_continuous(a[0], a[1], self.fish_angle_buffer[i], self.position_buffer[i][0],
                                        self.position_buffer[i][1], action_colour)
             else:
-                action_colour = self.fish.get_action_colour(self.fish_angle_buffer[i])
+                action_colour = self.fish.get_action_colour(self.action_buffer[i])
                 self.board.show_action_discrete(self.fish_angle_buffer[i], self.position_buffer[i][0],
                                        self.position_buffer[i][1], action_colour)
 

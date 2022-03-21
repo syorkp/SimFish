@@ -438,8 +438,8 @@ class Fish:
         if self.energy_level > 1.0:
             self.energy_level = 1.0
 
-        if consumption:
-            print(f"Energy level: {self.energy_level}")
-            print(f"Capture reward: {(energy_intake * self.consumption_reward_scaling)}")
-            print(f"Energy use penalty: {- (energy_use * self.action_reward_scaling)}")
+        # if consumption:
+        #     print(f"Energy level: {self.energy_level}")
+        #     print(f"Capture reward: {(energy_intake * self.consumption_reward_scaling)}")
+        #     print(f"Energy use penalty: {- (energy_use * self.action_reward_scaling)}")
         return reward
