@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from skimage.transform import resize, rescale
 
 from Analysis.load_data import load_data
-from Configurations.Networks.original_network import base_network_layers, ops, connectivity
+from Analysis.load_model_config import load_configuration_files
 from Tools.make_gif import make_gif
 
 
@@ -171,7 +171,12 @@ def create_network_gif(neural_data, connectivity_graph, model_name, scale=0.25):
 
 
 # model_name = "parameterised_speed_test_fast-1"
-model_name = "scaffold_version_4-4"
+# model_name = "scaffold_version_4-4"
+model_name = "dqn_scaffold_version_5-1"
+learning_params, environment_params = load_configuration_files(model_name)
+
+
+
 data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-3")
 network_data = {key: data[key] for key in list(base_network_layers.keys()) + ["left_eye", "right_eye"] + ["internal_state"]}
 ops = convert_ops_to_graph(ops)
