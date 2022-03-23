@@ -605,10 +605,10 @@ class BaseEnvironment:
                                                                                    self.env_variables["p_reorient"]])
             angle_changes = angle_changes + (large_turns * turns_implemented)
 
-        prey_within_range = self.check_proximity_all_prey(self.env_variables["prey_sensing_distance"])
+            self.prey_within_range = self.check_proximity_all_prey(self.env_variables["prey_sensing_distance"])
 
         for i, prey_body in enumerate(self.prey_bodies):
-            if prey_within_range[i]: #self.check_proximity(prey_body.position, self.env_variables['prey_sensing_distance']):
+            if self.prey_within_range[i]:  # self.check_proximity(prey_body.position, self.env_variables['prey_sensing_distance']):
                 # Motion from fluid dynamics
                 if self.env_variables["prey_fluid_displacement"]:
                     distance_vector = prey_body.position - self.fish.body.position
