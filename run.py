@@ -2019,10 +2019,10 @@ ppo_scaffold_training_config_4b = [
     },
 ]
 
-dqn_scaffold_training_config_4a = [
+dqn_scaffold_training_config_5a = [
     {
-        "Model Name": "dqn_scaffold_version_4",
-        "Environment Name": "dqn_scaffold_4",
+        "Model Name": "dqn_scaffold_version_5",
+        "Environment Name": "dqn_scaffold_5",
         "Trial Number": 1,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -2056,8 +2056,8 @@ dqn_scaffold_training_config_4a = [
         "New Simulation": True
     },
     {
-        "Model Name": "dqn_scaffold_version_4",
-        "Environment Name": "dqn_scaffold_4",
+        "Model Name": "dqn_scaffold_version_5",
+        "Environment Name": "dqn_scaffold_5",
         "Trial Number": 2,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -2094,5 +2094,5 @@ dqn_scaffold_training_config_4a = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(data_gathering_config_discrete, parallel_jobs=4)
+manager = TrialManager(dqn_scaffold_training_config_5a, parallel_jobs=4)
 manager.run_priority_loop()
