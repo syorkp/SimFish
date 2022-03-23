@@ -21,6 +21,7 @@ class QNetworkDynamic(DynamicBaseNetwork):
         self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
         self.actions = tf.placeholder(shape=[None], dtype=tf.int32, name='actions')
         self.actions_one_hot = tf.one_hot(self.actions, num_actions, dtype=tf.float32)
+        self.exp_keep = tf.placeholder(shape=None, dtype=tf.float32)
 
         # Main stream
         self.streamA, self.streamV = tf.split(self.processing_network_output, 2, 1)

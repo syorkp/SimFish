@@ -86,7 +86,7 @@ class BaseDQN:
             self.target_QN = QNetworkDynamic(simulation=self.simulation,
                                              rnn_dim=self.learning_params['rnn_dim_shared'],
                                              rnn_cell=cell,
-                                             my_scope='main',
+                                             my_scope='target',
                                              internal_states=internal_states,
                                              num_actions=self.learning_params['num_actions'],
                                              new_simulation=True,
@@ -97,7 +97,8 @@ class BaseDQN:
                                              ops=self.learning_params['ops'],
                                              connectivity=self.learning_params[
                                                  'connectivity'],
-                                             reflected=self.learning_params['reflected'], )
+                                             reflected=self.learning_params['reflected'],
+                                             )
         else:
             self.main_QN = QNetwork(self.simulation, self.learning_params['rnn_dim_shared'], cell, 'main',
                                     self.learning_params['num_actions'], internal_states=internal_states,
@@ -215,10 +216,10 @@ class BaseDQN:
         # Generate actions and corresponding steps.
         if np.random.rand(1) < self.epsilon or self.total_steps < self.pre_train_steps:
             [updated_rnn_state, sa, sv] = self.sess.run(
-                [self.main_QN.rnn_state, self.main_QN.streamA, self.main_QN.streamV],
+                [self.main_QN.rnn_state_shared, self.main_QN.streamA, self.main_QN.streamV],
                 feed_dict={self.main_QN.observation: o,
                            self.main_QN.internal_state: internal_state,
-                           self.main_QN.prev_actions: [a],
+                           self.main_QN.prev_actions: [[a]],
                            self.main_QN.train_length: 1,
                            self.main_QN.rnn_state_in: rnn_state,
                            self.main_QN.batch_size: 1,
@@ -228,10 +229,10 @@ class BaseDQN:
             chosen_a = np.random.randint(0, self.learning_params['num_actions'])
         else:
             chosen_a, updated_rnn_state, sa, sv = self.sess.run(
-                [self.main_QN.predict, self.main_QN.rnn_state, self.main_QN.streamA, self.main_QN.streamV],
+                [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.streamA, self.main_QN.streamV],
                 feed_dict={self.main_QN.observation: o,
                            self.main_QN.internal_state: internal_state,
-                           self.main_QN.prev_actions: [a],
+                           self.main_QN.prev_actions: [[a]],
                            self.main_QN.trainLength: 1,
                            self.main_QN.rnn_state_in: rnn_state,
                            self.main_QN.batch_size: 1,
@@ -338,12 +339,12 @@ class BaseDQN:
     def _assay_step_loop_new(self, o, internal_state, a, rnn_state):
         chosen_a, updated_rnn_state, rnn2_state, sa, sv, network_layers, o2 = \
             self.sess.run(
-                [self.main_QN.predict, self.main_QN.rnn_state, self.main_QN.rnn_state2, self.main_QN.streamA,
+                [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_shared_ref, self.main_QN.streamA,
                  self.main_QN.streamV, self.main_QN.network_graph, [self.main_QN.ref_left_eye, self.main_QN.ref_right_eye],
                  ],
                 feed_dict={self.main_QN.observation: o,
                            self.main_QN.internal_state: internal_state,
-                           self.main_QN.prev_actions: [a],
+                           self.main_QN.prev_actions: [[a]],
                            self.main_QN.train_length: 1,
                            self.main_QN.rnn_state_in: rnn_state,
                            self.main_QN.batch_size: 1,
