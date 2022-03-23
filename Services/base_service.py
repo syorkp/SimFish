@@ -24,9 +24,9 @@ def delete_nv_folder():
 class BaseService:
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_actions, new_simulation):
+                 config_name, realistic_bouts, continuous_actions, new_simulation, monitor_performance=False):
 
-        self.monitor_performance = False  # TODO: make parameter
+        self.monitor_performance = monitor_performance
         if self.monitor_performance:
             self.profile = cProfile.Profile()
             self.profile.enable()
@@ -80,7 +80,6 @@ class BaseService:
 
     def create_session(self):
         print("Creating Session..")
-        # TODO: Check is not breaking on GPU Usage (old Training and AssayServices did differently.
 
         if self.using_gpu:
             # options = tf.GPUOptions(per_process_gpu_memory_fraction=self.memory_fraction)

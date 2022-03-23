@@ -15,24 +15,25 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 def ppo_training_target_discrete(trial, total_steps, episode_number, memory_fraction, configuration_index):
     services = PPOTrainingServiceDiscrete2(model_name=trial["Model Name"],
-                                          trial_number=trial["Trial Number"],
-                                          total_steps=total_steps,
-                                          episode_number=episode_number,
-                                          monitor_gpu=trial["monitor gpu"],
-                                          using_gpu=trial["Using GPU"],
-                                          memory_fraction=memory_fraction,
-                                          config_name=trial["Environment Name"],
-                                          realistic_bouts=trial["Realistic Bouts"],
-                                          continuous_actions=trial["Continuous Actions"],
-                                          new_simulation=trial["New Simulation"],
+                                           trial_number=trial["Trial Number"],
+                                           total_steps=total_steps,
+                                           episode_number=episode_number,
+                                           monitor_gpu=trial["monitor gpu"],
+                                           using_gpu=trial["Using GPU"],
+                                           memory_fraction=memory_fraction,
+                                           config_name=trial["Environment Name"],
+                                           realistic_bouts=trial["Realistic Bouts"],
+                                           continuous_actions=trial["Continuous Actions"],
+                                           new_simulation=trial["New Simulation"],
 
-                                          model_exists=trial["Model Exists"],
-                                          episode_transitions=trial["Episode Transitions"],
-                                          total_configurations=trial["Total Configurations"],
-                                          conditional_transitions=trial["Conditional Transitions"],
-                                          configuration_index=configuration_index,
-                                          full_logs=trial["Full Logs"]
-                                          )
+                                           model_exists=trial["Model Exists"],
+                                           episode_transitions=trial["Episode Transitions"],
+                                           total_configurations=trial["Total Configurations"],
+                                           conditional_transitions=trial["Conditional Transitions"],
+                                           configuration_index=configuration_index,
+                                           full_logs=trial["Full Logs"],
+                                           profile_speed=trial["Profile Speed"],
+                                           )
     services.run()
 
 
@@ -40,7 +41,7 @@ class PPOTrainingServiceDiscrete2(TrainingService, DiscretePPO):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_actions, new_simulation, model_exists, episode_transitions,
-                 total_configurations, conditional_transitions, configuration_index, full_logs):
+                 total_configurations, conditional_transitions, configuration_index, full_logs, profile_speed):
         super().__init__(model_name=model_name, trial_number=trial_number,
                          total_steps=total_steps, episode_number=episode_number,
                          monitor_gpu=monitor_gpu, using_gpu=using_gpu,
@@ -53,7 +54,9 @@ class PPOTrainingServiceDiscrete2(TrainingService, DiscretePPO):
                          total_configurations=total_configurations,
                          conditional_transitions=conditional_transitions,
                          configuration_index=configuration_index,
-                         full_logs=full_logs)
+                         full_logs=full_logs,
+                         profile_speed=profile_speed,
+                         )
 
         self.batch_size = self.learning_params["batch_size"]
         self.trace_length = self.learning_params["trace_length"]

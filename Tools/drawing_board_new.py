@@ -91,7 +91,6 @@ class NewDrawingBoard:
         xPeriod = self.chosen_math_library.random.uniform(0.0, 10.0)
         yPeriod = self.chosen_math_library.random.uniform(0.0, 10.0)
 
-        # TODO: Calibrate these to be best for no direction and detectability.
         turbPower = 1.0
         turbSize = 162.0
 
@@ -698,7 +697,7 @@ class NewDrawingBoard:
                 self.mask_buffer_time_point = O
             elif self.visualise_mask == "G":
                 AV = self.chosen_math_library.concatenate(
-                    (AB[:, :, 0:1], self.chosen_math_library.array(self.db[:, :, 1:2]), AB[:, :, 1:2]), axis=2)  # TODO: Update here to CP.
+                    (AB[:, :, 0:1], self.chosen_math_library.array(self.db[:, :, 1:2]), AB[:, :, 1:2]), axis=2)
                 G = AV * L * O * S
                 self.mask_buffer_time_point = G
             else:

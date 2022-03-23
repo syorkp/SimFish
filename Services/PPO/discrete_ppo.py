@@ -107,7 +107,7 @@ class DiscretePPO(BasePPO):
                                                                                                      save_frames=True,
                                                                                                      activations=(sa,))
 
-        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()  # TODO: Modify
+        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
         # Update buffer
         self.buffer.add_training(observation=o,

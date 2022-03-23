@@ -142,9 +142,6 @@ class BasePPO:
             if d:
                 break
 
-        # if self.new_simulation:  # TODO: Probably just want for assay version
-#            self.buffer.add_energy_level_log(self.simulation.energy_level_log)
-
         self.buffer.tidy()
 
     def compute_rnn_states(self, rnn_key_points, observation_buffer, internal_state_buffer, previous_action_buffer):

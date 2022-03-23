@@ -91,7 +91,6 @@ class PPONetworkActor(BaseNetwork):
 
             # Following should be outside:
             self.action_tf_var_impulse = tf.squeeze(self.norm_dist_impulse.sample(1), axis=0)
-            # TODO: Shouldnt be clipping??
             self.impulse_output = tf.math.multiply(self.action_tf_var_impulse, max_impulse, name="impulse_output")
             self.log_prob_impulse = self.norm_dist_impulse.log_prob(self.action_tf_var_impulse)
 
@@ -176,7 +175,6 @@ class PPONetworkActor(BaseNetwork):
         # self.trainer = tf.train.AdamOptimizer(learning_rate=self.learning_rate, epsilon=1e-5)
         # self.train = self.trainer.apply_gradients(self.model_gradients)
 
-        # TODO: Probably not meant to be there.
         # self.optimizer = tf.train.AdamOptimizer(self.learning_rate, name='optimizer').minimize(
         #     self.total_loss)
 

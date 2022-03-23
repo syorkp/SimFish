@@ -3,6 +3,7 @@ import os
 import time
 import numpy as np
 import pstats
+import cProfile
 
 import tensorflow.compat.v1 as tf
 
@@ -17,13 +18,13 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 
 class TrainingService(BaseService):
-    # TODO: Test new configuration savinfg
+
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_actions, new_simulation, model_exists, episode_transitions,
-                 total_configurations, conditional_transitions, configuration_index, full_logs):
+                 total_configurations, conditional_transitions, configuration_index, full_logs, profile_speed):
 
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                         config_name, realistic_bouts, continuous_actions, new_simulation)
+                         config_name, realistic_bouts, continuous_actions, new_simulation, profile_speed)
 
         print("TrainingService Constructor called")
 
@@ -106,6 +107,10 @@ class TrainingService(BaseService):
                 ps.sort_stats("tottime")
                 ps.print_stats(20)
                 print(time.time())
+
+                if self.monitor_performance:
+                    self.profile = cProfile.Profile()
+                    self.profile.enable()
 
     def create_environment(self):
         if self.continuous_actions:

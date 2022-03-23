@@ -186,7 +186,7 @@ class ContinuousPPO(BasePPO):
                                                                                                      save_frames=True,
                                                                                                      activations=(sa,))
 
-        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()  # TODO: Modify
+        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
         # Update buffer
         self.buffer.add_training(observation=o,
@@ -259,7 +259,7 @@ class ContinuousPPO(BasePPO):
                                                                                                      save_frames=True,
                                                                                                      activations=(sa,))
 
-        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()  # TODO: Modify
+        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
         # Update buffer
         self.buffer.add_training(observation=o,
@@ -354,7 +354,7 @@ class ContinuousPPO(BasePPO):
                                                                                                      save_frames=True,
                                                                                                      activations=(sa,))
 
-        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()  # TODO: Modify
+        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
         # Update buffer
         self.buffer.add_training(observation=o,
@@ -456,7 +456,7 @@ class ContinuousPPO(BasePPO):
                                                                                                      save_frames=True,
                                                                                                      activations=(sa,))
 
-        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()  # TODO: Modify
+        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
         # Update buffer
         self.buffer.add_training(observation=o,
@@ -657,7 +657,7 @@ class ContinuousPPO(BasePPO):
         #                self.actor_network.train_length: 1,
         #                }
         # )
-        # TODO: Get rid of sam and pro
+
         impulse, angle, updated_rnn_state_actor, updated_rnn_state_actor_ref, action_probability, mu_i, mu_a, \
         si, mu1, mu1_ref, mu_a1, mu_a_ref = self.sess.run(
             [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.rnn_state_shared,
@@ -1179,7 +1179,7 @@ class ContinuousPPO(BasePPO):
                                                                          "batch_size"]])
 
 
-                # Optimise actor TODO: Get rid fo sampled and probs
+                # Optimise actor
                 loss_actor_val, loss_critic_val, total_loss, _, log_action_probability_batch_new, scaled_actions = self.sess.run(
                     [self.actor_network.policy_loss, self.actor_network.value_loss, self.actor_network.total_loss,
                      self.actor_network.train, self.actor_network.new_neg_log_prob, self.actor_network.normalised_action],
