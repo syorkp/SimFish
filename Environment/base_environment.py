@@ -552,12 +552,8 @@ class BaseEnvironment:
     def check_proximity_all_prey(self, sensing_distance):
         all_prey_positions = np.array([pr.position for pr in self.prey_bodies])
         fish_position = self.fish.body.position
-        sensing_area = np.array([[fish_position[0] - sensing_distance,
-                         fish_position[0] + sensing_distance],
-                        [fish_position[1] - sensing_distance,
-                         fish_position[1] + sensing_distance]])
-        within_x = (all_prey_positions[:, 0] > sensing_area[0, 0]) * (all_prey_positions[:, 0] < sensing_area[0, 1])
-        within_y = (all_prey_positions[:, 1] > sensing_area[1, 0]) * (all_prey_positions[:, 1] < sensing_area[1, 1])
+        within_x = (all_prey_positions[:, 0] > fish_position[0] - sensing_distance) * (all_prey_positions[:, 0] < fish_position[0] + sensing_distance)
+        within_y = (all_prey_positions[:, 1] > fish_position[1] - sensing_distance) * (all_prey_positions[:, 1] < fish_position[1] + sensing_distance)
         within_range = within_x * within_y
         return within_range
 
