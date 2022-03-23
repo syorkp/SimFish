@@ -43,13 +43,20 @@ class BaseDQN:
         self.init_rnn_state_ref = None
 
     def init_states(self):
-        # Init states for RNN TODO: Check not being changed. MOve to parent
-        self.init_rnn_state = (
-            np.zeros([1, self.main_QN.rnn_dim]),
-            np.zeros([1, self.main_QN.rnn_dim]))
-        self.init_rnn_state_ref = (
-            np.zeros([1, self.main_QN.rnn_dim]),
-            np.zeros([1, self.main_QN.rnn_dim]))
+        # Init states for RNN
+        if self.new_simulation:
+            rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
+            self.init_rnn_state_actor = tuple(
+                (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
+            self.init_rnn_state_actor_ref = tuple(
+                (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
+        else:
+            self.init_rnn_state = (
+                np.zeros([1, self.main_QN.rnn_dim]),
+                np.zeros([1, self.main_QN.rnn_dim]))
+            self.init_rnn_state_ref = (
+                np.zeros([1, self.main_QN.rnn_dim]),
+                np.zeros([1, self.main_QN.rnn_dim]))
 
     def create_network(self):
         """
@@ -403,7 +410,7 @@ class BaseDQN:
         # Below we perform the Double-DQN update to the target Q-values
         Q1 = self.sess.run(self.main_QN.predict, feed_dict={
             self.main_QN.observation: np.vstack(train_batch[:, 4]),
-            self.main_QN.prev_actions: np.expand_dims(np.hstack(([0], train_batch[:-1, 1]), 1)),
+            self.main_QN.prev_actions: np.expand_dims(np.hstack(([0], train_batch[:-1, 1])), 1),
             self.main_QN.train_length: self.learning_params['trace_length'],
             self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
             self.main_QN.rnn_state_in: state_train,
@@ -415,7 +422,7 @@ class BaseDQN:
 
         Q2 = self.sess.run(self.target_QN.Q_out, feed_dict={
             self.target_QN.observation: np.vstack(train_batch[:, 4]),
-            self.target_QN.prev_actions: np.expand_dims(np.hstack(([0], train_batch[:-1, 1]), 1)),
+            self.target_QN.prev_actions: np.expand_dims(np.hstack(([0], train_batch[:-1, 1])), 1),
             self.target_QN.train_length: self.learning_params['trace_length'],
             self.target_QN.internal_state: np.vstack(train_batch[:, 3]),
             self.target_QN.rnn_state_in: state_train,
@@ -435,7 +442,7 @@ class BaseDQN:
                                  self.main_QN.targetQ: target_Q,
                                  self.main_QN.actions: train_batch[:, 1],
                                  self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
-                                 self.main_QN.prev_actions: np.expand_dims(np.hstack(([3], train_batch[:-1, 1]), 1)),
+                                 self.main_QN.prev_actions: np.expand_dims(np.hstack(([3], train_batch[:-1, 1])), 1),
                                  self.main_QN.train_length: self.learning_params['trace_length'],
                                  self.main_QN.rnn_state_in: state_train,
                                  self.main_QN.batch_size: self.learning_params['batch_size'],
