@@ -101,9 +101,10 @@ class NaturalisticEnvironment(BaseEnvironment):
     def simulation_step(self, action, save_frames, frame_buffer, activations, impulse):
         self.prey_consumed_this_step = False
         self.last_action = action
+
+        # Visualisation
         if frame_buffer is None:
             frame_buffer = []
-
         if self.env_variables["show_previous_actions"]:
             self.action_buffer.append(action)
             self.position_buffer.append(np.array(self.fish.body.position))

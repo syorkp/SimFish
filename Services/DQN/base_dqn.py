@@ -294,7 +294,6 @@ class BaseDQN:
             sand_grain_positions = [[10000, 10000]]
 
         if self.simulation.prey_bodies:
-            # TODO: Note hacky fix which may want to clean up later.
             prey_positions = [prey.position for prey in self.simulation.prey_bodies]
             prey_positions = [[i[0], i[1]] for i in prey_positions]
             while True:
@@ -362,7 +361,7 @@ class BaseDQN:
         chosen_a = chosen_a[0]
         o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=chosen_a,
                                                                                                  activations=(sa,))
-        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()  # TODO: Modify
+        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
         # Update buffer
         self.buffer.add_training(observation=o,

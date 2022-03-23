@@ -200,5 +200,5 @@ class DynamicBaseNetwork:
                 rnn_cell_states[layer] = rnn_units[layer].zero_state(self.train_length, tf.float32)
                 if reflected:
                     rnn_cell_states[layer + "_ref"] = rnn_units[layer].zero_state(self.train_length, tf.float32)
-                rnn_dim = layers[layer][1]  # TODO: make so that is formed of array of RNN dims.
+                rnn_dim = layers[layer][1]
         return rnn_units, rnn_cell_states, rnn_dim

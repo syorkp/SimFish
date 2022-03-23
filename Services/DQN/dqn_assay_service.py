@@ -120,10 +120,10 @@ class DQNAssayService(AssayService, BaseDQN):
         for key in self.output_data:
             try:
                 # print(self.output_data[key])
-                assay_group.create_dataset(key, data=np.array(self.output_data[key]))  # TODO: Compress data.
+                assay_group.create_dataset(key, data=np.array(self.output_data[key]))
             except RuntimeError:
                 del assay_group[key]
-                assay_group.create_dataset(key, data=np.array(self.output_data[key]))  # TODO: Compress data.
+                assay_group.create_dataset(key, data=np.array(self.output_data[key]))
         hdf5_file.close()
 
     def save_episode_data(self):

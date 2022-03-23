@@ -237,7 +237,6 @@ class BaseEnvironment:
                              self.env_variables["max_salt_damage"]
 
     def output_frame(self, activations, internal_state, scale=0.25):
-        # TODO: Can make faster by combining different arrays at end in one step.
         # Saving mask frames (for debugging)
         if self.visualise_mask:
             frame = self.board.mask_buffer_time_point * 255.0
@@ -528,7 +527,7 @@ class BaseEnvironment:
 
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
 
-        # New prey motion TODO: Check doesnt mess with base version.
+        # New prey motion
         self.paramecia_gaits.append(
             np.random.choice([0, 1, 2], 1, p=[1 - (self.env_variables["p_fast"] + self.env_variables["p_slow"]),
                                               self.env_variables["p_slow"],
@@ -566,7 +565,6 @@ class BaseEnvironment:
     def _move_prey(self):
         # Not, currently, a prey isn't guaranteed to try to escape if a loud predator is near, only if it was going to
         # move anyway. Should reconsider this in the future.
-        # TODO: Reduce computational overhead.
         to_move = np.where(np.random.rand(len(self.prey_bodies)) < self.env_variables['prey_impulse_rate'])[0]
         for ii in range(len(to_move)):
             if self.check_proximity(self.prey_bodies[to_move[ii]].position,
@@ -851,7 +849,7 @@ class BaseEnvironment:
         y_position = fish_position[1] + dy
 
         self.predator_body.position = (x_position, y_position)
-        self.predator_target = fish_position  # TODO: Update so appears where fish will be in a few steps, if this is what predator does..
+        self.predator_target = fish_position
         self.total_predator_steps = 0
 
         if self.new_simulation:
@@ -1017,7 +1015,7 @@ class BaseEnvironment:
         self.predator_body.position = self.predator_location
 
         fish_position = self.fish.body.position
-        self.predator_target = fish_position  # TODO: Update so appears where fish will be in a few steps, if this is what predator does..
+        self.predator_target = fish_position
         self.space.add(self.predator_body, self.predator_shape)
 
     def create_sand_grain(self):

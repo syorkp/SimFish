@@ -205,7 +205,6 @@ class DiscretePPO(BasePPO):
                            }
             )
 
-        # TODO: Add missing value network
         # Simulation step
         o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
             action=action,

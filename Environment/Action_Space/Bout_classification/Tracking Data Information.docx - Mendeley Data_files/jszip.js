@@ -1121,7 +1121,7 @@ var generateZipParts = function(name, file, compressedObject, offset) {
     decToHex(utfEncodedComment.length, 2) +
     // disk number start
     "\x00\x00" +
-    // internal file attributes TODO
+    // internal file attributes
     "\x00\x00" +
     // external file attributes
     (dir === true ? "\x10\x00\x00\x00" : "\x00\x00\x00\x00") +
@@ -6031,7 +6031,6 @@ function InflateState() {
   this.dmax = 0;              /* zlib header max distance (INFLATE_STRICT) */
   this.check = 0;             /* protected copy of check value */
   this.total = 0;             /* protected copy of output count */
-  // TODO: may be {}
   this.head = null;           /* where to save gzip header information */
 
   /* sliding window */
@@ -6563,7 +6562,6 @@ function inflate(strm, flush) {
         if (have === 0) { break inf_leave; }
         copy = 0;
         do {
-          // TODO: 2 or 1 bytes?
           len = input[next + copy++];
           /* use constant limit because in js we should not preallocate memory */
           if (state.head && len &&

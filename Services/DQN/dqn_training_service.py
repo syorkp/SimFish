@@ -65,7 +65,6 @@ class DQNTrainingService(TrainingService, BaseDQN):
             'anneling_steps']
         self.pre_train_steps = self.total_steps + self.learning_params["pre_train_steps"]
 
-        # TODO: Check below dont already exist
         self.writer = None
         self.trainables = None
         self.target_ops = None
