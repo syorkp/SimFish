@@ -123,22 +123,13 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         done = False
 
+        # Change internal state variables
         self.fish.hungry += (1 - self.fish.hungry) * self.env_variables['hunger_inc_tau']
         self.fish.stress = self.fish.stress * self.env_variables['stress_compound']
         if self.predator_body is not None:
             self.fish.stress += 0.5
 
-        # TODO: Make step elements clearer by having them call their own methods.
-        if self.new_simulation:
-            if self.predator_location is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
-                    self.num_steps > self.env_variables['immunity_steps'] and not self.check_fish_near_vegetation() \
-                    and not self.check_fish_not_near_wall():
-                self.create_realistic_predator()
-        else:
-            if self.predator_shape is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
-                    self.num_steps > self.env_variables['immunity_steps'] and not self.check_fish_near_vegetation() \
-                    and not self.check_fish_not_near_wall():
-                self.create_realistic_predator()
+        self.init_predator()
 
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.move_prey(micro_step)
@@ -252,9 +243,19 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         return observation, reward, internal_state, done, frame_buffer
 
+    def init_predator(self):
+        if self.new_simulation:
+            if self.predator_location is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
+                    self.num_steps > self.env_variables['immunity_steps'] and not self.check_fish_near_vegetation() \
+                    and not self.check_fish_not_near_wall():
+                self.create_realistic_predator()
+        else:
+            if self.predator_shape is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
+                    self.num_steps > self.env_variables['immunity_steps'] and not self.check_fish_near_vegetation() \
+                    and not self.check_fish_not_near_wall():
+                self.create_realistic_predator()
+
     def resolve_visual_input_new(self, save_frames, activations, internal_state, frame_buffer):
-
-
         right_eye_pos = (
             -np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
             +np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
@@ -263,7 +264,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             -np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
 
         # self.show_new_channel_sectors(left_eye_pos, right_eye_pos)  # TODO: Needs to be updated.
-        if self.predator_body is not None:  # TODO: Potential speed improvement
+        if self.predator_body is not None:
             predator_bodies = np.array([self.predator_body.position])
         else:
             predator_bodies = np.array([])
@@ -383,7 +384,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         arena_center = np.array([self.env_variables["width"]/2, self.env_variables["height"]/2])
 
-        # All coordinates: TODO: Move above
+        # All coordinates:
         xp, yp = np.arange(self.env_variables["width"]), np.arange(self.env_variables["height"])
         xy, yp = np.meshgrid(xp, yp)
         xy = np.expand_dims(xy, 2)

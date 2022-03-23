@@ -109,7 +109,6 @@ class Fish:
 
     def take_action(self, action):
         """For discrete fish, overrided by continuous fish class."""
-        # TODO: Build in new simulation version here.
         if self.realistic_bouts:
             return self.take_realistic_action(action)
         else:
@@ -355,7 +354,7 @@ class Fish:
         if self.using_gpu:
             readings = readings.get()
 
-        #         if np.max(readings) > 255:  # TODO: Remove after debugging
+        #         if np.max(readings) > 255:
         #             print(f"""Base value exceeded 255.
         #
         # Max Red: {np.max(readings[:, 0])}

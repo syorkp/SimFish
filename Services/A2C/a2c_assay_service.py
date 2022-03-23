@@ -277,7 +277,6 @@ class A2CAssayService:
             sand_grain_positions = [[10000, 10000]]
 
         if self.simulation.prey_bodies:
-            # TODO: Note hacky fix which may want to clean up later.
             prey_positions = [prey.position for prey in self.simulation.prey_bodies]
             prey_positions = [[i[0], i[1]] for i in prey_positions]
             while True:
@@ -319,7 +318,7 @@ class A2CAssayService:
                                                          sand_grain_positions,
                                                          vegetation_positions,
                                                          fish_angle,
-                                                         )  # TODO: Add ability to save other RNN layers.
+                                                         )
         for key in self.assay_output_data_format:
             self.output_data[key].append(possible_data_to_save[key])
         self.output_data["step"].append(self.step_number)
@@ -348,10 +347,10 @@ class A2CAssayService:
         for key in self.output_data:
             try:
                 # print(self.output_data[key])
-                assay_group.create_dataset(key, data=np.array(self.output_data[key]))  # TODO: Compress data.
+                assay_group.create_dataset(key, data=np.array(self.output_data[key]))
             except RuntimeError:
                 del assay_group[key]
-                assay_group.create_dataset(key, data=np.array(self.output_data[key]))  # TODO: Compress data.
+                assay_group.create_dataset(key, data=np.array(self.output_data[key]))
         hdf5_file.close()
 
     def save_episode_data(self):

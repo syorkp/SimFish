@@ -123,7 +123,6 @@ def plot_multiple_traces(neuron_data_list, stimulus_data_list=None, trace_names=
                                     stimulus_data_list, trace_names=trace_names)
 
 
-
 def get_free_swimming_timestamps(data):
     """Requires the following data: position, prey_positions, predator. Assumes square arena 1500."""
     predator_timestamps = [i for i, a in enumerate(data["predator"]) if a == 1]
@@ -324,11 +323,15 @@ def plot_artificial_traces(prey_pred_data, prey_size_data, directional_data, pre
     # fig.legend(patches, labels, loc='center', frameon=False)
     # plt.show()
 
+model_name = "scaffold_version_4-4"
 
 #data1 = load_data("ppo_continuous_multivariate-7", "MultivariateData", "Naturalistic-1")
 # data1 = load_data("ppo_continuous_multivariate-40", "MultivariateData", "Naturalistic-1")
+data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
 data1 = load_data("ppo_multivariate_bptt-2", "MultivariateData", "Naturalistic-1")
 data1a = load_data("ppo_multivariate_bptt-2", "Prey-Full-Response-Vector", "Prey-Static-5")
+unit_activity = data["optic_tectum"]
+plot_traces(unit_activity)
 
 unit_activity1a = [[state[0, 0, j] for i, state in enumerate(data1["rnn_state_actor"])] for j in range(512)]
 plot_traces(unit_activity1a)

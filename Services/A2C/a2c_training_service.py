@@ -190,7 +190,6 @@ class A2CTrainingService:
         self.simulation = ContinuousNaturalisticEnvironment(self.env, self.realistic_bouts)
 
     def check_update_configuration(self):
-        # TODO: Will want to tidy this up later.
         next_point = str(self.configuration_index + 1)
         episode_transition_points = self.episode_transitions.keys()
 
@@ -362,7 +361,7 @@ class A2CTrainingService:
     def step_loop(self, o, internal_state, a, rnn_state_shared, rnn_state_shared_ref):
         # Generate actions and corresponding steps.
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
-        a = [a[0] / 10, a[1]]  # Set impulse to scale. TODO: Change 10 when systematic impulse given
+        a = [a[0] / 10, a[1]]  # Set impulse to scale. Note should change 10 when systematic impulse given
         impulse, angle, updated_rnn_state_shared, updated_rnn_state_shared_ref, V, mu_i, si_i, mu_a, si_a, mu1, mu1_ref = self.sess.run(
             [self.a2c_network.impulse_output, self.a2c_network.angle_output, self.a2c_network.rnn_state_shared,
              self.a2c_network.rnn_state_ref,

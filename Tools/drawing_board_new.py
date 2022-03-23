@@ -165,8 +165,7 @@ class NewDrawingBoard:
 
         # To offset the effect of reduced sampling further away from fish (an unwanted effect that yielded massive
         # performance improvements). Should counter them exactly.
-        implicit_scatter = self.chosen_math_library.sin(
-            self.photoreceptor_rf_size) * positional_mask  # TODO: dont need to compute sine each time, make parameter.
+        implicit_scatter = self.chosen_math_library.sin(self.photoreceptor_rf_size) * positional_mask
         implicit_scatter[implicit_scatter < 1] = 1
 
         adjusted_scatter = desired_scatter * implicit_scatter
