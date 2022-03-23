@@ -151,7 +151,7 @@ env = {
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'bkg_scatter': 0.03,  # base brightness of the background FORMERLY 0.00001
        'dark_gain': 0.38,  # gain of brightness in the dark side
-       'light_gain': 200.0,  # gain of brightness in the bright side
+       'light_gain': 10.0,  # gain of brightness in the bright side
 
        'predator_cost': 1000,
 
@@ -300,7 +300,7 @@ env = {
 
 }
 
-directory_name = "ppo_continuous_sbe_is_scaffold_4"
+directory_name = "ppo_continuous_sbe_is_scaffold_5"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):

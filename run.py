@@ -1873,10 +1873,10 @@ dqn_scaffold_training_config_3b = [
     },
 ]
 
-ppo_scaffold_training_config_4a = [
+ppo_scaffold_training_config_5a = [
     {
-        "Model Name": "scaffold_version_4",
-        "Environment Name": "ppo_continuous_sbe_is_scaffold_4",
+        "Model Name": "scaffold_version_5",
+        "Environment Name": "ppo_continuous_sbe_is_scaffold_5",
         "Trial Number": 1,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -1910,8 +1910,8 @@ ppo_scaffold_training_config_4a = [
         "New Simulation": True
     },
     {
-        "Model Name": "scaffold_version_4",
-        "Environment Name": "ppo_continuous_sbe_is_scaffold_4",
+        "Model Name": "scaffold_version_5",
+        "Environment Name": "ppo_continuous_sbe_is_scaffold_5",
         "Trial Number": 2,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -1946,10 +1946,10 @@ ppo_scaffold_training_config_4a = [
     },
 ]
 
-ppo_scaffold_training_config_4b = [
+ppo_scaffold_training_config_5b = [
     {
-        "Model Name": "scaffold_version_4",
-        "Environment Name": "ppo_continuous_sbe_is_scaffold_4",
+        "Model Name": "scaffold_version_5",
+        "Environment Name": "ppo_continuous_sbe_is_scaffold_5",
         "Trial Number": 3,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -1983,8 +1983,8 @@ ppo_scaffold_training_config_4b = [
         "New Simulation": True
     },
     {
-        "Model Name": "scaffold_version_4",
-        "Environment Name": "ppo_continuous_sbe_is_scaffold_4",
+        "Model Name": "scaffold_version_5",
+        "Environment Name": "ppo_continuous_sbe_is_scaffold_5",
         "Trial Number": 4,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -2094,5 +2094,5 @@ dqn_scaffold_training_config_5a = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_training_config_5a, parallel_jobs=4)
+manager = TrialManager(ppo_scaffold_training_config_5a, parallel_jobs=4)
 manager.run_priority_loop()
