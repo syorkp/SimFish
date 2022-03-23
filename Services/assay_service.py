@@ -72,7 +72,11 @@ class AssayService(BaseService):
             if assay["ablations"]:
                 self.ablate_units(assay["ablations"])
             if self.new_simulation:
-                self.buffer.rnn_layer_names = self.actor_network.rnn_layer_names
+                if self.ppo_version is not None:
+                    self.buffer.rnn_layer_names = self.actor_network.rnn_layer_names
+                else:
+                    self.buffer.rnn_layer_names = self.main_QN.rnn_layer_names
+
             self.save_frames = assay["save frames"]
             self.create_output_data_storage(assay)
             self.create_testing_environment(assay)
@@ -85,12 +89,6 @@ class AssayService(BaseService):
     def perform_assay(self, assay):
         self.assay_output_data_format = {key: None for key in assay["behavioural recordings"] + assay["network recordings"]}
         self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
-        # if assay["visualise network states"]:
-        #     if "convolutional layers" not in self.buffer.recordings:
-        #         self.buffer.recordings.append("convolutional layers")
-        #     if "rnn state" not in self.buffer.recordings:
-        #         self.buffer.recordings.append("rnn state")
-        #     self.design_network_states_gif()   # TODO: Use this to create some kind of config - with start indices, widths, etc.
 
         self.current_episode_max_duration = assay["duration"]
 
@@ -101,11 +99,6 @@ class AssayService(BaseService):
             make_gif(self.frame_buffer,
                      f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-        # if assay["visualise network states"]:
-        #     network_states_frames = self.build_network_states_gif()
-        #     make_gif(network_states_frames,
-        #              f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}-Network-States.gif",
-        #              duration=len(network_states_frames) * self.learning_params['time_per_step'], true_image=True)
         self.frame_buffer = []
 
         if "reward assessments" in self.buffer.recordings:

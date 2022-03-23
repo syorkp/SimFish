@@ -1,12 +1,10 @@
 from time import time
 import json
-import os
 
 import numpy as np
 import tensorflow.compat.v1 as tf
 
-from Buffers.experience_buffer import ExperienceBuffer
-from Tools.make_gif import make_gif
+from Buffers.DQN.experience_buffer import ExperienceBuffer
 from Services.training_service import TrainingService
 from Services.DQN.base_dqn import BaseDQN
 
@@ -75,7 +73,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
         else:
             self.epsilon = self.learning_params["startE"]
 
-        self.buffer = ExperienceBuffer(output_location=self.model_location, buffer_size=self.learning_params["exp_buffer_size"])
+        self.experience_buffer = ExperienceBuffer(output_location=self.model_location, buffer_size=self.learning_params["exp_buffer_size"])
 
     def run(self):
         sess = self.create_session()
@@ -127,5 +125,5 @@ class DQNTrainingService(TrainingService, BaseDQN):
 
         buffer_array = np.array(episode_buffer)
         episode_buffer = list(zip(buffer_array))
-        self.buffer.add(episode_buffer)
+        self.experience_buffer.add(episode_buffer)
         # Periodically save the model.

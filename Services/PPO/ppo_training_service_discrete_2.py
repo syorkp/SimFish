@@ -4,8 +4,7 @@ import json
 import numpy as np
 import tensorflow.compat.v1 as tf
 
-from Buffers.ppo_buffer_discrete import PPOBufferDiscrete
-from Buffers.ppo_buffer_discrete2 import PPOBufferDiscrete2
+from Buffers.PPO.ppo_buffer_discrete2 import PPOBufferDiscrete2
 
 from Services.PPO.discrete_ppo import DiscretePPO
 from Services.training_service import TrainingService

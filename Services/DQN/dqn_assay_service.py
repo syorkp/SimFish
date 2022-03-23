@@ -5,6 +5,7 @@ from datetime import datetime
 import numpy as np
 import tensorflow.compat.v1 as tf
 
+from Buffers.DQN.dqn_assay_buffer import DQNAssayBuffer
 from Services.assay_service import AssayService
 from Services.DQN.base_dqn import BaseDQN
 from Tools.make_gif import make_gif
@@ -23,6 +24,7 @@ def assay_target(trial, total_steps, episode_number, memory_fraction):
                               config_name=trial["Environment Name"],
                               realistic_bouts=trial["Realistic Bouts"],
                               continuous_actions=trial["Continuous Actions"],
+                              new_simulation=trial["New Simulation"],
 
                               assays=trial["Assays"],
                               set_random_seed=trial["set random seed"],
@@ -35,7 +37,7 @@ def assay_target(trial, total_steps, episode_number, memory_fraction):
 class DQNAssayService(AssayService, BaseDQN):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_actions, assays, set_random_seed, assay_config_name):
+                 config_name, realistic_bouts, continuous_actions, new_simulation, assays, set_random_seed, assay_config_name):
         """
         Runs a set of assays provided by the run configuraiton.
         """
@@ -45,7 +47,7 @@ class DQNAssayService(AssayService, BaseDQN):
                          monitor_gpu=monitor_gpu, using_gpu=using_gpu,
                          memory_fraction=memory_fraction, config_name=config_name,
                          realistic_bouts=realistic_bouts,
-                         continuous_environment=continuous_actions, assays=assays, set_random_seed=set_random_seed,
+                         continuous_environment=continuous_actions, new_simulation=new_simulation, assays=assays, set_random_seed=set_random_seed,
                          assay_config_name=assay_config_name)
 
         # Hacky fix for h5py problem:
@@ -53,10 +55,14 @@ class DQNAssayService(AssayService, BaseDQN):
         self.stimuli_data = []
         self.output_data = {}
 
-    def _run(self):
-        self.create_network()
-        self.init_states()
-        AssayService._run(self)
+        self.buffer = DQNAssayBuffer()
+
+    def run(self):
+        sess = self.create_session()
+        with sess as self.sess:
+            self.create_network()
+            self.init_states()
+            AssayService._run(self)
 
     def perform_assay(self, assay):
         self.assay_output_data_format = {key: None for key in assay["recordings"]}

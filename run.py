@@ -1540,16 +1540,90 @@ scaffold_training_config = [
     },
 ]
 
-data_gathering_config = [{
-    "Model Name": "parameterised_speed_test_fast",
+data_gathering_config_continuous = [{
+    "Model Name": "scaffold_version_4",
     "Environment Name": "continuous_assay",
     "Assay Configuration Name": "Behavioural-Data-Free",
-    "Trial Number": 1,
+    "Trial Number": 4,
     "Run Mode": "Assay",
     "Tethered": False,
     "Realistic Bouts": True,
     "Continuous Actions": True,
     "Learning Algorithm": "PPO",
+    "Priority": 2,
+    "Using GPU": False,
+    "monitor gpu": False,
+    "Full Logs": True,
+    "SB Emulator": True,
+    "set random seed": False,
+    "New Simulation": True,
+
+    "Assays": [
+        {
+            "assay id": "Naturalistic-3",
+            "stimulus paradigm": "Naturalistic",
+            "duration": 1000,
+            "Tethered": False,
+            "save frames": False,
+            "save stimuli": False,
+            "random positions": False,
+            "reset": False,
+            "background": None,
+            "moving": False,
+            "collisions": True,
+            "behavioural recordings": ["environmental positions", "observation"],
+            "network recordings": [layer for layer in base_network_layers.keys()] + ["left_eye", "right_eye", "internal_state"],  # Same organisation as ablations
+            "ablations": []
+        },
+        {
+            "assay id": "Naturalistic-4",
+            "stimulus paradigm": "Naturalistic",
+            "duration": 1000,
+            "Tethered": False,
+            "save frames": False,
+            "save stimuli": False,
+            "random positions": False,
+            "reset": False,
+            "background": None,
+            "moving": False,
+            "collisions": True,
+            "behavioural recordings": ["environmental positions", "observation"],
+            "network recordings": [layer for layer in base_network_layers.keys()] + ["left_eye", "right_eye",
+                                                                                     "internal_state"],
+            # Same organisation as ablations
+            "ablations": []
+        },
+        {
+            "assay id": "Naturalistic-5",
+            "stimulus paradigm": "Naturalistic",
+            "duration": 1000,
+            "Tethered": False,
+            "save frames": False,
+            "save stimuli": False,
+            "random positions": False,
+            "reset": False,
+            "background": None,
+            "moving": False,
+            "collisions": True,
+            "behavioural recordings": ["environmental positions", "observation"],
+            "network recordings": [layer for layer in base_network_layers.keys()] + ["left_eye", "right_eye",
+                                                                                     "internal_state"],
+            # Same organisation as ablations
+            "ablations": []
+        },
+    ]
+}]
+
+data_gathering_config_discrete = [{
+    "Model Name": "dqn_scaffold_version_3",
+    "Environment Name": "discrete_dqn_assay",
+    "Assay Configuration Name": "Behavioural-Data-Free",
+    "Trial Number": 2,
+    "Run Mode": "Assay",
+    "Tethered": False,
+    "Realistic Bouts": True,
+    "Continuous Actions": False,
+    "Learning Algorithm": "DQN",
     "Priority": 2,
     "Using GPU": False,
     "monitor gpu": False,
@@ -1571,13 +1645,14 @@ data_gathering_config = [{
             "background": None,
             "moving": False,
             "collisions": True,
+            "recordings": [],
             "behavioural recordings": ["environmental positions", "observation"],
-            "network recordings": [layer for layer in base_network_layers.keys()] + ["left_eye", "right_eye", "internal_state"],  # Same organisation as ablations
+            "network recordings": [], #[layer for layer in base_network_layers.keys()] + ["left_eye", "right_eye", "internal_state"],  # Same organisation as ablations
             "ablations": []
         },
     ]
-}
-]
+}]
+
 
 ppo_scaffold_training_config_3a = [
     {
@@ -1944,7 +2019,6 @@ ppo_scaffold_training_config_4b = [
     },
 ]
 
-
 dqn_scaffold_training_config_4a = [
     {
         "Model Name": "dqn_scaffold_version_4",
@@ -2020,5 +2094,5 @@ dqn_scaffold_training_config_4a = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_training_config_4b, parallel_jobs=4)
+manager = TrialManager(data_gathering_config_discrete, parallel_jobs=4)
 manager.run_priority_loop()

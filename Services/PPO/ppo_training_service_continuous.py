@@ -4,8 +4,8 @@ import json
 import numpy as np
 import tensorflow.compat.v1 as tf
 
-from Buffers.ppo_buffer_continuous import PPOBufferContinuous
-from Buffers.ppo_buffer_continuous_multivariate import PPOBufferContinuousMultivariate
+from Buffers.PPO.ppo_buffer_continuous import PPOBufferContinuous
+from Buffers.PPO.ppo_buffer_continuous_multivariate import PPOBufferContinuousMultivariate
 
 from Services.PPO.continuous_ppo import ContinuousPPO
 from Services.training_service import TrainingService

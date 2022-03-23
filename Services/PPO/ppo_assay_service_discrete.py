@@ -1,8 +1,6 @@
-import numpy as np
 import tensorflow.compat.v1 as tf
 
-from Buffers.ppo_buffer_discrete import PPOBufferDiscrete
-from Tools.make_gif import make_gif
+from Buffers.PPO.ppo_buffer_discrete import PPOBufferDiscrete
 
 from Services.PPO.discrete_ppo import DiscretePPO
 from Services.assay_service import AssayService

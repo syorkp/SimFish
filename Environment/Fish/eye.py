@@ -725,7 +725,6 @@ class Eye:
             else:
                 [rr, cc] = line(sector[2][1], sector[2][0], sector[0][1], sector[0][0])
             self.board.db[rr, cc] = (0.5, 0, 0)
-        plt.imshow(self.board.db)
 
     def compute_n(self, photoreceptor_rf_size, max_separation=1):
         max_dist = (self.width ** 2 + self.height ** 2) ** 0.5

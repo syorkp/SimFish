@@ -280,6 +280,8 @@ class NaturalisticEnvironment(BaseEnvironment):
             if self.env_variables['show_channel_sectors']:
                 self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
                 self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
+            # plt.imshow(self.board.db)
+            # plt.show()
 
             if save_frames:
                 frame_buffer.append(self.output_frame(activations, internal_state, scale=0.25))
@@ -338,6 +340,8 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.board.apply_light(self.dark_col, 0.7, 1)
             self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
             self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
+            plt.imshow(self.board.db)
+            plt.show()
             if save_frames:
                 frame_buffer.append(self.output_frame(activations, internal_state, scale=0.25))
             if self.draw_screen:

@@ -132,7 +132,7 @@ def draw_previous_actions(board, past_actions, past_positions, fish_angles, cont
     return board, past_actions, past_positions, fish_angles
 
 
-def draw_episode(data, config_name, draw_past_actions=False, show_energy_state=True, scale=0.25):
+def draw_episode(data, config_name, model_name, draw_past_actions=True, show_energy_state=True, scale=0.25):
     with open(f"../../Configurations/Training-Configs/{config_name}/1_env.json", 'r') as f:
         env_variables = json.load(f)
 
@@ -180,15 +180,12 @@ def draw_episode(data, config_name, draw_past_actions=False, show_energy_state=T
 
     frames = np.array(frames)
     frames *= 255
-    make_gif(frames, f"behaviour.gif", duration=len(frames) * 0.03, true_image=True)
+    make_gif(frames, f"{model_name}-4-behaviour.gif", duration=len(frames) * 0.03, true_image=True)
 
 
-data = load_data("parameterised_speed_test_fast-1", "Behavioural-Data-Free", "Naturalistic-1")
+# model_name = "parameterised_speed_test_fast-1"
+model_name = "scaffold_version_4-4"
+data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-4")
 config_name = "ppo_continuous_sbe_is_scaffold_4"
 
-draw_episode(data, config_name)
-
-plt.plot(range(500), data["internal_state"][:, 0])
-plt.xlabel("Step")
-plt.ylabel("Energy Level")
-plt.show()
+draw_episode(data, config_name, model_name)

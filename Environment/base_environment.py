@@ -331,6 +331,8 @@ class BaseEnvironment:
             px = np.round(np.array([pr.position[0] for pr in self.prey_bodies])).astype(int)
             py = np.round(np.array([pr.position[1] for pr in self.prey_bodies])).astype(int)
             rrs, ccs = self.board.multi_circles(px, py, prey_size)
+            rrs = np.clip(rrs, 0, 1499)
+            ccs = np.clip(ccs, 0, 1499)
 
             try:
                 self.board.db[rrs, ccs] = self.prey_shapes[0].color

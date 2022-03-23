@@ -1,6 +1,7 @@
 import copy
 import numpy as np
 import matplotlib.pyplot as plt
+from skimage.transform import resize, rescale
 
 from Analysis.load_data import load_data
 from Configurations.Networks.original_network import base_network_layers, ops, connectivity
@@ -58,7 +59,7 @@ def tidy_layers_upstream(layers_upstream):
     return rejig_layers_upstream(layers_upstream)
 
 
-def create_network_gif(neural_data, connectivity_graph):
+def create_network_gif(neural_data, connectivity_graph, model_name, scale=0.25):
     layer_space = 100
 
     layers = neural_data.keys()
@@ -160,17 +161,25 @@ def create_network_gif(neural_data, connectivity_graph):
             base_display[:, int(position * layer_space): int((position * layer_space) + layer_space),
                          int(width / 2 - 2):int(width / 2 + 2)] = (0, 100, 0)
 
-    make_gif(base_display, f"neural_activity.gif",
+    frames = []
+    for i in range(base_display.shape[0]):
+        frames.append(rescale(base_display[i], scale, multichannel=True, anti_aliasing=True))
+
+    make_gif(base_display, f"{model_name}-3-neural_activity.gif",
              duration=t * 0.03,
              true_image=True)
 
 
-data = load_data("parameterised_speed_test_fast-1", "Behavioural-Data-Free", "Naturalistic-1")
-plt.plot(range(500), data["internal_state"][:, 0])
-plt.xlabel("Step")
-plt.ylabel("Energy Level")
-plt.show()
-
+# model_name = "parameterised_speed_test_fast-1"
+model_name = "scaffold_version_4-4"
+data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-3")
 network_data = {key: data[key] for key in list(base_network_layers.keys()) + ["left_eye", "right_eye"] + ["internal_state"]}
 ops = convert_ops_to_graph(ops)
-create_network_gif(network_data, connectivity + ops)
+create_network_gif(network_data, connectivity + ops, model_name)
+
+# plt.plot(range(500), data["internal_state"][:, 0])
+# plt.xlabel("Step")
+# plt.ylabel("Energy Level")
+# plt.show()
+
+

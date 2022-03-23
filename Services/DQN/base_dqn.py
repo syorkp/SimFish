@@ -3,6 +3,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from Networks.DQN.q_network import QNetwork
+from Networks.DQN.q_network_dynamic import QNetworkDynamic
 from Tools.graph_functions import update_target
 
 
@@ -15,7 +16,7 @@ class BaseDQN:
         self.environment_params = None
         self.total_steps = None
         self.simulation = None
-        self.buffer = None
+        self.experience_buffer = None
         self.sess = None
         self.batch_size = None
         self.trace_length = None
@@ -61,12 +62,51 @@ class BaseDQN:
                          self.environment_params['energy_state'], self.environment_params['in_light'],
                          self.environment_params['salt']] if x is True])
         internal_states = max(internal_states, 1)
+
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
         cell_t = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
-        self.main_QN = QNetwork(self.simulation, self.learning_params['rnn_dim_shared'], cell, 'main', self.learning_params['num_actions'], internal_states=internal_states,
-                           learning_rate=self.learning_params['learning_rate'], extra_layer=self.learning_params['extra_rnn'])
-        self.target_QN = QNetwork(self.simulation, self.learning_params['rnn_dim_shared'], cell_t, 'target', self.learning_params['num_actions'], internal_states=internal_states,
-                             learning_rate=self.learning_params['learning_rate'], extra_layer=self.learning_params['extra_rnn'])
+
+        if self.new_simulation:
+            self.main_QN = QNetworkDynamic(simulation=self.simulation,
+                                           rnn_dim=self.learning_params['rnn_dim_shared'],
+                                           rnn_cell=cell,
+                                           my_scope='main',
+                                           internal_states=internal_states,
+                                           num_actions=self.learning_params['num_actions'],
+                                           new_simulation=True,
+                                           base_network_layers=self.learning_params[
+                                               'base_network_layers'],
+                                           modular_network_layers=self.learning_params[
+                                               'modular_network_layers'],
+                                           ops=self.learning_params['ops'],
+                                           connectivity=self.learning_params[
+                                               'connectivity'],
+                                           reflected=self.learning_params['reflected'],
+                                           )
+            self.target_QN = QNetworkDynamic(simulation=self.simulation,
+                                             rnn_dim=self.learning_params['rnn_dim_shared'],
+                                             rnn_cell=cell,
+                                             my_scope='main',
+                                             internal_states=internal_states,
+                                             num_actions=self.learning_params['num_actions'],
+                                             new_simulation=True,
+                                             base_network_layers=self.learning_params[
+                                                 'base_network_layers'],
+                                             modular_network_layers=self.learning_params[
+                                                 'modular_network_layers'],
+                                             ops=self.learning_params['ops'],
+                                             connectivity=self.learning_params[
+                                                 'connectivity'],
+                                             reflected=self.learning_params['reflected'], )
+        else:
+            self.main_QN = QNetwork(self.simulation, self.learning_params['rnn_dim_shared'], cell, 'main',
+                                    self.learning_params['num_actions'], internal_states=internal_states,
+                                    learning_rate=self.learning_params['learning_rate'],
+                                    extra_layer=self.learning_params['extra_rnn'])
+            self.target_QN = QNetwork(self.simulation, self.learning_params['rnn_dim_shared'], cell_t, 'target',
+                                      self.learning_params['num_actions'], internal_states=internal_states,
+                                      learning_rate=self.learning_params['learning_rate'],
+                                      extra_layer=self.learning_params['extra_rnn'])
 
     def episode_loop(self):
         """
@@ -131,6 +171,13 @@ class BaseDQN:
         updated_rnn_state: The updated RNN state
         """
         # Generate actions and corresponding steps.
+        if self.new_simulation:
+            return self.step_loop_new(o, internal_state, a, rnn_state)
+        else:
+            return self.step_loop_old(o, internal_state, a, rnn_state)
+
+    def step_loop_old(self, o, internal_state, a, rnn_state):
+        # Generate actions and corresponding steps.
         if np.random.rand(1) < self.epsilon or self.total_steps < self.pre_train_steps:
             [updated_rnn_state, sa, sv] = self.sess.run(
                 [self.main_QN.rnn_state, self.main_QN.streamA, self.main_QN.streamV],
@@ -140,7 +187,8 @@ class BaseDQN:
                            self.main_QN.trainLength: 1,
                            self.main_QN.rnn_state_in: rnn_state,
                            self.main_QN.batch_size: 1,
-                           self.main_QN.exp_keep: 1.0})
+                           self.main_QN.exp_keep: 1.0,
+                           })
             chosen_a = np.random.randint(0, self.learning_params['num_actions'])
         else:
             chosen_a, updated_rnn_state, sa, sv = self.sess.run(
@@ -151,7 +199,45 @@ class BaseDQN:
                            self.main_QN.trainLength: 1,
                            self.main_QN.rnn_state_in: rnn_state,
                            self.main_QN.batch_size: 1,
-                           self.main_QN.exp_keep: 1.0})
+                           self.main_QN.exp_keep: 1.0,
+                           })
+            chosen_a = chosen_a[0]
+
+        # Simulation step
+        o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=chosen_a,
+                                                                                                 frame_buffer=self.frame_buffer,
+                                                                                                 save_frames=self.save_frames,
+                                                                                                 activations=(sa,))
+        self.total_steps += 1
+        return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
+
+    def step_loop_new(self, o, internal_state, a, rnn_state):
+        # Generate actions and corresponding steps.
+        if np.random.rand(1) < self.epsilon or self.total_steps < self.pre_train_steps:
+            [updated_rnn_state, sa, sv] = self.sess.run(
+                [self.main_QN.rnn_state, self.main_QN.streamA, self.main_QN.streamV],
+                feed_dict={self.main_QN.observation: o,
+                           self.main_QN.internal_state: internal_state,
+                           self.main_QN.prev_actions: [a],
+                           self.main_QN.train_length: 1,
+                           self.main_QN.rnn_state_in: rnn_state,
+                           self.main_QN.batch_size: 1,
+                           self.main_QN.exp_keep: 1.0,
+                           self.main_QN.learning_rate: self.learning_params["learning_rate"],
+                           })
+            chosen_a = np.random.randint(0, self.learning_params['num_actions'])
+        else:
+            chosen_a, updated_rnn_state, sa, sv = self.sess.run(
+                [self.main_QN.predict, self.main_QN.rnn_state, self.main_QN.streamA, self.main_QN.streamV],
+                feed_dict={self.main_QN.observation: o,
+                           self.main_QN.internal_state: internal_state,
+                           self.main_QN.prev_actions: [a],
+                           self.main_QN.trainLength: 1,
+                           self.main_QN.rnn_state_in: rnn_state,
+                           self.main_QN.batch_size: 1,
+                           self.main_QN.exp_keep: 1.0,
+                           self.main_QN.learning_rate: self.learning_params["learning_rate"],
+                           })
             chosen_a = chosen_a[0]
 
         # Simulation step
@@ -163,6 +249,12 @@ class BaseDQN:
         return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
 
     def _assay_step_loop(self, o, internal_state, a, rnn_state):
+        if self.new_simulation:
+            return self._assay_step_loop_new(o, internal_state, a, rnn_state)
+        else:
+            return self._assay_step_loop_old(o, internal_state, a, rnn_state)
+
+    def _assay_step_loop_old(self, o, internal_state, a, rnn_state):
         chosen_a, updated_rnn_state, rnn2_state, sa, sv, conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r, o2 = \
             self.sess.run(
                 [self.main_QN.predict, self.main_QN.rnn_state, self.main_QN.rnn_state2, self.main_QN.streamA,
@@ -177,7 +269,8 @@ class BaseDQN:
                            self.main_QN.trainLength: 1,
                            self.main_QN.rnn_state_in: rnn_state,
                            self.main_QN.batch_size: 1,
-                           self.main_QN.exp_keep: 1.0})
+                           self.main_QN.exp_keep: 1.0,
+                           })
         chosen_a = chosen_a[0]
         o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=chosen_a,
                                                                                                  frame_buffer=self.frame_buffer,
@@ -242,7 +335,58 @@ class BaseDQN:
 
         return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
 
+    def _assay_step_loop_new(self, o, internal_state, a, rnn_state):
+        chosen_a, updated_rnn_state, rnn2_state, sa, sv, network_layers, o2 = \
+            self.sess.run(
+                [self.main_QN.predict, self.main_QN.rnn_state, self.main_QN.rnn_state2, self.main_QN.streamA,
+                 self.main_QN.streamV, self.main_QN.network_graph, [self.main_QN.ref_left_eye, self.main_QN.ref_right_eye],
+                 ],
+                feed_dict={self.main_QN.observation: o,
+                           self.main_QN.internal_state: internal_state,
+                           self.main_QN.prev_actions: [a],
+                           self.main_QN.train_length: 1,
+                           self.main_QN.rnn_state_in: rnn_state,
+                           self.main_QN.batch_size: 1,
+                           self.main_QN.exp_keep: 1.0,
+                           self.main_QN.learning_rate: self.learning_params["learning_rate"],
+                           })
+
+        chosen_a = chosen_a[0]
+        o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=chosen_a,
+                                                                                                 activations=(sa,))
+        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()  # TODO: Modify
+
+        # Update buffer
+        self.buffer.add_training(observation=o,
+                                 internal_state=internal_state,
+                                 action=chosen_a,
+                                 reward=given_reward,
+                                 actor_rnn_state=updated_rnn_state,
+                                 actor_rnn_state_ref=rnn2_state,
+                                 )
+
+        # Saving step data
+        if "environmental positions" in self.buffer.recordings:
+            self.buffer.save_environmental_positions(self.simulation.fish.body.position,
+                                                     self.simulation.prey_consumed_this_step,
+                                                     self.simulation.predator_body,
+                                                     prey_positions,
+                                                     predator_position,
+                                                     sand_grain_positions,
+                                                     vegetation_positions,
+                                                     self.simulation.fish.body.angle,
+                                                     )
+        self.buffer.make_desired_recordings(network_layers)
+
+        return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
+
     def train_networks(self):
+        if self.new_simulation:
+            return self._train_networks_new()
+        else:
+            return self._train_networks_old()
+
+    def _train_networks_new(self):
         """
         Trains the two networks, copying over the target network
         :return:
@@ -253,7 +397,64 @@ class BaseDQN:
                        np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
 
         # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
-        train_batch = self.buffer.sample(self.learning_params['batch_size'], self.learning_params['trace_length'])
+        train_batch = self.experience_buffer.sample(self.learning_params['batch_size'], self.learning_params['trace_length'])
+
+        # Below we perform the Double-DQN update to the target Q-values
+        Q1 = self.sess.run(self.main_QN.predict, feed_dict={
+            self.main_QN.observation: np.vstack(train_batch[:, 4]),
+            self.main_QN.prev_actions: np.hstack(([0], train_batch[:-1, 1])),
+            self.main_QN.train_length: self.learning_params['trace_length'],
+            self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
+            self.main_QN.rnn_state_in: state_train,
+            self.main_QN.batch_size: self.learning_params['batch_size'],
+            self.main_QN.exp_keep: 1.0,
+            self.main_QN.learning_rate: self.learning_params["learning_rate"],
+
+        })
+
+        Q2 = self.sess.run(self.target_QN.Q_out, feed_dict={
+            self.target_QN.observation: np.vstack(train_batch[:, 4]),
+            self.target_QN.prev_actions: np.hstack(([0], train_batch[:-1, 1])),
+            self.target_QN.train_length: self.learning_params['trace_length'],
+            self.target_QN.internal_state: np.vstack(train_batch[:, 3]),
+            self.target_QN.rnn_state_in: state_train,
+            self.target_QN.batch_size: self.learning_params['batch_size'],
+            self.target_QN.exp_keep: 1.0,
+            self.main_QN.learning_rate: self.learning_params["learning_rate"],
+
+        })
+
+        end_multiplier = -(train_batch[:, 5] - 1)
+
+        double_Q = Q2[range(self.learning_params['batch_size'] * self.learning_params['trace_length']), Q1]
+        target_Q = train_batch[:, 2] + (self.learning_params['y'] * double_Q * end_multiplier)
+        # Update the network with our target values.
+        self.sess.run(self.main_QN.updateModel,
+                      feed_dict={self.main_QN.observation: np.vstack(train_batch[:, 0]),
+                                 self.main_QN.targetQ: target_Q,
+                                 self.main_QN.actions: train_batch[:, 1],
+                                 self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
+                                 self.main_QN.prev_actions: np.hstack(([3], train_batch[:-1, 1])),
+                                 self.main_QN.train_length: self.learning_params['trace_length'],
+                                 self.main_QN.rnn_state_in: state_train,
+                                 self.main_QN.batch_size: self.learning_params['batch_size'],
+                                 self.main_QN.exp_keep: 1.0,
+                                 self.main_QN.learning_rate: self.learning_params["learning_rate"],
+                                 })
+
+
+    def _train_networks_old(self):
+        """
+        Trains the two networks, copying over the target network
+        :return:
+        """
+        update_target(self.target_ops, self.sess)
+        # Reset the recurrent layer's hidden state
+        state_train = (np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]),
+                       np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
+
+        # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
+        train_batch = self.experience_buffer.sample(self.learning_params['batch_size'], self.learning_params['trace_length'])
 
         # Below we perform the Double-DQN update to the target Q-values
         Q1 = self.sess.run(self.main_QN.predict, feed_dict={
@@ -289,4 +490,3 @@ class BaseDQN:
                                  self.main_QN.rnn_state_in: state_train,
                                  self.main_QN.batch_size: self.learning_params['batch_size'],
                                  self.main_QN.exp_keep: 1.0})
-
