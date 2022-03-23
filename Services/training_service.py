@@ -99,6 +99,7 @@ class TrainingService(BaseService):
             self.episode_number = e_number
             if self.configuration_index < self.total_configurations:
                 self.check_update_configuration()
+            self.save_configuration_files()
             self.episode_loop()
             if self.monitor_performance:
                 ps = pstats.Stats(self.profile)
@@ -474,3 +475,9 @@ class TrainingService(BaseService):
         #         mu1_ref_summary = tf.Summary(
         #             value=[tf.Summary.Value(tag="mu_angle_ref_base", simple_value=self.buffer.mu_a_ref_buffer[step])])
         #         self.writer.add_summary(mu1_ref_summary, self.total_steps - len(self.buffer.mu_a_ref_buffer) + step)
+
+    def save_configuration_files(self):
+        with open(f"{self.model_location}/learning_configuration.json", 'w') as f:
+            json.dump(self.learning_params, f, indent=4)
+        with open(f"{self.model_location}/environment_configuration.json", 'w') as f:
+            json.dump(self.environment_params, f, indent=4)

@@ -102,6 +102,4 @@ class BaseService:
             params = json.load(f)
         with open(f"{self.current_configuration_location}_env.json", 'r') as f:
             env = json.load(f)
-
-
         return params, env
