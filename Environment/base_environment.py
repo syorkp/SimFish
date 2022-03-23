@@ -549,6 +549,18 @@ class BaseEnvironment:
         else:
             return False
 
+    def check_proximity_all_prey(self, sensing_distance):
+        all_prey_positions = np.array([pr.position for pr in self.prey_bodies])
+        fish_position = self.fish.body.position
+        sensing_area = np.array([[fish_position[0] - sensing_distance,
+                         fish_position[0] + sensing_distance],
+                        [fish_position[1] - sensing_distance,
+                         fish_position[1] + sensing_distance]])
+        within_x = (all_prey_positions[:, 0] > sensing_area[0, 0]) * (all_prey_positions[:, 0] < sensing_area[0, 1])
+        within_y = (all_prey_positions[:, 1] > sensing_area[1, 0]) * (all_prey_positions[:, 1] < sensing_area[1, 1])
+        within_range = within_x * within_y
+        return within_range
+
     def move_prey(self, micro_step):
         if self.new_simulation:
             self._move_prey_new(micro_step)
@@ -572,19 +584,20 @@ class BaseEnvironment:
                 self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_impulse'], 0))
 
     def _move_prey_new(self, micro_step):
-        gaits_to_switch = np.random.choice([0, 1], len(self.prey_shapes),
-                                           p=[1 - self.env_variables["p_switch"], self.env_variables["p_switch"]])
-        switch_to = np.random.choice([0, 1, 2], len(self.prey_shapes),
-                                     p=[1 - (self.env_variables["p_slow"] + self.env_variables["p_fast"]),
-                                        self.env_variables["p_slow"], self.env_variables["p_fast"]])
-        self.paramecia_gaits = [switch_to[i] if gaits_to_switch[i] else old_gait for i, old_gait in
-                                enumerate(self.paramecia_gaits)]
-
         # Generate impulses
         impulse_types = [0, self.env_variables["slow_speed_paramecia"], self.env_variables["fast_speed_paramecia"]]
         impulses = [impulse_types[gait] for gait in self.paramecia_gaits]
 
+        # Do once per step.
         if micro_step == 0:
+            gaits_to_switch = np.random.choice([0, 1], len(self.prey_shapes),
+                                               p=[1 - self.env_variables["p_switch"], self.env_variables["p_switch"]])
+            switch_to = np.random.choice([0, 1, 2], len(self.prey_shapes),
+                                         p=[1 - (self.env_variables["p_slow"] + self.env_variables["p_fast"]),
+                                            self.env_variables["p_slow"], self.env_variables["p_fast"]])
+            self.paramecia_gaits = [switch_to[i] if gaits_to_switch[i] else old_gait for i, old_gait in
+                                    enumerate(self.paramecia_gaits)]
+
             # Angles of change
             angle_changes = np.random.uniform(-self.env_variables['prey_max_turning_angle'],
                                               self.env_variables['prey_max_turning_angle'],
@@ -596,8 +609,10 @@ class BaseEnvironment:
                                                                                    self.env_variables["p_reorient"]])
             angle_changes = angle_changes + (large_turns * turns_implemented)
 
+        prey_within_range = self.check_proximity_all_prey(self.env_variables["prey_sensing_distance"])
+
         for i, prey_body in enumerate(self.prey_bodies):
-            if self.check_proximity(prey_body.position, self.env_variables['prey_sensing_distance']):
+            if prey_within_range[i]: #self.check_proximity(prey_body.position, self.env_variables['prey_sensing_distance']):
                 # Motion from fluid dynamics
                 if self.env_variables["prey_fluid_displacement"]:
                     distance_vector = prey_body.position - self.fish.body.position
