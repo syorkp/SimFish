@@ -1732,7 +1732,7 @@ ppo_scaffold_training_config_5a = [
 
 ppo_scaffold_training_config_5a_no_entropy = [
     {
-        "Model Name": "scaffold_version_5",
+        "Model Name": "scaffold_version_5_ne",
         "Environment Name": "ppo_continuous_sbe_is_scaffold_5_ne",
         "Trial Number": 1,
         "Total Configurations": 8,
@@ -1768,7 +1768,7 @@ ppo_scaffold_training_config_5a_no_entropy = [
         "Profile Speed": False,
     },
     {
-        "Model Name": "scaffold_version_5",
+        "Model Name": "scaffold_version_5_ne",
         "Environment Name": "ppo_continuous_sbe_is_scaffold_5_ne",
         "Trial Number": 2,
         "Total Configurations": 8,
