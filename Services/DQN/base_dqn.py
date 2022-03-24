@@ -405,8 +405,9 @@ class BaseDQN:
 
         # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
         train_batch = self.experience_buffer.sample(self.learning_params['batch_size'], self.learning_params['trace_length'])
-        previous_actions = np.hstack(([0], train_batch[:-1, 1]))
+        previous_actions = np.expand_dims(np.hstack(([0], train_batch[:-1, 1])), 1)
         print(f"previous action batch: {previous_actions.shape}.")
+        print(f"Experience buffer shape: {train_batch.shape}.")
 
         # Below we perform the Double-DQN update to the target Q-values
         Q1 = self.sess.run(self.main_QN.predict, feed_dict={
@@ -443,7 +444,7 @@ class BaseDQN:
                                  self.main_QN.targetQ: target_Q,
                                  self.main_QN.actions: train_batch[:, 1],
                                  self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
-                                 self.main_QN.prev_actions: np.hstack(([3], train_batch[:-1, 1])),
+                                 self.main_QN.prev_actions: np.expand_dims(np.hstack(([3], train_batch[:-1, 1])), 1),
                                  self.main_QN.train_length: self.learning_params['trace_length'],
                                  self.main_QN.rnn_state_in: state_train,
                                  self.main_QN.batch_size: self.learning_params['batch_size'],
