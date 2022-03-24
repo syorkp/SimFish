@@ -239,6 +239,12 @@ class TrainingService(BaseService):
             )
             self.writer.add_summary(configuration_summary, self.episode_number)
 
+        if self.full_logs:
+            episode_duration_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="Episode Duration", simple_value=self.step_number)]
+            )
+            self.writer.add_summary(episode_duration_summary, self.episode_number)
+
         # Periodically save the model.
         if self.episode_number % self.learning_params['summaryLength'] == 0 and self.episode_number != 0:
             # print(f"mean time: {np.mean(self.training_times)}")
