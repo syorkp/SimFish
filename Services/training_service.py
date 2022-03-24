@@ -241,7 +241,7 @@ class TrainingService(BaseService):
 
         if self.full_logs:
             episode_duration_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="Episode Duration", simple_value=self.step_number)]
+                value=[tf.Summary.Value(tag="Episode Duration", simple_value=self.simulation.num_steps)]
             )
             self.writer.add_summary(episode_duration_summary, self.episode_number)
 

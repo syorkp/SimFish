@@ -35,20 +35,23 @@ class DynamicBaseNetwork:
         self.ops = ops
         self.connectivity = connectivity
 
-        self.rnn_cells, self.rnn_cell_states, self.rnn_dim = self.create_rnns(base_network_layers, modular_network_layers, reflected)
+        self.rnn_cells, self.rnn_cell_states, self.rnn_dim = self.create_rnns(base_network_layers,
+                                                                              modular_network_layers, reflected)
 
         # Contains all layers to be referenced.
         self.network_graph = {"observation": self.reshaped_observation,
                               "internal_state": self.internal_state,
                               "prev_actions": self.prev_actions}
-        self.initialize_network(copy.copy(base_network_layers), copy.copy(modular_network_layers), copy.copy(ops), connectivity, self.network_graph)
+        self.initialize_network(copy.copy(base_network_layers), copy.copy(modular_network_layers), copy.copy(ops),
+                                connectivity, self.network_graph)
 
         if reflected:
             print("Building reflected graph")
             self.reflected_network_graph = {"observation": self.reshaped_observation,
                                             "internal_state": self.internal_state,
                                             "prev_actions": self.prev_actions}
-            self.initialize_network(copy.copy(base_network_layers), copy.copy(modular_network_layers), copy.copy(ops), connectivity, self.reflected_network_graph, reflected=True)
+            self.initialize_network(copy.copy(base_network_layers), copy.copy(modular_network_layers), copy.copy(ops),
+                                    connectivity, self.reflected_network_graph, reflected=True)
 
         # Name the outputs
         self.processing_network_output = self.network_graph["output_layer"]
@@ -59,14 +62,19 @@ class DynamicBaseNetwork:
         self.initialize_rnn_states(reflected)
 
     def get_rnn_state_shapes(self):
-        rnn_layers_base = [layer for layer in self.base_network_layers.keys() if self.base_network_layers[layer][0] == "dynamic_rnn"]
-        rnn_layers_modular = [layer for layer in self.modular_network_layers.keys() if self.modular_network_layers[layer][0] == "dynamic_rnn"]
-        layer_sizes = [self.base_network_layers[layer][1] for layer in rnn_layers_base] + [self.modular_network_layers[layer][1] for layer in rnn_layers_modular]
+        rnn_layers_base = [layer for layer in self.base_network_layers.keys() if
+                           self.base_network_layers[layer][0] == "dynamic_rnn"]
+        rnn_layers_modular = [layer for layer in self.modular_network_layers.keys() if
+                              self.modular_network_layers[layer][0] == "dynamic_rnn"]
+        layer_sizes = [self.base_network_layers[layer][1] for layer in rnn_layers_base] + [
+            self.modular_network_layers[layer][1] for layer in rnn_layers_modular]
         return layer_sizes
 
     def initialize_rnn_states(self, reflected):
-        rnn_layers_base = [layer for layer in self.base_network_layers.keys() if self.base_network_layers[layer][0] == "dynamic_rnn"]
-        rnn_layers_modular = [layer for layer in self.modular_network_layers.keys() if self.modular_network_layers[layer][0] == "dynamic_rnn"]
+        rnn_layers_base = [layer for layer in self.base_network_layers.keys() if
+                           self.base_network_layers[layer][0] == "dynamic_rnn"]
+        rnn_layers_modular = [layer for layer in self.modular_network_layers.keys() if
+                              self.modular_network_layers[layer][0] == "dynamic_rnn"]
         rnn_layers = rnn_layers_base + rnn_layers_modular
 
         self.rnn_layer_names = rnn_layers
@@ -120,10 +128,11 @@ class DynamicBaseNetwork:
                 state_layer_name = layer_name
             units = layer_parameters[1]
             self.network_graph[layer_input + "_inputs"] = tf.layers.dense(network_graph[layer_input], units,
-                                                        activation=tf.nn.relu,
-                                                        kernel_initializer=tf.orthogonal_initializer,
-                                                        trainable=True, name=self.scope + "_" + layer_name + "_inputs",
-                                                        reuse=reflected)
+                                                                          activation=tf.nn.relu,
+                                                                          kernel_initializer=tf.orthogonal_initializer,
+                                                                          trainable=True,
+                                                                          name=self.scope + "_" + layer_name + "_inputs",
+                                                                          reuse=reflected)
             network_graph[layer_input + "_reshaped"] = tf.reshape(self.network_graph[layer_input + "_inputs"],
                                                                   [self.batch_size, self.train_length, units])
             network_graph[layer_name + "_dyn"], network_graph[layer_name + "_shared"] = tf.nn.dynamic_rnn(
@@ -156,7 +165,8 @@ class DynamicBaseNetwork:
                 for connection in connectivity:
                     if connection[1][1] == layer:
                         if connection[1][0] in list(network_graph.keys()):
-                            self.create_layer(layer, connection[1][0], connection[0], layers[layer], network_graph, reflected)
+                            self.create_layer(layer, connection[1][0], connection[0], layers[layer], network_graph,
+                                              reflected)
                             layer_to_remove = layer
                             final_name = layer
                             break_out = True
@@ -178,8 +188,10 @@ class DynamicBaseNetwork:
         """Through running through indicated connections, ensuring there are no impossible connections and that all
         referenced inputs are indicated. Also display warnings when layers of network have no input on output."""
         all_layer_names = list(base_network_layers.keys()) + list(modular_network_layers.keys()) + [item for l in
-                                                                                        [ops[v][2] for v in ops.keys()] for item
-                                                                                        in l]
+                                                                                                    [ops[v][2] for v in
+                                                                                                     ops.keys()] for
+                                                                                                    item
+                                                                                                    in l]
 
         connectivity_required_layers = flatten_list([[v[1]] for v in connectivity])
         connectivity_required_layers = flatten_list(connectivity_required_layers)

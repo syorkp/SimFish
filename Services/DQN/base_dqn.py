@@ -400,8 +400,10 @@ class BaseDQN:
         """
         update_target(self.target_ops, self.sess)
         # Reset the recurrent layer's hidden state
-        state_train = (np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]),
-                       np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
+        # state_train = (np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]),
+        #                np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
+        state_train = (np.zeros([self.learning_params['trace_length'], self.main_QN.rnn_dim]),
+                       np.zeros([self.learning_params['trace_length'], self.main_QN.rnn_dim]))
 
         # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
         train_batch = self.experience_buffer.sample(self.learning_params['batch_size'], self.learning_params['trace_length'])
@@ -451,7 +453,6 @@ class BaseDQN:
                                  self.main_QN.exp_keep: 1.0,
                                  self.main_QN.learning_rate: self.learning_params["learning_rate"],
                                  })
-
 
     def _train_networks_old(self):
         """
