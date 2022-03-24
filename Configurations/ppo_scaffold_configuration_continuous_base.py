@@ -300,7 +300,7 @@ env = {
 
 }
 
-directory_name = "ppo_continuous_sbe_is_scaffold_5"
+directory_name = "ppo_continuous_sbe_is_scaffold_5_ne"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):
