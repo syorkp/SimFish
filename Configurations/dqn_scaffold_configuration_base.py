@@ -150,9 +150,9 @@ env = {
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
-       'bkg_scatter': 0.03,  # base brightness of the background FORMERLY 0.00001
+       'bkg_scatter': 0.01,  # base brightness of the background FORMERLY 0.00001
        'dark_gain': 0.38,  # gain of brightness in the dark side
-       'light_gain': 10.0,  # gain of brightness in the bright side
+       'light_gain': 50.0,  # gain of brightness in the bright side
 
        'predator_cost': 1000,
 
@@ -249,8 +249,8 @@ env = {
        # Arbitrary fish parameters
 
        # Fish Visual System
-       'uv_photoreceptor_rf_size': 0.0133,  # Pi Radians (0.76 degrees) - Yoshimatsu et al. (2019)
-       'red_photoreceptor_rf_size': 0.0133,  # Kept same
+       'uv_photoreceptor_rf_size': 0.0133 * 3,  # Pi Radians (0.76 degrees) - Yoshimatsu et al. (2019)
+       'red_photoreceptor_rf_size': 0.0133 * 3,  # Kept same
        'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
        'red_photoreceptor_num': 63,
        'minimum_observation_size': 100,  # Parameter to determine padded observation size (avoids conv layer size bug).
@@ -302,7 +302,7 @@ env = {
 }
 
 
-directory_name = "dqn_scaffold_5"
+directory_name = "dqn_scaffold_6"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):
