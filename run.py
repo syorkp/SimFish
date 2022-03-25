@@ -2332,7 +2332,82 @@ dqn_scaffold_training_config_6a = [
     },
 ]
 
+dqn_scaffold_training_config_6b = [
+    {
+        "Model Name": "dqn_scaffold_version_6",
+        "Environment Name": "dqn_scaffold_6",
+        "Trial Number": 3,
+        "Total Configurations": 8,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 5,
+                "4": 6,
+                "5": 6,
+                "6": 7,
+                "8": 8,
+                "9": 8,
+            },
+            "Predators Avoided": {
+                "7": 4
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "dqn_scaffold_version_6",
+        "Environment Name": "dqn_scaffold_6",
+        "Trial Number": 4,
+        "Total Configurations": 8,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 5,
+                "4": 6,
+                "5": 6,
+                "6": 7,
+                "8": 8,
+                "9": 8,
+            },
+            "Predators Avoided": {
+                "7": 4
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_training_config_6a, parallel_jobs=4)
+manager = TrialManager(dqn_scaffold_training_config_6b, parallel_jobs=4)
 manager.run_priority_loop()

@@ -128,7 +128,7 @@ env = {
        'prey_inertia': 40.,
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-       'prey_num': 1,
+       'prey_num': 30,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
