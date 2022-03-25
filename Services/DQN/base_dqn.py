@@ -402,6 +402,7 @@ class BaseDQN:
         # Reset the recurrent layer's hidden state
         # state_train = (np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]),
         #                np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
+        # TODO: Sort out state train shapes.
         state_train = (np.zeros([self.learning_params['trace_length'], self.main_QN.rnn_dim]),
                        np.zeros([self.learning_params['trace_length'], self.main_QN.rnn_dim]))
 

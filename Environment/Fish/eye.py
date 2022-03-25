@@ -825,3 +825,103 @@ class Eye:
         # axs[1].imshow(left_3, aspect="auto")
         # axs[1].set_ylabel("Left eye")
         # plt.show()
+
+    def get_pr_coverage(self, masked_arena_pixels_uv, masked_arena_pixels_red, eye_x, eye_y, channel_angles_surrounding, n_channels_uv, n_channels_red):
+        """For testing purposes"""
+        n_channels = n_channels_uv + n_channels_red
+
+        # Make sure angles are in desired range (PR_N x n)
+        channel_angles_surrounding_scaling = (channel_angles_surrounding // (
+                    self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
+        channel_angles_surrounding = channel_angles_surrounding + channel_angles_surrounding_scaling
+
+        # Compute m using tan (PR_N x n)
+        m = self.chosen_math_library.tan(channel_angles_surrounding)
+
+        # Compute c (PR_N x n)
+        c = -m * eye_x
+        c = c + eye_y
+
+        # Compute components of intersections (PR_N x n x 4)
+        c_exp = self.chosen_math_library.expand_dims(c, 2)
+        c_exp = self.chosen_math_library.repeat(c_exp, 4, 2)
+
+        m_mul = self.chosen_math_library.expand_dims(m, 2)
+        full_m = self.chosen_math_library.repeat(m_mul, 4, 2)
+        m_mul = full_m * self.mul1_full[:n_channels]
+        m_mul[:, :, :3] = 1
+        addition_matrix = self.addition_matrix[:n_channels] * m_mul
+        division_matrix = full_m
+        division_matrix[:, :, 1] = 1
+        division_matrix[:, :, 3] = 1
+
+        intersection_components = ((c_exp * self.multiplication_matrix[
+                                            :n_channels]) + addition_matrix) / division_matrix
+
+        intersection_coordinates = self.chosen_math_library.expand_dims(intersection_components, 3)
+        intersection_coordinates = self.chosen_math_library.repeat(intersection_coordinates, 2, 3)
+        intersection_coordinates = (intersection_coordinates * self.mul_for_hypothetical[
+                                                               :n_channels]) + self.add_for_hypothetical[:n_channels]
+
+        # Compute possible intersections (PR_N x 2 x 2 x 2)
+        valid_points_ls = (intersection_components > 0) * 1
+        valid_points_more = (intersection_components < self.conditional_tiled[:n_channels]) * 1
+        valid_points = valid_points_more * valid_points_ls
+        valid_intersection_coordinates = intersection_coordinates[valid_points == 1]
+        valid_intersection_coordinates = self.chosen_math_library.reshape(valid_intersection_coordinates,
+                                                                          (n_channels, self.n, 2, 2))
+        # Get intersections (PR_N x 2)
+        eye_position = self.chosen_math_library.array([eye_x, eye_y])
+        possible_vectors = valid_intersection_coordinates - eye_position
+
+        angles = self.chosen_math_library.arctan2(possible_vectors[:, :, :, 1], possible_vectors[:, :, :, 0])
+
+        # Make sure angles are in correct range.
+        angle_scaling = (angles // (self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
+        angles = angles + angle_scaling
+
+        angles = self.chosen_math_library.round(angles, 3)
+        channel_angles_surrounding = self.chosen_math_library.round(channel_angles_surrounding, 3)
+
+        channel_angles_surrounding = self.chosen_math_library.expand_dims(channel_angles_surrounding, 2)
+        channel_angles_surrounding = self.chosen_math_library.repeat(channel_angles_surrounding, 2, 2)
+
+        same_values = (angles == channel_angles_surrounding) * 1
+        selected_intersections = valid_intersection_coordinates[same_values == 1]
+        selected_intersections = self.chosen_math_library.reshape(selected_intersections, (n_channels, self.n, 1, 2))
+
+        eye_position_full = self.chosen_math_library.tile(eye_position, (n_channels, self.n, 1, 1))
+        vertices = self.chosen_math_library.concatenate((eye_position_full, selected_intersections), axis=2)
+        vertices_xvals = vertices[:, :, :, 0]
+        vertices_yvals = vertices[:, :, :, 1]
+
+        min_x = self.chosen_math_library.min(vertices_xvals, axis=2)
+        max_x = self.chosen_math_library.max(vertices_xvals, axis=2)
+        min_y = self.chosen_math_library.min(vertices_yvals, axis=2)
+        max_y = self.chosen_math_library.max(vertices_yvals, axis=2)
+
+        # SEGMENT COMPUTATION
+        x_lens = self.chosen_math_library.rint(max_x[:, 0] - min_x[:, 0])
+        y_lens = self.chosen_math_library.rint(max_y[:, 0] - min_y[:, 0])
+
+        x_len = self.chosen_math_library.max(x_lens)
+        y_len = self.chosen_math_library.max(y_lens)
+
+        x_ranges = self.chosen_math_library.linspace(min_x, max_x, int(x_len))
+        y_ranges = self.chosen_math_library.linspace(min_y, max_y, int(y_len))
+
+        y_values = (m * x_ranges) + c
+        y_values = self.chosen_math_library.floor(y_values)
+        set_1 = self.chosen_math_library.stack((x_ranges, y_values), axis=-1)
+        x_values = (y_ranges - c) / m
+        x_values = self.chosen_math_library.floor(x_values)
+        set_2 = self.chosen_math_library.stack((x_values, y_ranges), axis=-1)
+        full_set = self.chosen_math_library.vstack((set_1, set_2)).astype(int)
+
+        full_set = full_set.swapaxes(0, 1)
+        full_set = full_set.reshape(n_channels, -1, 2)
+
+        full_set_uv = full_set[:n_channels_uv, :]
+        full_set_red = full_set[n_channels_uv:, :]
+
+        return full_set_uv, full_set_red
