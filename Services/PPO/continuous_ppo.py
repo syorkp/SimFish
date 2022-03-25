@@ -1165,19 +1165,21 @@ class ContinuousPPO(BasePPO):
             average_loss_impulse = 0
             average_loss_angle = 0
 
-
-
             for i in range(self.learning_params["n_updates_per_iteration"]):
                 # Compute RNN states for start of each trace.
                 actor_rnn_state_slice, actor_rnn_state_ref_slice = self.compute_rnn_states2(batch_key_points,
-                                                                     observation_buffer[
-                                                                     :(batch + 1) * self.learning_params["batch_size"]],
-                                                                     internal_state_buffer[
-                                                                     :(batch + 1) * self.learning_params["batch_size"]],
-                                                                     previous_action_buffer[
-                                                                     :(batch + 1) * self.learning_params[
-                                                                         "batch_size"]])
-
+                                                                                            observation_buffer[
+                                                                                            :(batch + 1) *
+                                                                                             self.learning_params[
+                                                                                                 "batch_size"]],
+                                                                                            internal_state_buffer[
+                                                                                            :(batch + 1) *
+                                                                                             self.learning_params[
+                                                                                                 "batch_size"]],
+                                                                                            previous_action_buffer[
+                                                                                            :(batch + 1) *
+                                                                                             self.learning_params[
+                                                                                                 "batch_size"]])
 
                 # Optimise actor
                 loss_actor_val, loss_critic_val, total_loss, _, log_action_probability_batch_new, scaled_actions = self.sess.run(

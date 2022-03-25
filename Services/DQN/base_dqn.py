@@ -404,8 +404,8 @@ class BaseDQN:
         #                np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
         rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
         state_train = tuple(
-            (np.zeros([self.learning_params['trace_length'], shape]),
-             np.zeros([self.learning_params['trace_length'], shape])) for shape in rnn_state_shapes)
+            (np.zeros([self.learning_params['batch_size'], shape]),
+             np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
 
         # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
         train_batch = self.experience_buffer.sample(self.learning_params['batch_size'], self.learning_params['trace_length'])
@@ -420,6 +420,7 @@ class BaseDQN:
             self.main_QN.train_length: self.learning_params['trace_length'],
             self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
             self.main_QN.rnn_state_in: state_train,
+            self.main_QN.rnn_state_in_ref: state_train,
             self.main_QN.batch_size: self.learning_params['batch_size'],
             self.main_QN.exp_keep: 1.0,
             self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -432,6 +433,7 @@ class BaseDQN:
             self.target_QN.train_length: self.learning_params['trace_length'],
             self.target_QN.internal_state: np.vstack(train_batch[:, 3]),
             self.target_QN.rnn_state_in: state_train,
+            self.target_QN.rnn_state_in_ref: state_train,
             self.target_QN.batch_size: self.learning_params['batch_size'],
             self.target_QN.exp_keep: 1.0,
             self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -451,6 +453,7 @@ class BaseDQN:
                                  self.main_QN.prev_actions: np.expand_dims(np.hstack(([3], train_batch[:-1, 1])), 1),
                                  self.main_QN.train_length: self.learning_params['trace_length'],
                                  self.main_QN.rnn_state_in: state_train,
+                                 self.main_QN.rnn_state_in_ref: state_train,
                                  self.main_QN.batch_size: self.learning_params['batch_size'],
                                  self.main_QN.exp_keep: 1.0,
                                  self.main_QN.learning_rate: self.learning_params["learning_rate"],

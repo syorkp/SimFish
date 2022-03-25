@@ -209,8 +209,8 @@ class DynamicBaseNetwork:
         for layer in layers.keys():
             if layers[layer][0] == "dynamic_rnn":
                 rnn_units[layer] = tf.nn.rnn_cell.LSTMCell(num_units=layers[layer][1], state_is_tuple=True)
-                rnn_cell_states[layer] = rnn_units[layer].zero_state(self.train_length, tf.float32)
+                rnn_cell_states[layer] = rnn_units[layer].zero_state(self.batch_size, tf.float32)
                 if reflected:
-                    rnn_cell_states[layer + "_ref"] = rnn_units[layer].zero_state(self.train_length, tf.float32)
+                    rnn_cell_states[layer + "_ref"] = rnn_units[layer].zero_state(self.batch_size, tf.float32)
                 rnn_dim = layers[layer][1]
         return rnn_units, rnn_cell_states, rnn_dim

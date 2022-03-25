@@ -179,7 +179,7 @@ env = {
 
        #                                  New Simulation
 
-       # Action mask
+       # Action
        'impose_action_mask': False,
 
        # Sensory inputs
