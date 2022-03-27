@@ -150,9 +150,9 @@ env = {
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
-       'bkg_scatter': 0.01,  # base brightness of the background FORMERLY 0.00001
+       'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001
        'dark_gain': 0.38,  # gain of brightness in the dark side
-       'light_gain': 50.0,  # gain of brightness in the bright side
+       'light_gain': 100.0,  # gain of brightness in the bright side
 
        'predator_cost': 1000,
 
@@ -198,7 +198,7 @@ env = {
        'show_previous_actions': 200,  # False if not, otherwise the number of actions to save.
 
        # Environment
-       'decay_rate': 0.006,  # Formerly 0.0006
+       'decay_rate': 0.01,  # Formerly 0.0006
        'sim_steps_per_second': 5,  # For converting isomerization frequency.
        'background_grating_frequency': 50,  # For extra layer motion:
        'displacement_scaling_factor': 0.018,
@@ -260,7 +260,7 @@ env = {
        # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
 
        # Shot noise
-       'shot_noise': True,  # Whether to model observation of individual photons as a poisson process.
+       'shot_noise': False,  # Whether to model observation of individual photons as a poisson process.
 
        # For dark noise:
        'isomerization_frequency': 0.0,  # Average frequency of photoisomerization per second per photoreceptor
@@ -302,7 +302,7 @@ env = {
 }
 
 
-directory_name = "dqn_scaffold_6"
+directory_name = "dqn_scaffold_7"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):

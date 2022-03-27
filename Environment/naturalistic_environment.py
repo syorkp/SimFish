@@ -179,6 +179,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             # Salt health
             if self.env_variables["salt"]:
                 salt_damage = self.salt_gradient[int(self.fish.body.position[0]), int(self.fish.body.position[1])]
+                self.salt_damage_history.append(salt_damage)
                 self.fish.salt_health = self.fish.salt_health + self.env_variables["salt_recovery"] - salt_damage
                 if self.fish.salt_health > 1.0:
                     self.fish.salt_health = 1.0

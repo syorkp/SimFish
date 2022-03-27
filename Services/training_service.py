@@ -233,6 +233,13 @@ class TrainingService(BaseService):
                                         simple_value=vegetation_index)])
             self.writer.add_summary(use_of_vegetation_summary, self.episode_number)
 
+        if self.environment_params["salt"]:
+            mean_salt_damage_per_step = np.mean(self.simulation.salt_damage_history)
+            salt_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="Mean salt damage taken per step",
+                                        simple_value=mean_salt_damage_per_step)])
+            self.writer.add_summary(salt_summary, self.episode_number)
+
         if self.switched_configuration:
             configuration_summary = tf.Summary(
                 value=[tf.Summary.Value(tag="Configuration change", simple_value=self.configuration_index)]

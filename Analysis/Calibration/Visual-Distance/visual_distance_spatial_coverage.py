@@ -85,7 +85,7 @@ uv_points, red_points = test_eye_r.get_pr_coverage(masked_arena_pixels_uv=uv_are
 uv_points = np.unique(np.reshape(uv_points, (-1, 2)), axis=0)
 arena[uv_points[:, 0], uv_points[:, 1]] = 1
 
-plt.figure(figsize=(20, 20), dpi=80)
+plt.figure(figsize=(15, 15), dpi=100)
 plt.scatter([500], [500], color="r")
 plt.imshow(arena)
 plt.show()

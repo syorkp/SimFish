@@ -2211,7 +2211,7 @@ ppo_scaffold_training_config_6b = [
         "Continuous Actions": True,
         "Learning Algorithm": "PPO",
         "Priority": 1,
-        "Using GPU": True,
+        "Using GPU": False,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
@@ -2257,10 +2257,10 @@ ppo_scaffold_training_config_6b = [
 ]
 
 
-dqn_scaffold_training_config_6a = [
+dqn_scaffold_training_config_7a = [
     {
-        "Model Name": "dqn_scaffold_version_6",
-        "Environment Name": "dqn_scaffold_6",
+        "Model Name": "dqn_scaffold_version_7",
+        "Environment Name": "dqn_scaffold_7",
         "Trial Number": 1,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -2295,8 +2295,8 @@ dqn_scaffold_training_config_6a = [
         "Profile Speed": False,
     },
     {
-        "Model Name": "dqn_scaffold_version_6",
-        "Environment Name": "dqn_scaffold_6",
+        "Model Name": "dqn_scaffold_version_7",
+        "Environment Name": "dqn_scaffold_7",
         "Trial Number": 2,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -2332,10 +2332,10 @@ dqn_scaffold_training_config_6a = [
     },
 ]
 
-dqn_scaffold_training_config_6b = [
+dqn_scaffold_training_config_7b = [
     {
-        "Model Name": "dqn_scaffold_version_6",
-        "Environment Name": "dqn_scaffold_6",
+        "Model Name": "dqn_scaffold_version_7",
+        "Environment Name": "dqn_scaffold_7",
         "Trial Number": 3,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -2370,8 +2370,8 @@ dqn_scaffold_training_config_6b = [
         "Profile Speed": False,
     },
     {
-        "Model Name": "dqn_scaffold_version_6",
-        "Environment Name": "dqn_scaffold_6",
+        "Model Name": "dqn_scaffold_version_7",
+        "Environment Name": "dqn_scaffold_7",
         "Trial Number": 4,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -2409,5 +2409,5 @@ dqn_scaffold_training_config_6b = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_training_config_6b, parallel_jobs=4)
+manager = TrialManager(dqn_scaffold_training_config_7a, parallel_jobs=4)
 manager.run_priority_loop()

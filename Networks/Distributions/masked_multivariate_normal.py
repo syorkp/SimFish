@@ -13,6 +13,8 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
     def __init__(self, loc, scale_diag, impulse_scaling, angle_scaling):
         super().__init__(loc=loc, scale_diag=scale_diag, allow_nan_stats=False)
 
+        self.mu_vals = loc
+
         # Compute KDF here.
         mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
         bout_kinematic_parameters_final_array = mat["BoutKinematicParametersFinalArray"]
@@ -65,12 +67,19 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
         # return actions_chosen, probs, positive_impulses
         return actions_chosen
 
+    def impose_zeroed(self, chosen_samples, mu_vals, threshold=0.01):
+        zero_chosen = ((mu_vals < threshold) * 1) * ((mu_vals > -threshold) * 1)
+        zero_chosen = (zero_chosen == 0) * 1.0
+        chosen_samples *= zero_chosen
+        return chosen_samples
+
     def sample_masked(self, shape):
         preliminary_samples = self.sample(shape * 100)
-        self.preliminary_samples = preliminary_samples
+        # self.preliminary_samples = preliminary_samples
         # chosen_samples, self.probs, self.positive_imp = tf.numpy_function(self.get_sample_masked_weights, [self.preliminary_samples, shape], [tf.float32, tf.float64, tf.int64])
         chosen_samples = tf.numpy_function(self.get_sample_masked_weights, [preliminary_samples, shape], tf.float32)
-        return chosen_samples
+        chosen_samples_thresholded = tf.numpy_function(self.impose_zeroed, [chosen_samples, self.mu_vals], tf.float32)
+        return chosen_samples_thresholded
 
 
 class MaskedMultivariateNormalOLD(tfp.distributions.MultivariateNormalDiag):

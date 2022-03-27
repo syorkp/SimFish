@@ -134,6 +134,7 @@ class BaseEnvironment:
         if self.env_variables["salt"]:
             self.salt_gradient = None
             self.xp, self.yp = np.arange(self.env_variables['width']), np.arange(self.env_variables['height'])
+            self.salt_damage_history = []
 
         if self.env_variables["prey_reproduction_mode"]:
             self.prey_ages = []
@@ -187,6 +188,8 @@ class BaseEnvironment:
             if self.env_variables["salt"]:
                 self.reset_salt_gradient()
                 self.fish.salt_health = 1.0
+                self.salt_damage_history = []
+
             self.paramecia_gaits = []
 
             if self.env_variables["prey_reproduction_mode"]:
