@@ -2106,10 +2106,10 @@ dqn_scaffold_training_config_5c = [
     },
 ]
 
-ppo_scaffold_training_config_6a = [
+ppo_scaffold_training_config_7a = [
     {
-        "Model Name": "scaffold_version_6",
-        "Environment Name": "ppo_continuous_sbe_is_scaffold_6",
+        "Model Name": "scaffold_version_7",
+        "Environment Name": "ppo_continuous_sbe_is_scaffold_7",
         "Trial Number": 1,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -2144,8 +2144,8 @@ ppo_scaffold_training_config_6a = [
         "Profile Speed": False,
     },
     {
-        "Model Name": "scaffold_version_6",
-        "Environment Name": "ppo_continuous_sbe_is_scaffold_6",
+        "Model Name": "scaffold_version_7",
+        "Environment Name": "ppo_continuous_sbe_is_scaffold_7",
         "Trial Number": 2,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -2181,10 +2181,10 @@ ppo_scaffold_training_config_6a = [
     },
 ]
 
-ppo_scaffold_training_config_6b = [
+ppo_scaffold_training_config_7b = [
     {
-        "Model Name": "scaffold_version_6",
-        "Environment Name": "ppo_continuous_sbe_is_scaffold_6",
+        "Model Name": "scaffold_version_7",
+        "Environment Name": "ppo_continuous_sbe_is_scaffold_7",
         "Trial Number": 3,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -2219,8 +2219,8 @@ ppo_scaffold_training_config_6b = [
         "Profile Speed": False,
     },
     {
-        "Model Name": "scaffold_version_6",
-        "Environment Name": "ppo_continuous_sbe_is_scaffold_6",
+        "Model Name": "scaffold_version_7",
+        "Environment Name": "ppo_continuous_sbe_is_scaffold_7",
         "Trial Number": 4,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -2409,5 +2409,5 @@ dqn_scaffold_training_config_7b = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_training_config_7b, parallel_jobs=4)
+manager = TrialManager(ppo_scaffold_training_config_7a, parallel_jobs=4)
 manager.run_priority_loop()
