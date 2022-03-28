@@ -56,7 +56,6 @@ class TrainingService(BaseService):
         self.full_logs = full_logs
 
         # For config scaffolding
-
         self.previous_config_switch = self.episode_number
 
         self.last_episodes_prey_caught = []
@@ -66,11 +65,15 @@ class TrainingService(BaseService):
         # For debugging show mask
         self.visualise_mask = self.environment_params['visualise_mask']
 
+        # Determining whether RNN exists in network
         rnns = [layer for layer in self.learning_params["base_network_layers"].keys() if
                 self.learning_params["base_network_layers"][layer][0] == "dynamic_rnn"] + \
                [layer for layer in self.learning_params["modular_network_layers"].keys() if
                 self.learning_params["modular_network_layers"][layer][0] == "dynamic_rnn"]
         self.rnn_in_network = True if len(rnns) > 0 else False
+
+        # For regular saving
+        self.save_environmental_data = False
 
     def _run(self):
         self.saver = tf.train.Saver(max_to_keep=5)
@@ -260,18 +263,30 @@ class TrainingService(BaseService):
             self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
             print("Saved Model")
 
-            # Create the GIF
-            make_gif(self.frame_buffer, f"{self.model_location}/episodes/episode-{str(self.episode_number)}.gif",
-                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-            if self.visualise_mask:
-                make_gif(self.simulation.mask_buffer, f"{self.model_location}/episodes/mask-buffer-episode-{str(self.episode_number)}.gif",
-                     duration=len(self.simulation.mask_buffer) * self.learning_params['time_per_step'], true_image=True)
-            self.frame_buffer = []
-            self.save_frames = False
+            if self.learning_params["save_gifs"]:
+                # Create the GIF
+                make_gif(self.frame_buffer, f"{self.model_location}/episodes/episode-{str(self.episode_number)}.gif",
+                         duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+                if self.visualise_mask:
+                    make_gif(self.simulation.mask_buffer,
+                             f"{self.model_location}/episodes/mask-buffer-episode-{str(self.episode_number)}.gif",
+                             duration=len(self.simulation.mask_buffer) * self.learning_params['time_per_step'],
+                             true_image=True)
+                self.frame_buffer = []
+                self.save_frames = False
+            else:
+                self.episode_buffer.save_assay_data(f"Episode {self.episode_number}", self.model_location + "/episodes", f"Episode {self.episode_number}")
+                self.episode_buffer.reset()
+                self.save_environmental_data = False
 
         if (self.episode_number + 1) % self.learning_params['summaryLength'] == 0:
             print('starting to save frames', flush=True)
-            self.save_frames = True
+            if self.learning_params["save_gifs"]:
+                self.save_frames = True
+            else:
+                self.save_environmental_data = True
+                self.episode_buffer.init_assay_recordings(["environmental_positions", "observation"], [])
+
         if self.monitor_gpu:
             print(f"GPU usage {os.system('gpustat -cp')}")
 

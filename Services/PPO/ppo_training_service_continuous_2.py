@@ -67,11 +67,34 @@ class PPOTrainingServiceContinuous2(TrainingService, ContinuousPPO):
         self.sb_emulator = True
 
         if self.multivariate:
-            self.buffer = PPOBufferContinuousMultivariate2(gamma=self.learning_params["gamma"], lmbda=self.learning_params["lambda"], batch_size=self.learning_params["batch_size"],
-                                              train_length=self.learning_params["trace_length"], assay=False, debug=False)
+            self.buffer = PPOBufferContinuousMultivariate2(gamma=self.learning_params["gamma"],
+                                                           lmbda=self.learning_params["lambda"],
+                                                           batch_size=self.learning_params["batch_size"],
+                                                           train_length=self.learning_params["trace_length"],
+                                                           assay=False,
+                                                           debug=False)
         else:
             self.buffer = PPOBufferContinuous(gamma=self.learning_params["gamma"], lmbda=self.learning_params["lambda"],  batch_size=self.learning_params["batch_size"],
                                               train_length=self.learning_params["trace_length"], assay=False, debug=False)
+
+        # IF not saving regular gifs, instead be ready to save the environmental data underlying GIFs.
+        if not self.learning_params["save_gifs"]:
+            if self.multivariate:
+                self.episode_buffer = PPOBufferContinuousMultivariate2(gamma=self.learning_params["gamma"],
+                                                                       lmbda=self.learning_params["lambda"],
+                                                                       batch_size=self.learning_params["batch_size"],
+                                                                       train_length=self.learning_params["trace_length"],
+                                                                       assay=True,
+                                                                       debug=False)
+            else:
+                self.episode_buffer = PPOBufferContinuous(gamma=self.learning_params["gamma"],
+                                                          lmbda=self.learning_params["lambda"],
+                                                          batch_size=self.learning_params["batch_size"],
+                                                          train_length=self.learning_params["trace_length"],
+                                                          assay=True,
+                                                          debug=False)
+        else:
+            self.episode_buffer = False
 
     def run(self):
         sess = self.create_session()

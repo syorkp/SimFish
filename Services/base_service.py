@@ -102,3 +102,41 @@ class BaseService:
         with open(f"{self.current_configuration_location}_env.json", 'r') as f:
             env = json.load(f)
         return params, env
+
+    def get_positions(self):
+        """Should be here as is used in both training and assay services."""
+        if not self.simulation.sand_grain_bodies:
+            sand_grain_positions = [self.simulation.sand_grain_bodies[i].position for i, b in
+                                    enumerate(self.simulation.sand_grain_bodies)]
+            sand_grain_positions = [[i[0], i[1]] for i in sand_grain_positions]
+        else:
+            sand_grain_positions = [[10000, 10000]]
+
+        if self.simulation.prey_bodies:
+            prey_positions = [prey.position for prey in self.simulation.prey_bodies]
+            prey_positions = [[i[0], i[1]] for i in prey_positions]
+            while True:
+                if len(prey_positions) < self.last_position_dim:
+                    prey_positions = np.append(prey_positions, [[10000, 10000]], axis=0)
+                else:
+                    break
+
+            self.last_position_dim = len(prey_positions)
+
+        else:
+            prey_positions = np.array([[10000, 10000]])
+
+        if self.simulation.predator_body is not None:
+            predator_position = self.simulation.predator_body.position
+            predator_position = np.array([predator_position[0], predator_position[1]])
+        else:
+            predator_position = np.array([10000, 10000])
+
+        if self.simulation.vegetation_bodies is not None:
+            vegetation_positions = [self.simulation.vegetation_bodies[i].position for i, b in
+                                    enumerate(self.simulation.vegetation_bodies)]
+            vegetation_positions = [[i[0], i[1]] for i in vegetation_positions]
+        else:
+            vegetation_positions = [[10000, 10000]]
+
+        return sand_grain_positions, prey_positions, predator_position, vegetation_positions

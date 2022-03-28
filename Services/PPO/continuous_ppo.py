@@ -551,6 +551,19 @@ class ContinuousPPO(BasePPO):
                                  actor_rnn_state_ref=rnn_state_actor_ref
                                  )
 
+
+        if self.save_environmental_data:
+            sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
+            self.episode_buffer.save_environmental_positions(self.simulation.fish.body.position,
+                                                             self.simulation.prey_consumed_this_step,
+                                                             self.simulation.predator_body,
+                                                             prey_positions,
+                                                             predator_position,
+                                                             sand_grain_positions,
+                                                             vegetation_positions,
+                                                             self.simulation.fish.body.angle,
+                                                             )
+
         si_i = si[0][0]
         si_a = si[0][1]
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, 0, 0, 0, 0)
@@ -628,6 +641,18 @@ class ContinuousPPO(BasePPO):
                                  actor_rnn_state=rnn_state_actor,
                                  actor_rnn_state_ref=rnn_state_actor_ref
                                  )
+
+        if self.save_environmental_data:
+            sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
+            self.episode_buffer.save_environmental_positions(self.simulation.fish.body.position,
+                                                             self.simulation.prey_consumed_this_step,
+                                                             self.simulation.predator_body,
+                                                             prey_positions,
+                                                             predator_position,
+                                                             sand_grain_positions,
+                                                             vegetation_positions,
+                                                             self.simulation.fish.body.angle,
+                                                             )
 
         self.total_steps += 1
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0

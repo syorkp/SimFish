@@ -5,6 +5,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from Buffers.DQN.experience_buffer import ExperienceBuffer
+from Buffers.DQN.dqn_assay_buffer import DQNAssayBuffer
 from Services.training_service import TrainingService
 from Services.DQN.base_dqn import BaseDQN
 
@@ -76,6 +77,10 @@ class DQNTrainingService(TrainingService, BaseDQN):
             self.epsilon = self.learning_params["startE"]
 
         self.experience_buffer = ExperienceBuffer(output_location=self.model_location, buffer_size=self.learning_params["exp_buffer_size"])
+        if self.learning_params["save_gifs"]:
+            self.episode_buffer = None
+        else:
+            self.episode_buffer = DQNAssayBuffer()
 
     def run(self):
         sess = self.create_session()

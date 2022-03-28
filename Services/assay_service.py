@@ -104,7 +104,9 @@ class AssayService(BaseService):
         if "reward assessments" in self.buffer.recordings:
             self.buffer.calculate_advantages_and_returns()
         self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id)
+        self.buffer.reset()
         print(f"Assay: {assay['assay id']} Completed")
+
 
     def log_stimuli(self):
         stimuli = self.simulation.stimuli_information
@@ -178,43 +180,6 @@ class AssayService(BaseService):
                 new_tensor = output.eval()
                 new_tensor[unit - 256] = np.array([0])
                 self.sess.run(tf.assign(output, new_tensor))
-
-    def get_positions(self):
-        if not self.simulation.sand_grain_bodies:
-            sand_grain_positions = [self.simulation.sand_grain_bodies[i].position for i, b in
-                                    enumerate(self.simulation.sand_grain_bodies)]
-            sand_grain_positions = [[i[0], i[1]] for i in sand_grain_positions]
-        else:
-            sand_grain_positions = [[10000, 10000]]
-
-        if self.simulation.prey_bodies:
-            prey_positions = [prey.position for prey in self.simulation.prey_bodies]
-            prey_positions = [[i[0], i[1]] for i in prey_positions]
-            while True:
-                if len(prey_positions) < self.last_position_dim:
-                    prey_positions = np.append(prey_positions, [[10000, 10000]], axis=0)
-                else:
-                    break
-
-            self.last_position_dim = len(prey_positions)
-
-        else:
-            prey_positions = np.array([[10000, 10000]])
-
-        if self.simulation.predator_body is not None:
-            predator_position = self.simulation.predator_body.position
-            predator_position = np.array([predator_position[0], predator_position[1]])
-        else:
-            predator_position = np.array([10000, 10000])
-
-        if self.simulation.vegetation_bodies is not None:
-            vegetation_positions = [self.simulation.vegetation_bodies[i].position for i, b in
-                                    enumerate(self.simulation.vegetation_bodies)]
-            vegetation_positions = [[i[0], i[1]] for i in vegetation_positions]
-        else:
-            vegetation_positions = [[10000, 10000]]
-
-        return sand_grain_positions, prey_positions, predator_position, vegetation_positions
 
     def create_output_data_storage(self, assay):
         self.output_data = {key: [] for key in assay["behavioural recordings"] + assay["network recordings"]}

@@ -33,7 +33,7 @@ def ppo_training_target_continuous(trial, total_steps, episode_number, memory_fr
                                             conditional_transitions=trial["Conditional Transitions"],
                                             configuration_index=configuration_index,
                                             full_logs=trial["Full Logs"],
-                                            profile_speed = trial["Profile Speed"],
+                                            profile_speed=trial["Profile Speed"],
                                             )
     services.run()
 
@@ -66,11 +66,35 @@ class PPOTrainingServiceContinuous(TrainingService, ContinuousPPO):
         self.multivariate = self.learning_params["multivariate"]
 
         if self.multivariate:
-            self.buffer = PPOBufferContinuousMultivariate(gamma=self.learning_params["gamma"], lmbda=self.learning_params["lambda"], batch_size=self.learning_params["batch_size"],
-                                              train_length=self.learning_params["trace_length"], assay=False, debug=False)
+            self.buffer = PPOBufferContinuousMultivariate(gamma=self.learning_params["gamma"],
+                                                          lmbda=self.learning_params["lambda"],
+                                                          batch_size=self.learning_params["batch_size"],
+                                                          train_length=self.learning_params["trace_length"],
+                                                          assay=False, debug=False)
         else:
-            self.buffer = PPOBufferContinuous(gamma=self.learning_params["gamma"], lmbda=self.learning_params["lambda"],  batch_size=self.learning_params["batch_size"],
-                                              train_length=self.learning_params["trace_length"], assay=False, debug=False)
+            self.buffer = PPOBufferContinuous(gamma=self.learning_params["gamma"], lmbda=self.learning_params["lambda"],
+                                              batch_size=self.learning_params["batch_size"],
+                                              train_length=self.learning_params["trace_length"], assay=False,
+                                              debug=False)
+
+        # IF not saving regular gifs, instead be ready to save the environmental data underlying GIFs.
+        if not self.learning_params["save_gifs"]:
+            if self.multivariate:
+                self.episode_buffer = PPOBufferContinuousMultivariate(gamma=0.99,
+                                                                      lmbda=0.9,
+                                                                      batch_size=self.learning_params["batch_size"],
+                                                                      train_length=self.learning_params["trace_length"],
+                                                                      assay=True,
+                                                                      debug=False)
+            else:
+                self.episode_buffer = PPOBufferContinuous(gamma=0.99,
+                                                          lmbda=0.9,
+                                                          batch_size=self.learning_params["batch_size"],
+                                                          train_length=self.learning_params["trace_length"],
+                                                          assay=True,
+                                                          debug=False)
+        else:
+            self.episode_buffer = False
 
     def run(self):
         sess = self.create_session()
@@ -141,7 +165,8 @@ Total episode reward: {self.total_episode_reward}\n""")
                                       predators_avoided, sand_grains_bumped, steps_near_vegetation)
         TrainingService._save_episode_continuous_variables(self)
 
-        output_data = {"episode_number": self.episode_number, "total_steps": self.total_steps, "configuration_index": self.configuration_index}
+        output_data = {"episode_number": self.episode_number, "total_steps": self.total_steps,
+                       "configuration_index": self.configuration_index}
         with open(f"{self.model_location}/saved_parameters.json", "w") as file:
             json.dump(output_data, file)
 

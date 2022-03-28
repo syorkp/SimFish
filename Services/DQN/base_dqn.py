@@ -253,6 +253,17 @@ class BaseDQN:
                                                                                                  frame_buffer=self.frame_buffer,
                                                                                                  save_frames=self.save_frames,
                                                                                                  activations=(sa,))
+        if self.save_environmental_data:
+            sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
+            self.episode_buffer.save_environmental_positions(self.simulation.fish.body.position,
+                                                             self.simulation.prey_consumed_this_step,
+                                                             self.simulation.predator_body,
+                                                             prey_positions,
+                                                             predator_position,
+                                                             sand_grain_positions,
+                                                             vegetation_positions,
+                                                             self.simulation.fish.body.angle,
+                                                             )
         self.total_steps += 1
         return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
 
@@ -345,8 +356,10 @@ class BaseDQN:
     def _assay_step_loop_new(self, o, internal_state, a, rnn_state):
         chosen_a, updated_rnn_state, rnn2_state, sa, sv, network_layers, o2 = \
             self.sess.run(
-                [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_shared_ref, self.main_QN.streamA,
-                 self.main_QN.streamV, self.main_QN.network_graph, [self.main_QN.ref_left_eye, self.main_QN.ref_right_eye],
+                [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_shared_ref,
+                 self.main_QN.streamA,
+                 self.main_QN.streamV, self.main_QN.network_graph,
+                 [self.main_QN.ref_left_eye, self.main_QN.ref_right_eye],
                  ],
                 feed_dict={self.main_QN.observation: o,
                            self.main_QN.internal_state: internal_state,
@@ -408,7 +421,8 @@ class BaseDQN:
              np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
 
         # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
-        train_batch = self.experience_buffer.sample(self.learning_params['batch_size'], self.learning_params['trace_length'])
+        train_batch = self.experience_buffer.sample(self.learning_params['batch_size'],
+                                                    self.learning_params['trace_length'])
         previous_actions = np.expand_dims(np.hstack(([0], train_batch[:-1, 1])), 1)
 
         # Below we perform the Double-DQN update to the target Q-values
@@ -468,7 +482,8 @@ class BaseDQN:
                        np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
 
         # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
-        train_batch = self.experience_buffer.sample(self.learning_params['batch_size'], self.learning_params['trace_length'])
+        train_batch = self.experience_buffer.sample(self.learning_params['batch_size'],
+                                                    self.learning_params['trace_length'])
 
         # Below we perform the Double-DQN update to the target Q-values
         Q1 = self.sess.run(self.main_QN.predict, feed_dict={
