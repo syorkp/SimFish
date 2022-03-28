@@ -50,7 +50,7 @@ class NewDrawingBoard:
         self.xp, self.yp = self.chosen_math_library.arange(self.width), self.chosen_math_library.arange(self.height)
 
         if self.using_gpu:
-            self.max_lines_num = 50000
+            self.max_lines_num = 60000
         else:
             self.max_lines_num = 20000
 
@@ -335,15 +335,15 @@ class NewDrawingBoard:
         proj_distance = (proj_vector[:, 0] ** 2 + proj_vector[:, 1] ** 2) ** 0.5
 
         # Compute fraction along the projection vector at which features lie
-        fraction_along = distance_along / proj_distance
-        # try:
-        #     fraction_along = distance_along/proj_distance
-        # except ValueError:
-        #     print(f"Distance along dimensions: {distance_along.shape}")
-        #     print(f"Proj distance dimensions: {proj_distance.shape}")
-        #     print(f"Fish position: {fish_position}")
-        #     print(f"Prey positions: {prey_locations}")
-        #     print(f"Predator position: {predator_locations}")
+        try:
+            fraction_along = distance_along / proj_distance
+        except ValueError:
+            # Note, think this error happened due to n being halved when more lines were required than were possible...
+            print(f"Distance along dimensions: {distance_along.shape}")
+            print(f"Proj distance dimensions: {proj_distance.shape}")
+            print(f"Fish position: {fish_position}")
+            print(f"Prey positions: {prey_locations}")
+            print(f"Predator position: {predator_locations}")
 
         fraction_along = self.chosen_math_library.expand_dims(fraction_along, 1)
         fraction_along = self.chosen_math_library.repeat(fraction_along, 2, 1)
@@ -711,7 +711,10 @@ class NewDrawingBoard:
         theta_separation = math.asin(max_separation / max_dist)
         n = (angular_size / theta_separation)# / 2
         if n * number_of_this_feature > self.max_lines_num:
-            n = n/2
+            print(f"""Max lines num needs increase:
+            Max lines num: {self.max_lines_num}
+            Required lines for this feature alone: {n * number_of_this_feature}
+            """)
         return int(n)
 
     def reset(self):

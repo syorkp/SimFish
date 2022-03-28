@@ -533,9 +533,6 @@ class ContinuousPPO(BasePPO):
 
         action = [impulse[0][0], angle[0][0]]
 
-        print(f"Mu impulse: {mu_i}, Mu angle: {mu_a}")
-        print(f"Impulse: {action[0]}, Angle: {action[1]}")
-
         # Simulation step
         o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
             action=action,
