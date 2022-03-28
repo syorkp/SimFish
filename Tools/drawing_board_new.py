@@ -50,7 +50,7 @@ class NewDrawingBoard:
         self.xp, self.yp = self.chosen_math_library.arange(self.width), self.chosen_math_library.arange(self.height)
 
         if self.using_gpu:
-            self.max_lines_num = 60000
+            self.max_lines_num = 50000
         else:
             self.max_lines_num = 20000
 
@@ -243,7 +243,7 @@ class NewDrawingBoard:
 
             # Combine prey and predator line angles.
             interpolated_line_angles = self.chosen_math_library.concatenate((interpolated_line_angles, predator_interpolated_line_angles),
-                                                      axis=0)
+                                                         axis=0)
 
             # Computing how far along each line predators are.
             predator_distance_along = (predator_distances ** 2 + self.predator_radius ** 2) ** 0.5
@@ -344,6 +344,7 @@ class NewDrawingBoard:
             print(f"Fish position: {fish_position}")
             print(f"Prey positions: {prey_locations}")
             print(f"Predator position: {predator_locations}")
+            fraction_along = distance_along / proj_distance[:distance_along.shape[0], :]
 
         fraction_along = self.chosen_math_library.expand_dims(fraction_along, 1)
         fraction_along = self.chosen_math_library.repeat(fraction_along, 2, 1)
@@ -388,7 +389,11 @@ class NewDrawingBoard:
 
         full_set = full_set.reshape(-1, 2)
 
-        self.empty_mask[full_set[:, 1], full_set[:, 0]] = 0.0
+        try:
+            self.empty_mask[full_set[:, 1], full_set[:, 0]] = 0.0
+        except IndexError:
+            full_set = self.chosen_math_library.clip(full_set, 0, self.width-1)
+            self.empty_mask[full_set[:, 1], full_set[:, 0]] = 0.0
 
         # For debugging:
         # try:
@@ -709,12 +714,13 @@ class NewDrawingBoard:
     def compute_n(self, angular_size, number_of_this_feature, max_separation=1):
         max_dist = (self.width ** 2 + self.height ** 2) ** 0.5
         theta_separation = math.asin(max_separation / max_dist)
-        n = (angular_size / theta_separation)# / 2
+        n = (angular_size / theta_separation)
         if n * number_of_this_feature > self.max_lines_num:
             print(f"""Max lines num needs increase:
             Max lines num: {self.max_lines_num}
             Required lines for this feature alone: {n * number_of_this_feature}
             """)
+            n = self.max_lines_num * 0.8
         return int(n)
 
     def reset(self):
