@@ -147,8 +147,10 @@ class BaseDQN:
         a = 0  # Initialise action for episode.
         while step_number < self.learning_params["max_epLength"]:
             step_number += 1
-            o, a, r, internal_state, o1, d, rnn_state, rnn_state_ref = self.step_loop(o=o, internal_state=internal_state,
-                                                                       a=a, rnn_state=rnn_state, rnn_state_ref=rnn_state_ref)
+            o, a, r, internal_state, o1, d, rnn_state, rnn_state_ref = self.step_loop(o=o,
+                                                                                      internal_state=internal_state,
+                                                                                      a=a, rnn_state=rnn_state,
+                                                                                      rnn_state_ref=rnn_state_ref)
             all_actions.append(a)
             episode_buffer.append(np.reshape(np.array([o, a, r, internal_state, o1, d]), [1, 6]))
             total_episode_reward += r
@@ -227,26 +229,30 @@ class BaseDQN:
     def step_loop_new(self, o, internal_state, a, rnn_state, rnn_state_ref):
         # Generate actions and corresponding steps.
         if np.random.rand(1) < self.epsilon or self.total_steps < self.pre_train_steps:
-            [updated_rnn_state, sa, sv] = self.sess.run(
-                [self.main_QN.rnn_state_shared, self.main_QN.streamA, self.main_QN.streamV],
+            [updated_rnn_state, updated_rnn_state_ref, sa, sv] = self.sess.run(
+                [self.main_QN.rnn_state_shared, self.main_QN.rnn_state_shared_ref, self.main_QN.streamA,
+                 self.main_QN.streamV],
                 feed_dict={self.main_QN.observation: o,
                            self.main_QN.internal_state: internal_state,
                            self.main_QN.prev_actions: [[a]],
                            self.main_QN.train_length: 1,
                            self.main_QN.rnn_state_in: rnn_state,
+                           self.main_QN.rnn_state_in_ref: rnn_state_ref,
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0,
                            self.main_QN.learning_rate: self.learning_params["learning_rate"],
                            })
             chosen_a = np.random.randint(0, self.learning_params['num_actions'])
         else:
-            chosen_a, updated_rnn_state, sa, sv = self.sess.run(
-                [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.streamA, self.main_QN.streamV],
+            chosen_a, updated_rnn_state, updated_rnn_state_ref, sa, sv = self.sess.run(
+                [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_shared_ref,
+                 self.main_QN.streamA, self.main_QN.streamV],
                 feed_dict={self.main_QN.observation: o,
                            self.main_QN.internal_state: internal_state,
                            self.main_QN.prev_actions: [[a]],
                            self.main_QN.train_length: 1,
                            self.main_QN.rnn_state_in: rnn_state,
+                           self.main_QN.rnn_state_in_ref: rnn_state_ref,
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0,
                            self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -270,7 +276,7 @@ class BaseDQN:
                                                              self.simulation.fish.body.angle,
                                                              )
         self.total_steps += 1
-        return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
+        return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref
 
     def _assay_step_loop(self, o, internal_state, a, rnn_state):
         if self.new_simulation:
@@ -427,7 +433,6 @@ class BaseDQN:
         state_train_ref = tuple(
             (np.zeros([self.learning_params['batch_size'], shape]),
              np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
-
 
         # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
         train_batch = self.experience_buffer.sample(self.learning_params['batch_size'],
