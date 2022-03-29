@@ -118,7 +118,7 @@ env = {
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
 
        'fish_mass': 140.,
-       'fish_mouth_size': 6.,  # FINAL VALUE - 0.2mm diameter, so 1.
+       'fish_mouth_size': 8.,  # FINAL VALUE - 0.2mm diameter, so 1.
        'fish_head_size': 2.5,  # Old - 10
        'fish_tail_length': 41.5,  # Old: 70
        'eyes_verg_angle': 77.,  # in deg
@@ -146,7 +146,7 @@ env = {
        'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
-       'probability_of_predator': 0.01,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
@@ -184,7 +184,7 @@ env = {
        'impose_action_mask': True,
 
        # Sensory inputs
-       'energy_state': True,
+       'energy_state': False,
        'in_light': False,
        'salt': False,  # Inclusion of olfactory salt input and salt death.
        'salt_concentration_decay': 0.001,  # Scale for exponential salt concentration decay from source.
@@ -194,7 +194,7 @@ env = {
        # GIFs and debugging
        'visualise_mask': False,  # For debugging purposes.
        'show_channel_sectors': False,
-       'show_fish_body_energy_state': True,
+       'show_fish_body_energy_state': False,
        'show_previous_actions': 200,  # False if not, otherwise the number of actions to save.
 
        # Environment
@@ -301,7 +301,7 @@ env = {
 
 }
 
-directory_name = "ppo_continuous_sbe_is_scaffold_7"
+directory_name = "ppo_continuous_sbe_is_scaffold_8"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):

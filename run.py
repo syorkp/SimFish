@@ -1730,82 +1730,6 @@ ppo_scaffold_training_config_5a = [
     },
 ]
 
-ppo_scaffold_training_config_5a_no_entropy = [
-    {
-        "Model Name": "scaffold_version_5_ne",
-        "Environment Name": "ppo_continuous_sbe_is_scaffold_5_ne",
-        "Trial Number": 1,
-        "Total Configurations": 8,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 5,
-                "4": 6,
-                "5": 6,
-                "6": 7,
-                "8": 8,
-                "9": 8,
-            },
-            "Predators Avoided": {
-                "7": 4
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": True,
-        "New Simulation": True,
-        "Profile Speed": False,
-    },
-    {
-        "Model Name": "scaffold_version_5_ne",
-        "Environment Name": "ppo_continuous_sbe_is_scaffold_5_ne",
-        "Trial Number": 2,
-        "Total Configurations": 8,
-        "Episode Transitions": {
-        },
-        "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 5,
-                "4": 6,
-                "5": 6,
-                "6": 7,
-                "8": 8,
-                "9": 8,
-            },
-            "Predators Avoided": {
-                "7": 4
-            },
-            "Sand Grains Bumped": {
-            }
-        },
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": True,
-        "New Simulation": True,
-        "Profile Speed": False,
-    },
-]
-
-
 ppo_scaffold_training_config_5b = [
     {
         "Model Name": "scaffold_version_5",
@@ -2256,7 +2180,6 @@ ppo_scaffold_training_config_7b = [
     },
 ]
 
-
 dqn_scaffold_training_config_7a = [
     {
         "Model Name": "dqn_scaffold_version_7",
@@ -2407,10 +2330,160 @@ dqn_scaffold_training_config_7b = [
     },
 ]
 
-mod_test_config = [
+ppo_scaffold_training_config_8a = [
     {
-        "Model Name": "modular_network_test",
-        "Environment Name": "modular_network_test",
+        "Model Name": "scaffold_version_8",
+        "Environment Name": "ppo_continuous_sbe_is_scaffold_8",
+        "Trial Number": 1,
+        "Total Configurations": 8,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 5,
+                "4": 6,
+                "5": 6,
+                "6": 7,
+                "8": 8,
+                "9": 8,
+            },
+            "Predators Avoided": {
+                "7": 4
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "scaffold_version_8",
+        "Environment Name": "ppo_continuous_sbe_is_scaffold_8",
+        "Trial Number": 2,
+        "Total Configurations": 8,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 5,
+                "4": 6,
+                "5": 6,
+                "6": 7,
+                "8": 8,
+                "9": 8,
+            },
+            "Predators Avoided": {
+                "7": 4
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+ppo_scaffold_training_config_8b = [
+    {
+        "Model Name": "scaffold_version_8",
+        "Environment Name": "ppo_continuous_sbe_is_scaffold_8",
+        "Trial Number": 3,
+        "Total Configurations": 8,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 5,
+                "4": 6,
+                "5": 6,
+                "6": 7,
+                "8": 8,
+                "9": 8,
+            },
+            "Predators Avoided": {
+                "7": 4
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "scaffold_version_8",
+        "Environment Name": "ppo_continuous_sbe_is_scaffold_8",
+        "Trial Number": 4,
+        "Total Configurations": 8,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 5,
+                "4": 6,
+                "5": 6,
+                "6": 7,
+                "8": 8,
+                "9": 8,
+            },
+            "Predators Avoided": {
+                "7": 4
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+dqn_scaffold_training_config_8a = [
+    {
+        "Model Name": "dqn_scaffold_version_8",
+        "Environment Name": "dqn_scaffold_8",
         "Trial Number": 1,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -2437,16 +2510,126 @@ mod_test_config = [
         "Continuous Actions": False,
         "Learning Algorithm": "DQN",
         "Priority": 1,
-        "Using GPU": False,
+        "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
-        "SB Emulator": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "dqn_scaffold_version_8",
+        "Environment Name": "dqn_scaffold_8",
+        "Trial Number": 2,
+        "Total Configurations": 8,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 5,
+                "4": 6,
+                "5": 6,
+                "6": 7,
+                "8": 8,
+                "9": 8,
+            },
+            "Predators Avoided": {
+                "7": 4
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
         "New Simulation": True,
         "Profile Speed": False,
     },
 ]
 
+dqn_scaffold_training_config_8b = [
+    {
+        "Model Name": "dqn_scaffold_version_8",
+        "Environment Name": "dqn_scaffold_8",
+        "Trial Number": 3,
+        "Total Configurations": 8,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 5,
+                "4": 6,
+                "5": 6,
+                "6": 7,
+                "8": 8,
+                "9": 8,
+            },
+            "Predators Avoided": {
+                "7": 4
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "dqn_scaffold_version_8",
+        "Environment Name": "dqn_scaffold_8",
+        "Trial Number": 4,
+        "Total Configurations": 8,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 5,
+                "4": 6,
+                "5": 6,
+                "6": 7,
+                "8": 8,
+                "9": 8,
+            },
+            "Predators Avoided": {
+                "7": 4
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_training_config_7b, parallel_jobs=4)
+manager = TrialManager(ppo_scaffold_training_config_7a, parallel_jobs=4)
 manager.run_priority_loop()
