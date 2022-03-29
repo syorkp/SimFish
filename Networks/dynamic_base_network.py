@@ -11,8 +11,8 @@ def flatten_list(t):
 
 class DynamicBaseNetwork:
 
-    def __init__(self, simulation, my_scope, internal_states, action_dim, new_simulation, base_network_layers,
-                 modular_network_layers, ops, connectivity, reflected):
+    def __init__(self, simulation, my_scope, internal_states, internal_state_names, action_dim, base_network_layers, modular_network_layers,
+                 ops, connectivity, reflected):
 
         self.resolve_connectivity(base_network_layers, modular_network_layers, ops, connectivity)
 
@@ -34,6 +34,7 @@ class DynamicBaseNetwork:
         self.modular_network_layers = modular_network_layers
         self.ops = ops
         self.connectivity = connectivity
+        self.internal_state_names = internal_state_names
 
         self.rnn_cells, self.rnn_cell_states, self.rnn_dim = self.create_rnns(base_network_layers,
                                                                               modular_network_layers, reflected)
@@ -144,7 +145,16 @@ class DynamicBaseNetwork:
         else:
             print(f"Undefined layer: {layer_parameters[0]}")
 
+    def separate_internal_state_inputs(self, reflected):
+        if reflected:
+            for i, state in enumerate(self.internal_state_names):
+                self.reflected_network_graph[state] = self.reflected_network_graph["internal_state"][:, i]
+        else:
+            for i, state in enumerate(self.internal_state_names):
+                self.network_graph[state] = self.network_graph["internal_state"][:, i]
+
     def initialize_network(self, layers, modular_layers, ops, connectivity, network_graph, reflected=False):
+        self.separate_internal_state_inputs(reflected)
         layers = {**layers, **modular_layers}
         final_name = None
         while True:

@@ -26,6 +26,7 @@
     "rnn_dim_shared": 512,
     "extra_rnn": false,
     "reflected": true,
+    "save_gifs": true,
     "base_network_layers": {
         "conv1l": [
             "conv1d",

@@ -1,6 +1,6 @@
 {
-    "batch_size": 1,
-    "trace_length": 50,
+    "batch_size": 16,
+    "trace_length": 64,
     "num_episodes": 50000,
     "max_epLength": 1000,
     "update_freq": 100,
@@ -8,15 +8,14 @@
     "startE": 0.2,
     "endE": 0.01,
     "anneling_steps": 1000000,
-    "pre_train_steps": 50000,
+    "pre_train_steps": 5000,
     "exp_buffer_size": 500,
     "tau": 0.001,
     "n_updates_per_iteration": 4,
     "rnn_state_computation": false,
-    "learning_rate_actor": 1e-06,
-    "learning_rate_critic": 1e-06,
-    "epsilon_greedy": false,
-    "multivariate": true,
+    "learning_rate": 0.0001,
+    "epsilon_greedy": true,
+    "multivariate": false,
     "beta_distribution": false,
     "gamma": 0.99,
     "lambda": 0.9,
@@ -26,8 +25,8 @@
     "summaryLength": 200,
     "rnn_dim_shared": 512,
     "extra_rnn": false,
-    "reflected": true,
     "save_gifs": true,
+    "reflected": true,
     "base_network_layers": {
         "conv1l": [
             "conv1d",
@@ -77,12 +76,21 @@
             4,
             1
         ],
-        "optic_tectum": [
-            "dynamic_rnn",
+        "rgc": [
+            "dense",
             512
         ]
     },
-    "modular_network_layers": {},
+    "modular_network_layers": {
+        "pretectum": [
+            "dynamic_rnn",
+            512
+        ],
+        "deep_brain": [
+            "dynamic_rnn",
+            200
+        ]
+    },
     "ops": {
         "eye_split": [
             "eye_split",
@@ -116,12 +124,31 @@
             "concatenate",
             [
                 "conv4l_flat",
-                "conv4r_flat",
+                "conv4r_flat"
+            ],
+            [
+                "conv_joined"
+            ]
+        ],
+        "deep_brain_inputs": [
+            "concatenate",
+            [
                 "internal_state",
                 "prev_actions"
             ],
             [
-                "conv_with_states"
+                "deep_brain_inputs"
+            ]
+        ],
+        "final_layer_inputs": [
+            "concatenate",
+            [
+                "conv_joined",
+                "pretectum",
+                "deep_brain"
+            ],
+            [
+                "final_layer_inputs"
             ]
         ]
     },
@@ -185,8 +212,22 @@
         [
             "full",
             [
-                "conv_with_states",
-                "optic_tectum"
+                "deep_brain_inputs",
+                "deep_brain"
+            ]
+        ],
+        [
+            "full",
+            [
+                "conv_joined",
+                "pretectum"
+            ]
+        ],
+        [
+            "full",
+            [
+                "final_layer_inputs",
+                "rgc"
             ]
         ]
     ]

@@ -32,15 +32,16 @@ class ContinuousPPO(BasePPO):
         Create the main and target Q networks, according to the configuration parameters.
         :return: The main network and the target network graphs.
         """
-        actor_cell, internal_states = BasePPO.create_network(self)
+        actor_cell, internal_states, internal_state_names = BasePPO.create_network(self)
 
         if self.multivariate:
             if self.new_simulation:
                 self.actor_network = PPONetworkActorMultivariate2Dynamic(simulation=self.simulation,
-                                                                         rnn_dim=self.learning_params['rnn_dim_shared'],
-                                                                         rnn_cell=actor_cell,
+                                                                         # rnn_dim=self.learning_params['rnn_dim_shared'],
+                                                                         # rnn_cell=actor_cell,
                                                                          my_scope='actor',
                                                                          internal_states=internal_states,
+                                                                         internal_state_names=internal_state_names,
                                                                          max_impulse=self.environment_params[
                                                                              'max_impulse'],
                                                                          max_angle_change=self.environment_params[
@@ -49,7 +50,7 @@ class ContinuousPPO(BasePPO):
                                                                              'clip_param'],
                                                                          input_sigmas=self.learning_params[
                                                                              'input_sigmas'],
-                                                                         new_simulation=self.new_simulation,
+                                                                         # new_simulation=self.new_simulation,
                                                                          impose_action_mask=self.environment_params[
                                                                              'impose_action_mask'],
                                                                          base_network_layers=self.learning_params[

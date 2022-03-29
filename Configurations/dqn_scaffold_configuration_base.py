@@ -52,7 +52,7 @@ params = {
        # Saving and video parameters
        'time_per_step': 0.03,  # Length of each step used in gif creation
        'summaryLength': 200,  # Number of episodes to periodically save for analysis
-       'rnn_dim_shared': 512,  # number of rnn cells
+       'rnn_dim_shared': 512,  # number of rnn cells. Should no longer be used.
        'extra_rnn': False,
        'save_gifs': True,
 

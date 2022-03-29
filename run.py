@@ -2407,6 +2407,45 @@ dqn_scaffold_training_config_7b = [
     },
 ]
 
+mod_test_config = [
+    {
+        "Model Name": "modular_network_test",
+        "Environment Name": "modular_network_test",
+        "Trial Number": 1,
+        "Total Configurations": 8,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Caught": {
+                "2": 5,
+                "3": 5,
+                "4": 6,
+                "5": 6,
+                "6": 7,
+                "8": 8,
+                "9": 8,
+            },
+            "Predators Avoided": {
+                "7": 4
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 manager = TrialManager(dqn_scaffold_training_config_7a, parallel_jobs=4)

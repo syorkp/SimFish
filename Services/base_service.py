@@ -103,6 +103,20 @@ class BaseService:
             env = json.load(f)
         return params, env
 
+    def get_internal_state_order(self):
+        internal_state_order = []
+        if self.environment_params['in_light']:
+            internal_state_order.append("in_light")
+        if self.environment_params['hunger']:
+            internal_state_order.append("hunger")
+        if self.environment_params['stress']:
+            internal_state_order.append("stress")
+        if self.environment_params['energy_state']:
+            internal_state_order.append("energy_state")
+        if self.environment_params['salt']:
+            internal_state_order.append("salt")
+        return internal_state_order
+
     def get_positions(self):
         """Should be here as is used in both training and assay services."""
         if not self.simulation.sand_grain_bodies:

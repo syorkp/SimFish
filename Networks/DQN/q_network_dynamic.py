@@ -7,16 +7,16 @@ tf.disable_v2_behavior()
 
 class QNetworkDynamic(DynamicBaseNetwork):
 
-    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, num_actions, new_simulation=True,
+    def __init__(self, simulation, my_scope, internal_states, internal_state_names, num_actions,
                 base_network_layers=None, modular_network_layers=None, ops=None, connectivity=None,
                  reflected=None):
-        super().__init__(simulation, my_scope, internal_states, action_dim=1, new_simulation=new_simulation,
+        super().__init__(simulation, my_scope, internal_states, internal_state_names, action_dim=1,
                          base_network_layers=base_network_layers, modular_network_layers=modular_network_layers, ops=ops,
                          connectivity=connectivity, reflected=reflected)
 
         # Shared
-        self.AW = tf.Variable(tf.random_normal([self.rnn_dim // 2, num_actions]), name=my_scope + "aw")
-        self.VW = tf.Variable(tf.random_normal([self.rnn_dim // 2, 1]), name=my_scope + "vw")
+        self.AW = tf.Variable(tf.random_normal([self.processing_network_output.shape[1] // 2, num_actions]), name=my_scope + "aw")
+        self.VW = tf.Variable(tf.random_normal([self.processing_network_output.shape[1] // 2, 1]), name=my_scope + "vw")
         self.Temp = tf.placeholder(shape=None, dtype=tf.float32)
         self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
         self.actions = tf.placeholder(shape=[None], dtype=tf.int32, name='actions')

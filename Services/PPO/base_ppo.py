@@ -77,6 +77,7 @@ class BasePPO:
                          self.environment_params['energy_state'], self.environment_params['in_light'],
                          self.environment_params['salt']] if x is True])
         internal_states = max(internal_states, 1)
+        internal_state_names = self.get_internal_state_order()
 
         actor_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
         critic_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
@@ -93,7 +94,7 @@ class BasePPO:
                                                    new_simulation=self.new_simulation,
                                                    )
 
-        return actor_cell, internal_states
+        return actor_cell, internal_states, internal_state_names
 
     def _episode_loop(self, a):
         rnn_state_actor = copy.copy(self.init_rnn_state_actor)

@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 import tensorflow.compat.v1 as tf
 
@@ -46,9 +47,9 @@ class BaseDQN:
         # Init states for RNN
         if self.new_simulation:
             rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
-            self.init_rnn_state_actor = tuple(
+            self.init_rnn_state = tuple(
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
-            self.init_rnn_state_actor_ref = tuple(
+            self.init_rnn_state_ref = tuple(
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
         else:
             self.init_rnn_state = (
@@ -69,18 +70,20 @@ class BaseDQN:
                          self.environment_params['energy_state'], self.environment_params['in_light'],
                          self.environment_params['salt']] if x is True])
         internal_states = max(internal_states, 1)
+        internal_state_names = self.get_internal_state_order()
 
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
         cell_t = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
 
         if self.new_simulation:
             self.main_QN = QNetworkDynamic(simulation=self.simulation,
-                                           rnn_dim=self.learning_params['rnn_dim_shared'],
-                                           rnn_cell=cell,
+                                           # rnn_dim=self.learning_params['rnn_dim_shared'],
+                                           # rnn_cell=cell,
                                            my_scope='main',
                                            internal_states=internal_states,
+                                           internal_state_names=internal_state_names,
                                            num_actions=self.learning_params['num_actions'],
-                                           new_simulation=True,
+                                           # new_simulation=True,
                                            base_network_layers=self.learning_params[
                                                'base_network_layers'],
                                            modular_network_layers=self.learning_params[
@@ -91,12 +94,13 @@ class BaseDQN:
                                            reflected=self.learning_params['reflected'],
                                            )
             self.target_QN = QNetworkDynamic(simulation=self.simulation,
-                                             rnn_dim=self.learning_params['rnn_dim_shared'],
-                                             rnn_cell=cell,
+                                             # rnn_dim=self.learning_params['rnn_dim_shared'],
+                                             # rnn_cell=cell,
                                              my_scope='target',
                                              internal_states=internal_states,
+                                             internal_state_names=internal_state_names,
                                              num_actions=self.learning_params['num_actions'],
-                                             new_simulation=True,
+                                             # new_simulation=True,
                                              base_network_layers=self.learning_params[
                                                  'base_network_layers'],
                                              modular_network_layers=self.learning_params[
@@ -123,7 +127,8 @@ class BaseDQN:
         """
         episode_buffer = []
 
-        rnn_state = (np.zeros([1, self.main_QN.rnn_dim]), np.zeros([1, self.main_QN.rnn_dim]))  # Reset RNN hidden state
+        rnn_state = copy.copy(self.init_rnn_state)
+        # rnn_state_ref = copy.copy(self.init_rnn_state_ref)  # TODO: Incorporate use of reflected into network.
         self.simulation.reset()
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         sv = np.zeros((1, 128))  # Placeholder for the state value stream

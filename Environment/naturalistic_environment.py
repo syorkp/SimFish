@@ -207,16 +207,22 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         # Calculate internal state
         internal_state = []
+        internal_state_order = []
         if self.env_variables['in_light']:
             internal_state.append(self.fish.body.position[0] > self.dark_col)
+            internal_state_order.append("in_light")
         if self.env_variables['hunger']:
             internal_state.append(self.fish.hungry)
+            internal_state_order.append("hunger")
         if self.env_variables['stress']:
             internal_state.append(self.fish.stress)
+            internal_state_order.append("stress")
         if self.env_variables['energy_state']:
             internal_state.append(self.fish.energy_level)
+            internal_state_order.append("energy_state")
         if self.env_variables['salt']:
             internal_state.append(salt_damage)
+            internal_state_order.append("salt")
         if len(internal_state) == 0:
             internal_state.append(0)
         internal_state = np.array([internal_state])

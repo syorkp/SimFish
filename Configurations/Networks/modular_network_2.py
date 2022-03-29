@@ -23,7 +23,7 @@ base_network_layers = {
 # Layers in the modular network - Programmatic differentiation is that these layers may be changed during trials.
 modular_network_layers = {
     "pretectum": ["dynamic_rnn", 512],
-    "deep_brain": ["dynamic_rnn", 512],
+    "deep_brain": ["dynamic_rnn", 200],
 }
 
 # Non-processing operations performed on network, with organisation Name: [operation, [required layers], [output layers]]
