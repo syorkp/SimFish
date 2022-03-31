@@ -75,7 +75,7 @@ class BaseDQN:
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
         cell_t = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
 
-        if self.new_simulation:
+        if self.environment_params["use_dynamic_network"]:
             self.main_QN = QNetworkDynamic(simulation=self.simulation,
                                            # rnn_dim=self.learning_params['rnn_dim_shared'],
                                            # rnn_cell=cell,

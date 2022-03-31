@@ -35,7 +35,7 @@ class ContinuousPPO(BasePPO):
         actor_cell, internal_states, internal_state_names = BasePPO.create_network(self)
 
         if self.multivariate:
-            if self.new_simulation:
+            if self.environment_params["use_dynamic_network"]:
                 self.actor_network = PPONetworkActorMultivariate2Dynamic(simulation=self.simulation,
                                                                          # rnn_dim=self.learning_params['rnn_dim_shared'],
                                                                          # rnn_cell=actor_cell,
