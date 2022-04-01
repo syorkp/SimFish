@@ -45,7 +45,7 @@ class BaseDQN:
 
     def init_states(self):
         # Init states for RNN
-        if self.new_simulation:
+        if self.environment_params["use_dynamic_network"]:
             rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
             self.init_rnn_state = tuple(
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
