@@ -424,15 +424,18 @@ class BaseDQN:
         """
         update_target(self.target_ops, self.sess)
         # Reset the recurrent layer's hidden state
-        # state_train = (np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]),
-        #                np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
-        rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
-        state_train = tuple(
-            (np.zeros([self.learning_params['batch_size'], shape]),
-             np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
-        state_train_ref = tuple(
-            (np.zeros([self.learning_params['batch_size'], shape]),
-             np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
+
+        if self.environment_params["use_dynamic_network"]:
+            rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
+            state_train = tuple(
+                (np.zeros([self.learning_params['batch_size'], shape]),
+                 np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
+            state_train_ref = tuple(
+                (np.zeros([self.learning_params['batch_size'], shape]),
+                 np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
+        else:
+            state_train = (np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]),
+                           np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
 
         # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
         train_batch = self.experience_buffer.sample(self.learning_params['batch_size'],
