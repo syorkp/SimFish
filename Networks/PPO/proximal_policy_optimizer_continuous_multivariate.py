@@ -92,7 +92,7 @@ class PPONetworkActorMultivariate(BaseNetwork):
         if impose_action_mask:
             self.action_distribution = MaskedMultivariateNormal(loc=self.mu_action, scale_diag=self.sigma_action,
                                                                 impulse_scaling=max_impulse,
-                                                                angle_scaling=angle_scaling)
+                                                                angle_scaling=max_angle_change)
             self.action_output = tf.squeeze(self.action_distribution.sample_masked(1), axis=0)
 
         else:
@@ -104,7 +104,7 @@ class PPONetworkActorMultivariate(BaseNetwork):
 
         if impose_action_mask:
             self.impulse_output = tf.math.multiply(self.impulse_output, max_impulse, name="impulse_output")
-            self.angle_output = tf.math.multiply(self.angle_output, angle_scaling, name="angle_output")
+            self.angle_output = tf.math.multiply(self.angle_output, max_angle_change, name="angle_output")
         else:
             self.impulse_output = tf.clip_by_value(self.impulse_output, 0, 1)
             self.angle_output = tf.clip_by_value(self.angle_output, -1, 1)
@@ -122,7 +122,7 @@ class PPONetworkActorMultivariate(BaseNetwork):
 
         if impose_action_mask:
             self.impulse_placeholder = tf.math.divide(self.impulse_placeholder, max_impulse)
-            self.angle_placeholder = tf.math.divide(self.angle_placeholder, angle_scaling)
+            self.angle_placeholder = tf.math.divide(self.angle_placeholder, max_angle_change)
         else:
             self.impulse_placeholder = tf.math.divide(self.impulse_placeholder, max_impulse)
             self.angle_placeholder = tf.math.divide(self.angle_placeholder, max_angle_change)

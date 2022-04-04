@@ -325,15 +325,17 @@ number = 1
 save_files(number)
 number += 1
 
-# Steps to incentivise Prey capture
+# 2 Steps to incentivise Prey capture
 env['slow_speed_paramecia'] = 0.0037
 save_files(number)
 number += 1
 
+# 3
 env['prey_fluid_displacement'] = True  # 5
 save_files(number)
 number += 1
 
+# 4
 env['fish_mouth_size'] = 2
 save_files(number)
 number += 1
