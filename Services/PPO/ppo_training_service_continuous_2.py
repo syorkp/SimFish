@@ -72,7 +72,8 @@ class PPOTrainingServiceContinuous2(TrainingService, ContinuousPPO):
                                                            batch_size=self.learning_params["batch_size"],
                                                            train_length=self.learning_params["trace_length"],
                                                            assay=False,
-                                                           debug=False)
+                                                           debug=False,
+                                                           dynamic_network=self.learning_params["use_dynamic_network"])
         else:
             self.buffer = PPOBufferContinuous(gamma=self.learning_params["gamma"], lmbda=self.learning_params["lambda"],  batch_size=self.learning_params["batch_size"],
                                               train_length=self.learning_params["trace_length"], assay=False, debug=False)

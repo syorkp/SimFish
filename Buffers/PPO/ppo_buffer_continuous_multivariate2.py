@@ -5,7 +5,7 @@ import numpy as np
 class PPOBufferContinuousMultivariate2(BasePPOBuffer):
     """Buffer for full episode for PPO training, and logging."""
 
-    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False):
+    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False, dynamic_network=False):
         super().__init__(gamma, lmbda, batch_size, train_length, assay, debug)
 
         # Buffer for training
@@ -24,6 +24,8 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
 
         self.impulse_loss_buffer = []
         self.angle_loss_buffer = []
+
+        self.dynamic_network = dynamic_network
 
         # For assay saving
         self.multivariate = True
@@ -193,8 +195,9 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         actor_rnn_state_batch = np.reshape(np.array(actor_rnn_state_batch), (n_rnns, batch_size, 2, n_units))
         actor_rnn_state_batch_ref = np.reshape(np.array(actor_rnn_state_batch_ref), (n_rnns, batch_size, 2, n_units))
 
-        actor_rnn_state_batch = tuple((np.array(actor_rnn_state_batch[i, :, 0, :]), np.array(actor_rnn_state_batch[i, :, 1, :])) for i in range(n_rnns))
-        actor_rnn_state_batch_ref = tuple((np.array(actor_rnn_state_batch_ref[i, :, 0, :]), np.array(actor_rnn_state_batch_ref[i, :, 1, :])) for i in range(n_rnns))
+        if self.dynamic_network:
+            actor_rnn_state_batch = tuple((np.array(actor_rnn_state_batch[i, :, 0, :]), np.array(actor_rnn_state_batch[i, :, 1, :])) for i in range(n_rnns))
+            actor_rnn_state_batch_ref = tuple((np.array(actor_rnn_state_batch_ref[i, :, 0, :]), np.array(actor_rnn_state_batch_ref[i, :, 1, :])) for i in range(n_rnns))
 
         return actor_rnn_state_batch, actor_rnn_state_batch_ref
 
