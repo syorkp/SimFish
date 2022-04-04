@@ -186,7 +186,7 @@ class BaseDQN:
         updated_rnn_state: The updated RNN state
         """
         # Generate actions and corresponding steps.
-        if self.new_simulation:
+        if self.new_simulation and self.environment_params["use_dynamic_network"]:
             return self.step_loop_new(o, internal_state, a, rnn_state, rnn_state_ref)
         else:
             return self.step_loop_old(o, internal_state, a, rnn_state)
@@ -279,7 +279,7 @@ class BaseDQN:
         return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref
 
     def _assay_step_loop(self, o, internal_state, a, rnn_state):
-        if self.new_simulation:
+        if self.new_simulation and self.environment_params["use_dynamic_network"]:
             return self._assay_step_loop_new(o, internal_state, a, rnn_state)
         else:
             return self._assay_step_loop_old(o, internal_state, a, rnn_state)
@@ -412,7 +412,7 @@ class BaseDQN:
         return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
 
     def train_networks(self):
-        if self.new_simulation:
+        if self.new_simulation and self.environment_params["use_dynamic_network"]:
             return self._train_networks_new()
         else:
             return self._train_networks_old()
