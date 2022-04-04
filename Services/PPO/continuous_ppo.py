@@ -1163,7 +1163,6 @@ class ContinuousPPO(BasePPO):
                                  average_loss_value / self.learning_params["n_updates_per_iteration"])
 
     def train_network_multivariate2(self):
-        print("Training step started")
         observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
             log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
             key_rnn_points = self.buffer.get_episode_buffer()
