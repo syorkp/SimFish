@@ -2855,10 +2855,10 @@ ppp_scaffold_training_config_8a_on = [
     },
 ]
 
-ppo_scaffold_training_config_8b_on = [
+ppp_scaffold_training_config_8b_on = [
     {
-        "Model Name": "dqn_scaffold_version_on_8",
-        "Environment Name": "dqn_scaffold_on_8",
+        "Model Name": "ppo_scaffold_version_on_8",
+        "Environment Name": "ppo_continuous_sbe_is_scaffold_8_on",
         "Trial Number": 3,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -2882,19 +2882,19 @@ ppo_scaffold_training_config_8b_on = [
         "Run Mode": "Training",
         "Tethered": False,
         "Realistic Bouts": True,
-        "Continuous Actions": False,
-        "Learning Algorithm": "DQN",
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
         "Priority": 1,
         "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
-        "SB Emulator": False,
+        "SB Emulator": True,
         "New Simulation": True,
         "Profile Speed": False,
     },
     {
-        "Model Name": "dqn_scaffold_version_on_8",
-        "Environment Name": "dqn_scaffold_on_8",
+        "Model Name": "ppo_scaffold_version_on_8",
+        "Environment Name": "ppo_continuous_sbe_is_scaffold_8_on",
         "Trial Number": 4,
         "Total Configurations": 8,
         "Episode Transitions": {
@@ -2918,18 +2918,18 @@ ppo_scaffold_training_config_8b_on = [
         "Run Mode": "Training",
         "Tethered": False,
         "Realistic Bouts": True,
-        "Continuous Actions": False,
-        "Learning Algorithm": "DQN",
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
         "Priority": 1,
         "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
-        "SB Emulator": False,
+        "SB Emulator": True,
         "New Simulation": True,
         "Profile Speed": False,
     },
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppp_scaffold_training_config_8a_on, parallel_jobs=4)
+manager = TrialManager(ppp_scaffold_training_config_8b_on, parallel_jobs=4)
 manager.run_priority_loop()
