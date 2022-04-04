@@ -14,7 +14,6 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
         super().__init__(loc=loc, scale_diag=scale_diag, allow_nan_stats=False)
 
         self.mu_vals = loc
-        print()
 
         # Compute KDF here.
         mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
