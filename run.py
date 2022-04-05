@@ -2931,5 +2931,5 @@ ppo_scaffold_training_config_8b_on = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_training_config_8b_on, parallel_jobs=4)
+manager = TrialManager(ppo_scaffold_training_config_8a_on, parallel_jobs=4)
 manager.run_priority_loop()
