@@ -84,7 +84,7 @@
     "sigma_time_constant": 1e-06,
     "clip_param": 0.2,
     "cs_required": false,
-    "impose_action_mask": true,
+    "impose_action_mask": false,
     "energy_state": false,
     "in_light": false,
     "salt": false,

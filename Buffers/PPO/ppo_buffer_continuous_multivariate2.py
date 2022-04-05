@@ -199,6 +199,10 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
 
             actor_rnn_state_batch = tuple((np.array(actor_rnn_state_batch[i, :, 0, :]), np.array(actor_rnn_state_batch[i, :, 1, :])) for i in range(n_rnns))
             actor_rnn_state_batch_ref = tuple((np.array(actor_rnn_state_batch_ref[i, :, 0, :]), np.array(actor_rnn_state_batch_ref[i, :, 1, :])) for i in range(n_rnns))
+        else:
+            actor_rnn_state_batch = tuple(actor_rnn_state_batch[0])
+            actor_rnn_state_batch_ref = tuple(actor_rnn_state_batch_ref[0])
+
 
         return actor_rnn_state_batch, actor_rnn_state_batch_ref
 
