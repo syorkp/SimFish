@@ -189,13 +189,14 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
             actor_rnn_state_batch.append(self.actor_rnn_state_buffer[point])
             actor_rnn_state_batch_ref.append(self.actor_rnn_state_ref_buffer[point])
 
-        n_rnns = np.array(actor_rnn_state_batch).shape[1]
-        n_units = np.array(actor_rnn_state_batch).shape[-1]
-
-        actor_rnn_state_batch = np.reshape(np.array(actor_rnn_state_batch), (n_rnns, batch_size, 2, n_units))
-        actor_rnn_state_batch_ref = np.reshape(np.array(actor_rnn_state_batch_ref), (n_rnns, batch_size, 2, n_units))
-
         if self.dynamic_network:
+            n_rnns = np.array(actor_rnn_state_batch).shape[1]
+            n_units = np.array(actor_rnn_state_batch).shape[-1]
+
+            actor_rnn_state_batch = np.reshape(np.array(actor_rnn_state_batch), (n_rnns, batch_size, 2, n_units))
+            actor_rnn_state_batch_ref = np.reshape(np.array(actor_rnn_state_batch_ref),
+                                                   (n_rnns, batch_size, 2, n_units))
+
             actor_rnn_state_batch = tuple((np.array(actor_rnn_state_batch[i, :, 0, :]), np.array(actor_rnn_state_batch[i, :, 1, :])) for i in range(n_rnns))
             actor_rnn_state_batch_ref = tuple((np.array(actor_rnn_state_batch_ref[i, :, 0, :]), np.array(actor_rnn_state_batch_ref[i, :, 1, :])) for i in range(n_rnns))
 
