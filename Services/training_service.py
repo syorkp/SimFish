@@ -263,7 +263,7 @@ class TrainingService(BaseService):
             self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
             print("Saved Model")
 
-            if self.learning_params["save_gifs"]:
+            if self.learning_params["save_gifs"] and len(self.frame_buffer) > 0:
                 # Create the GIF
                 make_gif(self.frame_buffer, f"{self.model_location}/episodes/episode-{str(self.episode_number)}.gif",
                          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
