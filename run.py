@@ -54,11 +54,11 @@ ppo_beta_configuration = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -82,11 +82,11 @@ ppo_beta_configuration = [
     #     "Episode Transitions": {
     #     },
     #     "Conditional Transitions": {
-    #         "Prey Caught": {
+    #         "Prey Capture Index": {
     #             "2": 5,
     #             "3": 6,
     #         },
-    #         "Predators Avoided": {
+    #         "Predator Avoidance Index": {
     #         },
     #         "Sand Grains Bumped": {
     #         }
@@ -110,11 +110,11 @@ ppo_beta_configuration = [
     #     "Episode Transitions": {
     #     },
     #     "Conditional Transitions": {
-    #         "Prey Caught": {
+    #         "Prey Capture Index": {
     #             "2": 5,
     #             "3": 6,
     #         },
-    #         "Predators Avoided": {
+    #         "Predator Avoidance Index": {
     #         },
     #         "Sand Grains Bumped": {
     #         }
@@ -138,11 +138,11 @@ ppo_beta_configuration = [
     #     "Episode Transitions": {
     #     },
     #     "Conditional Transitions": {
-    #         "Prey Caught": {
+    #         "Prey Capture Index": {
     #             "2": 5,
     #             "3": 6,
     #         },
-    #         "Predators Avoided": {
+    #         "Predator Avoidance Index": {
     #         },
     #         "Sand Grains Bumped": {
     #         }
@@ -169,13 +169,13 @@ dqn_discrete = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -199,13 +199,13 @@ dqn_discrete = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -229,13 +229,13 @@ dqn_discrete = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -259,13 +259,13 @@ dqn_discrete = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -293,7 +293,7 @@ ppo_discrete_sbe = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 3,
                 "3": 4,
                 "4": 5,
@@ -301,7 +301,7 @@ ppo_discrete_sbe = [
                 "6": 7,
                 "7": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -325,7 +325,7 @@ ppo_discrete_sbe = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 3,
                 "3": 4,
                 "4": 5,
@@ -333,7 +333,7 @@ ppo_discrete_sbe = [
                 "6": 7,
                 "7": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -357,7 +357,7 @@ ppo_discrete_sbe = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 3,
                 "3": 4,
                 "4": 5,
@@ -365,7 +365,7 @@ ppo_discrete_sbe = [
                 "6": 7,
                 "7": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -389,7 +389,7 @@ ppo_discrete_sbe = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 3,
                 "3": 4,
                 "4": 5,
@@ -397,7 +397,7 @@ ppo_discrete_sbe = [
                 "6": 7,
                 "7": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -424,13 +424,13 @@ ppo_continuous_sbe_is = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -454,13 +454,13 @@ ppo_continuous_sbe_is = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -484,13 +484,13 @@ ppo_continuous_sbe_is = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -514,13 +514,13 @@ ppo_continuous_sbe_is = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -547,13 +547,13 @@ ppo_continuous_sbe_es = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -577,13 +577,13 @@ ppo_continuous_sbe_es = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -607,13 +607,13 @@ ppo_continuous_sbe_es = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -637,13 +637,13 @@ ppo_continuous_sbe_es = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -670,13 +670,13 @@ ppo_continuous_mv_is = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -700,13 +700,13 @@ ppo_continuous_mv_is = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -730,13 +730,13 @@ ppo_continuous_mv_is = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -760,13 +760,13 @@ ppo_continuous_mv_is = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -793,13 +793,13 @@ ppo_continuous_uv_is = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -823,13 +823,13 @@ ppo_continuous_uv_is = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -853,13 +853,13 @@ ppo_continuous_uv_is = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -883,13 +883,13 @@ ppo_continuous_uv_is = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -916,11 +916,11 @@ ppo_beta_normal = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -944,11 +944,11 @@ ppo_beta_normal = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -972,11 +972,11 @@ ppo_beta_normal = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -1000,11 +1000,11 @@ ppo_beta_normal = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -1031,13 +1031,13 @@ ppo_continuous_mv_es = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -1061,13 +1061,13 @@ ppo_continuous_mv_es = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -1091,13 +1091,13 @@ ppo_continuous_mv_es = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -1121,13 +1121,13 @@ ppo_continuous_mv_es = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 6,
                 "4": 7,
                 "5": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
             },
             "Sand Grains Bumped": {
             }
@@ -1439,7 +1439,7 @@ ppo_scaffold_training_config_3a = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -1448,7 +1448,7 @@ ppo_scaffold_training_config_3a = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -1475,7 +1475,7 @@ ppo_scaffold_training_config_3a = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -1484,7 +1484,7 @@ ppo_scaffold_training_config_3a = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -1514,7 +1514,7 @@ dqn_scaffold_training_config_3a = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -1523,7 +1523,7 @@ dqn_scaffold_training_config_3a = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -1550,7 +1550,7 @@ dqn_scaffold_training_config_3a = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -1559,7 +1559,7 @@ dqn_scaffold_training_config_3a = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -1589,7 +1589,7 @@ dqn_scaffold_training_config_3b = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -1598,7 +1598,7 @@ dqn_scaffold_training_config_3b = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -1625,7 +1625,7 @@ dqn_scaffold_training_config_3b = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -1634,7 +1634,7 @@ dqn_scaffold_training_config_3b = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -1664,7 +1664,7 @@ ppo_scaffold_training_config_5a = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -1673,7 +1673,7 @@ ppo_scaffold_training_config_5a = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -1700,7 +1700,7 @@ ppo_scaffold_training_config_5a = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -1709,7 +1709,7 @@ ppo_scaffold_training_config_5a = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -1739,7 +1739,7 @@ ppo_scaffold_training_config_5b = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -1748,7 +1748,7 @@ ppo_scaffold_training_config_5b = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -1775,7 +1775,7 @@ ppo_scaffold_training_config_5b = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -1784,7 +1784,7 @@ ppo_scaffold_training_config_5b = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -1814,7 +1814,7 @@ dqn_scaffold_training_config_5a = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -1823,7 +1823,7 @@ dqn_scaffold_training_config_5a = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -1850,7 +1850,7 @@ dqn_scaffold_training_config_5a = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -1859,7 +1859,7 @@ dqn_scaffold_training_config_5a = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -1889,7 +1889,7 @@ dqn_scaffold_training_config_5b = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -1898,7 +1898,7 @@ dqn_scaffold_training_config_5b = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -1925,7 +1925,7 @@ dqn_scaffold_training_config_5b = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -1934,7 +1934,7 @@ dqn_scaffold_training_config_5b = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -1964,7 +1964,7 @@ dqn_scaffold_training_config_5c = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -1973,7 +1973,7 @@ dqn_scaffold_training_config_5c = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2000,7 +2000,7 @@ dqn_scaffold_training_config_5c = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2009,7 +2009,7 @@ dqn_scaffold_training_config_5c = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2039,7 +2039,7 @@ ppo_scaffold_training_config_7a = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2048,7 +2048,7 @@ ppo_scaffold_training_config_7a = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2075,7 +2075,7 @@ ppo_scaffold_training_config_7a = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2084,7 +2084,7 @@ ppo_scaffold_training_config_7a = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2114,7 +2114,7 @@ ppo_scaffold_training_config_7b = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2123,7 +2123,7 @@ ppo_scaffold_training_config_7b = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2150,7 +2150,7 @@ ppo_scaffold_training_config_7b = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2159,7 +2159,7 @@ ppo_scaffold_training_config_7b = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2189,7 +2189,7 @@ dqn_scaffold_training_config_7a = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2198,7 +2198,7 @@ dqn_scaffold_training_config_7a = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2225,7 +2225,7 @@ dqn_scaffold_training_config_7a = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2234,7 +2234,7 @@ dqn_scaffold_training_config_7a = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2264,7 +2264,7 @@ dqn_scaffold_training_config_7b = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2273,7 +2273,7 @@ dqn_scaffold_training_config_7b = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2300,7 +2300,7 @@ dqn_scaffold_training_config_7b = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2309,7 +2309,7 @@ dqn_scaffold_training_config_7b = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2339,7 +2339,7 @@ ppo_scaffold_training_config_8a = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2348,7 +2348,7 @@ ppo_scaffold_training_config_8a = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2375,7 +2375,7 @@ ppo_scaffold_training_config_8a = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2384,7 +2384,7 @@ ppo_scaffold_training_config_8a = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2414,7 +2414,7 @@ ppo_scaffold_training_config_8b = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2423,7 +2423,7 @@ ppo_scaffold_training_config_8b = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2450,7 +2450,7 @@ ppo_scaffold_training_config_8b = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2459,7 +2459,7 @@ ppo_scaffold_training_config_8b = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2489,7 +2489,7 @@ dqn_scaffold_training_config_8a = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2498,7 +2498,7 @@ dqn_scaffold_training_config_8a = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2525,7 +2525,7 @@ dqn_scaffold_training_config_8a = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2534,7 +2534,7 @@ dqn_scaffold_training_config_8a = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2564,7 +2564,7 @@ dqn_scaffold_training_config_8b = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2573,7 +2573,7 @@ dqn_scaffold_training_config_8b = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2600,7 +2600,7 @@ dqn_scaffold_training_config_8b = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2609,7 +2609,7 @@ dqn_scaffold_training_config_8b = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2639,17 +2639,17 @@ dqn_scaffold_training_config_8a_on = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 5,
-                "4": 6,
-                "5": 6,
-                "6": 7,
-                "8": 8,
-                "9": 8,
+            "Prey Capture Index": {
+                "2": 0.2,
+                "3": 0.2,
+                "4": 0.3,
+                "5": 0.3,
+                "6": 0.4,
+                "8": 0.4,
+                "9": 0.5,
             },
-            "Predators Avoided": {
-                "7": 4
+            "Predator Avoidance Index": {
+                "7": 400
             },
             "Sand Grains Bumped": {
             }
@@ -2675,17 +2675,17 @@ dqn_scaffold_training_config_8a_on = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 5,
-                "4": 6,
-                "5": 6,
-                "6": 7,
-                "8": 8,
-                "9": 8,
+            "Prey Capture Index": {
+                "2": 0.2,
+                "3": 0.2,
+                "4": 0.3,
+                "5": 0.3,
+                "6": 0.4,
+                "8": 0.4,
+                "9": 0.5,
             },
-            "Predators Avoided": {
-                "7": 4
+            "Predator Avoidance Index": {
+                "7": 400
             },
             "Sand Grains Bumped": {
             }
@@ -2714,17 +2714,17 @@ dqn_scaffold_training_config_8b_on = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 5,
-                "4": 6,
-                "5": 6,
-                "6": 7,
-                "8": 8,
-                "9": 8,
+            "Prey Capture Index": {
+                "2": 0.2,
+                "3": 0.2,
+                "4": 0.3,
+                "5": 0.3,
+                "6": 0.4,
+                "8": 0.4,
+                "9": 0.5,
             },
-            "Predators Avoided": {
-                "7": 4
+            "Predator Avoidance Index": {
+                "7": 400
             },
             "Sand Grains Bumped": {
             }
@@ -2750,17 +2750,17 @@ dqn_scaffold_training_config_8b_on = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 5,
-                "4": 6,
-                "5": 6,
-                "6": 7,
-                "8": 8,
-                "9": 8,
+            "Prey Capture Index": {
+                "2": 0.2,
+                "3": 0.2,
+                "4": 0.3,
+                "5": 0.3,
+                "6": 0.4,
+                "8": 0.4,
+                "9": 0.5,
             },
-            "Predators Avoided": {
-                "7": 4
+            "Predator Avoidance Index": {
+                "7": 400
             },
             "Sand Grains Bumped": {
             }
@@ -2789,17 +2789,17 @@ ppo_scaffold_training_config_8a_on = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 5,
-                "4": 6,
-                "5": 6,
-                "6": 7,
-                "8": 8,
-                "9": 8,
+            "Prey Capture Index": {
+                "2": 0.2,
+                "3": 0.2,
+                "4": 0.3,
+                "5": 0.3,
+                "6": 0.4,
+                "8": 0.4,
+                "9": 0.5,
             },
-            "Predators Avoided": {
-                "7": 4
+            "Predator Avoidance Index": {
+                "7": 400
             },
             "Sand Grains Bumped": {
             }
@@ -2825,17 +2825,17 @@ ppo_scaffold_training_config_8a_on = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 5,
-                "4": 6,
-                "5": 6,
-                "6": 7,
-                "8": 8,
-                "9": 8,
+            "Prey Capture Index": {
+                "2": 0.2,
+                "3": 0.2,
+                "4": 0.3,
+                "5": 0.3,
+                "6": 0.4,
+                "8": 0.4,
+                "9": 0.5,
             },
-            "Predators Avoided": {
-                "7": 4
+            "Predator Avoidance Index": {
+                "7": 400
             },
             "Sand Grains Bumped": {
             }
@@ -2864,17 +2864,17 @@ ppo_scaffold_training_config_8b_on = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
-                "2": 5,
-                "3": 5,
-                "4": 6,
-                "5": 6,
-                "6": 7,
-                "8": 8,
-                "9": 8,
+            "Prey Capture Index": {
+                "2": 0.2,
+                "3": 0.2,
+                "4": 0.3,
+                "5": 0.3,
+                "6": 0.4,
+                "8": 0.4,
+                "9": 0.5,
             },
-            "Predators Avoided": {
-                "7": 4
+            "Predator Avoidance Index": {
+                "7": 400
             },
             "Sand Grains Bumped": {
             }
@@ -2900,7 +2900,7 @@ ppo_scaffold_training_config_8b_on = [
         "Episode Transitions": {
         },
         "Conditional Transitions": {
-            "Prey Caught": {
+            "Prey Capture Index": {
                 "2": 5,
                 "3": 5,
                 "4": 6,
@@ -2909,7 +2909,7 @@ ppo_scaffold_training_config_8b_on = [
                 "8": 8,
                 "9": 8,
             },
-            "Predators Avoided": {
+            "Predator Avoidance Index": {
                 "7": 4
             },
             "Sand Grains Bumped": {
@@ -2931,5 +2931,5 @@ ppo_scaffold_training_config_8b_on = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_training_config_8a_on, parallel_jobs=4)
+manager = TrialManager(dqn_scaffold_training_config_8a_on, parallel_jobs=4)
 manager.run_priority_loop()

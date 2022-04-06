@@ -131,16 +131,16 @@ class TrainingService(BaseService):
             switch_criteria_met = True
         elif len(self.last_episodes_prey_caught) >= 20:  # Switch config by behavioural conditionals
 
-            prey_conditional_transition_points = self.conditional_transitions["Prey Caught"].keys()
-            predators_conditional_transition_points = self.conditional_transitions["Predators Avoided"].keys()
+            prey_conditional_transition_points = self.conditional_transitions["Prey Capture Index"].keys()
+            predators_conditional_transition_points = self.conditional_transitions["Predator Avoidance Index"].keys()
             grains_bumped_conditional_transfer_points = self.conditional_transitions["Sand Grains Bumped"].keys()
 
             if next_point in predators_conditional_transition_points and \
-                    np.mean(self.last_episodes_predators_avoided) > self.conditional_transitions["Predators Avoided"][next_point]:
+                    np.mean(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"] > self.conditional_transitions["Predator Avoidance Index"][next_point]:
                 switch_criteria_met = True
 
             elif next_point in prey_conditional_transition_points and \
-                    np.mean(self.last_episodes_prey_caught) > self.conditional_transitions["Prey Caught"][next_point]:
+                    np.mean(self.last_episodes_prey_caught)/self.environment_params["prey_num"] > self.conditional_transitions["Prey Capture Index"][next_point]:
                 switch_criteria_met = True
 
             elif next_point in grains_bumped_conditional_transfer_points and \
