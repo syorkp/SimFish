@@ -118,7 +118,7 @@ env = {
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
 
        'fish_mass': 140.,
-       'fish_mouth_size': 6.,  # FINAL VALUE - 0.2mm diameter, so 1.
+       'fish_mouth_size': 8.,  # FINAL VALUE - 0.2mm diameter, so 1.
        'fish_head_size': 2.5,  # Old - 10
        'fish_tail_length': 41.5,  # Old: 70
        'eyes_verg_angle': 77.,  # in deg
@@ -129,7 +129,7 @@ env = {
        'prey_inertia': 40.,
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-       'prey_num': 20,
+       'prey_num': 1,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
@@ -146,16 +146,17 @@ env = {
        'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
-       'probability_of_predator': 0.01,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
-       'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001
+       'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001; 0.01
        'dark_gain': 0.38,  # gain of brightness in the dark side
-       'light_gain': 100.0,  # gain of brightness in the bright side
+       'light_gain': 200.0,  # gain of brightness in the bright side
 
        'predator_cost': 1000,
 
+       # Old internal state variables
        'hunger': False,
        'reafference': True,
        'stress': False,
@@ -180,14 +181,14 @@ env = {
 
        #                                  New Simulation
 
-       # Action
-       'impose_action_mask': False,
+       # Action mask
+       'impose_action_mask': True,
 
        # Sensory inputs
-       'energy_state': True,
+       'energy_state': False,
        'in_light': False,
        'salt': False,  # Inclusion of olfactory salt input and salt death.
-       "use_dynamic_network": True,
+       "use_dynamic_network": False,
        'salt_concentration_decay': 0.001,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
        'max_salt_damage': 0.02,  # Salt damage at centre of source.
@@ -195,7 +196,7 @@ env = {
        # GIFs and debugging
        'visualise_mask': False,  # For debugging purposes.
        'show_channel_sectors': False,
-       'show_fish_body_energy_state': True,
+       'show_fish_body_energy_state': False,
        'show_previous_actions': 200,  # False if not, otherwise the number of actions to save.
 
        # Environment
@@ -238,9 +239,9 @@ env = {
        'duration_of_loom': 10,  # Number of steps for which loom occurs.
 
        # Visual system scaling factors (to set CNN inputs into 0 to 255 range):
-       'red_scaling_factor': 1,  # max was 100 without scaling
+       'red_scaling_factor': 0.5,  # max was 100 without scaling
        'uv_scaling_factor': 1, #50,  # max was 40 without scaling
-       'red_2_scaling_factor': 0.1, #0.018,  # max was 12000 without scaling
+       'red_2_scaling_factor': 0.05, #0.018,  # max was 12000 without scaling
        'red_occlusion_gain': 0.0,  # 0 Being complete construction.
        'uv_occlusion_gain': 1.0,
        'red2_occlusion_gain': 0.0,

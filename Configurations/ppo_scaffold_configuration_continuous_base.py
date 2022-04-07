@@ -44,7 +44,7 @@ params = {
        'beta_distribution': False,
        'gamma': 0.99,
        'lambda': 0.9,
-       'input_sigmas': True,
+       'input_sigmas': False,
 
        # Discrete Action Space
        'num_actions': 10,  # size of action space
@@ -156,6 +156,7 @@ env = {
 
        'predator_cost': 1000,
 
+       # Old internal state variables
        'hunger': False,
        'reafference': True,
        'stress': False,
@@ -302,7 +303,7 @@ env = {
 
 }
 
-directory_name = "ppo_continuous_sbe_is_scaffold_8_on"
+directory_name = "ppo_continuous_sbe_is_scaffold_8_on_se"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):
@@ -336,11 +337,11 @@ save_files(number)
 number += 1
 
 # 4
-env['fish_mouth_size'] = 2
+env['fish_mouth_size'] = 7
 save_files(number)
 number += 1
 
-env['fish_mouth_size'] = 1
+env['fish_mouth_size'] = 6
 save_files(number)
 number += 1
 
