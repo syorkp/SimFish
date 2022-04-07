@@ -98,8 +98,8 @@ env = {
        'j_turn_dir_change': 0.07,
        'rest_cost': 2,
 
-       'capture_swim_extra_cost': 25,
-       'capture_basic_reward': 10000,  # Used only in old simulation.
+       'capture_swim_extra_cost': 0,
+       'capture_basic_reward': 10000,  # Used only when not using energy state.
 
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
@@ -152,7 +152,7 @@ env = {
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001; 0.01
        'dark_gain': 0.38,  # gain of brightness in the dark side
-       'light_gain': 100.0,  # gain of brightness in the bright side
+       'light_gain': 200.0,  # gain of brightness in the bright side
 
        'predator_cost': 1000,
 
@@ -239,9 +239,9 @@ env = {
        'duration_of_loom': 10,  # Number of steps for which loom occurs.
 
        # Visual system scaling factors (to set CNN inputs into 0 to 255 range):
-       'red_scaling_factor': 1,  # max was 100 without scaling
+       'red_scaling_factor': 0.5,  # max was 100 without scaling
        'uv_scaling_factor': 1, #50,  # max was 40 without scaling
-       'red_2_scaling_factor': 0.1, #0.018,  # max was 12000 without scaling
+       'red_2_scaling_factor': 0.05, #0.018,  # max was 12000 without scaling
        'red_occlusion_gain': 0.0,  # 0 Being complete construction.
        'uv_occlusion_gain': 1.0,
        'red2_occlusion_gain': 0.0,
@@ -357,5 +357,17 @@ number += 1
 
 # Steps to incentivise phototaxis
 env['dark_light_ratio'] = 0.5
+save_files(number)
+number += 1
+
+env['max_impulse'] = 12
+save_files(number)
+number += 1
+
+env['max_impulse'] = 12
+save_files(number)
+number += 1
+
+env['max_impulse'] = 12
 save_files(number)
 number += 1
