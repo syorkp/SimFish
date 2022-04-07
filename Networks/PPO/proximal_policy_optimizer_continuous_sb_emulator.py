@@ -56,6 +56,8 @@ class PPONetworkActorMultivariate2(BaseNetwork):
                                                            name='sigma_impulse_combined')
         self.sigma_angle_combined_proto = tf.placeholder(shape=[None], dtype=tf.float32, name='sigma_angle_combined')
 
+        max_sigma = 0.4
+
         if input_sigmas:
             self.sigma_impulse_combined = tf.expand_dims(self.sigma_impulse_combined_proto, 1)
             self.sigma_angle_combined = tf.expand_dims(self.sigma_angle_combined_proto, 1)
@@ -64,22 +66,22 @@ class PPONetworkActorMultivariate2(BaseNetwork):
             self.sigma_impulse = tf.layers.dense(self.impulse_stream_sigma, 1, activation=tf.nn.sigmoid,
                                                  kernel_initializer=tf.orthogonal_initializer,
                                                  name=my_scope + '_sigma_impulse', trainable=True)
-            self.sigma_impulse = self.bounded_output(self.sigma_impulse, 0, 1)
+            self.sigma_impulse = self.bounded_output(self.sigma_impulse, 0, max_sigma)
 
             self.sigma_angle = tf.layers.dense(self.angle_stream_sigma, 1, activation=tf.nn.sigmoid,
                                                kernel_initializer=tf.orthogonal_initializer,
                                                name=my_scope + '_sigma_angle', trainable=True)
-            self.sigma_angle = self.bounded_output(self.sigma_angle, 0, 1)
+            self.sigma_angle = self.bounded_output(self.sigma_angle, 0, max_sigma)
 
             self.sigma_impulse_ref = tf.layers.dense(self.impulse_stream_sigma_ref, 1, activation=tf.nn.sigmoid,
                                                      kernel_initializer=tf.orthogonal_initializer,
                                                      name=my_scope + '_sigma_impulse', trainable=True, reuse=True)
-            self.sigma_impulse_ref = self.bounded_output(self.sigma_impulse_ref, 0, 1)
+            self.sigma_impulse_ref = self.bounded_output(self.sigma_impulse_ref, 0, max_sigma)
 
             self.sigma_angle_ref = tf.layers.dense(self.angle_stream_sigma_ref, 1, activation=tf.nn.sigmoid,
                                                    kernel_initializer=tf.orthogonal_initializer,
                                                    name=my_scope + '_sigma_angle', trainable=True, reuse=True)
-            self.sigma_angle_ref = self.bounded_output(self.sigma_angle_ref, 0, 1)
+            self.sigma_angle_ref = self.bounded_output(self.sigma_angle_ref, 0, max_sigma)
 
             self.sigma_impulse_combined = tf.divide(tf.add(self.sigma_impulse, self.sigma_impulse_ref), 2)
             self.sigma_angle_combined = tf.divide(tf.add(self.sigma_angle, self.sigma_angle_ref), 2)
