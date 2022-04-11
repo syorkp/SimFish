@@ -44,7 +44,7 @@ params = {
        'beta_distribution': False,
        'gamma': 0.99,
        'lambda': 0.9,
-       'input_sigmas': False,
+       'input_sigmas': True,
 
        # Discrete Action Space
        'num_actions': 10,  # size of action space
@@ -170,10 +170,10 @@ env = {
        'reward_distance': 100,
        'proximity_reward': 0.002,
 
-       'max_sigma_impulse': 0.3,  # Formerly 0.4
-       'max_sigma_angle': 0.3,  # Formerly 0.4
-       'min_sigma_impulse': 0.1,
-       'min_sigma_angle': 0.1,
+       'max_sigma_impulse': 0.001,  # Formerly 0.4
+       'max_sigma_angle': 0.001,  # Formerly 0.4
+       'min_sigma_impulse': 0.001,
+       'min_sigma_angle': 0.001,
        'sigma_time_constant': 0.000001,
 
        'clip_param': 0.2,
@@ -303,7 +303,7 @@ env = {
 
 }
 
-directory_name = "ppo_continuous_sbe_is_scaffold_8_on_se"
+directory_name = "ppo_scaffold_low_sig_9"
 
 # Ensure Output File Exists
 if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):
@@ -319,24 +319,59 @@ def save_files(n):
               json.dump(params, f, indent=4)
 
 
-# A. Learn Predator avoidance and prey capture #
-
 # 1 Initial config
 number = 1
 save_files(number)
 number += 1
 
-# 2 Steps to incentivise Prey capture
-env['slow_speed_paramecia'] = 0.0037
+# 1) Rewards and Penalties
+
+env['wall_touch_penalty'] = True  # 5
 save_files(number)
 number += 1
 
-# 3
-env['prey_fluid_displacement'] = True  # 5
+# Add energy state
+
+# 2) Visual System
+
+env['red_photoreceptor_rf_size'] = 0.0133 * 2
+env['uv_photoreceptor_rf_size'] = 0.0133 * 2
 save_files(number)
 number += 1
 
-# 4
+env['red_photoreceptor_rf_size'] = 0.0133 * 1
+env['uv_photoreceptor_rf_size'] = 0.0133 * 1
+save_files(number)
+number += 1
+
+env['shot_noise'] = True
+save_files(number)
+number += 1
+
+# Increase bkg_scatter
+
+# Decrease luminance
+
+
+# 3) Available actions
+
+env['max_impulse'] = 12
+save_files(number)
+number += 1
+
+env['max_impulse'] = 14
+save_files(number)
+number += 1
+
+env['max_impulse'] = 16
+save_files(number)
+number += 1
+
+# 4) Prey Capture
+env['prey_fluid_displacement'] = True
+save_files(number)
+number += 1
+
 env['fish_mouth_size'] = 7
 save_files(number)
 number += 1
@@ -345,29 +380,12 @@ env['fish_mouth_size'] = 6
 save_files(number)
 number += 1
 
-# Steps to incentivise predator avoidance.
-env['probability_of_predator'] = 0.01  # 1
+env['fish_mouth_size'] = 5
 save_files(number)
 number += 1
 
-# Steps to incentivise navigation
-env['salt'] = True
+env['fish_mouth_size'] = 4
 save_files(number)
 number += 1
 
-# Steps to incentivise phototaxis
-env['dark_light_ratio'] = 0.5
-save_files(number)
-number += 1
 
-env['max_impulse'] = 12
-save_files(number)
-number += 1
-
-env['max_impulse'] = 12
-save_files(number)
-number += 1
-
-env['max_impulse'] = 12
-save_files(number)
-number += 1

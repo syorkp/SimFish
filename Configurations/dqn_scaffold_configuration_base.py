@@ -320,7 +320,6 @@ def save_files(n):
         json.dump(params, f, indent=4)
 
 
-
 # 1 Initial config
 number = 1
 save_files(number)
