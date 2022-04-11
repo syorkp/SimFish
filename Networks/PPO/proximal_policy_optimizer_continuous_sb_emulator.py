@@ -14,7 +14,7 @@ class PPONetworkActorMultivariate2(BaseNetwork):
                  angle_scaling=None, max_sigma=1.0):
         super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim=2, new_simulation=new_simulation)
 
-        #            ----------        Stream Splitting       ---------            #
+        #            ----------        Stream Splitting       ---aa------            #
 
         self.action_stream, self.value_stream = tf.split(self.rnn_output, 2, 1)
         self.action_stream_ref, self.value_stream_ref = tf.split(self.rnn_output_ref, 2, 1)

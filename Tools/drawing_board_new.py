@@ -749,8 +749,14 @@ class NewDrawingBoard:
 
     def compute_n(self, angular_size, number_of_this_feature, max_separation=1):
         max_dist = (self.width ** 2 + self.height ** 2) ** 0.5
+        print("max_dist" + str(max_dist))
         theta_separation = math.asin(max_separation / max_dist)
+        print("Theta separation" + str(theta_separation))
+        print("angular_size" + str(angular_size))
+
         n = (angular_size / theta_separation)
+        print("n" + str(n))
+
         if n * number_of_this_feature > self.max_lines_num:
             print(f"""Max lines num needs increase:
             Max lines num: {self.max_lines_num}
