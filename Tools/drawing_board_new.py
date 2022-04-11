@@ -203,6 +203,10 @@ class NewDrawingBoard:
         # Reset empty mask
         self.empty_mask[:] = 1.0
 
+        if len(prey_locations) == 0:
+            print(prey_locations)
+            print("No prey...")
+
         # Compute prey positions relative to fish (Prey_num, 2)
         prey_relative_positions = prey_locations - fish_position
 
@@ -224,7 +228,7 @@ class NewDrawingBoard:
         prey_extremities = prey_angles + prey_rf_offsets
 
         # Number of lines to project through prey or predators, determined by width, height, and size of features. (1)
-        n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2, len(prey_locations))
+        n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2, len(prey_locations), p=prey_half_angular_size)
 
         # Create array of angles between prey extremities to form lines. (Prey_num * n_lines_prey)
         interpolated_line_angles = self.chosen_math_library.linspace(prey_extremities[:, 0], prey_extremities[:, 1],
@@ -747,7 +751,7 @@ class NewDrawingBoard:
         # x = (AB * L * O * S)[:, :, 1]
         return AB * L * O * S
 
-    def compute_n(self, angular_size, number_of_this_feature, max_separation=1):
+    def compute_n(self, angular_size, number_of_this_feature, max_separation=1, p=None):
         max_dist = (self.width ** 2 + self.height ** 2) ** 0.5
         theta_separation = math.asin(max_separation / max_dist)
         n = (angular_size / theta_separation)
