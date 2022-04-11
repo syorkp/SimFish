@@ -280,7 +280,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                                                          np.array([i.position for i in self.prey_bodies]),
                                                          predator_bodies
                                                          )
-        if full_masked_image == False:  # TODO: remove
+        if full_masked_image is None:  # TODO: remove
             print("FIsh not located.")
             print(self.fish.body.position)
             print(self.num_steps)

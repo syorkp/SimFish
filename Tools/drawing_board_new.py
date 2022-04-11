@@ -225,12 +225,12 @@ class NewDrawingBoard:
 
         # Number of lines to project through prey or predators, determined by width, height, and size of features. (1)
         n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2, len(prey_locations), p=prey_half_angular_size)
-        if n_lines_prey == False: # TODO: remove
+        if n_lines_prey is not None: # TODO: remove
             print(f"Prey locations: {prey_locations}")
             print(f"Fish position: {fish_position}")
             print(f"Prey Radius: {self.prey_radius}")
             print(f"Prey Distances: {prey_distances}")
-            return False
+            return None
 
         # Create array of angles between prey extremities to form lines. (Prey_num * n_lines_prey)
         interpolated_line_angles = self.chosen_math_library.linspace(prey_extremities[:, 0], prey_extremities[:, 1],
@@ -718,8 +718,8 @@ class NewDrawingBoard:
             O = self.create_obstruction_mask_lines_cupy(self.chosen_math_library.array(fish_position),
                                                         self.chosen_math_library.array(prey_locations),
                                                         self.chosen_math_library.array(predator_locations))
-            if O == False:  # TODO: Remove
-                return False
+            if O is None:  # TODO: Remove
+                return None
             # O = self.create_obstruction_mask_lines_mixed(fish_position, prey_locations, predator_locations)
 
         if self.differential_occlusion_gain:
@@ -774,7 +774,7 @@ class NewDrawingBoard:
             print("Theta separation" + str(theta_separation))
             print("angular_size" + str(angular_size))
             print("n" + str(n))
-            return False
+            return None
 
     def reset(self):
         """To be called at start of episode"""
