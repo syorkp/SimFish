@@ -1861,6 +1861,90 @@ ppo_scaffold_training_config_9a = [
     },
 ]
 
+ppo_scaffold_training_config_9b = [
+    {
+        "Model Name": "ppo_scaffold_low_sig_9",
+        "Environment Name": "ppo_scaffold_low_sig_9",
+        "Trial Number": 3,
+        "Total Configurations": 13,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Capture Index": {
+                "2": 0.2,
+                "3": 0.2,
+                "4": 0.3,
+                "5": 0.3,
+                "6": 0.4,
+                "7": 0.4,
+                "8": 0.4,
+                "9": 0.5,
+                "10": 0.5,
+                "11": 0.5,
+                "12": 0.5,
+                "13": 0.5,
+            },
+            "Predator Avoidance Index": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "ppo_scaffold_low_sig_9",
+        "Environment Name": "ppo_scaffold_low_sig_9",
+        "Trial Number": 4,
+        "Total Configurations": 13,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Capture Index": {
+                "2": 0.2,
+                "3": 0.2,
+                "4": 0.3,
+                "5": 0.3,
+                "6": 0.4,
+                "7": 0.4,
+                "8": 0.4,
+                "9": 0.5,
+                "10": 0.5,
+                "11": 0.5,
+                "12": 0.5,
+                "13": 0.5,
+            },
+            "Predator Avoidance Index": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_training_config_9a, parallel_jobs=4)
+manager = TrialManager(ppo_scaffold_training_config_9b, parallel_jobs=4)
 manager.run_priority_loop()
