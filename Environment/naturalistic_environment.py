@@ -276,15 +276,15 @@ class NaturalisticEnvironment(BaseEnvironment):
         else:
             predator_bodies = np.array([])
 
-        if np.isnan(np.array(self.fish.body.position)):
-            print("FIsh not located.")
-            print(self.fish.body.position)
-            print(self.num_steps)
-
         full_masked_image = self.board.get_masked_pixels(np.array(self.fish.body.position),
                                                          np.array([i.position for i in self.prey_bodies]),
                                                          predator_bodies
                                                          )
+        if not full_masked_image:  # TODO: remove
+            print("FIsh not located.")
+            print(self.fish.body.position)
+            print(self.num_steps)
+
         self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
         self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 

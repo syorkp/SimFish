@@ -225,11 +225,12 @@ class NewDrawingBoard:
 
         # Number of lines to project through prey or predators, determined by width, height, and size of features. (1)
         n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2, len(prey_locations), p=prey_half_angular_size)
-        if not n_lines_prey:
+        if not n_lines_prey: # TODO: remove
             print(f"Prey locations: {prey_locations}")
             print(f"Fish position: {fish_position}")
             print(f"Prey Radius: {self.prey_radius}")
             print(f"Prey Distances: {prey_distances}")
+            return False
 
         # Create array of angles between prey extremities to form lines. (Prey_num * n_lines_prey)
         interpolated_line_angles = self.chosen_math_library.linspace(prey_extremities[:, 0], prey_extremities[:, 1],
@@ -717,6 +718,8 @@ class NewDrawingBoard:
             O = self.create_obstruction_mask_lines_cupy(self.chosen_math_library.array(fish_position),
                                                         self.chosen_math_library.array(prey_locations),
                                                         self.chosen_math_library.array(predator_locations))
+            if not O:  # TODO: Remove
+                return False
             # O = self.create_obstruction_mask_lines_mixed(fish_position, prey_locations, predator_locations)
 
         if self.differential_occlusion_gain:
