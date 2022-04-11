@@ -203,10 +203,6 @@ class NewDrawingBoard:
         # Reset empty mask
         self.empty_mask[:] = 1.0
 
-        if len(prey_locations) == 0:
-            print(prey_locations)
-            print("No prey...")
-
         # Compute prey positions relative to fish (Prey_num, 2)
         prey_relative_positions = prey_locations - fish_position
 
@@ -229,6 +225,11 @@ class NewDrawingBoard:
 
         # Number of lines to project through prey or predators, determined by width, height, and size of features. (1)
         n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2, len(prey_locations), p=prey_half_angular_size)
+        if not n_lines_prey:
+            print(f"Prey locations: {prey_locations}")
+            print(f"Fish position: {fish_position}")
+            print(f"Prey Radius: {self.prey_radius}")
+            print(f"Prey Distances: {prey_distances}")
 
         # Create array of angles between prey extremities to form lines. (Prey_num * n_lines_prey)
         interpolated_line_angles = self.chosen_math_library.linspace(prey_extremities[:, 0], prey_extremities[:, 1],
@@ -770,7 +771,7 @@ class NewDrawingBoard:
             print("Theta separation" + str(theta_separation))
             print("angular_size" + str(angular_size))
             print("n" + str(n))
-            return 13
+            return False
 
     def reset(self):
         """To be called at start of episode"""
