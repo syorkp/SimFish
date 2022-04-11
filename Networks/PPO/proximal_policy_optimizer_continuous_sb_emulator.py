@@ -11,7 +11,7 @@ class PPONetworkActorMultivariate2(BaseNetwork):
 
     def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, max_impulse, max_angle_change,
                  clip_param, input_sigmas=False, new_simulation=True, impose_action_mask=False, impulse_scaling=None,
-                 angle_scaling=None):
+                 angle_scaling=None, max_sigma=1.0):
         super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim=2, new_simulation=new_simulation)
 
         #            ----------        Stream Splitting       ---------            #
@@ -55,8 +55,6 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         self.sigma_impulse_combined_proto = tf.placeholder(shape=[None], dtype=tf.float32,
                                                            name='sigma_impulse_combined')
         self.sigma_angle_combined_proto = tf.placeholder(shape=[None], dtype=tf.float32, name='sigma_angle_combined')
-
-        max_sigma = 0.4
 
         if input_sigmas:
             self.sigma_impulse_combined = tf.expand_dims(self.sigma_impulse_combined_proto, 1)

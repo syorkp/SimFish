@@ -475,7 +475,7 @@ class NewDrawingBoard:
         prey_extremities = prey_angles + prey_rf_offsets
 
         # Number of lines to project through prey or predators, determined by width, height, and size of features. (1)
-        n_lines_prey = self.compute_n(np.max(prey_half_angular_size) * 2)
+        n_lines_prey = self.compute_n(np.max(prey_half_angular_size) * 2, len(prey_locations))
 
         # Create array of angles between prey extremities to form lines. (Prey_num * n_lines_prey)
         interpolated_line_angles = np.linspace(prey_extremities[:, 0], prey_extremities[:, 1], n_lines_prey).flatten()
@@ -514,7 +514,7 @@ class NewDrawingBoard:
             predator_extremities = predator_angles_expanded + predator_rf_offsets
 
             # Number of lines to project through prey or predators, determined by width, height, and size of features.
-            n_lines_predator = self.compute_n(np.max(predator_half_angular_size) * 2)
+            n_lines_predator = self.compute_n(np.max(predator_half_angular_size) * 2, 1)
             predator_interpolated_line_angles = np.linspace(predator_extremities[:, 0], predator_extremities[:, 1],
                                                             n_lines_predator).flatten()
 
