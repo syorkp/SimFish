@@ -12,7 +12,8 @@ class NewDrawingBoard:
 
     def __init__(self, width, height, decay_rate, photoreceptor_rf_size, using_gpu, visualise_mask, prey_size=4,
                  predator_size=100, visible_scatter=0.3, background_grating_frequency=50, dark_light_ratio=0.0,
-                 dark_gain=0.01, light_gain=1.0, red_occlusion_gain=1.0, uv_occlusion_gain=1.0, red2_occlusion_gain=1.0):
+                 dark_gain=0.01, light_gain=1.0, red_occlusion_gain=1.0, uv_occlusion_gain=1.0,
+                 red2_occlusion_gain=1.0):
 
         self.using_gpu = using_gpu
 
@@ -149,14 +150,39 @@ class NewDrawingBoard:
         mul1 = self.chosen_math_library.array([0, 0, 0, 1])
         self.mul1_full = self.chosen_math_library.tile(mul1, (self.max_lines_num, 1))
 
-        conditional_tiled = self.chosen_math_library.array([self.width - 1, self.height - 1, self.width - 1, self.height - 1])
+        conditional_tiled = self.chosen_math_library.array(
+            [self.width - 1, self.height - 1, self.width - 1, self.height - 1])
         self.conditional_tiled = self.chosen_math_library.tile(conditional_tiled, (self.max_lines_num, 1))
 
         mul_for_hypothetical = self.chosen_math_library.array([[1, 0], [0, 1], [1, 0], [0, 1]])
         self.mul_for_hypothetical = self.chosen_math_library.tile(mul_for_hypothetical, (self.max_lines_num, 1, 1))
 
-        add_for_hypothetical = self.chosen_math_library.array([[0, 0], [0, 0], [0, self.width - 1], [self.height - 1, 0]])
+        add_for_hypothetical = self.chosen_math_library.array(
+            [[0, 0], [0, 0], [0, self.width - 1], [self.height - 1, 0]])
         self.add_for_hypothetical = self.chosen_math_library.tile(add_for_hypothetical, (self.max_lines_num, 1, 1))
+
+    def compute_repeated_computations_extended(self, num_lines):
+        multiplication_matrix_unit = self.chosen_math_library.array([-1, 1, -1, 1])
+        multiplication_matrix = self.chosen_math_library.tile(multiplication_matrix_unit, (num_lines, 1))
+
+        addition_matrix_unit = self.chosen_math_library.array([0, 0, self.height - 1, self.width - 1])
+        addition_matrix = self.chosen_math_library.tile(addition_matrix_unit, (num_lines, 1))
+
+        mul1 = self.chosen_math_library.array([0, 0, 0, 1])
+        mul1_full = self.chosen_math_library.tile(mul1, (num_lines, 1))
+
+        conditional_tiled = self.chosen_math_library.array(
+            [self.width - 1, self.height - 1, self.width - 1, self.height - 1])
+        conditional_tiled = self.chosen_math_library.tile(conditional_tiled, (num_lines, 1))
+
+        mul_for_hypothetical = self.chosen_math_library.array([[1, 0], [0, 1], [1, 0], [0, 1]])
+        mul_for_hypothetical = self.chosen_math_library.tile(mul_for_hypothetical, (num_lines, 1, 1))
+
+        add_for_hypothetical = self.chosen_math_library.array(
+            [[0, 0], [0, 0], [0, self.width - 1], [self.height - 1, 0]])
+        add_for_hypothetical = self.chosen_math_library.tile(add_for_hypothetical, (num_lines, 1, 1))
+
+        return multiplication_matrix, addition_matrix, mul1_full, mul_for_hypothetical, add_for_hypothetical, conditional_tiled
 
     def scatter(self, i, j, x, y):
         """Computes effects of absorption and scatter, but incorporates effect of implicit scatter from line spread."""
@@ -201,7 +227,8 @@ class NewDrawingBoard:
         n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2, len(prey_locations))
 
         # Create array of angles between prey extremities to form lines. (Prey_num * n_lines_prey)
-        interpolated_line_angles = self.chosen_math_library.linspace(prey_extremities[:, 0], prey_extremities[:, 1], n_lines_prey).flatten()
+        interpolated_line_angles = self.chosen_math_library.linspace(prey_extremities[:, 0], prey_extremities[:, 1],
+                                                                     n_lines_prey).flatten()
 
         # Computing how far along each line prey are.  (Prey_num * n_lines_prey)
         prey_distance_along = prey_distances + self.prey_radius
@@ -227,7 +254,8 @@ class NewDrawingBoard:
                                  ** 0.5
             predator_half_angular_size = self.chosen_math_library.arctan(self.predator_radius / predator_distances)
 
-            predator_angles = self.chosen_math_library.arctan(predator_relative_positions[:, 1] / predator_relative_positions[:, 0])
+            predator_angles = self.chosen_math_library.arctan(
+                predator_relative_positions[:, 1] / predator_relative_positions[:, 0])
             predator_angles_expanded = self.chosen_math_library.expand_dims(predator_angles, 1)
             predator_angles_expanded = self.chosen_math_library.repeat(predator_angles_expanded, 2, 1)
 
@@ -238,12 +266,14 @@ class NewDrawingBoard:
 
             # Number of lines to project through prey or predators, determined by width, height, and size of features.
             n_lines_predator = self.compute_n(self.chosen_math_library.max(predator_half_angular_size) * 2, 1)
-            predator_interpolated_line_angles = self.chosen_math_library.linspace(predator_extremities[:, 0], predator_extremities[:, 1],
-                                                            n_lines_predator).flatten()
+            predator_interpolated_line_angles = self.chosen_math_library.linspace(predator_extremities[:, 0],
+                                                                                  predator_extremities[:, 1],
+                                                                                  n_lines_predator).flatten()
 
             # Combine prey and predator line angles.
-            interpolated_line_angles = self.chosen_math_library.concatenate((interpolated_line_angles, predator_interpolated_line_angles),
-                                                         axis=0)
+            interpolated_line_angles = self.chosen_math_library.concatenate(
+                (interpolated_line_angles, predator_interpolated_line_angles),
+                axis=0)
 
             # Computing how far along each line predators are.
             predator_distance_along = (predator_distances ** 2 + self.predator_radius ** 2) ** 0.5
@@ -260,7 +290,8 @@ class NewDrawingBoard:
         total_lines = interpolated_line_angles.shape[0]
 
         # Ensure all angles are in designated range
-        interpolated_line_angles_scaling = (interpolated_line_angles // (self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
+        interpolated_line_angles_scaling = (interpolated_line_angles // (
+                    self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
         interpolated_line_angles = interpolated_line_angles + interpolated_line_angles_scaling
 
         # Compute m using tan (N_obj x n)
@@ -275,11 +306,18 @@ class NewDrawingBoard:
         c_exp = self.chosen_math_library.repeat(c_exp, 4, 1)
 
         # Slicing repeated matrices so have correct dimensions. (N_obj * n)
-        multiplication_matrix = self.multiplication_matrix[:total_lines]
-        addition_matrix = self.addition_matrix[:total_lines]
-        mul1_full = self.mul1_full[:total_lines]
-        mul_for_hypothetical = self.mul_for_hypothetical[:total_lines]
-        add_for_hypothetical = self.add_for_hypothetical[:total_lines]
+        if total_lines > self.max_lines_num:
+            print("Too few lines... Attempting to create more.")
+
+            multiplication_matrix = self.multiplication_matrix[:total_lines]
+            addition_matrix = self.addition_matrix[:total_lines]
+            mul1_full = self.mul1_full[:total_lines]
+            mul_for_hypothetical = self.mul_for_hypothetical[:total_lines]
+            add_for_hypothetical = self.add_for_hypothetical[:total_lines]
+            conditional_tiled = self.conditional_tiled[:total_lines]
+        else:
+            multiplication_matrix, addition_matrix, mul1_full, mul_for_hypothetical, add_for_hypothetical, \
+                conditional_tiled = self.compute_repeated_computations_extended(num_lines=total_lines)
 
         # Operations to compute all intersections of lines found
         m_mul = self.chosen_math_library.expand_dims(m, 1)
@@ -298,7 +336,6 @@ class NewDrawingBoard:
         intersection_coordinates = (intersection_coordinates * mul_for_hypothetical) + add_for_hypothetical
 
         # Compute possible intersections (N_obj n 2 x 2 x 2)
-        conditional_tiled = self.conditional_tiled[:total_lines]
         valid_points_ls = (intersection_components > 0) * 1
         valid_points_more = (intersection_components < conditional_tiled) * 1
         valid_points = valid_points_more * valid_points_ls
@@ -318,7 +355,8 @@ class NewDrawingBoard:
         interpolated_line_angles = interpolated_line_angles + features_on_left
 
         # Make sure angles in correct range.
-        interpolated_line_angles_scaling = (interpolated_line_angles // (self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
+        interpolated_line_angles_scaling = (interpolated_line_angles // (
+                    self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
         interpolated_line_angles = interpolated_line_angles + interpolated_line_angles_scaling
 
         # Get original angles in correct format.
@@ -392,7 +430,7 @@ class NewDrawingBoard:
         try:
             self.empty_mask[full_set[:, 1], full_set[:, 0]] = 0.0
         except IndexError:
-            full_set = self.chosen_math_library.clip(full_set, 0, self.width-1)
+            full_set = self.chosen_math_library.clip(full_set, 0, self.width - 1)
             self.empty_mask[full_set[:, 1], full_set[:, 0]] = 0.0
 
         # For debugging:
@@ -685,9 +723,7 @@ class NewDrawingBoard:
         else:
             O[O == 0] = self.red_occlusion_gain
 
-
         S = self.scatter(self.xp[:, None], self.yp[None, :], fish_position[1], fish_position[0])
-
 
         # AV = self.chosen_math_library.concatenate(
         #     (AB[:, :, 0:1], np.array(self.db[:, :, 1:2]), AB[:, :, 1:2]),
@@ -743,7 +779,7 @@ class NewDrawingBoard:
         if bkg == 0:
             db = self.chosen_math_library.zeros((self.height, self.width, 3), dtype=np.double)
         else:
-            db = (self.chosen_math_library.ones((self.height, self.width, 3), dtype=np.double) * bkg)/self.light_gain
+            db = (self.chosen_math_library.ones((self.height, self.width, 3), dtype=np.double) * bkg) / self.light_gain
         db[1:2, :] = self.chosen_math_library.array([1, 0, 0])
         db[self.width - 2:self.width - 1, :] = self.chosen_math_library.array([1, 0, 0])
         db[:, 1:2] = self.chosen_math_library.array([1, 0, 0])
@@ -815,7 +851,7 @@ class NewDrawingBoard:
 
     def show_action_continuous(self, impulse, angle, fish_angle, x_position, y_position, colour):
         # rr, cc = draw.ellipse(int(y_position), int(x_position), (abs(angle) * 3) + 3, (impulse*0.5) + 3, rotation=-fish_angle)
-        rr, cc = draw.ellipse(int(y_position), int(x_position), 3, (impulse*0.5) + 3, rotation=-fish_angle)
+        rr, cc = draw.ellipse(int(y_position), int(x_position), 3, (impulse * 0.5) + 3, rotation=-fish_angle)
         self.db[rr, cc, :] = colour
 
     def show_action_discrete(self, fish_angle, x_position, y_position, colour):
