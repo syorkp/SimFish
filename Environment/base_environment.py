@@ -459,7 +459,7 @@ class BaseEnvironment:
             self._touch_wall(arbiter, space, data)
 
     def _touch_wall(self, arbiter, space, data):
-        # print(f"Fish touched wall: {self.fish.body.position}")
+        print(f"Fish touched wall: {self.fish.body.position}")
         new_position_x = self.fish.body.position[0]
         new_position_y = self.fish.body.position[1]
 

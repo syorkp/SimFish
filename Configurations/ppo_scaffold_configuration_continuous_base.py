@@ -326,7 +326,7 @@ number += 1
 
 # 1) Rewards and Penalties
 
-env['wall_touch_penalty'] = True  # 5
+env['wall_reflection'] = True  # 5
 save_files(number)
 number += 1
 

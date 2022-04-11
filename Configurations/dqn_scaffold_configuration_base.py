@@ -331,7 +331,7 @@ env['capture_swim_extra_cost'] = 25
 save_files(number)
 number += 1
 
-env['wall_touch_penalty'] = True  # 5
+env['wall_reflection'] = True
 save_files(number)
 number += 1
 
