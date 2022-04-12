@@ -170,8 +170,8 @@ env = {
        'reward_distance': 100,
        'proximity_reward': 0.002,
 
-       'max_sigma_impulse': 0.001,  # Formerly 0.4
-       'max_sigma_angle': 0.001,  # Formerly 0.4
+       'max_sigma_impulse': 0.01,  # Formerly 0.4
+       'max_sigma_angle': 0.01,  # Formerly 0.4
        'min_sigma_impulse': 0.001,
        'min_sigma_angle': 0.001,
        'sigma_time_constant': 0.000001,

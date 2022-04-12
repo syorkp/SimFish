@@ -27,9 +27,6 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
         impulse = (distance * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
         dist_angles_radians = (np.absolute(dist_angles) / 180) * np.pi
 
-        print(impulse_scaling)
-        print(impulse)
-        print(type(impulse))
         impulse = impulse / impulse_scaling
 
         dist_angles_radians = dist_angles_radians / angle_scaling
