@@ -1778,6 +1778,86 @@ dqn_scaffold_training_config_9b = [
     },
 ]
 
+dqn_scaffold_training_config_9c = [
+    {
+        "Model Name": "dqn_scaffold_9",
+        "Environment Name": "dqn_scaffold_9",
+        "Trial Number": 5,
+        "Total Configurations": 11,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Capture Index": {
+                "2": 0.2,
+                "3": 0.2,
+                "4": 0.3,
+                "5": 0.3,
+                "6": 0.4,
+                "7": 0.4,
+                "8": 0.4,
+                "9": 0.5,
+                "10": 0.5,
+                "11": 0.5,
+            },
+            "Predator Avoidance Index": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "dqn_scaffold_9",
+        "Environment Name": "dqn_scaffold_9",
+        "Trial Number": 6,
+        "Total Configurations": 11,
+        "Episode Transitions": {
+        },
+        "Conditional Transitions": {
+            "Prey Capture Index": {
+                "2": 0.2,
+                "3": 0.2,
+                "4": 0.3,
+                "5": 0.3,
+                "6": 0.4,
+                "7": 0.4,
+                "8": 0.4,
+                "9": 0.5,
+                "10": 0.5,
+                "11": 0.5,
+            },
+            "Predator Avoidance Index": {
+            },
+            "Sand Grains Bumped": {
+            }
+        },
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+
 ppo_scaffold_training_config_9a = [
     {
         "Model Name": "ppo_scaffold_low_sig_9",
@@ -1946,5 +2026,5 @@ ppo_scaffold_training_config_9b = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_training_config_9a, parallel_jobs=4)
+manager = TrialManager(dqn_scaffold_training_config_9c, parallel_jobs=4)
 manager.run_priority_loop()
