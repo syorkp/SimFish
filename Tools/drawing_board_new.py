@@ -225,7 +225,7 @@ class NewDrawingBoard:
 
         # Number of lines to project through prey or predators, determined by width, height, and size of features. (1)
         n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2, len(prey_locations), p=prey_half_angular_size)
-        if n_lines_prey is not None: # TODO: remove
+        if n_lines_prey is None: # TODO: remove
             print(f"Prey locations: {prey_locations}")
             print(f"Fish position: {fish_position}")
             print(f"Prey Radius: {self.prey_radius}")
