@@ -95,6 +95,7 @@
     "visualise_mask": false,
     "show_channel_sectors": false,
     "show_fish_body_energy_state": false,
+    "show_action_space_usage": true,
     "show_previous_actions": 200,
     "decay_rate": 0.01,
     "sim_steps_per_second": 5,

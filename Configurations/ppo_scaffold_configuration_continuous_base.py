@@ -11,7 +11,9 @@ import os
 # all distances in pixels
 import numpy as np
 
+from Utilities.scaffold_creation import create_scaffold, build_changes_list_gradual
 from Networks.original_network import connectivity, reflected, base_network_layers, modular_network_layers, ops
+
 
 params = {
        # Learning (Universal)
@@ -170,6 +172,7 @@ env = {
        'reward_distance': 100,
        'proximity_reward': 0.002,
 
+       # For inputting std. values - note these must not be the same number.
        'max_sigma_impulse': 0.01,  # Formerly 0.4
        'max_sigma_angle': 0.01,  # Formerly 0.4
        'min_sigma_impulse': 0.001,
@@ -197,6 +200,7 @@ env = {
        'visualise_mask': False,  # For debugging purposes.
        'show_channel_sectors': False,
        'show_fish_body_energy_state': False,
+       'show_action_space_usage': True,
        'show_previous_actions': 200,  # False if not, otherwise the number of actions to save.
 
        # Environment
@@ -232,7 +236,7 @@ env = {
        'max_predator_reorient_distance': 400,
        'predator_presence_duration_steps': 100,
 
-       # Predator - Expanding disc
+       # Predator - Expanding disc (no longer used)
        'predator_first_attack_loom': False,
        'initial_predator_size': 20,  # Size in degrees
        'final_predator_size': 200,  # "
@@ -303,89 +307,32 @@ env = {
 
 }
 
-directory_name = "ppo_scaffold_low_sig_9"
-
-# Ensure Output File Exists
-if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):
-       os.makedirs(f"Configurations/Training-Configs/{directory_name}/")
+scaffold_name = "ppo_scaffold_low_sig_9"
 
 
-# Equal to that given in the file name.
-def save_files(n):
-       with open(f"Configurations/Training-Configs/{directory_name}/{str(n)}_env.json", 'w') as f:
-              json.dump(env, f, indent=4)
+changes = [
 
-       with open(f"Configurations/Training-Configs/{directory_name}/{str(n)}_learning.json", 'w') as f:
-              json.dump(params, f, indent=4)
+       # 1) Rewards and Penalties
+       ["PCI", 0.2, "wall_reflection", True],
+       # TODO: Add energy state
 
+       # 2) Visual System
+       ["PCI", 0.2, "red_photoreceptor_rf_size", 0.0133 * 2],
+       ["PCI", 0.2, "uv_photoreceptor_rf_size", 0.0133 * 2],
+       ["PCI", 0.2, "red_photoreceptor_rf_size", 0.0133 * 1],
+       ["PCI", 0.2, "uv_photoreceptor_rf_size", 0.0133 * 1],
+       ["PCI", 0.3, "shot_noise", True],
+       # TODO: Increase bkg_scatter
+       # TODO: Decrease luminance
 
-# 1 Initial config
-number = 1
-save_files(number)
-number += 1
-
-# 1) Rewards and Penalties
-
-env['wall_reflection'] = True  # 5
-save_files(number)
-number += 1
-
-# Add energy state
-
-# 2) Visual System
-
-env['red_photoreceptor_rf_size'] = 0.0133 * 2
-env['uv_photoreceptor_rf_size'] = 0.0133 * 2
-save_files(number)
-number += 1
-
-env['red_photoreceptor_rf_size'] = 0.0133 * 1
-env['uv_photoreceptor_rf_size'] = 0.0133 * 1
-save_files(number)
-number += 1
-
-env['shot_noise'] = True
-save_files(number)
-number += 1
-
-# Increase bkg_scatter
-
-# Decrease luminance
-
+]
 
 # 3) Available actions
+changes += build_changes_list_gradual("PCI", 0.3, "max_impulse", env["max_impulse"], 20, 10)
 
-env['max_impulse'] = 12
-save_files(number)
-number += 1
+# # 4) Prey Capture
+changes += [["PCI", 0.4, "prey_fluid_displacement", True]]
+changes += build_changes_list_gradual("PCI", 0.5, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
 
-env['max_impulse'] = 14
-save_files(number)
-number += 1
-
-env['max_impulse'] = 16
-save_files(number)
-number += 1
-
-# 4) Prey Capture
-env['prey_fluid_displacement'] = True
-save_files(number)
-number += 1
-
-env['fish_mouth_size'] = 7
-save_files(number)
-number += 1
-
-env['fish_mouth_size'] = 6
-save_files(number)
-number += 1
-
-env['fish_mouth_size'] = 5
-save_files(number)
-number += 1
-
-env['fish_mouth_size'] = 4
-save_files(number)
-number += 1
-
+create_scaffold(scaffold_name, env, params, changes)
 

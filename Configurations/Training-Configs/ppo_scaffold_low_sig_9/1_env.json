@@ -96,6 +96,7 @@
     "show_channel_sectors": false,
     "show_fish_body_energy_state": false,
     "show_previous_actions": 200,
+    "show_action_space_usage": true,
     "decay_rate": 0.01,
     "sim_steps_per_second": 5,
     "background_grating_frequency": 50,

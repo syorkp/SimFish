@@ -28,6 +28,7 @@ class NewDrawingBoard:
         self.light_gain = light_gain
         self.photoreceptor_rf_size = photoreceptor_rf_size
         self.db = None
+        self.db_visualisation = None
         self.base_db = self.get_base_arena()
         self.base_db_illuminated = self.get_base_arena(visible_scatter)
         self.background_grating = self.get_background_grating(background_grating_frequency)
@@ -771,11 +772,11 @@ class NewDrawingBoard:
         else:
             self.db = self.chosen_math_library.copy(self.base_db_illuminated)
 
-        # if bkg == 0:
-        #     self.db = np.zeros((self.height, self.width, 3), dtype=np.double)
-        # else:
-        #     self.db = np.ones((self.height, self.width, 3), dtype=np.double) * bkg
-        # self.draw_walls()
+    def erase_visualisation(self, bkg=0.1):
+        if bkg == 0:
+            self.db_visualisation = self.chosen_math_library.copy(self.base_db)
+        else:
+            self.db_visualisation = self.chosen_math_library.copy(self.base_db_illuminated)
 
     def get_base_arena(self, bkg=0.0):
         if bkg == 0:
@@ -798,24 +799,30 @@ class NewDrawingBoard:
         self.db[:, :dark_col] *= dark_gain
         self.db[:, dark_col:] *= light_gain
 
-    def circle(self, center, rad, color):
+    def circle(self, center, rad, color, visualisation=False):
         rr, cc = draw.circle(center[1], center[0], rad, self.db.shape)
-        self.db[rr, cc, :] = color
+        if visualisation:
+            self.db_visualisation[rr, cc, :] = color
+        else:
+            self.db[rr, cc, :] = color
 
-    def tail(self, head, left, right, tip, color):
+    def tail(self, head, left, right, tip, color, visualisation):
         tail_coordinates = np.array((head, left, tip, right))
         rr, cc = draw.polygon(tail_coordinates[:, 1], tail_coordinates[:, 0], self.db.shape)
-        self.db[rr, cc, :] = color
+        if visualisation:
+            self.db_visualisation[rr, cc, :] = color
+        else:
+            self.db[rr, cc, :] = color
 
     def fish_shape(self, mouth_centre, mouth_rad, head_rad, tail_length, mouth_colour, body_colour, angle):
         offset = np.pi / 2
         angle += offset
         angle = -angle
-        self.circle(mouth_centre, mouth_rad, mouth_colour)  # For the mouth.
+        self.circle(mouth_centre, mouth_rad, mouth_colour, visualisation=True)  # For the mouth.
         dx1, dy1 = head_rad * np.sin(angle), head_rad * np.cos(angle)
         head_centre = (mouth_centre[0] + dx1,
                        mouth_centre[1] + dy1)
-        self.circle(head_centre, head_rad, body_colour)
+        self.circle(head_centre, head_rad, body_colour, visualisation=True)
         dx2, dy2 = -1 * dy1, dx1
         left_flank = (head_centre[0] + dx2,
                       head_centre[1] + dy2)
@@ -823,7 +830,7 @@ class NewDrawingBoard:
                        head_centre[1] - dy2)
         tip = (mouth_centre[0] + (tail_length + head_rad) * np.sin(angle),
                mouth_centre[1] + (tail_length + head_rad) * np.cos(angle))
-        self.tail(head_centre, left_flank, right_flank, tip, body_colour)
+        self.tail(head_centre, left_flank, right_flank, tip, body_colour, visualisation=True)
 
     def create_screen(self, fish_position, distance, colour):
         rr, cc = draw.circle_perimeter(int(fish_position[0]), int(fish_position[1]), distance - 10)
@@ -833,7 +840,7 @@ class NewDrawingBoard:
         rr, cc = draw.circle_perimeter(int(fish_position[0]), int(fish_position[1]), distance - 8)
         self.db[rr, cc, :] = colour
 
-    def vegetation(self, vertex, edge_size, color):
+    def vegetation(self, vertex, edge_size, color, visualisation=False):
         coordinates = np.array(((vertex[1], vertex[0]),
                                 (vertex[1], vertex[0] + edge_size),
                                 (vertex[1] + edge_size / 2, vertex[0] + edge_size - edge_size / 3),
@@ -842,7 +849,10 @@ class NewDrawingBoard:
                                 (vertex[1] + edge_size / 2, vertex[0] + edge_size / 3)))
 
         rr, cc = draw.polygon(coordinates[:, 0], coordinates[:, 1], self.db.shape)
-        self.db[rr, cc, :] = color
+        if visualisation:
+            self.db_visualisation[rr, cc, :] = color
+        else:
+            self.db[rr, cc, :] = color
 
     @staticmethod
     def multi_circles(cx, cy, rad):
@@ -854,11 +864,11 @@ class NewDrawingBoard:
     def show_action_continuous(self, impulse, angle, fish_angle, x_position, y_position, colour):
         # rr, cc = draw.ellipse(int(y_position), int(x_position), (abs(angle) * 3) + 3, (impulse*0.5) + 3, rotation=-fish_angle)
         rr, cc = draw.ellipse(int(y_position), int(x_position), 3, (impulse * 0.5) + 3, rotation=-fish_angle)
-        self.db[rr, cc, :] = colour
+        self.db_visualisation[rr, cc, :] = colour
 
     def show_action_discrete(self, fish_angle, x_position, y_position, colour):
         rr, cc = draw.ellipse(int(y_position), int(x_position), 5, 3, rotation=-fish_angle)
-        self.db[rr, cc, :] = colour
+        self.db_visualisation[rr, cc, :] = colour
 
     def line(self, p1, p2, color):
         rr, cc = draw.line(p1[1], p1[0], p2[1], p2[0])

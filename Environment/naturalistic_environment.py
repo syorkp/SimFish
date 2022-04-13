@@ -161,7 +161,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.fish.touched_predator = False
 
             if self.show_all:
-                self.board.erase(bkg=self.env_variables['bkg_scatter'])
+                self.board.erase_visualisation(bkg=0.3)
                 self.draw_shapes(visualisation=True)
                 if self.draw_screen:
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5) / 255.)
@@ -285,7 +285,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 
         if save_frames or self.draw_screen:
-            self.board.erase(bkg=self.env_variables['bkg_scatter'])
+            self.board.erase_visualisation(bkg=0.3)
             self.draw_shapes(visualisation=True)
             self.board.apply_light(self.dark_col, 0.7, 1)
             if self.env_variables['show_channel_sectors']:
@@ -346,7 +346,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.fish.right_eye.read(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 
         if save_frames or self.draw_screen:
-            self.board.erase(bkg=self.env_variables['bkg_scatter'])
+            self.board.erase_visualisation(bkg=0.3)
             self.draw_shapes(visualisation=True)
             self.board.apply_light(self.dark_col, 0.7, 1)
             self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)

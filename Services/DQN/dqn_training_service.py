@@ -28,9 +28,6 @@ def training_target(trial, epsilon, total_steps, episode_number, memory_fraction
                                   new_simulation=trial["New Simulation"],
 
                                   model_exists=trial["Model Exists"],
-                                  episode_transitions=trial["Episode Transitions"],
-                                  total_configurations=trial["Total Configurations"],
-                                  conditional_transitions=trial["Conditional Transitions"],
                                   configuration_index=configuration_index,
                                   full_logs=trial["Full Logs"],
                                   profile_speed=trial["Profile Speed"],
@@ -41,8 +38,8 @@ def training_target(trial, epsilon, total_steps, episode_number, memory_fraction
 class DQNTrainingService(TrainingService, BaseDQN):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_actions, new_simulation, epsilon, model_exists, episode_transitions,
-                 total_configurations, conditional_transitions, configuration_index, full_logs, profile_speed):
+                 config_name, realistic_bouts, continuous_actions, new_simulation, epsilon, model_exists,
+                 configuration_index, full_logs, profile_speed):
         super().__init__(model_name=model_name, trial_number=trial_number,
                          total_steps=total_steps, episode_number=episode_number,
                          monitor_gpu=monitor_gpu, using_gpu=using_gpu,
@@ -51,9 +48,6 @@ class DQNTrainingService(TrainingService, BaseDQN):
                          continuous_actions=continuous_actions,
                          new_simulation=new_simulation,
                          model_exists=model_exists,
-                         episode_transitions=episode_transitions,
-                         total_configurations=total_configurations,
-                         conditional_transitions=conditional_transitions,
                          configuration_index=configuration_index,
                          full_logs=full_logs,
                          profile_speed=profile_speed

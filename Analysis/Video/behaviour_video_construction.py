@@ -1,5 +1,8 @@
+import copy
+
 import numpy as np
 import json
+import math
 import matplotlib.pyplot as plt
 import skimage.draw as draw
 from skimage import io
@@ -132,7 +135,74 @@ def draw_previous_actions(board, past_actions, past_positions, fish_angles, cont
     return board, past_actions, past_positions, fish_angles
 
 
-def draw_episode(data, config_name, model_name, draw_past_actions=True, show_energy_state=True, scale=0.25):
+def draw_action_space_usage_continuous(current_height, current_width, action_buffer, max_impulse=10, max_angle=1):
+    difference = 300
+    extra_area = np.zeros((current_height, difference - 20, 3))
+    available_height = current_height-20
+
+    impulse_resolution = 4
+    angle_resolution = 20
+
+    # Create counts for binned actions
+    impulse_bins = np.linspace(0, max_impulse, int(max_impulse * impulse_resolution))
+    binned_impulses = np.digitize(np.array(action_buffer)[:, 0], impulse_bins)
+    impulse_bin_counts = np.array([np.count_nonzero(binned_impulses == i) for i in range(len(impulse_bins))]).astype(float)
+
+    angle_bins = np.linspace(-max_angle, max_angle, int(max_angle * angle_resolution))
+    binned_angles = np.digitize(np.array(action_buffer)[:, 1], angle_bins)
+    angle_bin_counts = np.array([np.count_nonzero(binned_angles == i) for i in range(len(angle_bins))]).astype(float)
+
+    impulse_bin_scaling = (difference-20)/max(impulse_bin_counts)
+    angle_bin_scaling = (difference-20)/max(angle_bin_counts)
+
+    impulse_bin_counts *= impulse_bin_scaling
+    angle_bin_counts *= angle_bin_scaling
+
+    impulse_bin_counts = np.floor(impulse_bin_counts).astype(int)
+    angle_bin_counts = np.floor(angle_bin_counts).astype(int)
+
+    bin_height = int(math.floor(available_height / (len(impulse_bin_counts) + len(angle_bin_counts))))
+
+    current_h = 0
+    for count in impulse_bin_counts:
+        extra_area[current_h:current_h+bin_height, 0:count, :] = 255.0
+        current_h += bin_height
+
+    current_h += 100
+
+    for count in angle_bin_counts:
+        extra_area[current_h:current_h+bin_height, 0:count, :] = 255.0
+        current_h += bin_height
+
+    x = extra_area[:, :, 0]
+
+    return extra_area
+
+
+def draw_action_space_usage_discrete(current_height, current_width, action_buffer):
+    difference = current_height - current_width
+    extra_area = np.zeros((current_height, difference - 20, 3))
+
+    action_bins = [i for i in range(10)]
+    action_bin_counts = np.array([np.count_nonzero(np.array(action_buffer) == i) for i in action_bins]).astype(float)
+
+    action_bin_scaling = (difference-20)/max(action_bin_counts)
+    action_bin_counts *= action_bin_scaling
+    action_bin_counts = np.floor(action_bin_counts).astype(int)
+
+    bin_height = int(math.floor(current_width/len(action_bins)))
+
+    current_h = 0
+
+    for count in action_bin_counts:
+        extra_area[current_h:current_h+bin_height, 0:count, :] = 255.0
+        current_h += bin_height
+
+    return extra_area
+
+
+def draw_episode(data, config_name, model_name, continuous_actions, draw_past_actions=True, show_energy_state=True,
+                 scale=0.25, draw_action_space_usage=True):
     with open(f"../../Configurations/Training-Configs/{config_name}/1_env.json", 'r') as f:
         env_variables = json.load(f)
 
@@ -147,12 +217,17 @@ def draw_episode(data, config_name, model_name, draw_past_actions=True, show_ene
     orientation_buffer = []
 
     for step in range(num_steps):
-        action_buffer.append([data["impulse"][step], data["angle"][step]])
+        if continuous_actions:
+            action_buffer.append([data["impulse"][step], data["angle"][step]])
+        else:
+            action_buffer.append(data["action"][step])
         position_buffer.append(fish_positions[step])
         orientation_buffer.append(data["fish_angle"][step])
 
         if draw_past_actions:
-            board, action_buffer, position_buffer, orientation_buffer = draw_previous_actions(board, action_buffer, position_buffer, orientation_buffer)
+            board, action_buffer, position_buffer, orientation_buffer = draw_previous_actions(board, action_buffer,
+                                                                                              position_buffer, orientation_buffer,
+                                                                                              continuous_actions=continuous_actions)
 
         if show_energy_state:
             fish_body_colour = (1-energy_levels[step], energy_levels[step], 0)
@@ -175,7 +250,17 @@ def draw_episode(data, config_name, model_name, draw_past_actions=True, show_ene
         if data["predator_presence"][step]:
             board.circle(data["predator_positions"][step], env_variables['predator_size'], (0, 1, 0))
 
-        frames.append(rescale(board.db, scale, multichannel=True, anti_aliasing=True))
+        if draw_action_space_usage:
+            if continuous_actions:
+                action_space_strip = draw_action_space_usage_continuous(board.db.shape[0], board.db.shape[1], action_buffer)
+            else:
+                action_space_strip = draw_action_space_usage_discrete(board.db.shape[0], board.db.shape[1], action_buffer)
+
+            frame = np.hstack((board.db, np.zeros((board.db.shape[0], 20, 3)), action_space_strip))
+        else:
+            frame = board.db
+
+        frames.append(rescale(copy.copy(frame), scale, multichannel=True, anti_aliasing=True))
         board.db = board.get_base_arena(0.3)
 
     frames = np.array(frames)
@@ -188,4 +273,4 @@ model_name = "scaffold_version_4-4"
 data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-4")
 config_name = "ppo_continuous_sbe_is_scaffold_4"
 
-draw_episode(data, config_name, model_name)
+draw_episode(data, config_name, model_name, continuous_actions=True)

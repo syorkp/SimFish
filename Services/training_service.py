@@ -20,18 +20,21 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 class TrainingService(BaseService):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_actions, new_simulation, model_exists, episode_transitions,
-                 total_configurations, conditional_transitions, configuration_index, full_logs, profile_speed):
+                 config_name, realistic_bouts, continuous_actions, new_simulation, model_exists, configuration_index,
+                 full_logs, profile_speed):
 
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                          config_name, realistic_bouts, continuous_actions, new_simulation, profile_speed)
 
         print("TrainingService Constructor called")
 
-        # Configuration1
-        self.total_configurations = total_configurations
-        self.episode_transitions = episode_transitions
-        self.conditional_transitions = conditional_transitions
+        # Configurations
+        self.total_configurations = None
+        self.episode_transitions = None
+        self.pci_transitions = None
+        self.pai_transitions = None
+        self.sgb_transitions = None
+        self.load_transitions()
         if configuration_index is not None:
             self.configuration_index = configuration_index
         else:
@@ -131,20 +134,20 @@ class TrainingService(BaseService):
             switch_criteria_met = True
         elif len(self.last_episodes_prey_caught) >= 20:  # Switch config by behavioural conditionals
 
-            prey_conditional_transition_points = self.conditional_transitions["Prey Capture Index"].keys()
-            predators_conditional_transition_points = self.conditional_transitions["Predator Avoidance Index"].keys()
-            grains_bumped_conditional_transfer_points = self.conditional_transitions["Sand Grains Bumped"].keys()
+            prey_conditional_transition_points = self.pci_transitions.keys()
+            predators_conditional_transition_points = self.pai_transitions.keys()
+            grains_bumped_conditional_transfer_points = self.sgb_transitions.keys()
 
             if next_point in predators_conditional_transition_points and \
-                    np.mean(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"] > self.conditional_transitions["Predator Avoidance Index"][next_point]:
+                    np.mean(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"] > self.pai_transitions[next_point]:
                 switch_criteria_met = True
 
             elif next_point in prey_conditional_transition_points and \
-                    np.mean(self.last_episodes_prey_caught)/self.environment_params["prey_num"] > self.conditional_transitions["Prey Capture Index"][next_point]:
+                    np.mean(self.last_episodes_prey_caught)/self.environment_params["prey_num"] > self.pci_transitions[next_point]:
                 switch_criteria_met = True
 
             elif next_point in grains_bumped_conditional_transfer_points and \
-                    np.mean(self.last_episodes_sand_grains_bumped) > self.conditional_transitions["Sand Grains Bumped"][next_point]:
+                    np.mean(self.last_episodes_sand_grains_bumped) > self.sgb_transitions[next_point]:
                 switch_criteria_met = True
 
             if self.episode_number - self.previous_config_switch < 20:
@@ -160,6 +163,17 @@ class TrainingService(BaseService):
             self.create_environment()
         else:
             self.switched_configuration = False
+
+    def load_transitions(self):
+        with open(f"Configurations/Training-Configs/{self.config_name}/transitions.json", 'r') as f:
+            transitions = json.load(f)
+        self.episode_transitions = transitions["Episode"]
+        self.pci_transitions = transitions["PCI"]
+        self.pai_transitions = transitions["PAI"]
+        self.sgb_transitions = transitions["SGB"]
+        configurations = list(self.episode_transitions.keys()) + list(self.pci_transitions.keys()) + \
+                         list(self.pai_transitions.keys()) + list(self.sgb_transitions.keys())
+        self.total_configurations = len(configurations) + 1
 
     def _save_episode(self, episode_start_t, total_episode_reward, prey_caught, predators_avoided, sand_grains_bumped,
                       steps_near_vegetation):

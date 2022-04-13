@@ -1,4 +1,5 @@
 import copy
+import math
 import random
 import numpy as np
 import matplotlib.pyplot as plt
@@ -239,6 +240,78 @@ class BaseEnvironment:
         self.salt_gradient = np.exp(-self.env_variables["salt_concentration_decay"] * salt_distance) * \
                              self.env_variables["max_salt_damage"]
 
+    def get_action_space_usage_display(self, current_shape):
+        current_height = current_shape[0]
+        current_width = current_shape[1]
+        if self.continuous_actions:
+            return self._get_action_space_usage_display_continuous(current_height, current_width)
+        else:
+            return self._get_action_space_usage_display_discrete(current_height, current_width)
+
+    def _get_action_space_usage_display_continuous(self, current_height, current_width):
+        difference = current_height - current_width
+        extra_area = np.zeros((current_height, difference - 20, 3))
+        available_height = current_width - 100
+
+        impulse_resolution = 5
+        angle_resolution = 25
+
+        # Create counts for binned actions
+        impulse_bins = np.linspace(0, self.env_variables["max_impulse"], int(self.env_variables["max_impulse"] * impulse_resolution))
+        binned_impulses = np.digitize(np.array(self.action_buffer)[:, 0], impulse_bins)
+        impulse_bin_counts = np.array([np.count_nonzero(binned_impulses == i) for i in range(len(impulse_bins))]).astype(float)
+
+        angle_bins = np.linspace(-self.env_variables["max_angle_change"], self.env_variables["max_angle_change"],
+                                 int(self.env_variables["max_angle_change"] * angle_resolution))
+        binned_angles = np.digitize(np.array(self.action_buffer)[:, 1], angle_bins)
+        angle_bin_counts = np.array([np.count_nonzero(binned_angles == i) for i in range(len(angle_bins))]).astype(float)
+
+        impulse_bin_scaling = (difference-20)/max(impulse_bin_counts)
+        angle_bin_scaling = (difference-20)/max(angle_bin_counts)
+
+        impulse_bin_counts *= impulse_bin_scaling
+        angle_bin_counts *= angle_bin_scaling
+
+        impulse_bin_counts = np.floor(impulse_bin_counts).astype(int)
+        angle_bin_counts = np.floor(angle_bin_counts).astype(int)
+
+        bin_height = int(math.floor(available_height / (len(impulse_bin_counts) + len(angle_bin_counts))))
+
+        current_h = 0
+        for count in impulse_bin_counts:
+            extra_area[current_h:current_h+bin_height, 0:count, :] = 255.0
+            current_h += bin_height
+
+        current_h += 100
+
+        for count in angle_bin_counts:
+            extra_area[current_h:current_h+bin_height, 0:count, :] = 255.0
+            current_h += bin_height
+
+        return extra_area
+
+    def _get_action_space_usage_display_discrete(self, current_height, current_width):
+        difference = current_height - current_width
+        extra_area = np.zeros((current_height, difference - 20, 3))
+
+        action_bins = [i for i in range(10)]
+        # binned_actions = np.digitize(np.array(self.action_buffer), action_bins)
+        action_bin_counts = np.array([np.count_nonzero(np.array(self.action_buffer) == i) for i in action_bins]).astype(float)
+
+        action_bin_scaling = (difference-20)/max(action_bin_counts)
+        action_bin_counts *= action_bin_scaling
+        action_bin_counts = np.floor(action_bin_counts).astype(int)
+
+        bin_height = int(math.floor(current_width/len(action_bins)))
+
+        current_h = 0
+
+        for count in action_bin_counts:
+            extra_area[current_h:current_h+bin_height, 0:count, :] = 255.0
+            current_h += bin_height
+
+        return extra_area
+
     def output_frame(self, activations, internal_state, scale=0.25):
         # Saving mask frames (for debugging)
         if self.visualise_mask:
@@ -248,9 +321,9 @@ class BaseEnvironment:
             self.board.mask_buffer_point = None
 
         if self.using_gpu:
-            arena = self.board.db.get() * 255.0
+            arena = copy.copy(self.board.db_visualisation.get() * 255.0)
         else:
-            arena = self.board.db * 255.0
+            arena = copy.copy(self.board.db_visualisation * 255.0)
 
         arena[0, :, 0] = np.ones(self.env_variables['width']) * 255
         arena[self.env_variables['height'] - 1, :, 0] = np.ones(self.env_variables['width']) * 255
@@ -290,6 +363,10 @@ class BaseEnvironment:
 
                 frame = np.vstack((frame, np.zeros((20, self.env_variables['width'], 3)), this_ac))
 
+        if self.env_variables["show_action_space_usage"]:  # TODO: Test
+            action_display = self.get_action_space_usage_display(frame.shape)
+            frame = np.hstack((frame, np.zeros((frame.shape[0], 20, 3)), action_display))
+
         frame = rescale(frame, scale, multichannel=True, anti_aliasing=True)
         return frame
 
@@ -302,32 +379,36 @@ class BaseEnvironment:
             self._draw_shapes_environmental(visualisation, self.env_variables['prey_size'])
 
     def _draw_past_actions(self, n_actions_to_show):
-        while len(self.action_buffer) > n_actions_to_show:
-            self.action_buffer.pop(0)
-        while len(self.position_buffer) > n_actions_to_show:
-            self.position_buffer.pop(0)
-        while len(self.fish_angle_buffer) > n_actions_to_show:
-            self.fish_angle_buffer.pop(0)
+        # Select subset of actions to show
+        if len(self.action_buffer) > n_actions_to_show:
+            actions_to_show = self.action_buffer[len(self.action_buffer)-n_actions_to_show:]
+            positions_to_show = self.position_buffer[len(self.position_buffer)-n_actions_to_show:]
+            fish_angles_to_show = self.fish_angle_buffer[len(self.fish_angle_buffer)-n_actions_to_show:]
+        else:
+            actions_to_show = self.action_buffer
+            positions_to_show = self.position_buffer
+            fish_angles_to_show = self.fish_angle_buffer
 
-        for i, a in enumerate(self.action_buffer):
+        for i, a in enumerate(actions_to_show):
             if self.continuous_actions:
-                action_colour = (1 * ((i+1)/len(self.action_buffer)), 0, 0)
-                self.board.show_action_continuous(a[0], a[1], self.fish_angle_buffer[i], self.position_buffer[i][0],
-                                       self.position_buffer[i][1], action_colour)
+                action_colour = (1 * ((i+1)/len(actions_to_show)), 0, 0)
+                self.board.show_action_continuous(a[0], a[1], fish_angles_to_show[i], positions_to_show[i][0],
+                                       positions_to_show[i][1], action_colour)
             else:
-                action_colour = self.fish.get_action_colour(self.action_buffer[i], ((i+1)/len(self.action_buffer)))
-                self.board.show_action_discrete(self.fish_angle_buffer[i], self.position_buffer[i][0],
-                                       self.position_buffer[i][1], action_colour)
+                action_colour = self.fish.get_action_colour(actions_to_show[i], ((i+1)/len(actions_to_show)))
+                self.board.show_action_discrete(fish_angles_to_show[i], positions_to_show[i][0],
+                                       positions_to_show[i][1], action_colour)
 
     def _draw_shapes_environmental(self, visualisation, prey_size):
-        if self.env_variables["show_fish_body_energy_state"]:
-            fish_body_colour = (1-self.fish.energy_level, self.fish.energy_level, 0)
-        else:
-            fish_body_colour = self.fish.head.color
+        if visualisation:  # Only draw fish if in visualisation mode
+            if self.env_variables["show_fish_body_energy_state"]:
+                fish_body_colour = (1 - self.fish.energy_level, self.fish.energy_level, 0)
+            else:
+                fish_body_colour = self.fish.head.color
 
-        self.board.fish_shape(self.fish.body.position, self.env_variables['fish_mouth_size'],
-                              self.env_variables['fish_head_size'], self.env_variables['fish_tail_length'],
-                              self.fish.mouth.color, fish_body_colour, self.fish.body.angle)
+            self.board.fish_shape(self.fish.body.position, self.env_variables['fish_mouth_size'],
+                                  self.env_variables['fish_head_size'], self.env_variables['fish_tail_length'],
+                                  self.fish.mouth.color, fish_body_colour, self.fish.body.angle)
 
         if len(self.prey_bodies) > 0:
             px = np.round(np.array([pr.position[0] for pr in self.prey_bodies])).astype(int)
@@ -337,7 +418,10 @@ class BaseEnvironment:
             ccs = np.clip(ccs, 0, 1499)
 
             try:
-                self.board.db[rrs, ccs] = self.prey_shapes[0].color
+                if visualisation:
+                    self.board.db_visualisation[rrs, ccs] = self.prey_shapes[0].color
+                else:
+                    self.board.db[rrs, ccs] = self.prey_shapes[0].color
             except IndexError:
                 print(f"Index Error for: PX: {max(rrs.flatten())}, PY: {max(ccs.flatten())}")
                 if max(rrs.flatten()) > self.env_variables['height']:
@@ -357,7 +441,10 @@ class BaseEnvironment:
             rrs, ccs = self.board.multi_circles(px, py, self.env_variables['sand_grain_size'])
 
             try:
-                self.board.db[rrs, ccs] = self.sand_grain_shapes[0].color
+                if visualisation:
+                    self.board.db_visualisation[rrs, ccs] = self.sand_grain_shapes[0].color
+                else:
+                    self.board.db[rrs, ccs] = self.sand_grain_shapes[0].color
             except IndexError:
                 print(f"Index Error for: RRS: {max(rrs.flatten())}, CCS: {max(ccs.flatten())}")
                 if max(rrs.flatten()) > self.env_variables['width']:
@@ -372,19 +459,19 @@ class BaseEnvironment:
                 self.draw_shapes(visualisation=visualisation)
 
         for i, pr in enumerate(self.predator_bodies):
-            self.board.circle(pr.position, self.env_variables['predator_size'], self.predator_shapes[i].color)
+            self.board.circle(pr.position, self.env_variables['predator_size'], self.predator_shapes[i].color, visualisation)
 
         for i, pr in enumerate(self.vegetation_bodies):
-            self.board.vegetation(pr.position, self.env_variables['vegetation_size'], self.vegetation_shapes[i].color)
+            self.board.vegetation(pr.position, self.env_variables['vegetation_size'], self.vegetation_shapes[i].color, visualisation)
 
         if self.predator_body is not None:
             if self.first_attack:
                 self.board.circle(self.predator_body.position, self.loom_predator_current_size,
-                                  self.predator_shape.color)
+                                  self.predator_shape.color, visualisation)
             else:
                 self.board.circle(self.predator_body.position, self.env_variables['predator_size'],
-                                  self.predator_shape.color)
-
+                                  self.predator_shape.color, visualisation)
+        # For creating a screen around prey to test.
         if self.background:
             if self.background == "Green":
                 colour = (0, 1, 0)

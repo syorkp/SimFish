@@ -11,6 +11,7 @@ import numpy as np
 
 # all distances in pixels
 
+from Utilities.scaffold_creation import create_scaffold, build_changes_list_gradual
 from Networks.original_network import connectivity, reflected, base_network_layers, modular_network_layers, ops
 
 params = {
@@ -44,7 +45,6 @@ params = {
        'gamma': 0.99,
        'lambda': 0.9,
        'input_sigmas': True,
-
 
        # Discrete Action Space
        'num_actions': 10,  # size of action space
@@ -99,7 +99,7 @@ env = {
        'j_turn_dir_change': 0.07,
        'rest_cost': 2,
 
-       'capture_swim_extra_cost': 0,
+       'capture_swim_extra_cost': 5,
        'capture_basic_reward': 10000,  # Used only when not using energy state.
 
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
@@ -197,6 +197,7 @@ env = {
        'visualise_mask': False,  # For debugging purposes.
        'show_channel_sectors': False,
        'show_fish_body_energy_state': False,
+       'show_action_space_usage': True,
        'show_previous_actions': 200,  # False if not, otherwise the number of actions to save.
 
        # Environment
@@ -304,80 +305,48 @@ env = {
 }
 
 
-directory_name = "dqn_scaffold_9"
+scaffold_name = "dqn_scaffold_10"
 
-# Ensure Output File Exists
-if not os.path.exists(f"Configurations/Training-Configs/{directory_name}/"):
-    os.makedirs(f"Configurations/Training-Configs/{directory_name}/")
+changes = [
 
+       # 1) Rewards and Penalties
+       ["PCI", 0.2, "capture_swim_extra_cost", 25],
+       ["PCI", 0.2, "wall_reflection", True],
+       # TODO: Add energy state
 
-# Equal to that given in the file name.
-def save_files(n):
-    with open(f"Configurations/Training-Configs/{directory_name}/{str(n)}_env.json", 'w') as f:
-        json.dump(env, f, indent=4)
+       # 2) Visual System
+       ["PCI", 0.2, "red_photoreceptor_rf_size", 0.0133 * 2],
+       ["PCI", 0.2, "uv_photoreceptor_rf_size", 0.0133 * 2],
+       ["PCI", 0.2, "red_photoreceptor_rf_size", 0.0133 * 1],
+       ["PCI", 0.2, "uv_photoreceptor_rf_size", 0.0133 * 1],
+       ["PCI", 0.3, "shot_noise", True],
+       # TODO: Increase bkg_scatter
+       # TODO: Decrease luminance
 
-    with open(f"Configurations/Training-Configs/{directory_name}/{str(n)}_learning.json", 'w') as f:
-        json.dump(params, f, indent=4)
-
-
-# 1 Initial config
-number = 1
-save_files(number)
-number += 1
-
-# 1) Rewards and Penalties
-
-env['capture_swim_extra_cost'] = 25
-save_files(number)
-number += 1
-
-env['wall_reflection'] = True
-save_files(number)
-number += 1
-
-# Add energy state
-
-
-# 2) Visual System
-
-env['red_photoreceptor_rf_size'] = 0.0133 * 2
-env['uv_photoreceptor_rf_size'] = 0.0133 * 2
-save_files(number)
-number += 1
-
-env['red_photoreceptor_rf_size'] = 0.0133 * 1
-env['uv_photoreceptor_rf_size'] = 0.0133 * 1
-save_files(number)
-number += 1
-
-env['shot_noise'] = True
-save_files(number)
-number += 1
-
-# Increase bkg_scatter
-
-# Decrease luminance
-
+]
 
 # 3) Available actions
+# Only for continuous
 
 # 4) Prey Capture
-env['prey_fluid_displacement'] = True
-save_files(number)
-number += 1
+changes += [["PCI", 0.4, "prey_fluid_displacement", True]]
+changes += build_changes_list_gradual("PCI", 0.5, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
+changes += build_changes_list_gradual("PCI", 0.5, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25, 8)
+changes += build_changes_list_gradual("PCI", 0.5, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (17*np.pi)/180, 8)
 
-env['fish_mouth_size'] = 7
-save_files(number)
-number += 1
+# 5) Predator avoidance
+changes += [["PCI", 0.5, "probability_of_predator", 0.01]]
+# TODO: Complex predator
 
-env['fish_mouth_size'] = 6
-save_files(number)
-number += 1
+# 6) Other Behaviours
+# TODO: Light-dark areas
+changes += [["PAI", 500.0, "salt", True]]
+changes += [["PCI", 0.5, "current_setting", "Circular"]]
 
-env['fish_mouth_size'] = 5
-save_files(number)
-number += 1
+# 7) Final Features
+changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_x", env["impulse_effect_noise_sd_x"], 0.98512558, 8)
+changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_c", env["impulse_effect_noise_sd_c"], 0.06, 8)
+changes += build_changes_list_gradual("PCI", 0.4, "angle_effect_noise_sd_x", env["angle_effect_noise_sd_x"], 0.86155083, 8)
+changes += build_changes_list_gradual("PCI", 0.4, "angle_effect_noise_sd_c", env["angle_effect_noise_sd_c"], 0.0010472, 8)
 
-env['fish_mouth_size'] = 4
-save_files(number)
-number += 1
+create_scaffold(scaffold_name, env, params, changes)

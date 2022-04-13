@@ -132,6 +132,12 @@ class ContinuousPPO(BasePPO):
                 self.environment_params["max_sigma_angle"] - self.environment_params["min_sigma_angle"]) * (
                                              self.total_steps / 5000000)])
 
+        # TODO: note not been tested!
+        if math.isnan(self.impulse_sigma[0]):
+            self.impulse_sigma = np.array([self.environment_params["min_sigma_impulse"]])
+        if math.isnan(self.angle_sigma[0]):
+            self.angle_sigma = np.array([self.environment_params["min_sigma_angle"]])
+
     def _episode_loop(self, a=None):
         self.update_sigmas()
         a = [4.0, 0.0]
