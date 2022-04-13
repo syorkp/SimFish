@@ -65,6 +65,8 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
         if self.learning_params["epsilon_greedy"]:
             self.epsilon_greedy = True
             self.e = self.learning_params["startE"]
+        else:
+            self.epsilon_greedy = False
 
     def run(self):
         sess = self.create_session()

@@ -25,6 +25,11 @@ class ContinuousPPO(BasePPO):
         self.angle_sigma = None
         self.multivariate = None
 
+        # Placeholders
+        self.epsilon_greedy = None
+        self.e = None
+        self.step_drop = None
+
         self.output_dimensions = 2
 
     def create_network(self):
@@ -499,10 +504,7 @@ class ContinuousPPO(BasePPO):
         return given_reward, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, \
                updated_rnn_state_critic, updated_rnn_state_critic_ref
 
-    def _training_step_loop(self, actor_network_to_get, actor_network_feed_dict):
-        ...
-
-    def _training_step_multivariate_full_logs2(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+    def _step_loop_multivariate_sbe_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                                rnn_state_critic,
                                                rnn_state_critic_ref):
 
@@ -510,32 +512,77 @@ class ContinuousPPO(BasePPO):
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
 
-        impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability, mu_i, mu_a, \
-        si = self.sess.run(
-            [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.value_output,
-             self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
-             self.actor_network.neg_log_prob,
-             self.actor_network.mu_impulse_combined,
-             self.actor_network.mu_angle_combined,
-             self.actor_network.sigma_action,],
-             # self.actor_network.action_distribution.preliminary_samples, self.actor_network.action_distribution.probs, self.actor_network.action_distribution.positive_imp],
+        if self.epsilon_greedy:
+            if np.random.rand(1) < self.e:
+                impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability, mu_i, mu_a, \
+                si = self.sess.run(
+                    [self.actor_network.impulse_output, self.actor_network.angle_output,
+                     self.actor_network.value_output,
+                     self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
+                     self.actor_network.neg_log_prob,
+                     self.actor_network.mu_impulse_combined,
+                     self.actor_network.mu_angle_combined,
+                     self.actor_network.sigma_action, ],
+                    # self.actor_network.action_distribution.preliminary_samples, self.actor_network.action_distribution.probs, self.actor_network.action_distribution.positive_imp],
 
-            feed_dict={self.actor_network.observation: o,
-                       self.actor_network.internal_state: internal_state,
-                       self.actor_network.prev_actions: np.reshape(a, (1, 2)),
-                       self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
-                       self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
-                       self.actor_network.rnn_state_in: rnn_state_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
-                       self.actor_network.batch_size: 1,
-                       self.actor_network.train_length: 1,
-                       }
-        )
-        # sam[:, :, 1] *= np.pi/5  # (180/np.pi) *
-        # sam[:, :, 0] *= 10
-        # for i, s in enumerate(sam):
-        #     print(f"Sample: {s}, Probability: {pro[i]}, Positive imp: {pimp[i]}")
-        # print(" ")
+                    feed_dict={self.actor_network.observation: o,
+                               self.actor_network.internal_state: internal_state,
+                               self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                               self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
+                               self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
+                               self.actor_network.rnn_state_in: rnn_state_actor,
+                               self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                               self.actor_network.batch_size: 1,
+                               self.actor_network.train_length: 1,
+                               }
+                )
+            else:
+                impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability, mu_i, mu_a, \
+                si = self.sess.run(
+                    [self.actor_network.impulse_output, self.actor_network.angle_output,
+                     self.actor_network.value_output,
+                     self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
+                     self.actor_network.neg_log_prob,
+                     self.actor_network.mu_impulse_combined,
+                     self.actor_network.mu_angle_combined,
+                     self.actor_network.sigma_action, ],
+                    # self.actor_network.action_distribution.preliminary_samples, self.actor_network.action_distribution.probs, self.actor_network.action_distribution.positive_imp],
+
+                    feed_dict={self.actor_network.observation: o,
+                               self.actor_network.internal_state: internal_state,
+                               self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                               self.actor_network.sigma_impulse_combined_proto: np.array(0.01),
+                               self.actor_network.sigma_angle_combined_proto: np.array(0.01),
+                               self.actor_network.rnn_state_in: rnn_state_actor,
+                               self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                               self.actor_network.batch_size: 1,
+                               self.actor_network.train_length: 1,
+                               }
+                )
+
+        else:
+            impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability, mu_i, mu_a, \
+            si = self.sess.run(
+                [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.value_output,
+                 self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
+                 self.actor_network.neg_log_prob,
+                 self.actor_network.mu_impulse_combined,
+                 self.actor_network.mu_angle_combined,
+                 self.actor_network.sigma_action,],
+                 # self.actor_network.action_distribution.preliminary_samples, self.actor_network.action_distribution.probs, self.actor_network.action_distribution.positive_imp],
+
+                feed_dict={self.actor_network.observation: o,
+                           self.actor_network.internal_state: internal_state,
+                           self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                           self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
+                           self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
+                           self.actor_network.rnn_state_in: rnn_state_actor,
+                           self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                           self.actor_network.batch_size: 1,
+                           self.actor_network.train_length: 1,
+                           }
+            )
+
 
 
         action = [impulse[0][0], angle[0][0]]
@@ -578,7 +625,7 @@ class ContinuousPPO(BasePPO):
         self.total_steps += 1
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0
 
-    def _training_step_multivariate_reduced_logs2(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+    def _step_loop_multivariate_sbe_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                                rnn_state_critic,
                                                rnn_state_critic_ref):
 
@@ -586,48 +633,60 @@ class ContinuousPPO(BasePPO):
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
 
-        # normal_feed_dict = {self.actor_network.observation: o,
-        #                     self.actor_network.internal_state: internal_state,
-        #                     self.actor_network.prev_actions: np.reshape(a, (1, 2)),
-        #                     self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
-        #                     self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
-        #                     self.actor_network.batch_size: 1,
-        #                     self.actor_network.train_length: 1,
-        #                     }
-        #
-        # rnn_layers = self.actor_network.rnn_cells.keys()
-        # rnn_state_feed_dict = {
-        #     self.actor_network.network_graph[layer]: rnn_state_actor[i] for i, layer in enumerate(rnn_layers)
-        # }
-        # rnn_state_feed_dict_reflected = {
-        #     self.actor_network.reflected_network_graph[layer]: rnn_state_actor_ref[i] for i, layer in enumerate(rnn_layers)
-        # }
+        if self.epsilon_greedy:
+            if np.random.rand(1) < self.e:
+                impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability = self.sess.run(
+                    [self.actor_network.impulse_output, self.actor_network.angle_output,
+                     self.actor_network.value_output,
+                     self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
+                     self.actor_network.neg_log_prob],
 
-        impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability = self.sess.run(
-            [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.value_output,
-             self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
-             self.actor_network.neg_log_prob],
-             # self.actor_network.action_distribution.preliminary_samples, self.actor_network.action_distribution.probs, self.actor_network.action_distribution.positive_imp],
+                    feed_dict={self.actor_network.observation: o,
+                               self.actor_network.internal_state: internal_state,
+                               self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                               self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
+                               self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
+                               self.actor_network.rnn_state_in: rnn_state_actor,
+                               self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                               self.actor_network.batch_size: 1,
+                               self.actor_network.train_length: 1,
+                               }
+                )
+            else:
+                impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability = self.sess.run(
+                    [self.actor_network.impulse_output, self.actor_network.angle_output,
+                     self.actor_network.value_output,
+                     self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
+                     self.actor_network.neg_log_prob],
 
-            # feed_dict= {**normal_feed_dict, **rnn_state_feed_dict, **rnn_state_feed_dict_reflected}
+                    feed_dict={self.actor_network.observation: o,
+                               self.actor_network.internal_state: internal_state,
+                               self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                               self.actor_network.sigma_impulse_combined_proto: np.array(0.01),
+                               self.actor_network.sigma_angle_combined_proto: np.array(0.01),
+                               self.actor_network.rnn_state_in: rnn_state_actor,
+                               self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                               self.actor_network.batch_size: 1,
+                               self.actor_network.train_length: 1,
+                               }
+                )
+        else:
+            impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability = self.sess.run(
+                [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.value_output,
+                 self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
+                 self.actor_network.neg_log_prob],
 
-
-            feed_dict={self.actor_network.observation: o,
-                       self.actor_network.internal_state: internal_state,
-                       self.actor_network.prev_actions: np.reshape(a, (1, 2)),
-                       self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
-                       self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
-                       self.actor_network.rnn_state_in: rnn_state_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
-                       self.actor_network.batch_size: 1,
-                       self.actor_network.train_length: 1,
-                       }
-        )
-        # sam[:, :, 1] *= np.pi/5  # (180/np.pi) *
-        # sam[:, :, 0] *= 10
-        # for i, s in enumerate(sam):
-        #     print(f"Sample: {s}, Probability: {pro[i]}, Positive imp: {pimp[i]}")
-        # print(" ")
+                feed_dict={self.actor_network.observation: o,
+                           self.actor_network.internal_state: internal_state,
+                           self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                           self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
+                           self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
+                           self.actor_network.rnn_state_in: rnn_state_actor,
+                           self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                           self.actor_network.batch_size: 1,
+                           self.actor_network.train_length: 1,
+                           }
+            )
 
         action = [impulse[0][0], angle[0][0]]
 
@@ -664,7 +723,7 @@ class ContinuousPPO(BasePPO):
         self.total_steps += 1
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0
 
-    def _training_step_multivariate_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+    def _step_loop_multivariate_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                               rnn_state_critic,
                                               rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
@@ -756,7 +815,7 @@ class ContinuousPPO(BasePPO):
         self.total_steps += 1
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
 
-    def _training_step_multivariate_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+    def _step_loop_multivariate_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                                  rnn_state_critic,
                                                  rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
@@ -817,70 +876,7 @@ class ContinuousPPO(BasePPO):
         self.total_steps += 1
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
 
-    def _training_step_loop_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                         rnn_state_critic,
-                                         rnn_state_critic_ref):
-        # Generate actions and corresponding steps.
-        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
-        a = [a[0] / self.environment_params['max_impulse'],
-             a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
-
-        impulse, angle, updated_rnn_state_actor, updated_rnn_state_actor_ref, impulse_probability, angle_probability = self.sess.run(
-            [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.rnn_state_shared,
-             self.actor_network.rnn_state_ref,
-             self.actor_network.log_prob_impulse, self.actor_network.log_prob_angle,
-             ],
-            feed_dict={self.actor_network.observation: o,
-                       self.actor_network.internal_state: internal_state,
-                       self.actor_network.prev_actions: np.reshape(a, (1, 2)),
-                       self.actor_network.rnn_state_in: rnn_state_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
-                       self.actor_network.sigma_impulse_combined: self.impulse_sigma,
-                       self.actor_network.sigma_angle_combined: self.angle_sigma,
-                       self.actor_network.batch_size: 1,
-                       self.actor_network.train_length: 1,
-                       }
-        )
-
-        V, updated_rnn_state_critic, updated_rnn_state_critic_ref = self.sess.run(
-            [self.critic_network.Value_output, self.critic_network.rnn_state_shared,
-             self.critic_network.rnn_state_ref],
-            feed_dict={self.critic_network.observation: o,
-                       self.critic_network.internal_state: internal_state,
-                       self.critic_network.prev_actions: np.reshape(a, (1, 2)),
-                       self.critic_network.rnn_state_in: rnn_state_critic,
-                       self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
-                       self.critic_network.batch_size: 1,
-                       self.critic_network.train_length: 1,
-                       }
-        )
-
-        action = [impulse[0][0], angle[0][0]]
-
-        # Simulation step
-        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
-            action=action,
-            frame_buffer=self.frame_buffer,
-            save_frames=self.save_frames,
-            activations=sa)
-
-        # Update buffer
-        self.buffer.add_training(observation=o,
-                                 internal_state=internal_state,
-                                 action=action,
-                                 reward=r,
-                                 value=V,
-                                 l_p_impulse=impulse_probability,
-                                 l_p_angle=angle_probability,
-                                 actor_rnn_state=rnn_state_actor,
-                                 actor_rnn_state_ref=rnn_state_actor_ref,
-                                 critic_rnn_state=rnn_state_critic,
-                                 critic_rnn_state_ref=rnn_state_critic_ref,
-                                 )
-        self.total_steps += 1
-        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
-
-    def _training_step_loop_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+    def _step_loop_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                       rnn_state_critic,
                                       rnn_state_critic_ref):
         # Generate actions and corresponding steps.
@@ -950,6 +946,69 @@ class ContinuousPPO(BasePPO):
                                  )
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
 
+        self.total_steps += 1
+        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
+
+    def _step_loop_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+                                         rnn_state_critic,
+                                         rnn_state_critic_ref):
+        # Generate actions and corresponding steps.
+        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
+        a = [a[0] / self.environment_params['max_impulse'],
+             a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
+
+        impulse, angle, updated_rnn_state_actor, updated_rnn_state_actor_ref, impulse_probability, angle_probability = self.sess.run(
+            [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.rnn_state_shared,
+             self.actor_network.rnn_state_ref,
+             self.actor_network.log_prob_impulse, self.actor_network.log_prob_angle,
+             ],
+            feed_dict={self.actor_network.observation: o,
+                       self.actor_network.internal_state: internal_state,
+                       self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                       self.actor_network.rnn_state_in: rnn_state_actor,
+                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       self.actor_network.sigma_impulse_combined: self.impulse_sigma,
+                       self.actor_network.sigma_angle_combined: self.angle_sigma,
+                       self.actor_network.batch_size: 1,
+                       self.actor_network.train_length: 1,
+                       }
+        )
+
+        V, updated_rnn_state_critic, updated_rnn_state_critic_ref = self.sess.run(
+            [self.critic_network.Value_output, self.critic_network.rnn_state_shared,
+             self.critic_network.rnn_state_ref],
+            feed_dict={self.critic_network.observation: o,
+                       self.critic_network.internal_state: internal_state,
+                       self.critic_network.prev_actions: np.reshape(a, (1, 2)),
+                       self.critic_network.rnn_state_in: rnn_state_critic,
+                       self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
+                       self.critic_network.batch_size: 1,
+                       self.critic_network.train_length: 1,
+                       }
+        )
+
+        action = [impulse[0][0], angle[0][0]]
+
+        # Simulation step
+        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+            action=action,
+            frame_buffer=self.frame_buffer,
+            save_frames=self.save_frames,
+            activations=sa)
+
+        # Update buffer
+        self.buffer.add_training(observation=o,
+                                 internal_state=internal_state,
+                                 action=action,
+                                 reward=r,
+                                 value=V,
+                                 l_p_impulse=impulse_probability,
+                                 l_p_angle=angle_probability,
+                                 actor_rnn_state=rnn_state_actor,
+                                 actor_rnn_state_ref=rnn_state_actor_ref,
+                                 critic_rnn_state=rnn_state_critic,
+                                 critic_rnn_state_ref=rnn_state_critic_ref,
+                                 )
         self.total_steps += 1
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
 

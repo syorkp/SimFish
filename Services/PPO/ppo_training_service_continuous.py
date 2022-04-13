@@ -90,6 +90,12 @@ class PPOTrainingServiceContinuous(TrainingService, ContinuousPPO):
         else:
             self.episode_buffer = False
 
+        if self.learning_params["epsilon_greedy"]:
+            self.epsilon_greedy = True
+            self.e = self.learning_params["startE"]
+        else:
+            self.epsilon_greedy = False
+
     def run(self):
         sess = self.create_session()
         with sess as self.sess:
@@ -131,20 +137,20 @@ Total episode reward: {self.total_episode_reward}\n""")
                   rnn_state_critic_ref):
         if self.multivariate:
             if self.full_logs:
-                return self._training_step_multivariate_full_logs(o, internal_state, a, rnn_state_actor,
+                return self._step_loop_multivariate_full_logs(o, internal_state, a, rnn_state_actor,
                                                                   rnn_state_actor_ref, rnn_state_critic,
                                                                   rnn_state_critic_ref)
             else:
-                return self._training_step_multivariate_reduced_logs(o, internal_state, a, rnn_state_actor,
+                return self._step_loop_multivariate_reduced_logs(o, internal_state, a, rnn_state_actor,
                                                                      rnn_state_actor_ref, rnn_state_critic,
                                                                      rnn_state_critic_ref)
         else:
             if self.full_logs:
-                return self._training_step_loop_full_logs(o, internal_state, a, rnn_state_actor,
+                return self._step_loop_full_logs(o, internal_state, a, rnn_state_actor,
                                                           rnn_state_actor_ref, rnn_state_critic,
                                                           rnn_state_critic_ref)
             else:
-                return self._training_step_loop_reduced_logs(o, internal_state, a, rnn_state_actor,
+                return self._step_loop_reduced_logs(o, internal_state, a, rnn_state_actor,
                                                              rnn_state_actor_ref, rnn_state_critic,
                                                              rnn_state_critic_ref)
 

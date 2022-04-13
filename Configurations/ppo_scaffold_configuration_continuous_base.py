@@ -22,24 +22,23 @@ params = {
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
        'max_epLength': 1000,  # The max allowed length of our episode.
 
+       'startE': 0.8,  # Starting chance of random action for DQN (or PPO if epsilon_greedy=True)
+       'endE': 0.2,  # Final chance of random action for DQN (or PPO if epsilon_greedy=True)
+
        # Learning (DQN Only)
        'update_freq': 100,  # How often to perform a training step.
        'y': .99,  # Discount factor on the target Q-values
-       'startE': 0.2,  # Starting chance of random action
-       'endE': 0.01,  # Final chance of random action
        'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
        'pre_train_steps': 50000,  # How many steps of random actions before training begins.
        'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
        'tau': 0.001,  # target network update time constant
 
-       # Learning (PPO only)
+       # Learning (PPO only; both continuous and discrete)
        'n_updates_per_iteration': 4,
        'rnn_state_computation': False,
        'learning_rate_actor': 0.000001,  # Formerly 0.000001
        'learning_rate_critic': 0.000001,  # Formerly 0.000001
-
-       # Learning (PPO discrete only)
-       'epsilon_greedy': False,
+       'epsilon_greedy': True,
 
        # Learning (PPO Continuous Only)
        'multivariate': True,
@@ -307,7 +306,7 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_low_sig_9"
+scaffold_name = "ppo_scaffold_eg_10"
 
 
 changes = [
@@ -330,9 +329,25 @@ changes = [
 # 3) Available actions
 changes += build_changes_list_gradual("PCI", 0.3, "max_impulse", env["max_impulse"], 20, 10)
 
-# # 4) Prey Capture
+# 4) Prey Capture
 changes += [["PCI", 0.4, "prey_fluid_displacement", True]]
 changes += build_changes_list_gradual("PCI", 0.5, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
+changes += build_changes_list_gradual("PCI", 0.5, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25, 8)
+changes += build_changes_list_gradual("PCI", 0.5, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (17*np.pi)/180, 8)
+
+# 5) Predator avoidance
+changes += [["PCI", 0.5, "probability_of_predator", 0.01]]
+# TODO: Complex predator
+
+# 6) Other Behaviours
+# TODO: Light-dark areas
+changes += [["PAI", 500.0, "salt", True]]
+changes += [["PCI", 0.5, "current_setting", "Circular"]]
+
+# 7) Final Features
+changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_x", env["impulse_effect_noise_sd_x"], 0.98512558, 8)
+changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_c", env["impulse_effect_noise_sd_c"], 0.06, 8)
+changes += build_changes_list_gradual("PCI", 0.4, "angle_effect_noise_sd_x", env["angle_effect_noise_sd_x"], 0.86155083, 8)
+changes += build_changes_list_gradual("PCI", 0.4, "angle_effect_noise_sd_c", env["angle_effect_noise_sd_c"], 0.0010472, 8)
 
 create_scaffold(scaffold_name, env, params, changes)
-

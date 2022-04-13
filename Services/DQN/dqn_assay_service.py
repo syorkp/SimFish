@@ -96,7 +96,7 @@ class DQNAssayService(AssayService, BaseDQN):
                 break
 
     def step_loop(self, o, internal_state, a, rnn_state):
-        return BaseDQN._assay_step_loop(self, o, internal_state, a, rnn_state)
+        return BaseDQN.assay_step_loop(self, o, internal_state, a, rnn_state)
 
     def save_hdf5_data(self, assay):
         if assay["save frames"]:

@@ -14,28 +14,28 @@ tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
 
 
-def ppo_training_target_continuous(trial, total_steps, episode_number, memory_fraction, configuration_index):
-    services = PPOTrainingServiceContinuous2(model_name=trial["Model Name"],
-                                             trial_number=trial["Trial Number"],
-                                             total_steps=total_steps,
-                                             episode_number=episode_number,
-                                             monitor_gpu=trial["monitor gpu"],
-                                             using_gpu=trial["Using GPU"],
-                                             memory_fraction=memory_fraction,
-                                             config_name=trial["Environment Name"],
-                                             realistic_bouts=trial["Realistic Bouts"],
-                                             continuous_actions=trial["Continuous Actions"],
-                                             new_simulation=trial["New Simulation"],
+def ppo_training_target_continuous_sbe(trial, total_steps, episode_number, memory_fraction, configuration_index):
+    services = PPOTrainingServiceContinuousSBE(model_name=trial["Model Name"],
+                                               trial_number=trial["Trial Number"],
+                                               total_steps=total_steps,
+                                               episode_number=episode_number,
+                                               monitor_gpu=trial["monitor gpu"],
+                                               using_gpu=trial["Using GPU"],
+                                               memory_fraction=memory_fraction,
+                                               config_name=trial["Environment Name"],
+                                               realistic_bouts=trial["Realistic Bouts"],
+                                               continuous_actions=trial["Continuous Actions"],
+                                               new_simulation=trial["New Simulation"],
 
-                                             model_exists=trial["Model Exists"],
-                                             configuration_index=configuration_index,
-                                             full_logs=trial["Full Logs"],
-                                             profile_speed=trial["Profile Speed"],
-                                             )
+                                               model_exists=trial["Model Exists"],
+                                               configuration_index=configuration_index,
+                                               full_logs=trial["Full Logs"],
+                                               profile_speed=trial["Profile Speed"],
+                                               )
     services.run()
 
 
-class PPOTrainingServiceContinuous2(TrainingService, ContinuousPPO):
+class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_actions, new_simulation, model_exists, configuration_index,
@@ -91,6 +91,15 @@ class PPOTrainingServiceContinuous2(TrainingService, ContinuousPPO):
         else:
             self.episode_buffer = False
 
+        if self.learning_params["epsilon_greedy"]:
+            self.epsilon_greedy = True
+            self.e = self.learning_params["startE"]
+        else:
+            self.epsilon_greedy = False
+
+        self.step_drop = (self.learning_params['startE'] - self.learning_params['endE']) / self.learning_params[
+            'anneling_steps']
+
     def run(self):
         sess = self.create_session()
         with sess as self.sess:
@@ -132,20 +141,20 @@ Total episode reward: {self.total_episode_reward}\n""")
                   rnn_state_critic_ref):
         if self.multivariate:
             if self.full_logs:
-                return self._training_step_multivariate_full_logs2(o, internal_state, a, rnn_state_actor,
+                return self._step_loop_multivariate_sbe_full_logs(o, internal_state, a, rnn_state_actor,
                                                                   rnn_state_actor_ref, rnn_state_critic,
                                                                   rnn_state_critic_ref)
             else:
-                return self._training_step_multivariate_reduced_logs2(o, internal_state, a, rnn_state_actor,
+                return self._step_loop_multivariate_sbe_reduced_logs(o, internal_state, a, rnn_state_actor,
                                                                      rnn_state_actor_ref, rnn_state_critic,
                                                                      rnn_state_critic_ref)
         else:
             if self.full_logs:
-                return self._training_step_loop_full_logs(o, internal_state, a, rnn_state_actor,
+                return self._step_loop_full_logs(o, internal_state, a, rnn_state_actor,
                                                           rnn_state_actor_ref, rnn_state_critic,
                                                           rnn_state_critic_ref)
             else:
-                return self._training_step_loop_reduced_logs(o, internal_state, a, rnn_state_actor,
+                return self._step_loop_reduced_logs(o, internal_state, a, rnn_state_actor,
                                                              rnn_state_actor_ref, rnn_state_critic,
                                                              rnn_state_critic_ref)
 

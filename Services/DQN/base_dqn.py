@@ -187,11 +187,17 @@ class BaseDQN:
         """
         # Generate actions and corresponding steps.
         if self.new_simulation and self.environment_params["use_dynamic_network"]:
-            return self.step_loop_new(o, internal_state, a, rnn_state, rnn_state_ref)
+            return self._step_loop_new(o, internal_state, a, rnn_state, rnn_state_ref)
         else:
-            return self.step_loop_old(o, internal_state, a, rnn_state)
+            return self._step_loop_old(o, internal_state, a, rnn_state)
 
-    def step_loop_old(self, o, internal_state, a, rnn_state):
+    def assay_step_loop(self, o, internal_state, a, rnn_state):
+        if self.new_simulation and self.environment_params["use_dynamic_network"]:
+            return self._assay_step_loop_new(o, internal_state, a, rnn_state)
+        else:
+            return self._assay_step_loop_old(o, internal_state, a, rnn_state)
+
+    def _step_loop_old(self, o, internal_state, a, rnn_state):
         # Generate actions and corresponding steps.
         if np.random.rand(1) < self.epsilon or self.total_steps < self.pre_train_steps:
             [updated_rnn_state, sa, sv] = self.sess.run(
@@ -226,7 +232,7 @@ class BaseDQN:
         self.total_steps += 1
         return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state
 
-    def step_loop_new(self, o, internal_state, a, rnn_state, rnn_state_ref):
+    def _step_loop_new(self, o, internal_state, a, rnn_state, rnn_state_ref):
         # Generate actions and corresponding steps.
         if np.random.rand(1) < self.epsilon or self.total_steps < self.pre_train_steps:
             [updated_rnn_state, updated_rnn_state_ref, sa, sv] = self.sess.run(
@@ -277,12 +283,6 @@ class BaseDQN:
                                                              )
         self.total_steps += 1
         return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref
-
-    def _assay_step_loop(self, o, internal_state, a, rnn_state):
-        if self.new_simulation and self.environment_params["use_dynamic_network"]:
-            return self._assay_step_loop_new(o, internal_state, a, rnn_state)
-        else:
-            return self._assay_step_loop_old(o, internal_state, a, rnn_state)
 
     def _assay_step_loop_old(self, o, internal_state, a, rnn_state):
         chosen_a, updated_rnn_state, rnn2_state, sa, sv, conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r, o2 = \
