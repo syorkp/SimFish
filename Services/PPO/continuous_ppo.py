@@ -560,6 +560,8 @@ class ContinuousPPO(BasePPO):
                                }
                 )
 
+            if self.e > self.learning_params['endE']:
+                self.e -= self.step_drop
         else:
             impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability, mu_i, mu_a, \
             si = self.sess.run(
@@ -670,6 +672,9 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.train_length: 1,
                                }
                 )
+
+            if self.e > self.learning_params['endE']:
+                self.e -= self.step_drop
         else:
             impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability = self.sess.run(
                 [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.value_output,

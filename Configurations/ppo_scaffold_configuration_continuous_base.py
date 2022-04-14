@@ -172,10 +172,10 @@ env = {
        'proximity_reward': 0.002,
 
        # For inputting std. values - note these must not be the same number.
-       'max_sigma_impulse': 0.01,  # Formerly 0.4
-       'max_sigma_angle': 0.01,  # Formerly 0.4
-       'min_sigma_impulse': 0.001,
-       'min_sigma_angle': 0.001,
+       'max_sigma_impulse': 0.3,  # Formerly 0.4/0.3
+       'max_sigma_angle': 0.3,  # Formerly 0.4/0.3
+       'min_sigma_impulse': 0.1,
+       'min_sigma_angle': 0.1,
        'sigma_time_constant': 0.000001,
 
        'clip_param': 0.2,
