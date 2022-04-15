@@ -2094,6 +2094,47 @@ ppo_scaffold_training_config_10b = [
     },
 ]
 
+ppo_testing = [
+    {
+        "Model Name": "ppo_scaffold_version_on_8_se",
+        "Environment Name": "ppo_scaffold_version_on_8_se_assay",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 1,
+        "Run Mode": "Assay",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 2,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "set random seed": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+        "Assays": [
+            {
+                "assay id": "Naturalistic-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "behavioural recordings": ["environmental positions"],
+                "network recordings": ["rnn state"],
+                "ablations": []
+            },
+        ]
+    },
+]
+
+
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 manager = TrialManager(ppo_scaffold_training_config_10a, parallel_jobs=4)
 manager.run_priority_loop()

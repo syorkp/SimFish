@@ -20,31 +20,30 @@ params = {
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
        'max_epLength': 1000,  # The max allowed length of our episode.
 
+       'startE': 0.8,  # Starting chance of random action for DQN (or PPO if epsilon_greedy=True)
+       'endE': 0.2,  # Final chance of random action for DQN (or PPO if epsilon_greedy=True)
+
        # Learning (DQN Only)
        'update_freq': 100,  # How often to perform a training step.
        'y': .99,  # Discount factor on the target Q-values
-       'startE': 0.2,  # Starting chance of random action
-       'endE': 0.01,  # Final chance of random action
        'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
        'pre_train_steps': 50000,  # How many steps of random actions before training begins.
        'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
        'tau': 0.001,  # target network update time constant
 
-       # Learning (PPO only)
+       # Learning (PPO only; both continuous and discrete)
        'n_updates_per_iteration': 4,
        'rnn_state_computation': False,
        'learning_rate_actor': 0.000001,  # Formerly 0.000001
        'learning_rate_critic': 0.000001,  # Formerly 0.000001
-
-       # Learning (PPO discrete only)
-       'epsilon_greedy': False,
+       'epsilon_greedy': True,
 
        # Learning (PPO Continuous Only)
        'multivariate': True,
        'beta_distribution': False,
        'gamma': 0.99,
        'lambda': 0.9,
-       'input_sigmas': True,
+       'input_sigmas': False,
 
        # Discrete Action Space
        'num_actions': 10,  # size of action space
@@ -98,8 +97,8 @@ env = {
        'j_turn_dir_change': 0.07,
        'rest_cost': 2,
 
-       'capture_swim_extra_cost': 25,
-       'capture_basic_reward': 10000,  # Used only in old simulation.
+       'capture_swim_extra_cost': 0,
+       'capture_basic_reward': 10000,  # Used only when not using energy state.
 
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
@@ -129,7 +128,7 @@ env = {
        'prey_inertia': 40.,
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-       'prey_num': 1,
+       'prey_num': 30,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
@@ -170,8 +169,9 @@ env = {
        'reward_distance': 100,
        'proximity_reward': 0.002,
 
-       'max_sigma_impulse': 0.3,  # Formerly 0.4
-       'max_sigma_angle': 0.3,  # Formerly 0.4
+       # For inputting std. values - note these must not be the same number.
+       'max_sigma_impulse': 0.3,  # Formerly 0.4/0.3
+       'max_sigma_angle': 0.3,  # Formerly 0.4/0.3
        'min_sigma_impulse': 0.1,
        'min_sigma_angle': 0.1,
        'sigma_time_constant': 0.000001,
@@ -197,6 +197,7 @@ env = {
        'visualise_mask': False,  # For debugging purposes.
        'show_channel_sectors': False,
        'show_fish_body_energy_state': False,
+       'show_action_space_usage': True,
        'show_previous_actions': 200,  # False if not, otherwise the number of actions to save.
 
        # Environment
@@ -232,7 +233,7 @@ env = {
        'max_predator_reorient_distance': 400,
        'predator_presence_duration_steps': 100,
 
-       # Predator - Expanding disc
+       # Predator - Expanding disc (no longer used)
        'predator_first_attack_loom': False,
        'initial_predator_size': 20,  # Size in degrees
        'final_predator_size': 200,  # "
@@ -304,9 +305,12 @@ env = {
 }
 
 # Equal to that given in the file name.
-environment_name = "continuous_assay"
+environment_name = "ppo_scaffold_version_on_8_se_assay"  # "continuous_assay"
+
 with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)
 
 with open(f"Configurations/Assay-Configs/{environment_name}_learning.json", 'w') as f:
     json.dump(params, f)
+
+

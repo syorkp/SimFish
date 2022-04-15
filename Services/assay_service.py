@@ -71,7 +71,7 @@ class AssayService(BaseService):
         for assay in self.assays:
             if assay["ablations"]:
                 self.ablate_units(assay["ablations"])
-            if self.new_simulation:
+            if self.environment_params["use_dynamic_network"]:
                 if self.ppo_version is not None:
                     self.buffer.rnn_layer_names = self.actor_network.rnn_layer_names
                 else:
