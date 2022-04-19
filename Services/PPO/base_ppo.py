@@ -43,6 +43,26 @@ class BasePPO:
         self.init_rnn_state_critic = None
         self.init_rnn_state_critic_ref = None
 
+        # Add attributes only if don't exist yet (prevents errors thrown).
+        if not hasattr(self, "new_simulation"):
+            self.new_simulation = None
+        if not hasattr(self, "get_internal_state_order"):
+            self.get_internal_state_order = None
+        if not hasattr(self, "sb_emulator"):
+            self.sb_emulator = None
+        if not hasattr(self, "step_loop"):
+            self.step_loop = None
+        if not hasattr(self, "rnn_in_network"):
+            self.rnn_in_network = None
+        if not hasattr(self, "get_positions"):
+            self.get_positions = None
+        if not hasattr(self, "save_environmental_data"):
+            self.save_environmental_data = None
+        if not hasattr(self, "episode_buffer"):
+            self.episode_buffer = None
+
+
+
     def init_states(self):
         # Init states for RNN
         if self.environment_params["use_dynamic_network"]:

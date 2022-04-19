@@ -43,6 +43,32 @@ class BaseDQN:
         self.init_rnn_state = None  # Reset RNN hidden state
         self.init_rnn_state_ref = None
 
+        # Add attributes only if don't exist yet (prevents errors thrown).
+        if not hasattr(self, "new_simulation"):
+            self.new_simulation = None
+        if not hasattr(self, "get_positions"):
+            self.get_positions = None
+        if not hasattr(self, "buffer"):
+            self.buffer = None
+        if not hasattr(self, "output_data"):
+            self.output_data = None
+        if not hasattr(self, "assay_output_data_format"):
+            self.assay_output_data_format = None
+        if not hasattr(self, "step_number"):
+            self.step_number = None
+        if not hasattr(self, "get_internal_state_order"):
+            self.get_internal_state_order = None
+        if not hasattr(self, "save_environmental_data"):
+            self.save_environmental_data = None
+        if not hasattr(self, "episode_buffer"):
+            self.episode_buffer = None
+        if not hasattr(self, "last_position_dim"):
+            self.last_position_dim = None
+        if not hasattr(self, "package_output_data"):
+            self.package_output_data = None
+
+
+
     def init_states(self):
         # Init states for RNN
         if self.environment_params["use_dynamic_network"]:
@@ -436,7 +462,8 @@ class BaseDQN:
         else:
             state_train = (np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]),
                            np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
-
+            state_train_ref = (np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]),
+                           np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
         # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
         train_batch = self.experience_buffer.sample(self.learning_params['batch_size'],
                                                     self.learning_params['trace_length'])

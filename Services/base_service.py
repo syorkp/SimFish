@@ -78,6 +78,24 @@ class BaseService:
         if not self.using_gpu:
             os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
+        # Add attributes only if don't exist yet (prevents errors thrown).
+        if not hasattr(self, "environment_params"):
+            self.environment_params = None
+        if not hasattr(self, "last_position_dim"):
+            self.last_position_dim = None
+        if not hasattr(self, "episode_buffer"):
+            self.episode_buffer = None
+        if not hasattr(self, "buffer"):
+            self.buffer = None
+        if not hasattr(self, "episode_loop"):
+            self.episode_loop = None
+        if not hasattr(self, "actor_network"):
+            self.actor_network = None
+        if not hasattr(self, "main_QN"):
+            self.main_QN = None
+        if not hasattr(self, "_episode_loop"):
+            self._episode_loop = None
+
     def create_session(self):
         print("Creating Session..")
 

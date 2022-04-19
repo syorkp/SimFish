@@ -103,6 +103,10 @@ class DQNTrainingService(TrainingService, BaseDQN):
                      predators_avoided, sand_grains_bumped, steps_near_vegetation):
         """
         Saves the episode the the experience buffer. Also creates a gif if at interval.
+        :param prey_caught:
+        :param steps_near_vegetation:
+        :param sand_grains_bumped:
+        :param predators_avoided:
         :param episode_start_t: The time at the start of the episode, used to calculate the time the episode took.
         :param all_actions: The array of all the actions taken during the episode.
         :param total_episode_reward: The total reward of the episode.
