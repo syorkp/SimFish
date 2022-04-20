@@ -161,6 +161,12 @@ class TrainingService(BaseService):
             self.learning_params, self.environment_params = self.load_configuration_files()
             self.previous_config_switch = self.episode_number
             self.create_environment()
+
+            # Reset sigma progression
+            if self.continuous_actions and self.learning_params["sigma_scaffolding"]:
+                self.sigma_total_steps = 0
+            if self.learning_params["epsilon_greedy"]:
+                self.epsilon = self.learning_params["startE"]
         else:
             self.switched_configuration = False
 

@@ -61,6 +61,7 @@ class AssayService(BaseService):
         # Placeholders overwritten by child class
         self.buffer = None
         self.ppo_version = None
+        self.use_mu = False
 
     def _run(self):
         self.saver = tf.train.Saver(max_to_keep=5)
@@ -91,6 +92,8 @@ class AssayService(BaseService):
         self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
 
         self.current_episode_max_duration = assay["duration"]
+        if assay["use_mu"]:
+            self.use_mu = True
 
         self._episode_loop()
         self.log_stimuli()

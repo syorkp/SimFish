@@ -24,6 +24,7 @@ class ContinuousPPO(BasePPO):
         self.impulse_sigma = None
         self.angle_sigma = None
         self.multivariate = None
+        self.sigma_total_steps = 0
 
         # Placeholders
         self.epsilon_greedy = None
@@ -121,27 +122,24 @@ class ContinuousPPO(BasePPO):
         print("Created network")
 
     def update_sigmas(self):
-        # Exponential scale
-        # self.impulse_sigma = np.array([self.env["min_sigma_impulse"] + (
-        #             self.env["max_sigma_impulse"] - self.env["min_sigma_impulse"]) * np.e ** (
-        #                                            -self.total_steps * self.env["sigma_time_constant"])])
-        # self.angle_sigma = np.array([self.env["min_sigma_angle"] + (
-        #             self.env["max_sigma_angle"] - self.env["min_sigma_angle"]) * np.e ** (
-        #                                          -self.total_steps * self.env["sigma_time_constant"])])
+        self.sigma_total_steps += self.simulation.num_steps
 
-        # Linear scale
-        self.impulse_sigma = np.array([self.environment_params["max_sigma_impulse"] - (
-                self.environment_params["max_sigma_impulse"] - self.environment_params["min_sigma_impulse"]) * (
-                                               self.total_steps / 5000000)])
-        self.angle_sigma = np.array([self.environment_params["max_sigma_angle"] - (
-                self.environment_params["max_sigma_angle"] - self.environment_params["min_sigma_angle"]) * (
-                                             self.total_steps / 5000000)])
-
-        # TODO: note not been tested!
-        if math.isnan(self.impulse_sigma[0]):
-            self.impulse_sigma = np.array([self.environment_params["min_sigma_impulse"]])
-        if math.isnan(self.angle_sigma[0]):
-            self.angle_sigma = np.array([self.environment_params["min_sigma_angle"]])
+        if self.environment_params["sigma_mode"] != "Decreasing":
+            self.impulse_sigma = np.array([self.environment_params["max_sigma_impulse"]])
+            self.angle_sigma = np.array([self.environment_params["max_sigma_angle"]])
+        else:
+            # Linear scale
+            self.impulse_sigma = np.array([self.environment_params["max_sigma_impulse"] - (
+                    self.environment_params["max_sigma_impulse"] - self.environment_params["min_sigma_impulse"]) * (
+                                                   self.sigma_total_steps / self.environment_params["sigma_reduction_time"])])
+            self.angle_sigma = np.array([self.environment_params["max_sigma_angle"] - (
+                    self.environment_params["max_sigma_angle"] - self.environment_params["min_sigma_angle"]) * (
+                                                 self.sigma_total_steps / self.environment_params["sigma_reduction_time"])])
+            # To prevent ever returning NaN
+            if math.isnan(self.impulse_sigma[0]):
+                self.impulse_sigma = np.array([self.environment_params["min_sigma_impulse"]])
+            if math.isnan(self.angle_sigma[0]):
+                self.angle_sigma = np.array([self.environment_params["min_sigma_angle"]])
 
     def _episode_loop(self, a=None):
         self.update_sigmas()
@@ -191,7 +189,10 @@ class ContinuousPPO(BasePPO):
                        }
         )
 
-        action = [impulse[0][0], angle[0][0]]
+        if self.use_mu:
+            action = [mu_i[0][0], mu_a[0][0]]
+        else:
+            action = [impulse[0][0], angle[0][0]]
 
         o1, given_reward, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=action,
                                                                                                      frame_buffer=self.frame_buffer,

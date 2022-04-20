@@ -13,15 +13,17 @@ import numpy as np
 
 from Networks.original_network import connectivity, reflected, base_network_layers, modular_network_layers, ops
 
+
 params = {
        # Learning (Universal)
-       'batch_size': 1,  # How many experience traces to use for each training step.
-       'trace_length': 50,  # How long each experience trace will be when training
+       'batch_size': 16,  # How many experience traces to use for each training step.
+       'trace_length': 64,  # How long each experience trace will be when training
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
        'max_epLength': 1000,  # The max allowed length of our episode.
-
-       'startE': 0.8,  # Starting chance of random action for DQN (or PPO if epsilon_greedy=True)
-       'endE': 0.2,  # Final chance of random action for DQN (or PPO if epsilon_greedy=True)
+       'epsilon_greedy': False,
+       'epsilon_greedy_scaffolding': False,
+       'startE': 0.2,  # Starting chance of random action
+       'endE': 0.01,  # Final chance of random action
 
        # Learning (DQN Only)
        'update_freq': 100,  # How often to perform a training step.
@@ -31,12 +33,10 @@ params = {
        'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
        'tau': 0.001,  # target network update time constant
 
-       # Learning (PPO only; both continuous and discrete)
+       # Learning (PPO only)
        'n_updates_per_iteration': 4,
        'rnn_state_computation': False,
-       'learning_rate_actor': 0.000001,  # Formerly 0.000001
-       'learning_rate_critic': 0.000001,  # Formerly 0.000001
-       'epsilon_greedy': True,
+       'learning_rate': 0.0001,
 
        # Learning (PPO Continuous Only)
        'multivariate': True,
@@ -44,6 +44,7 @@ params = {
        'gamma': 0.99,
        'lambda': 0.9,
        'input_sigmas': False,
+       'sigma_scaffolding': False,  # Reset sigma progression if move along configuration scaffold.
 
        # Discrete Action Space
        'num_actions': 10,  # size of action space
@@ -51,7 +52,7 @@ params = {
        # Saving and video parameters
        'time_per_step': 0.03,  # Length of each step used in gif creation
        'summaryLength': 200,  # Number of episodes to periodically save for analysis
-       'rnn_dim_shared': 512,  # number of rnn cells
+       'rnn_dim_shared': 512,  # number of rnn cells. Should no longer be used.
        'extra_rnn': False,
        'save_gifs': True,
 
@@ -61,7 +62,6 @@ params = {
        'modular_network_layers': modular_network_layers,
        'ops': ops,
        'connectivity': connectivity,
-
 }
 
 env = {
@@ -97,7 +97,7 @@ env = {
        'j_turn_dir_change': 0.07,
        'rest_cost': 2,
 
-       'capture_swim_extra_cost': 0,
+       'capture_swim_extra_cost': 5,
        'capture_basic_reward': 10000,  # Used only when not using energy state.
 
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
@@ -149,13 +149,12 @@ env = {
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
-       'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001; 0.01
+       'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001
        'dark_gain': 0.38,  # gain of brightness in the dark side
        'light_gain': 200.0,  # gain of brightness in the bright side
 
        'predator_cost': 1000,
 
-       # Old internal state variables
        'hunger': False,
        'reafference': True,
        'stress': False,
@@ -169,15 +168,15 @@ env = {
        'reward_distance': 100,
        'proximity_reward': 0.002,
 
-       # For inputting std. values - note these must not be the same number.
-       'max_sigma_impulse': 0.3,  # Formerly 0.4/0.3
-       'max_sigma_angle': 0.3,  # Formerly 0.4/0.3
+       'max_sigma_impulse': 0.3,  # Formerly 0.4
+       'max_sigma_angle': 0.3,  # Formerly 0.4
        'min_sigma_impulse': 0.1,
        'min_sigma_angle': 0.1,
-       'sigma_time_constant': 0.000001,
+       'sigma_reduction_time': 5000000,  # Number of steps to complete sigma trajectory.
+       'sigma_mode': "Decreasing",  # Options: Decreasing (linear reduction with reduction time), Static
 
        'clip_param': 0.2,
-       'cs_required': False,
+       'cs_required': True,
 
        #                                  New Simulation
 
@@ -233,7 +232,7 @@ env = {
        'max_predator_reorient_distance': 400,
        'predator_presence_duration_steps': 100,
 
-       # Predator - Expanding disc (no longer used)
+       # Predator - Expanding disc
        'predator_first_attack_loom': False,
        'initial_predator_size': 20,  # Size in degrees
        'final_predator_size': 200,  # "
@@ -303,6 +302,7 @@ env = {
        # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
 
 }
+
 
 # Equal to that given in the file name.
 environment_name = "ppo_scaffold_version_on_8_se_assay"  # "continuous_assay"

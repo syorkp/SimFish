@@ -60,8 +60,8 @@ class BasePPO:
             self.save_environmental_data = None
         if not hasattr(self, "episode_buffer"):
             self.episode_buffer = None
-
-
+        if not hasattr(self, "use_mu"):
+            self.use_mu = None
 
     def init_states(self):
         # Init states for RNN

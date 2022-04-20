@@ -20,12 +20,14 @@ params = {
        'trace_length': 64,  # How long each experience trace will be when training
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
        'max_epLength': 1000,  # The max allowed length of our episode.
+       'epsilon_greedy': True,
+       'epsilon_greedy_scaffolding': True,
+       'startE': 0.2,  # Starting chance of random action
+       'endE': 0.01,  # Final chance of random action
 
        # Learning (DQN Only)
        'update_freq': 100,  # How often to perform a training step.
        'y': .99,  # Discount factor on the target Q-values
-       'startE': 0.2,  # Starting chance of random action
-       'endE': 0.01,  # Final chance of random action
        'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
        'pre_train_steps': 50000,  # How many steps of random actions before training begins.
        'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
@@ -36,8 +38,6 @@ params = {
        'rnn_state_computation': False,
        'learning_rate': 0.0001,
 
-       # Learning (PPO discrete and DQNonly)
-       'epsilon_greedy': True,
 
        # Learning (PPO Continuous Only)
        'multivariate': False,
@@ -45,6 +45,7 @@ params = {
        'gamma': 0.99,
        'lambda': 0.9,
        'input_sigmas': True,
+       'sigma_scaffolding': False,  # Reset sigma progression if move along configuration scaffold.
 
        # Discrete Action Space
        'num_actions': 10,  # size of action space
@@ -174,7 +175,8 @@ env = {
        'max_sigma_angle': 0.3,  # Formerly 0.4
        'min_sigma_impulse': 0.1,
        'min_sigma_angle': 0.1,
-       'sigma_time_constant': 0.000001,
+       'sigma_reduction_time': 5000000,  # Number of steps to complete sigma trajectory.
+       'sigma_mode': "Decreasing",  # Options: Decreasing (linear reduction with reduction time), Static
 
        'clip_param': 0.2,
        'cs_required': True,

@@ -21,7 +21,8 @@ params = {
        'trace_length': 50,  # How long each experience trace will be when training
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
        'max_epLength': 1000,  # The max allowed length of our episode.
-
+       'epsilon_greedy': True,
+       'epsilon_greedy_scaffolding': True,
        'startE': 0.8,  # Starting chance of random action for DQN (or PPO if epsilon_greedy=True)
        'endE': 0.2,  # Final chance of random action for DQN (or PPO if epsilon_greedy=True)
 
@@ -38,7 +39,6 @@ params = {
        'rnn_state_computation': False,
        'learning_rate_actor': 0.000001,  # Formerly 0.000001
        'learning_rate_critic': 0.000001,  # Formerly 0.000001
-       'epsilon_greedy': True,
 
        # Learning (PPO Continuous Only)
        'multivariate': True,
@@ -172,11 +172,13 @@ env = {
        'proximity_reward': 0.002,
 
        # For inputting std. values - note these must not be the same number.
-       'max_sigma_impulse': 0.3,  # Formerly 0.4/0.3
-       'max_sigma_angle': 0.3,  # Formerly 0.4/0.3
+       'max_sigma_impulse': 0.3,  # Formerly 0.4/0.3. Note in the case of static sigma, this is the static value.
+       'max_sigma_angle': 0.3,  # Formerly 0.4/0.3. Note in the case of static sigma, this is the static value.
        'min_sigma_impulse': 0.1,
        'min_sigma_angle': 0.1,
-       'sigma_time_constant': 0.000001,
+       'sigma_reduction_time': 5000000,  # Number of steps to complete sigma trajectory.
+       'sigma_mode': "Decreasing",  # Options: Decreasing (linear reduction with reduction time), Static
+       'sigma_scaffolding': True,  # Reset sigma progression if move along configuration scaffold.
 
        'clip_param': 0.2,
        'cs_required': False,

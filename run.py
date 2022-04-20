@@ -2126,6 +2126,7 @@ ppo_testing = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
+                "use_mu": True,
                 "behavioural recordings": ["environmental positions"],
                 "network recordings": ["rnn state"],
                 "ablations": []
@@ -2134,26 +2135,7 @@ ppo_testing = [
     },
 ]
 
-dqn_scaffold_training_config_10c = [
-    {
-        "Model Name": "dqn_scaffold_10",
-        "Environment Name": "dqn_scaffold_10",
-        "Trial Number": 5,
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": False,
-        "Learning Algorithm": "DQN",
-        "Priority": 1,
-        "Using GPU": False,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": False,
-        "New Simulation": True,
-        "Profile Speed": False,
-    },
-]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_training_config_10c, parallel_jobs=4)
+manager = TrialManager(ppo_testing, parallel_jobs=4)
 manager.run_priority_loop()
