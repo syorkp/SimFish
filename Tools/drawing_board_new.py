@@ -774,9 +774,14 @@ class NewDrawingBoard:
 
     def erase_visualisation(self, bkg=0.1):
         if bkg == 0:
-            self.db_visualisation = self.chosen_math_library.copy(self.base_db)
+            db = self.chosen_math_library.zeros((self.height, self.width, 3), dtype=np.double)
         else:
-            self.db_visualisation = self.chosen_math_library.copy(self.base_db_illuminated)
+            db = (self.chosen_math_library.ones((self.height, self.width, 3), dtype=np.double) * bkg) / self.light_gain
+        db[1:2, :] = self.chosen_math_library.array([1, 0, 0])
+        db[self.width - 2:self.width - 1, :] = self.chosen_math_library.array([1, 0, 0])
+        db[:, 1:2] = self.chosen_math_library.array([1, 0, 0])
+        db[:, self.height - 2:self.height - 1] = self.chosen_math_library.array([1, 0, 0])
+        self.db_visualisation = db
 
     def get_base_arena(self, bkg=0.0):
         if bkg == 0:
