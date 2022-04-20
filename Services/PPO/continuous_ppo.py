@@ -555,7 +555,7 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.batch_size: 1,
                                self.actor_network.train_length: 1,
 
-                               self.actor_network.action_placeholder: action,
+                               self.actor_network.action_placeholder: np.reshape(action, (1, 2)),
                                }
                 )
 
