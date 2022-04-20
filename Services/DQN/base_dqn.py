@@ -23,6 +23,7 @@ class BaseDQN:
         self.trace_length = None
         self.target_ops = None
         self.pre_train_steps = None
+        self.initial_exploration_steps = None
         self.epsilon = None
         self.step_drop = None
 
@@ -66,8 +67,6 @@ class BaseDQN:
             self.last_position_dim = None
         if not hasattr(self, "package_output_data"):
             self.package_output_data = None
-
-
 
     def init_states(self):
         # Init states for RNN
@@ -225,7 +224,7 @@ class BaseDQN:
 
     def _step_loop_old(self, o, internal_state, a, rnn_state):
         # Generate actions and corresponding steps.
-        if np.random.rand(1) < self.epsilon or self.total_steps < self.pre_train_steps:
+        if np.random.rand(1) < self.epsilon or self.total_steps < self.initial_exploration_steps:
             [updated_rnn_state, sa, sv] = self.sess.run(
                 [self.main_QN.rnn_state, self.main_QN.streamA, self.main_QN.streamV],
                 feed_dict={self.main_QN.observation: o,
@@ -260,7 +259,7 @@ class BaseDQN:
 
     def _step_loop_new(self, o, internal_state, a, rnn_state, rnn_state_ref):
         # Generate actions and corresponding steps.
-        if np.random.rand(1) < self.epsilon or self.total_steps < self.pre_train_steps:
+        if np.random.rand(1) < self.epsilon or self.total_steps < self.initial_exploration_steps:
             [updated_rnn_state, updated_rnn_state_ref, sa, sv] = self.sess.run(
                 [self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref, self.main_QN.streamA,
                  self.main_QN.streamV],

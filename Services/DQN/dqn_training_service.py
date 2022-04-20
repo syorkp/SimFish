@@ -58,7 +58,8 @@ class DQNTrainingService(TrainingService, BaseDQN):
         self.trace_length = self.learning_params["trace_length"]
         self.step_drop = (self.learning_params['startE'] - self.learning_params['endE']) / self.learning_params[
             'anneling_steps']
-        self.pre_train_steps = self.total_steps + self.learning_params["pre_train_steps"]
+        self.pre_train_steps = self.total_steps + self.learning_params["pre_train_steps"]  # To prevent training following loading if no buffer.
+        self.initial_exploration_steps = self.learning_params["pre_train_steps"]  # To allow an initial period of exploration, not repeated upon loading.
 
         self.writer = None
         self.trainables = None
