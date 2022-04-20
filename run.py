@@ -2242,28 +2242,6 @@ ppo_scaffold_training_config_egf_10b = [
     },
 ]
 
-ppo_scaffold_training_config_egf_10_fake = [
-    {
-        "Model Name": "ppo_scaffold_egf_10_fake",
-        "Environment Name": "ppo_scaffold_egf_10_fake",
-        "Trial Number": 3,
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": False,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": True,
-        "New Simulation": True,
-        "Profile Speed": False,
-    },
-]
-
-
-
 ppo_testing = [
     {
         "Model Name": "ppo_scaffold_version_on_8_se",
@@ -2305,7 +2283,81 @@ ppo_testing = [
     },
 ]
 
+dqn_scaffold_training_config_dn_10a = [
+    {
+        "Model Name": "dqn_scaffold_dn_10",
+        "Environment Name": "dqn_scaffold_dn_10",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "dqn_scaffold_dn_10",
+        "Environment Name": "dqn_scaffold_dn_10",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+dqn_scaffold_training_config_dn_10b = [
+    {
+        "Model Name": "dqn_scaffold_dn_10",
+        "Environment Name": "dqn_scaffold_dn_10",
+        "Trial Number": 3,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "dqn_scaffold_dn_10",
+        "Environment Name": "dqn_scaffold_dn_10",
+        "Trial Number": 4,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_training_config_egf_10_fake, parallel_jobs=4)
+manager = TrialManager(dqn_scaffold_training_config_dn_10a, parallel_jobs=4)
 manager.run_priority_loop()

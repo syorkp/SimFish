@@ -308,7 +308,7 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_egf_10_fake"
+scaffold_name = "ppo_scaffold_egf_10"
 
 
 changes = [

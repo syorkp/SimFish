@@ -189,7 +189,7 @@ env = {
        'energy_state': False,
        'in_light': False,
        'salt': False,  # Inclusion of olfactory salt input and salt death.
-       "use_dynamic_network": False,
+       "use_dynamic_network": True,
        'salt_concentration_decay': 0.001,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
        'max_salt_damage': 0.02,  # Salt damage at centre of source.
@@ -306,7 +306,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_10"
+scaffold_name = "dqn_scaffold_dn_10"
 
 changes = [
 
