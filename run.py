@@ -2242,6 +2242,27 @@ ppo_scaffold_training_config_egf_10b = [
     },
 ]
 
+ppo_scaffold_training_config_egf_10_fake = [
+    {
+        "Model Name": "ppo_scaffold_egf_10_fake",
+        "Environment Name": "ppo_scaffold_egf_10_fake",
+        "Trial Number": 3,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+
 
 ppo_testing = [
     {
@@ -2286,5 +2307,5 @@ ppo_testing = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_training_config_egf_10b, parallel_jobs=4)
+manager = TrialManager(ppo_scaffold_training_config_egf_10_fake, parallel_jobs=4)
 manager.run_priority_loop()

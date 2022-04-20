@@ -183,7 +183,8 @@ class QNetwork:
 
         self.salience = tf.gradients(self.Advantage_final, self.observation)
         # Then combine them together to get our final Q-values.
-        self.Q_out = self.Value_final + tf.subtract(self.Advantage_final, tf.reduce_mean(self.Advantage_final, axis=1, keep_dims=True))
+        self.Q_out = self.Value_final + tf.subtract(self.Advantage_final,
+                                                    tf.reduce_mean(self.Advantage_final, axis=1, keep_dims=True))
         self.predict = tf.argmax(self.Q_out, 1)
         self.Q_dist = tf.nn.softmax(self.Q_out / self.Temp)
         # Below we obtain the loss by taking the sum of squares difference between the target and prediction Q values.

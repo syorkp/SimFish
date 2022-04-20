@@ -22,12 +22,8 @@ class BaseNetwork:
         self.prev_actions = tf.placeholder(shape=[None, action_dim], dtype=tf.float32, name='prev_actions')
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
 
-        if new_simulation:
-            n_channel_dims = 3
-        else:
-            n_channel_dims = 3
-        self.observation = tf.placeholder(shape=[None, n_channel_dims, 2], dtype=tf.float32, name='obs')
-        self.reshaped_observation = tf.reshape(self.observation, shape=[-1, self.num_arms, n_channel_dims, 2],
+        self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
+        self.reshaped_observation = tf.reshape(self.observation, shape=[-1, self.num_arms, 3, 2],
                                                name="reshaped_observation")
 
         #            ----------        Non-Reflected       ---------            #

@@ -149,7 +149,7 @@ class ContinuousPPO(BasePPO):
     def _assay_step_loop_multivariate2(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                            rnn_state_critic,
                                            rnn_state_critic_ref):
-        if self.new_simulation:
+        if self.new_simulation and self.environment_params["use_dynamic_network"]:
             return self._assay_step_loop_multivariate2_new(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                       rnn_state_critic,
                                       rnn_state_critic_ref)
@@ -169,7 +169,7 @@ class ContinuousPPO(BasePPO):
         mu_i, mu_a, mu1, mu1_ref, mu_a1, mu_a_ref, si_i, si_a = self.sess.run(
             [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.value_output,
              self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
-             self.actor_network.rnn_state_in,# TODO: CHange back to: self.actor_network.network_graph,
+             self.actor_network.network_graph,
              self.actor_network.mu_impulse_combined,
              self.actor_network.mu_angle_combined,
              self.actor_network.mu_impulse,
@@ -265,7 +265,10 @@ class ContinuousPPO(BasePPO):
                        }
         )
 
-        action = [impulse[0][0], angle[0][0]]
+        if self.use_mu:
+            action = [mu_i[0][0], mu_a[0][0]]
+        else:
+            action = [impulse[0][0], angle[0][0]]
 
         o1, given_reward, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=action,
                                                                                                      frame_buffer=self.frame_buffer,
@@ -521,7 +524,6 @@ class ContinuousPPO(BasePPO):
              self.actor_network.mu_impulse_combined,
              self.actor_network.mu_angle_combined,
              self.actor_network.sigma_action, ],
-            # self.actor_network.action_distribution.preliminary_samples, self.actor_network.action_distribution.probs, self.actor_network.action_distribution.positive_imp],
 
             feed_dict={self.actor_network.observation: o,
                        self.actor_network.internal_state: internal_state,

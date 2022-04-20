@@ -10,9 +10,9 @@ class QNetworkDynamic(DynamicBaseNetwork):
     def __init__(self, simulation, my_scope, internal_states, internal_state_names, num_actions,
                 base_network_layers=None, modular_network_layers=None, ops=None, connectivity=None,
                  reflected=None):
-        super().__init__(simulation, my_scope, internal_states, internal_state_names, action_dim=1,
+        super().__init__(simulation, my_scope, internal_states, internal_state_names, action_dim=1, num_actions=num_actions,
                          base_network_layers=base_network_layers, modular_network_layers=modular_network_layers, ops=ops,
-                         connectivity=connectivity, reflected=reflected)
+                         connectivity=connectivity, reflected=reflected, algorithm="dqn")
 
         # Shared
         self.AW = tf.Variable(tf.random_normal([self.processing_network_output.shape[1] // 2, num_actions]), name=my_scope + "aw")
@@ -25,13 +25,13 @@ class QNetworkDynamic(DynamicBaseNetwork):
 
         # Main stream
         self.streamA, self.streamV = tf.split(self.processing_network_output, 2, 1)
-        self.Advantage = tf.matmul(self.streamA, self.AW)
         self.Value = tf.matmul(self.streamV, self.VW)
+        self.Advantage = tf.matmul(self.streamA, self.AW)
 
         # Reflected stream
         self.streamA_ref, self.streamV_ref = tf.split(self.processing_network_output_ref, 2, 1)
-        self.Advantage_ref = tf.matmul(self.streamA_ref, self.AW)
         self.Value_ref = tf.matmul(self.streamV_ref, self.VW)
+        self.Advantage_ref = tf.matmul(self.streamA_ref, self.AW)
 
         # Swapping rows in advantage - Note that this is specific to the current action space and order
         self.Advantage_ref = tf.concat([self.Advantage_ref[0:, :][:, :1],

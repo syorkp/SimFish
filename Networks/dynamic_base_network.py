@@ -11,8 +11,9 @@ def flatten_list(t):
 
 class DynamicBaseNetwork:
 
-    def __init__(self, simulation, my_scope, internal_states, internal_state_names, action_dim, base_network_layers, modular_network_layers,
-                 ops, connectivity, reflected):
+    def __init__(self, simulation, my_scope, internal_states, internal_state_names, action_dim, num_actions,
+                 base_network_layers, modular_network_layers,
+                 ops, connectivity, reflected, algorithm):
 
         self.resolve_connectivity(base_network_layers, modular_network_layers, ops, connectivity)
 
@@ -23,7 +24,12 @@ class DynamicBaseNetwork:
         self.scope = my_scope
 
         # Network inputs
-        self.prev_actions = tf.placeholder(shape=[None, action_dim], dtype=tf.float32, name='prev_actions')
+        if algorithm == "dqn":
+            self.prev_actions = tf.placeholder(shape=[num_actions], dtype=tf.float32, name='prev_actions')
+            self.prev_actions_one_hot = tf.one_hot(self.prev_actions, num_actions, dtype=tf.float32)
+        else:
+            self.prev_actions = tf.placeholder(shape=[None, action_dim], dtype=tf.float32, name='prev_actions')
+
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
         self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='observation')
         self.reshaped_observation = tf.reshape(self.observation, shape=[-1, self.photoreceptor_num, 3, 2],
@@ -40,9 +46,14 @@ class DynamicBaseNetwork:
                                                                               modular_network_layers, reflected)
 
         # Contains all layers to be referenced.
-        self.network_graph = {"observation": self.reshaped_observation,
-                              "internal_state": self.internal_state,
-                              "prev_actions": self.prev_actions}
+        if algorithm == "dqn":
+            self.network_graph = {"observation": self.reshaped_observation,
+                                  "internal_state": self.internal_state,
+                                  "prev_actions": self.prev_actions_one_hot}
+        else:
+            self.network_graph = {"observation": self.reshaped_observation,
+                                  "internal_state": self.internal_state,
+                                  "prev_actions": self.prev_actions}
         self.initialize_network(copy.copy(base_network_layers), copy.copy(modular_network_layers), copy.copy(ops),
                                 connectivity, self.network_graph)
 
@@ -89,12 +100,12 @@ class DynamicBaseNetwork:
 
     def perform_op(self, op, network_graph, reflected):
         if op[0] == "eye_split":
-            network_graph[op[2][0]] = network_graph[op[1][0]][:, :, :, 0]
-            network_graph[op[2][1]] = network_graph[op[1][0]][:, :, :, 1]
-
             if reflected:
-                network_graph[op[2][0]] = tf.reverse(network_graph[op[1][0]][:, :, :, 0], [1])
-                network_graph[op[2][1]] = tf.reverse(network_graph[op[1][0]][:, :, :, 1], [1])
+                network_graph[op[2][0]] = tf.reverse(self.network_graph[op[2][0]], [1])
+                network_graph[op[2][1]] = tf.reverse(self.network_graph[op[2][1]], [1])
+            else:
+                network_graph[op[2][0]] = network_graph[op[1][0]][:, :, :, 0]
+                network_graph[op[2][1]] = network_graph[op[1][0]][:, :, :, 1]
 
         elif op[0] == "flatten":
             network_graph[op[2][0]] = tf.layers.flatten(network_graph[op[1][0]], name=self.scope + "_" + op[2][0])
@@ -213,14 +224,14 @@ class DynamicBaseNetwork:
     def create_rnns(self, base_network_layers, modular_network_layers, reflected):
         rnn_units = {}
         rnn_cell_states = {}
-        rnn_dim = None
+        rnn_dim = None  # TODO: allow multiple of these to exist...
         layers = {**base_network_layers, **modular_network_layers}
 
         for layer in layers.keys():
             if layers[layer][0] == "dynamic_rnn":
                 rnn_units[layer] = tf.nn.rnn_cell.LSTMCell(num_units=layers[layer][1], state_is_tuple=True)
-                rnn_cell_states[layer] = rnn_units[layer].zero_state(self.batch_size, tf.float32)
+                rnn_cell_states[layer] = rnn_units[layer].zero_state(self.train_length, tf.float32)
                 if reflected:
-                    rnn_cell_states[layer + "_ref"] = rnn_units[layer].zero_state(self.batch_size, tf.float32)
+                    rnn_cell_states[layer + "_ref"] = rnn_units[layer].zero_state(self.train_length, tf.float32)
                 rnn_dim = layers[layer][1]
         return rnn_units, rnn_cell_states, rnn_dim

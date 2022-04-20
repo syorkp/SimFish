@@ -12,9 +12,9 @@ class PPONetworkActorMultivariate2Dynamic(DynamicBaseNetwork):
     def __init__(self, simulation, my_scope, internal_states, internal_state_names, max_impulse, max_angle_change,
                  clip_param, input_sigmas=False, impose_action_mask=False, base_network_layers=None, modular_network_layers=None, ops=None, connectivity=None,
                  reflected=None):
-        super().__init__(simulation, my_scope, internal_states, internal_state_names, action_dim=2,
+        super().__init__(simulation, my_scope, internal_states, internal_state_names, action_dim=2, num_actions=1,
                          base_network_layers=base_network_layers, modular_network_layers=modular_network_layers, ops=ops,
-                         connectivity=connectivity, reflected=reflected)
+                         connectivity=connectivity, reflected=reflected, algorithm="ppo")
 
         #            ----------        Stream Splitting       ---------            #
 
