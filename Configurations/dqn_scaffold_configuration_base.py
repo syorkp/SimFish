@@ -38,7 +38,6 @@ params = {
        'rnn_state_computation': False,
        'learning_rate': 0.0001,
 
-
        # Learning (PPO Continuous Only)
        'multivariate': False,
        'beta_distribution': False,

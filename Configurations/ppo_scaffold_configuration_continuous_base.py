@@ -21,10 +21,10 @@ params = {
        'trace_length': 50,  # How long each experience trace will be when training
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
        'max_epLength': 1000,  # The max allowed length of our episode.
-       'epsilon_greedy': False,
+       'epsilon_greedy': True,
        'epsilon_greedy_scaffolding': True,
-       'startE': 0.8,  # Starting chance of random action for DQN (or PPO if epsilon_greedy=True)
-       'endE': 0.2,  # Final chance of random action for DQN (or PPO if epsilon_greedy=True)
+       'startE': 0.2,  # Starting chance of random action
+       'endE': 0.01,  # Final chance of random action
 
        # Learning (DQN Only)
        'update_freq': 100,  # How often to perform a training step.
@@ -177,7 +177,7 @@ env = {
        'min_sigma_impulse': 0.4,  # Formerly 0.1
        'min_sigma_angle': 0.4,  # Formerly 0.1
        'sigma_reduction_time': 5000000,  # Number of steps to complete sigma trajectory.
-       'sigma_mode': "Decreasing",  # Options: Decreasing (linear reduction with reduction time), Static
+       'sigma_mode': "Static",  # Options: Decreasing (linear reduction with reduction time), Static
        'sigma_scaffolding': True,  # Reset sigma progression if move along configuration scaffold.
 
        'clip_param': 0.2,
@@ -308,7 +308,7 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_hs_10"
+scaffold_name = "ppo_scaffold_egf_10"
 
 
 changes = [
