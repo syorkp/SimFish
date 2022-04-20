@@ -21,7 +21,7 @@ params = {
        'trace_length': 50,  # How long each experience trace will be when training
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
        'max_epLength': 1000,  # The max allowed length of our episode.
-       'epsilon_greedy': True,
+       'epsilon_greedy': False,
        'epsilon_greedy_scaffolding': True,
        'startE': 0.8,  # Starting chance of random action for DQN (or PPO if epsilon_greedy=True)
        'endE': 0.2,  # Final chance of random action for DQN (or PPO if epsilon_greedy=True)
@@ -172,10 +172,10 @@ env = {
        'proximity_reward': 0.002,
 
        # For inputting std. values - note these must not be the same number.
-       'max_sigma_impulse': 0.3,  # Formerly 0.4/0.3. Note in the case of static sigma, this is the static value.
-       'max_sigma_angle': 0.3,  # Formerly 0.4/0.3. Note in the case of static sigma, this is the static value.
-       'min_sigma_impulse': 0.1,
-       'min_sigma_angle': 0.1,
+       'max_sigma_impulse': 0.7,  # Formerly 0.4/0.3. Note in the case of static sigma, this is the static value.
+       'max_sigma_angle': 0.7,  # Formerly 0.4/0.3. Note in the case of static sigma, this is the static value.
+       'min_sigma_impulse': 0.4,  # Formerly 0.1
+       'min_sigma_angle': 0.4,  # Formerly 0.1
        'sigma_reduction_time': 5000000,  # Number of steps to complete sigma trajectory.
        'sigma_mode': "Decreasing",  # Options: Decreasing (linear reduction with reduction time), Static
        'sigma_scaffolding': True,  # Reset sigma progression if move along configuration scaffold.
@@ -308,7 +308,7 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_eg_10"
+scaffold_name = "ppo_scaffold_hs_10"
 
 
 changes = [
