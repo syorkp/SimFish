@@ -17,7 +17,7 @@ def prey_signal_all_ds(L, distance, decay_constant=0.0006):
 
 
 def scatter_signal_all(max_d, rf_size, bkg_scatter, decay_constant=0.0006):
-    d_range = np.linspace(1, max_d, max_d-1)
+    d_range = np.linspace(1, max_d, int(max_d-1))
 
     point_width = 2 * d_range * np.tan(rf_size / 2)
     distance_scaling = np.exp(-decay_constant * d_range) * bkg_scatter
@@ -28,13 +28,16 @@ def scatter_signal_all(max_d, rf_size, bkg_scatter, decay_constant=0.0006):
 
     return photons
 
-decay = 0.006
-max_distance_s = (1500**2 + 1500 **2) ** 0.5
-luminance = 200
-distance = 500
 
-plt.hlines(scatter_signal_all(max_distance_s, 0.0133, 0.03, decay), 0, distance)
-plt.plot(np.linspace(0, distance, 1000), prey_signal_all_ds(luminance, distance, decay) + scatter_signal_all(max_distance_s, 0.0133, 0.03, decay))
+decay = 0.01
+max_distance_s = (1500**2 + 1500**2) ** 0.5
+luminance = 200
+distance = 600
+bkg_scatter = 0
+rf_size = 0.0133
+
+plt.hlines(scatter_signal_all(max_distance_s, rf_size, bkg_scatter, decay), 0, distance)
+plt.plot(np.linspace(0, distance, 1000), prey_signal_all_ds(luminance, distance, decay) + scatter_signal_all(max_distance_s, rf_size, bkg_scatter, decay))
 plt.show()
 
 
