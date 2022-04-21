@@ -128,7 +128,7 @@ env = {
        'prey_inertia': 40.,
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-       'prey_num': 30,
+       'prey_num': 1,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
@@ -149,7 +149,7 @@ env = {
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
-       'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001; 0.01
+       'bkg_scatter': 0.1,  # base brightness of the background FORMERLY 0.00001; 0.01
        'dark_gain': 0.38,  # gain of brightness in the dark side
        'light_gain': 200.0,  # gain of brightness in the bright side
 
@@ -307,8 +307,9 @@ env = {
 }
 
 
+
 # Equal to that given in the file name.
-environment_name = "ppo_scaffold_version_on_8_se_assay"  # "continuous_assay"
+environment_name = "continuous_assay"
 
 with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)
