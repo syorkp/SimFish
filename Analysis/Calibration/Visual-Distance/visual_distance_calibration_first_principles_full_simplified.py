@@ -1,3 +1,7 @@
+"""
+Simpler version of other, which gets actual max bgk_scatter. Note that it ignores occlusion entirely.
+"""
+
 import importlib
 import numpy as np
 import matplotlib.pyplot as plt
@@ -46,7 +50,7 @@ def plot_distinguishability_against_distance(max_distance, bkg_scatter, luminanc
         uv_prey *= scaling_factor
 
         max_uv_scatter = int(max_uv_scatter)
-        uv_prey_stimulus = int(uv_prey)
+        uv_prey_stimulus = int(uv_prey + max_uv_scatter)
 
         distinguishability_scores.append(compute_distinguishability(uv_prey_stimulus, max_uv_scatter))
 
@@ -93,7 +97,7 @@ def plot_distinguishability_against_luminance(visual_distance, max_distance, bkg
         max_uv_scatter *= scaling_factor
         max_uv_scatter = int(max_uv_scatter)
 
-        uv_prey_stimulus = int(uv_prey)
+        uv_prey_stimulus = int(uv_prey + max_uv_scatter)
         uv_stimulus_photons.append(uv_prey_stimulus)
         distinguishability_scores.append(compute_distinguishability(uv_prey_stimulus, max_uv_scatter))
 
@@ -102,7 +106,7 @@ def plot_distinguishability_against_luminance(visual_distance, max_distance, bkg
     plt.xlabel("Luminance")
     plt.show()
 
-    plt.plot(luminance_vals, [m for i in range(len(luminance_vals))])
+    plt.plot(luminance_vals, [max_uv_scatter for i in range(len(luminance_vals))])
     plt.plot(luminance_vals, uv_stimulus_photons, color="r")
     plt.legend(["Max Scatter Photons", "Max Prey Photons"])
     plt.title(f"Photon counts at {visual_distance/10}mm")
@@ -125,28 +129,29 @@ def plot_distinguishability_against_luminance_two_distances(visual_distance_full
 
     for l in luminance_vals:
         # Full visibility
-        uv_scatter_before_prey = get_max_scatter_photons(bkg_scatter, visual_distance_full, rf_size, decay_constant)
-        uv_scatter_after_prey = get_max_scatter_photons_occluded(bkg_scatter, rf_size, visual_distance_full, prey_size, max_distance, decay_constant, uv_occlusion_gain)
-        uv_prey = get_max_prey_photons(visual_distance_full, rf_size, decay_constant, l)
-        uv_prey_stimulus_full = uv_prey + uv_scatter_after_prey + uv_scatter_before_prey
+        uv_prey = prey_signal(l, visual_distance_full, decay_constant)
+        uv_prey *= scaling_factor
+        uv_prey_full = int(uv_prey+ uv_scatter_photons)
+
+        max_uv_scatter = get_max_bkg_scatter(bkg_scatter, decay_constant, rf_size, 1500, 1500, l, env_variables)
+        max_uv_scatter *= scaling_factor
+        max_uv_scatter_full = int(max_uv_scatter)
+
 
         # 50% visibility
-        uv_scatter_before_prey = get_max_scatter_photons(bkg_scatter, visual_distance_partial, rf_size, decay_constant)
-        uv_scatter_after_prey = get_max_scatter_photons_occluded(bkg_scatter, rf_size, visual_distance_partial, prey_size, max_distance, decay_constant, uv_occlusion_gain)
-        uv_prey = get_max_prey_photons(visual_distance_partial, rf_size, decay_constant, l)
-        uv_prey_stimulus_partial = uv_prey + uv_scatter_after_prey + uv_scatter_before_prey
+        uv_prey = prey_signal(l, visual_distance_full, decay_constant)
+        uv_prey *= scaling_factor
+        uv_prey_partial = int(uv_prey)
 
-        uv_prey_stimulus_full *= scaling_factor
-        uv_prey_stimulus_full = int(uv_prey_stimulus_full)
+        max_uv_scatter = get_max_bkg_scatter(bkg_scatter, decay_constant, rf_size, 1500, 1500, l, env_variables)
+        max_uv_scatter *= scaling_factor
+        max_uv_scatter_partial = int(max_uv_scatter)
 
-        uv_prey_stimulus_partial *= scaling_factor
-        uv_prey_stimulus_partial = int(uv_prey_stimulus_partial)
+        uv_stimulus_photons_full.append(uv_prey_full)
+        uv_stimulus_photons_partial.append(uv_prey_partial)
 
-        uv_stimulus_photons_full.append(uv_prey_stimulus_full)
-        uv_stimulus_photons_partial.append(uv_prey_stimulus_partial)
-
-        distinguishability_scores_full.append(compute_distinguishability(uv_prey_stimulus_full, uv_scatter_photons))
-        distinguishability_scores_partial.append(compute_distinguishability(uv_prey_stimulus_partial, uv_scatter_photons))
+        distinguishability_scores_full.append(compute_distinguishability(uv_prey_full, uv_scatter_photons))
+        distinguishability_scores_partial.append(compute_distinguishability(uv_prey_partial, uv_scatter_photons))
 
     plt.plot(luminance_vals, distinguishability_scores_full)
     plt.plot(luminance_vals, distinguishability_scores_partial)
@@ -162,23 +167,22 @@ def plot_distinguishability_against_luminance_two_distances(visual_distance_full
     plt.title(f"Photon counts")
     plt.show()
 
-    with open(
-            f"Data-Various/distinguishability_scores_partial.npy",
-            "wb") as f:
-        np.save(f, np.array(distinguishability_scores_partial))
 
-    with open(
-            f"Data-Various/distinguishability_scores_full.npy",
-            "wb") as f:
-        np.save(f, np.array(distinguishability_scores_full))
+L1 = 200
+max_distance = (1500**2 + 1500**2) ** 0.5
+bkg_scatter = 0.1
+scaling_factor = 1
+uv_occlusion_gain = 1.0
+visual_distance_full = 34
+visual_distance_partial = 100
+min_luminance = 10
+max_luminance = 200
+decay = 0.01
+luminance = 200
+distance = 600
+rf_size = 0.0133 * 3
 
-    with open(
-            f"Data-Various/uv_stimulus_photons_full.npy",
-            "wb") as f:
-        np.save(f, np.array(uv_stimulus_photons_full))
-
-    with open(
-            f"Data-Various/uv_stimulus_photons_partial.npy",
-            "wb") as f:
-        np.save(f, np.array(uv_stimulus_photons_partial))
-
+plot_distinguishability_against_distance(max_distance, bkg_scatter, L1, scaling_factor, rf_size, decay)
+plot_distinguishability_against_luminance_two_distances(visual_distance_full, visual_distance_partial, max_distance,
+                                                        bkg_scatter, scaling_factor, uv_occlusion_gain, min_luminance,
+                                                        max_luminance, rf_size, decay)
