@@ -25,7 +25,7 @@ class DynamicBaseNetwork:
 
         # Network inputs
         if algorithm == "dqn":
-            self.prev_actions = tf.placeholder(shape=[num_actions], dtype=tf.float32, name='prev_actions')
+            self.prev_actions = tf.placeholder(shape=[None], dtype=tf.int32, name='prev_actions')
             self.prev_actions_one_hot = tf.one_hot(self.prev_actions, num_actions, dtype=tf.float32)
         else:
             self.prev_actions = tf.placeholder(shape=[None, action_dim], dtype=tf.float32, name='prev_actions')
