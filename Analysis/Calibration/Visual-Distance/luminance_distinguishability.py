@@ -1,19 +1,19 @@
-"""Plots luminance-distinguishability scores for two distances from fish."""
+"""Plots luminance-distinguishability scores for two distances from fish. These scores are generated from visual_distance_calibration_first_principles models."""
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-with open(f'Luminance-Distinguishability/distinguishability_scores_full.npy', 'rb') as outfile:
+with open(f'Full-Model-Distinguishability-Scores/distinguishability_scores_full.npy', 'rb') as outfile:
     distinguishability_scores_full = np.load(outfile)
 
-with open(f'Luminance-Distinguishability/distinguishability_scores_partial.npy', 'rb') as outfile:
+with open(f'Full-Model-Distinguishability-Scores/distinguishability_scores_partial.npy', 'rb') as outfile:
     distinguishability_scores_partial = np.load(outfile)
 
-with open(f'Luminance-Distinguishability/uv_stimulus_photons_full.npy', 'rb') as outfile:
+with open(f'Full-Model-Distinguishability-Scores/uv_stimulus_photons_full.npy', 'rb') as outfile:
     uv_stimulus_photons_full = np.load(outfile)
 
-with open(f'Luminance-Distinguishability/uv_stimulus_photons_partial.npy', 'rb') as outfile:
+with open(f'Full-Model-Distinguishability-Scores/uv_stimulus_photons_partial.npy', 'rb') as outfile:
     uv_stimulus_photons_partial = np.load(outfile)
 
 
@@ -82,7 +82,7 @@ def plot_only_positive(luminance_values, distinguishability_scores_full, disting
     print(luminance_full[10])
 
 
-min_luminance = 0.25
-max_luminance = 0.28
+min_luminance = 0
+max_luminance = 200
 luminance_values = np.linspace(min_luminance, max_luminance, len(distinguishability_scores_full))
 plot_only_positive(luminance_values, distinguishability_scores_full, distinguishability_scores_partial)

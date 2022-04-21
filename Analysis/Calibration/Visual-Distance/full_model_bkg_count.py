@@ -52,4 +52,4 @@ def get_max_bkg_scatter(bkg_scatter, decay_rate, pr_size, width, height, luminan
 # rf_size = 0.0133 * 3
 # learning_params, env_variables, n, b, c = load_configuration_files("dqn_scaffold_10-1")
 #
-# max_uv = get_max_bkg_scatter(bkg_scatter, decay, rf_size, 1500, 1500, luminance, env_variables)
+# print(get_max_bkg_scatter(bkg_scatter, decay, rf_size, 1500, 1500, luminance, env_variables))
