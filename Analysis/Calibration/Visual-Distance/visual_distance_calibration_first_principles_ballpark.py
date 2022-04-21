@@ -1,5 +1,5 @@
 """
-Finding ballpark values...
+For finding ballpark values... Gets the max scatter sigmal
 """
 
 import numpy as np
@@ -29,7 +29,7 @@ def scatter_signal_all(max_d, rf_size, bkg_scatter, decay_constant=0.0006):
     return photons
 
 decay = 0.006
-max_distance_s = 2000
+max_distance_s = (1500**2 + 1500 **2) ** 0.5
 luminance = 200
 distance = 500
 

@@ -1,3 +1,5 @@
+"""First model attempt to get discriminability from first principles. """
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import poisson
@@ -222,22 +224,22 @@ def plot_distinguishability_against_luminance_two_distances(visual_distance_full
     plt.show()
 
     with open(
-            f"distinguishability_scores_partial.npy",
+            f"Data-Various/distinguishability_scores_partial.npy",
             "wb") as f:
         np.save(f, np.array(distinguishability_scores_partial))
 
     with open(
-            f"distinguishability_scores_full.npy",
+            f"Data-Various/distinguishability_scores_full.npy",
             "wb") as f:
         np.save(f, np.array(distinguishability_scores_full))
 
     with open(
-            f"uv_stimulus_photons_full.npy",
+            f"Data-Various/uv_stimulus_photons_full.npy",
             "wb") as f:
         np.save(f, np.array(uv_stimulus_photons_full))
 
     with open(
-            f"uv_stimulus_photons_partial.npy",
+            f"Data-Various/uv_stimulus_photons_partial.npy",
             "wb") as f:
         np.save(f, np.array(uv_stimulus_photons_partial))
 

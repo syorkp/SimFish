@@ -1,3 +1,6 @@
+"""Uses coarsly gathered SNR data points from environment test to get an estimate of how visibility in the three
+channels changes with distance. DEPRECATED"""
+
 import matplotlib.pyplot as plt
 import numpy as np
 

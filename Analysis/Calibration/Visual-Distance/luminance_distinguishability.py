@@ -1,3 +1,5 @@
+"""Plots luminance-distinguishability scores for two distances from fish."""
+
 import matplotlib.pyplot as plt
 import numpy as np
 

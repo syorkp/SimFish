@@ -59,9 +59,14 @@ class DynamicBaseNetwork:
 
         if reflected:
             print("Building reflected graph")
-            self.reflected_network_graph = {"observation": self.reshaped_observation,
-                                            "internal_state": self.internal_state,
-                                            "prev_actions": self.prev_actions}
+            if algorithm == "dqn":
+                self.reflected_network_graph = {"observation": self.reshaped_observation,
+                                                "internal_state": self.internal_state,
+                                                "prev_actions": self.prev_actions_one_hot}
+            else:
+                self.reflected_network_graph = {"observation": self.reshaped_observation,
+                                                "internal_state": self.internal_state,
+                                                "prev_actions": self.prev_actions}
             self.initialize_network(copy.copy(base_network_layers), copy.copy(modular_network_layers), copy.copy(ops),
                                     connectivity, self.reflected_network_graph, reflected=True)
 

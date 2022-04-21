@@ -1,3 +1,6 @@
+"""
+A way to display the PR coverage around the fish.
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -5,7 +8,7 @@ from Analysis.load_model_config import load_configuration_files
 from Environment.Fish.eye import Eye
 from Tools.drawing_board_new import NewDrawingBoard
 
-model_name = "dqn_scaffold_version_5-1"
+model_name = "dqn_scaffold_10-1"
 learning_params, env_variables, n, b, c = load_configuration_files(model_name)
 
 env_variables["uv_photoreceptor_rf_size"] *= 1

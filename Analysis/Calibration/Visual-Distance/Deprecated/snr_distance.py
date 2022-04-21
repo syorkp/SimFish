@@ -1,3 +1,6 @@
+"""Uses coarsly gathered SNR data points from environment test to get an estimate of how visibility in the three
+channels changes with distance. DEPRECATED"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -27,7 +30,7 @@ np_load_old = np.load
 np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
 
 
-file = "SNR/SNR9"
+file = "../SNR/SNR9"
 
 with open(f'{file}/distances2.npy', 'rb') as outfile:
     distances = np.load(outfile)

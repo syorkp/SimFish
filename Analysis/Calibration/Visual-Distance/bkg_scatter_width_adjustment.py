@@ -1,3 +1,6 @@
+"""Script to find how to scale bkg_scatter value depending on width of enviornment (and decay), to prevent visibility
+being worse in larger environments."""
+
 import numpy as np
 import matplotlib.pyplot as plt
 
