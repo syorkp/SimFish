@@ -753,7 +753,6 @@ class NewDrawingBoard:
         theta_separation = math.asin(max_separation / max_dist)
         n = (angular_size / theta_separation)
 
-
         if n * number_of_this_feature > self.max_lines_num:
             print(f"""Max lines num needs increase:
             Max lines num: {self.max_lines_num}
@@ -777,7 +776,7 @@ class NewDrawingBoard:
         if bkg == 0:
             db = self.chosen_math_library.zeros((self.height, self.width, 3), dtype=np.double)
         else:
-            db = (self.chosen_math_library.ones((self.height, self.width, 3), dtype=np.double) * bkg) / self.light_gain
+            db = (self.chosen_math_library.ones((self.height, self.width, 3), dtype=np.double) * bkg)
         db[1:2, :] = self.chosen_math_library.array([1, 0, 0])
         db[self.width - 2:self.width - 1, :] = self.chosen_math_library.array([1, 0, 0])
         db[:, 1:2] = self.chosen_math_library.array([1, 0, 0])

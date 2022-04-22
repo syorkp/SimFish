@@ -2427,6 +2427,25 @@ ppo_scaffold_training_config_egf_min_10a = [
     },
 ]
 
+ppo_test = [
+    {
+        "Model Name": "ppo_test_config",
+        "Environment Name": "test_config",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
 
 # Assay Configs
 
@@ -2555,5 +2574,5 @@ ppo_testing_normal_sigma = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_training_config_egf_min_10a, parallel_jobs=4)
+manager = TrialManager(dqn_scaffold_training_config_11a, parallel_jobs=4)
 manager.run_priority_loop()
