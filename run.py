@@ -2427,10 +2427,10 @@ ppo_scaffold_training_config_egf_min_10a = [
     },
 ]
 
-ppo_test = [
+ppo_scaffold_training_config_egf_max_10a = [
     {
-        "Model Name": "ppo_test_config",
-        "Environment Name": "test_config",
+        "Model Name": "ppo_scaffold_egf_max_10",
+        "Environment Name": "ppo_scaffold_egf_max_10",
         "Trial Number": 1,
         "Run Mode": "Training",
         "Tethered": False,
@@ -2438,7 +2438,61 @@ ppo_test = [
         "Continuous Actions": True,
         "Learning Algorithm": "PPO",
         "Priority": 1,
-        "Using GPU": False,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "ppo_scaffold_egf_max_10",
+        "Environment Name": "ppo_scaffold_egf_max_10",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+ppo_scaffold_training_config_egf_energy_10a = [
+    {
+        "Model Name": "ppo_scaffold_egf_energy_10",
+        "Environment Name": "ppo_scaffold_egf_energy_10",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "ppo_scaffold_egf_energy_10",
+        "Environment Name": "ppo_scaffold_egf_energy_10",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
@@ -2574,5 +2628,5 @@ ppo_testing_normal_sigma = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_training_config_11b, parallel_jobs=4)
+manager = TrialManager(ppo_scaffold_training_config_egf_max_10a, parallel_jobs=4)
 manager.run_priority_loop()
