@@ -354,13 +354,13 @@ class Fish:
         if self.using_gpu:
             readings = readings.get()
 
-        if np.max(readings) > 255:
-            print(f"""Base value exceeded 255.
-
-        Max Red: {np.max(readings[:, 0])}
-        Max UV: {np.max(readings[:, 1])}
-        Max Red2: {np.max(readings[:, 2])}
-                    """)
+        # if np.max(readings) > 255:
+        #     print(f"""Base value exceeded 255.
+        #
+        # Max Red: {np.max(readings[:, 0])}
+        # Max UV: {np.max(readings[:, 1])}
+        # Max Red2: {np.max(readings[:, 2])}
+        #             """)
 
         # Re-scale
         # readings[:, 0, :] /= self.env_variables["red_scaling_factor"]
@@ -370,7 +370,7 @@ class Fish:
         # readings[:, 1] /= (max(readings[:, 1])/ 255)
         photons = np.floor(readings).astype(int)
 
-        # photons = photons.clip(0, 255)
+        photons = photons.clip(0, 255)
 
         return photons
 
