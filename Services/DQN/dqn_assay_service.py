@@ -66,6 +66,7 @@ class DQNAssayService(AssayService, BaseDQN):
 
     def perform_assay(self, assay):
         self.assay_output_data_format = {key: None for key in assay["recordings"]}
+        self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
 
         rnn_state = (
             np.zeros([1, self.main_QN.rnn_dim]),
@@ -83,6 +84,7 @@ class DQNAssayService(AssayService, BaseDQN):
         a = 0
         self.step_number = 0
         while self.step_number < assay["duration"]:
+            print(self.step_number)
             if assay["reset"] and self.step_number % assay["reset interval"] == 0:
                 rnn_state = (
                 np.zeros([1, self.main_QN.rnn_dim]), np.zeros([1, self.main_QN.rnn_dim]))  # Reset RNN hidden state
@@ -94,6 +96,10 @@ class DQNAssayService(AssayService, BaseDQN):
 
             if d:
                 break
+        self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id)
+        self.buffer.reset()
+        print(f"Assay: {assay['assay id']} Completed")
+
 
     def step_loop(self, o, internal_state, a, rnn_state):
         return BaseDQN.assay_step_loop(self, o, internal_state, a, rnn_state)

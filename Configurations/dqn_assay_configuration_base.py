@@ -11,30 +11,30 @@ import numpy as np
 
 from Networks.original_network import connectivity, reflected, base_network_layers, modular_network_layers, ops
 
+
 params = {
        # Learning (Universal)
        'batch_size': 16,  # How many experience traces to use for each training step.
        'trace_length': 64,  # How long each experience trace will be when training
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
        'max_epLength': 1000,  # The max allowed length of our episode.
+       'epsilon_greedy': True,
+       'epsilon_greedy_scaffolding': True,
+       'startE': 0.2,  # Starting chance of random action
+       'endE': 0.01,  # Final chance of random action
 
        # Learning (DQN Only)
        'update_freq': 100,  # How often to perform a training step.
        'y': .99,  # Discount factor on the target Q-values
-       'startE': 0.2,  # Starting chance of random action
-       'endE': 0.01,  # Final chance of random action
        'anneling_steps': 1000000,  # How many steps of training to reduce startE to endE.
        'pre_train_steps': 50000,  # How many steps of random actions before training begins.
        'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
        'tau': 0.001,  # target network update time constant
-       'learning_rate': 0.0001,
 
        # Learning (PPO only)
        'n_updates_per_iteration': 4,
        'rnn_state_computation': False,
-
-       # Learning (PPO discrete and DQNonly)
-       'epsilon_greedy': True,
+       'learning_rate': 0.0001,
 
        # Learning (PPO Continuous Only)
        'multivariate': False,
@@ -42,6 +42,7 @@ params = {
        'gamma': 0.99,
        'lambda': 0.9,
        'input_sigmas': True,
+       'sigma_scaffolding': False,  # Reset sigma progression if move along configuration scaffold.
 
        # Discrete Action Space
        'num_actions': 10,  # size of action space
@@ -49,7 +50,7 @@ params = {
        # Saving and video parameters
        'time_per_step': 0.03,  # Length of each step used in gif creation
        'summaryLength': 200,  # Number of episodes to periodically save for analysis
-       'rnn_dim_shared': 512,  # number of rnn cells
+       'rnn_dim_shared': 512,  # number of rnn cells. Should no longer be used.
        'extra_rnn': False,
        'save_gifs': True,
 
@@ -96,8 +97,8 @@ env = {
        'j_turn_dir_change': 0.07,
        'rest_cost': 2,
 
-       'capture_swim_extra_cost': 25,
-       'capture_basic_reward': 10000,  # Used only in old simulation.
+       'capture_swim_extra_cost': 5,
+       'capture_basic_reward': 10000,  # Used only when not using energy state.
 
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
@@ -116,7 +117,7 @@ env = {
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
 
        'fish_mass': 140.,
-       'fish_mouth_size': 6.,  # FINAL VALUE - 0.2mm diameter, so 1.
+       'fish_mouth_size': 4.,  # FINAL VALUE - 0.2mm diameter, so 1.
        'fish_head_size': 2.5,  # Old - 10
        'fish_tail_length': 41.5,  # Old: 70
        'eyes_verg_angle': 77.,  # in deg
@@ -133,7 +134,7 @@ env = {
        'prey_sensing_distance': 20,
        'prey_max_turning_angle': 0.04,
        # This is the turn (pi radians) that happens every step, designed to replicate linear wavy movement.
-       'prey_fluid_displacement': False,
+       'prey_fluid_displacement': True,
        'prey_jump': False,
        'differential_prey': False,
        'prey_cloud_num': 2,
@@ -144,11 +145,11 @@ env = {
        'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
-       'probability_of_predator': 0.01,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
-       'bkg_scatter': 0.03,  # base brightness of the background FORMERLY 0.00001
+       'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001
        'dark_gain': 0.38,  # gain of brightness in the dark side
        'light_gain': 200.0,  # gain of brightness in the bright side
 
@@ -171,7 +172,8 @@ env = {
        'max_sigma_angle': 0.3,  # Formerly 0.4
        'min_sigma_impulse': 0.1,
        'min_sigma_angle': 0.1,
-       'sigma_time_constant': 0.000001,
+       'sigma_reduction_time': 5000000,  # Number of steps to complete sigma trajectory.
+       'sigma_mode': "Decreasing",  # Options: Decreasing (linear reduction with reduction time), Static
 
        'clip_param': 0.2,
        'cs_required': True,
@@ -182,10 +184,10 @@ env = {
        'impose_action_mask': True,
 
        # Sensory inputs
-       'energy_state': True,
+       'energy_state': False,
        'in_light': False,
        'salt': False,  # Inclusion of olfactory salt input and salt death.
-       "use_dynamic_network": True,
+       "use_dynamic_network": False,
        'salt_concentration_decay': 0.001,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
        'max_salt_damage': 0.02,  # Salt damage at centre of source.
@@ -193,11 +195,12 @@ env = {
        # GIFs and debugging
        'visualise_mask': False,  # For debugging purposes.
        'show_channel_sectors': False,
-       'show_fish_body_energy_state': True,
-       'show_previous_actions': False,  # False if not, otherwise the number of actions to save.
+       'show_fish_body_energy_state': False,
+       'show_action_space_usage': True,
+       'show_previous_actions': 200,  # False if not, otherwise the number of actions to save.
 
        # Environment
-       'decay_rate': 0.006,  # Formerly 0.0006
+       'decay_rate': 0.01,  # Formerly 0.0006
        'sim_steps_per_second': 5,  # For converting isomerization frequency.
        'background_grating_frequency': 50,  # For extra layer motion:
        'displacement_scaling_factor': 0.018,
@@ -236,9 +239,9 @@ env = {
        'duration_of_loom': 10,  # Number of steps for which loom occurs.
 
        # Visual system scaling factors (to set CNN inputs into 0 to 255 range):
-       'red_scaling_factor': 1,  # max was 100 without scaling
+       'red_scaling_factor': 0.5,  # max was 100 without scaling
        'uv_scaling_factor': 1, #50,  # max was 40 without scaling
-       'red_2_scaling_factor': 0.1, #0.018,  # max was 12000 without scaling
+       'red_2_scaling_factor': 0.05, #0.018,  # max was 12000 without scaling
        'red_occlusion_gain': 0.0,  # 0 Being complete construction.
        'uv_occlusion_gain': 1.0,
        'red2_occlusion_gain': 0.0,
@@ -248,8 +251,8 @@ env = {
        # Arbitrary fish parameters
 
        # Fish Visual System
-       'uv_photoreceptor_rf_size': 0.0133,  # Pi Radians (0.76 degrees) - Yoshimatsu et al. (2019)
-       'red_photoreceptor_rf_size': 0.0133,  # Kept same
+       'uv_photoreceptor_rf_size': 0.0133 * 1,  # Pi Radians (0.76 degrees) - Yoshimatsu et al. (2019)
+       'red_photoreceptor_rf_size': 0.0133 * 1,  # Kept same
        'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
        'red_photoreceptor_num': 63,
        'minimum_observation_size': 100,  # Parameter to determine padded observation size (avoids conv layer size bug).
@@ -301,7 +304,7 @@ env = {
 }
 
 # Equal to that given in the file name.
-environment_name = "discrete_dqn_assay"
+environment_name = "dqn_scaffold_10_assay"
 with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)
 

@@ -129,7 +129,7 @@ def draw_previous_actions(board, past_actions, past_positions, fish_angles, cont
             board.show_action_continuous(a[0], a[1], fish_angles[i], past_positions[i][0],
                                               past_positions[i][1], action_colour)
         else:
-            action_colour = board.get_action_colour(fish_angles[i])
+            action_colour = board.get_action_colour(past_actions[i])
             board.show_action_discrete(fish_angles[i], past_positions[i][0],
                                             past_positions[i][1], action_colour)
     return board, past_actions, past_positions, fish_angles
@@ -180,7 +180,7 @@ def draw_action_space_usage_continuous(current_height, current_width, action_buf
 
 
 def draw_action_space_usage_discrete(current_height, current_width, action_buffer):
-    difference = current_height - current_width
+    difference = 300
     extra_area = np.zeros((current_height, difference - 20, 3))
 
     action_bins = [i for i in range(10)]
@@ -208,7 +208,8 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
 
     n_actions_to_show = 50
     board = DrawingBoard(1500, 1500)
-    energy_levels = data["internal_state"][:, 0]
+    if show_energy_state:
+        energy_levels = data["internal_state"][:, 0]
     fish_positions = data["fish_position"]
     num_steps = fish_positions.shape[0]
     frames = []
@@ -269,8 +270,8 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
 
 
 # model_name = "parameterised_speed_test_fast-1"
-model_name = "scaffold_version_4-4"
-data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-4")
-config_name = "ppo_continuous_sbe_is_scaffold_4"
+model_name = "ppo_scaffold_version_on_8_se-1"
+data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
+config_name = "dqn_scaffold_10"
 
-draw_episode(data, config_name, model_name, continuous_actions=True)
+draw_episode(data, config_name, model_name, continuous_actions=True, show_energy_state=False)

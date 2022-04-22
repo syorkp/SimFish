@@ -14,6 +14,7 @@ import numpy as np
 from Utilities.scaffold_creation import create_scaffold, build_changes_list_gradual
 from Networks.original_network import connectivity, reflected, base_network_layers, modular_network_layers, ops
 
+
 params = {
        # Learning (Universal)
        'batch_size': 16,  # How many experience traces to use for each training step.
@@ -138,8 +139,8 @@ env = {
        # This is the turn (pi radians) that happens every step, designed to replicate linear wavy movement.
        'prey_fluid_displacement': False,
        'prey_jump': False,
-       'differential_prey': False,
-       'prey_cloud_num': 2,
+       'differential_prey': True,
+       'prey_cloud_num': 4,
 
        'predator_mass': 10.,
        'predator_inertia': 40.,
@@ -149,10 +150,10 @@ env = {
        'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
        'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
-       'dark_light_ratio': 0.0,  # fraction of arena in the dark
+       'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001
-       'dark_gain': 0.38,  # gain of brightness in the dark side
+       'dark_gain': 26.63,  # gain of brightness in the dark side
        'light_gain': 200.0,  # gain of brightness in the bright side
 
        'predator_cost': 1000,
@@ -186,8 +187,8 @@ env = {
        'impose_action_mask': True,
 
        # Sensory inputs
-       'energy_state': False,
-       'in_light': False,
+       'energy_state': True,
+       'in_light': True,
        'salt': False,  # Inclusion of olfactory salt input and salt death.
        "use_dynamic_network": False,
        'salt_concentration_decay': 0.001,  # Scale for exponential salt concentration decay from source.
@@ -306,14 +307,14 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_dn_10"
+scaffold_name = "dqn_scaffold_11"
 
-# 2-7
+# 2-9
 changes = [
 
        # 1) Rewards and Penalties
        ["PCI", 0.2, "capture_swim_extra_cost", 25],
-       ["PCI", 0.2, "wall_reflection", True],
+       ["PCI", 0.2, "wall_reflection", False],
        # TODO: Add energy state
 
        # 2) Visual System
@@ -322,10 +323,12 @@ changes = [
        ["PCI", 0.2, "red_photoreceptor_rf_size", 0.0133 * 1],
        ["PCI", 0.2, "uv_photoreceptor_rf_size", 0.0133 * 1],
        ["PCI", 0.3, "shot_noise", True],
-       # TODO: Increase bkg_scatter
-       # TODO: Decrease luminance
-
+       ["PCI", 0.3, "bkg_scatter", 0.1],
+       ["PCI", 0.3, "dark_gain", 18.81],
 ]
+
+changes += build_changes_list_gradual("PCI", 0.3, "light_gain", env["light_gain"], 36.63, 4)
+
 
 # 3) Available actions
 # Only for continuous

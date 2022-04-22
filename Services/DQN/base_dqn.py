@@ -217,7 +217,7 @@ class BaseDQN:
             return self._step_loop_old(o, internal_state, a, rnn_state)
 
     def assay_step_loop(self, o, internal_state, a, rnn_state):
-        if self.new_simulation and self.environment_params["use_dynamic_network"]:
+        if self.new_simulation:# and self.environment_params["use_dynamic_network"]:
             return self._assay_step_loop_new(o, internal_state, a, rnn_state)
         else:
             return self._assay_step_loop_old(o, internal_state, a, rnn_state)
@@ -390,21 +390,21 @@ class BaseDQN:
         return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
 
     def _assay_step_loop_new(self, o, internal_state, a, rnn_state):
-        chosen_a, updated_rnn_state, rnn2_state, sa, sv, network_layers, o2 = \
+        chosen_a, updated_rnn_state, rnn2_state, sa, sv, o2 = \
             self.sess.run(
-                [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
+                [self.main_QN.predict, self.main_QN.rnn_state, self.main_QN.rnn_state_ref,
                  self.main_QN.streamA,
-                 self.main_QN.streamV, self.main_QN.network_graph,
+                 self.main_QN.streamV,# self.main_QN.network_graph,
                  [self.main_QN.ref_left_eye, self.main_QN.ref_right_eye],
                  ],
                 feed_dict={self.main_QN.observation: o,
                            self.main_QN.internal_state: internal_state,
                            self.main_QN.prev_actions: [a],
-                           self.main_QN.train_length: 1,
+                           self.main_QN.trainLength: 1,
                            self.main_QN.rnn_state_in: rnn_state,
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0,
-                           self.main_QN.learning_rate: self.learning_params["learning_rate"],
+                           # self.main_QN.learning_rate: self.learning_params["learning_rate"],
                            })
 
         chosen_a = chosen_a[0]
@@ -417,13 +417,14 @@ class BaseDQN:
                                  internal_state=internal_state,
                                  action=chosen_a,
                                  reward=given_reward,
-                                 actor_rnn_state=updated_rnn_state,
-                                 actor_rnn_state_ref=rnn2_state,
+                                 rnn_state=updated_rnn_state,
+                                 rnn_state_ref=rnn2_state,
                                  )
 
         # Saving step data
         if "environmental positions" in self.buffer.recordings:
-            self.buffer.save_environmental_positions(self.simulation.fish.body.position,
+            self.buffer.save_environmental_positions(chosen_a,
+                                                     self.simulation.fish.body.position,
                                                      self.simulation.prey_consumed_this_step,
                                                      self.simulation.predator_body,
                                                      prey_positions,
@@ -432,7 +433,7 @@ class BaseDQN:
                                                      vegetation_positions,
                                                      self.simulation.fish.body.angle,
                                                      )
-        self.buffer.make_desired_recordings(network_layers)
+        # self.buffer.make_desired_recordings(network_layers)
 
         return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
 

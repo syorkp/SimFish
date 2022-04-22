@@ -314,7 +314,7 @@ scaffold_name = "ppo_scaffold_egf_10"
 changes = [
 
        # 1) Rewards and Penalties
-       ["PCI", 0.2, "wall_reflection", True],
+       ["PCI", 0.2, "wall_reflection", False],
        # TODO: Add energy state
 
        # 2) Visual System

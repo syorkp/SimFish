@@ -2242,47 +2242,6 @@ ppo_scaffold_training_config_egf_10b = [
     },
 ]
 
-ppo_testing = [
-    {
-        "Model Name": "ppo_scaffold_version_on_8_se",
-        "Environment Name": "ppo_scaffold_version_on_8_se_assay",
-        "Assay Configuration Name": "Behavioural-Data-Free",
-        "Trial Number": 1,
-        "Run Mode": "Assay",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 2,
-        "Using GPU": False,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": True,
-        "set random seed": False,
-        "New Simulation": True,
-        "Profile Speed": False,
-        "Assays": [
-            {
-                "assay id": "Naturalistic-1",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1000,
-                "Tethered": False,
-                "save frames": True,
-                "save stimuli": False,
-                "random positions": False,
-                "reset": False,
-                "background": None,
-                "moving": False,
-                "collisions": True,
-                "use_mu": True,
-                "behavioural recordings": ["environmental positions"],
-                "network recordings": ["rnn state"],
-                "ablations": []
-            },
-        ]
-    },
-]
-
 dqn_scaffold_training_config_dn_10a = [
     {
         "Model Name": "dqn_scaffold_dn_10",
@@ -2357,7 +2316,206 @@ dqn_scaffold_training_config_dn_10b = [
     },
 ]
 
+dqn_scaffold_training_config_11a = [
+    {
+        "Model Name": "dqn_scaffold_11",
+        "Environment Name": "dqn_scaffold_11",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "dqn_scaffold_11",
+        "Environment Name": "dqn_scaffold_11",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+dqn_scaffold_training_config_11b = [
+    {
+        "Model Name": "dqn_scaffold_11",
+        "Environment Name": "dqn_scaffold_11",
+        "Trial Number": 3,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "dqn_scaffold_11",
+        "Environment Name": "dqn_scaffold_11",
+        "Trial Number": 4,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+# Assay Configs
+
+dqn_testing = [
+    {
+        "Model Name": "dqn_scaffold_10",
+        "Environment Name": "dqn_scaffold_10_assay",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 3,
+        "Run Mode": "Assay",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 2,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "set random seed": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+        "Assays": [
+            {
+                "assay id": "Naturalistic-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": False,
+                "save frames": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "use_mu": False,
+                "recordings": ["action", "position", "prey_consumed", "prey_positions", "rnn state"],
+                "behavioural recordings": ["environmental positions"],
+                "network recordings": ["rnn state"],
+                "ablations": []
+            },
+        ]
+    },
+]
+
+ppo_testing = [
+    {
+        "Model Name": "ppo_scaffold_version_on_8_se",
+        "Environment Name": "ppo_scaffold_version_on_8_se_assay",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 1,
+        "Run Mode": "Assay",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 2,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "set random seed": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+        "Assays": [
+            {
+                "assay id": "Naturalistic-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "use_mu": True,
+                "behavioural recordings": ["environmental positions"],
+                "network recordings": ["rnn state"],
+                "ablations": []
+            },
+        ]
+    },
+]
+
+ppo_testing_normal_sigma = [
+    {
+        "Model Name": "ppo_scaffold_version_on_8_se",
+        "Environment Name": "ppo_scaffold_version_on_8_se_assay",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 1,
+        "Run Mode": "Assay",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 2,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "set random seed": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+        "Assays": [
+            {
+                "assay id": "NaturalisticNormalSigma-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 500,
+                "Tethered": False,
+                "save frames": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "use_mu": False,
+                "behavioural recordings": ["environmental positions"],
+                "network recordings": ["rnn state"],
+                "ablations": []
+            },
+        ]
+    },
+]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_training_config_egf_10b, parallel_jobs=4)
+manager = TrialManager(dqn_scaffold_training_config_11a, parallel_jobs=4)
 manager.run_priority_loop()
