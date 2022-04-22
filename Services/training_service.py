@@ -163,7 +163,7 @@ class TrainingService(BaseService):
             self.create_environment()
 
             # Reset sigma progression
-            if self.continuous_actions and self.learning_params["sigma_scaffolding"]:
+            if self.continuous_actions and self.environment_params["sigma_scaffolding"]:
                 self.sigma_total_steps = 0
             if self.learning_params["epsilon_greedy"]:
                 self.epsilon = self.learning_params["startE"]
