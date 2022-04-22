@@ -43,7 +43,7 @@ params = {
        'beta_distribution': False,
        'gamma': 0.99,
        'lambda': 0.9,
-       'input_sigmas': False,
+       'input_sigmas': True,
 
        # Discrete Action Space
        'num_actions': 10,  # size of action space
@@ -145,7 +145,7 @@ env = {
        'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
-       'probability_of_predator': 0.01,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
@@ -163,7 +163,7 @@ env = {
 
        # For continuous Actions space:
        'max_angle_change': 1,  # Final 4, Formerly np.pi / 5,
-       'max_impulse': 10.0,  # Final 100
+       'max_impulse': 5.0,  # Final 100
 
        'baseline_penalty': 0.002,
        'reward_distance': 100,
@@ -242,9 +242,9 @@ env = {
        'duration_of_loom': 10,  # Number of steps for which loom occurs.
 
        # Visual system scaling factors (to set CNN inputs into 0 to 255 range):
-       'red_scaling_factor': 0.5,  # max was 100 without scaling
-       'uv_scaling_factor': 1, #50,  # max was 40 without scaling
-       'red_2_scaling_factor': 0.05, #0.018,  # max was 12000 without scaling
+       'red_scaling_factor': 1/5,  # Pixel counts are multiplied by this
+       'uv_scaling_factor': 1,  # Pixel counts are multiplied by this
+       'red_2_scaling_factor': 1/500.0,  # Pixel counts are multiplied by this
        'red_occlusion_gain': 0.0,  # 0 Being complete construction.
        'uv_occlusion_gain': 1.0,
        'red2_occlusion_gain': 0.0,
@@ -309,7 +309,7 @@ env = {
 
 
 # Equal to that given in the file name.
-environment_name = "ppo_scaffold_version_on_8_se_assay"
+environment_name = "continuous_assay"
 
 with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)

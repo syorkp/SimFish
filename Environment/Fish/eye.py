@@ -251,9 +251,10 @@ class Eye:
             channel_angles_surrounding = self.channel_angles_surrounding + fish_angle
             readings = self._read(masked_arena_pixels, eye_x, eye_y, channel_angles_surrounding, self.photoreceptor_num)
             scaled_readings = self.scale_readings(readings,
-                                                  self.env_variables['red_scaling_factor'],
-                                                  self.env_variables['uv_scaling_factor'],
-                                                  self.env_variables['red_2_scaling_factor'])
+                                                  self.env_variables['red_scaling_factor'] * self.env_variables["light_gain"]/200,
+                                                  self.env_variables['uv_scaling_factor'] * self.env_variables["light_gain"]/200,
+                                                  self.env_variables['red_2_scaling_factor'] * self.env_variables["light_gain"]/200
+)
             self.readings = self.add_noise_to_readings(scaled_readings)
             self.readings = scaled_readings
 
@@ -291,12 +292,12 @@ class Eye:
                                                            n_channels_red=self.red_photoreceptor_num)
 
             uv_readings_scaled = self.scale_readings(uv_readings,
-                                                     self.env_variables['uv_scaling_factor'])
+                                                     self.env_variables['uv_scaling_factor'] * self.env_variables["light_gain"]/200)
             self.uv_readings = self.add_noise_to_readings(uv_readings_scaled)
 
             red_readings_scaled = self.scale_readings(red_readings,
-                                                      self.env_variables['red_scaling_factor'],
-                                                      self.env_variables['red_2_scaling_factor'])
+                                                      self.env_variables['red_scaling_factor'] * self.env_variables["light_gain"]/200,
+                                                      self.env_variables['red_2_scaling_factor'] * self.env_variables["light_gain"]/200)
             self.red_readings = self.add_noise_to_readings(red_readings_scaled)
 
             if self.red_photoreceptor_num != self.uv_photoreceptor_num:

@@ -242,9 +242,9 @@ env = {
        'duration_of_loom': 10,  # Number of steps for which loom occurs.
 
        # Visual system scaling factors (to set CNN inputs into 0 to 255 range):
-       'red_scaling_factor': 0.5,  # max was 100 without scaling
-       'uv_scaling_factor': 1, #50,  # max was 40 without scaling
-       'red_2_scaling_factor': 0.05, #0.018,  # max was 12000 without scaling
+       'red_scaling_factor': 1/5,  # Pixel counts are multiplied by this
+       'uv_scaling_factor': 1,  # Pixel counts are multiplied by this
+       'red_2_scaling_factor': 1/500.0,  # Pixel counts are multiplied by this
        'red_occlusion_gain': 0.0,  # 0 Being complete construction.
        'uv_occlusion_gain': 1.0,
        'red2_occlusion_gain': 0.0,
