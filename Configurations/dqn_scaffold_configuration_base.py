@@ -314,7 +314,7 @@ changes = [
 
        # 1) Rewards and Penalties
        ["PCI", 0.2, "capture_swim_extra_cost", 25],
-       ["PCI", 0.2, "wall_reflection", False],
+       ["PCI", 0.2, "wall_reflection", True],
        # TODO: Add energy state
 
        # 2) Visual System
