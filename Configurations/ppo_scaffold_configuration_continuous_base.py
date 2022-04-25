@@ -274,15 +274,15 @@ env = {
        'max_isomerization_size': 0.0,
 
        # Energy state and hunger-based rewards
-       'ci': 0.0002,
-       'ca': 0.0002,
+       'ci': 0.000002,
+       'ca': 0.000002,
        'baseline_decrease': 0.0003,
        'trajectory_A': 5.0,
        'trajectory_B': 2.5,
        'consumption_energy_gain': 1.0,
 
        # Reward
-       'action_reward_scaling': 1,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
+       'action_reward_scaling': 1942,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
        'consumption_reward_scaling': 100000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
        'wall_reflection': True,
@@ -327,7 +327,7 @@ changes = [
        # TODO: Decrease luminance
 
 ]
-max_epLength
+
 changes += [["PCI", 0.3, "max_epLength", 2000, "do_to_params"]]
 
 # 3) Available actions
