@@ -12,7 +12,8 @@ class PPONetworkActorMultivariate2Extended(BaseNetwork):
     def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, max_impulse, max_angle_change,
                  clip_param, input_sigmas=False, new_simulation=True, impose_action_mask=False, impulse_scaling=None,
                  angle_scaling=None, max_sigma=1):
-        super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim=2, new_simulation=new_simulation)
+        super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim=2,
+                         new_simulation=new_simulation)
 
         #            ----------        Stream Splitting       ---aa------            #
         print("Creating extended network...")
@@ -28,39 +29,39 @@ class PPONetworkActorMultivariate2Extended(BaseNetwork):
             self.impulse_stream_ref, self.impulse_stream_sigma_ref, self.angle_stream_ref, self.angle_stream_sigma_ref = tf.split(
                 self.action_stream_ref, 4, 1)
 
-            self.impulse_stream_sigma_2 = tf.layers.dense(self.impulse_stream_sigma, self.impulse_stream_sigma.shape[0], activation=tf.nn.sigmoid,
-                                          kernel_initializer=tf.orthogonal_initializer,
-                                          name=my_scope + '_impulses2', trainable=True)
-
-            self.angle_stream_sigma_2 = tf.layers.dense(self.angle_stream_sigma, self.angle_stream_sigma.shape[0], activation=tf.nn.sigmoid,
-                                          kernel_initializer=tf.orthogonal_initializer,
-                                          name=my_scope + '_angles_2', trainable=True)
-            self.impulse_stream_sigma_ref_2 = tf.layers.dense(self.impulse_stream_sigma_ref, self.impulse_stream_sigma_ref.shape[0],
-                                                          activation=tf.nn.sigmoid,
+            self.impulse_stream_sigma_2 = tf.layers.dense(self.impulse_stream_sigma, 100, activation=tf.nn.sigmoid,
                                                           kernel_initializer=tf.orthogonal_initializer,
-                                                          name=my_scope + '_impulses2', trainable=True, reuse=True)
+                                                          name=my_scope + '_impulses2', trainable=True)
 
-            self.angle_stream_sigma_ref_2 = tf.layers.dense(self.angle_stream_sigma_ref, self.angle_stream_sigma_ref.shape[0],
-                                                        activation=tf.nn.sigmoid,
+            self.angle_stream_sigma_2 = tf.layers.dense(self.angle_stream_sigma, 100, activation=tf.nn.sigmoid,
                                                         kernel_initializer=tf.orthogonal_initializer,
-                                                        name=my_scope + '_angles_2', trainable=True, reuse=True)
+                                                        name=my_scope + '_angles_2', trainable=True)
+            self.impulse_stream_sigma_ref_2 = tf.layers.dense(self.impulse_stream_sigma_ref, 100,
+                                                              activation=tf.nn.sigmoid,
+                                                              kernel_initializer=tf.orthogonal_initializer,
+                                                              name=my_scope + '_impulses2', trainable=True, reuse=True)
 
-        self.impulse_stream_2 = tf.layers.dense(self.impulse_stream, self.impulse_stream.shape[0], activation=tf.nn.sigmoid,
-                                      kernel_initializer=tf.orthogonal_initializer,
-                                      name=my_scope + '_impulse2', trainable=True)
+            self.angle_stream_sigma_ref_2 = tf.layers.dense(self.angle_stream_sigma_ref, 100,
+                                                            activation=tf.nn.sigmoid,
+                                                            kernel_initializer=tf.orthogonal_initializer,
+                                                            name=my_scope + '_angles_2', trainable=True, reuse=True)
 
-        self.angle_stream_2 = tf.layers.dense(self.angle_stream, self.angle_stream.shape[0], activation=tf.nn.sigmoid,
-                                      kernel_initializer=tf.orthogonal_initializer,
-                                      name=my_scope + '_angle_2', trainable=True)
-        self.impulse_stream_ref_2 = tf.layers.dense(self.impulse_stream_ref, self.impulse_stream_ref.shape[0],
-                                                      activation=tf.nn.sigmoid,
-                                                      kernel_initializer=tf.orthogonal_initializer,
-                                                      name=my_scope + '_impulse2', trainable=True, reuse=True)
+        self.impulse_stream_2 = tf.layers.dense(self.impulse_stream, 100, activation=tf.nn.sigmoid,
+                                                kernel_initializer=tf.orthogonal_initializer,
+                                                name=my_scope + '_impulse2', trainable=True)
 
-        self.angle_stream_ref_2 = tf.layers.dense(self.angle_stream_ref, self.angle_stream_ref.shape[0],
+        self.angle_stream_2 = tf.layers.dense(self.angle_stream, 100, activation=tf.nn.sigmoid,
+                                              kernel_initializer=tf.orthogonal_initializer,
+                                              name=my_scope + '_angle_2', trainable=True)
+        self.impulse_stream_ref_2 = tf.layers.dense(self.impulse_stream_ref, 100,
                                                     activation=tf.nn.sigmoid,
                                                     kernel_initializer=tf.orthogonal_initializer,
-                                                    name=my_scope + '_angle_2', trainable=True, reuse=True)
+                                                    name=my_scope + '_impulse2', trainable=True, reuse=True)
+
+        self.angle_stream_ref_2 = tf.layers.dense(self.angle_stream_ref, 100,
+                                                  activation=tf.nn.sigmoid,
+                                                  kernel_initializer=tf.orthogonal_initializer,
+                                                  name=my_scope + '_angle_2', trainable=True, reuse=True)
 
         #            ----------        Mu Estimations       ---------            #
 
