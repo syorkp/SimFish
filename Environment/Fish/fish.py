@@ -114,19 +114,19 @@ class Fish:
         else:
             return self.take_basic_action(action)
 
-    def get_action_colour(self, action, magnitude):
+    def get_action_colour(self, action, magnitude, base_light):
         """Returns the (R, G, B) for associated actions"""
         if action == 0:  # Slow2
-            action_colour = (0, magnitude, 0)
+            action_colour = (base_light, magnitude, base_light)
 
         elif action == 1:  # RT right
-            action_colour = (0, magnitude, 0)
+            action_colour = (base_light, magnitude, base_light)
 
         elif action == 2:  # RT left
-            action_colour = (0, magnitude, 0)
+            action_colour = (base_light, magnitude, base_light)
 
         elif action == 3:  # Short capture swim
-            action_colour = (magnitude, 0, magnitude)
+            action_colour = (magnitude, base_light, magnitude)
 
         elif action == 4:  # j turn right
             action_colour = (magnitude, magnitude, magnitude)
@@ -138,13 +138,13 @@ class Fish:
             action_colour = (0, 0, 0)
 
         elif action == 7:  # c start right
-            action_colour = (magnitude, 0, 0)
+            action_colour = (magnitude, base_light, base_light)
 
         elif action == 8:  # c start left
-            action_colour = (magnitude, 0, 0)
+            action_colour = (magnitude, base_light, base_light)
 
         elif action == 9:  # Approach swim.
-            action_colour = (0, magnitude, 0)
+            action_colour = (base_light, magnitude, base_light)
 
         else:
             action_colour = (0, 0, 0)

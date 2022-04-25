@@ -20,7 +20,7 @@ params = {
        'batch_size': 16,  # How many experience traces to use for each training step.
        'trace_length': 64,  # How long each experience trace will be when training
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
-       'max_epLength': 1000,  # The max allowed length of our episode.
+       'max_epLength': 2000,  # The max allowed length of our episode.
        'epsilon_greedy': True,
        'epsilon_greedy_scaffolding': True,
        'startE': 0.2,  # Starting chance of random action
@@ -328,7 +328,6 @@ changes = [
 ]
 
 changes += build_changes_list_gradual("PCI", 0.3, "light_gain", env["light_gain"], 36.63, 4)
-
 
 # 3) Available actions
 # Only for continuous
