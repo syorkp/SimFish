@@ -165,7 +165,7 @@ env = {
 
        # For continuous Actions space:
        'max_angle_change': 1,  # Final 4, Formerly np.pi / 5,
-       'max_impulse': 10.0,  # Final 100
+       'max_impulse': 100.0,  # Final 100
 
        'baseline_penalty': 0.002,
        'reward_distance': 100,

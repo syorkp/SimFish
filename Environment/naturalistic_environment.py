@@ -287,7 +287,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         if save_frames or self.draw_screen:
             self.board.erase_visualisation(bkg=0.3)
             self.draw_shapes(visualisation=True)
-            self.board.apply_light(self.dark_col, 0.7, 1)
+            self.board.apply_light(self.dark_col, 0.7, 1, visualisation=True)
             if self.env_variables['show_channel_sectors']:
                 self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
                 self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)

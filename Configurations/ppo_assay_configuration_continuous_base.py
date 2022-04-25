@@ -128,7 +128,7 @@ env = {
        'prey_inertia': 40.,
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-       'prey_num': 30,
+       'prey_num': 1,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
@@ -147,11 +147,11 @@ env = {
        'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
        'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
-       'dark_light_ratio': 0.0,  # fraction of arena in the dark
+       'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
-       'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001; 0.01
-       'dark_gain': 0.38,  # gain of brightness in the dark side
-       'light_gain': 200.0,  # gain of brightness in the bright side
+       'bkg_scatter': 0.1,  # base brightness of the background FORMERLY 0.00001; 0.01
+       'dark_gain': 18.81,  # gain of brightness in the dark side
+       'light_gain': 36.63,  # gain of brightness in the bright side
 
        'predator_cost': 1000,
 
@@ -254,8 +254,8 @@ env = {
        # Arbitrary fish parameters
 
        # Fish Visual System
-       'uv_photoreceptor_rf_size': 0.0133 * 3,  # Pi Radians (0.76 degrees) - Yoshimatsu et al. (2019)
-       'red_photoreceptor_rf_size': 0.0133 * 3,  # Kept same
+       'uv_photoreceptor_rf_size': 0.0133 * 1,  # Pi Radians (0.76 degrees) - Yoshimatsu et al. (2019)
+       'red_photoreceptor_rf_size': 0.0133 * 1,  # Kept same
        'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
        'red_photoreceptor_num': 63,
        'minimum_observation_size': 100,  # Parameter to determine padded observation size (avoids conv layer size bug).
@@ -265,7 +265,7 @@ env = {
        # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
 
        # Shot noise
-       'shot_noise': False,  # Whether to model observation of individual photons as a poisson process.
+       'shot_noise': True,  # Whether to model observation of individual photons as a poisson process.
 
        # For dark noise:
        'isomerization_frequency': 0.0,  # Average frequency of photoisomerization per second per photoreceptor

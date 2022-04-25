@@ -159,6 +159,9 @@ class BaseEnvironment:
         self.sand_grains_bumped = 0
         self.steps_near_vegetation = 0
         self.energy_level_log = []
+        if self.new_simulation:
+            self.board.light_gain = self.env_variables["light_gain"]
+            self.board.luminance_mask = self.board.get_luminance_mask(self.env_variables["dark_light_ratio"], self.env_variables["dark_gain"])
 
         # New energy system:
         self.fish.energy_level = 1

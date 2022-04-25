@@ -800,9 +800,13 @@ class NewDrawingBoard:
         self.db[:, 0] = [1, 0, 0]
         self.db[:, self.height - 1] = [1, 0, 0]
 
-    def apply_light(self, dark_col, dark_gain, light_gain):
-        self.db[:, :dark_col] *= dark_gain
-        self.db[:, dark_col:] *= light_gain
+    def apply_light(self, dark_col, dark_gain, light_gain, visualisation):
+        if visualisation:
+            self.db_visualisation[:dark_col, :] *= dark_gain
+            self.db_visualisation[dark_col:, :] *= light_gain
+        else:
+            self.db[:, :dark_col] *= dark_gain
+            self.db[:, dark_col:] *= light_gain
 
     def circle(self, center, rad, color, visualisation=False):
         rr, cc = draw.circle(center[1], center[0], rad, self.db.shape)

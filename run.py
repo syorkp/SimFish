@@ -2629,5 +2629,5 @@ ppo_testing_normal_sigma = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_training_config_egf_max_10a, parallel_jobs=4)
+manager = TrialManager(ppo_scaffold_training_config_egf_max_10b, parallel_jobs=4)
 manager.run_priority_loop()
