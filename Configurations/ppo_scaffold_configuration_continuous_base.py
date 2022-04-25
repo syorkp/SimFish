@@ -282,7 +282,7 @@ env = {
        'consumption_energy_gain': 1.0,
 
        # Reward
-       'action_reward_scaling': 1942,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
+       'action_reward_scaling': 1,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
        'consumption_reward_scaling': 100000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
        'wall_reflection': True,
@@ -327,9 +327,11 @@ changes = [
        # TODO: Decrease luminance
 
 ]
+max_epLength
+changes += [["PCI", 0.3, "max_epLength", 2000, "do_to_params"]]
 
 # 3) Available actions
-# changes += build_changes_list_gradual("PCI", 0.3, "max_impulse", env["max_impulse"], 20, 10)
+changes += build_changes_list_gradual("PCI", 0.3, "max_impulse", env["max_impulse"], 20, 10)
 
 # 4) Prey Capture
 changes += [["PCI", 0.4, "prey_fluid_displacement", True]]

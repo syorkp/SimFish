@@ -307,7 +307,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_11"
+scaffold_name = "test"
 
 # 2-9
 changes = [
@@ -328,6 +328,7 @@ changes = [
 ]
 
 changes += build_changes_list_gradual("PCI", 0.3, "light_gain", env["light_gain"], 36.63, 4)
+changes += [["PCI", 0.3, "max_epLength", 2000, "do_to_params"]]
 
 # 3) Available actions
 # Only for continuous

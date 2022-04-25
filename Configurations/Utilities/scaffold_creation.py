@@ -43,10 +43,13 @@ def create_scaffold(scaffold_name, initial_env, initial_params, changes):
     save_files(scaffold_name, initial_env, initial_params, 1)
 
     for i, change in enumerate(changes):
-        transitions[change[0]][str(i+2)] = change[1]
-        initial_env[change[2]] = change[3]
+        if len(change) > 4:
+            initial_params[change[2]] = change[3]
+        else:
+            initial_env[change[2]] = change[3]
         save_files(scaffold_name, initial_env, initial_params, i+2)
 
+        transitions[change[0]][str(i + 2)] = change[1]
     save_transitions(scaffold_name, transitions)
 
 

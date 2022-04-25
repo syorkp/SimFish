@@ -45,7 +45,7 @@ class PPONetworkActorMultivariate2Extended(BaseNetwork):
                                                         kernel_initializer=tf.orthogonal_initializer,
                                                         name=my_scope + '_angles_2', trainable=True, reuse=True)
 
-        self.impulse_stream_2 = tf.layers.dense(self.impulse_stream, self.impulse_stream_sigma.shape[0], activation=tf.nn.sigmoid,
+        self.impulse_stream_2 = tf.layers.dense(self.impulse_stream, self.impulse_stream.shape[0], activation=tf.nn.sigmoid,
                                       kernel_initializer=tf.orthogonal_initializer,
                                       name=my_scope + '_impulse2', trainable=True)
 
