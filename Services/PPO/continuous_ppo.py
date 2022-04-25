@@ -7,6 +7,7 @@ from Networks.PPO.proximal_policy_optimizer_continuous import PPONetworkActor
 from Networks.PPO.proximal_policy_optimizer_continuous_multivariate import PPONetworkActorMultivariate
 from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator import PPONetworkActorMultivariate2
 from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator_dynamic import PPONetworkActorMultivariate2Dynamic
+from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator_extended import PPONetworkActorMultivariate2Extended
 from Services.PPO.base_ppo import BasePPO
 
 tf.disable_v2_behavior()
@@ -69,7 +70,9 @@ class ContinuousPPO(BasePPO):
                                                                          reflected=self.learning_params['reflected'],
                                                                          )
             else:
-                self.actor_network = PPONetworkActorMultivariate2(simulation=self.simulation,
+                # TODO: Remove:
+
+                self.actor_network = PPONetworkActorMultivariate2Extended(simulation=self.simulation,
                                                                   rnn_dim=self.learning_params['rnn_dim_shared'],
                                                                   rnn_cell=actor_cell,
                                                                   my_scope='actor',
@@ -83,6 +86,21 @@ class ContinuousPPO(BasePPO):
                                                                   impose_action_mask=self.environment_params[
                                                                       'impose_action_mask'],
                                                                   )
+
+                # self.actor_network = PPONetworkActorMultivariate2(simulation=self.simulation,
+                #                                                   rnn_dim=self.learning_params['rnn_dim_shared'],
+                #                                                   rnn_cell=actor_cell,
+                #                                                   my_scope='actor',
+                #                                                   internal_states=internal_states,
+                #                                                   max_impulse=self.environment_params['max_impulse'],
+                #                                                   max_angle_change=self.environment_params[
+                #                                                       'max_angle_change'],
+                #                                                   clip_param=self.environment_params['clip_param'],
+                #                                                   input_sigmas=self.learning_params['input_sigmas'],
+                #                                                   new_simulation=self.new_simulation,
+                #                                                   impose_action_mask=self.environment_params[
+                #                                                       'impose_action_mask'],
+                #                                                   )
 
             if self.sb_emulator:
                 pass
