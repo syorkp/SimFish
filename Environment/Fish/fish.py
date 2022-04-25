@@ -415,7 +415,7 @@ class Fish:
     def update_energy_level(self, reward, consumption):
         """Updates the current energy state for continuous and discrete fish."""
         unscaled_consumption = 1.0 * consumption
-        unscaled_energy_use = self.ci * self.prev_action_impulse + self.ca * self.prev_action_angle + self.baseline_decrease
+        unscaled_energy_use = self.ci * (self.prev_action_impulse ** 2) + self.ca * (self.prev_action_angle ** 2) + self.baseline_decrease
 
         # Nonlinear reward scaling
         intake_s = self.intake_scale(self.energy_level)

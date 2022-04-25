@@ -282,7 +282,7 @@ env = {
        'consumption_energy_gain': 1.0,
 
        # Reward
-       'action_reward_scaling': 0,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
+       'action_reward_scaling': 1942,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
        'consumption_reward_scaling': 100000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
        'wall_reflection': True,
@@ -308,13 +308,13 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_egf_energy_10"
+scaffold_name = "ppo_scaffold_egf_max_10"
 
 
 changes = [
 
        # 1) Rewards and Penalties
-       ["PCI", 0.2, "wall_reflection", False],
+       ["PCI", 0.2, "wall_reflection", True],
        # TODO: Add energy state
 
        # 2) Visual System

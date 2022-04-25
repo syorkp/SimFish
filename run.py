@@ -2464,11 +2464,11 @@ ppo_scaffold_training_config_egf_max_10a = [
     },
 ]
 
-ppo_scaffold_training_config_egf_energy_10a = [
+ppo_scaffold_training_config_egf_max_10b = [
     {
-        "Model Name": "ppo_scaffold_egf_energy_10",
-        "Environment Name": "ppo_scaffold_egf_energy_10",
-        "Trial Number": 1,
+        "Model Name": "ppo_scaffold_egf_max_10",
+        "Environment Name": "ppo_scaffold_egf_max_10",
+        "Trial Number": 3,
         "Run Mode": "Training",
         "Tethered": False,
         "Realistic Bouts": True,
@@ -2483,9 +2483,9 @@ ppo_scaffold_training_config_egf_energy_10a = [
         "Profile Speed": False,
     },
     {
-        "Model Name": "ppo_scaffold_egf_energy_10",
-        "Environment Name": "ppo_scaffold_egf_energy_10",
-        "Trial Number": 2,
+        "Model Name": "ppo_scaffold_egf_max_10",
+        "Environment Name": "ppo_scaffold_egf_max_10",
+        "Trial Number": 4,
         "Run Mode": "Training",
         "Tethered": False,
         "Realistic Bouts": True,
@@ -2500,6 +2500,7 @@ ppo_scaffold_training_config_egf_energy_10a = [
         "Profile Speed": False,
     },
 ]
+
 
 # Assay Configs
 
@@ -2628,5 +2629,5 @@ ppo_testing_normal_sigma = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_training_config_dn_10b, parallel_jobs=4)
+manager = TrialManager(ppo_scaffold_training_config_egf_max_10a, parallel_jobs=4)
 manager.run_priority_loop()
