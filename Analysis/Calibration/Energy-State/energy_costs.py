@@ -25,7 +25,7 @@ def calculate_reward_and_cost(energy_level, consumption=True, impulse=5.0, angle
     consumption_reward_scaling = 10000000
 
     unscaled_consumption = 1.0 * consumption
-    unscaled_energy_use = ci * impulse + ca * angle + baseline_decrease
+    unscaled_energy_use = ci * (impulse ** 2) + ca * (angle ** 2) + baseline_decrease
     energy_level += unscaled_consumption - unscaled_energy_use
 
     # Nonlinear reward scaling
@@ -48,15 +48,18 @@ def get_trajectory(consumptions, impulses, angles, ci, ca, consumption_energy_ga
 
     reward = []
     action_penalty = []
+    action_reward_penalty = []
     energy_log = []
 
     for step in range(num_steps):
         # Energy
         unscaled_consumption = consumption_energy_gain * consumptions[step]
-        unscaled_energy_use = ci * impulses[step] + ca * angles[step] + baseline_decrease
+        unscaled_energy_use = ci * (impulses[step] ** 2) + ca * (angles[step] ** 2) + baseline_decrease
         energy_level += unscaled_consumption - unscaled_energy_use
         if energy_level > 1.0:
             energy_level = 1.0
+        if energy_level < 0:
+            break
         energy_log.append(energy_level)
 
         # Reward
@@ -68,10 +71,12 @@ def get_trajectory(consumptions, impulses, angles, ci, ca, consumption_energy_ga
         reward.append((energy_intake * consumption_reward_scaling) - (energy_use * action_reward_scaling))
         action_penalty.append(energy_use)
 
+        action_reward_penalty.append(energy_use * action_reward_scaling)
+
 
     print(f"Total reward: {np.sum(reward)}")
 
-    steps = [i for i in range(num_steps)]
+    steps = [i for i in range(len(reward))]
 
     plt.plot(steps, reward)
     plt.xlabel("Step")
@@ -80,7 +85,24 @@ def get_trajectory(consumptions, impulses, angles, ci, ca, consumption_energy_ga
 
     plt.plot(steps, action_penalty)
     plt.xlabel("Step")
-    plt.ylabel("Action Penalty")
+    plt.ylabel("Action Energy Penalty")
+    plt.show()
+
+    cum_action_penalty = [np.sum(action_penalty[:i+1]) for i in range(len(action_penalty))]
+    plt.plot(steps, cum_action_penalty)
+    plt.xlabel("Step")
+    plt.ylabel("Cumulative action energy penalty")
+    plt.show()
+
+    plt.plot(steps, action_reward_penalty)
+    plt.xlabel("Step")
+    plt.ylabel("Action Reward Penalty")
+    plt.show()
+
+    cum_action_penalty = [np.sum(action_reward_penalty[:i+1]) for i in range(len(action_reward_penalty))]
+    plt.plot(steps, cum_action_penalty)
+    plt.xlabel("Step")
+    plt.ylabel("Cumulative action reward Penalty")
     plt.show()
 
     plt.plot(steps, energy_log)
@@ -106,7 +128,7 @@ def get_returns_from_investment(ci, ca, baseline_decrease, trajectory_A, traject
             unscaled_consumption = consumption_energy_gain * 1
         else:
             unscaled_consumption = 0
-        unscaled_energy_use = ci * impulses[step] + ca * angles[step] + baseline_decrease
+        unscaled_energy_use = ci * (impulses[step] ** 2) + ca * (angles[step] ** 2) + baseline_decrease
         energy_level += unscaled_consumption - unscaled_energy_use
         if energy_level > 1.0:
             energy_level = 1.0
@@ -155,19 +177,19 @@ def rewards_vs_energy_state(trajectory_A, trajectory_B,):
 
 # Chosen parameters
 
-ci = 0.0002
-ca = 0.0002
+ci = 0.00002
+ca = 0.00002
 baseline_decrease = 0.0003
 trajectory_A = 5.0
 trajectory_B = 2.5
 consumption_energy_gain = 1.0
-action_reward_scaling = 1942
-consumption_reward_scaling = 50000
+action_reward_scaling = 10000
+consumption_reward_scaling = 1000000
 
 
 # Computing return from investment
 steps = 500
-impulses = np.random.uniform(4, 6, steps)
+impulses = np.random.uniform(0, 20, steps)
 angles = np.random.uniform(-1, 1, steps)
 get_returns_from_investment(ci, ca, baseline_decrease, trajectory_A, trajectory_B, consumption_energy_gain,
                                 action_reward_scaling, consumption_reward_scaling, impulses, angles)
@@ -176,7 +198,7 @@ get_returns_from_investment(ci, ca, baseline_decrease, trajectory_A, trajectory_
 # Modelling an episode
 
 steps = 1000
-consumptions = np.random.choice([0, 1], steps, p=[1-0.002, 0.002])
+consumptions = np.random.choice([0, 1], steps, p=[1-0.005, 0.005])
 # consumptions = np.random.choice([0, 1], steps, p=[1-0.0, 0.0])
 impulses = np.random.uniform(0, 20, steps)
 angles = np.random.uniform(-1, 1, steps)
