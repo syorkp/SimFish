@@ -2649,6 +2649,43 @@ ppo_scaffold_training_config_egf_min_ns_10a = [
     },
 ]
 
+ppo_scaffold_training_config_egf_min_ms_10a = [
+    {
+        "Model Name": "ppo_scaffold_egf_min_ms_10",
+        "Environment Name": "ppo_scaffold_egf_min_ms_10",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "ppo_scaffold_egf_min_ms_10",
+        "Environment Name": "ppo_scaffold_egf_min_ms_10",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
 
 # Assay Configs
 
