@@ -194,6 +194,9 @@ def plot_distinguishability_against_luminance_two_distances(visual_distance_full
         np.save(f, np.array(uv_stimulus_photons_partial))
 
 
+learning_params, env_variables, n, b, c = load_configuration_files("dqn_scaffold_11-1")
+
+
 L1 = 200
 max_distance = (1500**2 + 1500**2) ** 0.5
 bkg_scatter = 0.1

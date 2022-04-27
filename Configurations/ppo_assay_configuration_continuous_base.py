@@ -150,8 +150,8 @@ env = {
        'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'bkg_scatter': 0.1,  # base brightness of the background FORMERLY 0.00001; 0.01
-       'dark_gain': 18.81,  # gain of brightness in the dark side
-       'light_gain': 36.63,  # gain of brightness in the bright side
+       'dark_gain': 60.81,  # gain of brightness in the dark side
+       'light_gain': 125.7,  # gain of brightness in the bright side
 
        'predator_cost': 1000,
 

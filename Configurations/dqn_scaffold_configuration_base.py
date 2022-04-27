@@ -153,7 +153,7 @@ env = {
        'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001
-       'dark_gain': 26.63,  # gain of brightness in the dark side
+       'dark_gain': 60.0,  # gain of brightness in the dark side
        'light_gain': 200.0,  # gain of brightness in the bright side
 
        'predator_cost': 1000,
@@ -307,7 +307,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_11"
+scaffold_name = "dqn_scaffold_12"
 
 # 2-9
 changes = [
@@ -315,7 +315,6 @@ changes = [
        # 1) Rewards and Penalties
        ["PCI", 0.2, "capture_swim_extra_cost", 25],
        ["PCI", 0.2, "wall_reflection", True],
-       # TODO: Add energy state
 
        # 2) Visual System
        ["PCI", 0.2, "red_photoreceptor_rf_size", 0.0133 * 2],
@@ -324,10 +323,9 @@ changes = [
        ["PCI", 0.2, "uv_photoreceptor_rf_size", 0.0133 * 1],
        ["PCI", 0.3, "shot_noise", True],
        ["PCI", 0.3, "bkg_scatter", 0.1],
-       ["PCI", 0.3, "dark_gain", 18.81],
 ]
 
-changes += build_changes_list_gradual("PCI", 0.3, "light_gain", env["light_gain"], 36.63, 4)
+changes += build_changes_list_gradual("PCI", 0.3, "light_gain", env["light_gain"], 125.7, 4)
 changes += [["PCI", 0.3, "max_epLength", 2000, "do_to_params"]]
 
 # 3) Available actions
@@ -344,7 +342,6 @@ changes += [["PCI", 0.5, "probability_of_predator", 0.01]]
 # TODO: Complex predator
 
 # 6) Other Behaviours
-# TODO: Light-dark areas
 changes += [["PAI", 500.0, "salt", True]]
 changes += [["PCI", 0.5, "current_setting", "Circular"]]
 

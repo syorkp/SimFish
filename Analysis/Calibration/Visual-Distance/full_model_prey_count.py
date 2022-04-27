@@ -58,9 +58,10 @@ def full_model_prey_count(bkg_scatter, decay_rate, pr_size, width, height, lumin
     uv_covered_distances = (relative_coords[:, 0] ** 2 + relative_coords[:, 1] ** 2) ** 0.5
     closest = find_nearest(uv_covered_distances, prey_distance)
     prey_location = coords[closest, :]
+    prey_location = [prey_location[1], prey_location[0]]
 
     # field = np.zeros((1500, 1500))
-    # field[coords[:, 0], coords[:, 1]] = 1
+    # field[coords[:, 1], coords[:, 0]] = 1
 
     board.erase(bkg_scatter)
     px = np.round(np.array([prey_location[0]])).astype(int)

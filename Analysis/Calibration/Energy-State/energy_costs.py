@@ -172,9 +172,6 @@ def rewards_vs_energy_state(trajectory_A, trajectory_B,):
     plt.show()
 
 
-
-
-
 # Chosen parameters
 
 ci = 0.00002
