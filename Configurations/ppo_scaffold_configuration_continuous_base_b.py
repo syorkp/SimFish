@@ -309,14 +309,16 @@ env = {
 }
 
 scaffold_name = "ppo_scaffold_egf_min_ms_10"
-
-changes = build_changes_list_gradual("PCI", 0.5, "max_impulse", env["max_impulse"], 20, 10)
-
-changes += [
+changes = [
 
        # 1) Rewards and Penalties
-       ["PCI", 0.9, "wall_reflection", True],
+       ["PCI", 0.4, "wall_reflection", True],
        # TODO: Add energy state
+]
+
+changes += build_changes_list_gradual("PCI", 0.5, "max_impulse", env["max_impulse"], 20, 10)
+
+changes += [
 
        # 2) Visual System
        ["PCI", 0.2, "red_photoreceptor_rf_size", 0.0133 * 2],
@@ -352,3 +354,5 @@ changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_x", e
 changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_c", env["impulse_effect_noise_sd_c"], 0.06, 8)
 changes += build_changes_list_gradual("PCI", 0.4, "angle_effect_noise_sd_x", env["angle_effect_noise_sd_x"], 0.86155083, 8)
 changes += build_changes_list_gradual("PCI", 0.4, "angle_effect_noise_sd_c", env["angle_effect_noise_sd_c"], 0.0010472, 8)
+
+create_scaffold(scaffold_name, env, params, changes)
