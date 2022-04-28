@@ -64,6 +64,8 @@ params = {
        'ops': ops,
        'connectivity': connectivity,
 
+       # For RND
+       'use_rnd': True,  # Whether to use RND.
 }
 
 env = {
@@ -186,7 +188,7 @@ env = {
        #                                  New Simulation
 
        # Action mask
-       'impose_action_mask': True,
+       'impose_action_mask': False,
 
        # Sensory inputs
        'energy_state': True,
@@ -308,7 +310,7 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_egf_max_actual_10"
+scaffold_name = "ppo_rnd_test"
 
 
 changes = [

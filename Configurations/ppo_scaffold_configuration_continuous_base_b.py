@@ -64,6 +64,8 @@ params = {
        'ops': ops,
        'connectivity': connectivity,
 
+       # For RND
+       'use_rnd': False,  # Whether to use RND.
 }
 
 env = {

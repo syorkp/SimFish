@@ -62,6 +62,10 @@ class BasePPO:
             self.episode_buffer = None
         if not hasattr(self, "use_mu"):
             self.use_mu = None
+        if not hasattr(self, "target_rdn"):
+            self.target_rdn = None
+        if not hasattr(self, "predictor_rdn"):
+            self.predictor_rdn = None
 
     def init_states(self):
         # Init states for RNN

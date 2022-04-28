@@ -8,6 +8,7 @@ from Networks.PPO.proximal_policy_optimizer_continuous_multivariate import PPONe
 from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator import PPONetworkActorMultivariate2
 from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator_dynamic import PPONetworkActorMultivariate2Dynamic
 from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator_extended import PPONetworkActorMultivariate2Extended
+from Networks.RND.rnd import RandomNetworkDistiller
 from Services.PPO.base_ppo import BasePPO
 
 tf.disable_v2_behavior()
@@ -138,6 +139,23 @@ class ContinuousPPO(BasePPO):
 
                                                  )
         print("Created network")
+
+        if self.use_rnd:
+            print("Creating Random network distillation networks...")
+            self.target_rdn = RandomNetworkDistiller(
+                simulation=self.simulation,
+                my_scope='target_rdn',
+                internal_states=internal_states,
+                predictor=False,
+                new_simulation=self.new_simulation,
+            )
+            self.predictor_rdn = RandomNetworkDistiller(
+                simulation=self.simulation,
+                my_scope='predictor_rdn',
+                internal_states=internal_states,
+                predictor=True,
+                new_simulation=self.new_simulation,
+            )
 
     def update_sigmas(self):
         self.sigma_total_steps += self.simulation.num_steps
@@ -591,6 +609,26 @@ class ContinuousPPO(BasePPO):
             save_frames=self.save_frames,
             activations=sa)
 
+        if self.use_rdn:
+            target_output = self.sess.run(self.target_rdn.rdn_output,
+                                          feed_dict={self.actor_network.observation: o,
+                                                     self.actor_network.internal_state: internal_state,
+                                                     self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                                                     self.actor_network.batch_size: 1,
+                                                     self.actor_network.train_length: 1,
+                                                     }
+                                          )
+            predictor_output = self.sess.run(self.predictor_rdn.rdn_output,
+                                             feed_dict={self.actor_network.observation: o,
+                                                        self.actor_network.internal_state: internal_state,
+                                                        self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                                                        self.actor_network.batch_size: 1,
+                                                        self.actor_network.train_length: 1,
+                                                        }
+                                             )
+            prediction_error = (predictor_output - target_output) ** 2
+            print("Pred: " + prediction_error)
+
         # Update buffer
         self.buffer.add_training(observation=o,
                                  internal_state=internal_state,
@@ -684,6 +722,26 @@ class ContinuousPPO(BasePPO):
             frame_buffer=self.frame_buffer,
             save_frames=self.save_frames,
             activations=sa)
+
+        if self.use_rdn:
+            target_output = self.sess.run(self.target_rdn.rdn_output,
+                                          feed_dict={self.actor_network.observation: o,
+                                                     self.actor_network.internal_state: internal_state,
+                                                     self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                                                     self.actor_network.batch_size: 1,
+                                                     self.actor_network.train_length: 1,
+                                                     }
+                                          )
+            predictor_output = self.sess.run(self.predictor_rdn.rdn_output,
+                                             feed_dict={self.actor_network.observation: o,
+                                                        self.actor_network.internal_state: internal_state,
+                                                        self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                                                        self.actor_network.batch_size: 1,
+                                                        self.actor_network.train_length: 1,
+                                                        }
+                                             )
+            prediction_error = (predictor_output - target_output) ** 2
+            print("Pred: " + prediction_error)
 
         # Update buffer
         self.buffer.add_training(observation=o,

@@ -100,6 +100,8 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
         self.step_drop = (self.learning_params['startE'] - self.learning_params['endE']) / self.learning_params[
             'anneling_steps']
 
+        self.use_rnd = self.learning_params["use_rnd"]
+
     def run(self):
         sess = self.create_session()
         with sess as self.sess:
