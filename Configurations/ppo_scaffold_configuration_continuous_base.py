@@ -167,7 +167,7 @@ env = {
 
        # For continuous Actions space:
        'max_angle_change': 1,  # Final 4, Formerly np.pi / 5,
-       'max_impulse': 100.0,  # Final 100
+       'max_impulse': 10.0,  # Final 100
 
        'baseline_penalty': 0.002,
        'reward_distance': 100,
@@ -188,7 +188,7 @@ env = {
        #                                  New Simulation
 
        # Action mask
-       'impose_action_mask': False,
+       'impose_action_mask': True,
 
        # Sensory inputs
        'energy_state': True,
@@ -310,7 +310,7 @@ env = {
 
 }
 
-scaffold_name = "ppo_rnd_test"
+scaffold_name = "ppo_rnd_test_10"
 
 
 changes = [

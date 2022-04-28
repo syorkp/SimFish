@@ -5,7 +5,7 @@ import numpy as np
 class PPOBufferContinuousMultivariate2(BasePPOBuffer):
     """Buffer for full episode for PPO training, and logging."""
 
-    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False, dynamic_network=False):
+    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False, dynamic_network=False, use_rnd=False):
         super().__init__(gamma, lmbda, batch_size, train_length, assay, debug)
 
         # Buffer for training
@@ -25,10 +25,14 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         self.impulse_loss_buffer = []
         self.angle_loss_buffer = []
 
+        self.prediction_error_buffer = []
+
         self.dynamic_network = dynamic_network
 
         # For assay saving
         self.multivariate = True
+
+        self.use_rnd = use_rnd
 
     def reset(self):
         super().reset()
@@ -48,9 +52,10 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
 
         self.impulse_loss_buffer = []
         self.angle_loss_buffer = []
+        self.prediction_error_buffer = []
 
     def add_training(self, observation, internal_state, action, reward, value, l_p_action, actor_rnn_state,
-                     actor_rnn_state_ref):
+                     actor_rnn_state_ref, prediction_error):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
         self.reward_buffer.append(reward)
@@ -60,6 +65,9 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         self.actor_rnn_state_ref_buffer.append(actor_rnn_state_ref)
         self.log_action_probability_buffer.append(l_p_action)
         self.action_buffer.append(action)
+
+        if self.use_rnd:  # If using RND
+            self.prediction_error_buffer.append(prediction_error)
 
     def add_logging(self, mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref):
         self.mu_i_buffer.append(mu_i)
@@ -94,13 +102,22 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         advantage_batch = []
         return_batch = []
         value_batch = []
+
         for slice in slice_steps:
-            if slice == slice_steps[-1]:
-                observation_slice, internal_state_slice, action_slice, previous_action_slice, \
-                log_action_probability_slice, advantage_slice, return_slice, value_slice = self.get_batch(final_batch=True)
+            if self.use_rnd:
+                if slice == slice_steps[-1]:
+                    observation_slice, internal_state_slice, action_slice, previous_action_slice, \
+                    log_action_probability_slice, advantage_slice, return_slice, value_slice, = self.get_batch(final_batch=True)
+                else:
+                    observation_slice, internal_state_slice, action_slice, previous_action_slice, \
+                    log_action_probability_slice, advantage_slice, return_slice, value_slice = self.get_batch(final_batch=False)
             else:
-                observation_slice, internal_state_slice, action_slice, previous_action_slice, \
-                log_action_probability_slice, advantage_slice, return_slice, value_slice = self.get_batch(final_batch=False)
+                if slice == slice_steps[-1]:
+                    observation_slice, internal_state_slice, action_slice, previous_action_slice, \
+                    log_action_probability_slice, advantage_slice, return_slice, value_slice = self.get_batch(final_batch=True)
+                else:
+                    observation_slice, internal_state_slice, action_slice, previous_action_slice, \
+                    log_action_probability_slice, advantage_slice, return_slice, value_slice = self.get_batch(final_batch=False)
 
             observation_batch.append(observation_slice)
             internal_state_batch.append(internal_state_slice)
@@ -111,9 +128,11 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
             return_batch.append(return_slice)
             value_batch.append(value_slice)
 
+
         return np.array(observation_batch), np.array(internal_state_batch), np.array(action_batch), \
             np.array(previous_action_batch), np.array(log_action_probability_batch), \
             np.array(advantage_batch), np.array(return_batch), np.array(value_batch), slice_steps
+
 
     def get_batch(self, final_batch):
         """Gets a trace worth of data (or batch, as used previously)"""
@@ -155,8 +174,8 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         self.pointer += self.trace_length
 
         return observation_slice, internal_state_slice, action_slice, previous_action_slice, \
-               log_action_probability_slice, advantage_slice, return_slice, value_slice
-               #actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice
+           log_action_probability_slice, advantage_slice, return_slice, value_slice
+           #actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice
 
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id):
         hdf5_file, assay_group = BasePPOBuffer.save_assay_data(self, assay_id, data_save_location, assay_configuration_id)
@@ -205,6 +224,11 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
 
 
         return actor_rnn_state_batch, actor_rnn_state_batch_ref
+
+    def update_rewards_rnd(self):
+        reward_std = np.std(self.reward_buffer)
+        normalised_prediction_error = np.array(self.prediction_error_buffer) * reward_std
+        self.reward_buffer += normalised_prediction_error
 
     def calculate_advantages_and_returns(self, normalise_advantage=True):
         # Advantages = returns-values. Then scaled

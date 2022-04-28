@@ -11,16 +11,16 @@ class BaseNetwork2:
 
         self.num_arms = simulation.fish.left_eye.observation_size  # Rays for each eye
 
-        self.train_length = tf.placeholder(dtype=tf.int32, shape=[], name="train_length")
-        self.batch_size = tf.placeholder(dtype=tf.int32, shape=[], name='batch_size')
+        self.train_length = tf.placeholder(dtype=tf.int32, shape=[], name=my_scope+"_train_length")
+        self.batch_size = tf.placeholder(dtype=tf.int32, shape=[], name=my_scope+'_batch_size')
 
         # Networks Inputs
-        self.prev_actions = tf.placeholder(shape=[None, action_dim], dtype=tf.float32, name='prev_actions')
-        self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
+        self.prev_actions = tf.placeholder(shape=[None, action_dim], dtype=tf.float32, name=my_scope+'_prev_actions')
+        self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name=my_scope + '_internal_state')
 
-        self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
+        self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name=my_scope + "_obs")
         self.reshaped_observation = tf.reshape(self.observation, shape=[-1, self.num_arms, 3, 2],
-                                               name="reshaped_observation")
+                                               name=my_scope + "_reshaped_observation")
 
         #            ----------        Non-Reflected       ---------            #
 

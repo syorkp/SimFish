@@ -67,7 +67,9 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
                                                            train_length=self.learning_params["trace_length"],
                                                            assay=False,
                                                            debug=False,
-                                                           dynamic_network=self.environment_params["use_dynamic_network"])
+                                                           dynamic_network=self.environment_params["use_dynamic_network"],
+                                                           use_rnd=self.learning_params["use_rnd"]
+                                                           )
         else:
             self.buffer = PPOBufferContinuous(gamma=self.learning_params["gamma"], lmbda=self.learning_params["lambda"],  batch_size=self.learning_params["batch_size"],
                                               train_length=self.learning_params["trace_length"], assay=False, debug=False)
@@ -120,6 +122,8 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
         self._episode_loop()
 
         # Train the network on the episode buffer
+        if self.use_rnd:
+            self.buffer.update_rewards_rnd()
         self.buffer.calculate_advantages_and_returns()
         if self.multivariate:
             ContinuousPPO.train_network_multivariate2(self)

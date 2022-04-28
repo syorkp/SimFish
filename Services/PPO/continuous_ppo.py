@@ -609,25 +609,27 @@ class ContinuousPPO(BasePPO):
             save_frames=self.save_frames,
             activations=sa)
 
-        if self.use_rdn:
+        if self.use_rnd:
             target_output = self.sess.run(self.target_rdn.rdn_output,
-                                          feed_dict={self.actor_network.observation: o,
-                                                     self.actor_network.internal_state: internal_state,
-                                                     self.actor_network.prev_actions: np.reshape(a, (1, 2)),
-                                                     self.actor_network.batch_size: 1,
-                                                     self.actor_network.train_length: 1,
+                                          feed_dict={self.target_rdn.observation: o,
+                                                     self.target_rdn.internal_state: internal_state,
+                                                     self.target_rdn.prev_actions: np.reshape(a, (1, 2)),
+                                                     self.target_rdn.batch_size: 1,
+                                                     self.target_rdn.train_length: 1,
                                                      }
                                           )
             predictor_output = self.sess.run(self.predictor_rdn.rdn_output,
-                                             feed_dict={self.actor_network.observation: o,
-                                                        self.actor_network.internal_state: internal_state,
-                                                        self.actor_network.prev_actions: np.reshape(a, (1, 2)),
-                                                        self.actor_network.batch_size: 1,
-                                                        self.actor_network.train_length: 1,
+                                             feed_dict={self.predictor_rdn.observation: o,
+                                                        self.predictor_rdn.internal_state: internal_state,
+                                                        self.predictor_rdn.prev_actions: np.reshape(a, (1, 2)),
+                                                        self.predictor_rdn.batch_size: 1,
+                                                        self.predictor_rdn.train_length: 1,
                                                         }
                                              )
             prediction_error = (predictor_output - target_output) ** 2
-            print("Pred: " + prediction_error)
+            print(prediction_error)
+        else:
+            prediction_error = False
 
         # Update buffer
         self.buffer.add_training(observation=o,
@@ -637,7 +639,8 @@ class ContinuousPPO(BasePPO):
                                  value=V,
                                  l_p_action=neg_log_action_probability,
                                  actor_rnn_state=rnn_state_actor,
-                                 actor_rnn_state_ref=rnn_state_actor_ref
+                                 actor_rnn_state_ref=rnn_state_actor_ref,
+                                 prediction_error=prediction_error,
                                  )
 
 
@@ -723,7 +726,7 @@ class ContinuousPPO(BasePPO):
             save_frames=self.save_frames,
             activations=sa)
 
-        if self.use_rdn:
+        if self.use_rnd:
             target_output = self.sess.run(self.target_rdn.rdn_output,
                                           feed_dict={self.actor_network.observation: o,
                                                      self.actor_network.internal_state: internal_state,
@@ -741,7 +744,8 @@ class ContinuousPPO(BasePPO):
                                                         }
                                              )
             prediction_error = (predictor_output - target_output) ** 2
-            print("Pred: " + prediction_error)
+        else:
+            prediction_error = False
 
         # Update buffer
         self.buffer.add_training(observation=o,
@@ -751,7 +755,9 @@ class ContinuousPPO(BasePPO):
                                  value=V,
                                  l_p_action=neg_log_action_probability,
                                  actor_rnn_state=rnn_state_actor,
-                                 actor_rnn_state_ref=rnn_state_actor_ref
+                                 actor_rnn_state_ref=rnn_state_actor_ref,
+                                 prediction_error=prediction_error,
+
                                  )
 
         if self.save_environmental_data:
@@ -1274,7 +1280,12 @@ class ContinuousPPO(BasePPO):
                                  average_loss_value / self.learning_params["n_updates_per_iteration"])
 
     def train_network_multivariate2(self):
-        observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
+        if self.use_rdn:
+            observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
+                log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
+                key_rnn_points, prediction_error_batch = self.buffer.get_episode_buffer()
+        else:
+            observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
             log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
             key_rnn_points = self.buffer.get_episode_buffer()
 
