@@ -71,8 +71,9 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         self.action_buffer.append(action)
 
         if self.use_rnd:  # If using RND
-            self.target_output_buffer.append(target_output)
+            self.target_output_buffer.append(target_output[0])
             self.prediction_error_buffer.append(prediction_error)
+            x = True
 
     def add_logging(self, mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref):
         self.mu_i_buffer.append(mu_i)
@@ -114,11 +115,11 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
             if self.use_rnd:
                 if slice == slice_steps[-1]:
                     observation_slice, internal_state_slice, action_slice, previous_action_slice, \
-                    log_action_probability_slice, advantage_slice, return_slice, target_outputs_slice, value_slice, = self.get_batch(
+                    log_action_probability_slice, advantage_slice, return_slice, value_slice, target_outputs_slice = self.get_batch(
                         final_batch=True)
                 else:
                     observation_slice, internal_state_slice, action_slice, previous_action_slice, \
-                    log_action_probability_slice, advantage_slice, return_slice, target_outputs_slice, value_slice = self.get_batch(
+                    log_action_probability_slice, advantage_slice, return_slice, value_slice, target_outputs_slice = self.get_batch(
                         final_batch=False)
             else:
                 if slice == slice_steps[-1]:
@@ -170,7 +171,7 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
             # critic_rnn_state_slice = self.critic_rnn_state_buffer[self.pointer:-1]
             # critic_rnn_state_ref_slice = self.critic_rnn_state_ref_buffer[self.pointer:-1]
             if self.use_rnd:
-                target_output_slice = self.pad_slice(np.array(self.target_output_buffer[self.pointer:self.pointer + 50]), self.trace_length)
+                target_output_slice = np.array(self.pad_slice(np.array(self.target_output_buffer[self.pointer:self.pointer + 50]), self.trace_length))
 
 
         else:
@@ -194,7 +195,7 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
             # critic_rnn_state_ref_slice = self.critic_rnn_state_ref_buffer[self.pointer:self.pointer + self.trace_length]
 
             if self.use_rnd:
-                target_output_slice = self.target_output_buffer[self.pointer:self.pointer + self.trace_length]
+                target_output_slice = np.array(self.target_output_buffer[self.pointer:self.pointer + self.trace_length])
 
         self.pointer += self.trace_length
 

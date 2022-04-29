@@ -26,7 +26,7 @@ class RandomNetworkDistiller(BaseNetwork2):
                                                    kernel_initializer=tf.orthogonal_initializer,
                                                    name=my_scope + '_stream_2', trainable=True, reuse=True)
 
-        self.output_1_combined = tf.divide(tf.add(self.output_scalar_1, self.output_scalar_1_ref), 2)
+        self.output_1_combined = tf.divide(tf.subtract(self.output_scalar_1, self.output_scalar_1_ref), 2)
         self.output_2_combined = tf.divide(tf.subtract(self.output_scalar_2, self.output_scalar_2_ref), 2)
 
         self.rdn_output = tf.concat([self.output_1_combined, self.output_2_combined], axis=1)
