@@ -1140,8 +1140,6 @@ class ContinuousPPO(BasePPO):
                        batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
 
         if target_outputs_buffer is not None:
-            target_outputs_buffer = np.swapaxes(target_outputs_buffer, 0, 1)
-
             target_outputs_batch = target_outputs_buffer[
                           batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
 
@@ -1158,7 +1156,7 @@ class ContinuousPPO(BasePPO):
         return_batch = np.vstack(np.vstack(return_batch)).flatten()
         value_batch = value_batch.flatten()
         if target_outputs_buffer is not None:
-            target_outputs_batch = np.swapaxes(target_outputs_batch, 0, 1)
+            target_outputs_batch = np.vstack(target_outputs_batch)
 
         if self.use_rnd:
             return observation_batch, internal_state_batch, action_batch, previous_action_batch, \
@@ -1401,7 +1399,7 @@ class ContinuousPPO(BasePPO):
                 average_loss_value += np.abs(loss_critic_val)
 
                 if self.use_rnd:
-                    train = self.sess(self.predictor_rdn.train,
+                    train = self.sess.run(self.predictor_rdn.train,
                                       feed_dict={
                                           self.predictor_rdn.observation: observation_batch,
                                           self.predictor_rdn.prev_actions: previous_action_batch,

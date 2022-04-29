@@ -261,11 +261,13 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         return actor_rnn_state_batch, actor_rnn_state_batch_ref
 
     def update_rewards_rnd(self):
-        reward_std = np.std(self.reward_buffer)
-        normalised_prediction_error = np.array(self.prediction_error_buffer) * reward_std
-        normalised_prediction_error = np.sum(normalised_prediction_error, axis=2)
-        normalised_prediction_error = normalised_prediction_error.reshape(self.reward_buffer.shape[0])
-        self.reward_buffer += normalised_prediction_error
+        # reward_std = np.std(self.return_buffer)
+        # normalised_prediction_error = np.array(self.prediction_error_buffer) * reward_std
+        # normalised_prediction_error = np.sum(normalised_prediction_error, axis=2)
+        # normalised_prediction_error = normalised_prediction_error.reshape(self.return_buffer.shape[0])
+        normalised_prediction_error = np.sum(np.array(self.prediction_error_buffer), axis=2) * 100
+        normalised_prediction_error = normalised_prediction_error.reshape(self.return_buffer.shape[0])
+        self.return_buffer += normalised_prediction_error
 
     def calculate_advantages_and_returns(self, normalise_advantage=True):
         # Advantages = returns-values. Then scaled

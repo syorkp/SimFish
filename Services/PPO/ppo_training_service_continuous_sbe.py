@@ -122,9 +122,11 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
         self._episode_loop()
 
         # Train the network on the episode buffer
+        self.buffer.calculate_advantages_and_returns()
+
         if self.use_rnd:
             self.buffer.update_rewards_rnd()
-        self.buffer.calculate_advantages_and_returns()
+
         if self.multivariate:
             ContinuousPPO.train_network_multivariate2(self)
         else:
