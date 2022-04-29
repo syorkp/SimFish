@@ -627,7 +627,6 @@ class ContinuousPPO(BasePPO):
                                                         }
                                              )
             prediction_error = (predictor_output - target_output) ** 2
-            print(prediction_error)
             # Update buffer
             self.buffer.add_training(observation=o,
                                      internal_state=internal_state,

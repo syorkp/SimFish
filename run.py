@@ -2871,6 +2871,44 @@ ppo_scaffold_rnd_10a = [
     },
 ]
 
+ppo_scaffold_rnd_10b = [
+    {
+        "Model Name": "ppo_scaffold_rnd_10",
+        "Environment Name": "ppo_scaffold_rnd_10",
+        "Trial Number": 3,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "ppo_scaffold_rnd_10",
+        "Environment Name": "ppo_scaffold_rnd_10",
+        "Trial Number": 4,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+
 # Assay Configs
 
 dqn_testing = [
@@ -2998,5 +3036,5 @@ ppo_testing_normal_sigma = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_rnd_10a, parallel_jobs=4)
+manager = TrialManager(ppo_scaffold_rnd_10b, parallel_jobs=4)
 manager.run_priority_loop()
