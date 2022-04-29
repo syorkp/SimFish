@@ -628,20 +628,28 @@ class ContinuousPPO(BasePPO):
                                              )
             prediction_error = (predictor_output - target_output) ** 2
             print(prediction_error)
+            # Update buffer
+            self.buffer.add_training(observation=o,
+                                     internal_state=internal_state,
+                                     action=action,
+                                     reward=r,
+                                     value=V,
+                                     l_p_action=neg_log_action_probability,
+                                     actor_rnn_state=rnn_state_actor,
+                                     actor_rnn_state_ref=rnn_state_actor_ref,
+                                     prediction_error=prediction_error,
+                                     target_output=target_output,
+                                     )
         else:
-            prediction_error = False
-
-        # Update buffer
-        self.buffer.add_training(observation=o,
-                                 internal_state=internal_state,
-                                 action=action,
-                                 reward=r,
-                                 value=V,
-                                 l_p_action=neg_log_action_probability,
-                                 actor_rnn_state=rnn_state_actor,
-                                 actor_rnn_state_ref=rnn_state_actor_ref,
-                                 prediction_error=prediction_error,
-                                 )
+            self.buffer.add_training(observation=o,
+                                     internal_state=internal_state,
+                                     action=action,
+                                     reward=r,
+                                     value=V,
+                                     l_p_action=neg_log_action_probability,
+                                     actor_rnn_state=rnn_state_actor,
+                                     actor_rnn_state_ref=rnn_state_actor_ref,
+                                     )
 
 
         if self.save_environmental_data:
@@ -744,21 +752,29 @@ class ContinuousPPO(BasePPO):
                                                         }
                                              )
             prediction_error = (predictor_output - target_output) ** 2
+
+            # Update buffer
+            self.buffer.add_training(observation=o,
+                                     internal_state=internal_state,
+                                     action=action,
+                                     reward=r,
+                                     value=V,
+                                     l_p_action=neg_log_action_probability,
+                                     actor_rnn_state=rnn_state_actor,
+                                     actor_rnn_state_ref=rnn_state_actor_ref,
+                                     prediction_error=prediction_error,
+                                     target_output=target_output,
+                                     )
         else:
-            prediction_error = False
-
-        # Update buffer
-        self.buffer.add_training(observation=o,
-                                 internal_state=internal_state,
-                                 action=action,
-                                 reward=r,
-                                 value=V,
-                                 l_p_action=neg_log_action_probability,
-                                 actor_rnn_state=rnn_state_actor,
-                                 actor_rnn_state_ref=rnn_state_actor_ref,
-                                 prediction_error=prediction_error,
-
-                                 )
+            self.buffer.add_training(observation=o,
+                                     internal_state=internal_state,
+                                     action=action,
+                                     reward=r,
+                                     value=V,
+                                     l_p_action=neg_log_action_probability,
+                                     actor_rnn_state=rnn_state_actor,
+                                     actor_rnn_state_ref=rnn_state_actor_ref,
+                                     )
 
         if self.save_environmental_data:
             sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
@@ -1102,7 +1118,7 @@ class ContinuousPPO(BasePPO):
 
     def get_batch_multivariate2(self, batch, observation_buffer, internal_state_buffer, action_buffer,
                                previous_action_buffer,
-                               log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer):
+                               log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, target_outputs_buffer=None):
 
         observation_batch = observation_buffer[
                             batch * self.batch_size: (batch + 1) * self.batch_size]
@@ -1123,6 +1139,10 @@ class ContinuousPPO(BasePPO):
         value_batch = value_buffer[
                        batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
 
+        if target_outputs_buffer is not None:
+            target_outputs_batch = target_outputs_buffer[
+                          batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
+
         current_batch_size = observation_batch.shape[0]
 
         # Stacking for correct network dimensions
@@ -1135,10 +1155,17 @@ class ContinuousPPO(BasePPO):
         advantage_batch = np.vstack(advantage_batch).flatten()
         return_batch = np.vstack(np.vstack(return_batch)).flatten()
         value_batch = value_batch.flatten()
+        if target_outputs_buffer is not None:
+            target_outputs_batch = target_outputs_batch.flatten()
 
-        return observation_batch, internal_state_batch, action_batch, previous_action_batch, \
-               log_action_probability_batch, advantage_batch, return_batch, value_batch, \
+        if self.use_rnd:
+            return observation_batch, internal_state_batch, action_batch, previous_action_batch, \
+               log_action_probability_batch, advantage_batch, return_batch, value_batch, target_outputs_batch, \
                current_batch_size
+        else:
+            return observation_batch, internal_state_batch, action_batch, previous_action_batch, \
+                   log_action_probability_batch, advantage_batch, return_batch, value_batch, \
+                   current_batch_size
 
     def get_batch(self, batch, observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer,
                   log_impulse_probability_buffer, log_angle_probability_buffer, advantage_buffer, return_buffer):
@@ -1280,13 +1307,8 @@ class ContinuousPPO(BasePPO):
                                  average_loss_value / self.learning_params["n_updates_per_iteration"])
 
     def train_network_multivariate2(self):
-        if self.use_rdn:
-            observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
-                log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
-                key_rnn_points, prediction_error_batch = self.buffer.get_episode_buffer()
-        else:
-            observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
-            log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
+        observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
+            log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, target_outputs_buffer, \
             key_rnn_points = self.buffer.get_episode_buffer()
 
         number_of_batches = int(math.ceil(observation_buffer.shape[0] / self.learning_params["batch_size"]))
@@ -1299,14 +1321,25 @@ class ContinuousPPO(BasePPO):
                                 self.learning_params["batch_size"] * self.learning_params["trace_length"]]
 
             # Get the current batch
-            observation_batch, internal_state_batch, action_batch, previous_action_batch, \
+            if self.use_rnd:
+                observation_batch, internal_state_batch, action_batch, previous_action_batch, \
             log_action_probability_batch, advantage_batch, \
-            return_batch, previous_value_batch, current_batch_size = self.get_batch_multivariate2(batch, observation_buffer,
+            return_batch, previous_value_batch, target_outputs_batch, current_batch_size = self.get_batch_multivariate2(batch, observation_buffer,
                                                                            internal_state_buffer,
                                                                            action_buffer, previous_action_buffer,
                                                                            log_action_probability_buffer,
                                                                            advantage_buffer,
-                                                                           return_buffer, value_buffer)
+                                                                           return_buffer, value_buffer, target_outputs_buffer)
+            else:
+                observation_batch, internal_state_batch, action_batch, previous_action_batch, \
+                log_action_probability_batch, advantage_batch, \
+                return_batch, previous_value_batch, current_batch_size = self.get_batch_multivariate2(
+                    batch, observation_buffer,
+                    internal_state_buffer,
+                    action_buffer, previous_action_buffer,
+                    log_action_probability_buffer,
+                    advantage_buffer,
+                    return_buffer, value_buffer)
 
             # Loss value logging
             average_loss_value = 0
@@ -1359,6 +1392,21 @@ class ContinuousPPO(BasePPO):
                 average_loss_impulse += np.mean(np.abs(loss_actor_val))
                 average_loss_angle += np.mean(np.abs(loss_actor_val))
                 average_loss_value += np.abs(loss_critic_val)
+
+                if self.use_rnd:
+                    train = self.sess(self.predictor_rdn.train,
+                                      feed_dict={
+                                          self.predictor_rdn.observation: observation_batch,
+                                          self.predictor_rdn.prev_actions: previous_action_batch,
+                                          self.predictor_rdn.internal_state: internal_state_batch,
+
+                                          self.predictor_rdn.target_outputs: target_outputs_batch,
+
+                                          self.predictor_rdn.train_length: self.learning_params["trace_length"],
+                                          self.predictor_rdn.batch_size: current_batch_size,
+                                          self.predictor_rdn.learning_rate: self.learning_params[
+                                                                                "learning_rate_actor"] * current_batch_size
+                    })
 
             # print("RATIO " + str(np.mean(ratio)))
             # print("ADVANTAGE: " + str(np.mean(advantage_batch)))

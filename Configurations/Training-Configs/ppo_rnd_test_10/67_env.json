@@ -86,7 +86,7 @@
     "sigma_scaffolding": true,
     "clip_param": 0.2,
     "cs_required": false,
-    "impose_action_mask": true,
+    "impose_action_mask": false,
     "energy_state": true,
     "in_light": false,
     "salt": true,
