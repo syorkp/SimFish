@@ -1307,9 +1307,14 @@ class ContinuousPPO(BasePPO):
                                  average_loss_value / self.learning_params["n_updates_per_iteration"])
 
     def train_network_multivariate2(self):
-        observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
-            log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, target_outputs_buffer, \
-            key_rnn_points = self.buffer.get_episode_buffer()
+        if self.use_rnd:
+            observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
+                log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, target_outputs_buffer, \
+                key_rnn_points = self.buffer.get_episode_buffer()
+        else:
+            observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
+                log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
+                key_rnn_points = self.buffer.get_episode_buffer()
 
         number_of_batches = int(math.ceil(observation_buffer.shape[0] / self.learning_params["batch_size"]))
 

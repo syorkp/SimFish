@@ -310,15 +310,18 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_egf_min_ns_10"
+scaffold_name = "ppo_scaffold_egf_min_ms_10"
+
 changes = [
 
        # 1) Rewards and Penalties
-       ["PCI", 0.9, "wall_reflection", True],
+       ["PCI", 0.5, "wall_reflection", True],
        # TODO: Add energy state
 ]
 
 changes += build_changes_list_gradual("PCI", 0.5, "max_impulse", env["max_impulse"], 20, 10)
+
+
 
 changes += [
 

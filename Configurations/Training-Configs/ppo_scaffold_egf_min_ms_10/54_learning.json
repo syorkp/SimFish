@@ -190,5 +190,6 @@
                 "optic_tectum"
             ]
         ]
-    ]
+    ],
+    "use_rnd": false
 }
