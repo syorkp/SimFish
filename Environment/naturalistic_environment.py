@@ -201,6 +201,12 @@ class NaturalisticEnvironment(BaseEnvironment):
                         print("Removed prey")
                         self.remove_prey(i)
 
+        # Resolve if fish falls out of bounds.
+        if self.fish.body.position[0] > self.env_variables["width"] - 1 or self.fish.body.position[1] > \
+                self.env_variables["height"] - 1:
+            print("Fish out of bounds, resetting.")
+            return None, 0, 0, True, frame_buffer
+
         self.num_steps += 1
         self.board.erase(bkg=self.env_variables['bkg_scatter'])
         self.draw_shapes(visualisation=False)
@@ -270,7 +276,6 @@ class NaturalisticEnvironment(BaseEnvironment):
             +np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
             -np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
 
-        # self.show_new_channel_sectors(left_eye_pos, right_eye_pos)  # TODO: Needs to be updated.
         if self.predator_body is not None:
             predator_bodies = np.array([self.predator_body.position])
         else:
