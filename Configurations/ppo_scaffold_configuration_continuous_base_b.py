@@ -42,7 +42,7 @@ params = {
 
        # Learning (PPO Continuous Only)
        'multivariate': True,
-       'beta_distribution': False,
+       'beta_distribution': True,
        'gamma': 0.99,
        'lambda': 0.9,
        'input_sigmas': True,
@@ -310,7 +310,7 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_egf_min_ms_wr_csr_10"
+scaffold_name = "ppo_scaffold_egf_bn_min_ms_wr_10"
 
 changes = [
 

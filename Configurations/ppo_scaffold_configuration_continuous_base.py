@@ -310,7 +310,7 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_12"
+scaffold_name = "ppo_scaffold_beta_normal_12"
 
 
 changes = [

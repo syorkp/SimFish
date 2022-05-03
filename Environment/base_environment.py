@@ -787,8 +787,8 @@ class BaseEnvironment:
                         Computed orientation: {angle}
                         """)
 
-                    if self.fish.prev_action_impulse > 3:   # TODO: Make a hyperparameter.
-                        valid_capture = False
+                    # if self.fish.prev_action_impulse > 3:   # TODO: Make a hyperparameter.
+                    #     valid_capture = False
 
             if valid_capture:
                 self.prey_caught += 1
