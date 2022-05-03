@@ -310,7 +310,7 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_egf_min_ms_wr_10"
+scaffold_name = "ppo_scaffold_egf_min_ms_wr_csr_10"
 
 changes = [
 
@@ -318,6 +318,8 @@ changes = [
        ["PCI", 0.5, "wall_reflection", False],
        # TODO: Add energy state
 ]
+
+changes += build_changes_list_gradual("PCI", 0.5, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25, 8)
 
 changes += build_changes_list_gradual("PCI", 0.5, "max_impulse", env["max_impulse"], 20, 10)
 
@@ -342,8 +344,8 @@ changes += build_changes_list_gradual("PCI", 0.3, "max_impulse", env["max_impuls
 # 4) Prey Capture
 changes += [["PCI", 0.4, "prey_fluid_displacement", True]]
 changes += build_changes_list_gradual("PCI", 0.5, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
-changes += build_changes_list_gradual("PCI", 0.5, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25, 8)
 changes += build_changes_list_gradual("PCI", 0.5, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (17*np.pi)/180, 8)
+
 
 # 5) Predator avoidance
 changes += [["PCI", 0.5, "probability_of_predator", 0.01]]
