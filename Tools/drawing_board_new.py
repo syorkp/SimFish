@@ -760,7 +760,8 @@ class NewDrawingBoard:
             """)
             n = (self.max_lines_num * 0.8)/number_of_this_feature
 
-        return int(n)
+        try:
+            return int(n)
 
     def reset(self):
         """To be called at start of episode"""

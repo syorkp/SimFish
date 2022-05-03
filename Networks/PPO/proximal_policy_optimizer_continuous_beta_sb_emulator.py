@@ -130,20 +130,20 @@ class PPONetworkActorMultivariateBetaNormal2(BaseNetwork):
 
             self.action_output = self.action_distribution.sample(1)
 
-        self.impulse_output, self.angle_output = tf.split(self.action_output, 2, axis=1)
+        self.impulse_output_unscaled, self.angle_output_unscaled = tf.split(self.action_output, 2, axis=1)
 
         if impose_action_mask:
-            self.impulse_output = tf.math.multiply(self.impulse_output, max_impulse, name="impulse_output")
-            self.angle_output = tf.math.multiply(self.angle_output, max_angle_change, name="angle_output")
+            self.impulse_output = tf.math.multiply(self.impulse_output_unscaled, max_impulse, name="impulse_output")
+            self.angle_output = tf.math.multiply(self.angle_output_unscaled, max_angle_change, name="angle_output")
         else:
-            self.impulse_output = tf.clip_by_value(self.impulse_output, 0, 1)
-            self.angle_output = tf.clip_by_value(self.angle_output, -1, 1)
+            self.impulse_output = tf.clip_by_value(self.impulse_output_unscaled, 0, 1)
+            self.angle_output = tf.clip_by_value(self.angle_output_unscaled, -1, 1)
 
             self.impulse_output = tf.math.multiply(self.impulse_output, max_impulse, name="impulse_output")
             self.angle_output = tf.math.multiply(self.angle_output, max_angle_change, name="angle_output")
 
         self.neg_log_prob = -tf.math.log(
-            self.action_distribution.prob(self.impulse_output, self.angle_output))
+            self.action_distribution.prob(self.impulse_output_unscaled, self.angle_output_unscaled))
 
         #            ----------        Value Outputs       ----------           #
 

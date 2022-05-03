@@ -42,7 +42,7 @@ params = {
 
        # Learning (PPO Continuous Only)
        'multivariate': True,
-       'beta_distribution': True,
+       'beta_distribution': False,
        'gamma': 0.99,
        'lambda': 0.9,
        'input_sigmas': True,
