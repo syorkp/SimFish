@@ -310,12 +310,12 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_egf_min_ms_10"
+scaffold_name = "ppo_scaffold_egf_min_ms_wr_10"
 
 changes = [
 
        # 1) Rewards and Penalties
-       ["PCI", 0.5, "wall_reflection", True],
+       ["PCI", 0.5, "wall_reflection", False],
        # TODO: Add energy state
 ]
 
