@@ -779,6 +779,8 @@ class BaseEnvironment:
                         del self.paramecia_gaits[i]
                         if self.env_variables["prey_reproduction_mode"]:
                             del self.prey_ages[i]
+                    if self.fish.prev_action_impulse > 3:   # TODO: Make a hyperparameter.
+                        valid_capture = False
                     else:
                         print("Failed capture \n")
                         print(f"""Prey position: {prey_position}
