@@ -284,7 +284,7 @@ env = {
        'consumption_energy_gain': 1.0,
 
        # Reward
-       'action_reward_scaling': 10000,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
+       'action_reward_scaling': 0,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
        'consumption_reward_scaling': 1000000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
        'wall_reflection': True,
@@ -310,7 +310,7 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_beta_normal_12"
+scaffold_name = "ppo_scaffold_13"
 
 
 changes = [
@@ -328,6 +328,8 @@ changes = [
 ]
 
 changes += build_changes_list_gradual("PCI", 0.4, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25, 8)
+changes += build_changes_list_gradual("PCI", 0.4, "action_reward_scaling", env["action_reward_scaling"], 10000, 4)
+
 
 changes += build_changes_list_gradual("PCI", 0.4, "light_gain", env["light_gain"], 125.7, 4)
 changes += [["PCI", 0.4, "max_epLength", 2000, "do_to_params"]]

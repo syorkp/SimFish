@@ -3110,10 +3110,10 @@ ppo_scaffold_training_egf_min_ms_wr_csr_10a = [
     },
 ]
 
-ppo_scaffold_12a = [
+ppo_scaffold_13a = [
     {
-        "Model Name": "ppo_scaffold_12",
-        "Environment Name": "ppo_scaffold_12",
+        "Model Name": "ppo_scaffold_13",
+        "Environment Name": "ppo_scaffold_13",
         "Trial Number": 1,
         "Run Mode": "Training",
         "Tethered": False,
@@ -3129,8 +3129,8 @@ ppo_scaffold_12a = [
         "Profile Speed": False,
     },
     {
-        "Model Name": "ppo_scaffold_12",
-        "Environment Name": "ppo_scaffold_12",
+        "Model Name": "ppo_scaffold_13",
+        "Environment Name": "ppo_scaffold_13",
         "Trial Number": 2,
         "Run Mode": "Training",
         "Tethered": False,
@@ -3147,10 +3147,10 @@ ppo_scaffold_12a = [
     },
 ]
 
-ppo_scaffold_12b = [
+ppo_scaffold_13b = [
     {
-        "Model Name": "ppo_scaffold_12",
-        "Environment Name": "ppo_scaffold_12",
+        "Model Name": "ppo_scaffold_13",
+        "Environment Name": "ppo_scaffold_13",
         "Trial Number": 3,
         "Run Mode": "Training",
         "Tethered": False,
@@ -3166,8 +3166,8 @@ ppo_scaffold_12b = [
         "Profile Speed": False,
     },
     {
-        "Model Name": "ppo_scaffold_12",
-        "Environment Name": "ppo_scaffold_12",
+        "Model Name": "ppo_scaffold_13",
+        "Environment Name": "ppo_scaffold_13",
         "Trial Number": 4,
         "Run Mode": "Training",
         "Tethered": False,
@@ -3260,5 +3260,5 @@ ppo_scaffold_egf_bn_min_ms_wr_10a = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_training_config_dn_12b, parallel_jobs=4)
+manager = TrialManager(ppo_scaffold_13a, parallel_jobs=4)
 manager.run_priority_loop()
