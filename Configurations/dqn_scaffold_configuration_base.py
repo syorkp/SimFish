@@ -334,7 +334,7 @@ changes += [["PCI", 0.3, "max_epLength", 2000, "do_to_params"]]
 # 3) Available actions
 # Only for continuous
 
-# 4) Prey Capture
+# 4) Prey Capture 15-35
 changes += [["PCI", 0.4, "prey_fluid_displacement", True]]
 changes += build_changes_list_gradual("PCI", 0.5, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
 changes += build_changes_list_gradual("PCI", 0.5, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25, 8)

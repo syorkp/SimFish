@@ -6,7 +6,7 @@
     "epsilon_greedy": true,
     "epsilon_greedy_scaffolding": true,
     "startE": 0.2,
-    "endE": 0.01,
+    "endE": 0.05,
     "update_freq": 100,
     "y": 0.99,
     "anneling_steps": 1000000,

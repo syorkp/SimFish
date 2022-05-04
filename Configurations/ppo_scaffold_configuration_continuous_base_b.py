@@ -65,7 +65,7 @@ params = {
        'connectivity': connectivity,
 
        # For RND
-       'use_rnd': False,  # Whether to use RND.
+       'use_rnd': True,  # Whether to use RND.
 }
 
 env = {
@@ -310,7 +310,7 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_egf_bn_min_ms_wr_10"
+scaffold_name = "ppo_scaffold_rnd_10"
 
 changes = [
 

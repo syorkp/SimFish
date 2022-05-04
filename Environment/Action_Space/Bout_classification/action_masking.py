@@ -212,20 +212,20 @@ plt.show()
 
 
 # Thresholding                                       Best: [2.3733733733733735e-05, 8183]
-print(f"Total inliers: {np.sum(indices_of_valid)}")
-current_best = [0, 0]
-for threshold in np.linspace(0.000005, 0.0001, 1000):
-    probs2[probs < threshold] = 0
-    probs2[probs > threshold] = 1
-    match = np.sum((probs2 == indices_of_valid) * 1)
-    if match > current_best[1]:
-        current_best = [threshold, match]
-        print(f"Computed inliers for {threshold}: {match}")
-
-    if np.array_equal(indices_of_valid, probs2):
-        print(f"FOUND Threshold {threshold}")
+# print(f"Total inliers: {np.sum(indices_of_valid)}")
+# current_best = [0, 0]
+# for threshold in np.linspace(0.000005, 0.0001, 1000):
+#     probs2[probs < threshold] = 0
+#     probs2[probs > threshold] = 1
+#     match = np.sum((probs2 == indices_of_valid) * 1)
+#     if match > current_best[1]:
+#         current_best = [threshold, match]
+#         print(f"Computed inliers for {threshold}: {match}")
 #
-print(f"Best: {current_best}")
+#     if np.array_equal(indices_of_valid, probs2):
+#         print(f"FOUND Threshold {threshold}")
+# #
+# print(f"Best: {current_best}")
 #
 # probs2[probs < 0.0000729] = 0
 # probs2[probs > 0.0000729] = 1
@@ -255,18 +255,25 @@ possible_impulse, possible_angle = possible_impulse.flatten(), possible_angle.fl
 
 # probs = bw_ml_x.pdf(possible_angle) * bw_ml_y.pdf(possible_impulse)
 
-probs[probs < 0.0000729] = 0
-probs[probs > 0.0000729] = 1
+probs2 = copy.copy(probs)
+t = 0.01587368
 
-fig = plt.figure(figsize=(12, 12))
-ax = fig.add_subplot(projection='3d')
-ax.scatter(dist_angles_radians[:, 0], impulse[:, 0], probs)
-ax.set_ylabel("Impulse")
-ax.set_xlabel("Angle (pi radians)")
-ax.set_zlabel("Probability density")
-plt.show()
+for threshold in np.linspace(t, 0.1, 20):
 
-print(np.sum(probs))
+    # probs2[probs < threshold] = 0
+    # probs2[probs > threshold] = 1
+    #
+    # fig = plt.figure(figsize=(12, 12))
+    # ax = fig.add_subplot(projection='3d')
+    # ax.scatter(dist_angles_radians[:, 0], impulse[:, 0], probs2)
+    # ax.set_ylabel("Impulse")
+    # ax.set_xlabel("Angle (pi radians)")
+    # ax.set_zlabel("Probability density")
+    # plt.title(str(threshold))
+    # plt.show()
+    # print(np.sum(probs2))
+    plt.scatter(dist_angles_radians[probs > threshold][:, 0], impulse[probs > threshold][:, 0])
+    plt.show()
 
 
 

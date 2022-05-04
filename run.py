@@ -3145,7 +3145,7 @@ ppo_scaffold_13a = [
         "New Simulation": True,
         "Profile Speed": False,
     },
-]
+]False
 
 ppo_scaffold_13b = [
     {
@@ -3260,5 +3260,5 @@ ppo_scaffold_egf_bn_min_ms_wr_10a = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_training_config_12a, parallel_jobs=4)
+manager = TrialManager(ppo_scaffold_rnd_10a, parallel_jobs=4)
 manager.run_priority_loop()

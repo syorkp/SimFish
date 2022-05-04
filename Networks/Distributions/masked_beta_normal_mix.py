@@ -47,10 +47,10 @@ class MaskedBetaNormalDistribution(BetaNormalDistribution):
         self.kde_angle = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
 
     def get_sample_masked_weights(self, actions, shape):
-        probs = self.kde_impulse.pdf(actions[:, :, 0]) * self.kde_angle.pdf(np.absolute(actions[:, :, 1]))
+        probs = self.kde_impulse.pdf(actions[:, 0]) * self.kde_angle.pdf(np.absolute(actions[:, 1]))
 
         # Dis-allow negative impulses
-        positive_impulses = ((actions[:, :, 0] >= 0) * 1)[:, 0]
+        positive_impulses = ((actions[:, 0] >= 0) * 1)
         probs = probs * positive_impulses
         probs = np.nan_to_num(probs)
 
@@ -62,7 +62,7 @@ class MaskedBetaNormalDistribution(BetaNormalDistribution):
         probs = probs/integral
 
         indices_chosen = np.random.choice(actions.shape[0], size=shape, p=probs, replace=False)
-        actions_chosen = actions[indices_chosen, :, :]
+        actions_chosen = actions[indices_chosen, :]
         # return actions_chosen, probs, positive_impulses
         return actions_chosen
 
