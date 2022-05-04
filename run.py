@@ -3145,7 +3145,7 @@ ppo_scaffold_13a = [
         "New Simulation": True,
         "Profile Speed": False,
     },
-]False
+]
 
 ppo_scaffold_13b = [
     {
