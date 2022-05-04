@@ -103,4 +103,6 @@ class BetaNormalDistribution:
         return self.mu + self.std * tf.random_normal(tf.shape(self.mu),
                                                        dtype=self.mu.dtype)
 
+    def entropy(self):
+        return self.beta_entropy() * self.normal_entropy()
 
