@@ -658,6 +658,84 @@ class ContinuousPPO(BasePPO):
         self.total_steps += 1
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0
 
+    def _step_loop_multivariate_beta_sbe_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+                                               rnn_state_critic,
+                                               rnn_state_critic_ref):
+
+        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
+        a = [a[0] / self.environment_params['max_impulse'],
+             a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
+
+        impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, mu_i, mu_a, neg_log_action_probability = self.sess.run(
+            [self.actor_network.impulse_output, self.actor_network.angle_output,
+             self.actor_network.value_output,
+             self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
+             self.actor_network.mu_impulse_combined,
+             self.actor_network.mu_angle_combined,
+             self.actor_network.neg_log_prob],
+
+            feed_dict={self.actor_network.observation: o,
+                       self.actor_network.internal_state: internal_state,
+                       self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                       self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
+                       self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
+                       self.actor_network.rnn_state_in: rnn_state_actor,
+                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       self.actor_network.batch_size: 1,
+                       self.actor_network.train_length: 1,
+                       }
+        )
+        if self.epsilon_greedy:
+            if np.random.rand(1) < self.e:
+                action = [impulse[0][0], angle[0][0]]
+            else:
+                action = [impulse[0][0], mu_a[0][0] * self.environment_params["max_angle_change"]]
+
+                # And get updated neg_log_prob
+                neg_log_action_probability = self.sess.run(
+                    [self.actor_network.new_neg_log_prob],
+
+                    feed_dict={self.actor_network.observation: o,
+                               self.actor_network.internal_state: internal_state,
+                               self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                               self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
+                               self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
+                               self.actor_network.rnn_state_in: rnn_state_actor,
+                               self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                               self.actor_network.batch_size: 1,
+                               self.actor_network.train_length: 1,
+
+                               self.actor_network.action_placeholder: action,
+                               }
+                )
+
+            if self.e > self.learning_params['endE']:
+                self.e -= self.step_drop
+        else:
+            action = [impulse[0][0], angle[0][0]]
+
+        # Simulation step
+        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+            action=action,
+            frame_buffer=self.frame_buffer,
+            save_frames=self.save_frames,
+            activations=sa)
+
+        if self.save_environmental_data:
+            sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
+            self.episode_buffer.save_environmental_positions(self.simulation.fish.body.position,
+                                                             self.simulation.prey_consumed_this_step,
+                                                             self.simulation.predator_body,
+                                                             prey_positions,
+                                                             predator_position,
+                                                             sand_grain_positions,
+                                                             vegetation_positions,
+                                                             self.simulation.fish.body.angle,
+                                                             )
+
+        self.total_steps += 1
+        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0
+
     def _step_loop_multivariate_sbe_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                                rnn_state_critic,
                                                rnn_state_critic_ref):

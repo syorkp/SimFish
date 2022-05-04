@@ -7,6 +7,7 @@ import tensorflow_probability as tfp
 
 from Networks.Distributions.beta_normal_mix import BetaNormalDistribution
 
+
 class MaskedBetaNormalDistribution(BetaNormalDistribution):
 
     def __init__(self, concentration1, concentration0, mu, std, impulse_scaling, angle_scaling):
@@ -66,6 +67,7 @@ class MaskedBetaNormalDistribution(BetaNormalDistribution):
         return actions_chosen
 
     def impose_zeroed(self, chosen_samples, mu_vals, threshold=0.01):
+        """Brings values to exactly zero if they are below the threshold e.g. impulse of 0.001 will be returned as 0."""
         zero_chosen = ((mu_vals < threshold) * 1) * ((mu_vals > -threshold) * 1)
         zero_chosen = (zero_chosen == 0) * 1.0
         chosen_samples *= zero_chosen
@@ -76,5 +78,7 @@ class MaskedBetaNormalDistribution(BetaNormalDistribution):
         # self.preliminary_samples = preliminary_samples
         # chosen_samples, self.probs, self.positive_imp = tf.numpy_function(self.get_sample_masked_weights, [self.preliminary_samples, shape], [tf.float32, tf.float64, tf.int64])
         chosen_samples = tf.numpy_function(self.get_sample_masked_weights, [preliminary_samples, shape], tf.float32)
-        chosen_samples_thresholded = tf.numpy_function(self.impose_zeroed, [chosen_samples, self.mu], tf.float32)
+        mean_dist_beta = self.concentration1/(self.concentration0 + self.concentration1)
+        mean_dist_vals = tf.concat([mean_dist_beta, self.mu], axis=1)
+        chosen_samples_thresholded = tf.numpy_function(self.impose_zeroed, [chosen_samples, mean_dist_vals], tf.float32)
         return chosen_samples_thresholded

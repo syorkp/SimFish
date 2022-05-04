@@ -66,7 +66,7 @@ class PPONetworkActorMultivariateBetaNormal2(BaseNetwork):
         # For logging purposes:
         self.mu_impulse = self.mu_impulse_1_combined
         self.mu_impulse_ref = self.mu_impulse_2_combined
-        self.mu_impulse_combined = tf.divide(tf.add(self.mu_impulse_1_combined, self.mu_impulse_2_combined), 2)
+        self.mu_impulse_combined = tf.divide(self.mu_impulse_1_combined, tf.add(self.mu_impulse_1_combined, self.mu_impulse_2_combined))
 
         self.mu_angle_combined = tf.divide(tf.subtract(self.mu_angle, self.mu_angle_ref), 2)
 
@@ -114,9 +114,12 @@ class PPONetworkActorMultivariateBetaNormal2(BaseNetwork):
         #            ----------        Form Distribution Estimations       ---------            #
 
         if impose_action_mask:
-            self.action_distribution = BetaNormalDistribution(self.mu_impulse_1_combined, self.mu_impulse_2_combined,
-                                                                  self.mu_angle_combined, self.sigma_angle_combined)
-            self.action_output = self.action_distribution.sample(1)
+            self.action_distribution = MaskedBetaNormalDistribution(self.mu_impulse_1_combined, self.mu_impulse_2_combined,
+                                                                    self.mu_angle_combined, self.sigma_angle_combined,
+                                                                    impulse_scaling=max_impulse,
+                                                                    angle_scaling=max_angle_change
+                                                                    )
+            self.action_output = self.action_distribution.sample_masked(1)
             # self.action_output = tf.squeeze(self.action_distribution.sample(1), axis=0)
             # TODO: Build in action mask
             # self.action_distribution = BetaNormalDistribution(loc=self.mu_action, scale_diag=self.sigma_action,
