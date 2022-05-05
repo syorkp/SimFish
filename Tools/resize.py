@@ -60,7 +60,7 @@ def resize(image, output_shape, chosen_math_library, order=None, mode='reflect',
             tform.estimate(src_corners, dst_corners, chosen_math_library)
 
         # Make sure the transform is exactly metric, to ensure fast warping.
-        tform.params[2] = (0, 0, 1)
+        tform.params[2] = chosen_math_library.array([0, 0, 1])
         tform.params[0, 1] = 0
         tform.params[1, 0] = 0
 

@@ -42,7 +42,7 @@ def _stackcopy(a, b):
         a[:] = b
 
 
-def warp_coords(coord_map, shape, dtype=np.float64):
+def warp_coords(coord_map, shape, dtype=np.float64, chosen_math_library=None):
     """Build the source coordinates for the output of a 2-D image warp.
 
     Parameters
@@ -96,10 +96,10 @@ def warp_coords(coord_map, shape, dtype=np.float64):
     coords_shape = [len(shape), rows, cols]
     if len(shape) == 3:
         coords_shape.append(shape[2])
-    coords = np.empty(coords_shape, dtype=dtype)
+    coords = chosen_math_library.empty(coords_shape, dtype=dtype)
 
     # Reshape grid coordinates into a (P, 2) array of (row, col) pairs
-    tf_coords = np.indices((cols, rows), dtype=dtype).reshape(2, -1).T
+    tf_coords = chosen_math_library.indices((cols, rows), dtype=dtype).reshape(2, -1).T
 
     # Map each (row, col) pair to the source image according to
     # the user-provided mapping
@@ -676,7 +676,7 @@ class GeometricTransform(object):
         raise NotImplementedError()
 
 
-def _center_and_normalize_points(points):
+def _center_and_normalize_points(points, chosen_math_library):
     """Center and normalize image points.
 
     The points are transformed in a two-step procedure that is expressed
@@ -709,17 +709,17 @@ def _center_and_normalize_points(points):
 
     """
 
-    centroid = np.mean(points, axis=0)
+    centroid = chosen_math_library.mean(points, axis=0)
 
-    rms = math.sqrt(np.sum((points - centroid) ** 2) / points.shape[0])
+    rms = chosen_math_library.sqrt(chosen_math_library.sum((points - centroid) ** 2) / points.shape[0])
 
-    norm_factor = math.sqrt(2) / rms
+    norm_factor = chosen_math_library.sqrt(2) / rms
 
-    matrix = np.array([[norm_factor, 0, -norm_factor * centroid[0]],
+    matrix = chosen_math_library.array([[norm_factor, 0, -norm_factor * centroid[0]],
                        [0, norm_factor, -norm_factor * centroid[1]],
-                       [0, 0, 1]])
+                       [0, 0, 1]], dtype=chosen_math_library.float64)
 
-    pointsh = np.row_stack([points.T, np.ones((points.shape[0]),)])
+    pointsh = chosen_math_library.vstack([points.T, chosen_math_library.ones((points.shape[0]),)])
 
     new_pointsh = (matrix @ pointsh).T
 
@@ -728,6 +728,7 @@ def _center_and_normalize_points(points):
     new_points[:, 1] /= new_pointsh[:, 2]
 
     return matrix, new_points
+
 
 def get_bound_method_class(m):
     """Return the class for a bound method.
@@ -893,8 +894,8 @@ class ProjectiveTransform(GeometricTransform):
         """
 
         try:
-            src_matrix, src = _center_and_normalize_points(src)
-            dst_matrix, dst = _center_and_normalize_points(dst)
+            src_matrix, src = _center_and_normalize_points(src, chosen_math_library)
+            dst_matrix, dst = _center_and_normalize_points(dst, chosen_math_library)
         except ZeroDivisionError:
             self.params = chosen_math_library.nan * chosen_math_library.empty((3, 3))
             return False
@@ -934,11 +935,22 @@ class ProjectiveTransform(GeometricTransform):
         H = chosen_math_library.zeros((3, 3))
         # solution is right singular vector that corresponds to smallest
         # singular value
-        H.flat[list(self._coeffs) + [8]] = - V[-1, :-1] / V[-1, -1]
+
+        # My fix
+        absolute_indexes = list(self._coeffs) + [8]
+        to_be_set_to = - V[-1, :-1] / V[-1, -1]
+        to_be_set_to = chosen_math_library.concatenate((to_be_set_to, to_be_set_to[:1]))
+        original_shape = H.shape
+        H_flat = chosen_math_library.ravel(H)
+        H_flat[absolute_indexes] = to_be_set_to
+        H = chosen_math_library.reshape(H_flat, original_shape)
+        # My fix ends
+
+        # H.flat[list(self._coeffs) + [8]] = - V[-1, :-1] / V[-1, -1]
         H[2, 2] = 1
 
         # De-center and de-normalize
-        H = chosen_math_library.linalg.inv(dst_matrix) @ H @ src_matrix
+        H = np.linalg.inv(dst_matrix) @ H @ src_matrix
 
         self.params = H
 
@@ -1433,6 +1445,9 @@ def safe_as_int(val, atol=1e-3):
 
     return np.round(val).astype(np.int64)
 
+def spline_filter1d(*args, **kwargs): # real signature unknown
+    pass
+
 def _to_ndimage_mode(mode):
     """Convert from `numpy.pad` mode name to the corresponding ndimage mode."""
     mode_translation_dict = dict(edge='nearest', symmetric='reflect',
@@ -1440,6 +1455,181 @@ def _to_ndimage_mode(mode):
     if mode in mode_translation_dict:
         mode = mode_translation_dict[mode]
     return mode
+
+def geometric_transform(*args, **kwargs): # real signature unknown
+    pass
+
+def spline_filter(input, order=3, mode='mirror', chosen_math_library=None):
+    """
+    Multidimensional spline filter.
+
+    For more details, see `spline_filter1d`.
+
+    See Also
+    --------
+    spline_filter1d : Calculate a 1-D spline filter along the given axis.
+
+    Notes
+    -----
+    The multidimensional filter is implemented as a sequence of
+    1-D spline filters. The intermediate arrays are stored
+    in the same data type as the output. Therefore, for output types
+    with a limited precision, the results may be imprecise because
+    intermediate results may be stored with insufficient precision.
+
+    Examples
+    --------
+    We can filter an image using multidimentional splines:
+
+    >>> from scipy.ndimage import spline_filter
+    >>> import matplotlib.pyplot as plt
+    >>> orig_img = np.eye(20)  # create an image
+    >>> orig_img[10, :] = 1.0
+    >>> sp_filter = spline_filter(orig_img, order=3)
+    >>> f, ax = plt.subplots(1, 2, sharex=True)
+    >>> for ind, data in enumerate([[orig_img, "original image"],
+    ...                             [sp_filter, "spline filter"]]):
+    ...     ax[ind].imshow(data[0], cmap='gray_r')
+    ...     ax[ind].set_title(data[1])
+    >>> plt.tight_layout()
+    >>> plt.show()
+
+    """
+    output =chosen_math_library.float64
+
+    if order < 2 or order > 5:
+        raise RuntimeError('spline order not supported')
+    input = chosen_math_library.asarray(input)
+    if chosen_math_library.iscomplexobj(input):
+        raise TypeError('Complex type not supported')
+    output = _get_output(output, input)
+    if order not in [0, 1] and input.ndim > 0:
+        for axis in range(input.ndim):
+            spline_filter1d(input, order, axis, output=output, mode=mode)
+            input = output
+    else:
+        output[...] = input[...]
+    return output
+
+
+def _extend_mode_to_code(mode):
+    """Convert an extension mode to the corresponding integer code.
+    """
+    if mode == 'nearest':
+        return 0
+    elif mode == 'wrap':
+        return 1
+    elif mode == 'reflect':
+        return 2
+    elif mode == 'mirror':
+        return 3
+    elif mode == 'constant':
+        return 4
+    else:
+        raise RuntimeError('boundary mode not supported')
+
+
+def map_coordinates(input, coordinates, output=None, order=3,
+                    mode='constant', cval=0.0, prefilter=True, chosen_math_library=None):
+    """
+    Map the input array to new coordinates by interpolation.
+
+    The array of coordinates is used to find, for each point in the output,
+    the corresponding coordinates in the input. The value of the input at
+    those coordinates is determined by spline interpolation of the
+    requested order.
+
+    The shape of the output is derived from that of the coordinate
+    array by dropping the first axis. The values of the array along
+    the first axis are the coordinates in the input array at which the
+    output value is found.
+
+    Parameters
+    ----------
+    %(input)s
+    coordinates : array_like
+        The coordinates at which `input` is evaluated.
+    %(output)s
+    order : int, optional
+        The order of the spline interpolation, default is 3.
+        The order has to be in the range 0-5.
+    %(mode)s
+    %(cval)s
+    %(prefilter)s
+
+    Returns
+    -------
+    map_coordinates : ndarray
+        The result of transforming the input. The shape of the output is
+        derived from that of `coordinates` by dropping the first axis.
+
+    See Also
+    --------
+    spline_filter, geometric_transform, scipy.interpolate
+
+    Examples
+    --------
+    >>> from scipy import ndimage
+    >>> a = np.arange(12.).reshape((4, 3))
+    >>> a
+    array([[  0.,   1.,   2.],
+           [  3.,   4.,   5.],
+           [  6.,   7.,   8.],
+           [  9.,  10.,  11.]])
+    >>> ndimage.map_coordinates(a, [[0.5, 2], [0.5, 1]], order=1)
+    array([ 2.,  7.])
+
+    Above, the interpolated value of a[0.5, 0.5] gives output[0], while
+    a[2, 1] is output[1].
+
+    >>> inds = np.array([[0.5, 2], [0.5, 4]])
+    >>> ndimage.map_coordinates(a, inds, order=1, cval=-33.3)
+    array([  2. , -33.3])
+    >>> ndimage.map_coordinates(a, inds, order=1, mode='nearest')
+    array([ 2.,  8.])
+    >>> ndimage.map_coordinates(a, inds, order=1, cval=0, output=bool)
+    array([ True, False], dtype=bool)
+
+    """
+    if order < 0 or order > 5:
+        raise RuntimeError('spline order not supported')
+    input = chosen_math_library.asarray(input)
+    if chosen_math_library.iscomplexobj(input):
+        raise TypeError('Complex type not supported')
+    coordinates = chosen_math_library.asarray(coordinates)
+    if chosen_math_library.iscomplexobj(coordinates):
+        raise TypeError('Complex type not supported')
+    output_shape = coordinates.shape[1:]
+    if input.ndim < 1 or len(output_shape) < 1:
+        raise RuntimeError('input and output rank must be > 0')
+    if coordinates.shape[0] != input.ndim:
+        raise RuntimeError('invalid shape for coordinate array')
+    mode = _extend_mode_to_code(mode)
+    if prefilter and order > 1:
+        filtered = spline_filter(input, order, output=chosen_math_library.float64)
+    else:
+        filtered = input
+    output = _get_output(output, input,
+                                     shape=output_shape, chosen_math_library=chosen_math_library)
+    geometric_transform(filtered, None, coordinates, None, None,
+                                  output, order, mode, cval, None, None)
+    return output
+
+
+def _get_output(output, input, shape=None, chosen_math_library=None):
+    if shape is None:
+        shape = input.shape
+    if output is None:
+        output = chosen_math_library.zeros(shape, dtype=input.dtype.name)
+    elif isinstance(output, (type, chosen_math_library.dtype)):
+        # Classes (like `np.float32`) and dtypes are interpreted as dtype
+        output = chosen_math_library.zeros(shape, dtype=output)
+    elif isinstance(output, str):
+        output = chosen_math_library.typeDict[output]
+        output = chosen_math_library.zeros(shape, dtype=output)
+    elif output.shape != shape:
+        raise RuntimeError("output shape not correct")
+    return output
 
 
 def warp(image, inverse_map, map_args={}, output_shape=None, order=None,
@@ -1632,17 +1822,23 @@ def warp(image, inverse_map, map_args={}, output_shape=None, order=None,
             matrix = chosen_math_library.linalg.inv(inverse_map.__self__.params)
 
         if matrix is not None:
-            print("Uh Oh")
             matrix = matrix.astype(image.dtype)
             ctype = 'float32_t' if image.dtype == chosen_math_library.float32 else 'float64_t'
             if image.ndim == 2:
-                warped = _warp_fast[ctype](image, matrix,
+                # warped = _warp_fast[ctype](image, matrix,
+                #                            output_shape=output_shape,
+                #                            order=order, mode=mode, cval=cval)
+                warped = _warp_fast(image, matrix,
                                            output_shape=output_shape,
                                            order=order, mode=mode, cval=cval)
             elif image.ndim == 3:
                 dims = []
                 for dim in range(image.shape[2]):
-                    dims.append(_warp_fast[ctype](image[..., dim], matrix,
+                    # dims.append(_warp_fast[ctype](image[..., dim], matrix,
+                    #                               output_shape=output_shape,
+                    #                               order=order, mode=mode,
+                    #                               cval=cval))
+                    dims.append(_warp_fast(image[..., dim], matrix,
                                                   output_shape=output_shape,
                                                   order=order, mode=mode,
                                                   cval=cval))
@@ -1650,7 +1846,6 @@ def warp(image, inverse_map, map_args={}, output_shape=None, order=None,
 
     if warped is None:
         # use ndi.map_coordinates
-        print("Oh NO")
         if (isinstance(inverse_map, chosen_math_library.ndarray) and
                 inverse_map.shape == (3, 3)):
             # inverse_map is a transformation matrix as numpy array,
@@ -1671,7 +1866,7 @@ def warp(image, inverse_map, map_args={}, output_shape=None, order=None,
                                  "`inverse_map`.")
 
             def coord_map(*args):
-                return inverse_map(*args, **map_args)
+                return inverse_map(*args, **map_args, chosen_math_library=chosen_math_library)
 
             if len(input_shape) == 3 and len(output_shape) == 2:
                 # Input image is 2D and has color channel, but output_shape is
@@ -1680,14 +1875,14 @@ def warp(image, inverse_map, map_args={}, output_shape=None, order=None,
                 output_shape = (output_shape[0], output_shape[1],
                                 input_shape[2])
 
-            coords = warp_coords(coord_map, output_shape)
+            coords = warp_coords(coord_map, output_shape, chosen_math_library=chosen_math_library)
 
         # Pre-filtering not necessary for order 0, 1 interpolation
         prefilter = order > 1
 
         ndi_mode = _to_ndimage_mode(mode)
-        warped = ndi.map_coordinates(image, coords, prefilter=prefilter,
-                                     mode=ndi_mode, order=order, cval=cval)
+        warped = map_coordinates(image, coords, prefilter=prefilter,
+                                     mode=ndi_mode, order=order, cval=cval, chosen_math_library=chosen_math_library)
 
     _clip_warp_output(image, warped, order, mode, cval, clip, chosen_math_library)
 
