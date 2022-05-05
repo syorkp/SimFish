@@ -5,6 +5,7 @@ from skimage.draw import line
 from skimage.transform import resize
 import matplotlib.pyplot as plt
 
+# from Tools.resize import resize
 
 class Eye:
 
@@ -750,9 +751,9 @@ class Eye:
             uv_readings = uv_readings.astype(float)
             red_readings = red_readings.astype(float)
 
-            red_field = self.chosen_math_library.array(resize(red_readings[:, 0:1], (self.env_variables['minimum_observation_size'], 1)))
-            uv = self.chosen_math_library.array(resize(uv_readings, (self.env_variables['minimum_observation_size'], 1)))
-            red_background = self.chosen_math_library.array(resize(red_readings[:, 1:], (self.env_variables['minimum_observation_size'], 1)))
+            red_field = self.chosen_math_library.array(resize(red_readings[:, 0:1], (self.env_variables['minimum_observation_size'], 1), self.chosen_math_library))
+            uv = self.chosen_math_library.array(resize(uv_readings, (self.env_variables['minimum_observation_size'], 1), self.chosen_math_library))
+            red_background = self.chosen_math_library.array(resize(red_readings[:, 1:], (self.env_variables['minimum_observation_size'], 1), self.chosen_math_library))
             self.readings = self.chosen_math_library.concatenate((red_field, uv, red_background), axis=1)
 
         else:
