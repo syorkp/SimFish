@@ -3291,7 +3291,7 @@ dqn_scaffold_training_config_dn_12c = [
         "Full Logs": True,
         "SB Emulator": False,
         "New Simulation": True,
-        "Profile Speed": True,
+        "Profile Speed": False,
     },
 ]
 
