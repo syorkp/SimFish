@@ -3225,7 +3225,7 @@ ppo_scaffold_egf_bn_min_ms_wr_10a = [
     {
         "Model Name": "ppo_scaffold_egf_bn_min_ms_wr_10",
         "Environment Name": "ppo_scaffold_egf_bn_min_ms_wr_10",
-        "Trial Number": 1,
+        "Trial Number": 3,
         "Run Mode": "Training",
         "Tethered": False,
         "Realistic Bouts": True,
@@ -3242,7 +3242,7 @@ ppo_scaffold_egf_bn_min_ms_wr_10a = [
     {
         "Model Name": "ppo_scaffold_egf_bn_min_ms_wr_10",
         "Environment Name": "ppo_scaffold_egf_bn_min_ms_wr_10",
-        "Trial Number": 2,
+        "Trial Number": 4,
         "Run Mode": "Training",
         "Tethered": False,
         "Realistic Bouts": True,
