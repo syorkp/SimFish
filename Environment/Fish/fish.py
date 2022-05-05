@@ -351,8 +351,9 @@ class Fish:
 
     def _readings_to_photons_new(self, readings):
         """Rounds down observations to form array of discrete photon events."""
-        if self.using_gpu:
-            readings = readings.get()
+        # No longer need below as is removed from GPU earlier (before observation padding).
+        # if self.using_gpu:
+        #     readings = readings.get()
 
         # print(f"""
         # Max Red: {np.max(readings[:, 0])}
@@ -415,7 +416,7 @@ class Fish:
     def update_energy_level(self, reward, consumption):
         """Updates the current energy state for continuous and discrete fish."""
         unscaled_consumption = 1.0 * consumption
-        unscaled_energy_use = self.ci * (self.prev_action_impulse ** 2) + self.ca * (self.prev_action_angle ** 2) + self.baseline_decrease
+        unscaled_energy_use = self.ci * (self.prev_action_impulse ** 0.5) + self.ca * (self.prev_action_angle ** 0.5) + self.baseline_decrease
 
         # Nonlinear reward scaling
         intake_s = self.intake_scale(self.energy_level)

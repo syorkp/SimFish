@@ -139,10 +139,11 @@ class DynamicBaseNetwork:
                                                         reuse=reflected)
 
         elif layer_parameters[0] == "dynamic_rnn":
-            if reflected:
-                state_layer_name = layer_name + "_ref"
-            else:
-                state_layer_name = layer_name
+            # if reflected:
+            #     state_layer_name = layer_name + "_ref"
+            # else:
+            #     state_layer_name = layer_name
+            state_layer_name = layer_name
             units = layer_parameters[1]
             self.network_graph[layer_input + "_inputs"] = tf.layers.dense(network_graph[layer_input], units,
                                                                           activation=tf.nn.relu,

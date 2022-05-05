@@ -5,7 +5,7 @@ from skimage.draw import line
 from skimage.transform import resize
 import matplotlib.pyplot as plt
 
-from Tools.resize import resize as myresize
+# from Tools.resize import resize as myresize
 
 
 class Eye:
@@ -305,7 +305,7 @@ class Eye:
             if self.red_photoreceptor_num != self.uv_photoreceptor_num:
                 self.pad_observation()
             else:
-                self.readings = self.chosen_math_library.concatenate(
+                self.readings = np.concatenate(
                     (self.red_readings[:, 0:1], self.uv_readings, self.red_readings[:, 1:]), axis=1)
 
     def _read(self, masked_arena_pixels, eye_x, eye_y, channel_angles_surrounding, n_channels):
@@ -562,16 +562,16 @@ class Eye:
     def add_noise_to_readings(self, readings):
         """As specified, adds shot, read, and/or dark noise to readings."""
         if self.env_variables["shot_noise"]:
-            photons = self.chosen_math_library.random.poisson(readings)
-            shot_noise_difference = self.chosen_math_library.abs(readings - photons)
+            photons = np.random.poisson(readings)
+            shot_noise_difference = np.abs(readings - photons)
             snr = 1 - np.mean(shot_noise_difference/(photons+1), axis=1)
         else:
             photons = readings
 
         if self.env_variables['read_noise_sigma'] > 0:
-            noise = self.chosen_math_library.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
+            noise = np.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
             photons += noise.astype(int)
-            photons = self.chosen_math_library.clip(photons, 0, 255)
+            photons = np.clip(photons, 0, 255)
 
         # if photons.shape[1] == 1:
         #     print(f"Max photons: {np.max(readings[:, 0])}")
@@ -586,14 +586,14 @@ class Eye:
 
 
         if self.env_variables["isomerization_frequency"] > 0:
-            dark_noise_events = self.chosen_math_library.random.choice([0, 1], size=readings.size,
+            dark_noise_events = np.random.choice([0, 1], size=readings.size,
                                                                        p=[1-self.isomerization_probability,
                                                                           self.isomerization_probability]
                                                                        ).astype(float)
-            variability = self.chosen_math_library.random.rand(readings.size)
+            variability = np.random.rand(readings.size)
             dark_noise_events *= variability
             dark_noise_events = dark_noise_events * self.env_variables['max_isomerization_size']
-            dark_noise_events = self.chosen_math_library.reshape(dark_noise_events, readings.shape)
+            dark_noise_events = np.reshape(dark_noise_events, readings.shape)
             photons += dark_noise_events
 
         return photons
@@ -733,40 +733,37 @@ class Eye:
     def compute_n(self, photoreceptor_rf_size, max_separation=1):
         max_dist = (self.width ** 2 + self.height ** 2) ** 0.5
         theta_separation = math.asin(max_separation / max_dist)
-        n = (photoreceptor_rf_size / theta_separation) / 2
+        n = (photoreceptor_rf_size / theta_separation)
         return int(n)
 
     def pad_observation(self):
         """Makes photoreceptor input from two sources the same dimension by padding out points with their nearest values."""
         # TODO: Note the switching below might be slow... Probably worth writing own function.
         if self.expand_observation:
-            # # Test
-            # if self.using_gpu:
-            #     uv_readings = self.uv_readings.get()
-            #     red_readings = self.red_readings.get()
-            #
-            # else:
-            #     uv_readings = self.uv_readings
-            #     red_readings = self.red_readings
 
-            uv_readings = self.uv_readings
-            red_readings = self.red_readings
+            if self.using_gpu:
+                uv_readings = self.uv_readings.get()
+                red_readings = self.red_readings.get()
+
+            else:
+                uv_readings = self.uv_readings
+                red_readings = self.red_readings
 
             uv_readings = uv_readings.astype(float)
             red_readings = red_readings.astype(float)
 
             # Using original resize method.
-            red_field = self.chosen_math_library.array(resize(red_readings[:, 0:1].get(), (self.env_variables['minimum_observation_size'], 1),))
-            uv = self.chosen_math_library.array(resize(uv_readings.get(), (self.env_variables['minimum_observation_size'], 1)))
-            red_background = self.chosen_math_library.array(resize(red_readings[:, 1:].get(), (self.env_variables['minimum_observation_size'], 1)))
+            red_field = np.array(resize(red_readings[:, 0:1], (self.env_variables['minimum_observation_size'], 1),))
+            uv = np.array(resize(uv_readings, (self.env_variables['minimum_observation_size'], 1)))
+            red_background = np.array(resize(red_readings[:, 1:], (self.env_variables['minimum_observation_size'], 1)))
             # test_red_field = self.chosen_math_library.array(myresize(red_readings[:, 0:1].get(), (self.env_variables['minimum_observation_size'], 1), np))
             # test_uv = self.chosen_math_library.array(myresize(uv_readings.get(), (self.env_variables['minimum_observation_size'], 1), np))
             # test_red_background = self.chosen_math_library.array(myresize(red_readings[:, 1:].get(), (self.env_variables['minimum_observation_size'], 1), np))
-
+            #
             # red_field = self.chosen_math_library.array(myresize(red_readings[:, 0:1], (self.env_variables['minimum_observation_size'], 1), self.chosen_math_library))
             # uv = self.chosen_math_library.array(myresize(uv_readings, (self.env_variables['minimum_observation_size'], 1), self.chosen_math_library))
             # red_background = self.chosen_math_library.array(myresize(red_readings[:, 1:], (self.env_variables['minimum_observation_size'], 1), self.chosen_math_library))
-            self.readings = self.chosen_math_library.concatenate((red_field, uv, red_background), axis=1)
+            self.readings = np.concatenate((red_field, uv, red_background), axis=1)
 
         else:
             if self.uv_photoreceptor_num < self.red_photoreceptor_num:

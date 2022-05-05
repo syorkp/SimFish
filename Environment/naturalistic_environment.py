@@ -307,18 +307,20 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         # observation = self.chosen_math_library.dstack((self.fish.left_eye.readings,
         #                                                self.fish.right_eye.readings))
-        observation = self.chosen_math_library.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
-                                                       self.fish.readings_to_photons(self.fish.right_eye.readings)))
+        observation = np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
+                                 self.fish.readings_to_photons(self.fish.right_eye.readings)))
         # self.plot_observation(observation)
         # distance = ((self.fish.body.position[0]-self.prey_bodies[-1].position[0])**2 +
         #             (self.fish.body.position[1]-self.prey_bodies[-1].position[1])**2) ** 0.5
         # print(f"Prey Distance: {distance}\n")
         # self.paramecia_distances.append(distance)
 
-        if self.using_gpu:
-            return observation.get(), frame_buffer
-        else:
-            return observation, frame_buffer
+        # if self.using_gpu:
+        #     return observation.get(), frame_buffer
+        # else:
+        #     return observation, frame_buffer
+
+        return observation, frame_buffer
 
     def plot_observation(self, observation):
         if self.using_gpu:
