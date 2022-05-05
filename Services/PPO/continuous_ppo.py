@@ -595,7 +595,7 @@ class ContinuousPPO(BasePPO):
             if np.random.rand(1) < self.e:
                 action = [impulse[0][0], angle[0][0]]
             else:
-                action = [impulse[0][0], mu_a[0][0] * self.environment_params["max_angle_change"]]
+                action = [mu_i[0][0], mu_a[0][0] * self.environment_params["max_angle_change"]]
 
                 # And get updated neg_log_prob
                 neg_log_action_probability = self.sess.run(
@@ -689,7 +689,7 @@ class ContinuousPPO(BasePPO):
             if np.random.rand(1) < self.e:
                 action = [impulse[0][0], angle[0][0]]
             else:
-                action = [impulse[0][0], mu_a[0][0] * self.environment_params["max_angle_change"]]
+                action = [mu_i[0][0], mu_a[0][0] * self.environment_params["max_angle_change"]]
 
                 # And get updated neg_log_prob
                 neg_log_action_probability = self.sess.run(
