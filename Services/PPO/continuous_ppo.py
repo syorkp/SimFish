@@ -237,7 +237,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
                        self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
                        self.actor_network.rnn_state_in: rnn_state_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
                        self.actor_network.train_length: 1,
                        }
@@ -313,7 +313,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
                        self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
                        self.actor_network.rnn_state_in: rnn_state_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
                        self.actor_network.train_length: 1,
                        }
@@ -393,7 +393,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.internal_state: internal_state,
                        self.actor_network.prev_actions: np.reshape(a, (1, 2)),
                        self.actor_network.rnn_state_in: rnn_state_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
                        self.actor_network.train_length: 1,
                        }
@@ -412,7 +412,7 @@ class ContinuousPPO(BasePPO):
                        self.critic_network.internal_state: internal_state,
                        self.critic_network.prev_actions: np.reshape(a, (1, 2)),
                        self.critic_network.rnn_state_in: rnn_state_critic,
-                       self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
+                       # self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
                        self.critic_network.batch_size: 1,
                        self.critic_network.train_length: 1,
                        }
@@ -487,7 +487,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.internal_state: internal_state,
                        self.actor_network.prev_actions: np.reshape(a, (1, 2)),
                        self.actor_network.rnn_state_in: rnn_state_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
                        self.actor_network.train_length: 1,
                        self.actor_network.sigma_impulse_combined: self.impulse_sigma,
@@ -508,7 +508,7 @@ class ContinuousPPO(BasePPO):
                        self.critic_network.internal_state: internal_state,
                        self.critic_network.prev_actions: np.reshape(a, (1, 2)),
                        self.critic_network.rnn_state_in: rnn_state_critic,
-                       self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
+                       # self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
                        self.critic_network.batch_size: 1,
                        self.critic_network.train_length: 1,
                        }
@@ -585,7 +585,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
                        self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
                        self.actor_network.rnn_state_in: rnn_state_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
                        self.actor_network.train_length: 1,
                        }
@@ -607,7 +607,7 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
                                self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
                                self.actor_network.rnn_state_in: rnn_state_actor,
-                               self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                               # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                                self.actor_network.batch_size: 1,
                                self.actor_network.train_length: 1,
 
@@ -680,7 +680,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
                        self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
                        self.actor_network.rnn_state_in: rnn_state_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
                        self.actor_network.train_length: 1,
                        }
@@ -759,7 +759,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
                        self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
                        self.actor_network.rnn_state_in: rnn_state_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
                        self.actor_network.train_length: 1,
                        }
@@ -781,7 +781,7 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
                                self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
                                self.actor_network.rnn_state_in: rnn_state_actor,
-                               self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                               # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                                self.actor_network.batch_size: 1,
                                self.actor_network.train_length: 1,
 
@@ -884,7 +884,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
                        self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
                        self.actor_network.rnn_state_in: rnn_state_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
                        self.actor_network.train_length: 1,
                        }
@@ -905,7 +905,7 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
                                self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
                                self.actor_network.rnn_state_in: rnn_state_actor,
-                               self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                               # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                                self.actor_network.batch_size: 1,
                                self.actor_network.train_length: 1,
 
@@ -1026,7 +1026,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
                        self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
                        self.actor_network.rnn_state_in: rnn_state_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
                        self.actor_network.train_length: 1,
                        }
@@ -1039,7 +1039,7 @@ class ContinuousPPO(BasePPO):
                        self.critic_network.internal_state: internal_state,
                        self.critic_network.prev_actions: np.reshape(a, (1, 2)),
                        self.critic_network.rnn_state_in: rnn_state_critic,
-                       self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
+                       # self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
                        self.critic_network.batch_size: 1,
                        self.critic_network.train_length: 1,
                        }
@@ -1092,7 +1092,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
                        self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
                        self.actor_network.rnn_state_in: rnn_state_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
                        self.actor_network.train_length: 1,
                        }
@@ -1105,7 +1105,7 @@ class ContinuousPPO(BasePPO):
                        self.critic_network.internal_state: internal_state,
                        self.critic_network.prev_actions: np.reshape(a, (1, 2)),
                        self.critic_network.rnn_state_in: rnn_state_critic,
-                       self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
+                       # self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
                        self.critic_network.batch_size: 1,
                        self.critic_network.train_length: 1,
                        }
@@ -1156,7 +1156,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.internal_state: internal_state,
                        self.actor_network.prev_actions: np.reshape(a, (1, 2)),
                        self.actor_network.rnn_state_in: rnn_state_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.sigma_impulse_combined: self.impulse_sigma,
                        self.actor_network.sigma_angle_combined: self.angle_sigma,
                        self.actor_network.batch_size: 1,
@@ -1171,7 +1171,7 @@ class ContinuousPPO(BasePPO):
                        self.critic_network.internal_state: internal_state,
                        self.critic_network.prev_actions: np.reshape(a, (1, 2)),
                        self.critic_network.rnn_state_in: rnn_state_critic,
-                       self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
+                       # self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
                        self.critic_network.batch_size: 1,
                        self.critic_network.train_length: 1,
                        }
@@ -1225,7 +1225,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.internal_state: internal_state,
                        self.actor_network.prev_actions: np.reshape(a, (1, 2)),
                        self.actor_network.rnn_state_in: rnn_state_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
+                       # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.sigma_impulse_combined: self.impulse_sigma,
                        self.actor_network.sigma_angle_combined: self.angle_sigma,
                        self.actor_network.batch_size: 1,
@@ -1240,7 +1240,7 @@ class ContinuousPPO(BasePPO):
                        self.critic_network.internal_state: internal_state,
                        self.critic_network.prev_actions: np.reshape(a, (1, 2)),
                        self.critic_network.rnn_state_in: rnn_state_critic,
-                       self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
+                       # self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
                        self.critic_network.batch_size: 1,
                        self.critic_network.train_length: 1,
                        }
@@ -1453,7 +1453,7 @@ class ContinuousPPO(BasePPO):
                                self.critic_network.prev_actions: previous_action_batch,
                                self.critic_network.internal_state: internal_state_batch,
                                self.critic_network.rnn_state_in: critic_rnn_state_slice,
-                               self.critic_network.rnn_state_in_ref: critic_rnn_state_ref_slice,
+                               # self.critic_network.rnn_state_in_ref: critic_rnn_state_ref_slice,
 
                                self.critic_network.returns_placeholder: return_batch,
 
@@ -1472,7 +1472,7 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.prev_actions: previous_action_batch,
                                self.actor_network.internal_state: internal_state_batch,
                                self.actor_network.rnn_state_in: actor_rnn_state_slice,
-                               self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
+                               # self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
                                self.actor_network.sigma_impulse_combined: self.impulse_sigma,
                                self.actor_network.sigma_angle_combined: self.angle_sigma,
 
@@ -1567,7 +1567,7 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.prev_actions: previous_action_batch,
                                self.actor_network.internal_state: internal_state_batch,
                                self.actor_network.rnn_state_in: actor_rnn_state_slice,
-                               self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
+                               # self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
 
                                self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
                                self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
@@ -1660,7 +1660,7 @@ class ContinuousPPO(BasePPO):
                                self.critic_network.prev_actions: previous_action_batch,
                                self.critic_network.internal_state: internal_state_batch,
                                self.critic_network.rnn_state_in: critic_rnn_state_slice,
-                               self.critic_network.rnn_state_in_ref: critic_rnn_state_ref_slice,
+                               # self.critic_network.rnn_state_in_ref: critic_rnn_state_ref_slice,
 
                                self.critic_network.returns_placeholder: return_batch,
 
@@ -1679,7 +1679,7 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.prev_actions: previous_action_batch,
                                self.actor_network.internal_state: internal_state_batch,
                                self.actor_network.rnn_state_in: actor_rnn_state_slice,
-                               self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
+                               # self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
 
                                self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
                                self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
@@ -1740,7 +1740,7 @@ class ContinuousPPO(BasePPO):
                                self.critic_network.prev_actions: np.vstack(previous_action_slice),
                                self.critic_network.internal_state: np.vstack(internal_state_slice),
                                self.critic_network.rnn_state_in: critic_rnn_state_slice,
-                               self.critic_network.rnn_state_in_ref: critic_rnn_state_ref_slice,
+                               # self.critic_network.rnn_state_in_ref: critic_rnn_state_ref_slice,
 
                                self.critic_network.returns_placeholder: np.vstack(return_slice).flatten(),
 
@@ -1756,7 +1756,7 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.prev_actions: np.vstack(previous_action_slice),
                                self.actor_network.internal_state: np.vstack(internal_state_slice),
                                self.actor_network.rnn_state_in: actor_rnn_state_slice,
-                               self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
+                               # self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
                                self.actor_network.sigma_impulse_combined: self.impulse_sigma,
                                self.actor_network.sigma_angle_combined: self.angle_sigma,
 
