@@ -102,13 +102,10 @@ class BaseDQN:
 
         if self.environment_params["use_dynamic_network"]:
             self.main_QN = QNetworkDynamic(simulation=self.simulation,
-                                           # rnn_dim=self.learning_params['rnn_dim_shared'],
-                                           # rnn_cell=cell,
                                            my_scope='main',
                                            internal_states=internal_states,
                                            internal_state_names=internal_state_names,
                                            num_actions=self.learning_params['num_actions'],
-                                           # new_simulation=True,
                                            base_network_layers=self.learning_params[
                                                'base_network_layers'],
                                            modular_network_layers=self.learning_params[
@@ -119,13 +116,11 @@ class BaseDQN:
                                            reflected=self.learning_params['reflected'],
                                            )
             self.target_QN = QNetworkDynamic(simulation=self.simulation,
-                                             # rnn_dim=self.learning_params['rnn_dim_shared'],
-                                             # rnn_cell=cell,
+
                                              my_scope='target',
                                              internal_states=internal_states,
                                              internal_state_names=internal_state_names,
                                              num_actions=self.learning_params['num_actions'],
-                                             # new_simulation=True,
                                              base_network_layers=self.learning_params[
                                                  'base_network_layers'],
                                              modular_network_layers=self.learning_params[
@@ -136,12 +131,20 @@ class BaseDQN:
                                              reflected=self.learning_params['reflected'],
                                              )
         else:
-            self.main_QN = QNetwork(self.simulation, self.learning_params['rnn_dim_shared'], cell, 'main',
-                                    self.learning_params['num_actions'], internal_states=internal_states,
+            self.main_QN = QNetwork(simulation=self.simulation,
+                                    rnn_dim=self.learning_params['rnn_dim_shared'],
+                                    rnn_cell=cell,
+                                    my_scope='main',
+                                    num_actions=self.learning_params['num_actions'],
+                                    internal_states=internal_states,
                                     learning_rate=self.learning_params['learning_rate'],
                                     extra_layer=self.learning_params['extra_rnn'])
-            self.target_QN = QNetwork(self.simulation, self.learning_params['rnn_dim_shared'], cell_t, 'target',
-                                      self.learning_params['num_actions'], internal_states=internal_states,
+            self.target_QN = QNetwork(simulation=self.simulation,
+                                      rnn_dim=self.learning_params['rnn_dim_shared'],
+                                      rnn_cell=cell_t,
+                                      my_scope='target',
+                                      num_actions=self.learning_params['num_actions'],
+                                      internal_states=internal_states,
                                       learning_rate=self.learning_params['learning_rate'],
                                       extra_layer=self.learning_params['extra_rnn'])
 
@@ -268,7 +271,7 @@ class BaseDQN:
                            self.main_QN.prev_actions: [a],
                            self.main_QN.train_length: 1,
                            self.main_QN.rnn_state_in: rnn_state,
-                           self.main_QN.rnn_state_in_ref: rnn_state_ref,
+                           # self.main_QN.rnn_state_in_ref: rnn_state_ref,
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0,
                            self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -283,7 +286,7 @@ class BaseDQN:
                            self.main_QN.prev_actions: [a],
                            self.main_QN.train_length: 1,
                            self.main_QN.rnn_state_in: rnn_state,
-                           self.main_QN.rnn_state_in_ref: rnn_state_ref,
+                           # self.main_QN.rnn_state_in_ref: rnn_state_ref,
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0,
                            self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -477,7 +480,7 @@ class BaseDQN:
             self.main_QN.train_length: self.learning_params['trace_length'],
             self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
             self.main_QN.rnn_state_in: state_train,
-            self.main_QN.rnn_state_in_ref: state_train_ref,
+            # self.main_QN.rnn_state_in_ref: state_train_ref,
             self.main_QN.batch_size: self.learning_params['batch_size'],
             self.main_QN.exp_keep: 1.0,
             self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -490,7 +493,7 @@ class BaseDQN:
             self.target_QN.train_length: self.learning_params['trace_length'],
             self.target_QN.internal_state: np.vstack(train_batch[:, 3]),
             self.target_QN.rnn_state_in: state_train,
-            self.target_QN.rnn_state_in_ref: state_train_ref,
+            # self.target_QN.rnn_state_in_ref: state_train_ref,
             self.target_QN.batch_size: self.learning_params['batch_size'],
             self.target_QN.exp_keep: 1.0,
             self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -510,7 +513,7 @@ class BaseDQN:
                                  self.main_QN.prev_actions: np.expand_dims(np.hstack(([3], train_batch[:-1, 1])), 1)[:, 0],
                                  self.main_QN.train_length: self.learning_params['trace_length'],
                                  self.main_QN.rnn_state_in: state_train,
-                                 self.main_QN.rnn_state_in_ref: state_train_ref,
+                                 # self.main_QN.rnn_state_in_ref: state_train_ref,
                                  self.main_QN.batch_size: self.learning_params['batch_size'],
                                  self.main_QN.exp_keep: 1.0,
                                  self.main_QN.learning_rate: self.learning_params["learning_rate"],
