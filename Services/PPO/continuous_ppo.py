@@ -90,19 +90,19 @@ class ContinuousPPO(BasePPO):
                 #                                                   )
                 if self.learning_params["beta_distribution"]:
                     self.actor_network = PPONetworkActorMultivariateBetaNormal2(simulation=self.simulation,
-                                                                      rnn_dim=self.learning_params['rnn_dim_shared'],
-                                                                      rnn_cell=actor_cell,
-                                                                      my_scope='actor',
-                                                                      internal_states=internal_states,
-                                                                      max_impulse=self.environment_params[
-                                                                          'max_impulse'],
-                                                                      max_angle_change=self.environment_params[
-                                                                          'max_angle_change'],
-                                                                      clip_param=self.environment_params['clip_param'],
-                                                                      input_sigmas=self.learning_params['input_sigmas'],
-                                                                      new_simulation=self.new_simulation,
-                                                                      impose_action_mask=self.environment_params[
-                                                                          'impose_action_mask'],
+                                                                                rnn_dim=self.learning_params['rnn_dim_shared'],
+                                                                                rnn_cell=actor_cell,
+                                                                                my_scope='actor',
+                                                                                internal_states=internal_states,
+                                                                                max_impulse=self.environment_params[
+                                                                                    'max_impulse'],
+                                                                                max_angle_change=self.environment_params[
+                                                                                    'max_angle_change'],
+                                                                                clip_param=self.environment_params['clip_param'],
+                                                                                input_sigmas=self.learning_params['input_sigmas'],
+                                                                                new_simulation=self.new_simulation,
+                                                                                impose_action_mask=self.environment_params[
+                                                                                    'impose_action_mask'],
                                                                       )
 
                 else:
@@ -282,7 +282,7 @@ class ContinuousPPO(BasePPO):
         self.buffer.make_desired_recordings(network_layers)
 
         return given_reward, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, \
-               0, 0
+               0, 0, action
 
     def _assay_step_loop_multivariate2_old(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                       rnn_state_critic,
@@ -362,7 +362,7 @@ class ContinuousPPO(BasePPO):
                                          0, 0, 0)
 
         return given_reward, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, \
-               0, 0
+               0, 0, action
 
     def _assay_step_loop_multivariate(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                       rnn_state_critic,
@@ -457,7 +457,7 @@ class ContinuousPPO(BasePPO):
                                          conv2r_critic, conv3r_critic, conv4r_critic)
 
         return given_reward, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, \
-               updated_rnn_state_critic, updated_rnn_state_critic_ref
+               updated_rnn_state_critic, updated_rnn_state_critic_ref, action
 
     def _assay_step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                          rnn_state_critic_ref):
@@ -560,11 +560,12 @@ class ContinuousPPO(BasePPO):
                                          conv2r_critic, conv3r_critic, conv4r_critic)
 
         return given_reward, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, \
-               updated_rnn_state_critic, updated_rnn_state_critic_ref
+               updated_rnn_state_critic, updated_rnn_state_critic_ref, action
 
     def _step_loop_multivariate_beta_sbe_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                                rnn_state_critic,
                                                rnn_state_critic_ref):
+
 
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.environment_params['max_impulse'],
@@ -656,7 +657,7 @@ class ContinuousPPO(BasePPO):
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, 0, 0, 0, 0)
 
         self.total_steps += 1
-        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0
+        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0, action
 
     def _step_loop_multivariate_beta_sbe_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                                rnn_state_critic,
@@ -734,7 +735,7 @@ class ContinuousPPO(BasePPO):
                                                              )
 
         self.total_steps += 1
-        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0
+        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0, action
 
     def _step_loop_multivariate_sbe_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                                rnn_state_critic,
@@ -860,7 +861,7 @@ class ContinuousPPO(BasePPO):
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, 0, 0, 0, 0)
 
         self.total_steps += 1
-        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0
+        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0, action
 
     def _step_loop_multivariate_sbe_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                                rnn_state_critic,
@@ -980,7 +981,7 @@ class ContinuousPPO(BasePPO):
                                                              )
 
         self.total_steps += 1
-        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0
+        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0, action
 
     def _step_loop_multivariate_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                               rnn_state_critic,
@@ -1072,7 +1073,8 @@ class ContinuousPPO(BasePPO):
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
 
         self.total_steps += 1
-        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
+        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, \
+               updated_rnn_state_critic, updated_rnn_state_critic_ref, action
 
     def _step_loop_multivariate_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                                  rnn_state_critic,
@@ -1133,7 +1135,8 @@ class ContinuousPPO(BasePPO):
                                  critic_rnn_state_ref=rnn_state_critic_ref,
                                  )
         self.total_steps += 1
-        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
+        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, \
+               updated_rnn_state_critic, updated_rnn_state_critic_ref, action
 
     def _step_loop_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                       rnn_state_critic,
@@ -1206,7 +1209,9 @@ class ContinuousPPO(BasePPO):
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
 
         self.total_steps += 1
-        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
+
+        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, \
+               updated_rnn_state_critic, updated_rnn_state_critic_ref, action
 
     def _step_loop_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                          rnn_state_critic,
@@ -1269,7 +1274,8 @@ class ContinuousPPO(BasePPO):
                                  critic_rnn_state_ref=rnn_state_critic_ref,
                                  )
         self.total_steps += 1
-        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, updated_rnn_state_critic, updated_rnn_state_critic_ref
+        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, \
+               updated_rnn_state_critic, updated_rnn_state_critic_ref, action
 
     def get_batch_multivariate(self, batch, observation_buffer, internal_state_buffer, action_buffer,
                                previous_action_buffer,

@@ -113,7 +113,7 @@ class BaseNetwork:
 
         self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell,
                                                              dtype=tf.float32,
-                                                             initial_state=self.rnn_state_in_ref,
+                                                             initial_state=self.rnn_state_in,#_ref,
                                                              scope=my_scope + '_rnn')  # No need to reuse as takes rnn_cell as argument for both.
         self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim])
         self.rnn_output_ref = self.rnn_ref

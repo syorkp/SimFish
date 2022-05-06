@@ -153,7 +153,7 @@ class BasePPO:
             #     ps = pstats.Stats(self.profile)
             #     ps.sort_stats("tottime")
             #     ps.print_stats(20)
-            r, internal_state, o, d, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic, rnn_state_critic_ref = self.step_loop(
+            r, internal_state, o, d, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic, rnn_state_critic_ref, a = self.step_loop(
                 o=o,
                 internal_state=internal_state,
                 a=a,
