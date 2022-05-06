@@ -141,7 +141,7 @@ env = {
        'prey_fluid_displacement': False,
        'prey_jump': False,
        'differential_prey': True,
-       'prey_cloud_num': 4,
+       'prey_cloud_num': 5,
 
        'predator_mass': 10.,
        'predator_inertia': 40.,
@@ -310,25 +310,26 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_13"
+scaffold_name = "ppo_scaffold_14"
 
 
 changes = [
-
        # 1) Rewards and Penalties
        ["PCI", 0.3, "wall_reflection", False],
+]
 
+changes += build_changes_list_gradual("PCI", 0.3, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25, 8)
+changes += build_changes_list_gradual("PCI", 0.3, "action_reward_scaling", env["action_reward_scaling"], 10000, 4)
+
+changes += [
        # 2) Visual System
        ["PCI", 0.3, "red_photoreceptor_rf_size", 0.0133 * 2],
        ["PCI", 0.3, "uv_photoreceptor_rf_size", 0.0133 * 2],
        ["PCI", 0.3, "red_photoreceptor_rf_size", 0.0133 * 1],
        ["PCI", 0.3, "uv_photoreceptor_rf_size", 0.0133 * 1],
-       ["PCI", 0.4, "shot_noise", True],
-       ["PCI", 0.4, "bkg_scatter", 0.1],
+       ["PCI", 0.3, "shot_noise", True],
+       ["PCI", 0.3, "bkg_scatter", 0.1],
 ]
-
-changes += build_changes_list_gradual("PCI", 0.4, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25, 8)
-changes += build_changes_list_gradual("PCI", 0.4, "action_reward_scaling", env["action_reward_scaling"], 10000, 4)
 
 
 changes += build_changes_list_gradual("PCI", 0.4, "light_gain", env["light_gain"], 125.7, 4)
