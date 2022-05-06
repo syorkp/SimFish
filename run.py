@@ -3269,7 +3269,7 @@ dqn_scaffold_training_config_dn_12c = [
         "Continuous Actions": False,
         "Learning Algorithm": "DQN",
         "Priority": 1,
-        "Using GPU": False,
+        "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": False,
