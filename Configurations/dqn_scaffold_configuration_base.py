@@ -192,7 +192,7 @@ env = {
        'energy_state': True,
        'in_light': True,
        'salt': False,  # Inclusion of olfactory salt input and salt death.
-       "use_dynamic_network": True,
+       "use_dynamic_network": False,
        'salt_concentration_decay': 0.001,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
        'max_salt_damage': 0.02,  # Salt damage at centre of source.
@@ -309,14 +309,14 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_dn_12"
+scaffold_name = "dqn_scaffold_13"
 
 # 2-9
 changes = [
 
        # 1) Rewards and Penalties
-       ["PCI", 0.2, "capture_swim_extra_cost", 25],
-       ["PCI", 0.2, "wall_reflection", True],
+       ["PCI", 0.2, "capture_swim_extra_cost", 50],
+       ["PCI", 0.2, "wall_reflection", False],
 
        # 2) Visual System
        ["PCI", 0.2, "red_photoreceptor_rf_size", 0.0133 * 2],
@@ -336,17 +336,18 @@ changes += [["PCI", 0.3, "max_epLength", 2000, "do_to_params"]]
 
 # 4) Prey Capture 15-35
 changes += [["PCI", 0.4, "prey_fluid_displacement", True]]
-changes += build_changes_list_gradual("PCI", 0.5, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
-changes += build_changes_list_gradual("PCI", 0.5, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25, 8)
-changes += build_changes_list_gradual("PCI", 0.5, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (17*np.pi)/180, 8)
+changes += build_changes_list_gradual("PCI", 0.4, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
+changes += build_changes_list_gradual("PCI", 0.4, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25, 8)
+changes += build_changes_list_gradual("PCI", 0.4, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (17*np.pi)/180, 8)
+changes += [["PCI", 0.4, "prey_num", 20]]
 
 # 5) Predator avoidance
-changes += [["PCI", 0.5, "probability_of_predator", 0.01]]
+changes += [["PCI", 0.4, "probability_of_predator", 0.01]]
 # TODO: Complex predator
 
 # 6) Other Behaviours
 changes += [["PAI", 500.0, "salt", True]]
-changes += [["PCI", 0.5, "current_setting", "Circular"]]
+changes += [["PCI", 0.4, "current_setting", "Circular"]]
 
 # 7) Final Features
 changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_x", env["impulse_effect_noise_sd_x"], 0.98512558, 8)
