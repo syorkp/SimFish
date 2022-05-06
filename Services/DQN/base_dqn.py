@@ -182,6 +182,8 @@ class BaseDQN:
             all_actions.append(a)
             episode_buffer.append(np.reshape(np.array([o, a, r, internal_state, o1, d]), [1, 6]))
             total_episode_reward += r
+            if np.isnan(r):
+                x = True
 
             o = o1
             if self.total_steps > self.pre_train_steps:
