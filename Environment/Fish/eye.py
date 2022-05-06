@@ -306,7 +306,7 @@ class Eye:
                 self.pad_observation()
             else:
                 self.readings = np.concatenate(
-                    (self.red_readings[:, 0:1], self.uv_readings, self.red_readings[:, 1:]), axis=1)
+                    (self.red_readings[:, 0:1].get(), self.uv_readings.get(), self.red_readings[:, 1:].get()), axis=1)
 
     def _read(self, masked_arena_pixels, eye_x, eye_y, channel_angles_surrounding, n_channels):
         """Lines method to return pixel sum for all points for each photoreceptor, over its segment."""
@@ -562,16 +562,16 @@ class Eye:
     def add_noise_to_readings(self, readings):
         """As specified, adds shot, read, and/or dark noise to readings."""
         if self.env_variables["shot_noise"]:
-            photons = np.random.poisson(readings)
-            shot_noise_difference = np.abs(readings - photons)
-            snr = 1 - np.mean(shot_noise_difference/(photons+1), axis=1)
+            photons = self.chosen_math_library.random.poisson(readings)
+            shot_noise_difference = self.chosen_math_library.abs(readings - photons)
+            snr = 1 - self.chosen_math_library.mean(shot_noise_difference/(photons+1), axis=1)
         else:
             photons = readings
 
         if self.env_variables['read_noise_sigma'] > 0:
-            noise = np.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
+            noise = self.chosen_math_library.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
             photons += noise.astype(int)
-            photons = np.clip(photons, 0, 255)
+            photons = self.chosen_math_library.clip(photons, 0, 255)
 
         # if photons.shape[1] == 1:
         #     print(f"Max photons: {np.max(readings[:, 0])}")
@@ -586,14 +586,14 @@ class Eye:
 
 
         if self.env_variables["isomerization_frequency"] > 0:
-            dark_noise_events = np.random.choice([0, 1], size=readings.size,
+            dark_noise_events = self.chosen_math_library.random.choice([0, 1], size=readings.size,
                                                                        p=[1-self.isomerization_probability,
                                                                           self.isomerization_probability]
                                                                        ).astype(float)
-            variability = np.random.rand(readings.size)
+            variability = self.chosen_math_library.random.rand(readings.size)
             dark_noise_events *= variability
             dark_noise_events = dark_noise_events * self.env_variables['max_isomerization_size']
-            dark_noise_events = np.reshape(dark_noise_events, readings.shape)
+            dark_noise_events = self.chosen_math_library.reshape(dark_noise_events, readings.shape)
             photons += dark_noise_events
 
         return photons
