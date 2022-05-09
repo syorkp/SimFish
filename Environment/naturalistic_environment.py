@@ -208,7 +208,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             print("Fish returned to location nearest wall.")
             new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 0, self.env_variables["width"]),
                                         np.clip(self.fish.body.position[1], 0, self.env_variables["height"]))
-            print(new_position)
+            # print(new_position)
             self.fish.body.position = new_position
 
         self.num_steps += 1
