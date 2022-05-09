@@ -167,6 +167,8 @@ class TrainingService(BaseService):
                 self.sigma_total_steps = 0
             if self.learning_params["epsilon_greedy"]:
                 self.epsilon = self.learning_params["startE"]
+                self.step_drop = (self.learning_params['startE'] - self.learning_params['endE']) / self.learning_params[
+                    'anneling_steps']
         else:
             self.switched_configuration = False
 

@@ -191,7 +191,7 @@ env = {
        # Sensory inputs
        'energy_state': True,
        'in_light': True,
-       'salt': False,  # Inclusion of olfactory salt input and salt death.
+       'salt': True,  # Inclusion of olfactory salt input and salt death.
        "use_dynamic_network": False,
        'salt_concentration_decay': 0.001,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
@@ -309,11 +309,12 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_13"
+scaffold_name = "dqn_scaffold_14"
 
 # 2-9
 changes = [
 
+       ["PCI", 0.2, "anneling_steps", 500000],
        # 1) Rewards and Penalties
        ["PCI", 0.2, "capture_swim_extra_cost", 50],
        ["PCI", 0.2, "wall_reflection", False],
@@ -340,13 +341,15 @@ changes += build_changes_list_gradual("PCI", 0.4, "fish_mouth_size", env["fish_m
 changes += build_changes_list_gradual("PCI", 0.4, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25, 8)
 changes += build_changes_list_gradual("PCI", 0.4, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (17*np.pi)/180, 8)
 changes += [["PCI", 0.4, "prey_num", 20]]
+changes += [["PCI", 0.4, "anneling_steps", 1000000]]
 
 # 5) Predator avoidance
 changes += [["PCI", 0.4, "probability_of_predator", 0.01]]
 # TODO: Complex predator
+changes += [["PCI", 0.4, "anneling_steps", 500000]]
 
 # 6) Other Behaviours
-changes += [["PAI", 500.0, "salt", True]]
+# changes += [["PAI", 500.0, "salt", True]]
 changes += [["PCI", 0.4, "current_setting", "Circular"]]
 
 # 7) Final Features
