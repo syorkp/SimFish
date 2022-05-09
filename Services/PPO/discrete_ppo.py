@@ -30,7 +30,7 @@ class DiscretePPO(BasePPO):
         Create the main and target Q networks, according to the configuration parameters.
         :return: The main network and the target network graphs.
         """
-        actor_cell, internal_states = BasePPO.create_network(self)
+        actor_cell, internal_states, internal_state_names = BasePPO.create_network(self)
 
         if self.sb_emulator:
             self.actor_network = PPONetworkActorDiscreteEmulator(simulation=self.simulation,
@@ -180,7 +180,7 @@ class DiscretePPO(BasePPO):
                            self.actor_network.rnn_state_in: rnn_state_actor,
                            self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                            self.actor_network.batch_size: 1,
-                           self.actor_network.trainLength: 1,
+                           self.actor_network.train_length: 1,
                            }
             )
             if np.random.rand(1) < self.e:
@@ -201,7 +201,7 @@ class DiscretePPO(BasePPO):
                            self.actor_network.rnn_state_in: rnn_state_actor,
                            self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                            self.actor_network.batch_size: 1,
-                           self.actor_network.trainLength: 1,
+                           self.actor_network.train_length: 1,
                            }
             )
 
@@ -211,7 +211,7 @@ class DiscretePPO(BasePPO):
             frame_buffer=self.frame_buffer,
             save_frames=self.save_frames,
             activations=sa)
-
+        print(action)
         # Update buffer
         self.buffer.add_training(observation=o,
                                  internal_state=internal_state,
@@ -225,7 +225,7 @@ class DiscretePPO(BasePPO):
                                  critic_rnn_state_ref=rnn_state_critic_ref,
                                  )
         self.total_steps += 1
-        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0
+        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0, action
 
     def _training_step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                             rnn_state_critic_ref):
@@ -580,7 +580,7 @@ class DiscretePPO(BasePPO):
                                self.actor_network.returns_placeholder: return_batch,
                                self.actor_network.old_value_placeholder: previous_value_batch,
 
-                               self.actor_network.trainLength: self.learning_params["trace_length"],
+                               self.actor_network.train_length: self.learning_params["trace_length"],
                                self.actor_network.batch_size: current_batch_size,
                                self.actor_network.learning_rate: self.learning_params[
                                                                      "learning_rate_actor"] * current_batch_size

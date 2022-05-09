@@ -3484,7 +3484,43 @@ dqn_scaffold_dn_14a = [
     },
 ]
 
+ppo_discrete_14 = [
+    {
+        "Model Name": "ppo_discrete_14",
+        "Environment Name": "ppo_discrete_14",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "ppo_discrete_14",
+        "Environment Name": "ppo_discrete_14",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_training_egf_min_ms_wr_csr_10a, parallel_jobs=4)
+manager = TrialManager(ppo_discrete_14, parallel_jobs=4)
 manager.run_priority_loop()
