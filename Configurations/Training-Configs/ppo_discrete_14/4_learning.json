@@ -2,7 +2,7 @@
     "batch_size": 1,
     "trace_length": 50,
     "num_episodes": 50000,
-    "max_epLength": 50,
+    "max_epLength": 1000,
     "epsilon_greedy": false,
     "epsilon_greedy_scaffolding": true,
     "startE": 0.2,
