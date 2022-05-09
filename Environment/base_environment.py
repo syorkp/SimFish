@@ -582,6 +582,33 @@ class BaseEnvironment:
         return True
 
     def _touch_wall_new(self, arbiter, space, data):
+        position_x = self.fish.body.position[0]
+        position_y = self.fish.body.position[1]
+
+        if position_x < 0:
+            new_position_x = 1
+            move_fish_x = True
+        elif position_x > self.env_variables["width"] - 1:
+            new_position_x = self.env_variables["width"] - 2
+            move_fish_x = True
+
+        if position_y < 0:
+            new_position_y = 1
+            move_fish_y = True
+        elif position_y > self.env_variables["height"] - 1:
+            new_position_y = self.env_variables["height"] - 2
+            move_fish_y = True
+
+        if "new_position_x" in locals():
+            new_position = pymunk.Vec2d(new_position_x, self.fish.body.position[1])
+            self.fish.body.position = new_position
+            self.fish.body.velocity = (0, 0)
+
+        if "new_position_y" in locals():
+            new_position = pymunk.Vec2d(self.fish.body.position[0], new_position_y)
+            self.fish.body.position = new_position
+            self.fish.body.velocity = (0, 0)
+
         self.fish.touched_edge = True
         self.fish.touched_edge_this_step = True
         return True
