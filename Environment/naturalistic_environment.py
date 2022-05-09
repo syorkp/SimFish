@@ -1,6 +1,7 @@
 import numpy as np
 import cupy as cp
 import matplotlib.pyplot as plt
+import pymunk
 
 from Environment.base_environment import BaseEnvironment
 from Environment.Fish.fish import Fish
@@ -204,8 +205,11 @@ class NaturalisticEnvironment(BaseEnvironment):
         # Resolve if fish falls out of bounds.
         if self.fish.body.position[0] > self.env_variables["width"] - 1 or self.fish.body.position[1] > \
                 self.env_variables["height"] - 1:
-            print("Fish out of bounds, resetting.")
-            return None, 0, 0, True, frame_buffer
+            print("Fish returned to location nearest wall.")
+            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 0, self.env_variables["width"]),
+                                        np.clip(self.fish.body.position[1], 0, self.env_variables["height"]))
+            print(new_position)
+            self.fish.body.position = new_position
 
         self.num_steps += 1
         self.board.erase(bkg=self.env_variables['bkg_scatter'])

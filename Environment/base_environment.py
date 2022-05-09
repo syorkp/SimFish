@@ -136,6 +136,7 @@ class BaseEnvironment:
             self.salt_gradient = None
             self.xp, self.yp = np.arange(self.env_variables['width']), np.arange(self.env_variables['height'])
             self.salt_damage_history = []
+            self.salt_location = None
 
         if self.env_variables["prey_reproduction_mode"]:
             self.prey_ages = []
@@ -238,6 +239,7 @@ class BaseEnvironment:
     def reset_salt_gradient(self):
         salt_source_x = np.random.randint(0, self.env_variables['width'] - 1)
         salt_source_y = np.random.randint(0, self.env_variables['height'] - 1)
+        self.salt_location = [salt_source_x, salt_source_y]
         salt_distance = (((salt_source_x - self.xp[:, None]) ** 2 + (
                 salt_source_y - self.yp[None, :]) ** 2) ** 0.5)  # Measure of distance from source at every point.
         self.salt_gradient = np.exp(-self.env_variables["salt_concentration_decay"] * salt_distance) * \
@@ -476,6 +478,12 @@ class BaseEnvironment:
             else:
                 self.board.circle(self.predator_body.position, self.env_variables['predator_size'],
                                   self.predator_shape.color, visualisation)
+
+        # For displaying location of salt source
+        if visualisation:
+            if self.env_variables["salt"]:
+                self.board.show_salt_location(self.salt_location)
+
         # For creating a screen around prey to test.
         if self.background:
             if self.background == "Green":
@@ -546,9 +554,9 @@ class BaseEnvironment:
 
     def touch_wall(self, arbiter, space, data):
         if self.new_simulation and not self.env_variables["wall_reflection"]:
-            self._touch_wall_new(arbiter, space, data)
+            return self._touch_wall_new(arbiter, space, data)
         else:
-            self._touch_wall(arbiter, space, data)
+            return self._touch_wall(arbiter, space, data)
 
     def _touch_wall(self, arbiter, space, data):
         # print(f"Fish touched wall: {self.fish.body.position}")

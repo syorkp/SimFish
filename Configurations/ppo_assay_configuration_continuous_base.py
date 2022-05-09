@@ -283,7 +283,7 @@ env = {
        'action_reward_scaling': 0,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
        'consumption_reward_scaling': 100000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
-       'wall_reflection': True,
+       'wall_reflection': False,
        'wall_touch_penalty': 0.2,
 
        # Currents
@@ -305,8 +305,6 @@ env = {
        # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
 
 }
-
-
 
 # Equal to that given in the file name.
 environment_name = "continuous_assay"
