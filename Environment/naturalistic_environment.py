@@ -203,12 +203,11 @@ class NaturalisticEnvironment(BaseEnvironment):
                         self.remove_prey(i)
 
         # Resolve if fish falls out of bounds.
-        if self.fish.body.position[0] > self.env_variables["width"] - 1 or self.fish.body.position[1] > \
+        if self.fish.body.position[0] < 1 or self.fish.body.position[1] < 1 or self.fish.body.position[0] > self.env_variables["width"] - 1 or self.fish.body.position[1] > \
                 self.env_variables["height"] - 1:
             print("Fish returned to location nearest wall.")
-            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 0, self.env_variables["width"]),
-                                        np.clip(self.fish.body.position[1], 0, self.env_variables["height"]))
-            # print(new_position)
+            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 5, self.env_variables["width"]-1),
+                                        np.clip(self.fish.body.position[1], 5, self.env_variables["height"]-1))
             self.fish.body.position = new_position
 
         self.num_steps += 1
