@@ -211,7 +211,7 @@ class DiscretePPO(BasePPO):
             frame_buffer=self.frame_buffer,
             save_frames=self.save_frames,
             activations=sa)
-        print(action)
+
         # Update buffer
         self.buffer.add_training(observation=o,
                                  internal_state=internal_state,
