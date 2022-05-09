@@ -189,7 +189,7 @@ env = {
        # Sensory inputs
        'energy_state': False,
        'in_light': False,
-       'salt': False,  # Inclusion of olfactory salt input and salt death.
+       'salt': True,  # Inclusion of olfactory salt input and salt death.
        "use_dynamic_network": False,
        'salt_concentration_decay': 0.001,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
