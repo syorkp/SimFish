@@ -168,6 +168,14 @@ class NaturalisticEnvironment(BaseEnvironment):
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5) / 255.)
                     plt.pause(0.0001)
 
+        # Resolve if fish falls out of bounds.
+        if self.fish.body.position[0] < 1 or self.fish.body.position[1] < 1 or self.fish.body.position[0] > self.env_variables["width"] - 1 or self.fish.body.position[1] > \
+                self.env_variables["height"] - 1:
+            print("Fish returned to location nearest wall.")
+            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 5, self.env_variables["width"]-1),
+                                        np.clip(self.fish.body.position[1], 5, self.env_variables["height"]-1))
+            self.fish.body.position = new_position
+
         if self.new_simulation:
             # Energy level
             if self.env_variables["energy_state"]:
@@ -194,6 +202,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             if self.fish.touched_edge_this_step:
                 reward -= self.env_variables["wall_touch_penalty"]
                 self.fish.touched_edge_this_step = False
+
             if self.env_variables["prey_reproduction_mode"] and self.env_variables["differential_prey"]:
                 self.reproduce_prey()
                 self.prey_ages = [age + 1 for age in self.prey_ages]
@@ -202,13 +211,6 @@ class NaturalisticEnvironment(BaseEnvironment):
                         print("Removed prey")
                         self.remove_prey(i)
 
-        # Resolve if fish falls out of bounds.
-        if self.fish.body.position[0] < 1 or self.fish.body.position[1] < 1 or self.fish.body.position[0] > self.env_variables["width"] - 1 or self.fish.body.position[1] > \
-                self.env_variables["height"] - 1:
-            print("Fish returned to location nearest wall.")
-            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 5, self.env_variables["width"]-1),
-                                        np.clip(self.fish.body.position[1], 5, self.env_variables["height"]-1))
-            self.fish.body.position = new_position
 
         self.num_steps += 1
         self.board.erase(bkg=self.env_variables['bkg_scatter'])
