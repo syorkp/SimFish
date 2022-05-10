@@ -483,7 +483,10 @@ class Eye:
 
         same_values = (angles == channel_angles_surrounding) * 1
         selected_intersections = valid_intersection_coordinates[same_values == 1]
-        selected_intersections = self.chosen_math_library.reshape(selected_intersections, (n_channels, self.n, 1, 2))
+        try:
+            selected_intersections = self.chosen_math_library.reshape(selected_intersections, (n_channels, self.n, 1, 2))
+        except ValueError:
+            print(f"Eye position: {eye_position}")
 
         eye_position_full = self.chosen_math_library.tile(eye_position, (n_channels, self.n, 1, 1))
         vertices = self.chosen_math_library.concatenate((eye_position_full, selected_intersections), axis=2)
