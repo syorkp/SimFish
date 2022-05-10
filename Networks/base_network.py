@@ -120,6 +120,6 @@ class BaseNetwork:
 
     @staticmethod
     def bounded_output(x, lower, upper):
-        scale = upper - lower
+        scale = upper - loweraa
         return scale * tf.nn.sigmoid(x) + lower
 
