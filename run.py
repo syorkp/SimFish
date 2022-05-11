@@ -3521,10 +3521,6 @@ ppo_discrete_14 = [
     },
 ]
 
-ppo_sanity_check = [
-
-]
-
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_15a, parallel_jobs=4)
+manager = TrialManager(ppo_scaffold_15b, parallel_jobs=4)
 manager.run_priority_loop()

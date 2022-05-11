@@ -60,7 +60,7 @@ class PPOTrainingServiceDiscrete2(TrainingService, DiscretePPO):
             'anneling_steps']
 
         self.buffer = PPOBufferDiscrete2(gamma=self.learning_params["gamma"], lmbda=self.learning_params["lambda"], batch_size=self.learning_params["batch_size"],
-                                        train_length=self.learning_params["trace_length"], assay=False, debug=False)
+                                         train_length=self.learning_params["trace_length"], assay=False, debug=False)
 
         if self.learning_params["epsilon_greedy"]:
             self.epsilon_greedy = True
