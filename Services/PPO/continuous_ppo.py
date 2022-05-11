@@ -240,6 +240,7 @@ class ContinuousPPO(BasePPO):
                        # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
                        self.actor_network.train_length: 1,
+                       self.actor_network.entropy_coefficient: self.learning_params["lambda_entropy"],
                        }
         )
 
@@ -316,6 +317,7 @@ class ContinuousPPO(BasePPO):
                        # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
                        self.actor_network.train_length: 1,
+                       self.actor_network.entropy_coefficient: self.learning_params["lambda_entropy"],
                        }
         )
 
@@ -763,6 +765,7 @@ class ContinuousPPO(BasePPO):
                        # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
                        self.actor_network.train_length: 1,
+                       self.actor_network.entropy_coefficient: self.learning_params["lambda_entropy"],
                        }
         )
 
@@ -888,6 +891,7 @@ class ContinuousPPO(BasePPO):
                        # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
                        self.actor_network.train_length: 1,
+                       self.actor_network.entropy_coefficient: self.learning_params["lambda_entropy"],
                        }
         )
         if self.epsilon_greedy:

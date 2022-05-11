@@ -196,7 +196,7 @@ class PPONetworkActorDiscreteEmulator(BaseNetwork):
         self.entropy = tf.reduce_mean(self.action_distribution.entropy())  # TODO: works with new distribution?
 
         # Combined loss
-        self.entropy_coefficient = 0.01
+        self.entropy_coefficient = tf.placeholder(dtype=tf.float32, name="entropy_coefficient")  # 0.01
         self.value_coefficient = 0.5
         self.max_gradient_norm = 0.5
 

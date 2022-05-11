@@ -3484,10 +3484,10 @@ dqn_scaffold_dn_14a = [
     },
 ]
 
-ppo_discrete_14 = [
+ppo_discrete_eg_15 = [
     {
-        "Model Name": "ppo_discrete_14",
-        "Environment Name": "ppo_discrete_14",
+        "Model Name": "ppo_discrete_eg_15",
+        "Environment Name": "ppo_discrete_eg_15",
         "Trial Number": 1,
         "Run Mode": "Training",
         "Tethered": False,
@@ -3503,8 +3503,8 @@ ppo_discrete_14 = [
         "Profile Speed": False,
     },
     {
-        "Model Name": "ppo_discrete_14",
-        "Environment Name": "ppo_discrete_14",
+        "Model Name": "ppo_discrete_eg_15",
+        "Environment Name": "ppo_discrete_eg_15",
         "Trial Number": 2,
         "Run Mode": "Training",
         "Tethered": False,
@@ -3522,5 +3522,5 @@ ppo_discrete_14 = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_15a, parallel_jobs=4)
+manager = TrialManager(ppo_discrete_eg_15, parallel_jobs=4)
 manager.run_priority_loop()

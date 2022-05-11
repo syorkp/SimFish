@@ -37,6 +37,7 @@ params = {
        'rnn_state_computation': False,
        'learning_rate_actor': 0.000001,  # Formerly 0.000001
        'learning_rate_critic': 0.000001,  # Formerly 0.000001
+       'lambda_entropy': 0.01,
 
        # Learning (PPO Continuous Only)
        'multivariate': True,

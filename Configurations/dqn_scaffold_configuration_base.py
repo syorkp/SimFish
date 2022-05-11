@@ -38,6 +38,7 @@ params = {
        'n_updates_per_iteration': 4,
        'rnn_state_computation': False,
        'learning_rate': 0.0001,
+       'lambda_entropy': 0.01,
 
        # Learning (PPO Continuous Only)
        'multivariate': False,

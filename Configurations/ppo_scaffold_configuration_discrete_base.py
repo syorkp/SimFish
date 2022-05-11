@@ -18,7 +18,7 @@ params = {
        'trace_length': 50,  # How long each experience trace will be when training
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
        'max_epLength': 1000,  # The max allowed length of our episode.
-       'epsilon_greedy': False,
+       'epsilon_greedy': True,
        'epsilon_greedy_scaffolding': True,
        'startE': 0.2,  # Starting chance of random action
        'endE': 0.01,  # Final chance of random action
@@ -36,6 +36,7 @@ params = {
        'rnn_state_computation': False,
        'learning_rate_actor': 0.000001,  # Formerly 0.000001
        'learning_rate_critic': 0.000001,  # Formerly 0.000001
+       'lambda_entropy': 0.01,
 
        # Learning (PPO Continuous Only)
        'multivariate': False,
@@ -488,7 +489,7 @@ env = {
 #           'input_sigmas': True
 #           }
 
-scaffold_name = "ppo_discrete_14"
+scaffold_name = "ppo_discrete_eg_15"
 
 
 changes = [
