@@ -286,7 +286,7 @@ env = {
        'consumption_reward_scaling': 1000000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
        'wall_reflection': True,
-       'wall_touch_penalty': 0.2,
+       'wall_touch_penalty': 2,
 
        # Currents
        'current_setting': False,  # Current setting. If none, should be False. Current options: Circular, Linear

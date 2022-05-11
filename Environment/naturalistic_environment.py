@@ -172,8 +172,8 @@ class NaturalisticEnvironment(BaseEnvironment):
         if self.fish.body.position[0] < 1 or self.fish.body.position[1] < 1 or self.fish.body.position[0] > self.env_variables["width"] - 1 or self.fish.body.position[1] > \
                 self.env_variables["height"] - 1:
             print("Fish returned to location nearest wall.")
-            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 5, self.env_variables["width"]-5),
-                                        np.clip(self.fish.body.position[1], 5, self.env_variables["height"]-5))
+            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 5, self.env_variables["width"]-6),
+                                        np.clip(self.fish.body.position[1], 5, self.env_variables["height"]-6))
             self.fish.body.position = new_position
 
         if self.new_simulation:

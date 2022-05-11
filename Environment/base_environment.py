@@ -599,17 +599,17 @@ class BaseEnvironment:
         position_y = self.fish.body.position[1]
 
         if position_x < 0:
-            new_position_x = 1
+            new_position_x = 4
             move_fish_x = True
         elif position_x > self.env_variables["width"] - 1:
-            new_position_x = self.env_variables["width"] - 2
+            new_position_x = self.env_variables["width"] - 5
             move_fish_x = True
 
         if position_y < 0:
-            new_position_y = 1
+            new_position_y = 4
             move_fish_y = True
         elif position_y > self.env_variables["height"] - 1:
-            new_position_y = self.env_variables["height"] - 2
+            new_position_y = self.env_variables["height"] - 5
             move_fish_y = True
 
         if "new_position_x" in locals():
