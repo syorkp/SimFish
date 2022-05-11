@@ -110,7 +110,6 @@ class AssayService(BaseService):
         self.buffer.reset()
         print(f"Assay: {assay['assay id']} Completed")
 
-
     def log_stimuli(self):
         stimuli = self.simulation.stimuli_information
         to_save = {}

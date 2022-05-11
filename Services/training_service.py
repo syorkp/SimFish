@@ -236,6 +236,11 @@ class TrainingService(BaseService):
                 value=[tf.Summary.Value(tag="prey capture index (fraction caught)", simple_value=fraction_prey_caught)])
             self.writer.add_summary(prey_caught_summary, self.episode_number)
 
+            capture_success_rate = prey_caught / (prey_caught + self.simulation.failed_capture_attempts)
+            capture_success_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="capture success rate", simple_value=capture_success_rate)])
+            self.writer.add_summary(capture_success_summary, self.episode_number)
+
         if self.environment_params["probability_of_predator"] != 0:
             predator_avoided_index = predators_avoided / self.environment_params["probability_of_predator"]
             predators_avoided_summary = tf.Summary(

@@ -150,6 +150,9 @@ class BaseEnvironment:
         self.position_buffer = []
         self.fish_angle_buffer = []
 
+        # For logging
+        self.failed_capture_attempts = 0
+
     def reset(self):
         self.num_steps = 0
         self.fish.hungry = 0
@@ -221,6 +224,8 @@ class BaseEnvironment:
         self.action_buffer = []
         self.position_buffer = []
         self.fish_angle_buffer = []
+
+        self.failed_capture_attempts = 0
 
     def reproduce_prey(self):
         num_prey = len(self.prey_bodies)
@@ -815,15 +820,13 @@ class BaseEnvironment:
                         if self.env_variables["prey_reproduction_mode"]:
                             del self.prey_ages[i]
                     else:
-                        print("Failed capture \n")
-                        print(f"""Prey position: {prey_position}
-                        Fish position: {fish_position}
-                        Fish orientation: {fish_orientation}
-                        Computed orientation: {angle}
-                        """)
-
-                    # if self.fish.prev_action_impulse > 3:   # TODO: Make a hyperparameter.
-                    #     valid_capture = False
+                        self.failed_capture_attempts += 1
+                        # print("Failed capture \n")
+                        # print(f"""Prey position: {prey_position}
+                        # Fish position: {fish_position}
+                        # Fish orientation: {fish_orientation}
+                        # Computed orientation: {angle}
+                        # """)
 
             if valid_capture:
                 self.prey_caught += 1
@@ -832,6 +835,7 @@ class BaseEnvironment:
 
             return False
         else:
+            self.failed_capture_attempts += 1
             return True
 
     def touch_prey_old(self, arbiter, space, data):
