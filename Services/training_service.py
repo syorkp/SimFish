@@ -270,6 +270,14 @@ class TrainingService(BaseService):
                                         simple_value=mean_salt_damage_per_step)])
             self.writer.add_summary(salt_summary, self.episode_number)
 
+        if self.environment_params["dark_light_ratio"] > 0:
+            light_dominance = (1-self.environment_params["dark_light_ratio"]) / 0.5
+            fraction_in_light_normalised = np.mean(np.array(self.simulation.in_light_history) / light_dominance)
+            salt_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="Phototaxis Index",
+                                        simple_value=fraction_in_light_normalised)])
+            self.writer.add_summary(salt_summary, self.episode_number)
+
         if self.switched_configuration:
             configuration_summary = tf.Summary(
                 value=[tf.Summary.Value(tag="Configuration change", simple_value=self.configuration_index)]

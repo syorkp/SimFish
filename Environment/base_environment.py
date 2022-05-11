@@ -152,6 +152,7 @@ class BaseEnvironment:
 
         # For logging
         self.failed_capture_attempts = 0
+        self.in_light_history = []
 
     def reset(self):
         self.num_steps = 0
@@ -226,6 +227,7 @@ class BaseEnvironment:
         self.fish_angle_buffer = []
 
         self.failed_capture_attempts = 0
+        self.in_light_history = []
 
     def reproduce_prey(self):
         num_prey = len(self.prey_bodies)
@@ -598,19 +600,15 @@ class BaseEnvironment:
         position_x = self.fish.body.position[0]
         position_y = self.fish.body.position[1]
 
-        if position_x < 0:
+        if position_x < 1:
             new_position_x = 4
-            move_fish_x = True
         elif position_x > self.env_variables["width"] - 1:
             new_position_x = self.env_variables["width"] - 5
-            move_fish_x = True
 
-        if position_y < 0:
+        if position_y < 1:
             new_position_y = 4
-            move_fish_y = True
         elif position_y > self.env_variables["height"] - 1:
             new_position_y = self.env_variables["height"] - 5
-            move_fish_y = True
 
         if "new_position_x" in locals():
             new_position = pymunk.Vec2d(new_position_x, self.fish.body.position[1])

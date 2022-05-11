@@ -169,9 +169,9 @@ class NaturalisticEnvironment(BaseEnvironment):
                     plt.pause(0.0001)
 
         # Resolve if fish falls out of bounds.
-        if self.fish.body.position[0] < 1 or self.fish.body.position[1] < 1 or self.fish.body.position[0] > self.env_variables["width"] - 1 or self.fish.body.position[1] > \
-                self.env_variables["height"] - 1:
-            print("Fish returned to location nearest wall.")
+        if self.fish.body.position[0] < 2 or self.fish.body.position[1] < 2 or \
+                self.fish.body.position[0] > self.env_variables["width"] - 2 or \
+                self.fish.body.position[1] > self.env_variables["height"] - 2:
             new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 5, self.env_variables["width"]-6),
                                         np.clip(self.fish.body.position[1], 5, self.env_variables["height"]-6))
             self.fish.body.position = new_position
@@ -211,6 +211,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                         print("Removed prey")
                         self.remove_prey(i)
 
+        # Log whether or not fish in light
+        self.in_light_history.append(self.fish.body.position[0] > self.dark_col)
 
         self.num_steps += 1
         self.board.erase(bkg=self.env_variables['bkg_scatter'])

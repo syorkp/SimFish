@@ -463,8 +463,13 @@ class Eye:
         valid_points_more = (intersection_components < self.conditional_tiled[:n_channels]) * 1
         valid_points = valid_points_more * valid_points_ls
         valid_intersection_coordinates = intersection_coordinates[valid_points == 1]
-        valid_intersection_coordinates = self.chosen_math_library.reshape(valid_intersection_coordinates,
-                                                                          (n_channels, self.n, 2, 2))
+        try:
+            valid_intersection_coordinates = self.chosen_math_library.reshape(valid_intersection_coordinates,
+                                                                              (n_channels, self.n, 2, 2))
+        except ValueError:
+            print("ValueError")
+            print(f"Eye position: {[eye_x, eye_y]}")
+
         # Get intersections (PR_N x 2)
         eye_position = self.chosen_math_library.array([eye_x, eye_y])
         possible_vectors = valid_intersection_coordinates - eye_position
