@@ -80,7 +80,7 @@ class DiscretePPO(BasePPO):
                        self.actor_network.rnn_state_in: rnn_state_actor,
                        self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                        self.actor_network.batch_size: 1,
-                       self.actor_network.trainLength: 1,
+                       self.actor_network.train_length: 1,
                        }
         )
 
@@ -99,7 +99,7 @@ class DiscretePPO(BasePPO):
                        self.critic_network.rnn_state_in: rnn_state_critic,
                        self.critic_network.rnn_state_in_ref: rnn_state_critic_ref,
                        self.critic_network.batch_size: 1,
-                       self.critic_network.trainLength: 1,
+                       self.critic_network.train_length: 1,
                        }
         )
         o1, given_reward, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=action,
@@ -170,9 +170,10 @@ class DiscretePPO(BasePPO):
 
         if self.epsilon_greedy:
 
-            action, updated_rnn_state_actor, updated_rnn_state_actor_ref, action_probabilities = self.sess.run(
+            action, updated_rnn_state_actor, updated_rnn_state_actor_ref, probability, V = self.sess.run(
                 [self.actor_network.action_output, self.actor_network.rnn_state_shared,
-                 self.actor_network.rnn_state_ref, self.actor_network.action_probabilities
+                 self.actor_network.rnn_state_ref, self.actor_network.neg_log_prob,
+                 self.actor_network.value_output
                  ],
                 feed_dict={self.actor_network.observation: o,
                            self.actor_network.internal_state: internal_state,
@@ -186,7 +187,6 @@ class DiscretePPO(BasePPO):
             )
             if np.random.rand(1) < self.e:
                 action = np.random.randint(0, self.learning_params['num_actions'])
-            probability = action_probabilities[0][action]
 
             if self.e > self.learning_params['endE']:
                 self.e -= self.step_drop
@@ -245,7 +245,7 @@ class DiscretePPO(BasePPO):
                            self.actor_network.rnn_state_in: rnn_state_actor,
                            self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
                            self.actor_network.batch_size: 1,
-                           self.actor_network.trainLength: 1,
+                           self.actor_network.train_length: 1,
                            }
             )
             if np.random.rand(1) < self.e:
