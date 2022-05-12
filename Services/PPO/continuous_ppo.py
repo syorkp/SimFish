@@ -1551,6 +1551,7 @@ class ContinuousPPO(BasePPO):
             average_loss_value = 0
             average_loss_impulse = 0
             average_loss_angle = 0
+            average_loss_entropy = 0
 
             for i in range(self.learning_params["n_updates_per_iteration"]):
                 # Compute RNN states for start of each trace.
@@ -1569,9 +1570,10 @@ class ContinuousPPO(BasePPO):
                                                                                                  "batch_size"]])
 
                 # Optimise actor
-                loss_actor_val, loss_critic_val, total_loss, _, log_action_probability_batch_new, scaled_actions = self.sess.run(
-                    [self.actor_network.policy_loss, self.actor_network.value_loss, self.actor_network.total_loss,
-                     self.actor_network.train, self.actor_network.new_neg_log_prob, self.actor_network.normalised_action],
+                loss_actor_val, loss_critic_val, loss_entropy, total_loss, _, log_action_probability_batch_new, scaled_actions = self.sess.run(
+                    [self.actor_network.policy_loss, self.actor_network.value_loss, self.actor_network.entropy,
+                     self.actor_network.total_loss, self.actor_network.train, self.actor_network.new_neg_log_prob,
+                     self.actor_network.normalised_action],
 
                     feed_dict={self.actor_network.observation: observation_batch,
                                self.actor_network.prev_actions: previous_action_batch,
@@ -1596,9 +1598,10 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.entropy_coefficient: self.learning_params["lambda_entropy"]
                                })
 
-                average_loss_impulse += np.mean(np.abs(loss_actor_val))
-                average_loss_angle += np.mean(np.abs(loss_actor_val))
+                average_loss_impulse += np.mean(loss_actor_val)
+                average_loss_angle += np.mean(loss_actor_val)
                 average_loss_value += np.abs(loss_critic_val)
+                average_loss_entropy += np.mean(loss_entropy)
 
                 if self.use_rnd:
                     train = self.sess.run(self.predictor_rdn.train,
@@ -1620,7 +1623,8 @@ class ContinuousPPO(BasePPO):
 
             self.buffer.add_loss(average_loss_impulse / self.learning_params["n_updates_per_iteration"],
                                  average_loss_angle / self.learning_params["n_updates_per_iteration"],
-                                 average_loss_value / self.learning_params["n_updates_per_iteration"])
+                                 average_loss_value / self.learning_params["n_updates_per_iteration"],
+                                 average_loss_entropy / self.learning_params["n_updates_per_iteration"])
 
     def train_network_multivariate(self):
         observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \

@@ -411,7 +411,6 @@ class TrainingService(BaseService):
             critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min critic_loss", simple_value=min_critic_loss)])
             self.writer.add_summary(critic_loss_summary, self.episode_number)
 
-
             mean_impulse_loss = np.mean(self.buffer.impulse_loss_buffer)
             max_impulse_loss = np.max(self.buffer.impulse_loss_buffer)
             min_impulse_loss = np.min(self.buffer.impulse_loss_buffer)
@@ -431,6 +430,16 @@ class TrainingService(BaseService):
             self.writer.add_summary(angle_loss_summary, self.episode_number)
             angle_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min angle_loss", simple_value=min_angle_loss)])
             self.writer.add_summary(angle_loss_summary, self.episode_number)
+
+            mean_entropy_loss = np.mean(self.buffer.entropy_loss_buffer)
+            max_entropy_loss = np.max(self.buffer.entropy_loss_buffer)
+            min_entropy_loss = np.min(self.buffer.entropy_loss_buffer)
+            entropy_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean entropy_loss", simple_value=mean_entropy_loss)])
+            self.writer.add_summary(entropy_loss_summary, self.episode_number)
+            entropy_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max entropy_loss", simple_value=max_entropy_loss)])
+            self.writer.add_summary(entropy_loss_summary, self.episode_number)
+            entropy_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min entropy_loss", simple_value=min_entropy_loss)])
+            self.writer.add_summary(entropy_loss_summary, self.episode_number)
 
             # Saving Parameters for Testing
             mean_mu_i = np.mean(self.buffer.mu_i_buffer)

@@ -25,6 +25,7 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
 
         self.impulse_loss_buffer = []
         self.angle_loss_buffer = []
+        self.entropy_loss_buffer = []
 
         self.prediction_error_buffer = []
         self.target_output_buffer = []
@@ -54,6 +55,7 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
 
         self.impulse_loss_buffer = []
         self.angle_loss_buffer = []
+        self.entropy_loss_buffer = []
 
         self.prediction_error_buffer = []
         self.target_output_buffer = []
@@ -85,10 +87,11 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         self.mu_a1_buffer.append(mu_a1)
         self.mu_a_ref_buffer.append(mu_a_ref)
 
-    def add_loss(self, impulse_loss, angle_loss, critic_loss):
+    def add_loss(self, impulse_loss, angle_loss, critic_loss, entropy_loss):
         self.impulse_loss_buffer.append(impulse_loss)
         self.angle_loss_buffer.append(angle_loss)
         self.critic_loss_buffer.append(critic_loss)
+        self.entropy_loss_buffer.append(entropy_loss)
 
     def tidy(self):
         super().tidy()

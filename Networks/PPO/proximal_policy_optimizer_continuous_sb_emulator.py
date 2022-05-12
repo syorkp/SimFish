@@ -167,9 +167,11 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         self.entropy_coefficient = tf.placeholder(dtype=tf.float32, name="entropy_coefficient")  # 0.01
         self.value_coefficient = 0.5
         self.max_gradient_norm = 0.5
+        self.entropy_loss = -tf.multiply(self.entropy, self.entropy_coefficient)
 
-        self.total_loss = self.policy_loss - tf.multiply(self.entropy, self.entropy_coefficient) + \
-                          tf.multiply(self.value_loss, self.value_coefficient)
+        self.total_loss = self.policy_loss + self.entropy_loss + tf.multiply(self.value_loss, self.value_coefficient)
+        # self.total_loss = self.policy_loss - tf.multiply(self.entropy, self.entropy_coefficient) + \
+        #                   tf.multiply(self.value_loss, self.value_coefficient)
         # self.total_loss = self.policy_loss + tf.multiply(self.value_loss, self.value_coefficient)
         self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
 
