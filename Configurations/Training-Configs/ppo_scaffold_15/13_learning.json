@@ -17,6 +17,7 @@
     "rnn_state_computation": false,
     "learning_rate_actor": 1e-06,
     "learning_rate_critic": 1e-06,
+    "lambda_entropy": 0.01,
     "multivariate": true,
     "beta_distribution": false,
     "gamma": 0.99,

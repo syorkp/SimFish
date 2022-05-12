@@ -91,7 +91,7 @@
     "in_light": false,
     "salt": false,
     "use_dynamic_network": false,
-    "salt_concentration_decay": 0.001,
+    "salt_concentration_decay": 0.01,
     "salt_recovery": 0.01,
     "max_salt_damage": 0.02,
     "visualise_mask": false,
