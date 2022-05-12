@@ -3522,5 +3522,5 @@ ppo_discrete_eg_15 = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_15b, parallel_jobs=4)
+manager = TrialManager(dqn_scaffold_14b, parallel_jobs=4)
 manager.run_priority_loop()

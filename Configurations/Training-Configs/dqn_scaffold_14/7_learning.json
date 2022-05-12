@@ -16,6 +16,7 @@
     "n_updates_per_iteration": 4,
     "rnn_state_computation": false,
     "learning_rate": 0.0001,
+    "lambda_entropy": 0.01,
     "multivariate": false,
     "beta_distribution": false,
     "gamma": 0.99,

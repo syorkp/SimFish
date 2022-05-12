@@ -496,6 +496,7 @@ changes = [
        ["PCI", 0.3, "anneling_steps", 500000],
 
        # 1) Rewards and Penalties
+       ["PCI", 0.2, "capture_swim_extra_cost", 50],
        ["PCI", 0.3, "wall_reflection", False],
 ]
 
