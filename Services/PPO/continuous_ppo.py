@@ -1592,7 +1592,8 @@ class ContinuousPPO(BasePPO):
                                self.actor_network.train_length: self.learning_params["trace_length"],
                                self.actor_network.batch_size: current_batch_size,
                                self.actor_network.learning_rate: self.learning_params[
-                                                                     "learning_rate_actor"] * current_batch_size
+                                                                     "learning_rate_actor"] * current_batch_size,
+                               self.actor_network.entropy_coefficient: self.learning_params["lambda_entropy"]
                                })
 
                 average_loss_impulse += np.mean(np.abs(loss_actor_val))
