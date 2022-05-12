@@ -55,7 +55,9 @@ class DQNAssayService(AssayService, BaseDQN):
         self.stimuli_data = []
         self.output_data = {}
 
-        self.buffer = DQNAssayBuffer()
+        self.buffer = DQNAssayBuffer(use_dynamic_network=self.environment_params["use_dynamic_network"],
+)
+        self.use_rnd = self.learning_params["use_rnd"]
 
     def run(self):
         sess = self.create_session()
@@ -90,7 +92,6 @@ class DQNAssayService(AssayService, BaseDQN):
         a = 0
         self.step_number = 0
         while self.step_number < assay["duration"]:
-            print(self.step_number)
             if assay["reset"] and self.step_number % assay["reset interval"] == 0:
                 rnn_state = (
                 np.zeros([1, self.main_QN.rnn_dim]), np.zeros([1, self.main_QN.rnn_dim]))  # Reset RNN hidden state
@@ -103,9 +104,15 @@ class DQNAssayService(AssayService, BaseDQN):
             if d:
                 break
         self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id)
+
+        if assay["save frames"]:
+            make_gif(self.frame_buffer,
+                     f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
+                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+        self.frame_buffer = []
+
         self.buffer.reset()
         print(f"Assay: {assay['assay id']} Completed")
-
 
     def step_loop(self, o, internal_state, a, rnn_state):
         return BaseDQN.assay_step_loop(self, o, internal_state, a, rnn_state)

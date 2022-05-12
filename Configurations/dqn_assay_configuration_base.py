@@ -62,6 +62,8 @@ params = {
        'ops': ops,
        'connectivity': connectivity,
 
+       # For RND
+       'use_rnd': False,  # Whether to use RND.
 }
 
 
@@ -118,7 +120,7 @@ env = {
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
 
        'fish_mass': 140.,
-       'fish_mouth_size': 4.,  # FINAL VALUE - 0.2mm diameter, so 1.
+       'fish_mouth_size': 8.,  # FINAL VALUE - 0.2mm diameter, so 1.
        'fish_head_size': 2.5,  # Old - 10
        'fish_tail_length': 41.5,  # Old: 70
        'eyes_verg_angle': 77.,  # in deg
@@ -135,10 +137,10 @@ env = {
        'prey_sensing_distance': 20,
        'prey_max_turning_angle': 0.04,
        # This is the turn (pi radians) that happens every step, designed to replicate linear wavy movement.
-       'prey_fluid_displacement': True,
+       'prey_fluid_displacement': False,
        'prey_jump': False,
-       'differential_prey': False,
-       'prey_cloud_num': 2,
+       'differential_prey': True,
+       'prey_cloud_num': 4,
 
        'predator_mass': 10.,
        'predator_inertia': 40.,
@@ -148,10 +150,10 @@ env = {
        'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
        'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
-       'dark_light_ratio': 0.0,  # fraction of arena in the dark
+       'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001
-       'dark_gain': 0.38,  # gain of brightness in the dark side
+       'dark_gain': 60.0,  # gain of brightness in the dark side
        'light_gain': 200.0,  # gain of brightness in the bright side
 
        'predator_cost': 1000,
@@ -163,7 +165,7 @@ env = {
 
        # For continuous Actions space:
        'max_angle_change': 1,  # Final 4, Formerly np.pi / 5,
-       'max_impulse': 10.0,  # Final 100
+       'max_impulse': 100.0,  # Final 100
 
        'baseline_penalty': 0.002,
        'reward_distance': 100,
@@ -185,11 +187,11 @@ env = {
        'impose_action_mask': True,
 
        # Sensory inputs
-       'energy_state': False,
-       'in_light': False,
-       'salt': False,  # Inclusion of olfactory salt input and salt death.
-       "use_dynamic_network": False,
-       'salt_concentration_decay': 0.001,  # Scale for exponential salt concentration decay from source.
+       'energy_state': True,
+       'in_light': True,
+       'salt': True,  # Inclusion of olfactory salt input and salt death.
+       "use_dynamic_network": True,
+       'salt_concentration_decay': 0.01,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
        'max_salt_damage': 0.02,  # Salt damage at centre of source.
 
@@ -240,9 +242,9 @@ env = {
        'duration_of_loom': 10,  # Number of steps for which loom occurs.
 
        # Visual system scaling factors (to set CNN inputs into 0 to 255 range):
-       'red_scaling_factor': 0.5,  # max was 100 without scaling
-       'uv_scaling_factor': 1, #50,  # max was 40 without scaling
-       'red_2_scaling_factor': 0.05, #0.018,  # max was 12000 without scaling
+       'red_scaling_factor': 1/5,  # Pixel counts are multiplied by this
+       'uv_scaling_factor': 1,  # Pixel counts are multiplied by this
+       'red_2_scaling_factor': 1/500.0,  # Pixel counts are multiplied by this
        'red_occlusion_gain': 0.0,  # 0 Being complete construction.
        'uv_occlusion_gain': 1.0,
        'red2_occlusion_gain': 0.0,
@@ -252,8 +254,8 @@ env = {
        # Arbitrary fish parameters
 
        # Fish Visual System
-       'uv_photoreceptor_rf_size': 0.0133 * 1,  # Pi Radians (0.76 degrees) - Yoshimatsu et al. (2019)
-       'red_photoreceptor_rf_size': 0.0133 * 1,  # Kept same
+       'uv_photoreceptor_rf_size': 0.0133 * 3,  # Pi Radians (0.76 degrees) - Yoshimatsu et al. (2019)
+       'red_photoreceptor_rf_size': 0.0133 * 3,  # Kept same
        'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
        'red_photoreceptor_num': 63,
        'minimum_observation_size': 100,  # Parameter to determine padded observation size (avoids conv layer size bug).
@@ -263,26 +265,26 @@ env = {
        # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
 
        # Shot noise
-       'shot_noise': True,  # Whether to model observation of individual photons as a poisson process.
+       'shot_noise': False,  # Whether to model observation of individual photons as a poisson process.
 
        # For dark noise:
        'isomerization_frequency': 0.0,  # Average frequency of photoisomerization per second per photoreceptor
        'max_isomerization_size': 0.0,
 
        # Energy state and hunger-based rewards
-       'ci': 0.0002,
-       'ca': 0.0002,
-       'baseline_decrease': 0.0003,
+       'ci': 0.000002,
+       'ca': 0.000002,
+       'baseline_decrease': 0.00003,
        'trajectory_A': 5.0,
        'trajectory_B': 2.5,
        'consumption_energy_gain': 1.0,
 
        # Reward
-       'action_reward_scaling': 0,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
-       'consumption_reward_scaling': 100000,  # Arbitrary (practical) hyperparameter for reward for consumption
+       'action_reward_scaling': 10000,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
+       'consumption_reward_scaling': 1000000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
        'wall_reflection': True,
-       'wall_touch_penalty': 0.2,
+       'wall_touch_penalty': 2,
 
        # Currents
        'current_setting': False,  # Current setting. If none, should be False. Current options: Circular, Linear
@@ -305,7 +307,9 @@ env = {
 }
 
 # Equal to that given in the file name.
-environment_name = "dqn_scaffold_10_assay"
+environment_name = "dqn_dn_14"
+
+
 with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)
 

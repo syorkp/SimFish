@@ -10,9 +10,10 @@ class DQNAssayBuffer:
     NOTE: Class is NOT integrated with experience buffer as is the case with PPO.
     """
 
-    def __init__(self):
+    def __init__(self, use_dynamic_network=False):
         self.assay = True
         self.recordings = None
+        self.use_dynamic_network = use_dynamic_network
 
         # Buffer for training
         self.action_buffer = []
@@ -112,6 +113,10 @@ class DQNAssayBuffer:
         if "rnn state" in self.recordings:
             self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
             # self.create_data_group("rnn_state_critic", np.array(self.critic_rnn_state_buffer), assay_group)
+
+        if self.use_dynamic_network:
+            for layer in self.unit_recordings.keys():
+                self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
 
         for layer in self.unit_recordings.keys():
             self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)

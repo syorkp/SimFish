@@ -90,20 +90,25 @@ class ContinuousPPO(BasePPO):
                 #                                                   )
                 if self.learning_params["beta_distribution"]:
                     self.actor_network = PPONetworkActorMultivariateBetaNormal2(simulation=self.simulation,
-                                                                                rnn_dim=self.learning_params['rnn_dim_shared'],
+                                                                                rnn_dim=self.learning_params[
+                                                                                    'rnn_dim_shared'],
                                                                                 rnn_cell=actor_cell,
                                                                                 my_scope='actor',
                                                                                 internal_states=internal_states,
                                                                                 max_impulse=self.environment_params[
                                                                                     'max_impulse'],
-                                                                                max_angle_change=self.environment_params[
+                                                                                max_angle_change=
+                                                                                self.environment_params[
                                                                                     'max_angle_change'],
-                                                                                clip_param=self.environment_params['clip_param'],
-                                                                                input_sigmas=self.learning_params['input_sigmas'],
+                                                                                clip_param=self.environment_params[
+                                                                                    'clip_param'],
+                                                                                input_sigmas=self.learning_params[
+                                                                                    'input_sigmas'],
                                                                                 new_simulation=self.new_simulation,
-                                                                                impose_action_mask=self.environment_params[
+                                                                                impose_action_mask=
+                                                                                self.environment_params[
                                                                                     'impose_action_mask'],
-                                                                      )
+                                                                                )
 
                 else:
                     self.actor_network = PPONetworkActorMultivariate2(simulation=self.simulation,
@@ -111,7 +116,8 @@ class ContinuousPPO(BasePPO):
                                                                       rnn_cell=actor_cell,
                                                                       my_scope='actor',
                                                                       internal_states=internal_states,
-                                                                      max_impulse=self.environment_params['max_impulse'],
+                                                                      max_impulse=self.environment_params[
+                                                                          'max_impulse'],
                                                                       max_angle_change=self.environment_params[
                                                                           'max_angle_change'],
                                                                       clip_param=self.environment_params['clip_param'],
@@ -136,7 +142,8 @@ class ContinuousPPO(BasePPO):
                                                                  clip_param=self.environment_params['clip_param'],
                                                                  input_sigmas=self.learning_params['input_sigmas'],
                                                                  new_simulation=self.new_simulation,
-                                                                 impose_action_mask=self.environment_params['impose_action_mask'],
+                                                                 impose_action_mask=self.environment_params[
+                                                                     'impose_action_mask'],
                                                                  impulse_scaling=self.environment_params[
                                                                      'impulse_scaling'],
                                                                  angle_scaling=self.environment_params['angle_scaling'],
@@ -185,10 +192,12 @@ class ContinuousPPO(BasePPO):
             # Linear scale
             self.impulse_sigma = np.array([self.environment_params["max_sigma_impulse"] - (
                     self.environment_params["max_sigma_impulse"] - self.environment_params["min_sigma_impulse"]) * (
-                                                   self.sigma_total_steps / self.environment_params["sigma_reduction_time"])])
+                                                   self.sigma_total_steps / self.environment_params[
+                                               "sigma_reduction_time"])])
             self.angle_sigma = np.array([self.environment_params["max_sigma_angle"] - (
                     self.environment_params["max_sigma_angle"] - self.environment_params["min_sigma_angle"]) * (
-                                                 self.sigma_total_steps / self.environment_params["sigma_reduction_time"])])
+                                                 self.sigma_total_steps / self.environment_params[
+                                             "sigma_reduction_time"])])
             # To prevent ever returning NaN
             if math.isnan(self.impulse_sigma[0]):
                 self.impulse_sigma = np.array([self.environment_params["min_sigma_impulse"]])
@@ -201,20 +210,17 @@ class ContinuousPPO(BasePPO):
         super(ContinuousPPO, self)._episode_loop(a)
 
     def _assay_step_loop_multivariate2(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                           rnn_state_critic,
-                                           rnn_state_critic_ref):
+                                       rnn_state_critic, rnn_state_critic_ref):
         if self.new_simulation and self.environment_params["use_dynamic_network"]:
             return self._assay_step_loop_multivariate2_new(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                      rnn_state_critic,
-                                      rnn_state_critic_ref)
+                                                           rnn_state_critic, rnn_state_critic_ref)
         else:
             return self._assay_step_loop_multivariate2_old(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                      rnn_state_critic,
-                                      rnn_state_critic_ref)
+                                                           rnn_state_critic, rnn_state_critic_ref)
 
     def _assay_step_loop_multivariate2_new(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                      rnn_state_critic,
-                                      rnn_state_critic_ref):
+                                           rnn_state_critic,
+                                           rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
@@ -280,14 +286,15 @@ class ContinuousPPO(BasePPO):
                                                      vegetation_positions,
                                                      self.simulation.fish.body.angle,
                                                      )
+
         self.buffer.make_desired_recordings(network_layers)
 
         return given_reward, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, \
                0, 0, action
 
     def _assay_step_loop_multivariate2_old(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                      rnn_state_critic,
-                                      rnn_state_critic_ref):
+                                           rnn_state_critic,
+                                           rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
@@ -565,9 +572,8 @@ class ContinuousPPO(BasePPO):
                updated_rnn_state_critic, updated_rnn_state_critic_ref, action
 
     def _step_loop_multivariate_beta_sbe_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                               rnn_state_critic,
-                                               rnn_state_critic_ref):
-
+                                                   rnn_state_critic,
+                                                   rnn_state_critic_ref):
 
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.environment_params['max_impulse'],
@@ -630,7 +636,6 @@ class ContinuousPPO(BasePPO):
             save_frames=self.save_frames,
             activations=sa)
 
-
         self.buffer.add_training(observation=o,
                                  internal_state=internal_state,
                                  action=action,
@@ -640,7 +645,6 @@ class ContinuousPPO(BasePPO):
                                  actor_rnn_state=rnn_state_actor,
                                  actor_rnn_state_ref=rnn_state_actor_ref,
                                  )
-
 
         if self.save_environmental_data:
             sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
@@ -662,8 +666,8 @@ class ContinuousPPO(BasePPO):
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0, action
 
     def _step_loop_multivariate_beta_sbe_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                               rnn_state_critic,
-                                               rnn_state_critic_ref):
+                                                      rnn_state_critic,
+                                                      rnn_state_critic_ref):
 
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.environment_params['max_impulse'],
@@ -740,8 +744,8 @@ class ContinuousPPO(BasePPO):
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0, action
 
     def _step_loop_multivariate_sbe_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                               rnn_state_critic,
-                                               rnn_state_critic_ref):
+                                              rnn_state_critic,
+                                              rnn_state_critic_ref):
 
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.environment_params['max_impulse'],
@@ -773,7 +777,8 @@ class ContinuousPPO(BasePPO):
             if np.random.rand(1) < self.e:
                 action = [impulse[0][0], angle[0][0]]
             else:
-                action = [mu_i[0][0] * self.environment_params["max_impulse"], mu_a[0][0] * self.environment_params["max_angle_change"]]
+                action = [mu_i[0][0] * self.environment_params["max_impulse"],
+                          mu_a[0][0] * self.environment_params["max_angle_change"]]
 
                 # And get updated neg_log_prob
                 neg_log_action_probability = self.sess.run(
@@ -846,7 +851,6 @@ class ContinuousPPO(BasePPO):
                                      actor_rnn_state_ref=rnn_state_actor_ref,
                                      )
 
-
         if self.save_environmental_data:
             sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
             self.episode_buffer.save_environmental_positions(self.simulation.fish.body.position,
@@ -867,8 +871,8 @@ class ContinuousPPO(BasePPO):
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0, action
 
     def _step_loop_multivariate_sbe_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                               rnn_state_critic,
-                                               rnn_state_critic_ref):
+                                                 rnn_state_critic,
+                                                 rnn_state_critic_ref):
 
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.environment_params['max_impulse'],
@@ -898,7 +902,8 @@ class ContinuousPPO(BasePPO):
             if np.random.rand(1) < self.e:
                 action = [impulse[0][0], angle[0][0]]
             else:
-                action = [mu_i[0][0] * self.environment_params["max_impulse"], mu_a[0][0] * self.environment_params["max_angle_change"]]
+                action = [mu_i[0][0] * self.environment_params["max_impulse"],
+                          mu_a[0][0] * self.environment_params["max_angle_change"]]
 
                 # And get updated neg_log_prob
                 neg_log_action_probability = self.sess.run(
@@ -988,8 +993,8 @@ class ContinuousPPO(BasePPO):
         return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0, action
 
     def _step_loop_multivariate_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                              rnn_state_critic,
-                                              rnn_state_critic_ref):
+                                          rnn_state_critic,
+                                          rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
@@ -1023,7 +1028,7 @@ class ContinuousPPO(BasePPO):
              self.actor_network.mu_angle_combined,
              self.actor_network.sigma_action, self.actor_network.mu_impulse, self.actor_network.mu_impulse_ref,
              self.actor_network.mu_angle, self.actor_network.mu_angle_ref,
-            ],
+             ],
 
             feed_dict={self.actor_network.observation: o,
                        self.actor_network.internal_state: internal_state,
@@ -1081,8 +1086,8 @@ class ContinuousPPO(BasePPO):
                updated_rnn_state_critic, updated_rnn_state_critic_ref, action
 
     def _step_loop_multivariate_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                                 rnn_state_critic,
-                                                 rnn_state_critic_ref):
+                                             rnn_state_critic,
+                                             rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
@@ -1143,8 +1148,8 @@ class ContinuousPPO(BasePPO):
                updated_rnn_state_critic, updated_rnn_state_critic_ref, action
 
     def _step_loop_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                      rnn_state_critic,
-                                      rnn_state_critic_ref):
+                             rnn_state_critic,
+                             rnn_state_critic_ref):
         # Generate actions and corresponding steps.
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.environment_params['max_impulse'],
@@ -1218,8 +1223,8 @@ class ContinuousPPO(BasePPO):
                updated_rnn_state_critic, updated_rnn_state_critic_ref, action
 
     def _step_loop_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                         rnn_state_critic,
-                                         rnn_state_critic_ref):
+                                rnn_state_critic,
+                                rnn_state_critic_ref):
         # Generate actions and corresponding steps.
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0] / self.environment_params['max_impulse'],
@@ -1318,8 +1323,9 @@ class ContinuousPPO(BasePPO):
                current_batch_size
 
     def get_batch_multivariate2(self, batch, observation_buffer, internal_state_buffer, action_buffer,
-                               previous_action_buffer,
-                               log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, target_outputs_buffer=None):
+                                previous_action_buffer,
+                                log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer,
+                                target_outputs_buffer=None):
 
         observation_batch = observation_buffer[
                             batch * self.batch_size: (batch + 1) * self.batch_size]
@@ -1338,11 +1344,12 @@ class ContinuousPPO(BasePPO):
                        batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
 
         value_batch = value_buffer[
-                       batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
+                      batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
 
         if target_outputs_buffer is not None:
             target_outputs_batch = target_outputs_buffer[
-                          batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
+                                   batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params[
+                                       "batch_size"]]
 
         current_batch_size = observation_batch.shape[0]
 
@@ -1361,8 +1368,8 @@ class ContinuousPPO(BasePPO):
 
         if self.use_rnd:
             return observation_batch, internal_state_batch, action_batch, previous_action_batch, \
-               log_action_probability_batch, advantage_batch, return_batch, value_batch, target_outputs_batch, \
-               current_batch_size
+                   log_action_probability_batch, advantage_batch, return_batch, value_batch, target_outputs_batch, \
+                   current_batch_size
         else:
             return observation_batch, internal_state_batch, action_batch, previous_action_batch, \
                    log_action_probability_batch, advantage_batch, return_batch, value_batch, \
@@ -1434,7 +1441,7 @@ class ContinuousPPO(BasePPO):
             if self.learning_params['beta_distribution']:
                 log_impulse_probability_batch = np.exp(log_impulse_probability_batch)
                 maxli = max(log_impulse_probability_batch) + 1
-                log_impulse_probability_batch = log_impulse_probability_batch/maxli
+                log_impulse_probability_batch = log_impulse_probability_batch / maxli
                 log_impulse_probability_batch = np.log(log_impulse_probability_batch)
 
             # Loss value logging
@@ -1453,8 +1460,6 @@ class ContinuousPPO(BasePPO):
                                                                      previous_action_buffer[
                                                                      :(batch + 1) * self.learning_params[
                                                                          "batch_size"]])
-
-
 
                 # Optimise critic
                 loss_critic_val, _ = self.sess.run(
@@ -1510,12 +1515,12 @@ class ContinuousPPO(BasePPO):
     def train_network_multivariate2(self):
         if self.use_rnd:
             observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
-                log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, target_outputs_buffer, \
-                key_rnn_points = self.buffer.get_episode_buffer()
+            log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, target_outputs_buffer, \
+            key_rnn_points = self.buffer.get_episode_buffer()
         else:
             observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
-                log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
-                key_rnn_points = self.buffer.get_episode_buffer()
+            log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
+            key_rnn_points = self.buffer.get_episode_buffer()
 
         number_of_batches = int(math.ceil(observation_buffer.shape[0] / self.learning_params["batch_size"]))
 
@@ -1529,13 +1534,14 @@ class ContinuousPPO(BasePPO):
             # Get the current batch
             if self.use_rnd:
                 observation_batch, internal_state_batch, action_batch, previous_action_batch, \
-            log_action_probability_batch, advantage_batch, \
-            return_batch, previous_value_batch, target_outputs_batch, current_batch_size = self.get_batch_multivariate2(batch, observation_buffer,
-                                                                           internal_state_buffer,
-                                                                           action_buffer, previous_action_buffer,
-                                                                           log_action_probability_buffer,
-                                                                           advantage_buffer,
-                                                                           return_buffer, value_buffer, target_outputs_buffer)
+                log_action_probability_batch, advantage_batch, \
+                return_batch, previous_value_batch, target_outputs_batch, current_batch_size = self.get_batch_multivariate2(
+                    batch, observation_buffer,
+                    internal_state_buffer,
+                    action_buffer, previous_action_buffer,
+                    log_action_probability_buffer,
+                    advantage_buffer,
+                    return_buffer, value_buffer, target_outputs_buffer)
             else:
                 observation_batch, internal_state_batch, action_batch, previous_action_batch, \
                 log_action_probability_batch, advantage_batch, \
@@ -1605,18 +1611,18 @@ class ContinuousPPO(BasePPO):
 
                 if self.use_rnd:
                     train = self.sess.run(self.predictor_rdn.train,
-                                      feed_dict={
-                                          self.predictor_rdn.observation: observation_batch,
-                                          self.predictor_rdn.prev_actions: previous_action_batch,
-                                          self.predictor_rdn.internal_state: internal_state_batch,
+                                          feed_dict={
+                                              self.predictor_rdn.observation: observation_batch,
+                                              self.predictor_rdn.prev_actions: previous_action_batch,
+                                              self.predictor_rdn.internal_state: internal_state_batch,
 
-                                          self.predictor_rdn.target_outputs: target_outputs_batch,
+                                              self.predictor_rdn.target_outputs: target_outputs_batch,
 
-                                          self.predictor_rdn.train_length: self.learning_params["trace_length"],
-                                          self.predictor_rdn.batch_size: current_batch_size,
-                                          self.predictor_rdn.learning_rate: self.learning_params[
-                                                                                "learning_rate_actor"] * current_batch_size
-                    })
+                                              self.predictor_rdn.train_length: self.learning_params["trace_length"],
+                                              self.predictor_rdn.batch_size: current_batch_size,
+                                              self.predictor_rdn.learning_rate: self.learning_params[
+                                                                                    "learning_rate_actor"] * current_batch_size
+                                          })
 
             # print("RATIO " + str(np.mean(ratio)))
             # print("ADVANTAGE: " + str(np.mean(advantage_batch)))
@@ -1654,7 +1660,6 @@ class ContinuousPPO(BasePPO):
             average_loss_value = 0
             average_loss_impulse = 0
             average_loss_angle = 0
-
 
             for i in range(self.learning_params["n_updates_per_iteration"]):
                 # Compute RNN states for start of each trace.

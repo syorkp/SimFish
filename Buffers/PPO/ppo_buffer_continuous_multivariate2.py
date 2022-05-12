@@ -5,9 +5,9 @@ import numpy as np
 class PPOBufferContinuousMultivariate2(BasePPOBuffer):
     """Buffer for full episode for PPO training, and logging."""
 
-    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False, dynamic_network=False,
+    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False, use_dynamic_network=False,
                  use_rnd=False):
-        super().__init__(gamma, lmbda, batch_size, train_length, assay, debug)
+        super().__init__(gamma, lmbda, batch_size, train_length, assay, debug, use_dynamic_network)
 
         # Buffer for training
         self.log_action_probability_buffer = []
@@ -29,8 +29,6 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
 
         self.prediction_error_buffer = []
         self.target_output_buffer = []
-
-        self.dynamic_network = dynamic_network
 
         # For assay saving
         self.multivariate = True
@@ -243,7 +241,7 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
             actor_rnn_state_batch.append(self.actor_rnn_state_buffer[point])
             actor_rnn_state_batch_ref.append(self.actor_rnn_state_ref_buffer[point])
 
-        if self.dynamic_network:
+        if self.use_dynamic_network:
             n_rnns = np.array(actor_rnn_state_batch).shape[1]
             n_units = np.array(actor_rnn_state_batch).shape[-1]
 

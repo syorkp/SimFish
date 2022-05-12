@@ -37,7 +37,7 @@ params = {
        'rnn_state_computation': False,
        'learning_rate_actor': 0.000001,  # Formerly 0.000001
        'learning_rate_critic': 0.000001,  # Formerly 0.000001
-       'lambda_entropy': 0.01,
+       'lambda_entropy': 0.001,
 
        # Learning (PPO Continuous Only)
        'multivariate': True,
@@ -63,6 +63,8 @@ params = {
        'ops': ops,
        'connectivity': connectivity,
 
+       # For RND
+       'use_rnd': False,  # Whether to use RND.
 }
 
 env = {
@@ -129,7 +131,7 @@ env = {
        'prey_inertia': 40.,
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-       'prey_num': 1,
+       'prey_num': 30,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
@@ -137,8 +139,8 @@ env = {
        # This is the turn (pi radians) that happens every step, designed to replicate linear wavy movement.
        'prey_fluid_displacement': False,
        'prey_jump': False,
-       'differential_prey': False,
-       'prey_cloud_num': 2,
+       'differential_prey': True,
+       'prey_cloud_num': 5,
 
        'predator_mass': 10.,
        'predator_inertia': 40.,
@@ -150,9 +152,9 @@ env = {
 
        'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
-       'bkg_scatter': 0.1,  # base brightness of the background FORMERLY 0.00001; 0.01
-       'dark_gain': 60.81,  # gain of brightness in the dark side
-       'light_gain': 125.7,  # gain of brightness in the bright side
+       'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001; 0.01
+       'dark_gain': 60.0,  # gain of brightness in the dark side
+       'light_gain': 200.0,  # gain of brightness in the bright side
 
        'predator_cost': 1000,
 
@@ -190,9 +192,9 @@ env = {
        # Sensory inputs
        'energy_state': False,
        'in_light': False,
-       'salt': True,  # Inclusion of olfactory salt input and salt death.
+       'salt': False,  # Inclusion of olfactory salt input and salt death.
        "use_dynamic_network": False,
-       'salt_concentration_decay': 0.001,  # Scale for exponential salt concentration decay from source.
+       'salt_concentration_decay': 0.01,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
        'max_salt_damage': 0.02,  # Salt damage at centre of source.
 
@@ -255,8 +257,8 @@ env = {
        # Arbitrary fish parameters
 
        # Fish Visual System
-       'uv_photoreceptor_rf_size': 0.0133 * 1,  # Pi Radians (0.76 degrees) - Yoshimatsu et al. (2019)
-       'red_photoreceptor_rf_size': 0.0133 * 1,  # Kept same
+       'uv_photoreceptor_rf_size': 0.0133 * 3,  # Pi Radians (0.76 degrees) - Yoshimatsu et al. (2019)
+       'red_photoreceptor_rf_size': 0.0133 * 3,  # Kept same
        'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
        'red_photoreceptor_num': 63,
        'minimum_observation_size': 100,  # Parameter to determine padded observation size (avoids conv layer size bug).
@@ -266,25 +268,25 @@ env = {
        # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
 
        # Shot noise
-       'shot_noise': True,  # Whether to model observation of individual photons as a poisson process.
+       'shot_noise': False,  # Whether to model observation of individual photons as a poisson process.
 
        # For dark noise:
        'isomerization_frequency': 0.0,  # Average frequency of photoisomerization per second per photoreceptor
        'max_isomerization_size': 0.0,
 
        # Energy state and hunger-based rewards
-       'ci': 0.0002,
-       'ca': 0.0002,
-       'baseline_decrease': 0.0003,
+       'ci': 0.000002,
+       'ca': 0.000002,
+       'baseline_decrease': 0.00003,
        'trajectory_A': 5.0,
        'trajectory_B': 2.5,
        'consumption_energy_gain': 1.0,
 
        # Reward
        'action_reward_scaling': 0,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
-       'consumption_reward_scaling': 100000,  # Arbitrary (practical) hyperparameter for reward for consumption
+       'consumption_reward_scaling': 1000000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
-       'wall_reflection': False,
+       'wall_reflection': True,
        'wall_touch_penalty': 0.2,
 
        # Currents
@@ -308,7 +310,7 @@ env = {
 }
 
 # Equal to that given in the file name.
-environment_name = "continuous_assay"
+environment_name = "ppo_continuous_csr"
 
 with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)

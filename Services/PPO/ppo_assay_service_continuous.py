@@ -60,17 +60,27 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
         # Buffer for saving results of assay
         if self.multivariate:
-            self.buffer = PPOBufferContinuousMultivariate(gamma=0.99, lmbda=0.9,
+            self.buffer = PPOBufferContinuousMultivariate(gamma=0.99,
+                                                          lmbda=0.9,
                                                           batch_size=self.learning_params["batch_size"],
-                                                          train_length=self.learning_params["trace_length"], assay=True,
-                                                          debug=False)
+                                                          train_length=self.learning_params["trace_length"],
+                                                          assay=True,
+                                                          debug=False,
+                                                          use_dynamic_network=self.environment_params[
+                                                              "use_dynamic_network"],
+                                                          )
         else:
-            self.buffer = PPOBufferContinuous(gamma=0.99, lmbda=0.9, batch_size=self.learning_params["batch_size"],
-                                              train_length=self.learning_params["trace_length"], assay=True,
-                                              debug=False)
+            self.buffer = PPOBufferContinuous(gamma=0.99,
+                                              lmbda=0.9,
+                                              batch_size=self.learning_params["batch_size"],
+                                              train_length=self.learning_params["trace_length"],
+                                              assay=True,
+                                              debug=False,
+                                              use_dynamic_network=self.environment_params["use_dynamic_network"],
+                                              )
 
         self.ppo_version = ContinuousPPO
-
+        self.use_rnd = self.learning_params["use_rnd"]
         self.sb_emulator = sb_emulator
 
     def run(self):

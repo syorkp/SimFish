@@ -6,9 +6,9 @@ from Buffers.PPO.base_ppo_buffer import BasePPOBuffer
 class PPOBufferDiscrete(BasePPOBuffer):
     """Buffer for full episode for PPO training, and logging."""
 
-    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False):
+    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False, use_dynamic_network=False):
 
-        super().__init__(gamma, lmbda, batch_size, train_length, assay, debug)
+        super().__init__(gamma, lmbda, batch_size, train_length, assay, debug, use_dynamic_network)
 
         # Buffer for training
         self.log_action_probability_buffer = []

@@ -5,7 +5,7 @@ import numpy as np
 
 class BasePPOBuffer:
 
-    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False):
+    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False, use_dynamic_network=False):
         self.gamma = gamma
         self.lmbda = lmbda
         self.batch_size = batch_size
@@ -15,6 +15,7 @@ class BasePPOBuffer:
         self.assay = assay
         self.recordings = None
         self.multivariate = None
+        self.use_dynamic_network = use_dynamic_network
 
         # Buffer for training
         self.action_buffer = []
@@ -225,7 +226,6 @@ class BasePPOBuffer:
         self.unit_recordings = {i: [] for i in network_recordings}
 
     def make_desired_recordings(self, network_layers):
-        return  # TODO: Remove!!!!
         for l in self.unit_recordings.keys():
             self.unit_recordings[l].append(network_layers[l][0])
 
@@ -246,9 +246,9 @@ class BasePPOBuffer:
             self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
             # self.create_data_group("rnn_state_critic", np.array(self.critic_rnn_state_buffer), assay_group)
 
-        # TODO: Bring back
-        # for layer in self.unit_recordings.keys():
-        #     self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
+        if self.use_dynamic_network:
+            for layer in self.unit_recordings.keys():
+                self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
 
         if "environmental positions" in self.recordings:
             self.create_data_group("impulse", np.array(self.action_buffer)[:, 0], assay_group)

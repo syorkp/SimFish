@@ -5,8 +5,8 @@ import numpy as np
 class PPOBufferContinuousMultivariate(BasePPOBuffer):
     """Buffer for full episode for PPO training, and logging."""
 
-    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False):
-        super().__init__(gamma, lmbda, batch_size, train_length, assay, debug)
+    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False, use_dynamic_network=False):
+        super().__init__(gamma, lmbda, batch_size, train_length, assay, debug, use_dynamic_network)
 
         # Buffer for training
         self.log_action_probability_buffer = []

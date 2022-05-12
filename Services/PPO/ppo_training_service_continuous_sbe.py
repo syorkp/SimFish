@@ -67,12 +67,18 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
                                                            train_length=self.learning_params["trace_length"],
                                                            assay=False,
                                                            debug=False,
-                                                           dynamic_network=self.environment_params["use_dynamic_network"],
+                                                           use_dynamic_network=self.environment_params["use_dynamic_network"],
                                                            use_rnd=self.learning_params["use_rnd"]
                                                            )
         else:
-            self.buffer = PPOBufferContinuous(gamma=self.learning_params["gamma"], lmbda=self.learning_params["lambda"],  batch_size=self.learning_params["batch_size"],
-                                              train_length=self.learning_params["trace_length"], assay=False, debug=False)
+            self.buffer = PPOBufferContinuous(gamma=self.learning_params["gamma"],
+                                              lmbda=self.learning_params["lambda"],
+                                              batch_size=self.learning_params["batch_size"],
+                                              train_length=self.learning_params["trace_length"],
+                                              assay=False,
+                                              debug=False,
+                                              use_dynamic_network=self.environment_params["use_dynamic_network"],
+                                              )
 
         # IF not saving regular gifs, instead be ready to save the environmental data underlying GIFs.
         if not self.learning_params["save_gifs"]:
@@ -82,14 +88,19 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
                                                                        batch_size=self.learning_params["batch_size"],
                                                                        train_length=self.learning_params["trace_length"],
                                                                        assay=True,
-                                                                       debug=False)
+                                                                       debug=False,
+                                                                       use_dynamic_network=self.environment_params["use_dynamic_network"],
+                                                                       )
             else:
                 self.episode_buffer = PPOBufferContinuous(gamma=self.learning_params["gamma"],
                                                           lmbda=self.learning_params["lambda"],
                                                           batch_size=self.learning_params["batch_size"],
                                                           train_length=self.learning_params["trace_length"],
                                                           assay=True,
-                                                          debug=False)
+                                                          debug=False,
+                                                          use_dynamic_network=self.environment_params[
+                                                              "use_dynamic_network"],
+                                                          )
         else:
             self.episode_buffer = False
 
