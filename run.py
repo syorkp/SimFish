@@ -3716,5 +3716,5 @@ dqn_assay_test = [
     }
     ]
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_discrete_eg_ne_15, parallel_jobs=4)
+manager = TrialManager(dqn_scaffold_14b, parallel_jobs=4)
 manager.run_priority_loop()
