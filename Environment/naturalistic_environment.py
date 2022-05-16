@@ -169,11 +169,11 @@ class NaturalisticEnvironment(BaseEnvironment):
                     plt.pause(0.0001)
 
         # Resolve if fish falls out of bounds.
-        if self.fish.body.position[0] < 2 or self.fish.body.position[1] < 2 or \
-                self.fish.body.position[0] > self.env_variables["width"] - 2 or \
-                self.fish.body.position[1] > self.env_variables["height"] - 2:
-            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 5, self.env_variables["width"]-6),
-                                        np.clip(self.fish.body.position[1], 5, self.env_variables["height"]-6))
+        if self.fish.body.position[0] < 4 or self.fish.body.position[1] < 4 or \
+                self.fish.body.position[0] > self.env_variables["width"] - 4 or \
+                self.fish.body.position[1] > self.env_variables["height"] - 4:
+            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 6, self.env_variables["width"]-7),
+                                        np.clip(self.fish.body.position[1], 6, self.env_variables["height"]-7))
             self.fish.body.position = new_position
 
         if self.new_simulation:
