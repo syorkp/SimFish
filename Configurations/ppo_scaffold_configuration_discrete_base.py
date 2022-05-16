@@ -36,7 +36,7 @@ params = {
        'rnn_state_computation': False,
        'learning_rate_actor': 0.000001,  # Formerly 0.000001
        'learning_rate_critic': 0.000001,  # Formerly 0.000001
-       'lambda_entropy': 0.01,
+       'lambda_entropy': 0.0,
 
        # Learning (PPO Continuous Only)
        'multivariate': False,
@@ -489,7 +489,7 @@ env = {
 #           'input_sigmas': True
 #           }
 
-scaffold_name = "ppo_discrete_eg_15"
+scaffold_name = "ppo_discrete_eg_ne_15"
 
 
 changes = [
