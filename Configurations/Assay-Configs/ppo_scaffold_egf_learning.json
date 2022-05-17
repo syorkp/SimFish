@@ -28,6 +28,7 @@
     "rnn_dim_shared": 512,
     "extra_rnn": false,
     "save_gifs": true,
+    "lambda_entropy": 0.01,
     "reflected": true,
     "base_network_layers": {
         "conv1l": [
