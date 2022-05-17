@@ -163,7 +163,7 @@
     "impulse_effect_noise_sd_c": 0,
     "angle_effect_noise_sd_x": 0,
     "angle_effect_noise_sd_c": 0,
-    "fraction_capture_permitted": 0.875,
+    "fraction_capture_permitted": 0.75,
     "capture_angle_deviation_allowance": 3.141592653589793,
     "anneling_steps": 500000
 }

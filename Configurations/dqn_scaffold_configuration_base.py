@@ -339,8 +339,8 @@ changes += [["PCI", 0.3, "max_epLength", 2000, "do_to_params"]]
 # 4) Prey Capture 15-35
 changes += [["PCI", 0.4, "prey_fluid_displacement", True]]
 changes += build_changes_list_gradual("PCI", 0.4, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
-changes += build_changes_list_gradual("PCI", 0.4, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.5, 8)
-changes += build_changes_list_gradual("PCI", 0.4, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (34*np.pi)/180, 8)
+changes += build_changes_list_gradual("PCI", 0.4, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.5, 4)
+changes += build_changes_list_gradual("PCI", 0.4, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (34*np.pi)/180, 4)
 changes += [["PCI", 0.4, "prey_num", 20]]
 changes += [["PCI", 0.4, "capture_swim_extra_cost", 100]]
 changes += [["PCI", 0.4, "anneling_steps", 1000000]]

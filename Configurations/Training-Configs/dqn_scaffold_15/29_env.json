@@ -46,7 +46,7 @@
     "prey_inertia": 40.0,
     "prey_size": 1.0,
     "prey_size_visualisation": 4.0,
-    "prey_num": 30,
+    "prey_num": 20,
     "prey_impulse": 0.0,
     "prey_escape_impulse": 2,
     "prey_sensing_distance": 20,
@@ -164,6 +164,6 @@
     "angle_effect_noise_sd_x": 0,
     "angle_effect_noise_sd_c": 0,
     "fraction_capture_permitted": 0.5,
-    "capture_angle_deviation_allowance": 2.823070065100828,
+    "capture_angle_deviation_allowance": 0.5934119456780723,
     "anneling_steps": 500000
 }
