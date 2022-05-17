@@ -236,7 +236,8 @@ def randomly_switching_fish(n_sequences=100):
     return model_of_action_switching(sequences)
 
 
-# data = load_data("new_even_prey_ref-2", "Behavioural-Data-Free", f"Prey-1")
+data = load_data("ppo_scaffold_15-2", "Behavioural-Data-Free", f"Naturalistic-1")
+x = True
 # colored_2d_track_turns(data["position"][300:425], data["behavioural choice"][300:425])
 #
 # for i in range(1, 10):

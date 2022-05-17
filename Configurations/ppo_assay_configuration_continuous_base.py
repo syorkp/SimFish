@@ -37,7 +37,7 @@ params = {
        'rnn_state_computation': False,
        'learning_rate_actor': 0.000001,  # Formerly 0.000001
        'learning_rate_critic': 0.000001,  # Formerly 0.000001
-       'lambda_entropy': 0.001,
+       'lambda_entropy': 0.00,
 
        # Learning (PPO Continuous Only)
        'multivariate': True,
@@ -190,7 +190,7 @@ env = {
        'impose_action_mask': True,
 
        # Sensory inputs
-       'energy_state': False,
+       'energy_state': True,
        'in_light': False,
        'salt': False,  # Inclusion of olfactory salt input and salt death.
        "use_dynamic_network": False,
@@ -310,7 +310,7 @@ env = {
 }
 
 # Equal to that given in the file name.
-environment_name = "ppo_continuous_csr"
+environment_name = "ppo_scaffold_15"
 
 with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)

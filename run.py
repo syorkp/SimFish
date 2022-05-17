@@ -3637,9 +3637,9 @@ ppo_discrete_eg_ne_15 = [
 ppo_assay_test = [
     {
         "Model Name": "ppo_scaffold_egf_min_ms_wr_csr_10",
-        "Environment Name": "ppo_continuous_csr",
+        "Environment Name": "ppo_scaffold_egf",
         "Assay Configuration Name": "Behavioural-Data-Free",
-        "Trial Number": 2,
+        "Trial Number": 1,
         "Run Mode": "Assay",
         "Tethered": False,
         "Realistic Bouts": True,
@@ -3656,7 +3656,7 @@ ppo_assay_test = [
             {
                 "assay id": "Naturalistic-1",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 100,
+                "duration": 1000,
                 "Tethered": False,
                 "save frames": True,
                 "use_mu": True,
@@ -3666,9 +3666,81 @@ ppo_assay_test = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions"],
-                "behavioural recordings": ["environmental positions"],
-                "network recordings": ["rnn state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "ablations": []
+            },
+            {
+                "assay id": "Naturalistic-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "ablations": []
+            },
+            {
+                "assay id": "Naturalistic-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "ablations": []
+            },
+            {
+                "assay id": "Naturalistic-4",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "ablations": []
+            },
+            {
+                "assay id": "Naturalistic-5",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
                 "ablations": []
             },
             ],
@@ -3756,5 +3828,5 @@ dqn_scaffold_15a = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_15a, parallel_jobs=4)
+manager = TrialManager(ppo_assay_test, parallel_jobs=4)
 manager.run_priority_loop()

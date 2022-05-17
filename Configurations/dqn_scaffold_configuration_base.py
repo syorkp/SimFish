@@ -352,7 +352,6 @@ changes += [["PCI", 0.4, "probability_of_predator", 0.01]]
 changes += [["PCI", 0.4, "anneling_steps", 500000]]
 
 # 6) Other Behaviours
-# changes += [["PAI", 500.0, "salt", True]]
 changes += [["PCI", 0.4, "current_setting", "Circular"]]
 
 # 7) Final Features
