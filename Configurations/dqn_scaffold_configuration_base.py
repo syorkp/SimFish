@@ -310,7 +310,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_14"
+scaffold_name = "dqn_scaffold_15"
 
 # 2-9
 changes = [
@@ -339,14 +339,16 @@ changes += [["PCI", 0.3, "max_epLength", 2000, "do_to_params"]]
 # 4) Prey Capture 15-35
 changes += [["PCI", 0.4, "prey_fluid_displacement", True]]
 changes += build_changes_list_gradual("PCI", 0.4, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
-changes += build_changes_list_gradual("PCI", 0.4, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25, 8)
-changes += build_changes_list_gradual("PCI", 0.4, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (17*np.pi)/180, 8)
+changes += build_changes_list_gradual("PCI", 0.4, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.5, 8)
+changes += build_changes_list_gradual("PCI", 0.4, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (34*np.pi)/180, 8)
 changes += [["PCI", 0.4, "prey_num", 20]]
+changes += [["PCI", 0.4, "capture_swim_extra_cost", 100]]
 changes += [["PCI", 0.4, "anneling_steps", 1000000]]
 
 # 5) Predator avoidance
 changes += [["PCI", 0.4, "probability_of_predator", 0.01]]
 # TODO: Complex predator
+
 changes += [["PCI", 0.4, "anneling_steps", 500000]]
 
 # 6) Other Behaviours
@@ -354,9 +356,6 @@ changes += [["PCI", 0.4, "anneling_steps", 500000]]
 changes += [["PCI", 0.4, "current_setting", "Circular"]]
 
 # 7) Final Features
-changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_x", env["impulse_effect_noise_sd_x"], 0.98512558, 8)
-changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_c", env["impulse_effect_noise_sd_c"], 0.06, 8)
-changes += build_changes_list_gradual("PCI", 0.4, "angle_effect_noise_sd_x", env["angle_effect_noise_sd_x"], 0.86155083, 8)
-changes += build_changes_list_gradual("PCI", 0.4, "angle_effect_noise_sd_c", env["angle_effect_noise_sd_c"], 0.0010472, 8)
+# Motor effect noise (only for continuous)
 
 create_scaffold(scaffold_name, env, params, changes)
