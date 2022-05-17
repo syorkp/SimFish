@@ -2,7 +2,7 @@ import numpy as np
 
 
 def reset_salt_gradient():
-    salt_concentration_decay = 0.01
+    salt_concentration_decay = 0.005
     max_salt_damage = 0.02
     xp, yp = np.arange(1500), np.arange(1500)
 
