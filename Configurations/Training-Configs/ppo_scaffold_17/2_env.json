@@ -151,7 +151,7 @@
     "trajectory_A": 5.0,
     "trajectory_B": 2.5,
     "consumption_energy_gain": 1.0,
-    "action_reward_scaling": 1942,
+    "action_reward_scaling": 10000,
     "consumption_reward_scaling": 1000000,
     "wall_reflection": true,
     "wall_touch_penalty": 0.2,
