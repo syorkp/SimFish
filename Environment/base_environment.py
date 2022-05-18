@@ -27,9 +27,13 @@ class BaseEnvironment:
                         model(self.env_variables["width"]) / model(1500))
             print(f"New bkg scatter: {self.env_variables['bkg_scatter']}")
 
-
             max_photoreceptor_rf_size = max([self.env_variables['uv_photoreceptor_rf_size'],
                                              self.env_variables['red_photoreceptor_rf_size']])
+            if "light_gradient" in self.env_variables:
+                light_gradient = self.env_variables['light_gradient']
+            else:
+                light_gradient = False
+
             self.board = NewDrawingBoard(self.env_variables['width'], self.env_variables['height'],
                                          decay_rate=self.env_variables['decay_rate'],
                                          photoreceptor_rf_size=max_photoreceptor_rf_size,
@@ -44,7 +48,8 @@ class BaseEnvironment:
                                          light_gain=self.env_variables['light_gain'],
                                          red_occlusion_gain=self.env_variables['red_occlusion_gain'],
                                          uv_occlusion_gain=self.env_variables['uv_occlusion_gain'],
-                                         red2_occlusion_gain=self.env_variables['red2_occlusion_gain']
+                                         red2_occlusion_gain=self.env_variables['red2_occlusion_gain'],
+                                         light_gradient=light_gradient,
                                          )
         else:
             self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])

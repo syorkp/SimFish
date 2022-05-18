@@ -176,7 +176,7 @@ def rewards_vs_energy_state(trajectory_A, trajectory_B,):
 
 ci = 0.00002
 ca = 0.00002
-baseline_decrease = 0.0003
+baseline_decrease = 0.003
 trajectory_A = 5.0
 trajectory_B = 2.5
 consumption_energy_gain = 1.0

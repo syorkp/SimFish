@@ -13,7 +13,7 @@ class NewDrawingBoard:
     def __init__(self, width, height, decay_rate, photoreceptor_rf_size, using_gpu, visualise_mask, prey_size=4,
                  predator_size=100, visible_scatter=0.3, background_grating_frequency=50, dark_light_ratio=0.0,
                  dark_gain=0.01, light_gain=1.0, red_occlusion_gain=1.0, uv_occlusion_gain=1.0,
-                 red2_occlusion_gain=1.0):
+                 red2_occlusion_gain=1.0, light_gradient=False):
 
         self.using_gpu = using_gpu
 
@@ -26,6 +26,7 @@ class NewDrawingBoard:
         self.height = height
         self.decay_rate = decay_rate
         self.light_gain = light_gain
+        self.light_gradient = light_gradient
         self.photoreceptor_rf_size = photoreceptor_rf_size
         self.db = None
         self.db_visualisation = None
@@ -687,8 +688,11 @@ class NewDrawingBoard:
     def get_luminance_mask(self, dark_light_ratio, dark_gain):
         dark_field_length = int(self.width * dark_light_ratio)
         luminance_mask = self.chosen_math_library.ones((self.width, self.height, 1))
-        luminance_mask[:dark_field_length, :, :] *= dark_gain
-        luminance_mask[dark_field_length:, :, :] *= self.light_gain
+        if self.light_gradient:
+            ...
+        else:
+            luminance_mask[:dark_field_length, :, :] *= dark_gain
+            luminance_mask[dark_field_length:, :, :] *= self.light_gain
         return luminance_mask
 
     def get_masked_pixels(self, fish_position, prey_locations, predator_locations):

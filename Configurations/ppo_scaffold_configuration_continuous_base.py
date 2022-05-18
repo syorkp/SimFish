@@ -152,7 +152,8 @@ env = {
        'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
        'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
-       'dark_light_ratio': 0.3,  # fraction of arena in the dark
+       'dark_light_ratio': 0.0,  # fraction of arena in the dark
+       'light_gradient': True,
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001; 0.01
        'dark_gain': 60.0,  # gain of brightness in the dark side
@@ -196,7 +197,7 @@ env = {
        'in_light': False,
        'salt': False,  # Inclusion of olfactory salt input and salt death.
        "use_dynamic_network": False,
-       'salt_concentration_decay': 0.01,  # Scale for exponential salt concentration decay from source.
+       'salt_concentration_decay': 0.002,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
        'max_salt_damage': 0.02,  # Salt damage at centre of source.
 
@@ -277,8 +278,8 @@ env = {
        'max_isomerization_size': 0.0,
 
        # Energy state and hunger-based rewards
-       'ci': 0.000002,
-       'ca': 0.000002,
+       'ci': 0.00002,
+       'ca': 0.00002,
        'baseline_decrease': 0.003,
        'trajectory_A': 5.0,
        'trajectory_B': 2.5,
