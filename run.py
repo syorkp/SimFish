@@ -3761,7 +3761,7 @@ dqn_assay_test = [
         "Continuous Actions": False,
         "Learning Algorithm": "DQN",
         "Priority": 2,
-        "Using GPU": False,
+        "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
