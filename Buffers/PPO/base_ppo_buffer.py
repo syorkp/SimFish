@@ -237,8 +237,6 @@ class BasePPOBuffer:
         except ValueError:
             assay_group = hdf5_file.get(assay_id)
 
-        # TODO: Save step
-
         if "observation" in self.recordings:
             self.create_data_group("observation", np.array(self.observation_buffer), assay_group)
 
