@@ -3,9 +3,10 @@ Assay-Output
 Training-Output
 GPU-Caches
 
-/Analysis/Training-Data/Action-Use-Data/
-/Analysis/Training-Data/Metrics
+/Analysis/Training/Action-Use-Data/
+/Analysis/Training/Metrics
 /Analysis/Action-Choice-Data/
+/Analysis/Data/
 /Analysis/__pycache__/
 
 /Analysis/Calibration/Zimmerman/

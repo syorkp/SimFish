@@ -3,6 +3,20 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Calibration/Motor-Effect-Noise/Bolton et al. (2019)" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Calibration/Motor-Effect-Noise/Marques" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Calibration/Motor-Effect-Noise/Motor-Noise-Data" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Calibration/Prey-Tracking/Particle-Tracking-Data" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Calibration/Visual-Distance/Luminance-Distinguishability" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Calibration/Visual-Distance/LuminanceCalibration" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Calibration/Visual-Distance/SNR" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Calibration/Image" />
+      <excludeFolder url="file://$MODULE_DIR$/Assay-Output" />
+      <excludeFolder url="file://$MODULE_DIR$/Training-Output" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Data" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Data/Action-Choice-Data" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Data/Action-Use-Data" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Data/Metrics" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -268,7 +268,6 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
     frames *= 255
     make_gif(frames, f"{model_name}-4-behaviour.gif", duration=len(frames) * 0.03, true_image=True)
 
-
 # model_name = "parameterised_speed_test_fast-1"
 model_name = "ppo_scaffold_version_on_8_se-1"
 data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
