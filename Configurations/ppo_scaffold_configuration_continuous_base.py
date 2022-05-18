@@ -285,7 +285,7 @@ env = {
        'consumption_energy_gain': 1.0,
 
        # Reward
-       'action_reward_scaling': 0,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
+       'action_reward_scaling': 1942,  # Arbitrary (practical) hyperparameter for penalty for action
        'consumption_reward_scaling': 1000000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
        'wall_reflection': True,
@@ -311,7 +311,7 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_16"
+scaffold_name = "ppo_scaffold_17"
 
 
 changes = [
