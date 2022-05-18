@@ -104,8 +104,11 @@ class DQNAssayService(AssayService, BaseDQN):
                                                                        a=a, rnn_state=rnn_state)
             o = o1
 
+            print(self.step_number)
+
             if d:
                 break
+
         self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id)
 
         if assay["save frames"]:
