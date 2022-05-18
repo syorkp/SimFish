@@ -63,7 +63,7 @@
     "distance_from_fish": 498,
     "probability_of_predator": 0.01,
     "dark_light_ratio": 0.0,
-    "light_gradient": true,
+    "light_gradient": 0,
     "read_noise_sigma": 0.0,
     "bkg_scatter": 0.1,
     "dark_gain": 60.0,

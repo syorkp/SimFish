@@ -18,7 +18,8 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 class AssayService(BaseService):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_environment, new_simulation, assays, set_random_seed, assay_config_name):
+                 config_name, realistic_bouts, continuous_environment, new_simulation, assays, set_random_seed,
+                 assay_config_name, checkpoint):
 
         # Set random seed
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
@@ -32,6 +33,7 @@ class AssayService(BaseService):
         # Assay configuration and save location
         self.data_save_location = f"./Assay-Output/{self.model_id}"
         self.assay_configuration_id = assay_config_name
+        self.checkpoint = checkpoint
 
         # Configuration
         self.current_configuration_location = f"./Configurations/Assay-Configs/{config_name}"
@@ -67,7 +69,10 @@ class AssayService(BaseService):
         self.saver = tf.train.Saver(max_to_keep=5)
         self.init = tf.global_variables_initializer()
         checkpoint = tf.train.get_checkpoint_state(self.model_location)
-        self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
+        checkpoint_path = checkpoint.model_checkpoint_path
+        if self.checkpoint is not None:
+            checkpoint_path = self.model_location + f"/model-{self.checkpoint}.cptk"
+        self.saver.restore(self.sess, checkpoint_path)
         print("Model loaded")
         for assay in self.assays:
             if assay["ablations"]:

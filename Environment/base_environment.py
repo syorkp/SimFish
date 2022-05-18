@@ -32,7 +32,7 @@ class BaseEnvironment:
             if "light_gradient" in self.env_variables:
                 light_gradient = self.env_variables['light_gradient']
             else:
-                light_gradient = False
+                light_gradient = 0
 
             self.board = NewDrawingBoard(self.env_variables['width'], self.env_variables['height'],
                                          decay_rate=self.env_variables['decay_rate'],

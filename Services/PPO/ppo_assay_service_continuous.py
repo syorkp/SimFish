@@ -26,7 +26,8 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
                                         set_random_seed=trial["set random seed"],
                                         assay_config_name=trial["Assay Configuration Name"],
 
-                                        sb_emulator=trial["SB Emulator"]
+                                        sb_emulator=trial["SB Emulator"],
+                                        checkpoint=trial["Checkpoint"],
                                         )
     service.run()
 
@@ -35,8 +36,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_environment, new_simulation, assays, set_random_seed,
-                 assay_config_name,
-                 sb_emulator=False):
+                 assay_config_name, sb_emulator, checkpoint):
         """
         Runs a set of assays provided by the run configuraiton.
         """
@@ -54,7 +54,8 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                          new_simulation=new_simulation,
                          assays=assays,
                          set_random_seed=set_random_seed,
-                         assay_config_name=assay_config_name)
+                         assay_config_name=assay_config_name,
+                         checkpoint=checkpoint)
 
         self.multivariate = self.learning_params["multivariate"]
 

@@ -165,10 +165,29 @@ class TrainingService(BaseService):
             # Reset sigma progression
             if self.continuous_actions and self.environment_params["sigma_scaffolding"]:
                 self.sigma_total_steps = 0
+
             if self.learning_params["epsilon_greedy"]:
                 self.epsilon = self.learning_params["startE"]
                 self.step_drop = (self.learning_params['startE'] - self.learning_params['endE']) / self.learning_params[
                     'anneling_steps']
+
+            # Make sure visual system parameters are updated.
+            if self.new_simulation:
+                self.simulation.fish.left_eye.red_photoreceptor_rf_size = self.environment_params["red_photoreceptor_rf_size"]
+                self.simulation.fish.left_eye.uv_photoreceptor_rf_size = self.environment_params["uv_photoreceptor_rf_size"]
+                self.simulation.fish.left_eye.env_variables = self.environment_params
+                self.simulation.fish.left_eye.get_repeated_computations()
+
+                self.simulation.fish.right_eye.red_photoreceptor_rf_size = self.environment_params["red_photoreceptor_rf_size"]
+                self.simulation.fish.right_eye.uv_photoreceptor_rf_size = self.environment_params["uv_photoreceptor_rf_size"]
+                self.simulation.fish.right_eye.env_variables = self.environment_params
+                self.simulation.fish.right_eye.get_repeated_computations()
+
+                self.simulation.board.light_gain = self.environment_params["light_gain"]
+                if "light_gradient" in self.environment_params:
+                    self.simulation.board.light_gradient = self.environment_params["light_gradient"]
+
+                self.simulation.create_current()
         else:
             self.switched_configuration = False
 
@@ -236,12 +255,20 @@ class TrainingService(BaseService):
                 value=[tf.Summary.Value(tag="prey capture index (fraction caught)", simple_value=fraction_prey_caught)])
             self.writer.add_summary(prey_caught_summary, self.episode_number)
 
+            prey_capture_rate = fraction_prey_caught / self.simulation.num_steps
+            prey_capture_rate_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="prey capture rate (fraction caught per step)", simple_value=prey_capture_rate)])
+            self.writer.add_summary(prey_capture_rate_summary, self.episode_number)
+
             if (prey_caught + self.simulation.failed_capture_attempts) != 0:
 
                 capture_success_rate = prey_caught / (prey_caught + self.simulation.failed_capture_attempts)
                 capture_success_summary = tf.Summary(
                     value=[tf.Summary.Value(tag="capture success rate", simple_value=capture_success_rate)])
                 self.writer.add_summary(capture_success_summary, self.episode_number)
+
+
+
 
         if self.environment_params["probability_of_predator"] != 0:
             predator_avoided_index = predators_avoided / self.environment_params["probability_of_predator"]
@@ -273,8 +300,13 @@ class TrainingService(BaseService):
             self.writer.add_summary(salt_summary, self.episode_number)
 
         if self.environment_params["dark_light_ratio"] > 0:
-            light_dominance = (1-self.environment_params["dark_light_ratio"]) / 0.5
-            fraction_in_light_normalised = np.mean(np.array(self.simulation.in_light_history) / light_dominance)
+            light_dominance = 0.5 / (1-self.environment_params["dark_light_ratio"])
+            dark_discount = 0.5 / (self.environment_params["dark_light_ratio"])
+            steps_in_light = np.sum((np.array(self.simulation.in_light_history) > 0) * 1)
+            steps_in_light *= light_dominance
+            steps_in_dark = self.simulation.num_steps - steps_in_light
+            steps_in_dark *= dark_discount
+            fraction_in_light_normalised = steps_in_light/(steps_in_dark+steps_in_light)
             salt_summary = tf.Summary(
                 value=[tf.Summary.Value(tag="Phototaxis Index",
                                         simple_value=fraction_in_light_normalised)])

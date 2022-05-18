@@ -13,7 +13,7 @@ class NewDrawingBoard:
     def __init__(self, width, height, decay_rate, photoreceptor_rf_size, using_gpu, visualise_mask, prey_size=4,
                  predator_size=100, visible_scatter=0.3, background_grating_frequency=50, dark_light_ratio=0.0,
                  dark_gain=0.01, light_gain=1.0, red_occlusion_gain=1.0, uv_occlusion_gain=1.0,
-                 red2_occlusion_gain=1.0, light_gradient=False):
+                 red2_occlusion_gain=1.0, light_gradient=0):
 
         self.using_gpu = using_gpu
 
@@ -688,21 +688,19 @@ class NewDrawingBoard:
     def get_luminance_mask(self, dark_light_ratio, dark_gain):
         dark_field_length = int(self.width * dark_light_ratio)
         luminance_mask = self.chosen_math_library.ones((self.width, self.height, 1))
-        if self.light_gradient:
-            gradient_size = 100
-            scaling_gradient = self.chosen_math_library.ones((self.width))
-            scaling_gradient[:dark_field_length] *= dark_gain
-            scaling_gradient[dark_field_length:] *= self.light_gain
-            gradient = self.chosen_math_library.linspace(dark_gain, self.light_gain, gradient_size)
-            scaling_gradient[dark_field_length-(gradient_size/2):dark_field_length+(gradient_size/2)] = gradient
+        if self.light_gradient > 0 and dark_field_length > 0:
+            luminance_mask[:dark_field_length, :, :] *= dark_gain
+            luminance_mask[dark_field_length:, :, :] *= self.light_gain
+            gradient = self.chosen_math_library.linspace(dark_gain, self.light_gain, self.light_gradient)
+            gradient = self.chosen_math_library.expand_dims(gradient, 1)
+            gradient = self.chosen_math_library.repeat(gradient, self.height, 1)
+            gradient = self.chosen_math_library.expand_dims(gradient, 2)
+            luminance_mask[int(dark_field_length-(self.light_gradient/2)):int(dark_field_length+(self.light_gradient/2)), :, :] = gradient
 
-            luminance_mask *= scaling_gradient
         else:
             luminance_mask[:dark_field_length, :, :] *= dark_gain
             luminance_mask[dark_field_length:, :, :] *= self.light_gain
 
-        plt.imshow(luminance_mask)
-        plt.show()
         return luminance_mask
 
     def get_masked_pixels(self, fish_position, prey_locations, predator_locations):
@@ -816,8 +814,18 @@ class NewDrawingBoard:
 
     def apply_light(self, dark_col, dark_gain, light_gain, visualisation):
         if visualisation:
-            self.db_visualisation[:dark_col, :] *= dark_gain
-            self.db_visualisation[dark_col:, :] *= light_gain
+            if self.light_gradient > 0:
+                gradient = self.chosen_math_library.linspace(dark_gain, light_gain, self.light_gradient)
+                gradient = self.chosen_math_library.expand_dims(gradient, 1)
+                gradient = self.chosen_math_library.repeat(gradient, self.height, 1)
+                gradient = self.chosen_math_library.expand_dims(gradient, 2)
+                self.db_visualisation[int(dark_col-(self.light_gradient/2)):int(dark_col+(self.light_gradient/2)), :, :] *= gradient
+                self.db_visualisation[:int(dark_col-(self.light_gradient/2)), :] *= dark_gain
+                self.db_visualisation[int(dark_col+(self.light_gradient/2)):, :] *= light_gain
+            else:
+                self.db_visualisation[:dark_col, :] *= dark_gain
+                self.db_visualisation[dark_col:, :] *= light_gain
+
         else:
             self.db[:, :dark_col] *= dark_gain
             self.db[:, dark_col:] *= light_gain

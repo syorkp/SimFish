@@ -151,7 +151,7 @@ env = {
        'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.3,  # fraction of arena in the dark
-       'light_gradient': True,
+       'light_gradient': 200,
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001; 0.01
        'dark_gain': 60.0,  # gain of brightness in the dark side
@@ -311,7 +311,7 @@ env = {
 }
 
 # Equal to that given in the file name.
-environment_name = "ppo_scaffold_15"
+environment_name = "continuous_assay"#"ppo_scaffold_15"
 
 with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)
