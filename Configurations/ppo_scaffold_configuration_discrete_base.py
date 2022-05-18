@@ -275,9 +275,9 @@ env = {
        'max_isomerization_size': 0.0,
 
        # Energy state and hunger-based rewards
-       'ci': 0.000002,
-       'ca': 0.000002,
-       'baseline_decrease': 0.00003,
+       'ci': 0.00002,
+       'ca': 0.00002,
+       'baseline_decrease': 0.003,
        'trajectory_A': 5.0,
        'trajectory_B': 2.5,
        'consumption_energy_gain': 1.0,

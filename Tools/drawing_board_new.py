@@ -689,10 +689,20 @@ class NewDrawingBoard:
         dark_field_length = int(self.width * dark_light_ratio)
         luminance_mask = self.chosen_math_library.ones((self.width, self.height, 1))
         if self.light_gradient:
-            ...
+            gradient_size = 100
+            scaling_gradient = self.chosen_math_library.ones((self.width))
+            scaling_gradient[:dark_field_length] *= dark_gain
+            scaling_gradient[dark_field_length:] *= self.light_gain
+            gradient = self.chosen_math_library.linspace(dark_gain, self.light_gain, gradient_size)
+            scaling_gradient[dark_field_length-(gradient_size/2):dark_field_length+(gradient_size/2)] = gradient
+
+            luminance_mask *= scaling_gradient
         else:
             luminance_mask[:dark_field_length, :, :] *= dark_gain
             luminance_mask[dark_field_length:, :, :] *= self.light_gain
+
+        plt.imshow(luminance_mask)
+        plt.show()
         return luminance_mask
 
     def get_masked_pixels(self, fish_position, prey_locations, predator_locations):
