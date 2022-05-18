@@ -470,7 +470,9 @@ class BaseDQN:
 
         chosen_a = chosen_a[0]
         o1, given_reward, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=chosen_a,
-                                                                                                 activations=(sa,))
+                                                                                                 activations=(sa,),
+                                                                                                 save_frames=self.save_frames,
+                                                                                                 frame_buffer=self.frame_buffer)
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
         # Update buffer
