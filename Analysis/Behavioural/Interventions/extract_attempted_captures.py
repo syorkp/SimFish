@@ -1,5 +1,5 @@
 from Analysis.load_data import load_data
-from Analysis.Behavioural.Discrete.display_action_sequences import display_all_sequences_capture, get_capture_sequences
+from Analysis.Behavioural.Discrete.display_action_sequences_block import display_all_sequences_capture, get_capture_sequences
 from Analysis.Behavioural.Interventions.compare_behavioural_measures import get_both_measures
 import matplotlib.pyplot as plt
 import seaborn as sns

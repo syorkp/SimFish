@@ -83,7 +83,7 @@ def display_average_sequence(sequences):
 
 
 # VERSION 2"Behavioural-Data-Free", "Naturalistic"
-capture_sequences1 = get_capture_sequences("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 5)
+capture_sequences1 = get_capture_sequences("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 10)
 display_all_sequences_escape(capture_sequences1)
 
 

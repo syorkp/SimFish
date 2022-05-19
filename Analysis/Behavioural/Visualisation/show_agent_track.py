@@ -1,23 +1,9 @@
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-
-from Analysis.Behavioural.Discrete.show_spatial_density import get_action_name
-
-
-def create_color_map(actions):
-    colors = []
-    for action in actions:
-        if action == "RT Right" or action == "RT Left":
-            colors.append("green")
-        elif action == "sCS":
-            colors.append("red")
-        elif action == "J-turn Left" or action == "J-turn Right":
-            colors.append("yellow")
-        else:
-            colors.append("purple")
-
-    return colors
+from Analysis.Behavioural.Discrete.show_spatial_density_discrete import get_action_name
+from Analysis.Behavioural.Tools.get_action_colours import create_color_map
+from Analysis.load_data import load_data
 
 
 def colored_2d_track(position, action_choice, capture_positions=None):
@@ -74,29 +60,25 @@ def colored_2d_track_turns(position, action_choice, orientation_changes):
     plt.show()
 
 
-# data = load_data("new_differential_prey_ref-6", "Behavioural-Data-Free-1", "Naturalistic-8")
-# osition = data["position"]
-# action_choice = data["behavioural choice"]
+for i in range(1, 11):
+    data = load_data("even_prey_ref-5", "Behavioural-Data-Free", f"Naturalistic-{i}")
 
-# for i in range(1, 10):
-#     data = load_data("even_prey_ref-5", "Behavioural-Data-Free", f"Naturalistic-{i}")
-#
-#     position = data["position"]
-#     action_choice = data["behavioural choice"]
-#     ac, timestamps = extract_predator_action_sequences(data)
-#     # timestamps = random.sample(timestamps, 20)
-#     capture_timestamps = [i[-1] for i in timestamps]
-#     capture_positions = [p for i, p in enumerate(position) if i in capture_timestamps]
-#     #
-#     ts = []
-#     for i, t in enumerate(timestamps):
-#         if 8 in ac[i] or 7 in ac[i]:
-#             ts += t
-#     position = [p for i, p in enumerate(position) if i in ts]
-#     action_choice = [a for i, a in enumerate(action_choice) if i in ts]
-#     colored_2d_track(position, action_choice)
+    position = data["position"]
+    action_choice = data["behavioural choice"]
+    ac, timestamps = extract_predator_action_sequences(data)
+    # timestamps = random.sample(timestamps, 20)
+    capture_timestamps = [i[-1] for i in timestamps]
+    capture_positions = [p for i, p in enumerate(position) if i in capture_timestamps]
+    #
+    ts = []
+    for i, t in enumerate(timestamps):
+        if 8 in ac[i] or 7 in ac[i]:
+            ts += t
+    position = [p for i, p in enumerate(position) if i in ts]
+    action_choice = [a for i, a in enumerate(action_choice) if i in ts]
+    colored_2d_track(position, action_choice)
 
-# #
+
 # data = load_data("even_prey_ref-3", "Behavioural-Data-Free", "Prey-1")
 # # data = load_data("new_differential_prey_ref-6", "Behavioural-Data-Free-1", "Naturalistic-2")
 # position = data["position"]

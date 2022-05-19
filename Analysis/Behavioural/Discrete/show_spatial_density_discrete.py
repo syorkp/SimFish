@@ -5,6 +5,7 @@ from matplotlib.lines import Line2D
 import matplotlib
 
 from Analysis.load_data import load_data
+from Analysis.Behavioural.Tools.get_action_name import get_action_name
 
 """
 To create a graph of the style in Figure 3b of Marques et al. (2018)
@@ -70,32 +71,6 @@ def get_clouds_with_action(data, action=0):
             predator_cloud = predator_cloud + egocentric_predators
 
     return prey_cloud, predator_cloud
-
-
-def get_action_name(action_num):
-    if action_num == 0:
-        action_name = "Slow2"
-    elif action_num == 1:
-        action_name = "RT Right"
-    elif action_num == 2:
-        action_name = "RT Left"
-    elif action_num == 3:
-        action_name = "sCS"
-    elif action_num == 4:
-        action_name = "J-turn Right"
-    elif action_num == 5:
-        action_name = "J-turn Left"
-    elif action_num == 6:
-        action_name = "Rest"
-    elif action_num == 7:
-        action_name = "SLC Right"
-    elif action_num == 8:
-        action_name = "SLC Left"
-    elif action_num == 9:
-        action_name = "AS"
-    else:
-        action_name = "None"
-    return action_name
 
 
 class AnchoredHScaleBar(matplotlib.offsetbox.AnchoredOffsetbox):
@@ -330,8 +305,8 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
 
 # VERSION 2
 
-get_all_density_plots_all_subsets("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 5)
-create_j_turn_overlap_plot("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 5)
+get_all_density_plots_all_subsets("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 10)
+create_j_turn_overlap_plot("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 10)
 
 # VERSION 1
 # get_all_density_plots_all_subsets("new_even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
