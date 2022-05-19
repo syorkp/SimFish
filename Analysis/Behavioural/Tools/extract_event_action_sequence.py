@@ -29,18 +29,7 @@ def extract_predator_action_sequences(data):
     return action_sequences, predator_sequence_timestamps
 
 
-def extract_consumption_action_sequences(data, n=20):
-    """Returns all action sequences that occur n steps before consumption"""
-    consumption_timestamps = [i for i, a in enumerate(data["consumed"]) if a == 1]
-    prey_c_t = []
-    action_sequences = []
-    while len(consumption_timestamps) > 0:
-        index = consumption_timestamps.pop(0)
-        prey_capture_timestamps = [i for i in range(index-n+1, index+1) if i >= 0]
-        prey_c_t.append(prey_capture_timestamps)
-        action_sequence = [data["action"][i] for i in prey_capture_timestamps]
-        action_sequences.append(action_sequence)
-    return action_sequences, prey_c_t
+
 
 
 def create_density_matrix(sequences):
@@ -50,14 +39,6 @@ def create_density_matrix(sequences):
         for j, n in enumerate(sequence):
             colour_density_matrix[n][j] += 1
     return colour_density_matrix
-
-
-def get_capture_sequences(model_name, assay_config, assay_id, n):
-    all_capture_sequences = []
-    for i in range(1, n+1):
-        data = load_data(model_name, assay_config, f"{assay_id}-{i}")
-        all_capture_sequences = all_capture_sequences + extract_consumption_action_sequences(data)[0]
-    return all_capture_sequences
 
 
 def get_escape_sequences(model_name, assay_config, assay_id, n):

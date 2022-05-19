@@ -4,11 +4,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 
-# from Analysis.Behavioural.Legacy.MarkovChain.markovchain import MarkovChain
-
-
 from Analysis.load_data import load_data
-
+from Analysis.Behavioural.Tools.extract_capture_sequences import get_capture_sequences
+from Analysis.Behavioural.Tools.extract_exploration_sequences import get_exploration_sequences
 
 def get_first_order_transition_counts(p1, p2, p3, n):
     transition_counts = np.zeros((10, 10))
@@ -366,9 +364,19 @@ def get_modal_sequences(transition_probabilities, order=3, number=10):
     return ordered_sequences
 
 
-data = load_data("dqn_scaffold_14-1", f"Behavioural-Data-Free", f"Naturalistic-1")
+# Capture sequences
+capture_sequences = get_capture_sequences("dqn_scaffold_14-1", f"Behavioural-Data-Free", "Naturalistic", 10)
+transition_counts = get_first_order_transition_counts_from_sequences(capture_sequences)
+tp = compute_transition_probabilities(transition_counts)
+visualisation_method_2(tp)
 
-x = True
+# Exploration sequences
+exploration_sequences = get_exploration_sequences("dqn_scaffold_14-1", f"Behavioural-Data-Free", "Naturalistic", 10)
+transition_counts = get_first_order_transition_counts_from_sequences(exploration_sequences)
+tp = compute_transition_probabilities(transition_counts)
+visualisation_method_2(tp)
+
+# VERSION 1
 # free_swimiming = []
 # for i in range(1, 11):
 #     cs = list(load_data("new_even_prey_ref-1", f"Behavioural-Data-Free", f"Naturalistic-{i}")["behavioural choice"])

@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from Analysis.Behavioural.Discrete.extract_event_action_sequence import get_capture_sequences
+from Analysis.Behavioural.Tools.extract_capture_sequences import get_capture_sequences
+from Analysis.Behavioural.Tools.extract_exploration_sequences import get_exploration_sequences
 
 
 def display_sequences(sequences):
@@ -16,22 +17,7 @@ def display_sequences(sequences):
     plt.show()
 
 
-def display_all_sequences_capture(sequences):
-    # sns.set()
-    sequences.sort(key=len)
-    plot_dim = max([len(seq) for seq in sequences])
-
-    color_set = ['b', 'g', 'g', 'r', 'y', 'y', "k", "m", "m", "k"]
-    plt.figure(figsize=(5, 15))
-    for i, seq in enumerate(sequences):
-        for j, a in enumerate(reversed(seq)):
-            j = plot_dim - j
-            plt.fill_between((j, j+1), i, i+1, color=color_set[a])
-    plt.axis("scaled")
-    plt.show()
-
-
-def display_all_sequences_escape(sequences):
+def display_all_sequences(sequences):
     sns.set()
     sequences.sort(key=len)
     plot_dim = max([len(seq) for seq in sequences])
@@ -82,10 +68,14 @@ def display_average_sequence(sequences):
     # plt.show()
 
 
-# VERSION 2"Behavioural-Data-Free", "Naturalistic"
-capture_sequences1 = get_capture_sequences("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 10)
-display_all_sequences_escape(capture_sequences1)
+# VERSION 2
+# Capture sequences
+capture_sequences = get_capture_sequences("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 10)
+display_all_sequences(capture_sequences)
 
+# Exploration sequences
+exploration_sequences = get_exploration_sequences("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 10)
+display_all_sequences(exploration_sequences)
 
 # VERSION 1
 

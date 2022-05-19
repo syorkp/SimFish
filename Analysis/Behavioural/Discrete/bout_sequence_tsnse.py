@@ -1,12 +1,8 @@
-import numpy as np
 from sklearn.manifold import TSNE
 from matplotlib import pyplot as plt
 import seaborn as sns
 
-from Analysis.Behavioural.Discrete.bout_transition_probabilities import get_third_order_transition_counts_from_sequences, \
-    create_third_order_transition_count_matrix, compute_transition_probabilities, convert_probabilities_to_vectors, \
-    get_second_order_transition_counts, get_third_order_transition_counts
-from Analysis.Behavioural.Discrete.extract_event_action_sequence import get_escape_sequences, get_capture_sequences
+from Analysis.Behavioural.Discrete.bout_transition_probabilities import create_third_order_transition_count_matrix, compute_transition_probabilities
 from Analysis.load_data import load_data
 
 

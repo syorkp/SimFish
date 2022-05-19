@@ -4,11 +4,14 @@ from scipy.interpolate import UnivariateSpline
 import numpy as np
 
 from Analysis.load_data import load_data
+from Analysis.Behavioural.Tools.extract_exploration_sequences import extract_exploration_action_sequences_with_positions
+from Analysis.Behavioural.Tools.extract_turn_sequences import extract_turn_sequences
+from Analysis.Behavioural.Tools.extract_exploration_sequences import extract_exploration_action_sequences_with_fish_angles
 
 
 def plot_turning_sequences(fish_angle):
     # sns.set()
-    fish_angle = fish_angle.tolist()
+
     angle_changes = [fish_angle[i]-fish_angle[i-1] for i, angle in enumerate(fish_angle) if i!=0][-100:]
     # plt.bar(range(len(angle_changes)), angle_changes, color="blue")
     # plt.xlabel("Time (Step)")
@@ -31,47 +34,6 @@ def plot_turning_sequences(fish_angle):
     plt.show()
 
 
-def get_free_swimming_sequences(data):
-    """Requires the following data: position, prey_positions, predator. Assumes square arena 1500."""
-    predator_timestamps = [i for i, a in enumerate(data["predator"]) if a == 1]
-    wall_timestamps = [i for i, p in enumerate(data["position"]) if 200 < p[0] < 1300 and 200<p[1]<1300]
-    prey_timestamps = []
-    sensing_distance = 200
-    for i, p in enumerate(data["position"]):
-        for prey in data["prey_positions"][i]:
-            sensing_area = [[p[0] - sensing_distance,
-                             p[0] + sensing_distance],
-                            [p[1] - sensing_distance,
-                             p[1] + sensing_distance]]
-            near_prey = sensing_area[0][0] <= prey[0] <= sensing_area[0][1] and \
-                         sensing_area[1][0] <= prey[1] <= sensing_area[1][1]
-            if near_prey:
-                prey_timestamps.append(i)
-                break
-    # Check prey near at each step and add to timestamps.
-    null_timestamps = predator_timestamps + wall_timestamps + prey_timestamps
-    null_timestamps = set(null_timestamps)
-    desired_timestamps = [i for i in range(len(data["behavioural choice"])) if i not in null_timestamps]
-    action_sequences = []
-    current_action_sequence = []
-    previous_point = 0
-    for ts in desired_timestamps:
-        if ts - 1 == previous_point:
-            current_action_sequence.append(data["behavioural choice"][ts])
-            previous_point = ts
-        else:
-            if previous_point == 0:
-                current_action_sequence.append(data["behavioural choice"][ts])
-                previous_point = ts
-            else:
-                action_sequences.append(current_action_sequence)
-                current_action_sequence = [data["behavioural choice"][ts]]
-                previous_point = ts
-    if len(current_action_sequence) > 0:
-        action_sequences.append(current_action_sequence)
-    return action_sequences
-
-
 def model_of_action_switching(sequences):
     switch_right_count = 0
     switch_left_count = 0
@@ -82,32 +44,35 @@ def model_of_action_switching(sequences):
     for sequence in sequences:
         if len(sequence) < 5:
             continue
-        if sequence[0] == 1:
+        if sequence[0] == 1 or sequence[0] == 4:
             total_left += 1
-        elif sequence[0] == 2:
+        elif sequence[0] == 2 or sequence[0] == 5:
             total_right += 1
 
         count = 0
         for i, a in enumerate(sequence[1:]):
             count += 1
-            if a == 1:
+            if a == 1 or a == 4:
                 total_left += 1
                 if sequence[i-1] != a:
                     left_durations.append(count)
                     count = 0
                     switch_right_count += 1
-            elif a == 2:
+            elif a == 2 or a == 5:
                 total_right += 1
                 if sequence[i - 1] != a:
                     right_durations.append(count)
                     count = 0
                     switch_left_count += 1
+
     switch_right_p = switch_right_count/total_left
     switch_left_p = switch_left_count/total_right
     return switch_left_p, switch_right_p, left_durations, right_durations
 
 
-def plot_switching_distribution(left_durs, right_durs, left_durs2, right_durs2):
+def cumulative_switching_probability_plot(left_durs, right_durs, left_durs2, right_durs2):
+    """Given two sets of switching latencies, one random and one from a model, plots the cumulative probability of
+    switching direction."""
     left_durs = [i for i in left_durs if i>1]
     right_durs = [i for i in right_durs if i>1]
     left_durs2 = [i for i in left_durs2 if i>1]
@@ -140,14 +105,15 @@ def plot_switching_distribution(left_durs, right_durs, left_durs2, right_durs2):
     plt.show()
 
 
-def new_switching_plot2(mactino_seqeunces):
+def cumulative_turn_direction_plot_multiple_models(action_sequences):
     cum_averages = []
-    for action_sequences in mactino_seqeunces:
-        action_sequences = [seq for seq in action_sequences if len(seq) > 8]
+
+    for action_sequence in action_sequences:
+        action_sequence = [seq for seq in action_sequence if len(seq) > 8]
         transformed_sequences = []
         mxln = 0
 
-        for sequence in action_sequences:
+        for sequence in action_sequence:
             trans = [1 if a == sequence[0] else -1 for a in sequence]
             if len(trans) > mxln:
                 mxln = len(trans)
@@ -177,7 +143,7 @@ def new_switching_plot2(mactino_seqeunces):
     plt.show()
 
 
-def new_switching_plot(action_sequences):
+def cumulative_turn_direction_plot(action_sequences):
     action_sequences = [seq for seq in action_sequences if len(seq) > 8]
     transformed_sequences = []
     mxln = 0
@@ -235,10 +201,24 @@ def randomly_switching_fish(n_sequences=100):
     return model_of_action_switching(sequences)
 
 
-data = load_data("ppo_scaffold_15-2", "Behavioural-Data-Free", f"Naturalistic-1")
-x = True
-# colored_2d_track_turns(data["position"][300:425], data["behavioural choice"][300:425])
-#
+data = load_data("dqn_scaffold_14-1", "Behavioural-Data-Free", f"Naturalistic-1")
+
+# Cumulative turn direction plot
+exploration_timestamps, exploration_sequences, exploration_fish_positions = extract_exploration_action_sequences_with_positions(data)
+turn_exploration_sequences = extract_turn_sequences(exploration_sequences)
+cumulative_turn_direction_plot(turn_exploration_sequences)
+
+# Orientation plot
+exploration_timestamps, exploration_sequences, exploration_fish_orientations = extract_exploration_action_sequences_with_fish_angles(data)
+plot_turning_sequences(exploration_fish_orientations[-2])
+
+# Cumulative probability plot.
+l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
+l2, r2, sl2, sr2 = randomly_switching_fish()
+cumulative_switching_probability_plot(sl, sr, sl2, sr2)
+
+# VERSION 1
+
 # for i in range(1, 10):
 #     data = load_data("new_even_prey_ref-2", "Behavioural-Data-Free", f"Prey-{i}")
 #     colored_2d_track_turns(data["position"][100:500], data["behavioural choice"][100:500])
@@ -277,4 +257,3 @@ x = True
 
 # plot_turning_sequences(data["fish_angle"])
 # colored_2d_track_turns(data["position"][-200:], data["behavioural choice"][-200:])
-x = True
