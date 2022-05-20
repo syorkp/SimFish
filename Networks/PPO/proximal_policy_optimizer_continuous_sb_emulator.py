@@ -166,7 +166,7 @@ class PPONetworkActorMultivariate2(BaseNetwork):
         self.value_loss = self.value_coefficient * tf.reduce_mean(tf.maximum(self.critic_loss_1, self.critic_loss_2))
 
         # Entropy
-        self.entropy = tf.reduce_mean(self.action_distribution.entropy())  # TODO: works with new distribution?
+        self.entropy = tf.reduce_mean(self.action_distribution.entropy())
 
         # Combined loss
         self.entropy_loss = -tf.multiply(self.entropy, self.entropy_coefficient)

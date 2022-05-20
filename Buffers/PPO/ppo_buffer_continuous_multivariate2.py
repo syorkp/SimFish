@@ -59,7 +59,7 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         self.target_output_buffer = []
 
     def add_training(self, observation, internal_state, action, reward, value, l_p_action, actor_rnn_state,
-                     actor_rnn_state_ref, prediction_error=None, target_output=None):
+                     actor_rnn_state_ref, critic_rnn_state=None, critic_rnn_state_ref=None, prediction_error=None, target_output=None):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
         self.reward_buffer.append(reward)
@@ -69,6 +69,10 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         self.actor_rnn_state_ref_buffer.append(actor_rnn_state_ref)
         self.log_action_probability_buffer.append(l_p_action)
         self.action_buffer.append(action)
+
+        if critic_rnn_state is not None:
+            self.critic_rnn_state_buffer.append(critic_rnn_state)
+            self.critic_rnn_state_ref_buffer.append(critic_rnn_state_ref)
 
         if self.use_rnd:  # If using RND
             self.target_output_buffer.append(target_output[0])
@@ -233,13 +237,17 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
 
         # TODO: Add methods for detecting values outside of range.
 
-    def get_rnn_batch(self, key_points, batch_size):
+    def get_rnn_batch(self, key_points, batch_size, critic=False):
         actor_rnn_state_batch = []
         actor_rnn_state_batch_ref = []
 
         for point in key_points:
-            actor_rnn_state_batch.append(self.actor_rnn_state_buffer[point])
-            actor_rnn_state_batch_ref.append(self.actor_rnn_state_ref_buffer[point])
+            if critic:
+                actor_rnn_state_batch.append(self.critic_rnn_state_buffer[point])
+                actor_rnn_state_batch_ref.append(self.critic_rnn_state_ref_buffer[point])
+            else:
+                actor_rnn_state_batch.append(self.actor_rnn_state_buffer[point])
+                actor_rnn_state_batch_ref.append(self.actor_rnn_state_ref_buffer[point])
 
         if self.use_dynamic_network:
             n_rnns = np.array(actor_rnn_state_batch).shape[1]

@@ -169,14 +169,24 @@ Total episode reward: {self.total_episode_reward}\n""")
                                                                          rnn_state_actor_ref, rnn_state_critic,
                                                                          rnn_state_critic_ref)
             else:
-                if self.full_logs:
-                    return self._step_loop_multivariate_sbe_full_logs(o, internal_state, a, rnn_state_actor,
-                                                                      rnn_state_actor_ref, rnn_state_critic,
-                                                                      rnn_state_critic_ref)
+                if self.separate_networks:
+                    if self.full_logs:
+                        return self._step_loop_multivariate_sbe_sn_full_logs(o, internal_state, a, rnn_state_actor,
+                                                                          rnn_state_actor_ref, rnn_state_critic,
+                                                                          rnn_state_critic_ref)
+                    else:
+                        return self._step_loop_multivariate_sbe_sn_reduced_logs(o, internal_state, a, rnn_state_actor,
+                                                                             rnn_state_actor_ref, rnn_state_critic,
+                                                                             rnn_state_critic_ref)
                 else:
-                    return self._step_loop_multivariate_sbe_reduced_logs(o, internal_state, a, rnn_state_actor,
-                                                                         rnn_state_actor_ref, rnn_state_critic,
-                                                                         rnn_state_critic_ref)
+                    if self.full_logs:
+                        return self._step_loop_multivariate_sbe_full_logs(o, internal_state, a, rnn_state_actor,
+                                                                          rnn_state_actor_ref, rnn_state_critic,
+                                                                          rnn_state_critic_ref)
+                    else:
+                        return self._step_loop_multivariate_sbe_reduced_logs(o, internal_state, a, rnn_state_actor,
+                                                                             rnn_state_actor_ref, rnn_state_critic,
+                                                                             rnn_state_critic_ref)
         else:
             if self.full_logs:
                 return self._step_loop_full_logs(o, internal_state, a, rnn_state_actor,

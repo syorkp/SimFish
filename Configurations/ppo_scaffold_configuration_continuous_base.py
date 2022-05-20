@@ -40,7 +40,8 @@ params = {
        'learning_rate_actor': 0.000001,  # Formerly 0.000001
        'learning_rate_critic': 0.000001,  # Formerly 0.000001
        'lambda_entropy': 0.00,
-       'value_coefficient': 0.0002,  # Should bring value and policy loss within same range.
+       'value_coefficient': 0.5,  # 0.0002 Should bring value and policy loss within same range.
+       'separate_networks': False,
 
        # Learning (PPO Continuous Only)
        'multivariate': True,
@@ -313,7 +314,7 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_rvc_16"
+scaffold_name = "ppo_scaffold_16"
 
 
 changes = [

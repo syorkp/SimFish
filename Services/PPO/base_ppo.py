@@ -306,7 +306,7 @@ class BasePPO:
 
         return actor_rnn_state_buffer, actor_rnn_state_ref_buffer, critic_rnn_state_buffer, critic_rnn_state_ref_buffer
 
-    def compute_rnn_states2(self, rnn_key_points, observation_buffer, internal_state_buffer, previous_action_buffer):
+    def compute_rnn_states2(self, rnn_key_points, observation_buffer, internal_state_buffer, previous_action_buffer, critic=False):
         num_actions = self.output_dimensions
         batch_size = len(rnn_key_points)
 
@@ -404,7 +404,7 @@ class BasePPO:
                 #     np.array(critic_rnn_state_ref_buffer[0]), np.array(critic_rnn_state_ref_buffer[1]))
             else:
                 actor_rnn_state_buffer, actor_rnn_state_ref_buffer = \
-                    self.buffer.get_rnn_batch(rnn_key_points, batch_size)
+                    self.buffer.get_rnn_batch(rnn_key_points, batch_size, critic=critic)
 
                 # actor_rnn_state_buffer = (
                 #     np.zeros([batch_size, self.actor_network.rnn_dim]),

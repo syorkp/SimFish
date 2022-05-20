@@ -37,6 +37,7 @@ params = {
        'learning_rate_actor': 0.000001,  # Formerly 0.000001
        'learning_rate_critic': 0.000001,  # Formerly 0.000001
        'lambda_entropy': 0.0,
+       'separate_networks': False,
 
        # Learning (PPO Continuous Only)
        'multivariate': False,
