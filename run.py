@@ -4121,33 +4121,33 @@ ppo_scaffold_16c = [
         "Continuous Actions": True,
         "Learning Algorithm": "PPO",
         "Priority": 1,
-        "Using GPU": False,
+        "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
         "New Simulation": True,
         "Profile Speed": False,
     },
-    # {
-    #     "Model Name": "ppo_scaffold_sn_16",
-    #     "Environment Name": "ppo_scaffold_sn_16",
-    #     "Trial Number": 2,
-    #     "Run Mode": "Training",
-    #     "Tethered": False,
-    #     "Realistic Bouts": True,
-    #     "Continuous Actions": True,
-    #     "Learning Algorithm": "PPO",
-    #     "Priority": 1,
-    #     "Using GPU": True,
-    #     "monitor gpu": False,
-    #     "Full Logs": True,
-    #     "SB Emulator": True,
-    #     "New Simulation": True,
-    #     "Profile Speed": False,
-    # },
+    {
+        "Model Name": "ppo_scaffold_sn_16",
+        "Environment Name": "ppo_scaffold_sn_16",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
 ]
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_assay_test, parallel_jobs=4)
+manager = TrialManager(ppo_scaffold_16c, parallel_jobs=4)
 manager.run_priority_loop()

@@ -779,10 +779,6 @@ class ContinuousPPO(BasePPO):
         a = [a[0] / self.environment_params['max_impulse'],
              a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
 
-        print(rnn_state_critic.shape)
-        print(rnn_state_actor.shape)
-
-
         impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref,  updated_rnn_state_critic, \
         updated_rnn_state_critic_ref, neg_log_action_probability, mu_i, mu_a, si = self.sess.run(
             [self.actor_network.impulse_output, self.actor_network.angle_output, self.critic_network.value_output,
