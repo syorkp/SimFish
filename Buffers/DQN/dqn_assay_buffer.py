@@ -122,6 +122,8 @@ class DQNAssayBuffer:
             # Get internal state names and save each.
             for i, state in enumerate(internal_state_order):
                 self.create_data_group(state, np.array(self.internal_state_buffer[:, i]), assay_group)
+                if state == "salt":
+                    ... # TODO: Log salt location.
 
         if "environmental positions" in self.recordings:
             self.create_data_group("action", np.array(self.action_buffer), assay_group)
