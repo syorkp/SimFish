@@ -37,11 +37,6 @@ class ContinuousPPO(BasePPO):
 
         self.output_dimensions = 2
 
-        if "separate_networks" in self.learning_params:
-            self.separate_networks = self.learning_params["separate_networks"]
-        else:
-            self.separate_networks = False
-
     def create_network(self):
         """
         Create the main and target Q networks, according to the configuration parameters.

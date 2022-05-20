@@ -115,6 +115,12 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
 
         self.use_rnd = self.learning_params["use_rnd"]
 
+        # Whether or not to split the networks
+        if "separate_networks" in self.learning_params:
+            self.separate_networks = self.learning_params["separate_networks"]
+        else:
+            self.separate_networks = False
+
     def run(self):
         sess = self.create_session()
         with sess as self.sess:
