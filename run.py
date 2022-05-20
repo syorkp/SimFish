@@ -3761,7 +3761,7 @@ dqn_assay_test = [
         "Continuous Actions": False,
         "Learning Algorithm": "DQN",
         "Priority": 2,
-        "Using GPU": True,
+        "Using GPU": False,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
@@ -4149,5 +4149,5 @@ ppo_scaffold_16c = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_assay_test, parallel_jobs=4)
+manager = TrialManager(ppo_scaffold_16c, parallel_jobs=4)
 manager.run_priority_loop()

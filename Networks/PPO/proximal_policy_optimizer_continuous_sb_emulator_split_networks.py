@@ -206,6 +206,8 @@ class PPONetworkActorMultivariate2V(BaseNetwork):
         self.value_coefficient = value_coefficient
         self.max_gradient_norm = 0.5
 
+        self.scaled_advantage_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='scaled_advantage')
+
         # Value loss
         self.returns_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='returns')
         self.old_value_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='old_value')
