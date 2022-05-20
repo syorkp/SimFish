@@ -109,7 +109,12 @@ class DQNAssayService(AssayService, BaseDQN):
             if d:
                 break
 
-        self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id, self.internal_state_order)
+        if self.environment_params["salt"]:
+            salt_location = self.simulation.salt_location
+        else:
+            salt_location = None
+
+        self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id, self.internal_state_order, salt_location=salt_location)
 
         if assay["save frames"]:
             make_gif(self.frame_buffer,

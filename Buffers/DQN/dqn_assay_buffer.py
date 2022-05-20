@@ -123,9 +123,10 @@ class DQNAssayBuffer:
             self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
             # Get internal state names and save each.
             for i, state in enumerate(internal_state_order):
-                print(self.internal_state_buffer)
                 self.create_data_group(state, np.array(self.internal_state_buffer[:, i]), assay_group)
                 if state == "salt":
+                    if salt_location is None:
+                        salt_location = [150000, 150000]
                     self.create_data_group("salt_location", np.array(salt_location), assay_group)
 
         if "environmental positions" in self.recordings:
