@@ -145,7 +145,11 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
             self.buffer.update_rewards_rnd()
 
         if self.multivariate:
-            ContinuousPPO.train_network_multivariate2(self)
+            if self.separate_networks:
+                ContinuousPPO.train_network_multivariate2_split_networks(self)
+            else:
+                ContinuousPPO.train_network_multivariate2(self)
+
         else:
             ContinuousPPO.train_network(self)
 
