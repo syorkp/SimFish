@@ -111,8 +111,7 @@ class DQNAssayBuffer:
             self.create_data_group("observation", np.array(self.observation_buffer), assay_group)
 
         if "rnn state" in self.unit_recordings:
-            self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
-            # self.create_data_group("rnn_state_critic", np.array(self.critic_rnn_state_buffer), assay_group)
+            self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer), assay_group)
 
         if self.use_dynamic_network:
             for layer in self.unit_recordings.keys():
