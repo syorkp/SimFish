@@ -1848,6 +1848,7 @@ class ContinuousPPO(BasePPO):
 
                                self.actor_network.action_placeholder: action_batch,
                                self.actor_network.old_neg_log_prob: log_action_probability_batch,
+                               self.actor_network.scaled_advantage_placeholder: advantage_batch,
 
                                self.actor_network.train_length: self.learning_params["trace_length"],
                                self.actor_network.batch_size: current_batch_size,

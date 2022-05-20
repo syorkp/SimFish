@@ -49,11 +49,13 @@ def plot_salt_concentration_against_turn_away(fish_orientations, salt_locations,
 
 
 fish_positions, fish_orientations, salt_source_locations, salt_concentrations = \
-    get_salt_data("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 10)
+    get_salt_data("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 1)
+
+# Salt kdf.
+display_2d_kdf_salt_fish_position(fish_positions, salt_source_locations)
 
 # Salt-direction plot
 plot_salt_concentration_against_turn_away(fish_positions, fish_orientations, salt_source_locations, salt_concentrations)
 
-# Salt kdf.
 
 
