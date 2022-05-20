@@ -40,6 +40,7 @@ params = {
        'learning_rate_actor': 0.000001,  # Formerly 0.000001
        'learning_rate_critic': 0.000001,  # Formerly 0.000001
        'lambda_entropy': 0.00,
+       'value_coefficient': 0.0001,  # Should bring value and policy loss within same range.
 
        # Learning (PPO Continuous Only)
        'multivariate': True,
@@ -286,7 +287,7 @@ env = {
        'consumption_energy_gain': 1.0,
 
        # Reward
-       'action_reward_scaling': 10000,  # Arbitrary (practical) hyperparameter for penalty for action
+       'action_reward_scaling': 0,  # Arbitrary (practical) hyperparameter for penalty for action
        'consumption_reward_scaling': 1000000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
        'wall_reflection': True,
@@ -312,7 +313,7 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_17"
+scaffold_name = "ppo_scaffold_rvc_16"
 
 
 changes = [

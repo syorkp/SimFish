@@ -4073,10 +4073,10 @@ ppo_scaffold_16a = [
     },
 ]
 
-ppo_scaffold_17a = [
+ppo_scaffold_16b = [
     {
-        "Model Name": "ppo_scaffold_17",
-        "Environment Name": "ppo_scaffold_17",
+        "Model Name": "ppo_scaffold_rvc_16",
+        "Environment Name": "ppo_scaffold_rvc_16",
         "Trial Number": 1,
         "Run Mode": "Training",
         "Tethered": False,
@@ -4092,8 +4092,8 @@ ppo_scaffold_17a = [
         "Profile Speed": False,
     },
     {
-        "Model Name": "ppo_scaffold_17",
-        "Environment Name": "ppo_scaffold_17",
+        "Model Name": "ppo_scaffold_rvc_16",
+        "Environment Name": "ppo_scaffold_rvc_16",
         "Trial Number": 2,
         "Run Mode": "Training",
         "Tethered": False,
@@ -4111,5 +4111,5 @@ ppo_scaffold_17a = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_16a, parallel_jobs=4)
+manager = TrialManager(ppo_scaffold_16b, parallel_jobs=4)
 manager.run_priority_loop()

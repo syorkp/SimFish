@@ -111,6 +111,10 @@ class ContinuousPPO(BasePPO):
                                                                                 )
 
                 else:
+                    if "value_coefficient" in self.learning_params:
+                        value_coefficient = self.learning_params["value_coefficient"]
+                    else:
+                        value_coefficient = 0.5
                     self.actor_network = PPONetworkActorMultivariate2(simulation=self.simulation,
                                                                       rnn_dim=self.learning_params['rnn_dim_shared'],
                                                                       rnn_cell=actor_cell,
@@ -125,6 +129,7 @@ class ContinuousPPO(BasePPO):
                                                                       new_simulation=self.new_simulation,
                                                                       impose_action_mask=self.environment_params[
                                                                           'impose_action_mask'],
+                                                                      value_coefficient=value_coefficient,
                                                                       )
 
             if self.sb_emulator:
@@ -1623,9 +1628,6 @@ class ContinuousPPO(BasePPO):
                                               self.predictor_rdn.learning_rate: self.learning_params[
                                                                                     "learning_rate_actor"] * current_batch_size
                                           })
-
-            # print("RATIO " + str(np.mean(ratio)))
-            # print("ADVANTAGE: " + str(np.mean(advantage_batch)))
 
             self.buffer.add_loss(average_loss_impulse / self.learning_params["n_updates_per_iteration"],
                                  average_loss_angle / self.learning_params["n_updates_per_iteration"],

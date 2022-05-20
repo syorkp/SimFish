@@ -11,7 +11,7 @@ class PPONetworkActorMultivariate2(BaseNetwork):
 
     def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, max_impulse, max_angle_change,
                  clip_param, input_sigmas=False, new_simulation=True, impose_action_mask=False, impulse_scaling=None,
-                 angle_scaling=None, max_sigma=1):
+                 angle_scaling=None, max_sigma=1, value_coefficient=0.5):
         super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim=2, new_simulation=new_simulation)
 
         #            ----------        Stream Splitting       ---aa------            #
@@ -165,7 +165,7 @@ class PPONetworkActorMultivariate2(BaseNetwork):
 
         # Combined loss
         self.entropy_coefficient = tf.placeholder(dtype=tf.float32, name="entropy_coefficient")  # 0.01
-        self.value_coefficient = 0.5
+        self.value_coefficient = value_coefficient
         self.max_gradient_norm = 0.5
         self.entropy_loss = -tf.multiply(self.entropy, self.entropy_coefficient)
 
