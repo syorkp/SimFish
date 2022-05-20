@@ -40,7 +40,7 @@ params = {
        'learning_rate_actor': 0.000001,  # Formerly 0.000001
        'learning_rate_critic': 0.000001,  # Formerly 0.000001
        'lambda_entropy': 0.00,
-       'value_coefficient': 0.0001,  # Should bring value and policy loss within same range.
+       'value_coefficient': 0.0002,  # Should bring value and policy loss within same range.
 
        # Learning (PPO Continuous Only)
        'multivariate': True,
