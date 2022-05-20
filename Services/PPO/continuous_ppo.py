@@ -1859,6 +1859,7 @@ class ContinuousPPO(BasePPO):
                                self.critic_network.prev_actions: previous_action_batch,
                                self.critic_network.internal_state: internal_state_batch,
                                self.critic_network.rnn_state_in: critic_rnn_state_slice,
+                               self.critic_network.scaled_advantage_placeholder: advantage_batch,
                                self.critic_network.returns_placeholder: return_batch,
                                self.critic_network.old_value_placeholder: previous_value_batch,
                                self.critic_network.train_length: self.learning_params["trace_length"],

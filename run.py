@@ -3771,7 +3771,7 @@ dqn_assay_test = [
             {
                 "assay id": "Naturalistic-1",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 50,
+                "duration": 2000,
                 "Tethered": False,
                 "save frames": True,
                 "use_mu": True,
