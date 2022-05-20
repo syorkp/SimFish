@@ -110,7 +110,7 @@ class DQNAssayBuffer:
         if "observation" in self.recordings:
             self.create_data_group("observation", np.array(self.observation_buffer), assay_group)
 
-        if "rnn state" in self.recordings:
+        if "rnn state" in self.unit_recordings:
             self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
             # self.create_data_group("rnn_state_critic", np.array(self.critic_rnn_state_buffer), assay_group)
 
@@ -118,7 +118,7 @@ class DQNAssayBuffer:
             for layer in self.unit_recordings.keys():
                 self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
 
-        if "internal state" in self.recordings:
+        if "internal state" in self.unit_recordings:
             # Get internal state names and save each.
             for i, state in enumerate(internal_state_order):
                 self.create_data_group(state, np.array(self.internal_state_buffer[:, i]), assay_group)
@@ -137,7 +137,7 @@ class DQNAssayBuffer:
             self.create_data_group("sand_grain_positions", np.array(self.sand_grain_position_buffer), assay_group)
             self.create_data_group("vegetation_positions", np.array(self.vegetation_position_buffer), assay_group)
 
-        if "convolutional layers" in self.recordings:
+        if "convolutional layers" in self.unit_recordings:
             self.create_data_group("actor_conv1l", np.array(self.actor_conv1l_buffer), assay_group)
             self.create_data_group("actor_conv2l", np.array(self.actor_conv2l_buffer), assay_group)
             self.create_data_group("actor_conv3l", np.array(self.actor_conv3l_buffer), assay_group)

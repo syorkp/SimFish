@@ -38,7 +38,6 @@ def display_2d_kdf_salt_fish_position(fish_positions, salt_locations):
     plt.show()
 
 
-
 def plot_salt_concentration_against_turn_away(fish_positions, fish_orientations, salt_locations, salt_concentrations):
     ...
 
