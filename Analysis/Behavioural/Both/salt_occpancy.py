@@ -39,11 +39,11 @@ def display_2d_kdf_salt_fish_position(fish_positions, salt_locations):
 
 
 def plot_salt_concentration_against_turn_away(fish_orientations, salt_locations, salt_concentrations):
+    # TODO: Need to make it turn away.
     fish_turns = []
     for i in range(fish_orientations.shape[0]):
+        fish_turns += list(fish_orientations[i, 1:] - fish_orientations[i, :-1])
 
-    fish_orientations_flattened = np.concatenate(fish_orientations, axis=0)
-    fish
 
     ...
 
