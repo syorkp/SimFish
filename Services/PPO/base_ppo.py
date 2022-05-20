@@ -82,7 +82,7 @@ class BasePPO:
             self.init_rnn_state_actor_ref = (
                 np.zeros([1, self.actor_network.rnn_dim]),
                 np.zeros([1, self.actor_network.rnn_dim]))
-            if not self.sb_emulator:
+            if not self.sb_emulator and not self.split_networks:
                 self.init_rnn_state_critic = (
                     np.zeros([1, self.critic_network.rnn_dim]),
                     np.zeros([1, self.critic_network.rnn_dim]))

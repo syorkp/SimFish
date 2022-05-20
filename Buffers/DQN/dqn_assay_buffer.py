@@ -97,7 +97,7 @@ class DQNAssayBuffer:
         for l in self.unit_recordings.keys():
             self.unit_recordings[l].append(network_layers[l][0])
 
-    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order):
+    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order, salt_location=None):
         hdf5_file = h5py.File(f"{data_save_location}/{assay_configuration_id}.h5", "a")
 
         try:
@@ -123,7 +123,7 @@ class DQNAssayBuffer:
             for i, state in enumerate(internal_state_order):
                 self.create_data_group(state, np.array(self.internal_state_buffer[:, i]), assay_group)
                 if state == "salt":
-                    ... # TODO: Log salt location.
+                    self.create_data_group("salt_location", np.array(salt_location), assay_group)
 
         if "environmental positions" in self.recordings:
             self.create_data_group("action", np.array(self.action_buffer), assay_group)
