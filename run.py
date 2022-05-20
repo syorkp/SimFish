@@ -3771,7 +3771,7 @@ dqn_assay_test = [
             {
                 "assay id": "Naturalistic-1",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 2000,
+                "duration": 50,
                 "Tethered": False,
                 "save frames": True,
                 "use_mu": True,
@@ -4149,5 +4149,5 @@ ppo_scaffold_16c = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_16c, parallel_jobs=4)
+manager = TrialManager(dqn_assay_test, parallel_jobs=4)
 manager.run_priority_loop()

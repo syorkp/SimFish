@@ -85,7 +85,7 @@ class DQNAssayBuffer:
         # TODO: Compress data.
         try:
             assay_group.create_dataset(key, data=data)
-        except RuntimeError:
+        except (RuntimeError, OSError) as exception:
             del assay_group[key]
             assay_group.create_dataset(key, data=data)
 
