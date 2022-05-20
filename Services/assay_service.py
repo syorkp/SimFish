@@ -113,7 +113,12 @@ class AssayService(BaseService):
 
         if "reward assessments" in self.buffer.recordings:
             self.buffer.calculate_advantages_and_returns()
-        self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id)
+
+        if self.environment_params["salt"]:
+            salt_location = self.simulation.salt_location
+
+        self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id,
+                                    self.get_internal_state_order(), salt_location)
         self.buffer.reset()
         print(f"Assay: {assay['assay id']} Completed")
 

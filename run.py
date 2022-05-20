@@ -3952,9 +3952,6 @@ dqn_assay_test = [
     }
     ]
 
-
-
-
 dqn_assay_test_dn = [
     {
         "Model Name": "dqn_scaffold_14",

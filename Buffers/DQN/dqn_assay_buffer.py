@@ -118,7 +118,6 @@ class DQNAssayBuffer:
                 self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
 
         if "internal state" in self.unit_recordings:
-            print("Recording internal state")
             self.internal_state_buffer = np.array(self.internal_state_buffer)
             self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
             # Get internal state names and save each.

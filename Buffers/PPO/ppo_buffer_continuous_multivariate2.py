@@ -213,9 +213,9 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
                    log_action_probability_slice, advantage_slice, return_slice, value_slice
             # actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice
 
-    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id):
+    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order=None, salt_location=None):
         hdf5_file, assay_group = BasePPOBuffer.save_assay_data(self, assay_id, data_save_location,
-                                                               assay_configuration_id)
+                                                               assay_configuration_id, internal_state_order, salt_location)
 
         if "environmental positions" in self.recordings:
             self.create_data_group("mu_impulse", np.array(self.mu_i_buffer)[:, 0], assay_group)
