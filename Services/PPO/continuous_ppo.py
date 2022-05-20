@@ -807,7 +807,6 @@ class ContinuousPPO(BasePPO):
                        self.critic_network.rnn_state_in: rnn_state_critic,
                        self.critic_network.batch_size: 1,
                        self.critic_network.train_length: 1,
-                       self.critic_network.entropy_coefficient: self.learning_params["lambda_entropy"],
                        }
         )
 

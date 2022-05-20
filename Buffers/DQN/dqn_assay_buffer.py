@@ -97,7 +97,7 @@ class DQNAssayBuffer:
         for l in self.unit_recordings.keys():
             self.unit_recordings[l].append(network_layers[l][0])
 
-    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id):
+    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order):
         hdf5_file = h5py.File(f"{data_save_location}/{assay_configuration_id}.h5", "a")
 
         try:
@@ -120,7 +120,8 @@ class DQNAssayBuffer:
 
         if "internal state" in self.recordings:
             # Get internal state names and save each.
-            ...
+            for i, state in enumerate(internal_state_order):
+                self.create_data_group(state, np.array(self.internal_state_buffer[:, i]), assay_group)
 
         if "environmental positions" in self.recordings:
             self.create_data_group("action", np.array(self.action_buffer), assay_group)

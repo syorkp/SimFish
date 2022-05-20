@@ -109,7 +109,7 @@ class DQNAssayService(AssayService, BaseDQN):
             if d:
                 break
 
-        self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id)
+        self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id, self.internal_state_order)
 
         if assay["save frames"]:
             make_gif(self.frame_buffer,
