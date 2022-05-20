@@ -118,8 +118,9 @@ class DQNAssayBuffer:
             for layer in self.unit_recordings.keys():
                 self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
 
-        for layer in self.unit_recordings.keys():
-            self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
+        if "internal state" in self.recordings:
+            # Get internal state names and save each.
+            ...
 
         if "environmental positions" in self.recordings:
             self.create_data_group("action", np.array(self.action_buffer), assay_group)

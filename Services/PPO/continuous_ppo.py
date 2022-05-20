@@ -122,7 +122,7 @@ class ContinuousPPO(BasePPO):
                                                                           rnn_dim=self.learning_params[
                                                                               'rnn_dim_shared'],
                                                                           rnn_cell=actor_cell,
-                                                                          my_scope='actor',
+                                                                          my_scope='critic',
                                                                           internal_states=internal_states,
                                                                           max_impulse=self.environment_params[
                                                                               'max_impulse'],

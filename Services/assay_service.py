@@ -65,6 +65,8 @@ class AssayService(BaseService):
         self.ppo_version = None
         self.use_mu = False
 
+        self.internal_state_order = self.get_internal_state_order()
+
     def _run(self):
         self.saver = tf.train.Saver(max_to_keep=5)
         self.init = tf.global_variables_initializer()
