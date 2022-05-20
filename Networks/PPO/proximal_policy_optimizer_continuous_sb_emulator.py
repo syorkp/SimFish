@@ -125,6 +125,11 @@ class PPONetworkActorMultivariate2(BaseNetwork):
 
         #            ----------        Loss functions       ---------            #
 
+        # Scaling factors
+        self.entropy_coefficient = tf.placeholder(dtype=tf.float32, name="entropy_coefficient")  # 0.01
+        self.value_coefficient = value_coefficient
+        self.max_gradient_norm = 0.5
+
         # Actor loss
         self.action_placeholder = tf.placeholder(shape=[None, 2], dtype=tf.float32, name='action_placeholder')
         self.impulse_placeholder, self.angle_placeholder = tf.split(self.action_placeholder, 2, axis=1)
@@ -158,18 +163,15 @@ class PPONetworkActorMultivariate2(BaseNetwork):
 
         self.critic_loss_1 = tf.squared_difference(tf.squeeze(self.value_output), self.returns_placeholder)
         self.critic_loss_2 = tf.squared_difference(tf.squeeze(self.value_clipped), self.returns_placeholder)
-        self.value_loss = .5 * tf.reduce_mean(tf.maximum(self.critic_loss_1, self.critic_loss_2))
+        self.value_loss = self.value_coefficient * tf.reduce_mean(tf.maximum(self.critic_loss_1, self.critic_loss_2))
 
         # Entropy
         self.entropy = tf.reduce_mean(self.action_distribution.entropy())  # TODO: works with new distribution?
 
         # Combined loss
-        self.entropy_coefficient = tf.placeholder(dtype=tf.float32, name="entropy_coefficient")  # 0.01
-        self.value_coefficient = value_coefficient
-        self.max_gradient_norm = 0.5
         self.entropy_loss = -tf.multiply(self.entropy, self.entropy_coefficient)
 
-        self.total_loss = self.policy_loss + self.entropy_loss + tf.multiply(self.value_loss, self.value_coefficient)
+        self.total_loss = self.policy_loss + self.entropy_loss + self.value_loss
         # self.total_loss = self.policy_loss - tf.multiply(self.entropy, self.entropy_coefficient) + \
         #                   tf.multiply(self.value_loss, self.value_coefficient)
         # self.total_loss = self.policy_loss + tf.multiply(self.value_loss, self.value_coefficient)
