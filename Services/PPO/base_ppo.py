@@ -66,6 +66,8 @@ class BasePPO:
             self.target_rdn = None
         if not hasattr(self, "predictor_rdn"):
             self.predictor_rdn = None
+        if not hasattr(self, "separate_networks"):
+            self.separate_networks = None
 
     def init_states(self):
         # Init states for RNN
@@ -82,7 +84,7 @@ class BasePPO:
             self.init_rnn_state_actor_ref = (
                 np.zeros([1, self.actor_network.rnn_dim]),
                 np.zeros([1, self.actor_network.rnn_dim]))
-            if not self.sb_emulator or self.learning_params["separate_networks"]:
+            if not self.sb_emulator or self.separate_networks:
                 self.init_rnn_state_critic = (
                     np.zeros([1, self.critic_network.rnn_dim]),
                     np.zeros([1, self.critic_network.rnn_dim]))
