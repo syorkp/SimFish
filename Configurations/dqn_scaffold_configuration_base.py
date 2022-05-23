@@ -313,7 +313,7 @@ env = {
 
 scaffold_name = "dqn_scaffold_15"
 
-# 2-9
+# 2-10
 changes = [
 
        ["PCI", 0.2, "anneling_steps", 500000],
@@ -330,14 +330,14 @@ changes = [
        ["PCI", 0.3, "bkg_scatter", 0.1],
 ]
 
-# 10-14
+# 11-15
 changes += build_changes_list_gradual("PCI", 0.3, "light_gain", env["light_gain"], 125.7, 4)
 changes += [["PCI", 0.3, "max_epLength", 2000, "do_to_params"]]
 
 # 3) Available actions
 # Only for continuous
 
-# 4) Prey Capture 15-35
+# 4) Prey Capture 16-31
 changes += [["PCI", 0.4, "prey_fluid_displacement", True]]
 changes += build_changes_list_gradual("PCI", 0.4, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
 changes += build_changes_list_gradual("PCI", 0.4, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.5, 4)
@@ -346,13 +346,13 @@ changes += [["PCI", 0.4, "prey_num", 20]]
 changes += [["PCI", 0.4, "capture_swim_extra_cost", 100]]
 changes += [["PCI", 0.4, "anneling_steps", 1000000]]
 
-# 5) Predator avoidance
+# 5) Predator avoidance 32-3
 changes += [["PCI", 0.4, "probability_of_predator", 0.01]]
 # TODO: Complex predator
 
 changes += [["PCI", 0.4, "anneling_steps", 500000]]
 
-# 6) Other Behaviours
+# 6) Other Behaviours 34
 changes += [["PCI", 0.4, "current_setting", "Circular"]]
 
 # 7) Final Features

@@ -813,22 +813,33 @@ class NewDrawingBoard:
         self.db[:, self.height - 1] = [1, 0, 0]
 
     def apply_light(self, dark_col, dark_gain, light_gain, visualisation):
+        if dark_col < 0:
+            dark_col = 0
         if visualisation:
-            if self.light_gradient > 0:
+            if self.light_gradient > 0 and dark_col > 0:
                 gradient = self.chosen_math_library.linspace(dark_gain, light_gain, self.light_gradient)
-                gradient = self.chosen_math_library.expand_dims(gradient, 1)
-                gradient = self.chosen_math_library.repeat(gradient, self.height, 1)
+                gradient = self.chosen_math_library.expand_dims(gradient, 0)
+                gradient = self.chosen_math_library.repeat(gradient, self.height, 0)
                 gradient = self.chosen_math_library.expand_dims(gradient, 2)
-                self.db_visualisation[int(dark_col-(self.light_gradient/2)):int(dark_col+(self.light_gradient/2)), :, :] *= gradient
-                self.db_visualisation[:int(dark_col-(self.light_gradient/2)), :] *= dark_gain
-                self.db_visualisation[int(dark_col+(self.light_gradient/2)):, :] *= light_gain
+                self.db_visualisation[:, int(dark_col-(self.light_gradient/2)):int(dark_col+(self.light_gradient/2))] *= gradient
+                self.db_visualisation[:, :int(dark_col-(self.light_gradient/2))] *= dark_gain
+                self.db_visualisation[:, int(dark_col+(self.light_gradient/2)):] *= light_gain
             else:
-                self.db_visualisation[:dark_col, :] *= dark_gain
-                self.db_visualisation[dark_col:, :] *= light_gain
+                self.db_visualisation[:, :dark_col] *= dark_gain
+                self.db_visualisation[:, dark_col:] *= light_gain
 
         else:
-            self.db[:, :dark_col] *= dark_gain
-            self.db[:, dark_col:] *= light_gain
+            if self.light_gradient > 0 and dark_col > 0:
+                gradient = self.chosen_math_library.linspace(dark_gain, light_gain, self.light_gradient)
+                gradient = self.chosen_math_library.expand_dims(gradient, 0)
+                gradient = self.chosen_math_library.repeat(gradient, self.height, 0)
+                gradient = self.chosen_math_library.expand_dims(gradient, 2)
+                self.db[:, int(dark_col-(self.light_gradient/2)):int(dark_col+(self.light_gradient/2))] *= gradient
+                self.db[:, :int(dark_col-(self.light_gradient/2))] *= dark_gain
+                self.db[:, int(dark_col+(self.light_gradient/2)):] *= light_gain
+            else:
+                self.db[:, :dark_col] *= dark_gain
+                self.db[:, dark_col:] *= light_gain
 
     def circle(self, center, rad, color, visualisation=False):
         rr, cc = draw.circle(center[1], center[0], rad, self.db.shape)

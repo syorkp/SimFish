@@ -385,6 +385,7 @@ class BaseEnvironment:
             frame = np.hstack((frame, np.zeros((frame.shape[0], 20, 3)), action_display))
 
         frame = rescale(frame, scale, multichannel=True, anti_aliasing=True)
+
         return frame
 
     def draw_shapes(self, visualisation):

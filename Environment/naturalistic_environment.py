@@ -301,16 +301,17 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.draw_shapes(visualisation=True)
             relative_dark_gain = self.env_variables["dark_gain"]/self.env_variables["light_gain"]
             self.board.apply_light(self.dark_col, relative_dark_gain, 1, visualisation=True)
+
             if self.env_variables['show_channel_sectors']:
                 self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
                 self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
-            # plt.imshow(self.board.db)
-            # plt.show()
 
             if save_frames:
-                frame_buffer.append(self.output_frame(activations, internal_state, scale=0.25))
+                frame = self.output_frame(activations, internal_state, scale=0.25)
+                frame_buffer.append(frame)
             if self.draw_screen:
-                self.board_image.set_data(self.output_frame(activations, internal_state, scale=0.5) / 255.)
+                frame = self.output_frame(activations, internal_state, scale=0.5) / 255.
+                self.board_image.set_data(frame)
                 plt.pause(0.000001)
 
         # observation = self.chosen_math_library.dstack((self.fish.left_eye.readings,
