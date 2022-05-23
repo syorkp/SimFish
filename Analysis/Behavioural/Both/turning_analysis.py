@@ -7,6 +7,7 @@ from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.extract_exploration_sequences import extract_exploration_action_sequences_with_positions
 from Analysis.Behavioural.Tools.extract_turn_sequences import extract_turn_sequences
 from Analysis.Behavioural.Tools.extract_exploration_sequences import extract_exploration_action_sequences_with_fish_angles
+from Analysis.Behavioural.Tools.extract_exploration_sequences import get_no_prey_stimuli_sequences, get_exploration_sequences
 
 
 def plot_turning_sequences(fish_angle):
@@ -204,19 +205,27 @@ def randomly_switching_fish(n_sequences=100):
 data = load_data("dqn_scaffold_14-1", "Behavioural-Data-Free", f"Naturalistic-1")
 
 # Cumulative turn direction plot
-exploration_timestamps, exploration_sequences, exploration_fish_positions = extract_exploration_action_sequences_with_positions(data)
-turn_exploration_sequences = extract_turn_sequences(exploration_sequences)
-cumulative_turn_direction_plot(turn_exploration_sequences)
+# exploration_timestamps, exploration_sequences, exploration_fish_positions = extract_exploration_action_sequences_with_positions(data)
+# turn_exploration_sequences = extract_turn_sequences(exploration_sequences)
+# cumulative_turn_direction_plot(turn_exploration_sequences)
 
 # Orientation plot
-exploration_timestamps, exploration_sequences, exploration_fish_orientations = extract_exploration_action_sequences_with_fish_angles(data)
-plot_turning_sequences(exploration_fish_orientations[-2])
+# exploration_timestamps, exploration_sequences, exploration_fish_orientations = extract_exploration_action_sequences_with_fish_angles(data)
+# plot_turning_sequences(exploration_fish_orientations[-2])
 
 # Cumulative probability plot.
-l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
-l2, r2, sl2, sr2 = randomly_switching_fish()
-cumulative_switching_probability_plot(sl, sr, sl2, sr2)
+# l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
+# l2, r2, sl2, sr2 = randomly_switching_fish()
+# cumulative_switching_probability_plot(sl, sr, sl2, sr2)
 
+# Exploration sequences based on visual stimulation level
+no_prey_actions, no_prey_timestamps = get_no_prey_stimuli_sequences("dqn_scaffold_14-1", "Behavioural-Data-Free", f"Naturalistic", 10)
+otherwise_exploration_sequences = get_exploration_sequences("dqn_scaffold_14-1", "Behavioural-Data-Free", f"Naturalistic", 10)
+
+cumulative_turn_direction_plot(no_prey_actions)
+cumulative_turn_direction_plot(otherwise_exploration_sequences)
+
+x = True
 # VERSION 1
 
 # for i in range(1, 10):

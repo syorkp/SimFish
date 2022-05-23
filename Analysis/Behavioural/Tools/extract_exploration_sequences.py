@@ -156,3 +156,52 @@ def extract_exploration_action_sequences_with_fish_angles(data, possible_visual_
     fish_orientations_compiled.append(np.array(fish_orientations))
 
     return exploration_timestamps_compiled, actions_compiled, fish_orientations_compiled
+
+
+def extract_no_prey_stimuli_sequences(data, assumed_prey_stim_level=23, assumed_red_stim_level=10):
+    steps = data["observation"].shape[0]
+    timestamps = []
+    # all_uv_stim = np.array([])
+    for s in range(steps):
+        uv_channel = data["observation"][s, :, 1, :]
+        red_channel = data["observation"][s, :, 0, :]
+        # all_uv_stim = np.concatenate((all_uv_stim, np.reshape(red_channel, (-1))))
+        prey_stimuli_present = (uv_channel > assumed_prey_stim_level) * 1
+        wall_stimuli_present = (red_channel > assumed_red_stim_level) * 1
+        if np.sum(prey_stimuli_present) + np.sum(wall_stimuli_present) > 0:
+            pass
+        else:
+            timestamps.append(s)
+
+    # Validation
+    # import matplotlib.pyplot as plt
+    # plt.hist(all_uv_stim, bins=100)
+    # plt.show()
+    # positions = [x for i, x in enumerate(data["fish_position"]) if i in timestamps]
+    # plt.scatter([p[0] for p in positions], [p[1] for p in positions])
+    # plt.show()
+
+    all_action_sequences = []
+    current_sequence = []
+    # positions = [x for i, x in enumerate(data["fish_position"]) if i in timestamps]
+    for i, t in enumerate(timestamps):
+        if i == 0:
+            current_sequence.append(data["action"][t])
+        else:
+            if t-1 == timestamps[i-1] or t-2 == timestamps[i-1]:
+                current_sequence.append(data["action"][t])
+            else:
+                all_action_sequences.append(current_sequence)
+                current_sequence = []
+                current_sequence.append(data["action"][t])
+    all_action_sequences.append(current_sequence)
+    return all_action_sequences
+
+
+def get_no_prey_stimuli_sequences(model_name, assay_config, assay_id, n):
+    """Gathers all sequences (timestamps, actions) where UV channel shows no prey stimuli."""
+    all_exploration_sequences = []
+    for i in range(1, n + 1):
+        data = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        all_exploration_sequences = all_exploration_sequences + extract_no_prey_stimuli_sequences(data)
+    return all_exploration_sequences, None
