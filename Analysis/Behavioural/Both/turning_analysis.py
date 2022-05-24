@@ -225,7 +225,6 @@ otherwise_exploration_sequences = get_exploration_sequences("dqn_scaffold_14-1",
 cumulative_turn_direction_plot(no_prey_actions)
 cumulative_turn_direction_plot(otherwise_exploration_sequences)
 
-x = True
 # VERSION 1
 
 # for i in range(1, 10):
