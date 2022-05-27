@@ -201,29 +201,66 @@ def randomly_switching_fish(n_sequences=100):
         sequences.append(seq)
     return model_of_action_switching(sequences)
 
+# sl_compiled = []
+# sr_compiled = []
+# sl2_compiled = []
+# sr2_compiled = []
+# turn_exploration_sequences_compiled = []
+# for i in range(1, 5):
+#     data = load_data(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", f"Naturalistic-1")
+#
+#     # Cumulative turn direction plot
+#     exploration_timestamps, exploration_sequences, exploration_fish_positions = extract_exploration_action_sequences_with_positions(data)
+#     turn_exploration_sequences = extract_turn_sequences(exploration_sequences)
+#     cumulative_turn_direction_plot(turn_exploration_sequences)
+#
+#     # Orientation plot
+#     exploration_timestamps, exploration_sequences, exploration_fish_orientations = extract_exploration_action_sequences_with_fish_angles(data)
+#     plot_turning_sequences(exploration_fish_orientations[-2])
+#
+#     # Cumulative probability plot.
+#     l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
+#     l2, r2, sl2, sr2 = randomly_switching_fish()
+#     cumulative_switching_probability_plot(sl, sr, sl2, sr2)
+#
+#     turn_exploration_sequences_compiled += turn_exploration_sequences
+#     sl_compiled += sl
+#     sr_compiled += sr
+#     sl2_compiled += sl2
+#     sr2_compiled += sr2
+#
+# cumulative_switching_probability_plot(sl_compiled, sr_compiled, sl2_compiled, sr2_compiled)
+# cumulative_turn_direction_plot(turn_exploration_sequences_compiled)
 
-data = load_data("dqn_scaffold_14-1", "Behavioural-Data-Free", f"Naturalistic-1")
 
-# Cumulative turn direction plot
-# exploration_timestamps, exploration_sequences, exploration_fish_positions = extract_exploration_action_sequences_with_positions(data)
-# turn_exploration_sequences = extract_turn_sequences(exploration_sequences)
-# cumulative_turn_direction_plot(turn_exploration_sequences)
-
-# Orientation plot
-# exploration_timestamps, exploration_sequences, exploration_fish_orientations = extract_exploration_action_sequences_with_fish_angles(data)
-# plot_turning_sequences(exploration_fish_orientations[-2])
-
-# Cumulative probability plot.
-# l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
-# l2, r2, sl2, sr2 = randomly_switching_fish()
-# cumulative_switching_probability_plot(sl, sr, sl2, sr2)
+sl_compiled = []
+sr_compiled = []
+sl2_compiled = []
+sr2_compiled = []
+turn_exploration_sequences_compiled = []
 
 # Exploration sequences based on visual stimulation level
-no_prey_actions, no_prey_timestamps = get_no_prey_stimuli_sequences("dqn_scaffold_14-1", "Behavioural-Data-Free", f"Naturalistic", 10)
-otherwise_exploration_sequences = get_exploration_sequences("dqn_scaffold_14-1", "Behavioural-Data-Free", f"Naturalistic", 10)
+for i in range(1, 5):
+    no_prey_actions, no_prey_timestamps = get_no_prey_stimuli_sequences(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", f"Naturalistic", 10)
+    otherwise_exploration_sequences = get_exploration_sequences(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", f"Naturalistic", 10)
+    turn_exploration_sequences = extract_turn_sequences(otherwise_exploration_sequences)
 
-cumulative_turn_direction_plot(no_prey_actions)
-cumulative_turn_direction_plot(otherwise_exploration_sequences)
+    # cumulative_turn_direction_plot(no_prey_actions)
+    # cumulative_turn_direction_plot(otherwise_exploration_sequences)
+
+    # Cumulative probability plot.
+    l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
+    l2, r2, sl2, sr2 = randomly_switching_fish()
+    # cumulative_switching_probability_plot(sl, sr, sl2, sr2)
+
+    turn_exploration_sequences_compiled += turn_exploration_sequences
+    sl_compiled += sl
+    sr_compiled += sr
+    sl2_compiled += sl2
+    sr2_compiled += sr2
+
+cumulative_switching_probability_plot(sl_compiled, sr_compiled, sl2_compiled, sr2_compiled)
+cumulative_turn_direction_plot(turn_exploration_sequences_compiled)
 
 # VERSION 1
 

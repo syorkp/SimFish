@@ -8,6 +8,7 @@ from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.extract_capture_sequences import get_capture_sequences
 from Analysis.Behavioural.Tools.extract_exploration_sequences import get_exploration_sequences
 
+
 def get_first_order_transition_counts(p1, p2, p3, n):
     transition_counts = np.zeros((10, 10))
     for file_index in range(1, n+1):
@@ -364,17 +365,18 @@ def get_modal_sequences(transition_probabilities, order=3, number=10):
     return ordered_sequences
 
 
-# Capture sequences
-capture_sequences = get_capture_sequences("dqn_scaffold_14-1", f"Behavioural-Data-Free", "Naturalistic", 10)
-transition_counts = get_first_order_transition_counts_from_sequences(capture_sequences)
-tp = compute_transition_probabilities(transition_counts)
-visualisation_method_2(tp)
+for i in range(1, 5):
+    # Capture sequences
+    capture_sequences = get_capture_sequences(f"dqn_scaffold_14-{i}", f"Behavioural-Data-Free", "Naturalistic", 10)
+    transition_counts = get_first_order_transition_counts_from_sequences(capture_sequences)
+    tp = compute_transition_probabilities(transition_counts)
+    visualisation_method_2(tp)
 
-# Exploration sequences
-exploration_sequences = get_exploration_sequences("dqn_scaffold_14-1", f"Behavioural-Data-Free", "Naturalistic", 10)
-transition_counts = get_first_order_transition_counts_from_sequences(exploration_sequences)
-tp = compute_transition_probabilities(transition_counts)
-visualisation_method_2(tp)
+    # Exploration sequences
+    exploration_sequences = get_exploration_sequences(f"dqn_scaffold_14-{i}", f"Behavioural-Data-Free", "Naturalistic", 10)
+    transition_counts = get_first_order_transition_counts_from_sequences(exploration_sequences)
+    tp = compute_transition_probabilities(transition_counts)
+    visualisation_method_2(tp)
 
 # VERSION 1
 # free_swimiming = []

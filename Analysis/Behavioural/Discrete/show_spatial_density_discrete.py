@@ -129,6 +129,10 @@ def get_all_density_plots_all_subsets(p1, p2, p3, n):
         if len(pred_cloud) > 2:
             create_density_cloud(pred_cloud, action_num, "Predator")
 
+    create_j_turn_overlap_plot(p1, p2, p3, n)
+    create_routine_turn_overlap_plot(p1, p2, p3, n)
+    create_cstart_overlap_plot(p1, p2, p3, n)
+
 
 def create_j_turn_overlap_plot(p1, p2, p3, n):
     prey_cloud_left = []
@@ -277,10 +281,194 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
     plt.show()
 
 
+def create_j_turn_overlap_plot_multiple_models(p1, p2, p3, n, n2):
+    prey_cloud_left = []
+    prey_cloud_right = []
+    for m in range(1, n2+1):
+        for i in range(1, n+1):
+            data = load_data(f"{p1}-{m}", p2, f"{p3}-{i}")
+            prey_1, pred_1 = get_clouds_with_action(data, 4)
+            prey_cloud_left = prey_cloud_left + prey_1
+        for i in range(1, n+1):
+            data = load_data(f"{p1}-{m}", p2, f"{p3}-{i}")
+            prey_1, pred_1 = get_clouds_with_action(data, 5)
+            prey_cloud_right = prey_cloud_right + prey_1
+    n_samples = len(prey_cloud_left) + len(prey_cloud_right)
+    # For left
+    x = np.array([i[0] for i in prey_cloud_left])
+    y = np.array([i[1] for i in prey_cloud_left])
+    #y = np.negative(y)
+    nbins = 300
+    k = kde.gaussian_kde([y, x])
+    yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
+
+    zi = k(np.vstack([xi.flatten(), yi.flatten()]))
+
+    # For right
+    x = np.array([i[0] for i in prey_cloud_right])
+    y = np.array([i[1] for i in prey_cloud_right])
+    #y = np.negative(y)
+    nbins = 300
+    k = kde.gaussian_kde([y, x])
+    zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
+    zi = zi - zi2
+
+    # Make the plot
+    fig, ax = plt.subplots()
+
+    ax.pcolormesh(xi, yi, zi.reshape(xi.shape),  cmap='RdBu')
+
+    ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
+                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
+    ax.add_artist(ob)
+    plt.arrow(300, 220, 0, 40, width=10, color="red")
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+    plt.title(f"Feature: Prey, Action: J-turns")
+    plt.show()
+
+
+def create_routine_turn_overlap_plot_multiple_models(p1, p2, p3, n, n2):
+    prey_cloud_left = []
+    prey_cloud_right = []
+
+    for m in range(1, n2+1):
+        for i in range(1, n+1):
+            data = load_data(f"{p1}-{m}", p2, f"{p3}-{i}")
+            prey_1, pred_1 = get_clouds_with_action(data, 1)
+            prey_cloud_left = prey_cloud_left + prey_1
+        for i in range(1, n+1):
+            data = load_data(f"{p1}-{m}", p2, f"{p3}-{i}")
+            prey_1, pred_1 = get_clouds_with_action(data, 2)
+            prey_cloud_right = prey_cloud_right + prey_1
+
+    n_samples = len(prey_cloud_left) + len(prey_cloud_right)
+    # For left
+    x = np.array([i[0] for i in prey_cloud_left])
+    y = np.array([i[1] for i in prey_cloud_left])
+    #y = np.negative(y)
+    nbins = 300
+    k = kde.gaussian_kde([y, x])
+    yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
+
+    zi = k(np.vstack([xi.flatten(), yi.flatten()]))
+
+    # For right
+    x = np.array([i[0] for i in prey_cloud_right])
+    y = np.array([i[1] for i in prey_cloud_right])
+    #y = np.negative(y)
+    nbins = 300
+    k = kde.gaussian_kde([y, x])
+    zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
+
+    zi = zi2 - zi
+
+    fig, ax = plt.subplots()
+
+    ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
+
+    ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
+                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
+    ax.add_artist(ob)
+    plt.arrow(300, 220, 0, 40, width=10, color="red")
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+    plt.title(f"Feature: Prey, Action: Routine turns")
+    plt.show()
+
+
+def create_cstart_overlap_plot_multiple_models(p1, p2, p3, n, n2):
+    prey_cloud_left = []
+    prey_cloud_right = []
+    for m in range(1, n2+1):
+
+        for i in range(1, n+1):
+            if i < 11: continue
+                # print(i)
+                #
+                # data = load_data(p1, f"{p2}-2", f"{p3}-{i}")
+            else:
+                print(i)
+                data = load_data(f"{p1}-{m}", p2, f"{p3} {i}")
+            prey_1, pred_1 = get_clouds_with_action(data, 7)
+            prey_cloud_left = prey_cloud_left + prey_1
+        for i in range(1, n+1):
+            if i < 11: continue
+                # data = load_data(p1, f"{p2}-2", f"{p3} {i}")
+            else:
+                data = load_data(f"{p1}-{m}", p2, f"{p3} {i}")
+            prey_1, pred_1 = get_clouds_with_action(data, 8)
+            prey_cloud_right = prey_cloud_right + prey_1
+    n_samples = len(prey_cloud_left) + len(prey_cloud_right)
+    # For left
+    x = np.array([i[0] for i in prey_cloud_left])
+    y = np.array([i[1] for i in prey_cloud_left])
+    #y = np.negative(y)
+    nbins = 300
+    k = kde.gaussian_kde([y, x])
+    yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
+
+    zi = k(np.vstack([xi.flatten(), yi.flatten()]))
+
+    # For right
+    x = np.array([i[0] for i in prey_cloud_right])
+    y = np.array([i[1] for i in prey_cloud_right])
+    #y = np.negative(y)
+    nbins = 300
+    k = kde.gaussian_kde([y, x])
+    zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
+
+    zi = zi - zi2
+    # Make the plot
+    fig, ax = plt.subplots()
+
+    ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
+
+    ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
+                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
+    ax.add_artist(ob)
+    plt.arrow(300, 220, 0, 40, width=10, color="red")
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+    plt.title(f"Feature: Predator, Action: C-Starts")
+    plt.show()
+
+
+def get_all_density_plots_multiple_models(p1, p2, p3, n, n2):
+    for action_num in range(0, 10):
+        prey_cloud = []
+        pred_cloud = []
+        for m in range(1, n2+1):
+            for i in range(1, n+1):
+                if i > 12:
+                    data = load_data(f"{p1}-{m}", f"{p2}-2", f"{p3} {i}")
+                else:
+                    data = load_data(f"{p1}-{m}", p2, f"{p3}-{i}")
+
+                prey_1, pred_1 = get_clouds_with_action(data, action_num)
+                prey_cloud = prey_cloud + prey_1
+                pred_cloud = pred_cloud + pred_1
+
+        if len(prey_cloud) > 2:
+            create_density_cloud(prey_cloud, action_num, "Prey")
+
+        if len(pred_cloud) > 2:
+            create_density_cloud(pred_cloud, action_num, "Predator")
+
+    create_j_turn_overlap_plot_multiple_models(p1, p2, p3, n, n2)
+    create_routine_turn_overlap_plot_multiple_models(p1, p2, p3, n, n2)
+    create_cstart_overlap_plot_multiple_models(p1, p2, p3, n, n2)
+
+
 # VERSION 2
 
-get_all_density_plots_all_subsets("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 10)
-create_j_turn_overlap_plot("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 10)
+# Getting for combination of models
+get_all_density_plots_multiple_models(f"dqn_scaffold_14", "Behavioural-Data-Free", "Naturalistic", 10, 4)
+
+# Getting for individual models
+# for i in range(1, 5):
+#     get_all_density_plots_all_subsets(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
+
 
 # VERSION 1
 # get_all_density_plots_all_subsets("new_even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)

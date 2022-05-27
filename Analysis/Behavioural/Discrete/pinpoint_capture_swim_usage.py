@@ -2,8 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from Analysis.load_data import load_data
-from Analysis.Behavioural.Discrete.display_action_sequences_block import display_all_sequences
-from Analysis.Behavioural.Discrete.display_action_sequences_2D import plot_action_sequences_2D_discrete
+from Analysis.Behavioural.Tools.show_action_sequence_block import display_all_sequences
 
 
 def extract_capture_sequences_with_additional_steps(data, n=20, n2=3):
@@ -79,14 +78,21 @@ def get_max_uv_stimuli_with_scs(model_name, assay_config, assay_id, n):
 
     return max_uv_stimuli
 
-# Extracting based on prey positions in period following capture:
-reduced_sequences, reduced_fish_positions = get_capture_sequences_without_multiple_prey("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 10)
 
-# Display as block:
-display_all_sequences(reduced_sequences)
+for i in range(1, 5):
+    # Extracting based on prey positions in period following capture:
+    reduced_sequences, reduced_fish_positions = get_capture_sequences_without_multiple_prey(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
+
+    # Display as block:
+    display_all_sequences(reduced_sequences)
+
+    # Max UV stimulus required to elicit capture swims
+    max_stims = get_max_uv_stimuli_with_scs(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
+    plt.hist(max_stims, 100)
+    plt.title("Frequency Histogram sCS usage with UV Max Stimulation")
+    plt.ylabel("Frequency")
+    plt.xlabel("Max UV Photons")
+    plt.xlim(0, 255)
+    plt.show()
 
 
-# Max UV stimulus required to elicit capture swims
-max_stims = get_max_uv_stimuli_with_scs("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 10)
-plt.hist(max_stims, 100)
-plt.show()

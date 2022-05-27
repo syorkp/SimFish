@@ -4,31 +4,7 @@ import seaborn as sns
 from Analysis.Behavioural.Tools.extract_capture_sequences import get_capture_sequences
 from Analysis.Behavioural.Tools.extract_exploration_sequences import get_exploration_sequences
 
-
-def display_sequences(sequences):
-    plot_dim = len(sequences[0])
-    color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'y', "k", "m", "m", "k"]
-    plt.figure(figsize=(5, 15))
-    for i, seq in enumerate(reversed(sequences)):
-        for j, a in enumerate(reversed(seq)):
-            j = plot_dim - j
-            plt.fill_between((j, j + 1), i, i + 1, color=color_set[a])
-    plt.axis("scaled")
-    plt.show()
-
-
-def display_all_sequences(sequences):
-    sns.set()
-    sequences.sort(key=len)
-    plot_dim = max([len(seq) for seq in sequences])
-    color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'y', "k", "m", "m", "b"]
-    plt.figure(figsize=(5, 15))
-    for i, seq in enumerate(sequences):
-        for j, a in enumerate(reversed(seq)):
-            j = plot_dim - j
-            plt.fill_between((j, j+1), i, i+1, color=color_set[a])
-    plt.axis("scaled")
-    plt.show()
+from Analysis.Behavioural.Tools.show_action_sequence_block import display_all_sequences
 
 
 def display_average_sequence(sequences):
@@ -70,12 +46,24 @@ def display_average_sequence(sequences):
 
 # VERSION 2
 # Capture sequences
-capture_sequences = get_capture_sequences("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 10)
-display_all_sequences(capture_sequences)
+# compiled_capture_sequences = []
+# for i in range(1, 5):
+#     capture_sequences = get_capture_sequences(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
+#     # For each model
+#     display_all_sequences(capture_sequences)
+#     compiled_capture_sequences += capture_sequences
+#
+# # Combined across models
+# display_all_sequences(compiled_capture_sequences)
 
 # Exploration sequences
-exploration_sequences = get_exploration_sequences("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 10)
-display_all_sequences(exploration_sequences)
+compiled_exploration_sequences = []
+for i in range(1, 5):
+    exploration_sequences = get_exploration_sequences(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
+    display_all_sequences(exploration_sequences, min_length=50, max_length=150)
+    compiled_exploration_sequences += exploration_sequences
+
+display_all_sequences(compiled_exploration_sequences, min_length=50, max_length=150)
 
 # VERSION 1
 

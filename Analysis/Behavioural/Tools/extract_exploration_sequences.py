@@ -44,7 +44,7 @@ def get_free_swimming_sequences(data):
     return action_sequences
 
 
-def extract_exploration_action_sequences_with_positions(data, possible_visual_range=100, allowed_proximity_to_wall=200, environment_size=1500):
+def extract_exploration_action_sequences_with_positions(data, possible_visual_range=200, allowed_proximity_to_wall=200, environment_size=1500):
     """Returns all action sequences that occur n steps before consumption, with behavioural choice and """
 
     fish_prey_vectors = np.array([data["fish_position"]-data["prey_positions"][:, i, :] for i in range(data["prey_positions"].shape[1])])
