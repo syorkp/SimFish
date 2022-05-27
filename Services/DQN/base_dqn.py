@@ -605,7 +605,7 @@ class BaseDQN:
         # Below we perform the Double-DQN update to the target Q-values
         Q1 = self.sess.run(self.main_QN.predict, feed_dict={
             self.main_QN.observation: np.vstack(train_batch[:, 4]),
-            self.main_QN.prev_actions: np.hstack(([0], train_batch[:-1, 1])),
+            self.main_QN.prev_actions: np.hstack(([6, 0, 0], train_batch[:-1, 1])),
             self.main_QN.trainLength: self.learning_params['trace_length'],
             self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
             self.main_QN.rnn_state_in: state_train,
