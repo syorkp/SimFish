@@ -172,15 +172,18 @@ class BaseDQN:
         total_episode_reward = 0  # Total reward over episode
 
         step_number = 0  # To allow exit after maximum steps.
-        a = 0  # Initialise action for episode.
+        a = 3  # Initialise action for episode.
+        action_reafference = [a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
         while step_number < self.learning_params["max_epLength"]:
             step_number += 1
             o, a, r, internal_state, o1, d, rnn_state, rnn_state_ref = self.step_loop(o=o,
                                                                                       internal_state=internal_state,
-                                                                                      a=a, rnn_state=rnn_state,
+                                                                                      a=action_reafference,
+                                                                                      rnn_state=rnn_state,
                                                                                       rnn_state_ref=rnn_state_ref)
-            all_actions.append(a)
-            episode_buffer.append(np.reshape(np.array([o, a, r, internal_state, o1, d]), [1, 6]))
+
+            all_actions.append(action_reafference)
+            episode_buffer.append(np.reshape(np.array([o, action_reafference, r, internal_state, o1, d]), [1, 6]))
             total_episode_reward += r
             if np.isnan(r):
                 x = True
@@ -301,6 +304,8 @@ class BaseDQN:
                                                                                                  frame_buffer=self.frame_buffer,
                                                                                                  save_frames=self.save_frames,
                                                                                                  activations=(sa,))
+        action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+
         if self.save_environmental_data:
             sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
             self.episode_buffer.save_environmental_positions(self.simulation.fish.body.position,
@@ -313,7 +318,7 @@ class BaseDQN:
                                                              self.simulation.fish.body.angle,
                                                              )
         self.total_steps += 1
-        return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref
+        return o, action_reafference, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref
 
     def _assay_step_loop_old(self, o, internal_state, a, rnn_state):
         chosen_a, updated_rnn_state, rnn2_state, sa, sv, conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r, o2 = \
@@ -425,10 +430,13 @@ class BaseDQN:
                                                                                                  activations=(sa,))
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
+        action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+
         # Update buffer
         self.buffer.add_training(observation=o,
                                  internal_state=internal_state,
-                                 action=chosen_a,
+                                 # action=chosen_a,
+                                 action=action_reafference,
                                  reward=given_reward,
                                  rnn_state=updated_rnn_state,
                                  rnn_state_ref=rnn2_state,
@@ -448,7 +456,8 @@ class BaseDQN:
                                                      )
         self.buffer.make_desired_recordings(network_layers)
 
-        return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
+        # return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
+        return o, action_reafference, given_reward, internal_state, o1, d, updated_rnn_state
 
     def _assay_step_loop_new_static(self, o, internal_state, a, rnn_state):
         chosen_a, updated_rnn_state, rnn2_state, sa, sv, o2 = \
@@ -474,6 +483,7 @@ class BaseDQN:
                                                                                                  save_frames=self.save_frames,
                                                                                                  frame_buffer=self.frame_buffer)
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
+        action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
 
         # Update buffer
         self.buffer.add_training(observation=o,
@@ -497,7 +507,7 @@ class BaseDQN:
                                                      self.simulation.fish.body.angle,
                                                      )
 
-        return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
+        return o, action_reafference, given_reward, internal_state, o1, d, updated_rnn_state
 
     def train_networks(self):
         if self.new_simulation and self.environment_params["use_dynamic_network"]:

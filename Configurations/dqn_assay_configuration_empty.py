@@ -86,7 +86,9 @@ env = {'width': 1000,  # arena size
        'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
        'reafference': False,
        'stress': False,
-       'stress_compound': 0.9
+       'stress_compound': 0.9,
+       'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
+
        }
 
 params = {'num_actions': 7,  # size of action space

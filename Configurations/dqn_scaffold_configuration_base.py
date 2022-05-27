@@ -134,7 +134,7 @@ env = {
        'prey_inertia': 40.,
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-       'prey_num': 30,
+       'prey_num': 20,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
@@ -143,7 +143,7 @@ env = {
        'prey_fluid_displacement': False,
        'prey_jump': False,
        'differential_prey': True,
-       'prey_cloud_num': 4,
+       'prey_cloud_num': 3,
 
        'predator_mass': 10.,
        'predator_inertia': 40.,
@@ -308,10 +308,11 @@ env = {
        'capture_angle_deviation_allowance': np.pi,
        # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
 
+       'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
 }
 
 
-scaffold_name = "dqn_scaffold_15"
+scaffold_name = "dqn_scaffold_16"
 
 # 2-10
 changes = [
@@ -337,23 +338,21 @@ changes += [["PCI", 0.3, "max_epLength", 2000, "do_to_params"]]
 # 3) Available actions
 # Only for continuous
 
-# 4) Prey Capture 16-31
-changes += [["PCI", 0.4, "prey_fluid_displacement", True]]
-changes += build_changes_list_gradual("PCI", 0.4, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
-changes += build_changes_list_gradual("PCI", 0.4, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.5, 4)
-changes += build_changes_list_gradual("PCI", 0.4, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (17*np.pi)/180, 4)
-changes += [["PCI", 0.4, "prey_num", 20]]
-changes += [["PCI", 0.4, "capture_swim_extra_cost", 100]]
-changes += [["PCI", 0.4, "anneling_steps", 1000000]]
+# 4) Prey Capture 16-32
+changes += [["PCI", 0.3, "prey_fluid_displacement", True]]
+changes += [["PCI", 0.3, "prey_jump", True]]
+changes += build_changes_list_gradual("PCI", 0.3, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
+changes += build_changes_list_gradual("PCI", 0.3, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.5, 4)
+changes += build_changes_list_gradual("PCI", 0.3, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (34*np.pi)/180, 4)
+changes += [["PCI", 0.3, "capture_swim_extra_cost", 100]]
+changes += [["PCI", 0.3, "anneling_steps", 1000000]]
 
-# 5) Predator avoidance 32-3
-changes += [["PCI", 0.4, "probability_of_predator", 0.01]]
+# 5) Predator avoidance 33
+changes += [["PCI", 0.3, "probability_of_predator", 0.01]]
 # TODO: Complex predator
 
-changes += [["PCI", 0.4, "anneling_steps", 500000]]
-
 # 6) Other Behaviours 34
-changes += [["PCI", 0.4, "current_setting", "Circular"]]
+changes += [["PCI", 0.3, "current_setting", "Circular"]]
 
 # 7) Final Features
 # Motor effect noise (only for continuous)

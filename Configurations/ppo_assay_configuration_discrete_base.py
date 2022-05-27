@@ -225,6 +225,8 @@ env = {'width': 1500,  # arena size
        'minimum_observation_size': 100,  # Parameter to determine padded observation size (avoids conv layer size bug).
 
        'shot_noise': True,  # Whether to model observation of individual photons as a poisson process.
+       'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
+
        }
 
 params = {'num_actions': 10,  # size of action space

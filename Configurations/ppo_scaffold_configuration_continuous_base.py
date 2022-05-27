@@ -311,7 +311,7 @@ env = {
        'fraction_capture_permitted': 1.0,  # Should be 1.0 if no temporal restriction imposed.
        'capture_angle_deviation_allowance': np.pi,
        # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
-
+       'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
 }
 
 scaffold_name = "ppo_scaffold_16"
