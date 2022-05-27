@@ -20,6 +20,7 @@ class QNetwork:
         self.prev_actions = tf.placeholder(shape=[None, 3], dtype=tf.float32, name='prev_actions')
         self.prev_action_consequences = self.prev_actions[:, 2:]
         self.prev_chosen_actions = self.prev_actions[:, :1]
+        self.prev_chosen_actions = tf.cast(self.prev_chosen_actions, dtype=tf.int32)
         self.prev_actions_one_hot = tf.one_hot(self.prev_chosen_actions, num_actions, dtype=tf.float32)
 
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
