@@ -602,6 +602,10 @@ class BaseDQN:
         train_batch = self.experience_buffer.sample(self.learning_params['batch_size'],
                                                     self.learning_params['trace_length'])
 
+        print(f"""o: {np.vstack(train_batch[:, 4]).shape}
+        pa: {np.hstack(([6, 0, 0], train_batch[:-1, 1])).shape}
+        is: {np.vstack(train_batch[:, 3].shape)}
+        """)
         # Below we perform the Double-DQN update to the target Q-values
         Q1 = self.sess.run(self.main_QN.predict, feed_dict={
             self.main_QN.observation: np.vstack(train_batch[:, 4]),
