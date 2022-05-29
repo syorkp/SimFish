@@ -263,8 +263,9 @@ class BaseDQN:
                                                                                                  frame_buffer=self.frame_buffer,
                                                                                                  save_frames=self.save_frames,
                                                                                                  activations=(sa,))
+        action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
         self.total_steps += 1
-        return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state
+        return o, action_reafference, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state
 
     def _step_loop_new(self, o, internal_state, a, rnn_state, rnn_state_ref):
         # Generate actions and corresponding steps.
