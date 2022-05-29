@@ -602,7 +602,8 @@ class BaseDQN:
         train_batch = self.experience_buffer.sample(self.learning_params['batch_size'],
                                                     self.learning_params['trace_length'])
 
-        print(f"""o: {np.vstack(train_batch[:, 4]).shape}
+        print(f"""tb: {train_batch.shape}
+        o: {np.vstack(train_batch[:, 4]).shape}
         pa: {np.hstack(([6, 0, 0], train_batch[:-1, 1])).shape}
         is: {np.vstack(train_batch[:, 3].shape)}
         """)
