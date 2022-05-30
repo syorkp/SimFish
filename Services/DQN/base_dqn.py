@@ -618,7 +618,7 @@ class BaseDQN:
 
         Q2 = self.sess.run(self.target_QN.Q_out, feed_dict={
             self.target_QN.observation: np.vstack(train_batch[:, 4]),
-            self.main_QN.prev_actions: np.vstack((np.array([[6, 0, 0]]), np.vstack(train_batch[:-1, 1]))),
+            self.target_QN.prev_actions: np.vstack((np.array([[6, 0, 0]]), np.vstack(train_batch[:-1, 1]))),
             self.target_QN.trainLength: self.learning_params['trace_length'],
             self.target_QN.internal_state: np.vstack(train_batch[:, 3]),
             self.target_QN.rnn_state_in: state_train,
