@@ -132,4 +132,5 @@ class DQNTrainingService(TrainingService, BaseDQN):
         buffer_array = np.array(episode_buffer)
         episode_buffer = list(zip(buffer_array))
         self.experience_buffer.add(episode_buffer)
+        x = True
         # Periodically save the model.
