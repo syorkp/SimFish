@@ -603,7 +603,6 @@ class BaseDQN:
         train_batch = self.experience_buffer.sample(self.learning_params['batch_size'],
                                                     self.learning_params['trace_length'])
 
-        pa = np.vstack((np.array([[6, 0, 0]]), np.vstack(train_batch[:-1, 1])))
 
         # Below we perform the Double-DQN update to the target Q-values
         Q1 = self.sess.run(self.main_QN.predict, feed_dict={
@@ -629,8 +628,6 @@ class BaseDQN:
         double_Q = Q2[range(self.learning_params['batch_size'] * self.learning_params['trace_length']), Q1]
         target_Q = train_batch[:, 2] + (self.learning_params['y'] * double_Q * end_multiplier)
 
-        chosen_actions = np.vstack(train_batch[:, 1])[:, 0]
-        print(chosen_actions.shape)
         # Update the network with our target values.
         self.sess.run(self.main_QN.updateModel,
                       feed_dict={self.main_QN.observation: np.vstack(train_batch[:, 0]),
