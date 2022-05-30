@@ -182,8 +182,8 @@ class BaseDQN:
                                                                                       rnn_state=rnn_state,
                                                                                       rnn_state_ref=rnn_state_ref)
 
-            all_actions.append(action_reafference)
-            episode_buffer.append(np.reshape(np.array([o, action_reafference, r, internal_state, o1, d]), [1, 6]))
+            all_actions.append(a)
+            episode_buffer.append(np.reshape(np.array([o, np.array(a), r, internal_state, o1, d]), [1, 6]))
             total_episode_reward += r
             if np.isnan(r):
                 x = True
@@ -608,6 +608,7 @@ class BaseDQN:
         print(f"pa original: {np.array(train_batch[:-1, 1]).shape}")
         print(f"pa: {np.hstack(([[6, 0, 0]], [train_batch[:-1, 1]])).shape}")
         print(f"is: {np.vstack(train_batch[:, 3].shape)}")
+
         # Below we perform the Double-DQN update to the target Q-values
         Q1 = self.sess.run(self.main_QN.predict, feed_dict={
             self.main_QN.observation: np.vstack(train_batch[:, 4]),
