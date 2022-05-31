@@ -17,8 +17,8 @@ from Networks.original_network import connectivity, reflected, base_network_laye
 
 params = {
        # Learning (Universal)
-       'batch_size': 1,  # How many experience traces to use for each training step.
-       'trace_length': 50,  # How long each experience trace will be when training
+       'batch_size': 16,  # How many experience traces to use for each training step.. Works okay with 1,
+       'trace_length': 64,  # How long each experience trace will be when training. Works okay with 50
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
        'max_epLength': 1000,  # The max allowed length of our episode.
        'epsilon_greedy': True,
@@ -144,7 +144,7 @@ env = {
        'prey_fluid_displacement': False,
        'prey_jump': False,
        'differential_prey': True,
-       'prey_cloud_num': 5,
+       'prey_cloud_num': 7,
 
        'predator_mass': 10.,
        'predator_inertia': 40.,
@@ -315,7 +315,7 @@ env = {
        'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
 }
 
-scaffold_name = "ppo_scaffold_18"
+scaffold_name = "ppo_scaffold_18a"
 
 
 changes = [

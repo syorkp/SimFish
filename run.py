@@ -5028,7 +5028,7 @@ dqn_scaffold_17a = [
     },
 ]
 
-ppo_scaffold_18a = [
+ppo_scaffold_18 = [
     {
         "Model Name": "ppo_scaffold_18",
         "Environment Name": "ppo_scaffold_18",
@@ -5049,6 +5049,43 @@ ppo_scaffold_18a = [
     {
         "Model Name": "ppo_scaffold_18",
         "Environment Name": "ppo_scaffold_18",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+ppo_scaffold_18a = [
+    {
+        "Model Name": "ppo_scaffold_18a",
+        "Environment Name": "ppo_scaffold_18a",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "ppo_scaffold_18a",
+        "Environment Name": "ppo_scaffold_18a",
         "Trial Number": 2,
         "Run Mode": "Training",
         "Tethered": False,
