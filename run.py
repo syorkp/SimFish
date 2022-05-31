@@ -2,14 +2,14 @@ import os
 import shutil
 
 # Remove GPU Cache
-if os.path.exists("../.nv"):
-    print("Directory exists, removed it")
-    shutil.rmtree("../.nv")
-else:
-    print("Directory didnt exist")
-    d = '..'
-    print([os.path.join(d, o) for o in os.listdir(d)
-           if os.path.isdir(os.path.join(d, o))])
+# if os.path.exists("../.nv"):
+#     print("Directory exists, removed it")
+#     shutil.rmtree("../.nv")
+# else:
+#     print("Directory didnt exist")
+#     d = '..'
+    # print([os.path.join(d, o) for o in os.listdir(d)
+    #        if os.path.isdir(os.path.join(d, o))])
 import json
 from datetime import datetime
 
@@ -4991,7 +4991,6 @@ dqn_scaffold_16a = [
     },
 ]
 
-
 dqn_scaffold_17a = [
     {
         "Model Name": "dqn_scaffold_17",
@@ -5029,7 +5028,44 @@ dqn_scaffold_17a = [
     },
 ]
 
+ppo_scaffold_18a = [
+    {
+        "Model Name": "ppo_scaffold_18",
+        "Environment Name": "ppo_scaffold_18",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "ppo_scaffold_18",
+        "Environment Name": "ppo_scaffold_18",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_17a, parallel_jobs=3)
+manager = TrialManager(ppo_scaffold_18a, parallel_jobs=3)
 manager.run_priority_loop()

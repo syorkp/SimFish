@@ -198,6 +198,7 @@ env = {
        'energy_state': True,
        'in_light': False,
        'salt': False,  # Inclusion of olfactory salt input and salt death.
+       'salt_reward_penalty': 0,  # Scales with salt concentration.
        "use_dynamic_network": False,
        'salt_concentration_decay': 0.002,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
@@ -280,9 +281,9 @@ env = {
        'max_isomerization_size': 0.0,
 
        # Energy state and hunger-based rewards
-       'ci': 0.00002,
-       'ca': 0.00002,
-       'baseline_decrease': 0.003,
+       'ci': 0.0004,
+       'ca': 0.0004,
+       'baseline_decrease': 0.0015,
        'trajectory_A': 5.0,
        'trajectory_B': 2.5,
        'consumption_energy_gain': 1.0,
@@ -314,7 +315,7 @@ env = {
        'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
 }
 
-scaffold_name = "ppo_scaffold_16"
+scaffold_name = "ppo_scaffold_18"
 
 
 changes = [

@@ -139,7 +139,9 @@ class BasePPO:
         self.total_episode_reward = 0  # Total reward over episode
 
         self.buffer.reset()
-        self.buffer.action_buffer.append(a)  # Add to buffer for loading of previous actions
+        action = a + [self.simulation.fish.prev_action_impulse,
+                      self.simulation.fish.prev_action_angle]
+        self.buffer.action_buffer.append(action)  # Add to buffer for loading of previous actions
 
         self.step_number = 0
         while self.step_number < self.current_episode_max_duration:
@@ -151,10 +153,8 @@ class BasePPO:
                     rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
 
             self.step_number += 1
-            # if self.monitor_performance:
-            #     ps = pstats.Stats(self.profile)
-            #     ps.sort_stats("tottime")
-            #     ps.print_stats(20)
+
+
             r, internal_state, o, d, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic, rnn_state_critic_ref, a = self.step_loop(
                 o=o,
                 internal_state=internal_state,

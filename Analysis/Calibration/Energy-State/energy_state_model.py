@@ -40,14 +40,18 @@ def run_simulation(fish, actions, captures, duration=1000):
     print(np.sum(rewards))
 
 
-learning_params, env_variables, n, b, c = load_configuration_files("dqn_scaffold_15-1")
+learning_params, env_variables, n, b, c = load_configuration_files("ppo_scaffold_15-1")
 env_variables["baseline_decrease"] = 0.0015
-env_variables["ci"] = 0.0003
-env_variables["ca"] = 0.0003
+env_variables["ci"] = 0.0004
+env_variables["ca"] = 0.0004
 # Modify env variables here.
-model = build_fish_model(env_variables, continuous=False)
+model = build_fish_model(env_variables, continuous=True)
 captures = np.random.choice([0, 1], size=1000, p=[1-0.001, 0.001]).astype(float)
 no_captures = np.zeros((1000))
-actions = np.random.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], size=1000)
+# actions = np.random.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], size=1000)
+i = np.expand_dims((np.random.random_sample(1000) * 5), 1)
+a = np.expand_dims((np.random.random_sample(1000)-0.5), axis=1)
+actions = np.concatenate((i, a), axis=1)
+#actions[:, :] = 0
 # actions[:] = 6
 run_simulation(model, actions, no_captures)

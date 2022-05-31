@@ -30,6 +30,8 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         self.prediction_error_buffer = []
         self.target_output_buffer = []
 
+        self.action_consequences_buffer = []
+
         # For assay saving
         self.multivariate = True
 
@@ -58,8 +60,11 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         self.prediction_error_buffer = []
         self.target_output_buffer = []
 
+        self.action_consequences_buffer = []
+
     def add_training(self, observation, internal_state, action, reward, value, l_p_action, actor_rnn_state,
-                     actor_rnn_state_ref, critic_rnn_state=None, critic_rnn_state_ref=None, prediction_error=None, target_output=None):
+                     actor_rnn_state_ref, critic_rnn_state=None, critic_rnn_state_ref=None, prediction_error=None,
+                     target_output=None):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
         self.reward_buffer.append(reward)
@@ -77,7 +82,6 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         if self.use_rnd:  # If using RND
             self.target_output_buffer.append(target_output[0])
             self.prediction_error_buffer.append(prediction_error)
-            x = True
 
     def add_logging(self, mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref):
         self.mu_i_buffer.append(mu_i)
@@ -163,7 +167,7 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         if final_batch:
             observation_slice = self.pad_slice(self.observation_buffer[self.pointer:-1, :], self.trace_length)
             internal_state_slice = self.pad_slice(self.internal_state_buffer[self.pointer:-1, :], self.trace_length)
-            action_slice = self.pad_slice(self.action_buffer[self.pointer + 1:-1, :], self.trace_length)
+            action_slice = self.pad_slice(self.action_buffer[self.pointer + 1:-1, :2], self.trace_length)
             previous_action_slice = self.pad_slice(self.action_buffer[self.pointer:-2, :], self.trace_length)
             # reward_slice = self.reward_buffer[self.pointer:-1], self.trace_length)
             value_slice = self.pad_slice(self.value_buffer[self.pointer:-2], self.trace_length)
@@ -182,7 +186,7 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         else:
             observation_slice = self.observation_buffer[self.pointer:self.pointer + self.trace_length, :]
             internal_state_slice = self.internal_state_buffer[self.pointer:self.pointer + self.trace_length, :]
-            action_slice = self.action_buffer[self.pointer + 1:self.pointer + self.trace_length + 1, :]
+            action_slice = self.action_buffer[self.pointer + 1:self.pointer + self.trace_length + 1, :2]
             previous_action_slice = self.action_buffer[self.pointer:self.pointer + self.trace_length, :]
             # reward_slice = self.reward_buffer[self.pointer:self.pointer + self.trace_length, ]
             if self.pointer == 0:
