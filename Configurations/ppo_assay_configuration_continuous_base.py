@@ -152,7 +152,7 @@ env = {
        'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
-       'light_gradient': 200,
+       'light_gradient': 0,
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001; 0.01
        'dark_gain': 60.0,  # gain of brightness in the dark side

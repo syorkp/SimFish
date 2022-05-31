@@ -4992,6 +4992,44 @@ dqn_scaffold_16a = [
 ]
 
 
+dqn_scaffold_17a = [
+    {
+        "Model Name": "dqn_scaffold_17",
+        "Environment Name": "dqn_scaffold_17",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "dqn_scaffold_17",
+        "Environment Name": "dqn_scaffold_17",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_16a, parallel_jobs=3)
+manager = TrialManager(dqn_scaffold_17a, parallel_jobs=3)
 manager.run_priority_loop()

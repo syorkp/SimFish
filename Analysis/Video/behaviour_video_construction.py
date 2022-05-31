@@ -261,16 +261,23 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
         else:
             frame = board.db
 
+
+
         frames.append(rescale(copy.copy(frame), scale, multichannel=True, anti_aliasing=True))
         board.db = board.get_base_arena(0.3)
 
+    fig, ax = plt.subplots(figsize=(18, 18))
+    ax.imshow(frame)
+    plt.show()
     frames = np.array(frames)
     frames *= 255
     make_gif(frames, f"{model_name}-4-behaviour.gif", duration=len(frames) * 0.03, true_image=True)
 
 # model_name = "parameterised_speed_test_fast-1"
 model_name = "ppo_scaffold_version_on_8_se-1"
+model_name = "dqn_scaffold_10-3"
+
 data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
 config_name = "dqn_scaffold_10"
 
-draw_episode(data, config_name, model_name, continuous_actions=True, show_energy_state=False)
+draw_episode(data, config_name, model_name, continuous_actions=False, show_energy_state=False)
