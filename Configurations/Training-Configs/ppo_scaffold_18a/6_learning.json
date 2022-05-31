@@ -1,5 +1,5 @@
 {
-    "batch_size": 16,
+    "batch_size": 5,
     "trace_length": 64,
     "num_episodes": 50000,
     "max_epLength": 1000,
