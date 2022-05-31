@@ -521,6 +521,8 @@ class DiscretePPO(BasePPO):
             self.buffer.add_loss(average_loss_actor / self.learning_params["n_updates_per_iteration"],
                                  average_loss_value / self.learning_params["n_updates_per_iteration"])
 
+        self.buffer.reset()
+
     def train_network_2(self):
         observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
         log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
@@ -595,3 +597,4 @@ class DiscretePPO(BasePPO):
 
             self.buffer.add_loss(average_loss_actor / self.learning_params["n_updates_per_iteration"],
                                  average_loss_value / self.learning_params["n_updates_per_iteration"])
+        self.buffer.reset()

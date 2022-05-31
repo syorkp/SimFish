@@ -128,6 +128,8 @@ class BasePPO:
         rnn_state_critic = copy.copy(self.init_rnn_state_critic)
         rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
 
+        if self.assay:
+            self.buffer.reset()
         self.simulation.reset()
         sa = np.zeros((1, 128))  # Kept for GIFs.
 
@@ -138,7 +140,6 @@ class BasePPO:
 
         self.total_episode_reward = 0  # Total reward over episode
 
-        self.buffer.reset()
         action = a + [self.simulation.fish.prev_action_impulse,
                       self.simulation.fish.prev_action_angle]
         self.buffer.action_buffer.append(action)  # Add to buffer for loading of previous actions
@@ -423,5 +424,6 @@ class BasePPO:
         else:
             actor_rnn_state_buffer = ()
             actor_rnn_state_ref_buffer = ()
+
 
         return actor_rnn_state_buffer, actor_rnn_state_ref_buffer

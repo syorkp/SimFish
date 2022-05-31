@@ -1930,7 +1930,15 @@ class ContinuousPPO(BasePPO):
                                  average_loss_value / self.learning_params["n_updates_per_iteration"],
                                  average_loss_entropy / self.learning_params["n_updates_per_iteration"])
 
+        self.buffer.reset()
+
     def train_network_multivariate2(self):
+        if self.environment_params["batch_size"] * self.environment_params["trace_length"] > self.buffer.reward_buffer.shape[0]:
+            print(f"Buffer too small: {self.buffer.reward_buffer.shape[0]}")
+            return
+        else:
+            print(f"Buffer large enough: {self.buffer.reward_buffer.shape[0]}")
+
         if self.use_rnd:
             observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
             log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, target_outputs_buffer, \
@@ -2046,6 +2054,7 @@ class ContinuousPPO(BasePPO):
                                  average_loss_angle / self.learning_params["n_updates_per_iteration"],
                                  average_loss_value / self.learning_params["n_updates_per_iteration"],
                                  average_loss_entropy / self.learning_params["n_updates_per_iteration"])
+        self.buffer.reset()
 
     def train_network_multivariate(self):
         observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
@@ -2137,6 +2146,8 @@ class ContinuousPPO(BasePPO):
                                  average_loss_angle / self.learning_params["n_updates_per_iteration"],
                                  average_loss_value / self.learning_params["n_updates_per_iteration"])
 
+        self.buffer.reset()
+
     def old_training(self):
         number_of_batches = 5
         for batch in range(number_of_batches):
@@ -2212,3 +2223,5 @@ class ContinuousPPO(BasePPO):
             self.buffer.add_loss(average_loss_impulse / self.learning_params["n_updates_per_iteration"],
                                  average_loss_angle / self.learning_params["n_updates_per_iteration"],
                                  average_loss_value / self.learning_params["n_updates_per_iteration"])
+
+        self.buffer.reset()
