@@ -194,7 +194,7 @@ env = {
        'energy_state': True,
        'in_light': True,
        'salt': True,  # Inclusion of olfactory salt input and salt death.
-       'salt_reward_penalty': 0,  # Scales with salt concentration.
+       'salt_reward_penalty': 10000,  # Scales with salt concentration.
        "use_dynamic_network": False,
        'salt_concentration_decay': 0.002,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
@@ -313,7 +313,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_17"
+scaffold_name = "dqn_scaffold_18"
 
 # 2-10
 changes = [
