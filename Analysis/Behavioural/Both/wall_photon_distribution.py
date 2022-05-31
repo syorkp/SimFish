@@ -7,10 +7,10 @@ from Tools.drawing_board_new import NewDrawingBoard
 
 
 def generate_wall_inputs_full_field(eye, drawing_board, width, height, env_variables):
-    max_red_photons = np.zeros((width/20, height/20))
+    max_red_photons = np.zeros((int(width/20), int(height/20)))
 
-    for w in range(3, (width-3)):
-        for h in range(3, (height-3)):
+    for w in range(3, (width-10)):
+        for h in range(3, (height-10)):
             print(h)
             # TODO: Set eye orientation towards correct wall.
             fish_orientation = np.pi

@@ -397,7 +397,7 @@ class TrainingService(BaseService):
             self.writer.add_summary(actor_loss_summary, self.episode_number)
 
     def _save_episode_continuous_variables(self):
-        impulses = self.buffer.action_buffer[:, 0]
+        impulses = np.array(self.buffer.action_buffer)[:, 0]
         mean_impulse = np.mean(impulses)
         max_impulse = np.max(impulses)
         min_impulse = np.min(impulses)
@@ -408,7 +408,7 @@ class TrainingService(BaseService):
         impulse_summary = tf.Summary(value=[tf.Summary.Value(tag="min impulse", simple_value=min_impulse)])
         self.writer.add_summary(impulse_summary, self.episode_number)
 
-        angles = self.buffer.action_buffer[:, 1]
+        angles = np.array(self.buffer.action_buffer)[:, 1]
         mean_angle = np.mean(angles)
         max_angle = np.max(angles)
         min_angle = np.min(angles)
@@ -420,7 +420,7 @@ class TrainingService(BaseService):
         self.writer.add_summary(angle_summary, self.episode_number)
 
         # # Value Summary
-        values = self.buffer.value_buffer
+        values = np.array(self.buffer.value_buffer)
         mean_value = np.mean(values)
         max_value = np.max(values)
         min_value = np.min(values)
