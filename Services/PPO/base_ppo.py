@@ -170,8 +170,6 @@ class BasePPO:
             if d:
                 break
 
-        self.buffer.tidy()
-
     def compute_rnn_states(self, rnn_key_points, observation_buffer, internal_state_buffer, previous_action_buffer):
         num_actions = self.output_dimensions
         batch_size = len(rnn_key_points)

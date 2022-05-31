@@ -440,6 +440,8 @@ class DiscretePPO(BasePPO):
                current_batch_size
 
     def train_network(self):
+        self.buffer.tidy()
+
         observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
         log_action_probability_buffer, advantage_buffer, return_buffer, \
         key_rnn_points = self.buffer.get_episode_buffer()
@@ -524,6 +526,8 @@ class DiscretePPO(BasePPO):
         self.buffer.reset()
 
     def train_network_2(self):
+        self.buffer.tidy()
+
         observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
         log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
         key_rnn_points = self.buffer.get_episode_buffer()

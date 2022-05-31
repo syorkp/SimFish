@@ -1710,6 +1710,7 @@ class ContinuousPPO(BasePPO):
                current_batch_size
 
     def train_network(self):
+        self.buffer.tidy()
         observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
         log_impulse_probability_buffer, log_angle_probability_buffer, advantage_buffer, return_buffer, \
         key_rnn_points = self.buffer.get_episode_buffer()
@@ -1807,6 +1808,7 @@ class ContinuousPPO(BasePPO):
                                  average_loss_value / self.learning_params["n_updates_per_iteration"])
 
     def train_network_multivariate2_split_networks(self):
+        self.buffer.tidy()
         observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
         log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
         key_rnn_points = self.buffer.get_episode_buffer()
@@ -1937,6 +1939,7 @@ class ContinuousPPO(BasePPO):
             print(f"Buffer too small: {self.buffer.reward_buffer.shape[0]}")
             return
         else:
+            self.buffer.tidy()
             print(f"Buffer large enough: {self.buffer.reward_buffer.shape[0]}")
 
         if self.use_rnd:
