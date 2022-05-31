@@ -1936,11 +1936,11 @@ class ContinuousPPO(BasePPO):
 
     def train_network_multivariate2(self):
         if self.learning_params["batch_size"] * self.learning_params["trace_length"] > len(self.buffer.reward_buffer):
-            print(f"Buffer too small: {self.buffer.reward_buffer.shape[0]}")
+            print(f"Buffer too small: {len(self.buffer.reward_buffer)}")
             return
         else:
             self.buffer.tidy()
-            print(f"Buffer large enough: {self.buffer.reward_buffer.shape[0]}")
+            print(f"Buffer large enough: {len(self.buffer.reward_buffer)}")
 
         if self.use_rnd:
             observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
