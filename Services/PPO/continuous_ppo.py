@@ -331,8 +331,14 @@ class ContinuousPPO(BasePPO):
                                            rnn_state_critic,
                                            rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
-        a = [a[0] / self.environment_params['max_impulse'],
-             a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
+        # a = [a[0] / self.environment_params['max_impulse'],
+        #      a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
+
+        a = [a[0],
+             a[1],
+             self.simulation.fish.prev_action_impulse,
+             self.simulation.fish.prev_action_angle,
+             ]# Set impulse to scale to be inputted to network
 
         impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, conv1l_actor, conv2l_actor, conv3l_actor, \
         conv4l_actor, conv1r_actor, conv2r_actor, conv3r_actor, conv4r_actor, \
@@ -374,6 +380,10 @@ class ContinuousPPO(BasePPO):
                                                                                                      activations=(sa,))
 
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
+
+        action_consequences = [self.simulation.fish.prev_action_impulse / self.environment_params["max_impulse"],
+                               self.simulation.fish.prev_action_angle / self.environment_params["max_angle_change"]]
+        action = action + action_consequences
 
         # Update buffer
         self.buffer.add_training(observation=o,
@@ -1148,8 +1158,15 @@ class ContinuousPPO(BasePPO):
                                                  rnn_state_critic_ref):
 
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
-        a = [a[0] / self.environment_params['max_impulse'],
-             a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
+        # a = [a[0] / self.environment_params['max_impulse'],
+        #      a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
+
+        a = [a[0],
+             a[1],
+             self.simulation.fish.prev_action_impulse,
+             self.simulation.fish.prev_action_angle,
+             ]# Set impulse to scale to be inputted to network
+
 
         impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, mu_i, mu_a, neg_log_action_probability = self.sess.run(
             [self.actor_network.impulse_output, self.actor_network.angle_output,
@@ -1208,6 +1225,9 @@ class ContinuousPPO(BasePPO):
             save_frames=self.save_frames,
             activations=sa)
 
+        action_consequences = [self.simulation.fish.prev_action_impulse / self.environment_params["max_impulse"],
+                               self.simulation.fish.prev_action_angle / self.environment_params["max_angle_change"]]
+
         if self.use_rnd:
             target_output = self.sess.run(self.target_rdn.rdn_output,
                                           feed_dict={self.actor_network.observation: o,
@@ -1240,6 +1260,7 @@ class ContinuousPPO(BasePPO):
                                      target_output=target_output,
                                      )
         else:
+            action = action + action_consequences
             self.buffer.add_training(observation=o,
                                      internal_state=internal_state,
                                      action=action,
