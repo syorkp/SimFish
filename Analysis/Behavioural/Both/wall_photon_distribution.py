@@ -7,21 +7,41 @@ from Tools.drawing_board_new import NewDrawingBoard
 
 
 def generate_wall_inputs_full_field(eye, drawing_board, width, height, env_variables):
-    red_photons = np.zeros((width, height))
+    max_red_photons = np.zeros((width, height))
 
     for w in range(width):
         for h in range(height):
-            observation = eye.read()
+            print(h)
+            # TODO: Set eye orientation towards correct wall.
+            fish_orientation = np.pi
+            left_eye_pos = (
+                +np.cos(np.pi / 2 - fish_orientation) * env_variables['eyes_biasx'] + w,
+                -np.sin(np.pi / 2 - fish_orientation) * env_variables['eyes_biasx'] + h)
+
+            masked_pixels = drawing_board.get_masked_pixels([w, h], np.array([]), np.array([]))
+            eye.read(masked_pixels, left_eye_pos[0], left_eye_pos[1], fish_orientation)
+            red_photons = eye.readings[:, 0]
+            max_red_photons[w, h] = np.max(red_photons)
+
+    plt.imshow(max_red_photons)
+    plt.show()
+
 
 def build_board_and_eye(env_variables):
-    board = NewDrawingBoard(width, height, decay_rate, pr_size, False, False, 1, light_gain=luminance, visible_scatter=bkg_scatter)
+    board = NewDrawingBoard(env_variables["width"], env_variables["height"], env_variables["decay_rate"],
+                            env_variables["uv_photoreceptor_rf_size"], False, False, 1,
+                            light_gain=env_variables["light_gain"], visible_scatter=env_variables["bkg_scatter"])
 
     verg_angle = 77. * (np.pi / 180)
     retinal_field = 163. * (np.pi / 180)
     dark_col = int(env_variables['width'] * env_variables['dark_light_ratio'])
     eye = Eye(board, verg_angle, retinal_field, True, env_variables, dark_col, False)
 
-    return eye
+    return eye, board
 
+
+learning_params, env_variables, n, b, c = load_configuration_files("dqn_scaffold_15-1")
+eye, board = build_board_and_eye(env_variables)
+generate_wall_inputs_full_field(eye, board, 1500, 1500, env_variables)
 
 
