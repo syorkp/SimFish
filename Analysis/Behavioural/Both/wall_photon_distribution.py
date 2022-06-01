@@ -7,8 +7,12 @@ from Tools.drawing_board_new import NewDrawingBoard
 
 
 def get_orientation_to_closest_wall(width, height, x, y):
-    if x <
-
+    halfway_x = width/2
+    halfway_y = height/2
+    if x < y:
+        ... # Then is in lower half
+    if x + y < width
+        ... # Then side closest to 0, 0
 
 def generate_wall_inputs_full_field(eye, drawing_board, width, height, env_variables):
     max_red_photons = np.zeros((int(width/20), int(height/20)))

@@ -5114,7 +5114,7 @@ ppo_scaffold_18a = [
         "Continuous Actions": True,
         "Learning Algorithm": "PPO",
         "Priority": 1,
-        "Using GPU": True,
+        "Using GPU": False,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
