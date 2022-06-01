@@ -2009,7 +2009,8 @@ class ContinuousPPO(BasePPO):
                                                                                             :(batch + 1) *
                                                                                              self.learning_params[
                                                                                                  "batch_size"]])
-
+                print(f"RNN state: {actor_rnn_state_ref_slice}")
+                print(f"RNN state shape: {actor_rnn_state_ref_slice.shape}")
                 # Optimise actor
                 loss_actor_val, loss_critic_val, loss_entropy, total_loss, _, log_action_probability_batch_new, scaled_actions = self.sess.run(
                     [self.actor_network.policy_loss, self.actor_network.value_loss, self.actor_network.entropy,
