@@ -6,6 +6,10 @@ from Environment.Fish.eye import Eye
 from Tools.drawing_board_new import NewDrawingBoard
 
 
+def get_orientation_to_closest_wall(width, height, x, y):
+    if x <
+
+
 def generate_wall_inputs_full_field(eye, drawing_board, width, height, env_variables):
     max_red_photons = np.zeros((int(width/20), int(height/20)))
 
@@ -24,6 +28,7 @@ def generate_wall_inputs_full_field(eye, drawing_board, width, height, env_varia
             max_red_photons[w, h] = np.max(red_photons)
 
     plt.imshow(max_red_photons)
+    # TODO: add scale
     plt.show()
 
 
