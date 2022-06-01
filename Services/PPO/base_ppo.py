@@ -79,11 +79,11 @@ class BasePPO:
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
         else:
             self.init_rnn_state_actor = (
-                np.zeros([1, self.actor_network.rnn_dim]),
-                np.zeros([1, self.actor_network.rnn_dim]))
+                np.zeros([self.learning_params["batch_size"], self.actor_network.rnn_dim]),
+                np.zeros([self.learning_params["batch_size"], self.actor_network.rnn_dim]))
             self.init_rnn_state_actor_ref = (
-                np.zeros([1, self.actor_network.rnn_dim]),
-                np.zeros([1, self.actor_network.rnn_dim]))
+                np.zeros([self.learning_params["batch_size"], self.actor_network.rnn_dim]),
+                np.zeros([self.learning_params["batch_size"], self.actor_network.rnn_dim]))
             if not self.sb_emulator or self.separate_networks:
                 self.init_rnn_state_critic = (
                     np.zeros([1, self.critic_network.rnn_dim]),
