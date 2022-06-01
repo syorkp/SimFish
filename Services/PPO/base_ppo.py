@@ -70,7 +70,7 @@ class BasePPO:
             self.separate_networks = None
 
     def init_states(self):
-        # Init states for RNN
+        # Init states for RNN - For steps, not training.
         if self.environment_params["use_dynamic_network"]:
             rnn_state_shapes = self.actor_network.get_rnn_state_shapes()
             self.init_rnn_state_actor = tuple(
@@ -79,11 +79,11 @@ class BasePPO:
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
         else:
             self.init_rnn_state_actor = (
-                np.zeros([self.learning_params["batch_size"], self.actor_network.rnn_dim]),
-                np.zeros([self.learning_params["batch_size"], self.actor_network.rnn_dim]))
+                np.zeros([1, self.actor_network.rnn_dim]),
+                np.zeros([1, self.actor_network.rnn_dim]))
             self.init_rnn_state_actor_ref = (
-                np.zeros([self.learning_params["batch_size"], self.actor_network.rnn_dim]),
-                np.zeros([self.learning_params["batch_size"], self.actor_network.rnn_dim]))
+                np.zeros([1, self.actor_network.rnn_dim]),
+                np.zeros([1, self.actor_network.rnn_dim]))
             if not self.sb_emulator or self.separate_networks:
                 self.init_rnn_state_critic = (
                     np.zeros([1, self.critic_network.rnn_dim]),
@@ -108,9 +108,9 @@ class BasePPO:
         actor_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
         critic_cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
 
-        output_dimension = self.output_dimensions
-
         if not self.sb_emulator:
+            output_dimension = self.output_dimensions
+
             self.critic_network = PPONetworkCritic(simulation=self.simulation,
                                                    rnn_dim=self.learning_params['rnn_dim_shared'],
                                                    rnn_cell=critic_cell,

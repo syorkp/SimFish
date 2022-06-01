@@ -15,8 +15,8 @@ class BaseNetwork:
         self.train_length = tf.placeholder(dtype=tf.int32, shape=[], name="train_length")
         self.batch_size = tf.placeholder(dtype=tf.int32, shape=[], name='batch_size')
 
-        self.rnn_state_in = rnn_cell.zero_state(self.train_length, tf.float32)
-        self.rnn_state_in_ref = rnn_cell.zero_state(self.train_length, tf.float32)
+        self.rnn_state_in = rnn_cell.zero_state(self.batch_size, tf.float32)  # Changed frmo train_length to be in line with dqn
+        self.rnn_state_in_ref = rnn_cell.zero_state(self.batch_size, tf.float32)  # Changed frmo train_length to be in line with dqn
 
         # Networks Inputs
         self.prev_actions = tf.placeholder(shape=[None, action_dim], dtype=tf.float32, name='prev_actions')

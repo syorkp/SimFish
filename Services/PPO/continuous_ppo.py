@@ -1951,10 +1951,12 @@ class ContinuousPPO(BasePPO):
             log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
             key_rnn_points = self.buffer.get_episode_buffer()
 
-        # if self.learning_params["batch_size"] == 1:
-        number_of_batches = int(math.ceil(observation_buffer.shape[0] / self.learning_params["batch_size"]))
-        # else:
-        #     number_of_batches = int(math.ceil(observation_buffer.shape[0] / (self.learning_params["batch_size"] * self.learning_params["trace_length"])))
+        if self.learning_params["batch_size"] == 1:
+            number_of_batches = int(math.ceil(observation_buffer.shape[0] / self.learning_params["batch_size"]))
+        else:
+            number_of_batches = int(math.ceil(observation_buffer.shape[0] / (self.learning_params["batch_size"] * self.learning_params["trace_length"])))
+
+        print(f"Number of batches: {number_of_batches}")
 
         for batch in range(number_of_batches):
             # Find steps at start of each trace to compute RNN states
@@ -1962,6 +1964,7 @@ class ContinuousPPO(BasePPO):
                                 batch * self.learning_params["batch_size"] * self.learning_params[
                                     "trace_length"] <= i < (batch + 1) *
                                 self.learning_params["batch_size"] * self.learning_params["trace_length"]]
+            print(f"Batch key points: {batch_key_points}")
 
             # Get the current batch
             if self.use_rnd:
