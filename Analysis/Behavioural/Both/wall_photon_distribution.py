@@ -7,31 +7,46 @@ from Tools.drawing_board_new import NewDrawingBoard
 
 
 def get_orientation_to_closest_wall(width, height, x, y):
-    halfway_x = width/2
-    halfway_y = height/2
     if x < y:
-        ... # Then is in lower half
-    if x + y < width
-        ... # Then side closest to 0, 0
+        lower = True
+    else:
+        lower = False
+    if x + y < width:
+        closer = True
+    else:
+        closer = False
 
-def generate_wall_inputs_full_field(eye, drawing_board, width, height, env_variables):
-    max_red_photons = np.zeros((int(width/20), int(height/20)))
+    if lower and closer:
+        return np.pi
+    elif not lower and closer:
+        return np.pi * 1.5
+    elif lower and not closer:
+        return np.pi * 0.5
+    else:
+        return 0
 
-    for w in range(3, int((width-3)/20)):
-        for h in range(3, int((height-3)/20)):
-            print(h)
-            # TODO: Set eye orientation towards correct wall.
-            fish_orientation = np.pi
+
+def generate_wall_inputs_full_field(eye, drawing_board, width, height, env_variables, scaling=50):
+    max_red_photons = np.zeros((int(width/scaling), int(height/scaling)))
+    total = (width/scaling) * (height/scaling)
+    total_remaining = (width/scaling) * (height/scaling)
+
+    for w in range(1, int((width-3)/scaling)):
+        for h in range(1, int((height-3)/scaling)):
+            total_remaining -= 1
+            print(f"{(total_remaining/total) * 100}% remaining")
+            fish_orientation = get_orientation_to_closest_wall(width, height, w*scaling, h*scaling)
             left_eye_pos = (
-                +np.cos(np.pi / 2 - fish_orientation) * env_variables['eyes_biasx'] + w * 20,
-                -np.sin(np.pi / 2 - fish_orientation) * env_variables['eyes_biasx'] + h * 20)
+                +np.cos(np.pi / 2 - fish_orientation) * env_variables['eyes_biasx'] + w * scaling,
+                -np.sin(np.pi / 2 - fish_orientation) * env_variables['eyes_biasx'] + h * scaling)
 
-            masked_pixels = drawing_board.get_masked_pixels([w*20, h*20], np.array([]), np.array([]))
+            masked_pixels = drawing_board.get_masked_pixels([w*scaling, h*scaling], np.array([]), np.array([]))
             eye.read(masked_pixels, left_eye_pos[0], left_eye_pos[1], fish_orientation)
             red_photons = eye.readings[:, 0]
             max_red_photons[w, h] = np.max(red_photons)
 
     plt.imshow(max_red_photons)
+    plt.legend()
     # TODO: add scale
     plt.show()
 
