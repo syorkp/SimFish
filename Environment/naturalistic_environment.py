@@ -195,8 +195,9 @@ class NaturalisticEnvironment(BaseEnvironment):
                 if self.fish.salt_health < 0:
                     print("Fish too salty")
                     done = True
-                if self.env_variables["salt_reward_penalty"] > 0:
-                    reward -= self.env_variables["salt_reward_penalty"] * salt_damage
+                if "salt_reward_penalty" in self.env_variables:
+                    if self.env_variables["salt_reward_penalty"] > 0:
+                        reward -= self.env_variables["salt_reward_penalty"] * salt_damage
 
             if self.predator_body is not None:
                 self.total_predator_steps += 1
