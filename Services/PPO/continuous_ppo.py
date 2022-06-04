@@ -1021,7 +1021,7 @@ class ContinuousPPO(BasePPO):
     def _step_loop_multivariate_sbe_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                               rnn_state_critic,
                                               rnn_state_critic_ref):
-
+        print(self.step_number)
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0],
              a[1],

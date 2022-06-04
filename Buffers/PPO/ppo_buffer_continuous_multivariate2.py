@@ -299,6 +299,7 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         # returns = self.discount_cumsum(self.reward_buffer, self.gamma)[:-1]
         # self.advantage_buffer = advantage
         # self.return_buffer = returns
+        value_buffer = np.array([v[0, 0] for v in self.value_buffer])
         last_values = self.value_buffer
         advantages = np.zeros_like(self.reward_buffer)
         last_gae_lam = 0
@@ -311,7 +312,7 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
                 nextvalues = self.value_buffer[step + 1]
             delta = self.reward_buffer[step] + self.gamma * nextvalues * nextnonterminal - self.value_buffer[step]
             advantages[step] = last_gae_lam = delta + self.gamma * self.lmbda * nextnonterminal * last_gae_lam
-        returns = advantages + self.value_buffer
+        returns = advantages + value_buffer
         self.advantage_buffer = advantages
         self.return_buffer = returns
 
