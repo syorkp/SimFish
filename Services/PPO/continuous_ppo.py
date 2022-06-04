@@ -37,6 +37,7 @@ class ContinuousPPO(BasePPO):
         self.step_drop = None
 
         self.output_dimensions = 2
+        self.just_trained = False
 
     def create_network(self):
         """
@@ -1994,16 +1995,16 @@ class ContinuousPPO(BasePPO):
             average_loss_angle = 0
             average_loss_entropy = 0
 
-            print(f"""
-            o: {np.array(observation_batch).shape}
-            is: {np.array(internal_state_batch).shape}
-            a: {np.array(action_batch).shape}
-            pa: {np.array(previous_action_batch).shape}
-            ad: {np.array(advantage_batch).shape}
-            re: {np.array(return_batch).shape}
-            pv: {np.array(previous_value_batch).shape}
-            cbs: {current_batch_size}
-            """)
+            # print(f"""
+            # o: {np.array(observation_batch).shape}
+            # is: {np.array(internal_state_batch).shape}
+            # a: {np.array(action_batch).shape}
+            # pa: {np.array(previous_action_batch).shape}
+            # ad: {np.array(advantage_batch).shape}
+            # re: {np.array(return_batch).shape}
+            # pv: {np.array(previous_value_batch).shape}
+            # cbs: {current_batch_size}
+            # """)
 
 
             for i in range(self.learning_params["n_updates_per_iteration"]):
@@ -2021,8 +2022,8 @@ class ContinuousPPO(BasePPO):
                                                                                             :(batch + 1) *
                                                                                              self.learning_params[
                                                                                                  "batch_size"]])
-                print(f"RNN state: {actor_rnn_state_ref_slice}")
-                print(f"RNN state shape: {actor_rnn_state_ref_slice[0].shape}")
+                # print(f"RNN state: {actor_rnn_state_ref_slice}")
+                # print(f"RNN state shape: {actor_rnn_state_ref_slice[0].shape}")
                 # Optimise actor
                 loss_actor_val, loss_critic_val, loss_entropy, total_loss, _, log_action_probability_batch_new, scaled_actions = self.sess.run(
                     [self.actor_network.policy_loss, self.actor_network.value_loss, self.actor_network.entropy,
@@ -2076,7 +2077,7 @@ class ContinuousPPO(BasePPO):
                                  average_loss_angle / self.learning_params["n_updates_per_iteration"],
                                  average_loss_value / self.learning_params["n_updates_per_iteration"],
                                  average_loss_entropy / self.learning_params["n_updates_per_iteration"])
-        self.buffer.reset()
+        self.just_trained = True
 
     def train_network_multivariate(self):
         observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \

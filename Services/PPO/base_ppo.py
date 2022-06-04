@@ -128,8 +128,9 @@ class BasePPO:
         rnn_state_critic = copy.copy(self.init_rnn_state_critic)
         rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
 
-        if self.assay:
+        if self.assay or self.just_trained:
             self.buffer.reset()
+            self.just_trained = False
         self.simulation.reset()
         sa = np.zeros((1, 128))  # Kept for GIFs.
 

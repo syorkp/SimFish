@@ -17,8 +17,8 @@ from Networks.original_network import connectivity, reflected, base_network_laye
 
 params = {
        # Learning (Universal)
-       'batch_size': 4,  # How many experience traces to use for each training step. Works okay with 1,
-       'trace_length': 5,  # How long each experience trace will be when training. Works okay with 50
+       'batch_size': 16,  # How many experience traces to use for each training step. Works okay with 1,
+       'trace_length': 64,  # How long each experience trace will be when training. Works okay with 50
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
        'max_epLength': 200,  # The max allowed length of our episode.
        'epsilon_greedy': True,
@@ -192,7 +192,7 @@ env = {
        #                                  New Simulation
 
        # Action mask
-       'impose_action_mask': False,
+       'impose_action_mask': True,
 
        # Sensory inputs
        'energy_state': True,
