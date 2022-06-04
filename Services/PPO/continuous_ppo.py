@@ -1994,16 +1994,16 @@ class ContinuousPPO(BasePPO):
             average_loss_angle = 0
             average_loss_entropy = 0
 
-            # print(f"""
-            # o: {np.array(observation_batch).shape}
-            # is: {np.array(internal_state_batch).shape}
-            # a: {np.array(action_batch).shape}
-            # pa: {np.array(previous_action_batch).shape}
-            # ad: {np.array(advantage_batch).shape}
-            # re: {np.array(return_batch).shape}
-            # pv: {np.array(previous_value_batch).shape}
-            # cbs: {current_batch_size}
-            # """)
+            print(f"""
+            o: {np.array(observation_batch).shape}
+            is: {np.array(internal_state_batch).shape}
+            a: {np.array(action_batch).shape}
+            pa: {np.array(previous_action_batch).shape}
+            ad: {np.array(advantage_batch).shape}
+            re: {np.array(return_batch).shape}
+            pv: {np.array(previous_value_batch).shape}
+            cbs: {current_batch_size}
+            """)
 
 
             for i in range(self.learning_params["n_updates_per_iteration"]):
