@@ -1022,7 +1022,6 @@ class ContinuousPPO(BasePPO):
     def _step_loop_multivariate_sbe_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                               rnn_state_critic,
                                               rnn_state_critic_ref):
-        print(self.step_number)
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0],
              a[1],
@@ -1937,11 +1936,11 @@ class ContinuousPPO(BasePPO):
 
     def train_network_multivariate2(self):
         if (self.learning_params["batch_size"] * self.learning_params["trace_length"]) * 2 > len(self.buffer.reward_buffer):
-            print(f"Buffer too small: {len(self.buffer.reward_buffer)}")
+            # print(f"Buffer too small: {len(self.buffer.reward_buffer)}")
             return
         else:
             self.buffer.tidy()
-            print(f"Buffer large enough: {len(self.buffer.reward_buffer)}")
+            # print(f"Buffer large enough: {len(self.buffer.reward_buffer)}")
 
         if self.use_rnd:
             observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
@@ -1957,7 +1956,7 @@ class ContinuousPPO(BasePPO):
         else:
             number_of_batches = int(math.ceil(observation_buffer.shape[0] / (self.learning_params["batch_size"] * self.learning_params["trace_length"])))
 
-        print(f"Number of batches: {number_of_batches}")
+        # print(f"Number of batches: {number_of_batches}")
 
         for batch in range(number_of_batches):
             # Find steps at start of each trace to compute RNN states
@@ -1965,7 +1964,7 @@ class ContinuousPPO(BasePPO):
                                 batch * self.learning_params["batch_size"] * self.learning_params[
                                     "trace_length"] <= i < (batch + 1) *
                                 self.learning_params["batch_size"] * self.learning_params["trace_length"]]
-            print(f"Batch key points: {batch_key_points}")
+            # print(f"Batch key points: {batch_key_points}")
 
             # Get the current batch
             if self.use_rnd:
