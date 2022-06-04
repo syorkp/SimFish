@@ -761,7 +761,7 @@ class BaseEnvironment:
                     prey_body.angle = original_angle
 
                 # Motion from prey escape
-                if self.env_variables["prey_jump"] and np.random.choice(1, [0, 1],
+                if self.env_variables["prey_jump"] and np.random.choice([0, 1], size=1,
                                                                         p=[1 - self.env_variables["p_escape"],
                                                                            self.env_variables["p_escape"]])[0] == 1:
                     prey_body.apply_impulse_at_local_point((self.env_variables["jump_speed_paramecia"], 0))
