@@ -71,7 +71,7 @@ def model_of_action_switching(sequences):
     return switch_left_p, switch_right_p, left_durations, right_durations
 
 
-def cumulative_switching_probability_plot(left_durs, right_durs, left_durs2, right_durs2):
+def cumulative_switching_probability_plot(left_durs, right_durs, left_durs2, right_durs2, label):
     """Given two sets of switching latencies, one random and one from a model, plots the cumulative probability of
     switching direction."""
     left_durs = [i for i in left_durs if i>1]
@@ -101,6 +101,7 @@ def cumulative_switching_probability_plot(left_durs, right_durs, left_durs2, rig
     plt.plot(x2, cdf2, label="Random Switching")
     plt.xlabel("Turn Streak Length", fontsize=18)
     plt.ylabel("Cumulative Probability", fontsize=18)
+    plt.title(label)
     plt.legend()
     fig.tight_layout()
     plt.show()
@@ -144,7 +145,7 @@ def cumulative_turn_direction_plot_multiple_models(action_sequences):
     plt.show()
 
 
-def cumulative_turn_direction_plot(action_sequences):
+def cumulative_turn_direction_plot(action_sequences, label):
     action_sequences = [seq for seq in action_sequences if len(seq) > 8]
     transformed_sequences = []
     mxln = 0
@@ -169,6 +170,7 @@ def cumulative_turn_direction_plot(action_sequences):
     plt.xlabel("Number of Turns", fontsize=20)
     plt.ylabel("Cumulative Turn Direction", fontsize=20)
     plt.hlines(0, 0, 10, color="r")
+    plt.title(label)
     # plt.fill_between(range(11), err_min, err_max)
     plt.show()
 
@@ -245,13 +247,13 @@ for i in range(1, 5):
     otherwise_exploration_sequences = get_exploration_sequences(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", f"Naturalistic", 10)
     turn_exploration_sequences = extract_turn_sequences(otherwise_exploration_sequences)
 
-    # cumulative_turn_direction_plot(no_prey_actions)
-    # cumulative_turn_direction_plot(otherwise_exploration_sequences)
+    cumulative_turn_direction_plot(no_prey_actions, label=f"Cumulative Turn Direction (no prey near) dqn_scaffold_14-{i}")
+    cumulative_turn_direction_plot(otherwise_exploration_sequences, label=f"Cumulative Turn Direction (no prey or walls) dqn_scaffold_14-{i}")
 
     # Cumulative probability plot.
     l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
     l2, r2, sl2, sr2 = randomly_switching_fish()
-    # cumulative_switching_probability_plot(sl, sr, sl2, sr2)
+    cumulative_switching_probability_plot(sl, sr, sl2, sr2, label=f"Cumulative Switching Probability dqn_scaffold_14-{i}")
 
     turn_exploration_sequences_compiled += turn_exploration_sequences
     sl_compiled += sl
@@ -259,8 +261,8 @@ for i in range(1, 5):
     sl2_compiled += sl2
     sr2_compiled += sr2
 
-cumulative_switching_probability_plot(sl_compiled, sr_compiled, sl2_compiled, sr2_compiled)
-cumulative_turn_direction_plot(turn_exploration_sequences_compiled)
+cumulative_switching_probability_plot(sl_compiled, sr_compiled, sl2_compiled, sr2_compiled, f"Cumulative Switching Probability Plot all models")
+cumulative_turn_direction_plot(turn_exploration_sequences_compiled, f"Cumulative turn direction plot all models")
 
 # VERSION 1
 
