@@ -150,7 +150,7 @@ env = {
        'predator_size': 43.5,  # To be 8.7mm in diameter, formerly 100
        'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
-       'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
+       'distance_from_fish': 50,  # Distance from the fish at which the predator appears. Formerly 300
        'probability_of_predator': 0.01,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.3,  # fraction of arena in the dark
@@ -313,7 +313,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_20"
+scaffold_name = "dqn_scaffold_21"
 
 # 2-10
 changes = [
