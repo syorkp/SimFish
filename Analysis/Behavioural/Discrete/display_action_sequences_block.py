@@ -5,6 +5,7 @@ from Analysis.Behavioural.Tools.extract_capture_sequences import get_capture_seq
 from Analysis.Behavioural.Tools.extract_exploration_sequences import get_exploration_sequences
 
 from Analysis.Behavioural.Tools.show_action_sequence_block import display_all_sequences
+from Analysis.Behavioural.Tools.extract_failed_capture_sequences import get_failed_capture_sequences
 
 
 def display_average_sequence(sequences):
@@ -57,13 +58,24 @@ def display_average_sequence(sequences):
 # display_all_sequences(compiled_capture_sequences)
 
 # Exploration sequences
-compiled_exploration_sequences = []
-for i in range(1, 5):
-    exploration_sequences = get_exploration_sequences(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
-    display_all_sequences(exploration_sequences, min_length=50, max_length=150)
-    compiled_exploration_sequences += exploration_sequences
+# compiled_exploration_sequences = []
+# for i in range(1, 5):
+#     exploration_sequences = get_exploration_sequences(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
+#     display_all_sequences(exploration_sequences, min_length=50, max_length=150)
+#     compiled_exploration_sequences += exploration_sequences
+#
+# display_all_sequences(compiled_exploration_sequences, min_length=50, max_length=150)
 
-display_all_sequences(compiled_exploration_sequences, min_length=50, max_length=150)
+# Failed Capture Sequences
+compiled_failed_capture_sequences = []
+for i in range(1, 5):
+    capture_sequences = get_failed_capture_sequences(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
+    # For each model
+    display_all_sequences(capture_sequences)
+    compiled_failed_capture_sequences += capture_sequences
+
+# Combined across models
+display_all_sequences(compiled_failed_capture_sequences)
 
 # VERSION 1
 

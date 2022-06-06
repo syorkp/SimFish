@@ -62,3 +62,5 @@ def get_capture_sequences(model_name, assay_config, assay_id, n):
         data = load_data(model_name, assay_config, f"{assay_id}-{i}")
         all_capture_sequences = all_capture_sequences + extract_consumption_action_sequences(data)[0]
     return all_capture_sequences
+
+
