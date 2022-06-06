@@ -194,8 +194,14 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
                 value_slice = np.concatenate((np.array([0]), value_slice))
             else:
                 value_slice = self.value_buffer[self.pointer - 1:self.pointer + self.trace_length - 1, ]
-            log_action_probability_slice = self.log_action_probability_buffer[
-                                           self.pointer:self.pointer + self.trace_length, :]
+            try:
+                log_action_probability_slice = self.log_action_probability_buffer[
+                                               self.pointer:self.pointer + self.trace_length, :]
+            except ValueError:
+                print(f"Pointer: {self.pointer}")
+                print(f"Trace length: {self.trace_length}")
+                print(f"Shape log action prob buffer: {self.log_action_probability_buffer.shape}")
+
             advantage_slice = self.advantage_buffer[self.pointer:self.pointer + self.trace_length]
             return_slice = self.return_buffer[self.pointer:self.pointer + self.trace_length]
             # actor_rnn_state_slice = self.actor_rnn_state_buffer[self.pointer:self.pointer + self.trace_length]

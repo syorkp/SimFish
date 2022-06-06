@@ -5065,7 +5065,6 @@ dqn_scaffold_18a = [
     },
 ]
 
-
 ppo_scaffold_18 = [
     {
         "Model Name": "ppo_scaffold_18",
@@ -5082,7 +5081,7 @@ ppo_scaffold_18 = [
         "Full Logs": True,
         "SB Emulator": True,
         "New Simulation": True,
-        "Profile Speed": False,
+        "Profile Speed": True,
     },
     {
         "Model Name": "ppo_scaffold_18",
@@ -5142,5 +5141,5 @@ ppo_scaffold_18a = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_18a, parallel_jobs=3)
+manager = TrialManager(ppo_scaffold_18, parallel_jobs=3)
 manager.run_priority_loop()
