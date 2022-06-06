@@ -23,6 +23,6 @@ def reset_salt_gradient():
     plt.title("Salt Unsafe Locations")
     plt.imshow(salt_unsafe_locations)
     plt.show()
-
+    x = True
 
 reset_salt_gradient()

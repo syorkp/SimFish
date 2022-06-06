@@ -134,7 +134,7 @@ env = {
        'prey_inertia': 40.,
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-       'prey_num': 20,
+       'prey_num': 30,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
@@ -143,7 +143,7 @@ env = {
        'prey_fluid_displacement': False,
        'prey_jump': False,
        'differential_prey': True,
-       'prey_cloud_num': 3,
+       'prey_cloud_num': 4,
 
        'predator_mass': 10.,
        'predator_inertia': 40.,
@@ -313,47 +313,47 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_18"
+scaffold_name = "dqn_scaffold_19"
 
 # 2-10
 changes = [
 
-       ["PCI", 0.2, "anneling_steps", 500000],
+       ["PCI", 0.25, "anneling_steps", 500000],
        # 1) Rewards and Penalties
-       ["PCI", 0.2, "capture_swim_extra_cost", 50],
-       ["PCI", 0.2, "wall_reflection", False],
+       ["PCI", 0.25, "capture_swim_extra_cost", 50],
+       ["PCI", 0.25, "wall_reflection", False],
 
        # 2) Visual System
-       ["PCI", 0.2, "red_photoreceptor_rf_size", 0.0133 * 2],
-       ["PCI", 0.2, "uv_photoreceptor_rf_size", 0.0133 * 2],
-       ["PCI", 0.2, "red_photoreceptor_rf_size", 0.0133 * 1],
-       ["PCI", 0.2, "uv_photoreceptor_rf_size", 0.0133 * 1],
-       ["PCI", 0.3, "shot_noise", True],
-       ["PCI", 0.3, "bkg_scatter", 0.1],
+       ["PCI", 0.25, "red_photoreceptor_rf_size", 0.0133 * 2],
+       ["PCI", 0.25, "uv_photoreceptor_rf_size", 0.0133 * 2],
+       ["PCI", 0.25, "red_photoreceptor_rf_size", 0.0133 * 1],
+       ["PCI", 0.25, "uv_photoreceptor_rf_size", 0.0133 * 1],
+       ["PCI", 0.35, "shot_noise", True],
+       ["PCI", 0.35, "bkg_scatter", 0.1],
 ]
 
 # 11-15
 changes += build_changes_list_gradual("PCI", 0.3, "light_gain", env["light_gain"], 125.7, 4)
-changes += [["PCI", 0.3, "max_epLength", 2000, "do_to_params"]]
+changes += [["PCI", 0.35, "max_epLength", 2000, "do_to_params"]]
 
 # 3) Available actions
 # Only for continuous
 
 # 4) Prey Capture 16-32
-changes += [["PCI", 0.3, "prey_fluid_displacement", True]]
-changes += [["PCI", 0.3, "prey_jump", True]]
-changes += build_changes_list_gradual("PCI", 0.3, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
-changes += build_changes_list_gradual("PCI", 0.3, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.5, 4)
-changes += build_changes_list_gradual("PCI", 0.3, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (34*np.pi)/180, 4)
-changes += [["PCI", 0.3, "capture_swim_extra_cost", 100]]
-changes += [["PCI", 0.3, "anneling_steps", 1000000]]
+changes += [["PCI", 0.35, "prey_fluid_displacement", True]]
+changes += [["PCI", 0.35, "prey_jump", True]]
+changes += build_changes_list_gradual("PCI", 0.35, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
+changes += build_changes_list_gradual("PCI", 0.35, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.5, 4)
+changes += build_changes_list_gradual("PCI", 0.35, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (34*np.pi)/180, 4)
+changes += [["PCI", 0.35, "capture_swim_extra_cost", 100]]
+changes += [["PCI", 0.35, "anneling_steps", 1000000]]
 
 # 5) Predator avoidance 33
-changes += [["PCI", 0.3, "probability_of_predator", 0.01]]
+changes += [["PCI", 0.35, "probability_of_predator", 0.01]]
 # TODO: Complex predator
 
 # 6) Other Behaviours 34
-changes += [["PCI", 0.3, "current_setting", "Circular"]]
+changes += [["PCI", 0.35, "current_setting", "Circular"]]
 
 # 7) Final Features
 # Motor effect noise (only for continuous)
