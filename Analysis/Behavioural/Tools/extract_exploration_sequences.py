@@ -205,3 +205,19 @@ def get_no_prey_stimuli_sequences(model_name, assay_config, assay_id, n):
         data = load_data(model_name, assay_config, f"{assay_id}-{i}")
         all_exploration_sequences = all_exploration_sequences + extract_no_prey_stimuli_sequences(data)
     return all_exploration_sequences, None
+
+
+def get_exploration_sequences_with_energy_state(model_name, assay_config, assay_id, n):
+    all_exploration_sequences = []
+    all_energy_states_by_sequence = []
+    for i in range(1, n + 1):
+        data = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        new_energy_states = []
+        new_timestamps, new_sequences, _ = extract_exploration_action_sequences_with_positions(data)
+        for seq in new_timestamps:
+            new_energy_states += [[data["energy_state"][i] for i in seq]]
+        all_exploration_sequences = all_exploration_sequences + new_sequences
+        all_energy_states_by_sequence += new_energy_states
+    return all_exploration_sequences, all_energy_states_by_sequence
+
+

@@ -42,6 +42,20 @@ def extract_consumption_action_sequences(data, n=20):
     return action_sequences, prey_c_t
 
 
+def get_capture_sequences_with_energy_state(model_name, assay_config, assay_id, n):
+    all_capture_sequences = []
+    all_energy_states_by_sequence = []
+    for i in range(1, n + 1):
+        data = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        new_energy_states = []
+        new_sequences, new_timestamps = extract_consumption_action_sequences(data)
+        for seq in new_timestamps:
+            new_energy_states += [[data["energy_state"][i] for i in seq]]
+        all_capture_sequences = all_capture_sequences + new_sequences
+        all_energy_states_by_sequence += new_energy_states
+    return all_capture_sequences, all_energy_states_by_sequence
+
+
 def get_capture_sequences(model_name, assay_config, assay_id, n):
     all_capture_sequences = []
     for i in range(1, n+1):
