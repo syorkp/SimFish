@@ -41,9 +41,9 @@ def run_simulation(fish, actions, captures, duration=1000):
 
 
 learning_params, env_variables, n, b, c = load_configuration_files("ppo_scaffold_15-1")
-env_variables["baseline_decrease"] = 0.000003
-env_variables["ci"] = 0.000008
-env_variables["ca"] = 0.000008
+env_variables["baseline_decrease"] = 0.0015
+env_variables["ci"] = 0.0000008
+env_variables["ca"] = 0.0000008
 env_variables["action_energy_use_scaling"] = "Nonlinear"
 # Modify env variables here.
 model = build_fish_model(env_variables, continuous=False)
