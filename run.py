@@ -6008,7 +6008,7 @@ dqn_17_naturalistic_data = [
                 "ablations": []
             },
             ],
-        "Full Reafference": False,
+        "Full Reafference": True,
     },
     {
         "Model Name": "dqn_scaffold_17",
@@ -6210,7 +6210,7 @@ dqn_17_naturalistic_data = [
                 "ablations": []
             },
         ],
-        "Full Reafference": False,
+        "Full Reafference": True,
     },
     ]
 
