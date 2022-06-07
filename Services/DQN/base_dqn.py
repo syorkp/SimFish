@@ -174,7 +174,10 @@ class BaseDQN:
         total_episode_reward = 0  # Total reward over episode
 
         step_number = 0  # To allow exit after maximum steps.
-        a = 3  # Initialise action for episode.
+        if self.full_reafference:
+            a = [6, 0, 0]
+        else:
+            a = 3  # Initialise action for episode.
         action_reafference = [a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
         while step_number < self.learning_params["max_epLength"]:
             step_number += 1
