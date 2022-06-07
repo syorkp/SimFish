@@ -138,7 +138,8 @@ class BaseDQN:
                                     num_actions=self.learning_params['num_actions'],
                                     internal_states=internal_states,
                                     learning_rate=self.learning_params['learning_rate'],
-                                    extra_layer=self.learning_params['extra_rnn'])
+                                    extra_layer=self.learning_params['extra_rnn'],
+                                    full_reafference=self.full_reafference)
             self.target_QN = QNetwork(simulation=self.simulation,
                                       rnn_dim=self.learning_params['rnn_dim_shared'],
                                       rnn_cell=cell_t,
@@ -146,7 +147,8 @@ class BaseDQN:
                                       num_actions=self.learning_params['num_actions'],
                                       internal_states=internal_states,
                                       learning_rate=self.learning_params['learning_rate'],
-                                      extra_layer=self.learning_params['extra_rnn'])
+                                      extra_layer=self.learning_params['extra_rnn'],
+                                      full_reafference=self.full_reafference)
 
     def episode_loop(self):
         """
@@ -484,7 +486,11 @@ class BaseDQN:
                                                                                                  save_frames=self.save_frames,
                                                                                                  frame_buffer=self.frame_buffer)
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
-        action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+        if self.full_reafference:
+            action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+        else:
+            action_reafference = [chosen_a]
+
 
         # Update buffer
         self.buffer.add_training(observation=o,

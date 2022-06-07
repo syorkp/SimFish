@@ -30,6 +30,7 @@ def assay_target(trial, total_steps, episode_number, memory_fraction):
                               set_random_seed=trial["set random seed"],
                               assay_config_name=trial["Assay Configuration Name"],
                               checkpoint=trial["Checkpoint"],
+                              full_reafference=trial["Full Reafference"]
                               )
 
     service.run()
@@ -39,7 +40,7 @@ class DQNAssayService(AssayService, BaseDQN):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_actions, new_simulation, assays, set_random_seed,
-                 assay_config_name, checkpoint):
+                 assay_config_name, checkpoint, full_reafference):
         """
         Runs a set of assays provided by the run configuraiton.
         """
@@ -61,6 +62,7 @@ class DQNAssayService(AssayService, BaseDQN):
         self.buffer = DQNAssayBuffer(use_dynamic_network=self.environment_params["use_dynamic_network"])
 
         self.use_rnd = self.learning_params["use_rnd"]
+        self.full_reafference = full_reafference
 
     def run(self):
         sess = self.create_session()

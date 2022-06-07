@@ -5601,6 +5601,7 @@ dqn_15_naturalistic_data = [
                 "ablations": []
             },
             ],
+        "Full Reafference": False,
     },
     {
         "Model Name": "dqn_scaffold_15",
@@ -5802,10 +5803,11 @@ dqn_15_naturalistic_data = [
                 "ablations": []
             },
         ],
+        "Full Reafference": False,
     },
     ]
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_15_naturalistic_data, parallel_jobs=1)
+manager = TrialManager(dqn_15_naturalistic_data, parallel_jobs=3)
 manager.run_priority_loop()
