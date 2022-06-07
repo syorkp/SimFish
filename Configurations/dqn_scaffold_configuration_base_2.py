@@ -20,7 +20,7 @@ params = {
        'batch_size': 16,  # How many experience traces to use for each training step.
        'trace_length': 64,  # How long each experience trace will be when training
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
-       'max_epLength': 1000,  # The max allowed length of our episode.
+       'max_epLength': 2000,  # The max allowed length of our episode.
        'epsilon_greedy': True,
        'epsilon_greedy_scaffolding': True,
        'startE': 0.2,  # Starting chance of random action
@@ -96,7 +96,7 @@ env = {
        'routine_turn_cost': 3,
        'routine_turn_impulse': 5,
        'routine_turn_dir_change': 0.6,
-       'capture_swim_cost': 5,
+       'capture_swim_cost': 100,
        'capture_swim_impulse': 5,
        'j_turn_cost': 2.5,
        'j_turn_impulse': 0.1,
@@ -123,7 +123,7 @@ env = {
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
 
        'fish_mass': 140.,
-       'fish_mouth_size': 8.,  # FINAL VALUE - 0.2mm diameter, so 1.
+       'fish_mouth_size': 4.,  # FINAL VALUE - 0.2mm diameter, so 1.
        'fish_head_size': 2.5,  # Old - 10
        'fish_tail_length': 41.5,  # Old: 70
        'eyes_verg_angle': 77.,  # in deg
@@ -140,8 +140,8 @@ env = {
        'prey_sensing_distance': 20,
        'prey_max_turning_angle': 0.04,
        # This is the turn (pi radians) that happens every step, designed to replicate linear wavy movement.
-       'prey_fluid_displacement': False,
-       'prey_jump': False,
+       'prey_fluid_displacement': True,
+       'prey_jump': True,
        'differential_prey': True,
        'prey_cloud_num': 4,
 
@@ -150,15 +150,15 @@ env = {
        'predator_size': 43.5,  # To be 8.7mm in diameter, formerly 100
        'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
-       'distance_from_fish': 100,  # Distance from the fish at which the predator appears. Formerly 498
+       'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 498
        'probability_of_predator': 0.01,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'light_gradient': 200,
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
-       'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001
+       'bkg_scatter': 0.1,  # base brightness of the background FORMERLY 0.00001
        'dark_gain': 60.0,  # gain of brightness in the dark side
-       'light_gain': 200.0,  # gain of brightness in the bright side
+       'light_gain': 125.7,  # gain of brightness in the bright side
 
        'predator_cost': 1000,
 
@@ -259,8 +259,8 @@ env = {
        # Arbitrary fish parameters
 
        # Fish Visual System
-       'uv_photoreceptor_rf_size': 0.0133 * 3,  # Pi Radians (0.76 degrees) - Yoshimatsu et al. (2019)
-       'red_photoreceptor_rf_size': 0.0133 * 3,  # Kept same
+       'uv_photoreceptor_rf_size': 0.0133 * 1,  # Pi Radians (0.76 degrees) - Yoshimatsu et al. (2019)
+       'red_photoreceptor_rf_size': 0.0133 * 1,  # Kept same
        'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
        'red_photoreceptor_num': 63,
        'minimum_observation_size': 100,  # Parameter to determine padded observation size (avoids conv layer size bug).
@@ -270,7 +270,7 @@ env = {
        # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
 
        # Shot noise
-       'shot_noise': False,  # Whether to model observation of individual photons as a poisson process.
+       'shot_noise': True,  # Whether to model observation of individual photons as a poisson process.
 
        # For dark noise:
        'isomerization_frequency': 0.0,  # Average frequency of photoisomerization per second per photoreceptor
@@ -288,7 +288,7 @@ env = {
        'action_reward_scaling': 10000,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
        'consumption_reward_scaling': 1000000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
-       'wall_reflection': True,
+       'wall_reflection': False,
        'wall_touch_penalty': 2,
 
        # Currents
@@ -305,57 +305,17 @@ env = {
        'angle_effect_noise_sd_c': 0,  # 0.0010472,
 
        # Complex capture swim dynamics
-       'fraction_capture_permitted': 1.0,  # Should be 1.0 if no temporal restriction imposed.
-       'capture_angle_deviation_allowance': np.pi,
+       'fraction_capture_permitted': 0.5,  # Should be 1.0 if no temporal restriction imposed.
+       'capture_angle_deviation_allowance': (34*np.pi)/180,
        # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
 
        'action_energy_use_scaling': "Nonlinear",  # Options: Nonlinear, linear, sublinear.
 }
 
 
-scaffold_name = "dqn_scaffold_21"
-
-# 2-10
-changes = [
-
-       ["PCI", 0.25, "anneling_steps", 500000],
-       # 1) Rewards and Penalties
-       ["PCI", 0.25, "capture_swim_extra_cost", 50],
-       ["PCI", 0.25, "wall_reflection", False],
-
-       # 2) Visual System
-       ["PCI", 0.25, "red_photoreceptor_rf_size", 0.0133 * 2],
-       ["PCI", 0.25, "uv_photoreceptor_rf_size", 0.0133 * 2],
-       ["PCI", 0.25, "red_photoreceptor_rf_size", 0.0133 * 1],
-       ["PCI", 0.25, "uv_photoreceptor_rf_size", 0.0133 * 1],
-       ["PCI", 0.35, "shot_noise", True],
-       ["PCI", 0.35, "bkg_scatter", 0.1],
-]
-
-# 11-15
-changes += build_changes_list_gradual("PCI", 0.3, "light_gain", env["light_gain"], 125.7, 4)
-changes += [["PCI", 0.35, "max_epLength", 2000, "do_to_params"]]
-
-# 3) Available actions
-# Only for continuous
-
-# 4) Prey Capture 16-32
-changes += [["PCI", 0.35, "prey_fluid_displacement", True]]
-changes += [["PCI", 0.35, "prey_jump", True]]
-changes += build_changes_list_gradual("PCI", 0.35, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
-changes += build_changes_list_gradual("PCI", 0.35, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.5, 4)
-changes += build_changes_list_gradual("PCI", 0.35, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (34*np.pi)/180, 4)
-changes += [["PCI", 0.35, "capture_swim_extra_cost", 100]]
-changes += [["PCI", 0.35, "anneling_steps", 1000000]]
-
-# 5) Predator avoidance 33
-changes += [["PCI", 0.35, "probability_of_predator", 0.01]]
-# TODO: Complex predator
+scaffold_name = "dqn_no_scaffold"
 
 # 6) Other Behaviours 34
-changes += [["PCI", 0.35, "current_setting", "Circular"]]
-
-# 7) Final Features
-# Motor effect noise (only for continuous)
+changes = [["PCI", 0.35, "current_setting", "Circular"]]
 
 create_scaffold(scaffold_name, env, params, changes)

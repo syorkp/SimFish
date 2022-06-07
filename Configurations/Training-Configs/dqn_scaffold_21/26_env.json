@@ -60,7 +60,7 @@
     "predator_size": 43.5,
     "predator_impulse": 0.39,
     "immunity_steps": 65,
-    "distance_from_fish": 50,
+    "distance_from_fish": 100,
     "probability_of_predator": 0.01,
     "dark_light_ratio": 0.3,
     "light_gradient": 200,
@@ -146,8 +146,8 @@
     "shot_noise": true,
     "isomerization_frequency": 0.0,
     "max_isomerization_size": 0.0,
-    "ci": 0.0003,
-    "ca": 0.0003,
+    "ci": 8e-07,
+    "ca": 8e-07,
     "baseline_decrease": 0.0015,
     "trajectory_A": 5.0,
     "trajectory_B": 2.5,
@@ -167,6 +167,6 @@
     "angle_effect_noise_sd_c": 0,
     "fraction_capture_permitted": 0.5,
     "capture_angle_deviation_allowance": 2.504547476611863,
-    "action_energy_use_scaling": "Sublinear",
+    "action_energy_use_scaling": "Nonlinear",
     "anneling_steps": 500000
 }
