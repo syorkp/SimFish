@@ -489,7 +489,7 @@ class BaseDQN:
         if self.full_reafference:
             action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
         else:
-            action_reafference = [chosen_a]
+            action_reafference = chosen_a
 
 
         # Update buffer
