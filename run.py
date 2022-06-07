@@ -5268,7 +5268,7 @@ dqn_scaffold_nl_19b = [
         "Full Logs": True,
         "SB Emulator": False,
         "New Simulation": True,
-        "Profile Speed": False,
+        "Profile Speed": True,
     },
     {
         "Model Name": "dqn_scaffold_nl_19",
@@ -5285,7 +5285,7 @@ dqn_scaffold_nl_19b = [
         "Full Logs": True,
         "SB Emulator": False,
         "New Simulation": True,
-        "Profile Speed": False,
+        "Profile Speed": True,
     },
 ]
 
