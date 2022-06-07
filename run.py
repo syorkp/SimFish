@@ -5807,7 +5807,6 @@ dqn_15_naturalistic_data = [
     },
     ]
 
-
 dqn_17_naturalistic_data = [
     {
         "Model Name": "dqn_scaffold_17",
@@ -6217,5 +6216,5 @@ dqn_17_naturalistic_data = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_17_naturalistic_data, parallel_jobs=3)
+manager = TrialManager(dqn_17_naturalistic_data, parallel_jobs=1)
 manager.run_priority_loop()
