@@ -95,6 +95,10 @@ class DQNAssayService(AssayService, BaseDQN):
                                                                                      save_frames=True,
                                                                                      activations=(sa,))
         a = 0
+        if self.full_reafference:
+            action_reafference = [a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+        else:
+            action_reafference = a
         self.step_number = 0
         while self.step_number < assay["duration"]:
             if assay["reset"] and self.step_number % assay["reset interval"] == 0:
@@ -103,7 +107,7 @@ class DQNAssayService(AssayService, BaseDQN):
             self.step_number += 1
 
             o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
-                                                                       a=a, rnn_state=rnn_state)
+                                                                       a=action_reafference, rnn_state=rnn_state)
             o = o1
 
             print(self.step_number)
