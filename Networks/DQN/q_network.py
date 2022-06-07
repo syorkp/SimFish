@@ -27,7 +27,7 @@ class QNetwork:
             self.prev_actions_one_hot = tf.one_hot(self.prev_chosen_actions, num_actions, dtype=tf.float32)
         else:
             self.prev_actions = tf.placeholder(shape=[None], dtype=tf.float32, name='prev_actions')
-            self.prev_actions_one_hot = tf.one_hot(self.prev_chosen_actions, num_actions, dtype=tf.float32)
+            self.prev_actions_one_hot = tf.one_hot(self.prev_actions, num_actions, dtype=tf.float32)
 
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
 
@@ -141,12 +141,17 @@ class QNetwork:
         self.conv4l_flat_ref = tf.layers.flatten(self.conv4l_ref)
         self.conv4r_flat_ref = tf.layers.flatten(self.conv4r_ref)
         self.prev_actions_one_hot_rev = tf.reverse(self.prev_actions_one_hot, [1])
-        self.prev_action_impulse_rev = tf.reverse(self.prev_action_impulse, [1])
-        self.prev_action_angle_rev = tf.reverse(self.prev_action_angle, [1])
         self.internal_state_rev = tf.reverse(self.internal_state, [1])
 
-        self.conv_with_states_ref = tf.concat(
-            [self.conv4l_flat_ref, self.conv4r_flat_ref, self.prev_actions_one_hot_rev, self.prev_action_impulse_rev, self.prev_action_angle_rev, self.internal_state_rev], 1)
+        if full_reafference:
+            self.prev_action_impulse_rev = tf.reverse(self.prev_action_impulse, [1])
+            self.prev_action_angle_rev = tf.reverse(self.prev_action_angle, [1])
+            self.conv_with_states_ref = tf.concat(
+                [self.conv4l_flat_ref, self.conv4r_flat_ref, self.prev_actions_one_hot_rev, self.prev_action_impulse_rev, self.prev_action_angle_rev, self.internal_state_rev], 1)
+        else:
+            self.conv_with_states_ref = tf.concat(
+                [self.conv4l_flat_ref, self.conv4r_flat_ref, self.prev_actions_one_hot_rev, self.internal_state_rev], 1)
+
         self.rnn_in_ref = tf.layers.dense(self.conv_with_states_ref, self.rnn_dim, activation=tf.nn.relu,
                                           kernel_initializer=tf.orthogonal_initializer,
                                           trainable=True, name=my_scope + '_rnn_in', reuse=True)
