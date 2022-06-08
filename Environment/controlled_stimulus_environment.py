@@ -15,7 +15,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     """
 
     def __init__(self, env_variables, stimuli, realistic_bouts, new_simulation, using_gpu, tethered=True, set_positions=False, moving=False,
-                 random=False, reset_each_step=False, reset_interval=1, background=None, draw_screen=False, assay_full_detail=None):
+                 random=False, reset_each_step=False, reset_interval=1, background=None, draw_screen=False, assay_all_details=None):
         super().__init__(env_variables, draw_screen, new_simulation, using_gpu)
 
         if tethered:
@@ -67,7 +67,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.prey_fish_col.begin = self.no_collision
 
         self.continuous_actions = False
-        self.assay_full_detail = assay_full_detail
+        self.assay_full_detail = assay_all_details
 
     def reset(self):
         super().reset()
@@ -135,7 +135,6 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                     elif self.assay_full_detail["energy_state_control"] is list:
                         self.fish.energy_level = self.assay_full_detail["energy_state_control"][self.num_steps]
                     self.energy_level_log.append(self.fish.energy_level)
-                    print(self.fish.energy_level)
                     if self.fish.energy_level < 0:
                         print("Fish ran out of energy")
                         done = True
@@ -315,7 +314,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     def update_unset_stimuli(self):
         # TODO: Still need to update so that can have multiple, sequential stimuli. Will require adding in onset into stimulus, as well as changing the baseline phase. Not useful for current requirements.
         stimuli_to_delete = []
-        init_period = 100  # TODO: Change back to 400
+        init_period = 400  # TODO: Change back to 400
 
         for stimulus in self.unset_stimuli.keys():
             i = int(stimulus.split()[1]) - 1
