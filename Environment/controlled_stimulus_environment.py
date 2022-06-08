@@ -15,7 +15,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     """
 
     def __init__(self, env_variables, stimuli, realistic_bouts, new_simulation, using_gpu, tethered=True, set_positions=False, moving=False,
-                 random=False, reset_each_step=False, reset_interval=1, background=None, draw_screen=False):
+                 random=False, reset_each_step=False, reset_interval=1, background=None, draw_screen=False, assay_full_detail=None):
         super().__init__(env_variables, draw_screen, new_simulation, using_gpu)
 
         if tethered:
@@ -67,6 +67,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.prey_fish_col.begin = self.no_collision
 
         self.continuous_actions = False
+        self.assay_full_detail = assay_full_detail
 
     def reset(self):
         super().reset()
@@ -126,9 +127,15 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                             "salt_recovery"]:
                             reward -= self.env_variables["salt_reward_penalty"] * salt_damage
                 # Energy level
+
                 if self.env_variables["energy_state"]:
                     reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
+                    if self.assay_full_detail["energy_state_control"] == "Held":
+                        self.fish.energy_level = 1.0
+                    elif self.assay_full_detail["energy_state_control"] is list:
+                        self.fish.energy_level = self.assay_full_detail["energy_state_control"][self.num_steps]
                     self.energy_level_log.append(self.fish.energy_level)
+                    print(self.fish.energy_level)
                     if self.fish.energy_level < 0:
                         print("Fish ran out of energy")
                         done = True
@@ -141,10 +148,6 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                 if self.draw_screen:
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5)/255.)
                     plt.pause(0.0001)
-
-        if self.new_simulation and self.env_variables['energy_state']:
-            self.energy_level_log.append(self.fish.energy_level)
-            reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
 
         self.fish.body.position = (self.env_variables['width'] / 2, self.env_variables['height'] / 2)
         self.fish.body.angle = 0

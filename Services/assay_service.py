@@ -149,8 +149,10 @@ class AssayService(BaseService):
                                                                 moving=assay["moving"],
                                                                 reset_each_step=assay["reset"],
                                                                 reset_interval=assay["reset interval"],
-                                                                background=assay["background"]
-                                                                )
+                                                                background=assay["background"],
+                                                                assay_all_details=assay,
+
+                                                                          )
             else:
                 self.simulation = ControlledStimulusEnvironment(self.environment_params, assay["stimuli"],
                                                                 self.realistic_bouts,
@@ -162,7 +164,8 @@ class AssayService(BaseService):
                                                                 moving=assay["moving"],
                                                                 reset_each_step=assay["reset"],
                                                                 reset_interval=assay["reset interval"],
-                                                                background=assay["background"]
+                                                                background=assay["background"],
+                                                                assay_all_details=assay,
                                                                 )
         elif assay["stimulus paradigm"] == "Naturalistic":
             if self.continuous_actions:
