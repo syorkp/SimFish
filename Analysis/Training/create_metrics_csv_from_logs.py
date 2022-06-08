@@ -11,8 +11,8 @@ def tabulate_events(dpath):
 
     tags = summary_iterators[0].Tags()['scalars']
 
-    for it in summary_iterators:
-        assert it.Tags()['scalars'] == tags
+    # for it in summary_iterators:
+    #     assert it.Tags()['scalars'] == tags
 
     out = defaultdict(list)
     steps = []
@@ -21,9 +21,11 @@ def tabulate_events(dpath):
         steps = [e.step for e in summary_iterators[0].Scalars(tag)]
 
         for events in zip(*[acc.Scalars(tag) for acc in summary_iterators]):
-            assert len(set(e.step for e in events)) == 1
-
-            out[tag].append([e.value for e in events])
+            # assert len(set(e.step for e in events)) == 1
+            if tag in acc.Tags()["scalars"]:
+                out[tag].append([e.value for e in events])
+            else:
+                out[tag].append([])
 
     return out, steps
 

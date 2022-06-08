@@ -71,6 +71,7 @@ def get_clouds_with_action(data, action=0):
 
     return prey_cloud, predator_cloud
 
+
 def create_density_cloud(density_list, action_num, stimulus_name):
     n_samples = len(density_list)
     x = np.array([i[0] for i in density_list])
@@ -94,7 +95,7 @@ def create_density_cloud(density_list, action_num, stimulus_name):
     plt.arrow(-300, 220, 0, 40, width=10, color="red")
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
-    plt.title(f"Feature: {stimulus_name}, Action: {get_action_name(action_num)}")
+    plt.title(f"Feature: {stimulus_name}, Action: {get_action_name(action_num)}, N-Samples: {n_samples}")
     plt.show()
 
 
@@ -151,7 +152,10 @@ def create_j_turn_overlap_plot(p1, p2, p3, n):
     y = np.array([i[1] for i in prey_cloud_left])
     #y = np.negative(y)
     nbins = 300
-    k = kde.gaussian_kde([y, x])
+    try:
+        k = kde.gaussian_kde([y, x])
+    except ValueError:
+        return
     yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
 
     zi = k(np.vstack([xi.flatten(), yi.flatten()]))
@@ -161,7 +165,10 @@ def create_j_turn_overlap_plot(p1, p2, p3, n):
     y = np.array([i[1] for i in prey_cloud_right])
     #y = np.negative(y)
     nbins = 300
-    k = kde.gaussian_kde([y, x])
+    try:
+        k = kde.gaussian_kde([y, x])
+    except ValueError:
+        return
     zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
     zi = zi - zi2
 
@@ -176,7 +183,7 @@ def create_j_turn_overlap_plot(p1, p2, p3, n):
     plt.arrow(300, 220, 0, 40, width=10, color="red")
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
-    plt.title(f"Feature: Prey, Action: J-turns")
+    plt.title(f"Feature: Prey, Action: J-turns, N-Samples: {n_samples}")
     plt.show()
 
 
@@ -197,7 +204,10 @@ def create_routine_turn_overlap_plot(p1, p2, p3, n):
     y = np.array([i[1] for i in prey_cloud_left])
     #y = np.negative(y)
     nbins = 300
-    k = kde.gaussian_kde([y, x])
+    try:
+        k = kde.gaussian_kde([y, x])
+    except ValueError:
+        return
     yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
 
     zi = k(np.vstack([xi.flatten(), yi.flatten()]))
@@ -207,7 +217,10 @@ def create_routine_turn_overlap_plot(p1, p2, p3, n):
     y = np.array([i[1] for i in prey_cloud_right])
     #y = np.negative(y)
     nbins = 300
-    k = kde.gaussian_kde([y, x])
+    try:
+        k = kde.gaussian_kde([y, x])
+    except ValueError:
+        return
     zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
 
     zi = zi2 - zi
@@ -222,7 +235,7 @@ def create_routine_turn_overlap_plot(p1, p2, p3, n):
     plt.arrow(300, 220, 0, 40, width=10, color="red")
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
-    plt.title(f"Feature: Prey, Action: Routine turns")
+    plt.title(f"Feature: Prey, Action: Routine turns, N-Samples: {n_samples}")
     plt.show()
 
 
@@ -252,7 +265,10 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
     y = np.array([i[1] for i in prey_cloud_left])
     #y = np.negative(y)
     nbins = 300
-    k = kde.gaussian_kde([y, x])
+    try:
+        k = kde.gaussian_kde([y, x])
+    except ValueError:
+        return
     yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
 
     zi = k(np.vstack([xi.flatten(), yi.flatten()]))
@@ -262,7 +278,10 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
     y = np.array([i[1] for i in prey_cloud_right])
     #y = np.negative(y)
     nbins = 300
-    k = kde.gaussian_kde([y, x])
+    try:
+        k = kde.gaussian_kde([y, x])
+    except ValueError:
+        return
     zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
 
     zi = zi - zi2
@@ -277,7 +296,7 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
     plt.arrow(300, 220, 0, 40, width=10, color="red")
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
-    plt.title(f"Feature: Predator, Action: C-Starts")
+    plt.title(f"Feature: Predator, Action: C-Starts, N-Samples: {n_samples}")
     plt.show()
 
 
@@ -299,7 +318,10 @@ def create_j_turn_overlap_plot_multiple_models(p1, p2, p3, n, n2):
     y = np.array([i[1] for i in prey_cloud_left])
     #y = np.negative(y)
     nbins = 300
-    k = kde.gaussian_kde([y, x])
+    try:
+        k = kde.gaussian_kde([y, x])
+    except ValueError:
+        return
     yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
 
     zi = k(np.vstack([xi.flatten(), yi.flatten()]))
@@ -463,11 +485,23 @@ def get_all_density_plots_multiple_models(p1, p2, p3, n, n2):
 # VERSION 2
 
 # Getting for combination of models
-get_all_density_plots_multiple_models(f"dqn_scaffold_14", "Behavioural-Data-Free", "Naturalistic", 10, 4)
+# get_all_density_plots_multiple_models(f"dqn_scaffold_14", "Behavioural-Data-Free", "Naturalistic", 10, 4)
 
 # Getting for individual models
 # for i in range(1, 5):
 #     get_all_density_plots_all_subsets(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
+
+# for i in range(1, 3):
+#     get_all_density_plots_all_subsets(f"dqn_scaffold_15-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
+
+for i in range(1, 3):
+    get_all_density_plots_all_subsets(f"dqn_scaffold_16-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
+
+for i in range(1, 3):
+    get_all_density_plots_all_subsets(f"dqn_scaffold_17-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
+
+for i in range(1, 3):
+    get_all_density_plots_all_subsets(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
 
 
 # VERSION 1

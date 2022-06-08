@@ -1,5 +1,6 @@
 import csv
 import random
+import copy
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -245,13 +246,14 @@ def convert_poi_to_prop(data, p=0.05):
 
 
 def get_metrics_for_model(model_name):
-    with open(f'Metrics/{model_name}/run-.-tag-prey capture index (fraction caught).csv', newline='') as f:
+    with open(f'../Data/Metrics/{model_name}/run-.-tag-prey capture index (fraction caught).csv', newline='') as f:
         reader = csv.reader(f)
         prey = list(reader)
 
-    with open(f'Metrics/{model_name}/run-.-tag-predator avoidance index (avoided_p_pred).csv', newline='') as f:
-        reader = csv.reader(f)
-        pred = list(reader)
+    # with open(f'Metrics/{model_name}/run-.-tag-predator avoidance index (avoided_p_pred).csv', newline='') as f:
+    #     reader = csv.reader(f)
+    #     pred = list(reader)
+    pred = copy.copy(prey)
     return prey, pred
 
 
@@ -274,12 +276,14 @@ def clean_metrics_data(reader, file_name, model):
                 previous_step = current_step
 
 
-models = ["even_5", "even_6", "even_7","even_8"]
-models2 = ["even_1", "even_2", "even_3", "even_4"]
-models = ["dqn_scaffold_14-1"]
+if __name__ == "__main__":
+    models = ["even_5", "even_6", "even_7","even_8"]
+    models2 = ["even_1", "even_2", "even_3", "even_4"]
+    models = ["dqn_14-1"]
+    models2 = ["dqn_14-1"]
 
-filenames = ["run-.-tag-predator avoidance index (avoided_p_pred)",
-             "run-.-tag-prey capture index (fraction caught)"]
+    filenames = ["run-.-tag-predator avoidance index (avoided_p_pred)",
+                 "run-.-tag-prey capture index (fraction caught)"]
 
-plot_multiple_model_metrics_two_trace(models, models2, 50)
+    plot_multiple_model_metrics_two_trace(models, models2, 50)
 
