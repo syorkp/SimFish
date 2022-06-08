@@ -161,6 +161,7 @@ def create_full_response_vector(model_name, background=False):
 
 
 data = load_data("dqn_scaffold_14-1", "Prey-Full-Response-Vector", "Prey-Static-5")
+o = data["observation"][:, :, 1, 0]
 p = data["prey_positions"][:, 0, :]
 # full_rv = create_full_response_vector("even_prey_ref-5")
 # x = True

@@ -7047,5 +7047,5 @@ vrv_gathering_test = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_16_17_18_naturalistic_data, parallel_jobs=1)
+manager = TrialManager(dqn_scaffold_19b, parallel_jobs=3)
 manager.run_priority_loop()
