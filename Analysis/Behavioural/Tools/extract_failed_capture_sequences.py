@@ -21,20 +21,18 @@ def extract_failed_capture_sequences(data, n=20, strict=True):
         failed_capture_timestamps = [i for i in capture_swim_timestamps if i not in consumption_timestamps]
     failed_c_t = []
     action_sequences = []
-    if len(failed_capture_timestamps) > 0:
-        while len(failed_capture_timestamps) > 0:
-            index = failed_capture_timestamps.pop(0)
-            failed_capture_timestamps = [i for i in range(index-n+1, index+1) if i >= 0]
-            failed_c_t.append(failed_capture_timestamps)
-            action_sequence = [data["action"][i] for i in failed_capture_timestamps]
-            action_sequences.append(action_sequence)
+    while len(failed_capture_timestamps) > 0:
+        index = failed_capture_timestamps.pop(0)
+        failed_capture_sequences = [i for i in range(index-n+1, index+1) if i >= 0]
+        failed_c_t.append(failed_capture_sequences)
+        action_sequence = [data["action"][i] for i in failed_capture_sequences]
+        action_sequences.append(action_sequence)
     return action_sequences, failed_c_t
 
 
 def get_failed_capture_sequences(model_name, assay_config, assay_id, n):
     all_failed_capture_sequences = []
     for i in range(1, n+1):
-        print(i)
         data = load_data(model_name, assay_config, f"{assay_id}-{i}")
         all_failed_capture_sequences = all_failed_capture_sequences + extract_failed_capture_sequences(data)[0]
     return all_failed_capture_sequences
