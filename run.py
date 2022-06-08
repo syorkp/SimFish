@@ -45,6 +45,26 @@ if not os.path.exists("./Assay-Output/"):
 # with open("./Run-Configurations/VRV_CONFIG.json", "r") as file:
 #     vrv_config = json.load(file)
 
+# vrv_config = vrv_config[0]
+# vrv_config["Model Name"] = "dqn_scaffold_14"
+# vrv_config["Trial Number"] = 1
+# vrv_config["Checkpoint"] = None
+# vrv_config["New Simulation"] = True
+# vrv_config["Full Reafference"] = False
+# for i, assay in enumerate(vrv_config["Assays"]):
+#     vrv_config["Assays"][i]["behavioural recordings"] = ["environmental positions", "observation"]
+#     vrv_config["Assays"][i]["network recordings"] = ["rnn state", "internal state"]
+#     vrv_config["Assays"][i]["use_mu"] = True
+# vrv_config["Using GPU"] = False
+# vrv_config["Continuous Actions"] = False
+# vrv_config["SB Emulator"] = True
+# vrv_config["Learning Algorithm"] = "DQN"
+#
+# vrv_config["Assays"] = [vrv_config["Assays"][0]]
+# vrv_config["Assays"][0]["save frames"] = True
+# vrv_config = [vrv_config]
+
+
 ppo_beta_configuration = [
     {
         "Model Name": "ppo_continuous_beta_sanity",
@@ -7022,7 +7042,10 @@ dqn_16_17_18_naturalistic_data = [
     },
 ]
 
+vrv_gathering_test = [
+
+]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_16_17_18_naturalistic_data, parallel_jobs=1)
+manager = TrialManager(dqn_scaffold_20a, parallel_jobs=1)
 manager.run_priority_loop()

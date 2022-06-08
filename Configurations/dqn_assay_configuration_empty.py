@@ -111,9 +111,8 @@ params = {'num_actions': 7,  # size of action space
           'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
           'learning_rate': 0.0001}
 
-
 # Equal to that given in the file name.
-environment_name = "empty_base"
+environment_name = "test_square"
 
 with open(f"Configurations/Assay-Configs/{environment_name}_env.json", 'w') as f:
     json.dump(env, f)
