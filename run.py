@@ -44,7 +44,7 @@ if not os.path.exists("./Assay-Output/"):
 
 # with open("./Run-Configurations/VRV_CONFIG.json", "r") as file:
 #     vrv_config = json.load(file)
-
+#
 # vrv_config = vrv_config[0]
 # vrv_config["Model Name"] = "dqn_scaffold_14"
 # vrv_config["Trial Number"] = 1
@@ -7047,5 +7047,5 @@ vrv_gathering_test = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_20a, parallel_jobs=1)
+manager = TrialManager(dqn_scaffold_19b, parallel_jobs=1)
 manager.run_priority_loop()

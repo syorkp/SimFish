@@ -10,7 +10,7 @@ from Environment.Fish.tethered_fish import TetheredFish
 class ControlledStimulusEnvironment(BaseEnvironment):
     """
     This version is made with only the fixed projection configuration in mind.
-    As a result, doesnt have walls, and fish appears directly in the centfre of the environment.
+    As a result, doesnt have walls, and fish appears directly in the centre of the environment.
     For this environment, the following stimuli are available: prey, predators.
     """
 
@@ -120,7 +120,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
 
         if self.new_simulation and self.env_variables['energy_state']:
             self.energy_level_log.append(self.fish.energy_level)
-            reward = self.fish.update_energy_level(reward, action[0], action[1], self.prey_consumed_this_step)
+            reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
 
         self.fish.body.position = (self.env_variables['width'] / 2, self.env_variables['height'] / 2)
         self.fish.body.angle = 0
@@ -132,15 +132,23 @@ class ControlledStimulusEnvironment(BaseEnvironment):
 
         # Calculate internal state
         internal_state = []
+        internal_state_order = []
         if self.env_variables['in_light']:
             internal_state.append(self.fish.body.position[0] > self.dark_col)
-        elif self.env_variables['hunger']:
+            internal_state_order.append("in_light")
+        if self.env_variables['hunger']:
             internal_state.append(self.fish.hungry)
-        elif self.env_variables['stress']:
+            internal_state_order.append("hunger")
+        if self.env_variables['stress']:
             internal_state.append(self.fish.stress)
-        elif self.env_variables['energy_state']:
+            internal_state_order.append("stress")
+        if self.env_variables['energy_state']:
             internal_state.append(self.fish.energy_level)
-        else:
+            internal_state_order.append("energy_state")
+        if self.env_variables['salt']:
+            internal_state.append(salt_damage)
+            internal_state_order.append("salt")
+        if len(internal_state) == 0:
             internal_state.append(0)
         internal_state = np.array([internal_state])
 
@@ -150,19 +158,35 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         left_eye_pos = (+np.cos(np.pi/2-self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
                         -np.sin(np.pi/2-self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
 
-        self.fish.left_eye.read(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
-        self.fish.right_eye.read(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
+        if self.predator_body is not None:
+            predator_bodies = np.array([self.predator_body.position])
+        else:
+            predator_bodies = np.array([])
+
+        full_masked_image = self.board.get_masked_pixels(np.array(self.fish.body.position),
+                                                         np.array([i.position for i in self.prey_bodies]),
+                                                         predator_bodies
+                                                         )
+
+        self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
+        self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 
         if save_frames or self.draw_screen:
-            self.board.erase(bkg=self.env_variables['bkg_scatter'])
+            self.board.erase_visualisation(bkg=0.3)
             self.draw_shapes(visualisation=True)
-            self.board.apply_light(self.dark_col, 0.7, 1)
-            self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
-            self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
+            relative_dark_gain = self.env_variables["dark_gain"]/self.env_variables["light_gain"]
+            self.board.apply_light(self.dark_col, relative_dark_gain, 1, visualisation=True)
+
+            if self.env_variables["show_channel_sectors"]
+                self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
+                self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
+
             if save_frames:
-                frame_buffer.append(self.output_frame(activations, internal_state, scale=0.25))
+                frame = self.output_frame(activations, internal_state, scale=0.25)
+                frame_buffer.append(frame)
             if self.draw_screen:
-                self.board_image.set_data(self.output_frame(activations, internal_state, scale=0.5) / 255.)
+                frame = self.output_frame(activations, internal_state, scale=0.5) / 255.
+                self.board_image.set_data(frame)
                 plt.pause(0.000001)
 
         observation = np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
