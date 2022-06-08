@@ -109,8 +109,8 @@ class DQNAssayService(AssayService, BaseDQN):
             o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
                                                                        a=action_reafference, rnn_state=rnn_state)
             o = o1
-
-            print(self.step_number)
+            if self.step_number % 100 == 0:
+                print(self.step_number)
 
             if d:
                 break
