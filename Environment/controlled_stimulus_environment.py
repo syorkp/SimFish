@@ -109,6 +109,30 @@ class ControlledStimulusEnvironment(BaseEnvironment):
 
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.space.step(self.env_variables['phys_dt'])
+
+            if self.new_simulation:
+                # Salt health
+                if self.env_variables["salt"]:
+                    salt_damage = self.salt_gradient[int(self.fish.body.position[0]), int(self.fish.body.position[1])]
+                    self.salt_damage_history.append(salt_damage)
+                    self.fish.salt_health = self.fish.salt_health + self.env_variables["salt_recovery"] - salt_damage
+                    if self.fish.salt_health > 1.0:
+                        self.fish.salt_health = 1.0
+                    if self.fish.salt_health < 0:
+                        print("Fish too salty")
+                        done = True
+                    if "salt_reward_penalty" in self.env_variables:
+                        if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables[
+                            "salt_recovery"]:
+                            reward -= self.env_variables["salt_reward_penalty"] * salt_damage
+                # Energy level
+                if self.env_variables["energy_state"]:
+                    reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
+                    self.energy_level_log.append(self.fish.energy_level)
+                    if self.fish.energy_level < 0:
+                        print("Fish ran out of energy")
+                        done = True
+
             if self.fish.touched_edge:
                 self.fish.touched_edge = False
             if self.show_all:
@@ -125,6 +149,9 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.fish.body.position = (self.env_variables['width'] / 2, self.env_variables['height'] / 2)
         self.fish.body.angle = 0
         self.fish.body.velocity = (0, 0)
+
+        # Log whether or not fish in light
+        self.in_light_history.append(self.fish.body.position[0] > self.dark_col)
 
         self.num_steps += 1
         self.board.erase(bkg=self.env_variables['bkg_scatter'])
@@ -177,7 +204,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
             relative_dark_gain = self.env_variables["dark_gain"]/self.env_variables["light_gain"]
             self.board.apply_light(self.dark_col, relative_dark_gain, 1, visualisation=True)
 
-            if self.env_variables["show_channel_sectors"]
+            if self.env_variables["show_channel_sectors"]:
                 self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
                 self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 
@@ -285,10 +312,11 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     def update_unset_stimuli(self):
         # TODO: Still need to update so that can have multiple, sequential stimuli. Will require adding in onset into stimulus, as well as changing the baseline phase. Not useful for current requirements.
         stimuli_to_delete = []
-        init_period = 400
+        init_period = 100  # TODO: Change back to 400
 
         for stimulus in self.unset_stimuli.keys():
             i = int(stimulus.split()[1]) - 1
+
             if self.num_steps <= init_period:
                 # Networks initialisation period
                 if "prey" in stimulus:

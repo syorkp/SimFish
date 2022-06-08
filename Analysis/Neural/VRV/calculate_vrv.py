@@ -160,6 +160,8 @@ def create_full_response_vector(model_name, background=False):
     return response_vectors
 
 
+data = load_data("dqn_scaffold_14-1", "Prey-Full-Response-Vector", "Prey-Static-5")
+p = data["prey_positions"][:, 0, :]
 # full_rv = create_full_response_vector("even_prey_ref-5")
 # x = True
 
