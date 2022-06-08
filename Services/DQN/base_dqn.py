@@ -195,12 +195,6 @@ class BaseDQN:
             episode_buffer.append(np.reshape(np.array([o, np.array(a), r, internal_state, o1, d]), [1, 6]))
             total_episode_reward += r
 
-            if self.full_reafference:
-                action_reafference = [a, self.simulation.fish.prev_action_impulse,
-                                      self.simulation.fish.prev_action_angle]
-            else:
-                action_reafference = a
-
             o = o1
             if self.total_steps > self.pre_train_steps:
                 if self.epsilon > self.learning_params['endE']:

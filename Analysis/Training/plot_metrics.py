@@ -275,8 +275,9 @@ def clean_metrics_data(reader, file_name, model):
 
 
 models = ["even_5", "even_6", "even_7","even_8"]
-
 models2 = ["even_1", "even_2", "even_3", "even_4"]
+models = ["dqn_scaffold_14-1"]
+
 filenames = ["run-.-tag-predator avoidance index (avoided_p_pred)",
              "run-.-tag-prey capture index (fraction caught)"]
 
