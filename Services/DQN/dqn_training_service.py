@@ -31,6 +31,7 @@ def training_target(trial, epsilon, total_steps, episode_number, memory_fraction
                                   configuration_index=configuration_index,
                                   full_logs=trial["Full Logs"],
                                   profile_speed=trial["Profile Speed"],
+                                  full_reafference=trial["Full Reafference"]
                                   )
     services.run()
 

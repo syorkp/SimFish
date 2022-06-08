@@ -67,6 +67,8 @@ class BaseDQN:
             self.last_position_dim = None
         if not hasattr(self, "package_output_data"):
             self.package_output_data = None
+        if not self.assay:
+            self.full_reafference = True
 
     def init_states(self):
         # Init states for RNN
@@ -176,7 +178,10 @@ class BaseDQN:
         step_number = 0  # To allow exit after maximum steps.
         a = 3  # Initialise action for episode.
 
-        action_reafference = [a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+        if self.full_reafference:
+            action_reafference = [a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+        else:
+            action_reafference = a
 
         while step_number < self.learning_params["max_epLength"]:
             step_number += 1
@@ -189,6 +194,12 @@ class BaseDQN:
             all_actions.append(a[0])
             episode_buffer.append(np.reshape(np.array([o, np.array(a), r, internal_state, o1, d]), [1, 6]))
             total_episode_reward += r
+
+            if self.full_reafference:
+                action_reafference = [a, self.simulation.fish.prev_action_impulse,
+                                      self.simulation.fish.prev_action_angle]
+            else:
+                action_reafference = a
 
             o = o1
             if self.total_steps > self.pre_train_steps:
