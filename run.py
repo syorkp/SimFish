@@ -57,13 +57,12 @@ for i, assay in enumerate(vrv_config["Assays"]):
     vrv_config["Assays"][i]["use_mu"] = True
     vrv_config["Assays"][i]["energy_state_control"] = "Held"
     vrv_config["Assays"][i]["salt_control"] = False
-vrv_config["Using GPU"] = False
+vrv_config["Using GPU"] = True
 vrv_config["Continuous Actions"] = False
 vrv_config["SB Emulator"] = True
 vrv_config["Learning Algorithm"] = "DQN"
-
-vrv_config["Assays"] = [vrv_config["Assays"][0]]
-vrv_config["Assays"][0]["save frames"] = True
+# vrv_config["Assays"] = [vrv_config["Assays"][0]]
+# vrv_config["Assays"][0]["save frames"] = True
 vrv_config = [vrv_config]
 
 
@@ -7206,5 +7205,5 @@ dqn_16_17_18_naturalistic_data = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_19a, parallel_jobs=3)
+manager = TrialManager(vrv_config, parallel_jobs=3)
 manager.run_priority_loop()
