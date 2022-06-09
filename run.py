@@ -7688,5 +7688,5 @@ dqn_16_17_18_naturalistic_data = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_14_naturalistic_data_2, parallel_jobs=3)
+manager = TrialManager(dqn_14_naturalistic_data_2, parallel_jobs=1)
 manager.run_priority_loop()
