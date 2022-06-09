@@ -309,15 +309,15 @@ env = {
        'capture_angle_deviation_allowance': np.pi,
        # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
 
-       'action_energy_use_scaling': "Nonlinear",  # Options: Nonlinear, linear, sublinear.
+       'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
 }
 
 
-scaffold_name = "dqn_scaffold_21"
+scaffold_name = "dqn_scaffold_22"
 
 # 2-10
 changes = [
-
+       ["PCI", 0.25, 'distance_from_fish', 75],  # Distance from the fish at which the predator appears. Formerly 498
        ["PCI", 0.25, "anneling_steps", 500000],
        # 1) Rewards and Penalties
        ["PCI", 0.25, "capture_swim_extra_cost", 50],
