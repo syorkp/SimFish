@@ -18,7 +18,7 @@ def display_all_sequences(sequences, min_length=None, max_length=None):
     sns.set()
     sequences.sort(key=len)
     plot_dim = max([len(seq) for seq in sequences])
-    color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'y', "k", "m", "m", "b"]
+    color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'gold', "c", "m", "m", "black"]
     plt.figure(figsize=(5, 15))
     for i, seq in enumerate(sequences):
         if min_length is not None:

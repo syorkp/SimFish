@@ -131,6 +131,7 @@ class AssayService(BaseService):
 
         if to_save:
             self.stimuli_data.append(to_save)
+        self.simulation.stimuli_information = {}
 
     def create_testing_environment(self, assay):
         """

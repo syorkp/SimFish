@@ -96,10 +96,14 @@ def create_full_stimulus_vector(model_name, background=False):
     full_stimulus_vector = []
     file_precursors = ["Prey", "Predator"]
     file_precursors = ["Prey"]  #TODO: Change back later
-    prey_assay_ids = ["Prey-Static-5", "Prey-Static-10", "Prey-Static-15",
-                      "Prey-Left-5", "Prey-Left-10", "Prey-Left-15",
-                      "Prey-Right-5", "Prey-Right-10", "Prey-Right-15",
-                      "Prey-Away", "Prey-Towards"]
+    # prey_assay_ids = ["Prey-Static-5", "Prey-Static-10", "Prey-Static-15",
+    #                   "Prey-Left-5", "Prey-Left-10", "Prey-Left-15",
+    #                   "Prey-Right-5", "Prey-Right-10", "Prey-Right-15",
+    #                   "Prey-Away", "Prey-Towards"]
+    prey_assay_ids = ["Prey-Static-5", "Prey-Static-5", "Prey-Static-5",
+                      "Prey-Static-5", "Prey-Static-5", "Prey-Static-5",
+                      "Prey-Static-5", "Prey-Static-5", "Prey-Static-5",
+                      "Prey-Static-5", "Prey-Static-5"]
     predator_assay_ids = ["Predator-Static-40", "Predator-Static-60", "Predator-Static-80",
                           "Predator-Left-40", "Predator-Left-60", "Predator-Left-80",
                           "Predator-Right-40", "Predator-Right-60", "Predator-Right-80",
@@ -145,6 +149,7 @@ def create_full_response_vector(model_name, background=False):
         if "Prey" in file_p:
             for aid in prey_assay_ids:
                 data = load_data(model_name, f"{file_p}-Full-Response-Vector", aid)
+                aid = "Prey-Static-5"
                 stimulus_data = load_stimulus_data(model_name, f"{file_p}-Full-Response-Vector", aid)
                 # stimulus_data = new_load_stimulus_data(model_name, f"{file_p}-Full-Response-Vector", aid)
                 new_vector_section = get_all_neuron_vectors(data, "prey 1", stimulus_data, "rnn_state_actor")

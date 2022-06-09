@@ -29,7 +29,7 @@ def plot_action_sequences_2D_discrete(fish_positions_compiled, actions_compiled,
     actions_present = [x for x in actions_compiled_flattened if not (x in seen or seen_add(x))]
     ordered_actions_present = sorted(actions_present)
 
-    color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'y', "k", "m", "m", "black"]
+    color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'gold', "k", "m", "m", "black"]
     color_set = [color_set[a] for a in ordered_actions_present]
     colours = ListedColormap(color_set)
 
@@ -70,7 +70,7 @@ def plot_action_sequences_2D_discreteV2(fish_positions_compiled, actions_compile
     ordered_actions_present = sorted(actions_present)
     associated_actions = [get_action_name(a) for a in ordered_actions_present]
 
-    color_set = ['b', 'g', 'lightgreen', 'r', 'gold', 'y', "c", "m", "m", "black"]
+    color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'gold', "c", "m", "m", "black"]
 
     plt.figure(figsize=(10, 10))
     points = []
@@ -93,15 +93,17 @@ def plot_action_sequences_2D_discreteV2(fish_positions_compiled, actions_compile
     plt.show()
 
 
+data = load_data(f"dqn_scaffold_14-1", "Prey-Full-Response-Vector", f"Prey-Left-5")
+
 
 # Displays the exploration and capture sequences for the first trial for each model.
 for i in range(1, 5):
     for j in range(1, 11):
-        data = load_data(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", f"Naturalistic-{j}")
+        data = load_data(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", f"Naturalistic-{j}")
 
         # Capture sequences
-        # ts, consumption_timestamps, capture_sequences, capture_fish_positions = extract_consumption_action_sequences_with_positions(data)
-        # plot_action_sequences_2D_discrete(capture_fish_positions, capture_sequences, ts, consumption_timestamps=consumption_timestamps)
+        ts, consumption_timestamps, capture_sequences, capture_fish_positions = extract_consumption_action_sequences_with_positions(data)
+        plot_action_sequences_2D_discrete(capture_fish_positions, capture_sequences, ts, consumption_timestamps=consumption_timestamps)
 
         # Exploration sequences
         exploration_timestamps, exploration_sequences, exploration_fish_positions = extract_exploration_action_sequences_with_positions(data)

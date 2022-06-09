@@ -314,13 +314,13 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     def update_unset_stimuli(self):
         # TODO: Still need to update so that can have multiple, sequential stimuli. Will require adding in onset into stimulus, as well as changing the baseline phase. Not useful for current requirements.
         stimuli_to_delete = []
-        init_period = 400  # TODO: Change back to 400
-
+        init_period = 100
+        print(self.num_steps)
         for stimulus in self.unset_stimuli.keys():
             i = int(stimulus.split()[1]) - 1
 
             if self.num_steps <= init_period:
-                # Networks initialisation period
+                # Networks initialisation period - First period of length init_period
                 if "prey" in stimulus:
                     self.prey_bodies[i].position = (10, 10)
                 elif "predator" in stimulus:
@@ -328,7 +328,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
             else:
 
                 if (self.num_steps-init_period) % self.unset_stimuli[stimulus]["interval"] == 0:
-                    # Initialisation period
+                    # Initialisation period for each presentation
                     self.stimuli_information[stimulus]["Initialisation"] = self.num_steps
                     if "prey" in stimulus:
                         self.prey_bodies[i].position = (10, 10)
@@ -387,6 +387,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                             print("Invalid *moving* parameter given")
 
                     self.stimuli_information[stimulus] = {}
+
         for stimulus in stimuli_to_delete:
             del self.unset_stimuli[stimulus]
 
