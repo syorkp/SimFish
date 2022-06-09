@@ -5,7 +5,7 @@ import numpy as np
 
 from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.extract_exploration_sequences import extract_exploration_action_sequences_with_positions
-from Analysis.Behavioural.Tools.extract_turn_sequences import extract_turn_sequences
+from Analysis.Behavioural.Tools.extract_turn_sequences import extract_turn_sequences, extract_purely_turn_sequences
 from Analysis.Behavioural.Tools.extract_exploration_sequences import extract_exploration_action_sequences_with_fish_angles
 from Analysis.Behavioural.Tools.extract_exploration_sequences import get_no_prey_stimuli_sequences, get_exploration_sequences
 
@@ -43,8 +43,6 @@ def model_of_action_switching(sequences):
     left_durations = []
     right_durations = []
     for sequence in sequences:
-        if len(sequence) < 5:
-            continue
         if sequence[0] == 1 or sequence[0] == 4:
             total_left += 1
         elif sequence[0] == 2 or sequence[0] == 5:
@@ -65,37 +63,48 @@ def model_of_action_switching(sequences):
                     right_durations.append(count)
                     count = 0
                     switch_left_count += 1
+        if count > 0:
+            if a == 1 or a == 4:
+                left_durations.append(count)
+            elif a == 2 or a == 5:
+                right_durations.append(count)
 
-    switch_right_p = switch_right_count/total_left
-    switch_left_p = switch_left_count/total_right
-    return switch_left_p, switch_right_p, left_durations, right_durations
+    if total_left > 0 and total_right > 0:
+        switch_right_p = switch_right_count/total_left
+        switch_left_p = switch_left_count/total_right
+        return switch_left_p, switch_right_p, left_durations, right_durations
+    else:
+        return 0, 0, [], []
+
+
+def compute_cumulative_probability(sequence_lengths):
+    max_duration = max(sequence_lengths)
+    count_seq_length = np.zeros((max_duration+1))
+    for sequence in sequence_lengths:
+        count_seq_length[sequence] += 1
+    cumulative_count_sequence_length = [sum(count_seq_length[:i]) for i in range(1, len(count_seq_length+1))]
+    cumulative_probability = np.array(cumulative_count_sequence_length)/max(cumulative_count_sequence_length)
+    return cumulative_probability
 
 
 def cumulative_switching_probability_plot(left_durs, right_durs, left_durs2, right_durs2, label):
     """Given two sets of switching latencies, one random and one from a model, plots the cumulative probability of
     switching direction."""
-    left_durs = [i for i in left_durs if i>1]
-    right_durs = [i for i in right_durs if i>1]
-    left_durs2 = [i for i in left_durs2 if i>1]
-    right_durs2 = [i for i in right_durs2 if i>1]
+    # left_durs = [i for i in left_durs if i>1]
+    # right_durs = [i for i in right_durs if i>1]
+    # left_durs2 = [i for i in left_durs2 if i>1]
+    # right_durs2 = [i for i in right_durs2 if i>1]
+    if len(left_durs) == 0 or len(right_durs) == 0:
+        return
 
     sns.set()
     seq_lengths = left_durs + right_durs
     seq_lengths2 = left_durs2 + right_durs2
 
-    p, x = np.histogram(seq_lengths, bins=10)  # bin it into n = N//10 bins
-    x = x[:-1] + (x[1] - x[0]) / 2  # convert bin edges to centers
-    f = UnivariateSpline(x, p, s=10)
-    pdf = f(x)/len(seq_lengths)
-    cdf = [sum(pdf[:i]) for i in range(len(pdf))]
-
-    p2, x2 = np.histogram(seq_lengths2, bins=10)  # bin it into n = N//10 bins
-    x2 = x2[:-1] + (x2[1] - x2[0]) / 2  # convert bin edges to centers
-    f2 = UnivariateSpline(x2, p2, s=10)
-    pdf2 = f2(x2)/len(seq_lengths2)
-    cdf2 = [sum(pdf2[:i]) for i in range(len(pdf2))]
-    plt.show()
-    fig = plt.figure()
+    cdf = compute_cumulative_probability(seq_lengths)
+    cdf2 = compute_cumulative_probability(seq_lengths2)
+    x = range(0, max(seq_lengths))
+    x2 = range(0, max(seq_lengths2))
 
     plt.plot(x, cdf, label="Agent")
     plt.plot(x2, cdf2, label="Random Switching")
@@ -103,7 +112,6 @@ def cumulative_switching_probability_plot(left_durs, right_durs, left_durs2, rig
     plt.ylabel("Cumulative Probability", fontsize=18)
     plt.title(label)
     plt.legend()
-    fig.tight_layout()
     plt.show()
 
 
@@ -203,6 +211,35 @@ def randomly_switching_fish(n_sequences=100):
         sequences.append(seq)
     return model_of_action_switching(sequences)
 
+
+def plot_all_turn_analysis(model_name, assay_config, assay_id, n, use_purely_turn_sequences=True):
+    no_prey_actions, no_prey_timestamps = get_no_prey_stimuli_sequences(model_name, assay_config, assay_id, n)
+    otherwise_exploration_sequences = get_exploration_sequences(model_name, assay_config, assay_id, n)
+
+    if use_purely_turn_sequences:
+        turn_exploration_sequences = extract_purely_turn_sequences(otherwise_exploration_sequences, 5)
+        turn_no_prey_sequences = extract_purely_turn_sequences(no_prey_actions, 5)
+    else:
+        turn_exploration_sequences = extract_turn_sequences(otherwise_exploration_sequences)
+        turn_no_prey_sequences = extract_turn_sequences(no_prey_actions)
+
+    # Cumulative turn direction plots:
+    cumulative_turn_direction_plot(turn_no_prey_sequences,
+                                   label=f"Cumulative Turn Direction (no prey near, only turns) {model_name}")
+    cumulative_turn_direction_plot(turn_exploration_sequences,
+                                   label=f"Cumulative Turn Direction (no prey or walls, only turns) {model_name}")
+
+    # Cumulative probability plot.
+    l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
+    l2, r2, sl2, sr2 = randomly_switching_fish()
+    cumulative_switching_probability_plot(sl, sr, sl2, sr2, label=f"Cumulative Switching Probability (exploration) {model_name}")
+
+    l, r, sl, sr = model_of_action_switching(turn_no_prey_sequences)
+    l2, r2, sl2, sr2 = randomly_switching_fish()
+    cumulative_switching_probability_plot(sl, sr, sl2, sr2, label=f"Cumulative Switching Probability (no prey) {model_name}")
+
+
+
 # sl_compiled = []
 # sr_compiled = []
 # sl2_compiled = []
@@ -243,26 +280,16 @@ turn_exploration_sequences_compiled = []
 
 # Exploration sequences based on visual stimulation level
 for i in range(1, 5):
-    no_prey_actions, no_prey_timestamps = get_no_prey_stimuli_sequences(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", f"Naturalistic", 10)
-    otherwise_exploration_sequences = get_exploration_sequences(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", f"Naturalistic", 10)
-    turn_exploration_sequences = extract_turn_sequences(otherwise_exploration_sequences)
+    plot_all_turn_analysis(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", f"Naturalistic", 10)
 
-    cumulative_turn_direction_plot(no_prey_actions, label=f"Cumulative Turn Direction (no prey near) dqn_scaffold_14-{i}")
-    cumulative_turn_direction_plot(otherwise_exploration_sequences, label=f"Cumulative Turn Direction (no prey or walls) dqn_scaffold_14-{i}")
+    # turn_exploration_sequences_compiled += turn_exploration_sequences
+    # sl_compiled += sl
+    # sr_compiled += sr
+    # sl2_compiled += sl2
+    # sr2_compiled += sr2
 
-    # Cumulative probability plot.
-    l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
-    l2, r2, sl2, sr2 = randomly_switching_fish()
-    cumulative_switching_probability_plot(sl, sr, sl2, sr2, label=f"Cumulative Switching Probability dqn_scaffold_14-{i}")
-
-    turn_exploration_sequences_compiled += turn_exploration_sequences
-    sl_compiled += sl
-    sr_compiled += sr
-    sl2_compiled += sl2
-    sr2_compiled += sr2
-
-cumulative_switching_probability_plot(sl_compiled, sr_compiled, sl2_compiled, sr2_compiled, f"Cumulative Switching Probability Plot all models")
-cumulative_turn_direction_plot(turn_exploration_sequences_compiled, f"Cumulative turn direction plot all models")
+# cumulative_switching_probability_plot(sl_compiled, sr_compiled, sl2_compiled, sr2_compiled, f"Cumulative Switching Probability Plot all models")
+# cumulative_turn_direction_plot(turn_exploration_sequences_compiled, f"Cumulative turn direction plot all models")
 
 # VERSION 1
 
