@@ -119,7 +119,7 @@ class DQNAssayService(AssayService, BaseDQN):
             salt_location = None
 
         self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id, self.internal_state_order, salt_location=salt_location)
-
+        self.log_stimuli()
         if assay["save frames"]:
             make_gif(self.frame_buffer,
                      f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
