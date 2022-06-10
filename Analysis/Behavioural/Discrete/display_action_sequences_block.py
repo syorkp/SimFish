@@ -51,7 +51,7 @@ def display_average_sequence(sequences):
 for i in range(1, 3):
     capture_sequences = get_capture_sequences(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
     # For each model
-    display_all_sequences(capture_sequences)
+    display_all_sequences(capture_sequences, indicate_consumption=True)
     # compiled_capture_sequences += capture_sequences
 
 # Combined across models

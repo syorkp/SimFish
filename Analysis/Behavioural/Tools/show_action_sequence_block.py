@@ -18,7 +18,7 @@ def display_sequences(sequences):
     plt.show()
 
 
-def display_all_sequences(sequences, min_length=None, max_length=None):
+def display_all_sequences(sequences, min_length=None, max_length=None, indicate_consumption=False):
     sns.set()
     sequences.sort(key=len)
     plot_dim = max([len(seq) for seq in sequences])
@@ -32,6 +32,8 @@ def display_all_sequences(sequences, min_length=None, max_length=None):
     associated_actions = [get_action_name(a) for a in ordered_actions_present]
 
     # plt.figure(figsize=(5, 15))
+    fig, ax = plt.subplots()
+    used_sequences = []
     for i, seq in enumerate(sequences):
         if min_length is not None:
             if len(seq) < min_length:
@@ -41,9 +43,23 @@ def display_all_sequences(sequences, min_length=None, max_length=None):
                 continue
         for j, a in enumerate(reversed(seq)):
             j = plot_dim - j
-            plt.fill_between((j, j+1), i, i+1, color=color_set[a])
+            ax.fill_between((j, j+1), i, i+1, color=color_set[a])
+        used_sequences.append(seq)
 
-    legend_elements = [Patch(facecolor=color_set[a], label=associated_actions[a]) for i, a in enumerate(ordered_actions_present)]# [0], [0], marker="o", color=color_set[i], label=associated_actions[i]) for i in actions_present]
+    seen = set()
+    seen_add = seen.add
+    actions_compiled_flattened = np.concatenate(np.array(used_sequences))
+    actions_present = [x for x in actions_compiled_flattened if not (x in seen or seen_add(x))]
+    ordered_actions_present = sorted(actions_present)
+    associated_actions = [get_action_name(a) for a in ordered_actions_present]
+
+
+    legend_elements = [Patch(facecolor=color_set[a], label=associated_actions[i]) for i, a in enumerate(ordered_actions_present)]# [0], [0], marker="o", color=color_set[i], label=associated_actions[i]) for i in actions_present]
+
+    # if indicate_consumption:
+    #     # outline = plt.Polygon(np.array([[plot_dim, 0], [plot_dim+1, 0], [plot_dim+1, len(used_sequences)], [plot_dim, len(used_sequences)]]))
+    #     # ax.add_patch(outline)
+    #     plt.arrow(plot_dim, 0, 0, 1, width=4, color="r")
 
     # plt.legend(legend_elements, associated_actions, bbox_to_anchor=(1.5, 1), borderaxespad=0)#loc='upper right')
     plt.legend(legend_elements, associated_actions, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)

@@ -703,7 +703,7 @@ class NewDrawingBoard:
 
         return luminance_mask
 
-    def get_masked_pixels(self, fish_position, prey_locations, predator_locations):
+    def get_masked_pixels(self, fish_position, prey_locations, predator_locations, return_masks=False):
         """
         Returns masked pixels in form W.H.3
         With Red.UV.Red2
@@ -758,7 +758,10 @@ class NewDrawingBoard:
             if self.using_gpu:
                 self.mask_buffer_time_point = self.mask_buffer_time_point.get()
         # x = (AB * L * O * S)[:, :, 1]
-        return AB * L * O * S
+        if return_masks:
+            return AB, L, O, S
+        else:
+            return AB * L * O * S
 
     def compute_n(self, angular_size, number_of_this_feature, max_separation=1, p=None):
         max_dist = (self.width ** 2 + self.height ** 2) ** 0.5

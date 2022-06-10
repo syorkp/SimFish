@@ -110,15 +110,14 @@ def draw_angle_dist(bout_id):
 
             return chosen_angle, chosen_dist
 
+
+if __name__ == "__main__":
 # display_pdf_and_cdf(0)
 
-# for i in range(0, 13):
-#     display_pdf_and_cdf(i)
-#     print(i)
-#     angle, dist = draw_angle_dist(i)
-#     print(angle, dist)
+    for i in range(0, 13):
+        display_pdf_and_cdf(i)
+        print(i)
+        # angle, dist = draw_angle_dist(i)
+        # print(angle, dist)
 
-# display_pdf_and_cdf(5)
-# display_pdf_and_cdf(9)
-
-# plot_full_scatter_of_poss_actions()
+    plot_full_scatter_of_poss_actions()
