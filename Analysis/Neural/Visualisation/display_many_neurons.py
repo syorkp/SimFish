@@ -1,5 +1,7 @@
 import math
 from matplotlib import pyplot as plt
+import numpy as np
+
 from Analysis.load_data import load_data
 from Analysis.load_stimuli_data import load_stimulus_data
 
@@ -323,18 +325,31 @@ def plot_artificial_traces(prey_pred_data, prey_size_data, directional_data, pre
     # fig.legend(patches, labels, loc='center', frameon=False)
     # plt.show()
 
-model_name = "scaffold_version_4-4"
 
-#data1 = load_data("ppo_continuous_multivariate-7", "MultivariateData", "Naturalistic-1")
-# data1 = load_data("ppo_continuous_multivariate-40", "MultivariateData", "Naturalistic-1")
-data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
-data1 = load_data("ppo_multivariate_bptt-2", "MultivariateData", "Naturalistic-1")
-data1a = load_data("ppo_multivariate_bptt-2", "Prey-Full-Response-Vector", "Prey-Static-5")
-unit_activity = data["optic_tectum"]
-plot_traces(unit_activity)
+data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic-1")
+e = [i for i in data["energy_state"]]
 
-unit_activity1a = [[state[0, 0, j] for i, state in enumerate(data1["rnn_state_actor"])] for j in range(512)]
+
+plt.figure(figsize=(20, 10))
+unit_activity1a = [[state[0, 0, j] for i, state in enumerate(data["rnn_state_actor"])] for j in range(512)]
+unit_29 = unit_activity1a[235]
+
+consumption_points = [i for i, a in enumerate(data["consumed"]) if a == 1]
+cs_points = [i for i, a in enumerate(data["action"]) if a == 3]
+
+
+
+plt.plot(unit_29)
+plt.plot((np.array(e)*250))
+for c in cs_points:
+    plt.vlines(c, 0, 300, color="r")
+
+plt.show()
+
+
+
 plot_traces(unit_activity1a)
+
 #
 # import json
 # #

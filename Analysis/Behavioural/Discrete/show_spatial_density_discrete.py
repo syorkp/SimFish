@@ -11,6 +11,31 @@ To create a graph of the style in Figure 3b of Marques et al. (2018)
 """
 
 
+def draw_fish(x, y, mouth_size, head_size, tail_length, ax):
+    mouth_centre = (x, y)  # TODO: Make sure this is true
+
+    mouth = plt.Circle(mouth_centre, mouth_size,  fc="green")
+    ax.add_patch(mouth)
+
+    angle = (2 * np.pi)/2
+    dx1, dy1 = head_size * np.sin(angle), head_size * np.cos(angle)
+    head_centre = (mouth_centre[0] + dx1,
+                   mouth_centre[1] + dy1)
+    head = plt.Circle(head_centre, head_size, fc="green")
+    ax.add_patch(head)
+
+    dx2, dy2 = -1 * dy1, dx1
+    left_flank = (head_centre[0] + dx2,
+                  head_centre[1] + dy2)
+    right_flank = (head_centre[0] - dx2,
+                   head_centre[1] - dy2)
+    tip = (mouth_centre[0] + (tail_length + head_size) * np.sin(angle),
+           mouth_centre[1] + (tail_length + head_size) * np.cos(angle))
+    tail = plt.Polygon(np.array([left_flank, right_flank, tip]), fc="green")
+    ax.add_patch(tail)
+    return ax
+
+
 def get_nearby_features(data, step, proximity=300):
     """For a single step, returns the positions of nearby prey and predators."""
     nearby_prey_coordinates = []
@@ -72,7 +97,7 @@ def get_clouds_with_action(data, action=0):
     return prey_cloud, predator_cloud
 
 
-def create_density_cloud(density_list, action_num, stimulus_name):
+def create_density_cloud(density_list, action_num, stimulus_name, return_objects):
     n_samples = len(density_list)
     x = np.array([i[0] for i in density_list])
     y = np.array([i[1] for i in density_list])
@@ -87,16 +112,28 @@ def create_density_cloud(density_list, action_num, stimulus_name):
     # Make the plot
     fig, ax = plt.subplots()
 
-    ax.pcolormesh(xi, yi, zi.reshape(xi.shape))
+    ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap="Reds", )#cmap='gist_gray')#  cmap='PuBu_r')
 
     ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
                            pad=0.6, sep=4, linekw=dict(color="crimson"), )
     ax.add_artist(ob)
-    plt.arrow(-300, 220, 0, 40, width=10, color="red")
+    # plt.arrow(-300, 220, 0, 40, width=10, color="red")
+
+    ax = draw_fish(-300, 220, 4, 2.5, 41.5, ax)
+    ax.set_xlim(-600, 0)
+    ax.set_ylim(-80, 520)
+
+    # plt.scatter(y, x, c="b", s=1)
+
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Feature: {stimulus_name}, Action: {get_action_name(action_num)}, N-Samples: {n_samples}")
-    plt.show()
+
+    if return_objects:
+        plt.clf()
+        return ax
+    else:
+        plt.show()
 
 
 def get_all_density_plots(data):
@@ -110,12 +147,13 @@ def get_all_density_plots(data):
             create_density_cloud(pred_1, action_num, "Predator")
 
 
-def get_all_density_plots_all_subsets(p1, p2, p3, n):
+def get_all_density_plots_all_subsets(p1, p2, p3, n, return_objects):
+    axes_objects = []
     for action_num in range(0, 10):
         prey_cloud = []
         pred_cloud = []
         for i in range(1, n+1):
-            if i > 12:
+            if i > 100:
                 data = load_data(p1, f"{p2}-2", f"{p3} {i}")
             else:
                 data = load_data(p1, p2, f"{p3}-{i}")
@@ -125,17 +163,23 @@ def get_all_density_plots_all_subsets(p1, p2, p3, n):
             pred_cloud = pred_cloud + pred_1
 
         if len(prey_cloud) > 2:
-            create_density_cloud(prey_cloud, action_num, "Prey")
+            ax = create_density_cloud(prey_cloud, action_num, "Prey", return_objects)
+            axes_objects.append(ax)
 
         if len(pred_cloud) > 2:
-            create_density_cloud(pred_cloud, action_num, "Predator")
+            ax = create_density_cloud(pred_cloud, action_num, "Predator", return_objects)
+            axes_objects.append(ax)
 
-    create_j_turn_overlap_plot(p1, p2, p3, n)
-    create_routine_turn_overlap_plot(p1, p2, p3, n)
-    create_cstart_overlap_plot(p1, p2, p3, n)
+    ax = create_j_turn_overlap_plot(p1, p2, p3, n, return_objects)
+    axes_objects.append(ax)
+    ax = create_routine_turn_overlap_plot(p1, p2, p3, n, return_objects)
+    axes_objects.append(ax)
+    ax = create_cstart_overlap_plot(p1, p2, p3, n, return_objects)
+    axes_objects.append(ax)
+    return axes_objects
 
 
-def create_j_turn_overlap_plot(p1, p2, p3, n):
+def create_j_turn_overlap_plot(p1, p2, p3, n, return_objects):
     prey_cloud_left = []
     for i in range(1, n+1):
         data = load_data(p1, p2, f"{p3}-{i}")
@@ -175,19 +219,30 @@ def create_j_turn_overlap_plot(p1, p2, p3, n):
     # Make the plot
     fig, ax = plt.subplots()
 
-    ax.pcolormesh(xi, yi, zi.reshape(xi.shape),  cmap='RdBu')
+    pcm = ax.pcolormesh(xi, yi, zi.reshape(xi.shape),  cmap='RdBu')
 
     ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
                            pad=0.6, sep=4, linekw=dict(color="crimson"), )
     ax.add_artist(ob)
-    plt.arrow(300, 220, 0, 40, width=10, color="red")
+
+    ax = draw_fish(300, 220, 4, 2.5, 41.5, ax)
+    ax.set_xlim(0, 600)
+    ax.set_ylim(-80, 520)
+
+    fig.colorbar(pcm)
+
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Feature: Prey, Action: J-turns, N-Samples: {n_samples}")
-    plt.show()
+
+    if return_objects:
+        plt.clf()
+        return ax
+    else:
+        plt.show()
 
 
-def create_routine_turn_overlap_plot(p1, p2, p3, n):
+def create_routine_turn_overlap_plot(p1, p2, p3, n, return_objects):
     prey_cloud_left = []
     for i in range(1, n+1):
         data = load_data(p1, p2, f"{p3}-{i}")
@@ -227,19 +282,30 @@ def create_routine_turn_overlap_plot(p1, p2, p3, n):
 
     fig, ax = plt.subplots()
 
-    ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
+    pcm = ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
 
     ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
                            pad=0.6, sep=4, linekw=dict(color="crimson"), )
     ax.add_artist(ob)
-    plt.arrow(300, 220, 0, 40, width=10, color="red")
+
+    ax = draw_fish(-300, 220, 4, 2.5, 41.5, ax)
+    ax.set_xlim(-600, 0)
+    ax.set_ylim(-80, 520)
+
+    fig.colorbar(pcm)
+
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Feature: Prey, Action: Routine turns, N-Samples: {n_samples}")
-    plt.show()
+
+    if return_objects:
+        plt.clf()
+        return ax
+    else:
+        plt.show()
 
 
-def create_cstart_overlap_plot(p1, p2, p3, n):
+def create_cstart_overlap_plot(p1, p2, p3, n, return_objects):
     prey_cloud_left = []
     for i in range(1, n+1):
         if i < 11: continue
@@ -288,16 +354,27 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
     # Make the plot
     fig, ax = plt.subplots()
 
-    ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
+    pcm = ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
 
     ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
                            pad=0.6, sep=4, linekw=dict(color="crimson"), )
     ax.add_artist(ob)
-    plt.arrow(300, 220, 0, 40, width=10, color="red")
+
+    ax = draw_fish(300, 220, 4, 2.5, 41.5, ax)
+    ax.set_xlim(0, 600)
+    ax.set_ylim(-80, 520)
+
+    fig.colorbar(pcm)
+
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Feature: Predator, Action: C-Starts, N-Samples: {n_samples}")
-    plt.show()
+
+    if return_objects:
+        plt.clf()
+        return ax
+    else:
+        plt.show()
 
 
 def create_j_turn_overlap_plot_multiple_models(p1, p2, p3, n, n2):
@@ -343,7 +420,11 @@ def create_j_turn_overlap_plot_multiple_models(p1, p2, p3, n, n2):
     ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
                            pad=0.6, sep=4, linekw=dict(color="crimson"), )
     ax.add_artist(ob)
-    plt.arrow(300, 220, 0, 40, width=10, color="red")
+
+    ax = draw_fish(300, 220, 4, 2.5, 41.5, ax)
+    ax.set_xlim(0, 600)
+    ax.set_ylim(-80, 520)
+
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Feature: Prey, Action: J-turns")
@@ -392,7 +473,11 @@ def create_routine_turn_overlap_plot_multiple_models(p1, p2, p3, n, n2):
     ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
                            pad=0.6, sep=4, linekw=dict(color="crimson"), )
     ax.add_artist(ob)
-    plt.arrow(300, 220, 0, 40, width=10, color="red")
+
+    ax = draw_fish(300, 220, 4, 2.5, 41.5, ax)
+    ax.set_xlim(0, 600)
+    ax.set_ylim(-80, 520)
+
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Feature: Prey, Action: Routine turns")
@@ -449,7 +534,11 @@ def create_cstart_overlap_plot_multiple_models(p1, p2, p3, n, n2):
     ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
                            pad=0.6, sep=4, linekw=dict(color="crimson"), )
     ax.add_artist(ob)
-    plt.arrow(300, 220, 0, 40, width=10, color="red")
+
+    ax = draw_fish(300, 220, 4, 2.5, 41.5, ax)
+    ax.set_xlim(0, 600)
+    ax.set_ylim(-80, 520)
+
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Feature: Predator, Action: C-Starts")
@@ -488,20 +577,20 @@ def get_all_density_plots_multiple_models(p1, p2, p3, n, n2):
 # get_all_density_plots_multiple_models(f"dqn_scaffold_14", "Behavioural-Data-Free", "Naturalistic", 10, 4)
 
 # Getting for individual models
-# for i in range(1, 5):
-#     get_all_density_plots_all_subsets(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
+for i in range(1, 2):
+    get_all_density_plots_all_subsets(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
 
 # for i in range(1, 3):
 #     get_all_density_plots_all_subsets(f"dqn_scaffold_15-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
 
-for i in range(1, 3):
-    get_all_density_plots_all_subsets(f"dqn_scaffold_16-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
-
-for i in range(1, 3):
-    get_all_density_plots_all_subsets(f"dqn_scaffold_17-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
-
-for i in range(1, 3):
-    get_all_density_plots_all_subsets(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
+# for i in range(1, 3):
+#     get_all_density_plots_all_subsets(f"dqn_scaffold_16-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
+#
+# for i in range(1, 3):
+#     get_all_density_plots_all_subsets(f"dqn_scaffold_17-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
+#
+# for i in range(1, 3):
+#     get_all_density_plots_all_subsets(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
 
 
 # VERSION 1

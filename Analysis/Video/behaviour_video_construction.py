@@ -114,6 +114,35 @@ class DrawingBoard:
 
         return action_colour
 
+    def apply_light(self, dark_col, dark_gain, light_gain, visualisation):
+        if dark_col < 0:
+            dark_col = 0
+        if visualisation:
+            if self.light_gradient > 0 and dark_col > 0:
+                gradient = self.chosen_math_library.linspace(dark_gain, light_gain, self.light_gradient)
+                gradient = self.chosen_math_library.expand_dims(gradient, 0)
+                gradient = self.chosen_math_library.repeat(gradient, self.height, 0)
+                gradient = self.chosen_math_library.expand_dims(gradient, 2)
+                self.db_visualisation[:, int(dark_col-(self.light_gradient/2)):int(dark_col+(self.light_gradient/2))] *= gradient
+                self.db_visualisation[:, :int(dark_col-(self.light_gradient/2))] *= dark_gain
+                self.db_visualisation[:, int(dark_col+(self.light_gradient/2)):] *= light_gain
+            else:
+                self.db_visualisation[:, :dark_col] *= dark_gain
+                self.db_visualisation[:, dark_col:] *= light_gain
+
+        else:
+            if self.light_gradient > 0 and dark_col > 0:
+                gradient = self.chosen_math_library.linspace(dark_gain, light_gain, self.light_gradient)
+                gradient = self.chosen_math_library.expand_dims(gradient, 0)
+                gradient = self.chosen_math_library.repeat(gradient, self.height, 0)
+                gradient = self.chosen_math_library.expand_dims(gradient, 2)
+                self.db[:, int(dark_col-(self.light_gradient/2)):int(dark_col+(self.light_gradient/2))] *= gradient
+                self.db[:, :int(dark_col-(self.light_gradient/2))] *= dark_gain
+                self.db[:, int(dark_col+(self.light_gradient/2)):] *= light_gain
+            else:
+                self.db[:, :dark_col] *= dark_gain
+                self.db[:, dark_col:] *= light_gain
+
 
 def draw_previous_actions(board, past_actions, past_positions, fish_angles, continuous_actions=True, n_actions_to_show=50):
     while len(past_actions) > n_actions_to_show:
@@ -261,8 +290,6 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
         else:
             frame = board.db
 
-
-
         frames.append(rescale(copy.copy(frame), scale, multichannel=True, anti_aliasing=True))
         board.db = board.get_base_arena(0.3)
 
@@ -273,11 +300,13 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
     frames *= 255
     make_gif(frames, f"{model_name}-4-behaviour.gif", duration=len(frames) * 0.03, true_image=True)
 
-# model_name = "parameterised_speed_test_fast-1"
-model_name = "ppo_scaffold_version_on_8_se-1"
-model_name = "dqn_scaffold_10-3"
 
-data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
-config_name = "dqn_scaffold_10"
+if __name__ == "__main__":
+    # model_name = "parameterised_speed_test_fast-1"
+    model_name = "ppo_scaffold_version_on_8_se-1"
+    model_name = "dqn_scaffold_10-3"
 
-draw_episode(data, config_name, model_name, continuous_actions=False, show_energy_state=False)
+    data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
+    config_name = "dqn_scaffold_10"
+
+    draw_episode(data, config_name, model_name, continuous_actions=False, show_energy_state=False)
