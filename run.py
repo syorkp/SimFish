@@ -8231,7 +8231,7 @@ dqn_20_naturalistic_data2 = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-7",
+                "assay id": "Naturalistic-27",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,

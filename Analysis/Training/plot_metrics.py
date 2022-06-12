@@ -164,8 +164,6 @@ def plot_multiple_model_metrics(models, window):
     prey_steps = prey_steps[:len(average_prey)]
     pred_steps = pred_steps[:len(average_pred)]
 
-
-
     prey_max = [max([eta_timeseries_prey[m][i] for m, model in enumerate(models)]) for i in range(len(eta_timeseries_prey[0]))]
     prey_min = [min([eta_timeseries_prey[m][i] for m, model in enumerate(models)]) for i in range(len(eta_timeseries_prey[0]))]
     pred_max = [max([eta_timeseries_pred[m][i] for m, model in enumerate(models)]) for i in range(len(eta_timeseries_pred[0]))]
@@ -250,10 +248,10 @@ def get_metrics_for_model(model_name):
         reader = csv.reader(f)
         prey = list(reader)
 
-    # with open(f'Metrics/{model_name}/run-.-tag-predator avoidance index (avoided_p_pred).csv', newline='') as f:
-    #     reader = csv.reader(f)
-    #     pred = list(reader)
-    pred = copy.copy(prey)
+    with open(f'../Data/Metrics/{model_name}/p_pred).csv') as f: #run-.-tag-predator avoidance index (avoided_p_pred).csv', newline='') as f:
+        reader = csv.reader(f)
+        pred = list(reader)
+
     return prey, pred
 
 
