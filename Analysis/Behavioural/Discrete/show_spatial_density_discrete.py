@@ -225,7 +225,7 @@ def create_overlap_plot(cloud_left, cloud_right, feature, action, model_name):
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Feature: {feature}, Action: {action}, N-Samples: {n_samples}")
-    plt.savefig(f"../../Figures/Panels/Panel-4/{action}-{model_name}-{stimulus_name}.jpg")
+    plt.savefig(f"../../Figures/Panels/Panel-4/{action}-{model_name}-{feature}.jpg")
 
     plt.show()
 
@@ -642,8 +642,13 @@ def get_all_density_plots_multiple_models(p1, p2, p3, n, n2):
 # get_all_density_plots_multiple_models(f"dqn_scaffold_14", "Behavioural-Data-Free", "Naturalistic", 10, 4)
 
 # Getting for individual models
+
+# create_j_turn_overlap_plot("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+# create_routine_turn_overlap_plot("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+# create_cstart_overlap_plot("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+get_all_density_plots_all_subsets(f"dqn_scaffold_14-2", "Behavioural-Data-Free", "Naturalistic", 10, return_objects=False)
 for i in range(1, 2):
-    get_all_density_plots_all_subsets(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
     get_all_density_plots_all_subsets(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
 
 get_all_density_plots_all_subsets(f"dqn_scaffold_20-2", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
