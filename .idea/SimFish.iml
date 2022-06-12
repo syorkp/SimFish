@@ -17,6 +17,7 @@
       <excludeFolder url="file://$MODULE_DIR$/Analysis/Data/Action-Choice-Data" />
       <excludeFolder url="file://$MODULE_DIR$/Analysis/Data/Action-Use-Data" />
       <excludeFolder url="file://$MODULE_DIR$/Analysis/Data/Metrics" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Figures/Panels" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

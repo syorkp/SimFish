@@ -7,7 +7,7 @@ from Environment.Fish.eye import Eye
 # from Analysis.Video.behaviour_video_construction import DrawingBoard
 from Tools.drawing_board_new import NewDrawingBoard
 from Analysis.load_data import load_data
-
+from Analysis.Behavioural.Tools.anchored_scale_bar import AnchoredHScaleBar
 
 
 def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_draw):
@@ -24,6 +24,10 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
                             uv_occlusion_gain=env_variables["uv_occlusion_gain"],
                             red2_occlusion_gain=env_variables["red2_occlusion_gain"])
 
+    fish_angle = data["fish_angle"][step_to_draw]
+    fish_position = data["fish_position"][step_to_draw]
+    predator_bodies = np.array([[fish_position[0]+200, fish_position[1]-50]])
+
     # Draw shapes for visualisation
     board.erase_visualisation(0.3)
     board.fish_shape(data["fish_position"][step_to_draw], env_variables['fish_mouth_size'],
@@ -39,8 +43,6 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
 
     board.db_visualisation[rrs, ccs] = (0, 0, 1)
 
-    if data["predator_presence"][step_to_draw]:
-        board.circle(data["predator_positions"][step_to_draw], env_variables['predator_size'], (0, 1, 0))
 
     relative_dark_gain = env_variables["dark_gain"] / env_variables["light_gain"]
     board.apply_light(int(env_variables['width'] * env_variables['dark_light_ratio']), relative_dark_gain, 1, visualisation=True)
@@ -50,7 +52,7 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
     board.db_visualisation[env_variables["width"] - 10:, :] = [1, 0, 0]
     board.db_visualisation[:, :10] = [1, 0, 0]
     board.db_visualisation[:, env_variables["height"] - 10:] = [1, 0, 0]
-
+    board.circle(predator_bodies[0], env_variables['predator_size'], (0, 1, 0), visualisation=True)
 
     # Draw shapes for image
     board.erase(env_variables['bkg_scatter'])
@@ -68,10 +70,16 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
     board.db[rrs, ccs] = (0, 0, 1)
 
 
-    # Show visualisation
-
-    plt.figure(figsize=(10, 10))
+    # Show visualisation of whole environment
+    fig, ax = plt.subplots(figsize=(15, 15), dpi=100)
     plt.imshow(board.db_visualisation)
+    ob = AnchoredHScaleBar(size=200, label="20mm", loc=4, frameon=True,
+                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
+    ax.add_artist(ob)
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+    plt.savefig("./Panels/Panel-1/full_arena.jpg")
+
     plt.show()
 
     # Also create image of zoomed in of fish
@@ -81,7 +89,14 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
                                                      int(data["fish_position"][step_to_draw, 0] - buffer):
                                                      int(data["fish_position"][step_to_draw, 0] + buffer),
                                                     ]
+    fig, ax = plt.subplots(figsize=(15, 15), dpi=100)
     plt.imshow(surrounding_fish_region)
+    ob = AnchoredHScaleBar(size=200, label="20mm", loc=4, frameon=True,
+                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
+    ax.add_artist(ob)
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+    plt.savefig("./Panels/Panel-1/surrounding_fish_region.jpg")
     plt.show()
 
 
@@ -92,9 +107,6 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
     test_eye_l = Eye(board, verg_angle, retinal_field, True, env_variables, dark_col, False)
     test_eye_r = Eye(board, verg_angle, retinal_field, False, env_variables, dark_col, False)
 
-    fish_angle = data["fish_angle"][step_to_draw]
-    fish_position = data["fish_position"][step_to_draw]
-
     right_eye_pos = (
         -np.cos(np.pi / 2 - fish_angle) * env_variables['eyes_biasx'] + data["fish_position"][step_to_draw, 0],
         +np.sin(np.pi / 2 - fish_angle) * env_variables['eyes_biasx'] + data["fish_position"][step_to_draw, 1])
@@ -104,7 +116,6 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
 
     arena = np.zeros((1500, 1500))
 
-    predator_bodies = np.array([[fish_position[0]-100, fish_position[1]+75]])
     full_masked_image = board.get_masked_pixels(np.array([data["fish_position"][step_to_draw][0], data["fish_position"][step_to_draw][1]]),
                                                 data["prey_positions"][step_to_draw],
                                                 predator_bodies
@@ -143,19 +154,26 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
     uv_points = np.unique(np.reshape(uv_points, (-1, 2)), axis=0)
     arena[uv_points[:, 1], uv_points[:, 0]] = 1
 
-    plt.figure(figsize=(15, 15), dpi=100)
+    fig, ax = plt.subplots(figsize=(15, 15), dpi=100)
     plt.imshow(arena)
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
     plt.show()
 
     board.db_visualisation[uv_points[:, 1], uv_points[:, 0], 0:2] += 0.3
-    plt.figure(figsize=(15, 15), dpi=100)
+    fig, ax = plt.subplots(figsize=(15, 15), dpi=100)
     plt.imshow(board.db_visualisation)
+    ob = AnchoredHScaleBar(size=200, label="20mm", loc=4, frameon=True,
+                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
+    ax.add_artist(ob)
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+    plt.savefig("./Panels/Panel-1/arena_with_channels.jpg")
     plt.show()
 
     # Get observation for the given step.
     test_eye_l.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], fish_angle)
     test_eye_r.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], fish_angle)
-
 
     photons_l = np.floor(test_eye_l.readings).astype(int)
     photons_l = np.concatenate((photons_l[:, 0:1], photons_l[:, 2:3], photons_l[:, 1:2]), axis=1)
@@ -170,13 +188,22 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
     photons_r = np.expand_dims(photons_r, 0)
     photons_r = np.repeat(photons_r, 20, 0)
 
-    fig, axs = plt.subplots(1, 2)
+    fig, axs = plt.subplots(1, 2, figsize=(10, 4))
     axs[0].imshow(photons_l)
     axs[1].imshow(photons_r)
+    axs[0].axes.get_yaxis().set_visible(False)
+    axs[1].axes.get_yaxis().set_visible(False)
+    axs[0].axes.get_xaxis().set_visible(False)
+    axs[1].axes.get_xaxis().set_visible(False)
+    plt.savefig("./Panels/Panel-1/observation.jpg")
     plt.show()
 
     # Show background
+    fig, ax = plt.subplots(figsize=(15, 15), dpi=100)
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
     plt.imshow(board.background_grating)
+    plt.savefig("./Panels/Panel-1/background.jpg")
     plt.show()
 
 
@@ -185,23 +212,86 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
                                                 data["prey_positions"][step_to_draw],
                                                 predator_bodies, return_masks=True)
     # Rearrange AB
+    fig, ax = plt.subplots(figsize=(15, 15), dpi=100)
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
     plt.imshow(AB)
+    plt.savefig("./Panels/Panel-1/AB.jpg")
     plt.show()
 
+    L = np.swapaxes(L, 0, 1)
+    fig, ax = plt.subplots(figsize=(15, 15), dpi=100)
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
     plt.imshow(L)
+    plt.savefig("./Panels/Panel-1/L.jpg")
     plt.show()
 
+    O = O[:, :, 0]
+    fig, ax = plt.subplots(figsize=(15, 15), dpi=100)
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
     plt.imshow(O)
+    plt.savefig("./Panels/Panel-1/O.jpg")
     plt.show()
 
+    fig, ax = plt.subplots(figsize=(15, 15), dpi=100)
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
     plt.imshow(S)
+    plt.savefig("./Panels/Panel-1/S.jpg")
+    plt.show()
+
+    # Get observation for the given step without any shot noise
+    board.erase(0)
+    board.fish_shape(data["fish_position"][step_to_draw], env_variables['fish_mouth_size'],
+                     env_variables['fish_head_size'], env_variables['fish_tail_length'],
+                     (0, 1, 0), fish_body_colour, data["fish_angle"][step_to_draw])
+
+    px = np.round(np.array([pr[0] for pr in data["prey_positions"][step_to_draw]])).astype(int)
+    py = np.round(np.array([pr[1] for pr in data["prey_positions"][step_to_draw]])).astype(int)
+    rrs, ccs = board.multi_circles(px, py, env_variables["prey_size"])
+
+    rrs = np.clip(rrs, 0, 1499)
+    ccs = np.clip(ccs, 0, 1499)
+
+    board.db[rrs, ccs] = (0, 0, 1)
+
+    full_masked_image = board.get_masked_pixels(np.array([data["fish_position"][step_to_draw][0], data["fish_position"][step_to_draw][1]]),
+                                                data["prey_positions"][step_to_draw],
+                                                predator_bodies
+                                                )
+
+    test_eye_l.env_variables["show_noise"] = False
+    test_eye_r.env_variables["show_noise"] = False
+    test_eye_l.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], fish_angle)
+    test_eye_r.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], fish_angle)
+
+    photons_l = np.floor(test_eye_l.readings).astype(int)
+    photons_l = np.concatenate((photons_l[:, 0:1], photons_l[:, 2:3], photons_l[:, 1:2]), axis=1)
+    photons_l = photons_l.clip(0, 255)
+
+    photons_r = np.floor(test_eye_r.readings).astype(int)
+    photons_r = np.concatenate((photons_r[:, 0:1], photons_r[:, 2:3], photons_r[:, 1:2]), axis=1)
+    photons_r = photons_r.clip(0, 255)
+
+    photons_l = np.expand_dims(photons_l, 0)
+    photons_l = np.repeat(photons_l, 20, 0)
+    photons_r = np.expand_dims(photons_r, 0)
+    photons_r = np.repeat(photons_r, 20, 0)
+
+    fig, axs = plt.subplots(1, 2, figsize=(10, 4))
+    axs[0].imshow(photons_l)
+    axs[1].imshow(photons_r)
+    axs[0].axes.get_yaxis().set_visible(False)
+    axs[1].axes.get_yaxis().set_visible(False)
+    axs[0].axes.get_xaxis().set_visible(False)
+    axs[1].axes.get_xaxis().set_visible(False)
+    plt.savefig("./Panels/Panel-1/observation_no_noise.jpg")
     plt.show()
 
 
-    # TODO: Get rid of ticks and instead show scale bar.
-
-
-visualise_environent_at_step("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic-3", 54)
+visualise_environent_at_step("dqn_scaffold_18-2", "Behavioural-Data-Free", "Naturalistic-3", 56)
 
 
 
