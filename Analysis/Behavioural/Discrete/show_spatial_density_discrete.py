@@ -255,139 +255,188 @@ def create_j_turn_overlap_plot(p1, p2, p3, n, return_objects):
 
 def create_routine_turn_overlap_plot(p1, p2, p3, n, return_objects):
     prey_cloud_left = []
+    pred_cloud_left = []
     for i in range(1, n+1):
         data = load_data(p1, p2, f"{p3}-{i}")
         prey_1, pred_1 = get_clouds_with_action(data, 1)
         prey_cloud_left = prey_cloud_left + prey_1
+        pred_cloud_left = pred_cloud_left + pred_1
     prey_cloud_right = []
+    pred_cloud_right = []
     for i in range(1, n+1):
         data = load_data(p1, p2, f"{p3}-{i}")
         prey_1, pred_1 = get_clouds_with_action(data, 2)
         prey_cloud_right = prey_cloud_right + prey_1
-    n_samples = len(prey_cloud_left) + len(prey_cloud_right)
-    # For left
-    x = np.array([i[0] for i in prey_cloud_left])
-    y = np.array([i[1] for i in prey_cloud_left])
-    #y = np.negative(y)
-    nbins = 300
-    try:
-        k = kde.gaussian_kde([y, x])
-    except ValueError:
-        return
-    yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
+        pred_cloud_right = pred_cloud_right + pred_1
 
-    zi = k(np.vstack([xi.flatten(), yi.flatten()]))
-
-    # For right
-    x = np.array([i[0] for i in prey_cloud_right])
-    y = np.array([i[1] for i in prey_cloud_right])
-    #y = np.negative(y)
-    nbins = 300
-    try:
-        k = kde.gaussian_kde([y, x])
-    except ValueError:
-        return
-    zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
-
-    zi = zi2 - zi
-
-    fig, ax = plt.subplots()
-
-    pcm = ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
-
-    ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
-                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
-    ax.add_artist(ob)
-
-
-    ax = draw_fish(300, 220, 4, 2.5, 41.5, ax)
-    ax.set_xlim(0, 600)
-    ax.set_ylim(-80, 520)
-    # ax = draw_fish(-300, 220, 4, 2.5, 41.5, ax)
-    # ax.set_xlim(-600, 0)
-    # ax.set_ylim(-80, 520)
-
-    fig.colorbar(pcm)
-
-    ax.axes.get_xaxis().set_visible(False)
-    ax.axes.get_yaxis().set_visible(False)
-    plt.title(f"Feature: Prey, Action: Routine turns, N-Samples: {n_samples}")
+    create_overlap_plot(prey_cloud_left, prey_cloud_right, "Prey", "RT")
+    create_overlap_plot(pred_cloud_left, pred_cloud_right, "Predators", "RT")
 
     if return_objects:
         plt.clf()
-        return ax
+        return None
     else:
-        plt.show()
+        return
+
+    # prey_cloud_left = []
+    # for i in range(1, n+1):
+    #     data = load_data(p1, p2, f"{p3}-{i}")
+    #     prey_1, pred_1 = get_clouds_with_action(data, 1)
+    #     prey_cloud_left = prey_cloud_left + prey_1
+    # prey_cloud_right = []
+    # for i in range(1, n+1):
+    #     data = load_data(p1, p2, f"{p3}-{i}")
+    #     prey_1, pred_1 = get_clouds_with_action(data, 2)
+    #     prey_cloud_right = prey_cloud_right + prey_1
+    # n_samples = len(prey_cloud_left) + len(prey_cloud_right)
+    # # For left
+    # x = np.array([i[0] for i in prey_cloud_left])
+    # y = np.array([i[1] for i in prey_cloud_left])
+    # #y = np.negative(y)
+    # nbins = 300
+    # try:
+    #     k = kde.gaussian_kde([y, x])
+    # except ValueError:
+    #     return
+    # yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
+    #
+    # zi = k(np.vstack([xi.flatten(), yi.flatten()]))
+    #
+    # # For right
+    # x = np.array([i[0] for i in prey_cloud_right])
+    # y = np.array([i[1] for i in prey_cloud_right])
+    # #y = np.negative(y)
+    # nbins = 300
+    # try:
+    #     k = kde.gaussian_kde([y, x])
+    # except ValueError:
+    #     return
+    # zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
+    #
+    # zi = zi2 - zi
+    #
+    # fig, ax = plt.subplots()
+    #
+    # pcm = ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
+    #
+    # ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
+    #                        pad=0.6, sep=4, linekw=dict(color="crimson"), )
+    # ax.add_artist(ob)
+    #
+    #
+    # ax = draw_fish(300, 220, 4, 2.5, 41.5, ax)
+    # ax.set_xlim(0, 600)
+    # ax.set_ylim(-80, 520)
+    # # ax = draw_fish(-300, 220, 4, 2.5, 41.5, ax)
+    # # ax.set_xlim(-600, 0)
+    # # ax.set_ylim(-80, 520)
+    #
+    # fig.colorbar(pcm)
+    #
+    # ax.axes.get_xaxis().set_visible(False)
+    # ax.axes.get_yaxis().set_visible(False)
+    # plt.title(f"Feature: Prey, Action: Routine turns, N-Samples: {n_samples}")
+    #
+    # if return_objects:
+    #     plt.clf()
+    #     return ax
+    # else:
+    #     plt.show()
 
 
 def create_cstart_overlap_plot(p1, p2, p3, n, return_objects):
     prey_cloud_left = []
+    pred_cloud_left = []
     for i in range(1, n+1):
-        if i < 11:
-            data = load_data(p1, f"{p2}-2", f"{p3}-{i}")
-        else:
-            print(i)
-            data = load_data(p1, p2, f"{p3}-{i}")
-        prey_1, pred_1 = get_clouds_with_action(data, 7)
+        data = load_data(p1, p2, f"{p3}-{i}")
+        prey_1, pred_1 = get_clouds_with_action(data, 4)
         prey_cloud_left = prey_cloud_left + prey_1
+        pred_cloud_left = pred_cloud_left + pred_1
     prey_cloud_right = []
+    pred_cloud_right = []
     for i in range(1, n+1):
-        if i < 11: continue
-            # data = load_data(p1, f"{p2}-2", f"{p3} {i}")
-        else:
-            data = load_data(p1, p2, f"{p3} {i}")
-        prey_1, pred_1 = get_clouds_with_action(data, 8)
+        data = load_data(p1, p2, f"{p3}-{i}")
+        prey_1, pred_1 = get_clouds_with_action(data, 5)
         prey_cloud_right = prey_cloud_right + prey_1
-    n_samples = len(prey_cloud_left) + len(prey_cloud_right)
-    # For left
-    x = np.array([i[0] for i in prey_cloud_left])
-    y = np.array([i[1] for i in prey_cloud_left])
-    #y = np.negative(y)
-    nbins = 300
-    try:
-        k = kde.gaussian_kde([y, x])
-    except ValueError:
-        return
-    yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
+        pred_cloud_right = pred_cloud_right + pred_1
 
-    zi = k(np.vstack([xi.flatten(), yi.flatten()]))
-
-    # For right
-    x = np.array([i[0] for i in prey_cloud_right])
-    y = np.array([i[1] for i in prey_cloud_right])
-    #y = np.negative(y)
-    nbins = 300
-    try:
-        k = kde.gaussian_kde([y, x])
-    except ValueError:
-        return
-    zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
-
-    zi = zi - zi2
-    # Make the plot
-    fig, ax = plt.subplots()
-
-    pcm = ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
-
-    ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
-                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
-    ax.add_artist(ob)
-
-    ax = draw_fish(300, 220, 4, 2.5, 41.5, ax)
-    ax.set_xlim(0, 600)
-    ax.set_ylim(-80, 520)
-
-    fig.colorbar(pcm)
-
-    ax.axes.get_xaxis().set_visible(False)
-    ax.axes.get_yaxis().set_visible(False)
-    plt.title(f"Feature: Predator, Action: C-Starts, N-Samples: {n_samples}")
+    create_overlap_plot(prey_cloud_left, prey_cloud_right, "Prey", "C-Start")
+    create_overlap_plot(pred_cloud_left, pred_cloud_right, "Predators", "C-Start")
 
     if return_objects:
         plt.clf()
-        return ax
+        return None
     else:
-        plt.show()
+        return
+
+    #
+    # prey_cloud_left = []
+    # for i in range(1, n+1):
+    #     if i < 11:
+    #         data = load_data(p1, f"{p2}-2", f"{p3}-{i}")
+    #     else:
+    #         print(i)
+    #         data = load_data(p1, p2, f"{p3}-{i}")
+    #     prey_1, pred_1 = get_clouds_with_action(data, 7)
+    #     prey_cloud_left = prey_cloud_left + prey_1
+    # prey_cloud_right = []
+    # for i in range(1, n+1):
+    #     if i < 11: continue
+    #         # data = load_data(p1, f"{p2}-2", f"{p3} {i}")
+    #     else:
+    #         data = load_data(p1, p2, f"{p3} {i}")
+    #     prey_1, pred_1 = get_clouds_with_action(data, 8)
+    #     prey_cloud_right = prey_cloud_right + prey_1
+    # n_samples = len(prey_cloud_left) + len(prey_cloud_right)
+    # # For left
+    # x = np.array([i[0] for i in prey_cloud_left])
+    # y = np.array([i[1] for i in prey_cloud_left])
+    # #y = np.negative(y)
+    # nbins = 300
+    # try:
+    #     k = kde.gaussian_kde([y, x])
+    # except ValueError:
+    #     return
+    # yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
+    #
+    # zi = k(np.vstack([xi.flatten(), yi.flatten()]))
+    #
+    # # For right
+    # x = np.array([i[0] for i in prey_cloud_right])
+    # y = np.array([i[1] for i in prey_cloud_right])
+    # #y = np.negative(y)
+    # nbins = 300
+    # try:
+    #     k = kde.gaussian_kde([y, x])
+    # except ValueError:
+    #     return
+    # zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
+    #
+    # zi = zi - zi2
+    # # Make the plot
+    # fig, ax = plt.subplots()
+    #
+    # pcm = ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
+    #
+    # ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
+    #                        pad=0.6, sep=4, linekw=dict(color="crimson"), )
+    # ax.add_artist(ob)
+    #
+    # ax = draw_fish(300, 220, 4, 2.5, 41.5, ax)
+    # ax.set_xlim(0, 600)
+    # ax.set_ylim(-80, 520)
+    #
+    # fig.colorbar(pcm)
+    #
+    # ax.axes.get_xaxis().set_visible(False)
+    # ax.axes.get_yaxis().set_visible(False)
+    # plt.title(f"Feature: Predator, Action: C-Starts, N-Samples: {n_samples}")
+    #
+    # if return_objects:
+    #     plt.clf()
+    #     return ax
+    # else:
+    #     plt.show()
 
 
 def create_j_turn_overlap_plot_multiple_models(p1, p2, p3, n, n2):
@@ -595,7 +644,7 @@ def get_all_density_plots_multiple_models(p1, p2, p3, n, n2):
 
     # get_all_density_plots_all_subsets(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
 
-get_all_density_plots_all_subsets(f"dqn_scaffold_20-2", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+get_all_density_plots_all_subsets(f"dqn_scaffold_20-2", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
 
 
 
