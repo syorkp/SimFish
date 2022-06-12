@@ -8095,7 +8095,7 @@ dqn_20_naturalistic_data = [
         "Model Name": "dqn_scaffold_20",
         "Environment Name": "dqn_20_2",
         "Assay Configuration Name": "Behavioural-Data-Free",
-        "Trial Number": 1,
+        "Trial Number": 2,
         "Checkpoint": None,
         "Run Mode": "Assay",
         "Tethered": False,
@@ -8498,5 +8498,5 @@ dqn_20_naturalistic_data = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_19b, parallel_jobs=3)  # TODO: Change back
+manager = TrialManager(dqn_20_naturalistic_data, parallel_jobs=1)  # TODO: Change back
 manager.run_priority_loop()
