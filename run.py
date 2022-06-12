@@ -8090,7 +8090,7 @@ dqn_18_extra = [
     },
 ]
 
-dqn_20_naturalistic_data = [
+dqn_20_naturalistic_data2 = [
     {
         "Model Name": "dqn_scaffold_20",
         "Environment Name": "dqn_20_2",
@@ -8111,7 +8111,7 @@ dqn_20_naturalistic_data = [
         "New Simulation": True,
         "Assays": [
             {
-                "assay id": "Naturalistic-1",
+                "assay id": "Naturalistic-21",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8131,7 +8131,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-2",
+                "assay id": "Naturalistic-22",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8151,7 +8151,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-3",
+                "assay id": "Naturalistic-23",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8171,7 +8171,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-4",
+                "assay id": "Naturalistic-24",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8191,7 +8191,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-5",
+                "assay id": "Naturalistic-25",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8211,7 +8211,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-6",
+                "assay id": "Naturalistic-26",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8251,7 +8251,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-8",
+                "assay id": "Naturalistic-28",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8271,7 +8271,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-9",
+                "assay id": "Naturalistic-29",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8291,7 +8291,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-10",
+                "assay id": "Naturalistic-30",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8311,7 +8311,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-11",
+                "assay id": "Naturalistic-31",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8329,7 +8329,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-12",
+                "assay id": "Naturalistic-32",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8347,7 +8347,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-13",
+                "assay id": "Naturalistic-33",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8365,7 +8365,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-14",
+                "assay id": "Naturalistic-34",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8383,7 +8383,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-15",
+                "assay id": "Naturalistic-35",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8401,7 +8401,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-16",
+                "assay id": "Naturalistic-36",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8419,7 +8419,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-17",
+                "assay id": "Naturalistic-37",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8437,7 +8437,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-18",
+                "assay id": "Naturalistic-38",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8455,7 +8455,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-19",
+                "assay id": "Naturalistic-39",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8473,7 +8473,7 @@ dqn_20_naturalistic_data = [
                 "ablations": []
             },
             {
-                "assay id": "Naturalistic-20",
+                "assay id": "Naturalistic-40",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -8498,5 +8498,5 @@ dqn_20_naturalistic_data = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_20_naturalistic_data, parallel_jobs=1)  # TODO: Change back
+manager = TrialManager(dqn_20_naturalistic_data2, parallel_jobs=1)  # TODO: Change back
 manager.run_priority_loop()

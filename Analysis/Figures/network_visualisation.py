@@ -7,11 +7,11 @@ from Analysis.load_data import load_data
 
 def create_conv_layer_diagram(width, height):
     fig, ax = plt.subplots()
-    layer = plt.Polygon(np.array([[0, 0], [0, height], [width, height], [width, 0]]))
+    layer = plt.Polygon(np.array([[0, 0], [0, height], [width, height], [width, 0]]), hatch="/")
     ax.add_patch(layer)
     plt.axis("scaled")
     plt.axis('off')
-
+    plt.savefig(f"./Panels/Panel-2/conv-{width}-{height}.jpg")
     plt.show()
 
 
@@ -19,7 +19,7 @@ def create_neuron_layer_diagram(width, n_units, recurrent=False):
     area_available = width/n_units
     height = area_available
 
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(20, 2))
     layer = plt.Polygon(np.array([[0, 0], [0, height], [width, height], [width, 0]]), fc="white", ec="red")
     ax.add_patch(layer)
 
@@ -37,21 +37,36 @@ def create_neuron_layer_diagram(width, n_units, recurrent=False):
 
     plt.axis("scaled")
     plt.axis('off')
+    plt.savefig(f"./Panels/Panel-2/neuron-recurrent={recurrent}.jpg")
 
     plt.show()
 
 
 def show_energy_state(data, datapoint_index):
-    plt.plot(data["energy_state"])
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.plot(data["energy_state"])
 
     et = data["energy_state"][datapoint_index]
+    consumption_timepoints = [i for i, c in enumerate(data["consumed"]) if c == 1]
     plt.hlines(et, 0, datapoint_index, colors="r")
     plt.vlines(datapoint_index, 0, et, colors="r")
 
+    for c in consumption_timepoints:
+        plt.vlines(c, 0, data["energy_state"][c], linestyles="dashed")
+
     plt.margins(x=0, y=0)
+    plt.ylabel("Energy State", size=15)
+    plt.xlabel("Step", size=15)
+    plt.savefig(f"./Panels/Panel-2/energy_state.jpg")
+
     plt.show()
 
 
-create_neuron_layer_diagram(100, 10, True)
-dat = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic-1")
-show_energy_state(dat, 1000)
+create_conv_layer_diagram(80, 40)
+create_conv_layer_diagram(40, 20)
+create_conv_layer_diagram(40, 10)
+create_conv_layer_diagram(100, 10)
+create_neuron_layer_diagram(300, 20, False)
+create_neuron_layer_diagram(300, 20, True)
+dat = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic-4")
+show_energy_state(dat, 550)

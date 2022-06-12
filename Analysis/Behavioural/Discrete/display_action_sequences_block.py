@@ -45,24 +45,39 @@ def display_average_sequence(sequences):
     # plt.show()
 
 
+def remove_sCS_heavy(sequences, max_sCS=7):
+    new_sequences = []
+    for sequence in sequences:
+        if sequence.count(3) > max_sCS:
+            pass
+        else:
+            new_sequences.append(sequence)
+    return new_sequences
+
 # VERSION 2
 # Capture sequences
 # compiled_capture_sequences = []
-for i in range(1, 3):
-    capture_sequences = get_capture_sequences(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
-    # For each model
-    display_all_sequences(capture_sequences, indicate_consumption=True)
-    # compiled_capture_sequences += capture_sequences
+# capture_sequences = get_capture_sequences(f"dqn_scaffold_18x-1", "Behavioural-Data-Free", "Naturalistic", 10)
+# capture_sequences = remove_sCS_heavy(capture_sequences)
+#
+# for i in range(1, 2):
+#     capture_sequences += get_capture_sequences(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", "Naturalistic", 20)
+#     capture_sequences = remove_sCS_heavy(capture_sequences)
+#     # Filter those with too many sCS
+#
+#     # For each model
+#     display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=True, figure_name="dqn_scaffold_18_captures")
+#     # compiled_capture_sequences += capture_sequences
 
 # Combined across models
 # display_all_sequences(compiled_capture_sequences)
 
 # Exploration sequences
 # compiled_exploration_sequences = []
-# for i in range(1, 3):
-#     exploration_sequences = get_exploration_sequences(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
-#     display_all_sequences(exploration_sequences, min_length=50, max_length=150)
-#     compiled_exploration_sequences += exploration_sequences
+for i in range(1, 2):
+    exploration_sequences = get_exploration_sequences(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", "Naturalistic", 20)
+    display_all_sequences(exploration_sequences, min_length=50, max_length=50)
+    # compiled_exploration_sequences += exploration_sequences
 
 # display_all_sequences(compiled_exploration_sequences, min_length=50, max_length=150)
 

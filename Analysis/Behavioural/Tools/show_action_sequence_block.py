@@ -18,7 +18,7 @@ def display_sequences(sequences):
     plt.show()
 
 
-def display_all_sequences(sequences, min_length=None, max_length=None, indicate_consumption=False):
+def display_all_sequences(sequences, min_length=None, max_length=None, indicate_consumption=False, save_figure=True, figure_name=None):
     sns.set()
     sequences.sort(key=len)
     plot_dim = max([len(seq) for seq in sequences])
@@ -40,6 +40,11 @@ def display_all_sequences(sequences, min_length=None, max_length=None, indicate_
                 continue
         if max_length is not None:
             if len(seq) > max_length:
+                for j, a in enumerate(reversed(seq[:max_length])):
+                    j = plot_dim - j
+                    ax.fill_between((j, j + 1), i, i + 1, color=color_set[a])
+                    used_sequences.append(seq)
+
                 continue
         for j, a in enumerate(reversed(seq)):
             j = plot_dim - j
