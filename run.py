@@ -8541,5 +8541,5 @@ dqn_20_naturalistic_data2b = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_20_naturalistic_data2b, parallel_jobs=1)  # TODO: Change back
+manager = TrialManager(ppo_scaffold_18, parallel_jobs=3)  # TODO: Change back
 manager.run_priority_loop()

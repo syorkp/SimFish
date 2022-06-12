@@ -84,6 +84,7 @@ def plot_pci_multiple_models(model_names, window, window2=4):
         min_line.append(lines[PCIs.index(min(PCIs))])
 
     # To clean up error bars, go through each trace, following that one along while it is the minimum.
+    for s in flattened_steps:
 
 
     # Main trace
