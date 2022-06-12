@@ -8533,9 +8533,10 @@ dqn_20_naturalistic_data2b = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "ablations": [],
+            }
             ],
-            "Full Reafference": True,
+        "Full Reafference": True,
     },
 ]
                                 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
