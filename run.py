@@ -8495,8 +8495,49 @@ dqn_20_naturalistic_data2 = [
     },
 
 ]
-
-
-print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_20_naturalistic_data2, parallel_jobs=1)  # TODO: Change back
+dqn_20_naturalistic_data2b = [
+    {
+        "Model Name": "dqn_scaffold_20",
+        "Environment Name": "dqn_20_2",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 2,
+        "Checkpoint": None,
+        "Run Mode": "Assay",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "set random seed": False,
+        "New Simulation": True,
+        "Assays": [
+            {
+                "assay id": "Naturalistic-27",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 2000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "energy_state_control": False,
+                "salt_control": False,
+                "ablations": []
+            ],
+            "Full Reafference": True,
+    },
+]
+                                print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+manager = TrialManager(dqn_20_naturalistic_data2b, parallel_jobs=1)  # TODO: Change back
 manager.run_priority_loop()

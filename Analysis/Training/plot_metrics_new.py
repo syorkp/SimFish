@@ -72,7 +72,6 @@ def plot_pci_multiple_models(model_names, window, window2=4):
                 PCIs.append(pci_at_step)
             else:
                 pass
-        if len
 
         max_pci_all_steps.append(max(PCIs))
         min_pci_all_steps.append(min(PCIs))
