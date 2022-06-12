@@ -86,16 +86,14 @@ def plot_pci_multiple_models(model_names, window, window2=4):
     # To clean up error bars, go through each trace, following that one along while it is the minimum.
     new_min_line = []
     new_max_line = []
-    streak_length = 1
-    max_line_streak = []
     for i, s in enumerate(flattened_steps):
-        if i == 0:
-            continue
-        if max_line[i] != max_line[-1]:
-            max_line_streak.append(streak_length)
-            streak_length = 1
+        if i < 10:
+            pass
         else:
-            streak_length += 1
+            min_in_window = min(min_pci_all_steps[i-10:i])
+            new_min_line.append(min_in_window)
+            max_in_window = max(max_pci_all_steps[i-10:i])
+            new_max_line.append(max_in_window)
 
     # Main trace
     model_name = model_names[0]
