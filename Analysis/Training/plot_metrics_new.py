@@ -62,19 +62,29 @@ def plot_pci_multiple_models(model_names, window, window2=4):
     plt.show()
 
     flattened_steps = sorted([x for xi in steps_for_each for x in xi])
+
     max_pci_all_steps = []
     min_pci_all_steps = []
+    min_line = []
+    max_line = []
     for i, s in enumerate(flattened_steps):
         PCIs = []
+        lines = []
         for m in range(len(model_names)):
             if s in steps_for_each[m]:
                 pci_at_step = PCI_for_each[m][steps_for_each[m].index(s)]
                 PCIs.append(pci_at_step)
+                lines.append(m)
             else:
                 pass
 
         max_pci_all_steps.append(max(PCIs))
+        max_line.append(lines[PCIs.index(max(PCIs))])
         min_pci_all_steps.append(min(PCIs))
+        min_line.append(lines[PCIs.index(min(PCIs))])
+
+    # To clean up error bars, go through each trace, following that one along while it is the minimum.
+
 
     # Main trace
     model_name = model_names[0]
@@ -98,6 +108,8 @@ def plot_pci_multiple_models(model_names, window, window2=4):
     for c in normalised_switching_points:
         # TODO: Add contingency to only plot important switching points.
         plt.vlines(c, 0, max_pci, colors="r")
+
+
 
 
     plt.fill_between(flattened_steps[:-window2], min_pci_all_steps, max_pci_all_steps, color="b", alpha=0.5)
