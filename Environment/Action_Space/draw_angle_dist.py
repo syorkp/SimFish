@@ -38,10 +38,12 @@ def display_pdf_and_cdf(bout_id):
         plt.title(label=bout_id+1)
 
         plt.subplot(212)
-        plt.plot(angles[bout_id, :], p_angle[bout_id, :] / np.sum(p_angle[bout_id, :]))
+        plt.plot(angles[bout_id, :]*np.pi/180, p_angle[bout_id, :] / np.sum(p_angle[bout_id, :]))
 
-        plt.xlabel('Angle (degrees)')
+        # plt.xlabel('Angle (degrees)')
+        plt.xlabel('Angle (pi radians)')
         plt.ylabel('Probability Density')
+        plt.savefig(f"Angle draw-{bout_id}")
 
         plt.show()
 
@@ -56,6 +58,7 @@ def display_pdf_and_cdf(bout_id):
         plt.plot(dists[bout_id, :], p_dist[bout_id, :] / np.sum(p_dist[bout_id, :]))
         plt.xlabel('Distance (mm)')
         plt.ylabel('Probability Density')
+        plt.savefig(f"Distance draw-{bout_id}")
 
         plt.show()
 
@@ -120,4 +123,4 @@ if __name__ == "__main__":
         # angle, dist = draw_angle_dist(i)
         # print(angle, dist)
 
-    plot_full_scatter_of_poss_actions()
+    # plot_full_scatter_of_poss_actions()

@@ -10,7 +10,7 @@ Should, given two indexes, give the full action sequence of the fish within.
 
 def extract_predator_action_sequences(data):
     """Returns all action sequences that occur while a predator is present"""
-    predator_timestamps = [i for i, a in enumerate(data["predator"]) if a == 1]
+    predator_timestamps = [i for i, a in enumerate(data["predator_presence"]) if a == 1]
     predator_sequence_timestamps = []
     current_sequence = []
     prev = 0

@@ -33,10 +33,11 @@ def get_event_triggered_average(data, event_name):
 
 
 def get_action_triggered_average(data):
-    action_triggered_averages = {str(i): [0 for i in range(len(data["rnn state"][0][0]))] for i in range(10)}
+    x = [0 for i in range(len(data["rnn_state_actor"][0][0][0]))]
+    action_triggered_averages = {str(i): [0 for i in range(len(data["rnn_state_actor"][0][0][0]))] for i in range(10)}
     action_counts = {str(i): 0 for i in range(10)}
-    neuron_baseline = [np.mean(data["rnn state"][:, :, i]) for i in range(len(data["rnn state"][0][0]))]
-    for a, n in zip(data["behavioural choice"], np.squeeze(data["rnn state"])):
+    neuron_baseline = [np.mean(data["rnn_state_actor"][:, :, :, i]) for i in range(len(data["rnn_state_actor"][0][0][0]))]
+    for a, n in zip(data["action"], np.squeeze(data["rnn_state_actor"])):
         for i, nn in enumerate(n):
             action_triggered_averages[str(a)][i] += nn
         action_counts[str(a)] += 1
@@ -247,6 +248,13 @@ def get_indexes_of_max(ex, total=100):
     plt.show()
     return hundred_most_associated
 
+# VERSION 2
+
+
+
+
+
+# VERSION 1
 
 # data = load_data("new_differential_prey_ref-4", "Behavioural-Data-Free-1", "Naturalistic-1")
 # ex = get_eta(data, "exploration")

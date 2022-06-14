@@ -291,8 +291,9 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
     plt.show()
 
 
-visualise_environent_at_step("dqn_scaffold_18-2", "Behavioural-Data-Free", "Naturalistic-3", 56)
+# visualise_environent_at_step("dqn_scaffold_18-2", "Behavioural-Data-Free", "Naturalistic-3", 56)
 
+visualise_environent_at_step("dqn_scaffold_18-2", "Behavioural-Data-Free", "Naturalistic-4", 56)
 
 
 

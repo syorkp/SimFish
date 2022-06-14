@@ -4,6 +4,7 @@ import numpy as np
 import math
 import seaborn as sns
 import json
+import scipy.stats as stats
 
 from Analysis.Neural.ETA.event_triggered_averages import get_full_eta_timeseries, get_for_specific_neurons, get_full_eta, get_average_timeseries, get_full_action_triggered_average
 from Analysis.Neural.VRV.calculate_vrv import normalise_vrvs
@@ -282,8 +283,6 @@ def display_eta_timeseries_overlay(timeseries_list):
     plt.axvline(x=0, c="r")
     plt.show()
 
-import scipy.stats as stats
-
 
 def check_separation(group1, group2):
     plt.figure()
@@ -292,6 +291,14 @@ def check_separation(group1, group2):
     plt.show()
     print(stats.f_oneway(group1, group2))
 
+
+# VERSION 2
+
+ata = get_full_action_triggered_average("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20)
+plot_average_action_scores_comparison([ata], ["All"], [ata])
+
+
+# VERSION 1
 
 # with open(f"../../Categorisation-Data/latest_even.json", 'r') as f:
 #     data2 = json.load(f)

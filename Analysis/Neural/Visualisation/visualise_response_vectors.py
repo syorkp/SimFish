@@ -27,7 +27,7 @@ def format_func_prey(value, tick_number):
                   "Right-5", "Right-10", "Right-15",
                   "Away", "Towards"]
     if 0 <= N < 11:
-        return categories[N]
+        return "                   " + categories[N]
     else:
         return ""
 
@@ -126,20 +126,22 @@ def display_half_response_vector(response_vector, stimulus_vector, title, transi
                     return i - 1
             return len(transition_points) - 1
 
-        ax.set_yticks(transition_points, minor=True, fontsize=20)
+        ax.tick_params(axis='y', labelsize=20)
+        # ax.set_yticks(transition_points, minor=True, fontsize=20)
         ax2 = ax.secondary_yaxis("right")
         ax2.yaxis.set_major_locator(plt.FixedLocator(transition_points))
         ax2.yaxis.set_major_formatter(plt.FuncFormatter(format_func_cluster))
-        ax2.set_ylabel("Cluster ID")
+        ax2.set_ylabel("Cluster ID", fontsize=35)
 
     ax.set_xlabel("Stimulus and Position", fontsize=25)
     ax.set_ylabel("Neuron", fontsize=35)
     ax.xaxis.grid(linewidth=1, color="black")
     # ax.xaxis._axinfo["grid"]['linewidth'] = 3.
+    plt.savefig("../../Figures/Panels/Panel-5/vrv.png")
     plt.show()
 
 
-def display_full_response_vector(response_vector, stimulus_vector, title, transition_points=None):
+def display_full_response_vector(response_vector, stimulus_vector, title, transition_points=None, include_predator=True):
     fig, ax = plt.subplots()
     # fig.set_size_inches(18.5, 80)
     fig.set_size_inches(37, 20)
@@ -147,13 +149,19 @@ def display_full_response_vector(response_vector, stimulus_vector, title, transi
     # ax.set_title(title, fontsize=45)
     ax.pcolor(response_vector, cmap='coolwarm')
     ax.grid(True, which='minor', axis='both', linestyle='-', color='k')
-    ax.set_xlim(0, 242)
+    if include_predator:
+        ax.set_xlim(0, 242)
+        ax.set_xticks(range(0, len(stimulus_vector), 11), minor=True)
+
+    else:
+        ax.set_xlim(0, 121)
+        ax.set_xticks(range(0, int(len(stimulus_vector)/2), 11), minor=True)
+
     ax.xaxis.set_major_locator(plt.MultipleLocator(11))
     ax.xaxis.set_major_formatter(plt.FuncFormatter(format_func_both))
 
     ax.tick_params(labelsize=35)
     ax.tick_params(axis="x", labelrotation=45)
-    ax.set_xticks(range(0, len(stimulus_vector), 11), minor=True)
     if transition_points:
         transition_points = transition_points
 

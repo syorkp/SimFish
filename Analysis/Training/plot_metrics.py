@@ -246,13 +246,21 @@ def convert_poi_to_prop(data, p=0.05):
 def get_metrics_for_model(model_name):
     with open(f'../Data/Metrics/{model_name}/run-.-tag-prey capture index (fraction caught).csv', newline='') as f:
         reader = csv.reader(f)
-        prey = list(reader)
+        pci = list(reader)
 
     with open(f'../Data/Metrics/{model_name}/p_pred).csv') as f: #run-.-tag-predator avoidance index (avoided_p_pred).csv', newline='') as f:
         reader = csv.reader(f)
-        pred = list(reader)
+        pai = list(reader)
 
-    return prey, pred
+    with open(f'../Data/Metrics/{model_name}/run-.-tag-capture success rate.csv') as f: #run-.-tag-predator avoidance index (avoided_p_pred).csv', newline='') as f:
+        reader = csv.reader(f)
+        csr = list(reader)
+
+    with open(f'../Data/Metrics/{model_name}/run-.-tag-prey capture rate (fraction caught per step).csv') as f: #run-.-tag-predator avoidance index (avoided_p_pred).csv', newline='') as f:
+        reader = csv.reader(f)
+        pcr = list(reader)
+
+    return pci, pai, csr, pcr
 
 
 def clean_metrics_data(reader, file_name, model):

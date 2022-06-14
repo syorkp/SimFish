@@ -643,15 +643,19 @@ def get_all_density_plots_multiple_models(p1, p2, p3, n, n2):
 
 # Getting for individual models
 
+# get_all_density_plots_all_subsets(f"dqn_scaffold_20-1", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
+# get_all_density_plots_all_subsets(f"dqn_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
+# get_all_density_plots_all_subsets(f"dqn_scaffold_22-1", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
+
 # create_j_turn_overlap_plot("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
 # create_routine_turn_overlap_plot("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
 # create_cstart_overlap_plot("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
-get_all_density_plots_all_subsets(f"dqn_scaffold_14-2", "Behavioural-Data-Free", "Naturalistic", 10, return_objects=False)
-for i in range(1, 2):
-    # get_all_density_plots_all_subsets(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
-    get_all_density_plots_all_subsets(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
-
-get_all_density_plots_all_subsets(f"dqn_scaffold_20-2", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
+# get_all_density_plots_all_subsets(f"dqn_scaffold_14-2", "Behavioural-Data-Free", "Naturalistic", 10, return_objects=False)
+# for i in range(1, 2):
+#     # get_all_density_plots_all_subsets(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+#     get_all_density_plots_all_subsets(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+#
+# get_all_density_plots_all_subsets(f"dqn_scaffold_20-2", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
 
 
 # VERSION 1

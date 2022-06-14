@@ -18,7 +18,8 @@ def display_sequences(sequences):
     plt.show()
 
 
-def display_all_sequences(sequences, min_length=None, max_length=None, indicate_consumption=False, save_figure=True, figure_name=None):
+def display_all_sequences(sequences, min_length=None, max_length=None, indicate_consumption=False, save_figure=False,
+                          figure_name=None):
     sns.set()
     sequences.sort(key=len)
     plot_dim = max([len(seq) for seq in sequences])
@@ -32,7 +33,7 @@ def display_all_sequences(sequences, min_length=None, max_length=None, indicate_
     associated_actions = [get_action_name(a) for a in ordered_actions_present]
 
     # plt.figure(figsize=(5, 15))
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(10, 10))
     used_sequences = []
     for i, seq in enumerate(sequences):
         if min_length is not None:
@@ -58,7 +59,6 @@ def display_all_sequences(sequences, min_length=None, max_length=None, indicate_
     ordered_actions_present = sorted(actions_present)
     associated_actions = [get_action_name(a) for a in ordered_actions_present]
 
-
     legend_elements = [Patch(facecolor=color_set[a], label=associated_actions[i]) for i, a in enumerate(ordered_actions_present)]# [0], [0], marker="o", color=color_set[i], label=associated_actions[i]) for i in actions_present]
 
     # if indicate_consumption:
@@ -67,7 +67,9 @@ def display_all_sequences(sequences, min_length=None, max_length=None, indicate_
     #     plt.arrow(plot_dim, 0, 0, 1, width=4, color="r")
 
     # plt.legend(legend_elements, associated_actions, bbox_to_anchor=(1.5, 1), borderaxespad=0)#loc='upper right')
-    plt.legend(legend_elements, associated_actions, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.legend(legend_elements, associated_actions, bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
     plt.axis("scaled")
+    if save_figure:
+        plt.savefig(f"../../Figures/Panels/Panel-4/Action-Block-{figure_name}")
     # plt.tight_layout()
     plt.show()

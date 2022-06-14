@@ -6,6 +6,7 @@ from Analysis.Behavioural.Tools.extract_exploration_sequences import get_explora
 
 from Analysis.Behavioural.Tools.show_action_sequence_block import display_all_sequences
 from Analysis.Behavioural.Tools.extract_failed_capture_sequences import get_failed_capture_sequences
+from Analysis.Behavioural.Tools.extract_event_action_sequence import get_escape_sequences
 
 
 def display_average_sequence(sequences):
@@ -55,11 +56,23 @@ def remove_sCS_heavy(sequences, max_sCS=7):
     return new_sequences
 
 # VERSION 2
-# Capture sequences
+#                                   CAPTURE SEQUENCES
 # compiled_capture_sequences = []
 # capture_sequences = get_capture_sequences(f"dqn_scaffold_18x-1", "Behavioural-Data-Free", "Naturalistic", 10)
+# display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=False, figure_name="Captures-dqn_scaffold_18a-1")
 # capture_sequences = remove_sCS_heavy(capture_sequences)
+# display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=True, figure_name="Captures-dqn_scaffold_18a-1")
 #
+# capture_sequences = get_capture_sequences(f"dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic", 20)
+# display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=False, figure_name="Captures-dqn_scaffold_18a-1")
+# capture_sequences = remove_sCS_heavy(capture_sequences)
+# display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=True, figure_name="Captures-dqn_scaffold_18b-1")
+#
+# capture_sequences = get_capture_sequences(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20)
+# display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=False, figure_name="Captures-dqn_scaffold_18a-1")
+# capture_sequences = remove_sCS_heavy(capture_sequences, max_sCS=4)
+# display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=True, figure_name="Captures-dqn_scaffold_14-1")
+
 # for i in range(1, 2):
 #     capture_sequences += get_capture_sequences(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", "Naturalistic", 20)
 #     capture_sequences = remove_sCS_heavy(capture_sequences)
@@ -72,12 +85,13 @@ def remove_sCS_heavy(sequences, max_sCS=7):
 # Combined across models
 # display_all_sequences(compiled_capture_sequences)
 
-# Exploration sequences
+#                       EXPLORATION SEQUENCES
 # compiled_exploration_sequences = []
-for i in range(1, 2):
-    exploration_sequences = get_exploration_sequences(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", "Naturalistic", 20)
-    display_all_sequences(exploration_sequences, min_length=50, max_length=50)
-    # compiled_exploration_sequences += exploration_sequences
+# exploration_sequences = get_exploration_sequences(f"dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic", 20)
+# display_all_sequences(exploration_sequences, min_length=23, max_length=42, save_figure=True,
+#                       figure_name="Exploration-dqn_scaffold_18-1")
+
+# compiled_exploration_sequences += exploration_sequences
 
 # display_all_sequences(compiled_exploration_sequences, min_length=50, max_length=150)
 
@@ -88,6 +102,20 @@ for i in range(1, 2):
 #     # For each model
 #     display_all_sequences(capture_sequences)
 #     compiled_failed_capture_sequences += capture_sequences
+
+
+#                           PREDATOR AVOIDANCE SEQUENCES
+
+# escape_sequences = get_escape_sequences("dqn_scaffold_20-1", "Behavioural-Data-Free", "Naturalistic", 40)
+# display_all_sequences(escape_sequences)
+# escape_sequences = get_escape_sequences("dqn_scaffold_20-2", "Behavioural-Data-Free", "Naturalistic", 40)
+# display_all_sequences(escape_sequences)
+escape_sequences = get_escape_sequences("dqn_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 40)
+escape_sequences = remove_sCS_heavy(escape_sequences, 0)
+display_all_sequences(escape_sequences, max_length=20, save_figure=True, figure_name="Avoidance-dqn_scaffold_21-2")
+# escape_sequences = get_escape_sequences("dqn_scaffold_22-1", "Behavioural-Data-Free", "Naturalistic", 40)
+# display_all_sequences(escape_sequences)
+
 
 # Combined across models
 # display_all_sequences(compiled_failed_capture_sequences)

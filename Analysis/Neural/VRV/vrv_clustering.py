@@ -4,10 +4,10 @@ from sklearn.cluster import KMeans
 
 from Analysis.Neural.VRV.calculate_vrv import create_full_response_vector, create_full_stimulus_vector
 from Analysis.Neural.Categorisation.label_neurons import normalise_response_vectors
-from Analysis.Neural.Visualisation.visualise_response_vectors import display_full_response_vector
+from Analysis.Neural.Visualisation.visualise_response_vectors import display_full_response_vector, display_half_response_vector
 
 
-def knn_clustering_assign_categories(response_vectors, stimulus_vector, optimal_num):
+def knn_clustering_assign_categories(response_vectors, stimulus_vector, optimal_num, include_predator=False):
     all_vectors = []
 
     for vector in response_vectors:
@@ -30,7 +30,10 @@ def knn_clustering_assign_categories(response_vectors, stimulus_vector, optimal_
             if lab[i] == cluster:
                 ordered_vectors.append(neuron)
         transition_points.append(len(ordered_vectors))
-    display_full_response_vector(ordered_vectors, stimulus_vector, "All Stimuli", transition_points)
+    if include_predator:
+        display_full_response_vector(ordered_vectors, stimulus_vector, "All Stimuli", transition_points)
+    else:
+        display_half_response_vector(ordered_vectors, stimulus_vector, "Prey Stimuli", transition_points,)
 
     return model_labels, transition_points
 
@@ -47,7 +50,7 @@ def save_neuron_groups(model_names, neuron_groups, group_number, group_name):
 full_rv1 = create_full_response_vector("dqn_scaffold_14-1", background=False)
 full_sv = create_full_stimulus_vector("dqn_scaffold_14-1")
 
-model_l, transition_points = knn_clustering_assign_categories([full_rv1], full_sv, 20)#, full_rv2, full_rv3, full_rv4], full_sv, 20)
+model_l, transition_points = knn_clustering_assign_categories([full_rv1], full_sv, 20, include_predator=False)#, full_rv2, full_rv3, full_rv4], full_sv, 20)
 
 # Full vector
 # full_rv1 = create_full_response_vector("new_even_prey_ref-4", background=False)

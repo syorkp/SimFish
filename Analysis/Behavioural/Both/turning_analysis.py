@@ -115,6 +115,53 @@ def cumulative_switching_probability_plot(left_durs, right_durs, left_durs2, rig
     plt.show()
 
 
+def cumulative_switching_probability_plot_multiple_models(left_durs_list, right_durs_list, left_durs2, right_durs2,
+                                                          label, save_figure=True):
+    """Given two sets of switching latencies, one random and one from a model, plots the cumulative probability of
+    switching direction."""
+    # left_durs = [i for i in left_durs if i>1]
+    # right_durs = [i for i in right_durs if i>1]
+    # left_durs2 = [i for i in left_durs2 if i>1]
+    # right_durs2 = [i for i in right_durs2 if i>1]
+
+    seq_lengths2 = left_durs2 + right_durs2
+    cdf2 = compute_cumulative_probability(seq_lengths2)
+    x2 = range(0, max(seq_lengths2))
+
+    cdfs = []
+    xs = []
+    min_len = 1000
+    for left_durs, right_durs in zip(left_durs_list, right_durs_list):
+        if len(left_durs) == 0 or len(right_durs) == 0:
+            return
+
+        sns.set()
+        seq_lengths = left_durs + right_durs
+
+        cdf = compute_cumulative_probability(seq_lengths)
+        cdfs.append(cdf)
+
+        x = range(0, max(seq_lengths))
+        xs.append(x)
+        if max(seq_lengths) < min_len:
+            min_len = max(seq_lengths)
+
+    ermin = [min([cdfs[m][i] for m, model in enumerate(cdfs)]) for i in range(min_len)]
+    ermax = [max([cdfs[m][i] for m, model in enumerate(cdfs)]) for i in range(min_len)]
+
+    # plt.plot(x, cdf, label="Agent")
+    fig, ax = plt.subplots(figsize=(14, 10))
+    ax.fill_between(range(len(ermin)), ermin, ermax, label="Agent")
+    ax.plot(x2, cdf2, label="Random Switching", color="orange")
+    plt.xlabel("Turn Streak Length", fontsize=18)
+    plt.ylabel("Cumulative Probability", fontsize=18)
+    plt.title(label)
+    ax.legend()
+    if save_figure:
+        plt.savefig(f"../../Figures/Panels/Panel-4/{label}")
+    plt.show()
+
+
 def cumulative_turn_direction_plot_multiple_models(action_sequences):
     cum_averages = []
 
@@ -148,7 +195,7 @@ def cumulative_turn_direction_plot_multiple_models(action_sequences):
     plt.xlabel("Number of Turns", fontsize=18)
     plt.ylabel("Cumulative Turn Direction", fontsize=18)
     plt.hlines(0, 0, 10, color="r")
-    plt.fill_between(range(11), ermin, ermax, color="b", alpha=0.5)
+    plt.fill_between(range(len(ermin)), ermin, ermax, color="b", alpha=0.5)
     fig.tight_layout()
     plt.show()
 
@@ -239,6 +286,62 @@ def plot_all_turn_analysis(model_name, assay_config, assay_id, n, use_purely_tur
     cumulative_switching_probability_plot(sl, sr, sl2, sr2, label=f"Cumulative Switching Probability (no prey) {model_name}")
 
 
+def plot_all_turn_analysis_multiple_models(model_names, assay_config, assay_id, n, use_purely_turn_sequences=True):
+    compiled_l_exploration = []
+    compiled_r_exploration = []
+    compiled_sl_exploration = []
+    compiled_sr_exploration = []
+
+    compiled_l_no_prey = []
+    compiled_r_no_prey = []
+    compiled_sl_no_prey = []
+    compiled_sr_no_prey = []
+
+    turn_no_prey_sequences_list = []
+    for model_name in model_names:
+        no_prey_actions, no_prey_timestamps = get_no_prey_stimuli_sequences(model_name, assay_config, assay_id, n)
+        otherwise_exploration_sequences = get_exploration_sequences(model_name, assay_config, assay_id, n)
+
+        if use_purely_turn_sequences:
+            turn_exploration_sequences = extract_purely_turn_sequences(otherwise_exploration_sequences, 5)
+            turn_no_prey_sequences = extract_purely_turn_sequences(no_prey_actions, 5)
+            turn_no_prey_sequences_list.append(turn_no_prey_sequences)
+        else:
+            turn_exploration_sequences = extract_turn_sequences(otherwise_exploration_sequences)
+            turn_no_prey_sequences = extract_turn_sequences(no_prey_actions)
+
+        l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
+
+        compiled_l_exploration.append(l)
+        compiled_r_exploration.append(r)
+        compiled_sl_exploration.append(sl)
+        compiled_sr_exploration.append(sr)
+
+        l, r, sl, sr = model_of_action_switching(turn_no_prey_sequences)
+
+
+
+        compiled_l_no_prey.append(l)
+        compiled_r_no_prey.append(r)
+        compiled_sl_no_prey.append(sl)
+        compiled_sr_no_prey.append(sr)
+
+    # Cumulative turn direction plots:
+    cumulative_turn_direction_plot_multiple_models(turn_no_prey_sequences_list)
+    cumulative_turn_direction_plot(turn_exploration_sequences,
+                                   label=f"Cumulative Turn Direction (no prey or walls, only turns) {model_name}")
+
+    # Cumulative probability plot.
+    l2, r2, sl2, sr2 = randomly_switching_fish()
+    cumulative_switching_probability_plot_multiple_models(compiled_sl_exploration, compiled_sr_exploration, sl2, sr2,
+                                                          label=f"Cumulative Switching Probability (exploration) {model_name}")
+
+    l2, r2, sl2, sr2 = randomly_switching_fish()
+    cumulative_switching_probability_plot_multiple_models(compiled_sl_no_prey, compiled_sr_no_prey,  sl2, sr2, label=f"Cumulative Switching Probability (no prey) {model_name}")
+
+
+plot_all_turn_analysis_multiple_models(["dqn_scaffold_14-1", "dqn_scaffold_14-2"], "Behavioural-Data-Free", f"Naturalistic", 10)
+
 
 # sl_compiled = []
 # sr_compiled = []
@@ -279,8 +382,11 @@ sr2_compiled = []
 turn_exploration_sequences_compiled = []
 
 # Exploration sequences based on visual stimulation level
-for i in range(1, 5):
-    plot_all_turn_analysis(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", f"Naturalistic", 10)
+# plot_all_turn_analysis(f"dqn_scaffold_14-1", "Behavioural-Data-Free", f"Naturalistic", 20)
+# plot_all_turn_analysis(f"dqn_scaffold_14-2", "Behavioural-Data-Free", f"Naturalistic", 10)
+
+
+
 
     # turn_exploration_sequences_compiled += turn_exploration_sequences
     # sl_compiled += sl
@@ -290,6 +396,18 @@ for i in range(1, 5):
 
 # cumulative_switching_probability_plot(sl_compiled, sr_compiled, sl2_compiled, sr2_compiled, f"Cumulative Switching Probability Plot all models")
 # cumulative_turn_direction_plot(turn_exploration_sequences_compiled, f"Cumulative turn direction plot all models")
+
+
+
+
+
+
+
+
+
+
+
+
 
 # VERSION 1
 
