@@ -12477,7 +12477,6 @@ ppo_scaffold_20 = [
     },
 ]
 
-
 ppo_scaffold_18a = [
     {
         "Model Name": "ppo_scaffold_18a",
@@ -12507,6 +12506,26 @@ ppo_scaffold_18a = [
         "Learning Algorithm": "PPO",
         "Priority": 1,
         "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+ppo_scaffold_20_bs = [
+        {
+        "Model Name": "ppo_scaffold_20_bs",
+        "Environment Name": "ppo_scaffold_20_bs",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": False,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,

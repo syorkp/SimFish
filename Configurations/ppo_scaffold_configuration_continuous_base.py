@@ -17,8 +17,8 @@ from Networks.original_network import connectivity, reflected, base_network_laye
 
 params = {
        # Learning (Universal)
-       'batch_size': 1,  # How many experience traces to use for each training step. Works okay with 1,
-       'trace_length': 50,  # How long each experience trace will be when training. Works okay with 50
+       'batch_size': 16,  # How many experience traces to use for each training step. Works okay with 1,
+       'trace_length': 64,  # How long each experience trace will be when training. Works okay with 50
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
        'max_epLength': 3000,  # The max allowed length of our episode.
        'epsilon_greedy': True,
@@ -192,7 +192,7 @@ env = {
        #                                  New Simulation
 
        # Action mask
-       'impose_action_mask': True,
+       'impose_action_mask': False,
 
        # Sensory inputs
        'energy_state': True,
@@ -315,7 +315,7 @@ env = {
        'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
 }
 
-scaffold_name = "ppo_scaffold_20"
+scaffold_name = "ppo_scaffold_20_bs"
 
 
 changes = [

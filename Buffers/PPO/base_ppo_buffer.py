@@ -192,6 +192,7 @@ class BasePPOBuffer:
     @staticmethod
     def pad_slice(buffer, desired_length):
         """Zero pads a trace so all are same length"""
+        print(f"Remaining buffer shape: {buffer.shape}")
         shape_of_data = buffer.shape[1:]
         extra_pads = desired_length - buffer.shape[0]
         padding_shape = (extra_pads, ) + shape_of_data
