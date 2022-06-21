@@ -12403,6 +12403,43 @@ ppo_scaffold_18 = [
     },
 ]
 
+ppo_scaffold_19 = [
+    {
+        "Model Name": "ppo_scaffold_19",
+        "Environment Name": "ppo_scaffold_19",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "ppo_scaffold_19",
+        "Environment Name": "ppo_scaffold_19",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
 ppo_scaffold_18a = [
     {
         "Model Name": "ppo_scaffold_18a",
@@ -12441,5 +12478,5 @@ ppo_scaffold_18a = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_18, parallel_jobs=3)
+manager = TrialManager(ppo_scaffold_19, parallel_jobs=3)
 manager.run_priority_loop()

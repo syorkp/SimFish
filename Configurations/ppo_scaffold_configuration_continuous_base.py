@@ -17,10 +17,10 @@ from Networks.original_network import connectivity, reflected, base_network_laye
 
 params = {
        # Learning (Universal)
-       'batch_size': 16,  # How many experience traces to use for each training step. Works okay with 1,
-       'trace_length': 64,  # How long each experience trace will be when training. Works okay with 50
+       'batch_size': 1,  # How many experience traces to use for each training step. Works okay with 1,
+       'trace_length': 50,  # How long each experience trace will be when training. Works okay with 50
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
-       'max_epLength': 1000,  # The max allowed length of our episode.
+       'max_epLength': 3000,  # The max allowed length of our episode.
        'epsilon_greedy': True,
        'epsilon_greedy_scaffolding': True,
        'startE': 0.2,  # Starting chance of random action
@@ -281,8 +281,8 @@ env = {
        'max_isomerization_size': 0.0,
 
        # Energy state and hunger-based rewards
-       'ci': 0.0004,
-       'ca': 0.0004,
+       'ci': 0.0002,  # 0.0004 in previous best.
+       'ca': 0.0002,  # 0.0004 in previous best.
        'baseline_decrease': 0.0015,
        'trajectory_A': 5.0,
        'trajectory_B': 2.5,
@@ -315,7 +315,7 @@ env = {
        'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
 }
 
-scaffold_name = "ppo_scaffold_18a"
+scaffold_name = "ppo_scaffold_19"
 
 
 changes = [
@@ -340,7 +340,7 @@ changes += [
 
 
 changes += build_changes_list_gradual("PCI", 0.4, "light_gain", env["light_gain"], 125.7, 4)
-changes += [["PCI", 0.4, "max_epLength", 2000, "do_to_params"]]
+changes += [["PCI", 0.4, "max_epLength", 5000, "do_to_params"]]
 
 # 3) Available actions
 changes += build_changes_list_gradual("PCI", 0.4, "max_impulse", env["max_impulse"], 20, 20)
