@@ -96,10 +96,10 @@ def create_full_stimulus_vector(model_name, background=False):
     full_stimulus_vector = []
     file_precursors = ["Prey", "Predator"]
     file_precursors = ["Prey"]  #TODO: Change back later
-    # prey_assay_ids = ["Prey-Static-5", "Prey-Static-10", "Prey-Static-15",
-    #                   "Prey-Left-5", "Prey-Left-10", "Prey-Left-15",
-    #                   "Prey-Right-5", "Prey-Right-10", "Prey-Right-15",
-    #                   "Prey-Away", "Prey-Towards"]
+    actual_prey_assay_ids = ["Prey-Static-5", "Prey-Static-10", "Prey-Static-15",
+                      "Prey-Left-5", "Prey-Left-10", "Prey-Left-15",
+                      "Prey-Right-5", "Prey-Right-10", "Prey-Right-15",
+                      "Prey-Away", "Prey-Towards"]
     prey_assay_ids = ["Prey-Static-5", "Prey-Static-5", "Prey-Static-5",
                       "Prey-Static-5", "Prey-Static-5", "Prey-Static-5",
                       "Prey-Static-5", "Prey-Static-5", "Prey-Static-5",
@@ -113,10 +113,10 @@ def create_full_stimulus_vector(model_name, background=False):
         predator_assay_ids += ["Background-" + i for i in predator_assay_ids]
     for file_p in file_precursors:
         if "Prey" in file_p:
-            for aid in prey_assay_ids:
+            for i, aid in enumerate(prey_assay_ids):
                 stimulus_data = load_stimulus_data(model_name, f"{file_p}-Full-Response-Vector", aid)
                 stimulus_vector = get_stimulus_vector(stimulus_data, "prey 1")
-                stimulus_vector = [aid + "-" + str(s) for s in stimulus_vector]
+                stimulus_vector = [actual_prey_assay_ids[i] + "-" + str(s) for s in stimulus_vector]
                 full_stimulus_vector += stimulus_vector
 
         elif "Predator" in file_p:

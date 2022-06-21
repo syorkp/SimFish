@@ -70,7 +70,7 @@ class NewDrawingBoard:
         self.mask_buffer_time_point = None
 
         # For obstruction mask (reset each time is called).
-        self.empty_mask = self.chosen_math_library.ones((1500, 1500, 1), dtype=np.float64)
+        self.empty_mask = self.chosen_math_library.ones((self.width, self.height, 1), dtype=np.float64)
 
     def get_background_grating(self, frequency, linear=False):
         if linear:

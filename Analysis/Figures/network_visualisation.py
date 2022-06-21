@@ -43,20 +43,27 @@ def create_neuron_layer_diagram(width, n_units, recurrent=False):
 
 
 def show_energy_state(data, datapoint_index):
-    fig, ax = plt.subplots(figsize=(8, 8))
+    fig, ax = plt.subplots(figsize=(6, 6))
     ax.plot(data["energy_state"])
 
     et = data["energy_state"][datapoint_index]
     consumption_timepoints = [i for i, c in enumerate(data["consumed"]) if c == 1]
-    plt.hlines(et, 0, datapoint_index, colors="r")
-    plt.vlines(datapoint_index, 0, et, colors="r")
 
     for c in consumption_timepoints:
-        plt.vlines(c, 0, data["energy_state"][c], linestyles="dashed")
+        ax.vlines(c, 0, data["energy_state"][c], color="green")
 
-    plt.margins(x=0, y=0)
-    plt.ylabel("Energy State", size=15)
-    plt.xlabel("Step", size=15)
+    ax.spines["right"].set_visible(False)
+    ax.spines["top"].set_visible(False)
+    ax.hlines(et, 0, datapoint_index, colors="r")
+    ax.vlines(datapoint_index, 0, et, colors="r")
+
+    ax.margins(x=0, y=0)
+    ax.legend(["Energy State", "Consumption"], fontsize=14)
+    plt.ylabel("Energy State", size=25)
+    plt.xlabel("Step", size=25)
+    ax.tick_params(axis="x", labelsize=20)
+    ax.tick_params(axis="y", labelsize=20)
+    plt.tight_layout()
     plt.savefig(f"./Panels/Panel-2/energy_state.jpg")
 
     plt.show()

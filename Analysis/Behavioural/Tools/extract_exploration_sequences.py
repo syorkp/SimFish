@@ -142,6 +142,7 @@ def extract_exploration_action_sequences_with_fish_angles(data, possible_visual_
                 actions = []
                 fish_positions = []
                 current_sequence = []
+                fish_orientations = []
 
                 fish_orientations.append(data["fish_angle"][t])
                 actions.append(data["action"][t])

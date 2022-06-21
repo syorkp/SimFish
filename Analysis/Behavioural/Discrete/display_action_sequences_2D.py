@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.colors import ListedColormap
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
 from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.get_action_name import get_action_name
@@ -85,7 +86,7 @@ def plot_action_sequences_2D_discreteV2(fish_positions_compiled, actions_compile
         y = fish_positions_compiled_flattened[ts, 1]
         points.append(ax.scatter(x, y, c=colour))
     # plt.legend(handles=action_plot.legend_elements()[0], labels=associated_actions)
-    ax.legend(points, associated_actions, loc="upper right")
+    # ax.legend(points, associated_actions, loc="upper right")
 
     if consumption_timestamps is not None:
         consumption_positions = [p for p, t in zip(fish_positions_compiled_flattened, action_sequence_timestamps_flattened) if t in consumption_timestamps]
@@ -94,9 +95,20 @@ def plot_action_sequences_2D_discreteV2(fish_positions_compiled, actions_compile
         predation_death_positions = [p for p, t in zip(fish_positions_compiled_flattened, action_sequence_timestamps_flattened) if t in predation_death_timestamps]
         predation_plot = ax.scatter([p[0] for p in predation_death_positions], [p[1] for p in predation_death_positions], color="r", marker="X")
 
-    ob = AnchoredHScaleBar(size=200, label="20mm", loc=4, frameon=True,
-                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
-    ax.add_artist(ob)
+    # ob = AnchoredHScaleBar(size=200, label="20mm", loc=4, frameon=True,
+    #                        pad=0.6, sep=4, linekw=dict(color="crimson"), )
+    # ax.add_artist(ob)
+
+    scale_bar = AnchoredSizeBar(ax.transData,
+                                200, '20mm', 'lower center',
+                                pad=1,
+                                color='black',
+                                frameon=False,
+                                size_vertical=1,
+                                fontproperties={"size": 16})
+    #                           fontproperties=fontprops )
+    ax.add_artist(scale_bar)
+
     ax.set_facecolor('lightgrey')
     plt.setp(ax.get_xticklabels(), visible=False)
     plt.setp(ax.get_yticklabels(), visible=False)
@@ -105,7 +117,6 @@ def plot_action_sequences_2D_discreteV2(fish_positions_compiled, actions_compile
     if save_figure:
         plt.savefig(f"../../Figures/Panels/Panel-4/{title}")
     plt.show()
-
 
 
 # Chosen escape
@@ -153,12 +164,12 @@ cts = [cts[i] for i in to_keep]
 consumption_timestamps = [consumption_timestamps[i] for i in to_keep]
 capture_sequences = [capture_sequences[i] for i in to_keep]
 capture_fish_positions = [capture_fish_positions[i] for i in to_keep]
-capture_fish_positions = [c-400 for c in capture_fish_positions]
+capture_fish_positions = [c-450 for c in capture_fish_positions]
 
 
-timestamps = cts + exploration_timestamps + ts
-sequences = capture_sequences + exploration_sequences + escape_sequences
-fish_positions = capture_fish_positions + exploration_fish_positions + escape_fish_positions
+timestamps = cts + exploration_timestamps #+ ts
+sequences = capture_sequences + exploration_sequences #+ escape_sequences
+fish_positions = capture_fish_positions + exploration_fish_positions #+ escape_fish_positions
 
 
 plot_action_sequences_2D_discreteV2(fish_positions, sequences, timestamps,

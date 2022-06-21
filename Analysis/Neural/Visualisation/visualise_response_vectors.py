@@ -131,7 +131,10 @@ def display_half_response_vector(response_vector, stimulus_vector, title, transi
         ax2 = ax.secondary_yaxis("right")
         ax2.yaxis.set_major_locator(plt.FixedLocator(transition_points))
         ax2.yaxis.set_major_formatter(plt.FuncFormatter(format_func_cluster))
-        ax2.set_ylabel("Cluster ID", fontsize=35)
+        # ax2.set_ylabel("Cluster ID", fontsize=35)
+
+        for t in transition_points:
+            ax.hlines(t, xmin=0, xmax=121)
 
     ax.set_xlabel("Stimulus and Position", fontsize=25)
     ax.set_ylabel("Neuron", fontsize=35)

@@ -33,27 +33,29 @@ test_eye_r = Eye(board, verg_angle, retinal_field, False, env_variables, dark_co
 l_angles = test_eye_l.uv_photoreceptor_angles
 l_angles_red = test_eye_l.red_photoreceptor_angles
 
-fig, ax = plt.subplots(figsize=(14, 4))
+fig, ax = plt.subplots(figsize=(10, 3))
 ax.eventplot(l_angles_red, colors=["r"], lineoffsets=[-1], linewidths=[6])
 ax.eventplot(l_angles, lineoffsets=[0], linewidths=[6])
 ax.eventplot(l_angles_red, colors=["orangered"], lineoffsets=[1], linewidths=[6])
-plt.vlines(0, -2, 2, linestyles="dashed", colors="black")
+plt.vlines(0, -2, 2, colors="black")
 ax.axes.get_yaxis().set_visible(False)
-plt.xlabel("Angle from Midline (pi radians)")
+plt.xlabel("Angle from Midline (pi radians)", fontsize=20)
 plt.savefig("./Panels/Panel-1/left_retina.jpg")
+plt.tight_layout()
 plt.show()
 
 l_angles = test_eye_r.uv_photoreceptor_angles
 l_angles_red = test_eye_r.red_photoreceptor_angles
 
-fig, ax = plt.subplots(figsize=(14, 4))
+fig, ax = plt.subplots(figsize=(10, 3))
 ax.eventplot(l_angles_red, colors=["r"], lineoffsets=[-1], linewidths=[6])
 ax.eventplot(l_angles, lineoffsets=[0], linewidths=[6])
 ax.eventplot(l_angles_red, colors=["orangered"], lineoffsets=[1], linewidths=[6])
-plt.vlines(0, -2, 2, linestyles="dashed", colors="black")
+plt.vlines(0, -2, 2, colors="black")
 ax.axes.get_yaxis().set_visible(False)
-plt.xlabel("Angle from Midline (pi radians)")
+plt.xlabel("Angle from Midline (pi radians)", fontsize=20)
 plt.savefig("./Panels/Panel-1/right_retina.jpg")
+plt.tight_layout()
 plt.show()
 
 

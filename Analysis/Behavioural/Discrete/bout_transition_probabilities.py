@@ -171,7 +171,7 @@ def get_action_name(action_num):
     return action_name
 
 
-def visualisation_method_2(transition_probabilities):
+def visualisation_method_2(transition_probabilities, title=None, save_figure=False):
     sns.set()
     fig = plt.figure(figsize=(10, 10))
     ax = fig.add_subplot(111, aspect='equal')
@@ -221,7 +221,11 @@ def visualisation_method_2(transition_probabilities):
     # cb.set_label("Transition Probability", rotation=270, labelpad=15)
     # plt.ylim(0, 0.4)
     # plt.xlim(0, 0.4)
+    if title is not None:
+        plt.title(title)
     fig.tight_layout()
+    if save_figure:
+        plt.savefig(f"../../Figures/Panels/Panel-6/{title}.png")
     plt.show(block=True)
     plt.interactive(False)
 

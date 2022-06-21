@@ -55,7 +55,7 @@ def normalise_response_vectors(response_vectors):
     return response_vectors
 
 
-def label_all_units_selectivities(response_vectors, stimulus_vectors, background=False):
+def label_all_units_selectivities(response_vectors, stimulus_vectors, check_predator=False, background=False):
     """Returns a neuron dimensional list of lists, each of which contains all selectivity properties of neurons.
     Higher level properties could then be inferred by combinations of selectivities"""
 
@@ -78,13 +78,14 @@ def label_all_units_selectivities(response_vectors, stimulus_vectors, background
 
         predator_subset = unit[121:242]
         stimulus_vectors_subset = stimulus_vectors[121:242]
-        predator = simple_check_feature_selectivity(predator_subset, "Predator")
-        if predator is not None:
-            selectivities[i]["Predator"] = []
-            for j, stim in enumerate(stimulus_vectors_subset):
-                sel = simple_check_feature_selectivity([predator_subset[j]], stim)
-                if sel is not None:
-                    selectivities[i]["Predator"].append(sel)
+        if check_predator:
+            predator = simple_check_feature_selectivity(predator_subset, "Predator")
+            if predator is not None:
+                selectivities[i]["Predator"] = []
+                for j, stim in enumerate(stimulus_vectors_subset):
+                    sel = simple_check_feature_selectivity([predator_subset[j]], stim)
+                    if sel is not None:
+                        selectivities[i]["Predator"].append(sel)
 
         if background:
             red_prey_subset = unit[242:363]

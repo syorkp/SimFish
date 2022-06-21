@@ -49,13 +49,66 @@ def display_average_sequence(sequences):
 def remove_sCS_heavy(sequences, max_sCS=7):
     new_sequences = []
     for sequence in sequences:
-        if sequence.count(3) > max_sCS:
+        if list(sequence).count(3) > max_sCS:
             pass
         else:
             new_sequences.append(sequence)
     return new_sequences
 
 # VERSION 2
+
+# Exploration DQN 14
+exploration_sequences_14 = get_exploration_sequences(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20)
+# display_all_sequences(exploration_sequences, min_length=23, max_length=42, save_figure=True,
+#                       figure_name="Exploration-dqn_scaffold_14-1")
+
+# Exploration DQN 19
+exploration_sequences_19 = get_exploration_sequences(f"dqn_scaffold_19-1", "Behavioural-Data-Free", "Naturalistic", 20)
+exploration_sequences_19 = remove_sCS_heavy(exploration_sequences_19, max_sCS=6)
+# display_all_sequences(exploration_sequences, min_length=15, max_length=42, save_figure=True,
+#                       figure_name="Exploration-dqn_scaffold_19-1")
+
+# Exploration DQN 18
+exploration_sequences_18 = get_exploration_sequences(f"dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic", 20)
+# display_all_sequences(exploration_sequences, min_length=23, max_length=42, save_figure=True,
+#                       figure_name="Exploration-dqn_scaffold_18-1")
+
+# Exploration DQN_nl 19
+exploration_sequences_nl = get_exploration_sequences(f"dqn_scaffold_nl_19-1", "Behavioural-Data-Free", "Naturalistic", 20)
+exploration_sequences_nl = remove_sCS_heavy(exploration_sequences_nl, max_sCS=6)
+# display_all_sequences(exploration_sequences, min_length=23, max_length=42, save_figure=True,
+#                       figure_name="Exploration-dqn_scaffold_nl_19-1")
+
+# Comparing action usage across the models
+import numpy as np
+actions_proportions = np.zeros((10, 4))
+actions_present = np.array([])
+
+for i, sequences in enumerate([exploration_sequences_14, exploration_sequences_19, exploration_sequences_18, exploration_sequences_nl]):
+    flattened_sequences = np.concatenate((sequences))
+    unique, counts = np.unique(flattened_sequences, return_counts=True)
+    actions_present = np.concatenate((actions_present, unique))
+    x = list(zip(unique, counts))
+    for a in x:
+        actions_proportions[int(a[0]), i] = a[1] / len(flattened_sequences)
+color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'gold', "c", "m", "m", "black"]
+actions_present = list(set(actions_present))
+fig, ax = plt.subplots(figsize=(10, 10))
+for a in reversed(list(actions_present)):
+    total = sum([actions_proportions[int(i)] for i in range(int(a + 1))])
+    ax.bar([i for i in range(4)], total,  color=color_set[int(a)], width=0.4)
+
+plt.xticks([i for i in range(4)], ["Model 1", "Model 2", "Model 3", "Model 4"], fontsize=20)
+plt.ylabel("Proportion of Actions", fontsize=30)
+ax.spines["right"].set_visible(False)
+ax.spines["top"].set_visible(False)
+ax.tick_params(axis="x", labelsize=25)
+ax.tick_params(axis="y", labelsize=20)
+# plt.legend([get_action_name(int(a)) for a in reversed(actions_present)])
+plt.savefig("../../Figures/Panels/Panel-5/Model-Action.png")
+plt.show()
+
+
 #                                   CAPTURE SEQUENCES
 # compiled_capture_sequences = []
 # capture_sequences = get_capture_sequences(f"dqn_scaffold_18x-1", "Behavioural-Data-Free", "Naturalistic", 10)
@@ -110,9 +163,9 @@ def remove_sCS_heavy(sequences, max_sCS=7):
 # display_all_sequences(escape_sequences)
 # escape_sequences = get_escape_sequences("dqn_scaffold_20-2", "Behavioural-Data-Free", "Naturalistic", 40)
 # display_all_sequences(escape_sequences)
-escape_sequences = get_escape_sequences("dqn_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 40)
-escape_sequences = remove_sCS_heavy(escape_sequences, 0)
-display_all_sequences(escape_sequences, max_length=20, save_figure=True, figure_name="Avoidance-dqn_scaffold_21-2")
+# escape_sequences = get_escape_sequences("dqn_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 40)
+# escape_sequences = remove_sCS_heavy(escape_sequences, 0)
+# display_all_sequences(escape_sequences, max_length=20, save_figure=True, figure_name="Avoidance-dqn_scaffold_21-2")
 # escape_sequences = get_escape_sequences("dqn_scaffold_22-1", "Behavioural-Data-Free", "Naturalistic", 40)
 # display_all_sequences(escape_sequences)
 

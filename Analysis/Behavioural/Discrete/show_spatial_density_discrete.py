@@ -2,9 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import kde
 
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
+
+
 from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.get_action_name import get_action_name
-from Analysis.Behavioural.Tools.anchored_scale_bar import AnchoredHScaleBar
+from Analysis.Behavioural.Tools.anchored_scale_bar import AnchoredHScaleBar,AnchoredHScaleBarSimple
 
 """
 To create a graph of the style in Figure 3b of Marques et al. (2018)
@@ -112,11 +115,18 @@ def create_density_cloud(density_list, action_num, stimulus_name, return_objects
     # Make the plot
     fig, ax = plt.subplots(figsize=(10, 10))
 
-    ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap="Reds", )#cmap='gist_gray')#  cmap='PuBu_r')
+    pcm = ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap="Reds", )#cmap='gist_gray')#  cmap='PuBu_r')
+    fig.colorbar(pcm)
 
-    ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
-                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
-    ax.add_artist(ob)
+    scale_bar = AnchoredSizeBar(ax.transData,
+                                200, '20mm', 'lower right',
+                                pad=1,
+                                color='black',
+                                frameon=False,
+                                size_vertical=1,
+                                fontproperties={"size": 16}
+                                )
+    ax.add_artist(scale_bar)
     # plt.arrow(-300, 220, 0, 40, width=10, color="red")
 
     ax = draw_fish(-300, 220, 4, 2.5, 41.5, ax)
@@ -209,12 +219,22 @@ def create_overlap_plot(cloud_left, cloud_right, feature, action, model_name):
 
     # Make the plot
     fig, ax = plt.subplots(figsize=(10, 10))
+    zi = np.clip(zi, -0.0000015, 0.0000015)  # TODO: Remove
 
     pcm = ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
 
-    ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
-                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
-    ax.add_artist(ob)
+    # ob = AnchoredHScaleBar(size=100, label="10mm", loc=4, frameon=True,
+    #                        pad=0.6, sep=4, linekw=dict(color="crimson"), )
+
+    scale_bar = AnchoredSizeBar(ax.transData,
+                                200, '20mm', 'lower right',
+                                pad=1,
+                                color='black',
+                                frameon=False,
+                                size_vertical=1,
+                                fontproperties={"size": 16}
+                                )
+    ax.add_artist(scale_bar)
 
     ax = draw_fish(300, 220, 4, 2.5, 41.5, ax)
     ax.set_xlim(0, 600)
@@ -647,8 +667,13 @@ def get_all_density_plots_multiple_models(p1, p2, p3, n, n2):
 # get_all_density_plots_all_subsets(f"dqn_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
 # get_all_density_plots_all_subsets(f"dqn_scaffold_22-1", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
 
-# create_j_turn_overlap_plot("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
-# create_routine_turn_overlap_plot("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+# create_routine_turn_overlap_plot("dqn_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
+# get_all_density_plots_all_subsets(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+# get_all_density_plots_all_subsets("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+
+create_routine_turn_overlap_plot("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+
+
 # create_cstart_overlap_plot("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
 # get_all_density_plots_all_subsets(f"dqn_scaffold_14-2", "Behavioural-Data-Free", "Naturalistic", 10, return_objects=False)
 # for i in range(1, 2):

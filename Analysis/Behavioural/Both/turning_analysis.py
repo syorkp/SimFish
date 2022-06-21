@@ -10,7 +10,7 @@ from Analysis.Behavioural.Tools.extract_exploration_sequences import extract_exp
 from Analysis.Behavioural.Tools.extract_exploration_sequences import get_no_prey_stimuli_sequences, get_exploration_sequences
 
 
-def plot_turning_sequences(fish_angle):
+def plot_turning_sequences(fish_angle, save_figure=True):
     # sns.set()
 
     angle_changes = [fish_angle[i]-fish_angle[i-1] for i, angle in enumerate(fish_angle) if i!=0][-100:]
@@ -23,6 +23,8 @@ def plot_turning_sequences(fish_angle):
     angles["Color"] = ["r" if angle < 0 else "b" for angle in angle_changes]
     fig = plt.figure()
     ax = sns.barplot(x="Time (Step)", y="Turn Amplitude (pi radians)", hue="Color", data=angles)
+    ax.tick_params(axis="x", labelsize=20)
+    ax.tick_params(axis="y", labelsize=20)
     ax.get_legend().remove()
     for ind, label in enumerate(ax.get_xticklabels()):
         if ind % 10 == 0:  # every 10th label is kept
@@ -32,6 +34,8 @@ def plot_turning_sequences(fish_angle):
     plt.xlabel("Time (Step)", fontsize=18)
     plt.ylabel("Turn Amplitude (pi radians)", fontsize=18)
     fig.tight_layout()
+    if save_figure:
+        plt.savefig(f"../../Figures/Panels/Panel-4/Orientation-Plot")
     plt.show()
 
 
@@ -106,12 +110,13 @@ def cumulative_switching_probability_plot(left_durs, right_durs, left_durs2, rig
     x = range(0, max(seq_lengths))
     x2 = range(0, max(seq_lengths2))
 
+    plt.figure(figsize=(10, 10))
     plt.plot(x, cdf, label="Agent")
     plt.plot(x2, cdf2, label="Random Switching")
-    plt.xlabel("Turn Streak Length", fontsize=18)
-    plt.ylabel("Cumulative Probability", fontsize=18)
+    plt.xlabel("Turn Streak Length", fontsize=30)
+    plt.ylabel("Cumulative Probability", fontsize=30)
     plt.title(label)
-    plt.legend()
+    plt.legend(["Models", "Random Switching"], fontsize=30)
     plt.show()
 
 
@@ -151,12 +156,16 @@ def cumulative_switching_probability_plot_multiple_models(left_durs_list, right_
 
     # plt.plot(x, cdf, label="Agent")
     fig, ax = plt.subplots(figsize=(14, 10))
-    ax.fill_between(range(len(ermin)), ermin, ermax, label="Agent")
-    ax.plot(x2, cdf2, label="Random Switching", color="orange")
-    plt.xlabel("Turn Streak Length", fontsize=18)
-    plt.ylabel("Cumulative Probability", fontsize=18)
+    ax.fill_between(range(len(ermin)), ermin, ermax, label="Agents")
+    ax.plot(x2, cdf2, label="Random Switching", color="orange", linewidth=5)
+    ax.spines["right"].set_visible(False)
+    ax.spines["top"].set_visible(False)
+    ax.tick_params(axis="x", labelsize=20)
+    ax.tick_params(axis="y", labelsize=20)
+    plt.xlabel("Turn Streak Length", fontsize=30)
+    plt.ylabel("Cumulative Probability", fontsize=30)
     plt.title(label)
-    ax.legend()
+    ax.legend(prop={'size': 30}, loc="lower right")
     if save_figure:
         plt.savefig(f"../../Figures/Panels/Panel-4/{label}")
     plt.show()
@@ -221,6 +230,7 @@ def cumulative_turn_direction_plot(action_sequences, label):
     # spl = make_interp_spline(range(len(cum_average)), cum_average, k=2)  # type: BSpline
     # power_smooth = spl(np.linspace(0, 20, 10))
     sns.set()
+    plt.figure(figsize=(10, 10))
     plt.plot(cum_average)
     plt.xlabel("Number of Turns", fontsize=20)
     plt.ylabel("Cumulative Turn Direction", fontsize=20)
@@ -319,8 +329,6 @@ def plot_all_turn_analysis_multiple_models(model_names, assay_config, assay_id, 
 
         l, r, sl, sr = model_of_action_switching(turn_no_prey_sequences)
 
-
-
         compiled_l_no_prey.append(l)
         compiled_r_no_prey.append(r)
         compiled_sl_no_prey.append(sl)
@@ -340,7 +348,22 @@ def plot_all_turn_analysis_multiple_models(model_names, assay_config, assay_id, 
     cumulative_switching_probability_plot_multiple_models(compiled_sl_no_prey, compiled_sr_no_prey,  sl2, sr2, label=f"Cumulative Switching Probability (no prey) {model_name}")
 
 
-plot_all_turn_analysis_multiple_models(["dqn_scaffold_14-1", "dqn_scaffold_14-2"], "Behavioural-Data-Free", f"Naturalistic", 10)
+plot_all_turn_analysis_multiple_models(["dqn_scaffold_14-1", "dqn_scaffold_14-2"], "Behavioural-Data-Free",
+                                       f"Naturalistic", 10)
+
+data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", f"Naturalistic-18")
+exploration_timestamps, exploration_sequences, exploration_fish_orientations = \
+    extract_exploration_action_sequences_with_fish_angles(data)
+
+rt_usage = [i for i, a in enumerate(data["action"]) if a == 1 or a == 2]
+plot_turning_sequences(exploration_fish_orientations[len(exploration_fish_orientations)-1][:-1])
+
+# for i in range(len(exploration_fish_orientations)):
+#     # to_keep = [o for t, o in enumerate(exploration_fish_orientations[i])
+#     #            if exploration_timestamps[i][t] in rt_usage]
+#     # if len(to_keep) > 0:
+#     #     plot_turning_sequences(to_keep)
+#     plot_turning_sequences(exploration_fish_orientations[i][:-1])
 
 
 # sl_compiled = []

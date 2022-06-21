@@ -326,31 +326,55 @@ def plot_artificial_traces(prey_pred_data, prey_size_data, directional_data, pre
     # plt.show()
 
 
-data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic-1")
-e = [i for i in data["energy_state"]]
+from Analysis.Neural.Visualisation.plot_activity import plot_activity, plot_activity2
+
+if __name__ == "__main__":
+    # Various visual neurons
+    data = load_data("dqn_scaffold_14-1", "Prey-Full-Response-Vector", "Prey-Static-15")
+    unit_activity1a = [[state[0, 0, j] for i, state in enumerate(data["rnn_state_actor"])] for j in range(512)]
+    cho = [188, 192, 194, 234, 222]
+    chosen_units = [unit for i, unit in enumerate(unit_activity1a) if i in cho]
+    stimulus_data = load_stimulus_data("dqn_scaffold_14-1", "Prey-Full-Response-Vector", "Prey-Static-15")
+    # plot_activity(chosen_units, stimulus_data, 600)
+    plot_activity2(chosen_units, stimulus_data, 600)
+
+    # plot_traces(unit_activity1a)
+
+    # Energy state neuron
+    data = load_data("dqn_scaffold_18x-1", "Behavioural-Data-Free", "Naturalistic-1")
+    e = [i for i in data["energy_state"]]
+
+    unit_activity1a = [[state[0, 0, j] for i, state in enumerate(data["rnn_state_actor"])] for j in range(512)]
+
+    fig, axs = plt.subplots(figsize=(10, 5))
+    unit_29 = unit_activity1a[235]
+
+    consumption_points = [i for i, a in enumerate(data["consumed"]) if a == 1]
+    cs_points = [i for i, a in enumerate(data["action"]) if a == 3]
+
+    axs.plot((-np.array(unit_29)/min(unit_29))+1, label="RNN Unit")
+    axs.plot((np.array(e)), label="Energy State")
+    for c in cs_points:
+        if c in consumption_points:
+            plt.vlines(c, 1, 1.15, color="g", alpha=1, label="Successful Capture")
+        else:
+            plt.vlines(c, 1, 1.15, color="r", alpha=0.1, label="Capture Swim")
+
+    handles, labels = plt.gca().get_legend_handles_labels()
+    by_label = dict(zip(labels, handles))
+    axs.legend(by_label.values(), by_label.keys(), prop={'size': 13}, loc="upper right")
+    plt.xlabel("Step", fontsize=25)
+    plt.ylabel("Normalised Activity/Energy State", fontsize=18)
+    axs.spines["right"].set_visible(False)
+    axs.spines["top"].set_visible(False)
+    axs.tick_params(axis="x", labelsize=16)
+    axs.tick_params(axis="y", labelsize=16)
+    plt.tight_layout()
+    plt.savefig("../../Figures/Panels/rnn_unit_energy_state.png")
+    plt.show()
 
 
-plt.figure(figsize=(20, 10))
-unit_activity1a = [[state[0, 0, j] for i, state in enumerate(data["rnn_state_actor"])] for j in range(512)]
-unit_29 = unit_activity1a[235]
-
-consumption_points = [i for i, a in enumerate(data["consumed"]) if a == 1]
-cs_points = [i for i, a in enumerate(data["action"]) if a == 3]
-
-
-
-plt.plot(unit_29)
-plt.plot((np.array(e)*250))
-for c in cs_points:
-    plt.vlines(c, 0, 300, color="r")
-
-plt.show()
-
-
-
-plot_traces(unit_activity1a)
-
-#
+# VERSION 1
 # import json
 # #
 # with open(f"../../Categorisation-Data/final_even2.json", 'r') as f:

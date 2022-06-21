@@ -293,88 +293,93 @@ def check_separation(group1, group2):
 
 
 # VERSION 2
+with open(f"./../../Data/Categorisation-Data/dqn_scaffold_14-1_categories.json", "r") as file:
+    categories = json.load(file)
 
 ata = get_full_action_triggered_average("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20)
-plot_average_action_scores_comparison([ata], ["All"], [ata])
+
+
+
+plot_average_action_scores_comparison([ata], ["All"])
 
 
 # VERSION 1
 
-# with open(f"../../Categorisation-Data/latest_even.json", 'r') as f:
+# # with open(f"../../Categorisation-Data/latest_even.json", 'r') as f:
+# #     data2 = json.load(f)
+#
+# #
+# with open(f"../../Data/Categorisation-Data/final_even2.json", 'r') as f:
 #     data2 = json.load(f)
-
 #
-with open(f"../../Data/Categorisation-Data/final_even2.json", 'r') as f:
-    data2 = json.load(f)
-
-# Single-point
-ata = get_full_action_triggered_average("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
-
-# display_all_atas(ata, data2["new_even_prey_ref-4"])
-
-data = load_data("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
-ex1 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "exploration")
-ex2 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "consumed")
-ex3 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "predator")
-
-# display_all_etas([ex1, ex2, ex3], ["Exploration", "Consumption", "Predator"], data2["new_even_prey_ref-4"])
-
-
-placeholder_list = data2["new_even_prey_ref-4"]["3"] + data2["new_even_prey_ref-4"]["16"]
-predator_only_ns = [2, 13, 19, 23, 27, 29, 34, 36, 46, 50, 60, 66, 81, 82, 93, 94, 95, 99, 100, 106, 110, 113, 117, 119, 122, 135, 145, 150, 156, 163, 165, 169, 171, 174, 182, 185, 186, 201, 203, 217, 218, 219, 220, 225, 226, 227, 238, 244, 259, 261, 264, 269, 280, 290, 302, 308, 310, 317, 322, 324, 339, 341, 345, 350, 366, 373, 402, 411, 450, 464, 469, 471, 477, 493]
-prey_only_ns = [72, 77, 82, 138, 222, 232, 253, 268, 279, 318, 369, 382, 385, 388, 410, 433, 461, 481]
-predator_cs_ns = data2["new_even_prey_ref-4"]["15"] + data2["new_even_prey_ref-4"]["11"]
-valence_ns = data2["new_even_prey_ref-4"]["3"] + data2["new_even_prey_ref-4"]["9"]
-prey_full_field_ns = data2["new_even_prey_ref-4"]["7"] + data2["new_even_prey_ref-4"]["8"] + data2["new_even_prey_ref-4"]["9"]+ data2["new_even_prey_ref-4"]["12"]
-
-ex2 = normalise_vrvs([ex1, ex2, ex3])[1]
-atas_v = [ata[i] for i in ata.keys()]
-atas_v = normalise_vrvs(atas_v)
-prey_in_front_etas_consumption = [a for i, a in enumerate(ex2) if i in placeholder_list]
-prey_in_front_etas_scs = [a for i, a in enumerate(atas_v[3]) if i in placeholder_list]
-all_etas_consumption = [a for i, a in enumerate(ex2) if i not in placeholder_list]
-all_etas_scs = [a for i, a in enumerate(ata["3"]) if i not in placeholder_list]
-
-check_separation(prey_in_front_etas_consumption, all_etas_consumption)
-check_separation(prey_in_front_etas_scs, all_etas_scs)
-
-prey_in_front = get_for_specific_neurons(ata, placeholder_list)
-# predator_only = get_for_specific_neurons(ata, predator_only_ns)
-# prey_only = get_for_specific_neurons(ata, prey_only_ns)
-predator_cs = get_for_specific_neurons(ata, predator_cs_ns)
-valence = get_for_specific_neurons(ata, valence_ns)
-prey_full_field = get_for_specific_neurons(ata, prey_full_field_ns)
-
-prey_in_front_std = [np.std([n for i, n in enumerate(ata[a]) if i in placeholder_list]) for a in ata.keys()]
-prey_full_field_std = [np.std([n for i, n in enumerate(ata[a]) if i in prey_full_field_ns]) for a in ata.keys()]
-valence_std = [np.std([n for i, n in enumerate(ata[a]) if i in valence_ns]) for a in ata.keys()]
-all_std = [np.std([n for i, n in enumerate(ata[a])]) for a in ata.keys()]
-used_actions = [0, 3, 4, 5]
-
-stdss = []
-
-for a in used_actions:
-    stds = []
-    stds.append(prey_in_front_std[a])
-    stds.append(prey_full_field_std[a])
-    stds.append(valence_std[a])
-    stds.append(all_std[a])
-    stdss.append(stds)
-
-plot_average_action_scores_comparison([prey_in_front,prey_full_field, valence, ata, ], ["15o-in-Front", "Prey-Full-Field", "Valence", "All Neurons"], stdss)
+# # Single-point
+# ata = get_full_action_triggered_average("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
 #
-# plot_average_action_scores_comparison([predator_only, prey_only, ata], ["Predator-Only","Prey-Only", "All"])
-# Timeseries:
-
-eta = get_full_eta_timeseries("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
-eta = np.absolute(eta)
-prey_in_front_capture_average, std = get_average_timeseries(eta, placeholder_list)
-prey_full_field, std2 = get_average_timeseries(eta, prey_full_field_ns)
-predator_cs, std3 = get_average_timeseries(eta, predator_cs_ns)
-other_capture_average, std23 = get_average_timeseries(eta, [i for i in range(512) if i not in placeholder_list and i not in prey_full_field_ns])
-predator_only_capture_average, std33 = get_average_timeseries(eta, predator_only_ns)
-display_multiple_average_eta_timeseries([prey_in_front_capture_average, other_capture_average, prey_full_field, predator_cs], ["15o-in-Front", "All Neurons", "Prey-Full-Field", "Predator-RW"], std, std2, std3)
-
-
-
+# # display_all_atas(ata, data2["new_even_prey_ref-4"])
+#
+# data = load_data("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic-1")
+# ex1 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "exploration")
+# ex2 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "consumed")
+# ex3 = get_full_eta("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10, "predator")
+#
+# # display_all_etas([ex1, ex2, ex3], ["Exploration", "Consumption", "Predator"], data2["new_even_prey_ref-4"])
+#
+#
+# placeholder_list = data2["new_even_prey_ref-4"]["3"] + data2["new_even_prey_ref-4"]["16"]
+# predator_only_ns = [2, 13, 19, 23, 27, 29, 34, 36, 46, 50, 60, 66, 81, 82, 93, 94, 95, 99, 100, 106, 110, 113, 117, 119, 122, 135, 145, 150, 156, 163, 165, 169, 171, 174, 182, 185, 186, 201, 203, 217, 218, 219, 220, 225, 226, 227, 238, 244, 259, 261, 264, 269, 280, 290, 302, 308, 310, 317, 322, 324, 339, 341, 345, 350, 366, 373, 402, 411, 450, 464, 469, 471, 477, 493]
+# prey_only_ns = [72, 77, 82, 138, 222, 232, 253, 268, 279, 318, 369, 382, 385, 388, 410, 433, 461, 481]
+# predator_cs_ns = data2["new_even_prey_ref-4"]["15"] + data2["new_even_prey_ref-4"]["11"]
+# valence_ns = data2["new_even_prey_ref-4"]["3"] + data2["new_even_prey_ref-4"]["9"]
+# prey_full_field_ns = data2["new_even_prey_ref-4"]["7"] + data2["new_even_prey_ref-4"]["8"] + data2["new_even_prey_ref-4"]["9"]+ data2["new_even_prey_ref-4"]["12"]
+#
+# ex2 = normalise_vrvs([ex1, ex2, ex3])[1]
+# atas_v = [ata[i] for i in ata.keys()]
+# atas_v = normalise_vrvs(atas_v)
+# prey_in_front_etas_consumption = [a for i, a in enumerate(ex2) if i in placeholder_list]
+# prey_in_front_etas_scs = [a for i, a in enumerate(atas_v[3]) if i in placeholder_list]
+# all_etas_consumption = [a for i, a in enumerate(ex2) if i not in placeholder_list]
+# all_etas_scs = [a for i, a in enumerate(ata["3"]) if i not in placeholder_list]
+#
+# check_separation(prey_in_front_etas_consumption, all_etas_consumption)
+# check_separation(prey_in_front_etas_scs, all_etas_scs)
+#
+# prey_in_front = get_for_specific_neurons(ata, placeholder_list)
+# # predator_only = get_for_specific_neurons(ata, predator_only_ns)
+# # prey_only = get_for_specific_neurons(ata, prey_only_ns)
+# predator_cs = get_for_specific_neurons(ata, predator_cs_ns)
+# valence = get_for_specific_neurons(ata, valence_ns)
+# prey_full_field = get_for_specific_neurons(ata, prey_full_field_ns)
+#
+# prey_in_front_std = [np.std([n for i, n in enumerate(ata[a]) if i in placeholder_list]) for a in ata.keys()]
+# prey_full_field_std = [np.std([n for i, n in enumerate(ata[a]) if i in prey_full_field_ns]) for a in ata.keys()]
+# valence_std = [np.std([n for i, n in enumerate(ata[a]) if i in valence_ns]) for a in ata.keys()]
+# all_std = [np.std([n for i, n in enumerate(ata[a])]) for a in ata.keys()]
+# used_actions = [0, 3, 4, 5]
+#
+# stdss = []
+#
+# for a in used_actions:
+#     stds = []
+#     stds.append(prey_in_front_std[a])
+#     stds.append(prey_full_field_std[a])
+#     stds.append(valence_std[a])
+#     stds.append(all_std[a])
+#     stdss.append(stds)
+#
+# plot_average_action_scores_comparison([prey_in_front,prey_full_field, valence, ata, ], ["15o-in-Front", "Prey-Full-Field", "Valence", "All Neurons"], stdss)
+# #
+# # plot_average_action_scores_comparison([predator_only, prey_only, ata], ["Predator-Only","Prey-Only", "All"])
+# # Timeseries:
+#
+# eta = get_full_eta_timeseries("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
+# eta = np.absolute(eta)
+# prey_in_front_capture_average, std = get_average_timeseries(eta, placeholder_list)
+# prey_full_field, std2 = get_average_timeseries(eta, prey_full_field_ns)
+# predator_cs, std3 = get_average_timeseries(eta, predator_cs_ns)
+# other_capture_average, std23 = get_average_timeseries(eta, [i for i in range(512) if i not in placeholder_list and i not in prey_full_field_ns])
+# predator_only_capture_average, std33 = get_average_timeseries(eta, predator_only_ns)
+# display_multiple_average_eta_timeseries([prey_in_front_capture_average, other_capture_average, prey_full_field, predator_cs], ["15o-in-Front", "All Neurons", "Prey-Full-Field", "Predator-RW"], std, std2, std3)
+#
+#
+#
 

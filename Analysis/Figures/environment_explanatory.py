@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
 from Analysis.load_model_config import load_configuration_files
 from Environment.Fish.eye import Eye
@@ -10,9 +11,15 @@ from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.anchored_scale_bar import AnchoredHScaleBar
 
 
-def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_draw):
+def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_draw, reduction=2.5):
     data = load_data(model_name, assay_config, assay_id)
     learning_params, env_variables, n, b, c = load_configuration_files(model_name="dqn_scaffold_18-1")
+    env_variables["width"] = int(env_variables["width"]/reduction)
+    env_variables["height"] = int(env_variables["height"]/reduction)
+    env_variables["red_photoreceptor_num"] = int(env_variables["red_photoreceptor_num"]/reduction)
+    env_variables["uv_photoreceptor_num"] = int(env_variables["uv_photoreceptor_num"]/reduction)
+
+    env_variables["light_gradient"] = int(env_variables["light_gradient"]/reduction)
     fish_body_colour = (0, 1, 0)
     board = NewDrawingBoard(env_variables["width"], env_variables["height"], env_variables["decay_rate"],
                             env_variables["uv_photoreceptor_rf_size"],
@@ -24,25 +31,25 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
                             uv_occlusion_gain=env_variables["uv_occlusion_gain"],
                             red2_occlusion_gain=env_variables["red2_occlusion_gain"])
 
+
     fish_angle = data["fish_angle"][step_to_draw]
-    fish_position = data["fish_position"][step_to_draw]
-    predator_bodies = np.array([[fish_position[0]+200, fish_position[1]-50]])
+    fish_position = data["fish_position"][step_to_draw]/reduction
+    predator_bodies = np.array([[fish_position[0]+600/reduction, fish_position[1]-400/reduction]])
 
     # Draw shapes for visualisation
     board.erase_visualisation(0.3)
-    board.fish_shape(data["fish_position"][step_to_draw], env_variables['fish_mouth_size'],
+    board.fish_shape(fish_position, env_variables['fish_mouth_size'],
                      env_variables['fish_head_size'], env_variables['fish_tail_length'],
                      (0, 1, 0), fish_body_colour, data["fish_angle"][step_to_draw])
 
-    px = np.round(np.array([pr[0] for pr in data["prey_positions"][step_to_draw]])).astype(int)
-    py = np.round(np.array([pr[1] for pr in data["prey_positions"][step_to_draw]])).astype(int)
+    px = np.round(np.array([pr[0]/reduction for pr in data["prey_positions"][step_to_draw]])).astype(int)
+    py = np.round(np.array([pr[1]/reduction for pr in data["prey_positions"][step_to_draw]])).astype(int)
     rrs, ccs = board.multi_circles(px, py, env_variables["prey_size_visualisation"])
 
-    rrs = np.clip(rrs, 0, 1499)
-    ccs = np.clip(ccs, 0, 1499)
+    rrs = np.clip(rrs, 0, env_variables["width"]-1)
+    ccs = np.clip(ccs, 0, env_variables["height"]-1)
 
     board.db_visualisation[rrs, ccs] = (0, 0, 1)
-
 
     relative_dark_gain = env_variables["dark_gain"] / env_variables["light_gain"]
     board.apply_light(int(env_variables['width'] * env_variables['dark_light_ratio']), relative_dark_gain, 1, visualisation=True)
@@ -56,16 +63,16 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
 
     # Draw shapes for image
     board.erase(env_variables['bkg_scatter'])
-    board.fish_shape(data["fish_position"][step_to_draw], env_variables['fish_mouth_size'],
+    board.fish_shape(fish_position, env_variables['fish_mouth_size'],
                      env_variables['fish_head_size'], env_variables['fish_tail_length'],
                      (0, 1, 0), fish_body_colour, data["fish_angle"][step_to_draw])
 
-    px = np.round(np.array([pr[0] for pr in data["prey_positions"][step_to_draw]])).astype(int)
-    py = np.round(np.array([pr[1] for pr in data["prey_positions"][step_to_draw]])).astype(int)
+    px = np.round(np.array([pr[0]/reduction for pr in data["prey_positions"][step_to_draw]])).astype(int)
+    py = np.round(np.array([pr[1]/reduction for pr in data["prey_positions"][step_to_draw]])).astype(int)
     rrs, ccs = board.multi_circles(px, py, env_variables["prey_size"])
 
-    rrs = np.clip(rrs, 0, 1499)
-    ccs = np.clip(ccs, 0, 1499)
+    rrs = np.clip(rrs, 0, env_variables["width"]-1)
+    ccs = np.clip(ccs, 0, env_variables["height"]-1)
 
     board.db[rrs, ccs] = (0, 0, 1)
 
@@ -73,9 +80,15 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
     # Show visualisation of whole environment
     fig, ax = plt.subplots(figsize=(15, 15), dpi=100)
     plt.imshow(board.db_visualisation)
-    ob = AnchoredHScaleBar(size=200, label="20mm", loc=4, frameon=True,
-                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
-    ax.add_artist(ob)
+    scale_bar = AnchoredSizeBar(ax.transData,
+                                200, '20mm', "lower center",
+                                pad=2,
+                                color='white',
+                                frameon=False,
+                                size_vertical=1,
+                                fontproperties={"size": 30})
+
+    ax.add_artist(scale_bar)
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.savefig("./Panels/Panel-1/full_arena.jpg")
@@ -83,17 +96,22 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
     plt.show()
 
     # Also create image of zoomed in of fish
-    buffer = 200
-    surrounding_fish_region = board.db_visualisation[int(data["fish_position"][step_to_draw, 1]-buffer):
-                                                     int(data["fish_position"][step_to_draw, 1]+buffer),
-                                                     int(data["fish_position"][step_to_draw, 0] - buffer):
-                                                     int(data["fish_position"][step_to_draw, 0] + buffer),
+    buffer = 300/reduction
+    surrounding_fish_region = board.db_visualisation[int(fish_position[1]-buffer):
+                                                     int(fish_position[1]+buffer),
+                                                     int(fish_position[0]-buffer):
+                                                     int(fish_position[0]+buffer),
                                                     ]
     fig, ax = plt.subplots(figsize=(15, 15), dpi=100)
     plt.imshow(surrounding_fish_region)
-    ob = AnchoredHScaleBar(size=200, label="20mm", loc=4, frameon=True,
-                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
-    ax.add_artist(ob)
+    scale_bar = AnchoredSizeBar(ax.transData,
+                                100, '10mm', "lower center",
+                                pad=2,
+                                color='white',
+                                frameon=False,
+                                size_vertical=1,
+                                fontproperties={"size": 30})
+    ax.add_artist(scale_bar)
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.savefig("./Panels/Panel-1/surrounding_fish_region.jpg")
@@ -108,16 +126,16 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
     test_eye_r = Eye(board, verg_angle, retinal_field, False, env_variables, dark_col, False)
 
     right_eye_pos = (
-        -np.cos(np.pi / 2 - fish_angle) * env_variables['eyes_biasx'] + data["fish_position"][step_to_draw, 0],
-        +np.sin(np.pi / 2 - fish_angle) * env_variables['eyes_biasx'] + data["fish_position"][step_to_draw, 1])
+        -np.cos(np.pi / 2 - fish_angle) * env_variables['eyes_biasx'] + fish_position[0],
+        +np.sin(np.pi / 2 - fish_angle) * env_variables['eyes_biasx'] + fish_position[1])
     left_eye_pos = (
-        +np.cos(np.pi / 2 - fish_angle) * env_variables['eyes_biasx'] + data["fish_position"][step_to_draw, 0],
-        -np.sin(np.pi / 2 - fish_angle) * env_variables['eyes_biasx'] + data["fish_position"][step_to_draw, 1])
+        +np.cos(np.pi / 2 - fish_angle) * env_variables['eyes_biasx'] + fish_position[0],
+        -np.sin(np.pi / 2 - fish_angle) * env_variables['eyes_biasx'] + fish_position[1])
 
-    arena = np.zeros((1500, 1500))
+    arena = np.zeros((env_variables["width"], env_variables["height"]))
 
-    full_masked_image = board.get_masked_pixels(np.array([data["fish_position"][step_to_draw][0], data["fish_position"][step_to_draw][1]]),
-                                                data["prey_positions"][step_to_draw],
+    full_masked_image = board.get_masked_pixels(np.array([fish_position[0], fish_position[1]]),
+                                                data["prey_positions"][step_to_draw]/reduction,
                                                 predator_bodies
                                                 )
 
@@ -163,13 +181,35 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
     board.db_visualisation[uv_points[:, 1], uv_points[:, 0], 0:2] += 0.3
     fig, ax = plt.subplots(figsize=(15, 15), dpi=100)
     plt.imshow(board.db_visualisation)
-    ob = AnchoredHScaleBar(size=200, label="20mm", loc=4, frameon=True,
-                           pad=0.6, sep=4, linekw=dict(color="crimson"), )
-    ax.add_artist(ob)
+    scale_bar = AnchoredSizeBar(ax.transData,
+                                200, '20mm', "lower center",
+                                pad=2,
+                                color='white',
+                                frameon=False,
+                                size_vertical=1,
+                                fontproperties={"size": 30})
+    ax.add_artist(scale_bar)
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.savefig("./Panels/Panel-1/arena_with_channels.jpg")
     plt.show()
+
+    fig, ax = plt.subplots(figsize=(15, 15), dpi=100)
+    plt.imshow(full_masked_image)
+    scale_bar = AnchoredSizeBar(ax.transData,
+                                200, '20mm', "lower center",
+                                pad=2,
+                                color='white',
+                                frameon=False,
+                                size_vertical=1,
+                                fontproperties={"size": 30})
+    ax.add_artist(scale_bar)
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+    plt.savefig("./Panels/Panel-1/full_masked_image_with_channels.jpg")
+    plt.show()
+
+
 
     # Get observation for the given step.
     test_eye_l.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], fish_angle)
@@ -196,6 +236,19 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
     axs[0].axes.get_xaxis().set_visible(False)
     axs[1].axes.get_xaxis().set_visible(False)
     plt.savefig("./Panels/Panel-1/observation.jpg")
+    plt.show()
+
+    photons_l_uv_highlight = photons_l * np.array([[1, 1, 3]])
+    photons_r_uv_highlight = photons_r * np.array([[1, 1, 3]])
+
+    fig, axs = plt.subplots(1, 2, figsize=(10, 4))
+    axs[0].imshow(photons_l_uv_highlight)
+    axs[1].imshow(photons_r_uv_highlight)
+    axs[0].axes.get_yaxis().set_visible(False)
+    axs[1].axes.get_yaxis().set_visible(False)
+    axs[0].axes.get_xaxis().set_visible(False)
+    axs[1].axes.get_xaxis().set_visible(False)
+    plt.savefig("./Panels/Panel-1/observation_uv_highlight.jpg")
     plt.show()
 
     # Show background
@@ -244,16 +297,16 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
 
     # Get observation for the given step without any shot noise
     board.erase(0)
-    board.fish_shape(data["fish_position"][step_to_draw], env_variables['fish_mouth_size'],
+    board.fish_shape(fish_position, env_variables['fish_mouth_size'],
                      env_variables['fish_head_size'], env_variables['fish_tail_length'],
                      (0, 1, 0), fish_body_colour, data["fish_angle"][step_to_draw])
 
-    px = np.round(np.array([pr[0] for pr in data["prey_positions"][step_to_draw]])).astype(int)
-    py = np.round(np.array([pr[1] for pr in data["prey_positions"][step_to_draw]])).astype(int)
+    px = np.round(np.array([pr[0]/reduction for pr in data["prey_positions"][step_to_draw]])).astype(int)
+    py = np.round(np.array([pr[1]/reduction for pr in data["prey_positions"][step_to_draw]])).astype(int)
     rrs, ccs = board.multi_circles(px, py, env_variables["prey_size"])
 
-    rrs = np.clip(rrs, 0, 1499)
-    ccs = np.clip(ccs, 0, 1499)
+    rrs = np.clip(rrs, 0, env_variables["width"]-1)
+    ccs = np.clip(ccs, 0, env_variables["height"]-1)
 
     board.db[rrs, ccs] = (0, 0, 1)
 
@@ -293,7 +346,7 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
 
 # visualise_environent_at_step("dqn_scaffold_18-2", "Behavioural-Data-Free", "Naturalistic-3", 56)
 
-visualise_environent_at_step("dqn_scaffold_18-2", "Behavioural-Data-Free", "Naturalistic-4", 56)
+visualise_environent_at_step("dqn_scaffold_18-2", "Behavioural-Data-Free", "Naturalistic-4", 40)
 
 
 

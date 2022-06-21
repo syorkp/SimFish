@@ -37,7 +37,7 @@ def get_action_triggered_average(data):
     action_triggered_averages = {str(i): [0 for i in range(len(data["rnn_state_actor"][0][0][0]))] for i in range(10)}
     action_counts = {str(i): 0 for i in range(10)}
     neuron_baseline = [np.mean(data["rnn_state_actor"][:, :, :, i]) for i in range(len(data["rnn_state_actor"][0][0][0]))]
-    for a, n in zip(data["action"], np.squeeze(data["rnn_state_actor"])):
+    for a, n in zip(data["action"], np.squeeze(data["rnn_state_actor"])[:, 0, :]):
         for i, nn in enumerate(n):
             action_triggered_averages[str(a)][i] += nn
         action_counts[str(a)] += 1
@@ -248,9 +248,14 @@ def get_indexes_of_max(ex, total=100):
     plt.show()
     return hundred_most_associated
 
+
 # VERSION 2
+from Analysis.Neural.Visualisation.visualise_etas import plot_average_action_scores
 
-
+data = load_data("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic-1")
+ex = get_eta(data, "actions")
+ind = get_indexes_of_max(ex, 100)
+plot_average_action_scores(ex)
 
 
 
