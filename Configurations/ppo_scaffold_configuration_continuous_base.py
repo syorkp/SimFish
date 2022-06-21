@@ -192,7 +192,7 @@ env = {
        #                                  New Simulation
 
        # Action mask
-       'impose_action_mask': False,
+       'impose_action_mask': True,
 
        # Sensory inputs
        'energy_state': True,
