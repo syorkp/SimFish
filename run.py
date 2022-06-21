@@ -5829,6 +5829,9 @@ dqn_no_scaffold = [
     },
 ]
 
+
+# Data Gathering
+
 dqn_15_naturalistic_data = [
     {
         "Model Name": "dqn_scaffold_15",
@@ -12535,5 +12538,5 @@ ppo_scaffold_20_bs = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_18a, parallel_jobs=3)
+manager = TrialManager(dqn_scaffold_19a, parallel_jobs=3)
 manager.run_priority_loop()
