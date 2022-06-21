@@ -147,7 +147,7 @@ class BasePPO:
 
         self.step_number = 0
         while self.step_number < self.current_episode_max_duration:
-            print(self.step_number)
+            # print(self.step_number)
             if self.assay is not None:
                 if self.assay["reset"] and self.step_number % self.assay["reset interval"] == 0:
                     rnn_state_actor = copy.copy(self.init_rnn_state_actor)
