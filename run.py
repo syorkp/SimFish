@@ -5494,80 +5494,6 @@ dqn_scaffold_18a = [
     },
 ]
 
-ppo_scaffold_18 = [
-    {
-        "Model Name": "ppo_scaffold_18",
-        "Environment Name": "ppo_scaffold_18",
-        "Trial Number": 1,
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": True,
-        "New Simulation": True,
-        "Profile Speed": False,
-    },
-    {
-        "Model Name": "ppo_scaffold_18",
-        "Environment Name": "ppo_scaffold_18",
-        "Trial Number": 2,
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": True,
-        "New Simulation": True,
-        "Profile Speed": False,
-    },
-]
-
-ppo_scaffold_18a = [
-    {
-        "Model Name": "ppo_scaffold_18a",
-        "Environment Name": "ppo_scaffold_18a",
-        "Trial Number": 1,
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": True,
-        "New Simulation": True,
-        "Profile Speed": False,
-    },
-    {
-        "Model Name": "ppo_scaffold_18a",
-        "Environment Name": "ppo_scaffold_18a",
-        "Trial Number": 2,
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": True,
-        "New Simulation": True,
-        "Profile Speed": False,
-    },
-]
-
 # For Symposium (06.06 onwards)
 
 dqn_scaffold_19a = [
@@ -12438,6 +12364,82 @@ dqn_19_19nl_naturalistic_data = [
 ]
 
 
+# To Continue 21.06.22
+
+ppo_scaffold_18 = [
+    {
+        "Model Name": "ppo_scaffold_18",
+        "Environment Name": "ppo_scaffold_18",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "ppo_scaffold_18",
+        "Environment Name": "ppo_scaffold_18",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+ppo_scaffold_18a = [
+    {
+        "Model Name": "ppo_scaffold_18a",
+        "Environment Name": "ppo_scaffold_18a",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "ppo_scaffold_18a",
+        "Environment Name": "ppo_scaffold_18a",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_19_19nl_naturalistic_data, parallel_jobs=1)  # TODO: Change back
+manager = TrialManager(ppo_scaffold_18, parallel_jobs=1)  # TODO: Change back
 manager.run_priority_loop()
