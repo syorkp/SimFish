@@ -314,7 +314,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_23"
+scaffold_name = "dqn_scaffold_24"
 
 # 2-10
 changes = [
