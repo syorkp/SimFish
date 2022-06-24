@@ -128,10 +128,11 @@ def plot_distinguishability_against_luminance_two_distances(visual_distance_full
                                                             max_luminance, rf_size, decay_constant):
     luminance_vals = np.linspace(min_luminance, max_luminance, 1000)
 
-    learning_params, env_variables, n, b, c = load_configuration_files("dqn_scaffold_11-1")
+    learning_params, env_variables, n, b, c = load_configuration_files("dqn_scaffold_19-1")
     env_variables["light_gain"] = luminance
     env_variables["shot_noise"] = False
     env_variables["dark_light_ratio"] = 0.0
+    env_variables["max_visual_distance"] = 1500
 
     max_uv_scatter = get_max_bkg_scatter(bkg_scatter, decay_constant, rf_size, 1500, 1500, luminance, env_variables)
 
@@ -194,7 +195,8 @@ def plot_distinguishability_against_luminance_two_distances(visual_distance_full
         np.save(f, np.array(uv_stimulus_photons_partial))
 
 
-learning_params, env_variables, n, b, c = load_configuration_files("dqn_scaffold_11-1")
+learning_params, env_variables, n, b, c = load_configuration_files("dqn_scaffold_19-1")
+
 
 
 L1 = 200

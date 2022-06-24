@@ -69,7 +69,6 @@ params = {
        'use_rnd': False,  # Whether to use RND.
 }
 
-
 env = {
        #                            Old Simulation (Parameters ignored in new simulation)
        'num_photoreceptors': 120,  # number of visual 'rays' per eye
@@ -134,7 +133,7 @@ env = {
        'prey_inertia': 40.,
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-       'prey_num': 30,
+       'prey_num': 25,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
@@ -198,7 +197,7 @@ env = {
        "use_dynamic_network": False,
        'salt_concentration_decay': 0.002,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
-       'max_salt_damage': 0.02,  # Salt damage at centre of source.
+       'max_salt_damage': 0.0,  # Salt damage at centre of source. Before, was 0.02
 
        # GIFs and debugging
        'visualise_mask': False,  # For debugging purposes.
@@ -310,14 +309,15 @@ env = {
        # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
 
        'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
+
+       'max_visual_range': 1500,
 }
 
 
-scaffold_name = "dqn_scaffold_22"
+scaffold_name = "dqn_scaffold_23"
 
 # 2-10
 changes = [
-       ["PCI", 0.25, 'distance_from_fish', 75],  # Distance from the fish at which the predator appears. Formerly 498
        ["PCI", 0.25, "anneling_steps", 500000],
        # 1) Rewards and Penalties
        ["PCI", 0.25, "capture_swim_extra_cost", 50],
@@ -332,14 +332,16 @@ changes = [
        ["PCI", 0.35, "bkg_scatter", 0.1],
 ]
 
-# 11-15
+# 11-14
 changes += build_changes_list_gradual("PCI", 0.3, "light_gain", env["light_gain"], 125.7, 4)
+
+# 2) Exploration 15-18
 changes += [["PCI", 0.35, "max_epLength", 2000, "do_to_params"]]
+changes += [["PCI", 0.35, "baseline_decrease", 0.00075]]
+changes += [["PCI", 0.35, "width", 3000]]
+changes += [["PCI", 0.35, "height", 3000]]
 
-# 3) Available actions
-# Only for continuous
-
-# 4) Prey Capture 16-32
+# 3) Fine Prey Capture 19-34
 changes += [["PCI", 0.35, "prey_fluid_displacement", True]]
 changes += [["PCI", 0.35, "prey_jump", True]]
 changes += build_changes_list_gradual("PCI", 0.35, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
@@ -348,14 +350,12 @@ changes += build_changes_list_gradual("PCI", 0.35, "capture_angle_deviation_allo
 changes += [["PCI", 0.35, "capture_swim_extra_cost", 100]]
 changes += [["PCI", 0.35, "anneling_steps", 1000000]]
 
-# 5) Predator avoidance 33
+# 4) Predator avoidance 35
 changes += [["PCI", 0.35, "probability_of_predator", 0.01]]
 # TODO: Complex predator
 
-# 6) Other Behaviours 34
+# 5) Other Behaviours 36-37
+changes += [["PCI", 0.35, "max_salt_damage", 0.02]]
 changes += [["PCI", 0.35, "current_setting", "Circular"]]
-
-# 7) Final Features
-# Motor effect noise (only for continuous)
 
 create_scaffold(scaffold_name, env, params, changes)

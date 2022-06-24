@@ -118,6 +118,11 @@ class Eye:
         self.uv_signal_fail = []
         self.red2_signal_fail = []
 
+        if "max_visual_range" in self.env_variables:
+            self.max_visual_range = self.env_variables["max_visual_range"]
+        else:
+            self.max_visual_range = self.width + self.height
+
     def get_repeated_computations(self):
         if self.shared_photoreceptor_channels:
             channel_angles_surrounding = self.chosen_math_library.expand_dims(self.photoreceptor_angles, 1)
@@ -502,6 +507,16 @@ class Eye:
         max_x = self.chosen_math_library.max(vertices_xvals, axis=2)
         min_y = self.chosen_math_library.min(vertices_yvals, axis=2)
         max_y = self.chosen_math_library.max(vertices_yvals, axis=2)
+
+        # Threshold with distance from fish
+        absolute_min_x = eye_x - self.max_visual_range
+        absolute_max_x = eye_x + self.max_visual_range
+        absolute_min_y = eye_y - self.max_visual_range
+        absolute_max_y = eye_y + self.max_visual_range
+        min_x = self.chosen_math_library.clip(min_x, absolute_min_x, self.width)
+        max_x = self.chosen_math_library.clip(max_x, 0, absolute_max_x)
+        min_y = self.chosen_math_library.clip(min_y, absolute_min_y, self.height)
+        max_y = self.chosen_math_library.clip(max_y, 0, absolute_max_y)
 
         # SEGMENT COMPUTATION
         x_lens = self.chosen_math_library.rint(max_x[:, 0] - min_x[:, 0])
