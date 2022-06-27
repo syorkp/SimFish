@@ -320,6 +320,7 @@ env = {
 scaffold_name = "ppo_scaffold_20_bs"
 
 
+# 2-3
 changes = [
        ["PCI", 0.3, "anneling_steps", 500000],
 
@@ -327,6 +328,7 @@ changes = [
        ["PCI", 0.3, "wall_reflection", False],
 ]
 
+# 4-11
 changes += build_changes_list_gradual("PCI", 0.3, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25, 8)
 changes += build_changes_list_gradual("PCI", 0.3, "action_reward_scaling", env["action_reward_scaling"], 10000, 4)
 
