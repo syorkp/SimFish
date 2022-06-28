@@ -1650,8 +1650,7 @@ class ContinuousPPO(BasePPO):
         # Stacking for correct network dimensions
         observation_batch = np.vstack(np.vstack(observation_batch))
         internal_state_batch = np.vstack(np.vstack(internal_state_batch))
-        action_batch = np.reshape(action_batch[:, :, :],
-                                  (self.learning_params["trace_length"] * current_batch_size, 2))
+        action_batch = np.reshape(action_batch, (self.learning_params["trace_length"] * current_batch_size, 2))
         previous_action_batch = np.vstack(np.vstack(previous_action_batch))
         log_action_probability_batch = log_action_probability_batch.flatten()
         advantage_batch = np.vstack(advantage_batch).flatten()
