@@ -191,7 +191,9 @@ class BasePPOBuffer:
 
     @staticmethod
     def pad_slice(buffer, desired_length, identity=None):
-        """Zero pads a trace so all are same length"""
+        """Zero pads a trace so all are same length.
+        NOTE: Fails in case of previous action which doesnt need to be padded.
+        """
         shape_of_data = buffer.shape[1:]
         extra_pads = desired_length - buffer.shape[0]
         padding_shape = (extra_pads, ) + shape_of_data
@@ -199,10 +201,7 @@ class BasePPOBuffer:
         try:
             padding = np.zeros(padding_shape, dtype=float)
         except ValueError:
-            print(f"Identity: {identity}")
-            print(f"Padding shape: {padding_shape}")
-            print(f"Extra pads: {extra_pads}")
-            print(f"Remaining buffer shape: {buffer.shape}")
+            return buffer
 
         padding = padding + 0.01
         buffer = np.concatenate((buffer, padding), axis=0)
