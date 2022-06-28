@@ -119,12 +119,12 @@ class PPOBufferContinuous(BasePPOBuffer):
             internal_state_slice = self.pad_slice(self.internal_state_buffer[self.pointer:-1, :], self.trace_length, "i")
             action_slice = self.pad_slice(self.action_buffer[self.pointer + 1:-1, :], self.trace_length, "a")
             previous_action_slice = self.pad_slice(self.action_buffer[self.pointer:-2, :], self.trace_length, "p")
-            # reward_slice = self.reward_buffer[self.pointer:-1], self.trace_length)
-            # value_slice = self.pad_slice(self.value_buffer[self.pointer:-1], self.trace_length)
             log_impulse_probability_slice = self.pad_slice(self.log_impulse_probability_buffer[self.pointer:-1], self.trace_length, "li")
             log_angle_probability_slice = self.pad_slice(self.log_angle_probability_buffer[self.pointer:-1], self.trace_length, "la")
             advantage_slice = self.pad_slice(self.advantage_buffer[self.pointer:], self.trace_length, "ad")
             return_slice = self.pad_slice(self.return_buffer[self.pointer:], self.trace_length, "re")
+            # reward_slice = self.reward_buffer[self.pointer:-1], self.trace_length)
+            # value_slice = self.pad_slice(self.value_buffer[self.pointer:-1], self.trace_length)
             # actor_rnn_state_slice = self.actor_rnn_state_buffer[self.pointer:-1]
             # actor_rnn_state_ref_slice = self.actor_rnn_state_ref_buffer[self.pointer:-1]
             # critic_rnn_state_slice = self.critic_rnn_state_buffer[self.pointer:-1]
