@@ -12685,6 +12685,27 @@ dqn_scaffold_24b = [
     },
 ]
 
+dqn_scaffold_dn_test = [
+    {
+        "Model Name": "dqn_scaffold_dn_test",
+        "Environment Name": "dqn_scaffold_dn_test",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_18a, parallel_jobs=3)
+manager = TrialManager(dqn_scaffold_23a, parallel_jobs=3)
 manager.run_priority_loop()

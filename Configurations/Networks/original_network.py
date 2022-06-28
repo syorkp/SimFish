@@ -18,7 +18,7 @@ base_network_layers = {
     "conv4r": ['conv1d', 64, 4, 1],
 
     # "rgc": ["dense", 512],  # Units
-    "optic_tectum": ["dynamic_rnn", 512],  # Units
+    "rnn": ["dynamic_rnn", 512],  # Units
 }
 
 # Layers in the modular network - Programmatic differentiation is that these layers may be changed during trials.
@@ -31,7 +31,8 @@ ops = {
     "eye_split": ["eye_split", ["observation"], ["left_eye", "right_eye"]],
     "flatten1": ["flatten", ["conv4l"], ["conv4l_flat"]],
     "flatten2": ["flatten", ["conv4r"], ["conv4r_flat"]],
-    "join_eyes": ["concatenate", ["conv4l_flat", "conv4r_flat", "internal_state", "prev_actions"], ["conv_with_states"]],
+    "join_eyes": ["concatenate", ["conv4l_flat", "conv4r_flat", "internal_state", "prev_actions", "prev_action_impulse",
+                                  "prev_action_angle"], ["flattened_conv"]],
 }
 
 # Types of connectivity between layers
@@ -46,6 +47,6 @@ connectivity = [
     ["full", ["conv2r", "conv3r"]],
     ["full", ["conv3r", "conv4r"]],
 
-    ["full", ["conv_with_states", "optic_tectum"]],
+    ["full", ["flattened_conv", "rnn"]],
 ]
 

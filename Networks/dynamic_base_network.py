@@ -25,8 +25,13 @@ class DynamicBaseNetwork:
 
         # Network inputs
         if algorithm == "dqn":
-            self.prev_actions = tf.placeholder(shape=[None], dtype=tf.int32, name='prev_actions')
-            self.prev_actions_one_hot = tf.one_hot(self.prev_actions, num_actions, dtype=tf.float32)
+            self.prev_actions = tf.placeholder(shape=[None, 3], dtype=tf.int32, name='prev_actions')
+            self.prev_action_consequences = self.prev_actions[:, 1:]
+            self.prev_action_impulse = self.prev_action_consequences[:, :1]
+            self.prev_action_angle = self.prev_action_consequences[:, 1:]
+            self.prev_chosen_actions = self.prev_actions[:, 0]
+            self.prev_chosen_actions = tf.cast(self.prev_chosen_actions, dtype=tf.int32)
+            self.prev_actions_one_hot = tf.one_hot(self.prev_chosen_actions, num_actions, dtype=tf.float32)
         else:
             self.prev_actions = tf.placeholder(shape=[None, action_dim], dtype=tf.float32, name='prev_actions')
 
@@ -49,7 +54,10 @@ class DynamicBaseNetwork:
         if algorithm == "dqn":
             self.network_graph = {"observation": self.reshaped_observation,
                                   "internal_state": self.internal_state,
-                                  "prev_actions": self.prev_actions_one_hot}
+                                  "prev_actions": self.prev_actions_one_hot,
+                                  "prev_action_impulse": self.prev_action_impulse,
+                                  "prev_action_angle": self.prev_action_angle,
+                                  }
         else:
             self.network_graph = {"observation": self.reshaped_observation,
                                   "internal_state": self.internal_state,
@@ -115,8 +123,11 @@ class DynamicBaseNetwork:
         elif op[0] == "flatten":
             network_graph[op[2][0]] = tf.layers.flatten(network_graph[op[1][0]], name=self.scope + "_" + op[2][0])
         elif op[0] == "concatenate":
-            network_graph[op[2][0]] = tf.concat([network_graph[op[1][i]] for i in range(len(op[1]))], 1,
-                                                name=self.scope + "_" + op[2][0])
+            if reflected:  # TODO: Get rid of in future, is compatability error..
+                network_graph[op[2][0]] = tf.concat([network_graph[op[1][i]] for i in range(len(op[1]))], 1)
+            else:
+                network_graph[op[2][0]] = tf.concat([network_graph[op[1][i]] for i in range(len(op[1]))], 1,
+                                                name=op[2][0])
         else:
             print(f"Undefined op: {op[0]}")
 
@@ -149,16 +160,25 @@ class DynamicBaseNetwork:
                                                                           activation=tf.nn.relu,
                                                                           kernel_initializer=tf.orthogonal_initializer,
                                                                           trainable=True,
-                                                                          name=self.scope + "_" + layer_name + "_inputs",
+                                                                          name=self.scope + "_" + layer_name + "_in",
                                                                           reuse=reflected)
-            network_graph[layer_input + "_reshaped"] = tf.reshape(self.network_graph[layer_input + "_inputs"],
-                                                                  [self.batch_size, self.train_length, units])
+            if reflected:  # TODO: Remove later, compatability issue now.
+                network_graph[layer_input + "_reshaped"] = tf.reshape(self.network_graph[layer_input + "_inputs"],
+                                                                      [self.batch_size, self.train_length, units])
+            else:
+                network_graph[layer_input + "_reshaped"] = tf.reshape(self.network_graph[layer_input + "_inputs"],
+                                                                      [self.batch_size, self.train_length, units],
+                                                                      name="flattened_shared_" + layer_name + "_in")
             network_graph[layer_name + "_dyn"], network_graph[layer_name + "_shared"] = tf.nn.dynamic_rnn(
                 inputs=network_graph[layer_input + "_reshaped"], cell=self.rnn_cells[layer_name],
                 dtype=tf.float32,
                 initial_state=self.rnn_cell_states[state_layer_name],
                 scope=self.scope + "_" + state_layer_name)
-            network_graph[layer_name] = tf.reshape(network_graph[layer_name + "_dyn"], shape=[-1, units])
+            if reflected:  # TODO: Remove later, compatability issue now.
+                network_graph[layer_name] = tf.reshape(network_graph[layer_name + "_dyn"], shape=[-1, units])
+            else:
+                network_graph[layer_name] = tf.reshape(network_graph[layer_name + "_dyn"], shape=[-1, units],
+                                                       name="shared_" + layer_name + "_output")
         else:
             print(f"Undefined layer: {layer_parameters[0]}")
 

@@ -20,7 +20,7 @@ params = {
        'batch_size': 16,  # How many experience traces to use for each training step.
        'trace_length': 64,  # How long each experience trace will be when training
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
-       'max_epLength': 1000,  # The max allowed length of our episode.
+       'max_epLength': 100,  # The max allowed length of our episode.
        'epsilon_greedy': True,
        'epsilon_greedy_scaffolding': True,
        'startE': 0.2,  # Starting chance of random action
@@ -53,7 +53,7 @@ params = {
 
        # Saving and video parameters
        'time_per_step': 0.03,  # Length of each step used in gif creation
-       'summaryLength': 200,  # Number of episodes to periodically save for analysis
+       'summaryLength': 1,  # Number of episodes to periodically save for analysis
        'rnn_dim_shared': 512,  # number of rnn cells. Should no longer be used.
        'extra_rnn': False,
        'save_gifs': True,
@@ -194,7 +194,7 @@ env = {
        'in_light': True,
        'salt': True,  # Inclusion of olfactory salt input and salt death.
        'salt_reward_penalty': 10000,  # Scales with salt concentration.
-       "use_dynamic_network": False,
+       "use_dynamic_network": True,
        'salt_concentration_decay': 0.002,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
        'max_salt_damage': 0.0,  # Salt damage at centre of source. Before, was 0.02
@@ -314,7 +314,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_23_test"
+scaffold_name = "dqn_scaffold_dn_test"
 
 # 2-10
 changes = [
