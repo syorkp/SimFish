@@ -44,7 +44,12 @@ def create_scaffold(scaffold_name, initial_env, initial_params, changes):
 
     for i, change in enumerate(changes):
         if len(change) > 4:
-            initial_params[change[2]] = change[3]
+            if change[-1] == "do_to_params":
+                initial_params[change[2]] = change[3]
+            else:
+                things_to_change = change[2:]
+                for j in range(0, len(things_to_change), 2):
+                    initial_env[things_to_change[j]] = things_to_change[j+1]
         else:
             initial_env[change[2]] = change[3]
         save_files(scaffold_name, initial_env, initial_params, i+2)
@@ -64,3 +69,4 @@ def build_changes_list_gradual(threshold_measure, threshold, change_to_make, ini
         current_value += increment
         changes += [[threshold_measure, threshold, change_to_make, current_value]]
     return changes
+

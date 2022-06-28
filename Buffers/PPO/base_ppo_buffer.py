@@ -190,7 +190,7 @@ class BasePPOBuffer:
         return actor_rnn_state_batch, actor_rnn_state_batch_ref, critic_rnn_state_batch, critic_rnn_state_batch_ref
 
     @staticmethod
-    def pad_slice(buffer, desired_length):
+    def pad_slice(buffer, desired_length, identity=None):
         """Zero pads a trace so all are same length"""
         shape_of_data = buffer.shape[1:]
         extra_pads = desired_length - buffer.shape[0]
@@ -199,6 +199,7 @@ class BasePPOBuffer:
         try:
             padding = np.zeros(padding_shape, dtype=float)
         except ValueError:
+            print(f"Identity: {identity}")
             print(f"Padding shape: {padding_shape}")
             print(f"Extra pads: {extra_pads}")
             print(f"Remaining buffer shape: {buffer.shape}")

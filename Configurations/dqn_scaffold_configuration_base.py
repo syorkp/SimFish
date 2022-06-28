@@ -314,7 +314,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_23"
+scaffold_name = "dqn_scaffold_23_test"
 
 # 2-10
 changes = [
@@ -338,8 +338,7 @@ changes += build_changes_list_gradual("PCI", 0.3, "light_gain", env["light_gain"
 # 2) Exploration 15-18
 changes += [["PCI", 0.35, "max_epLength", 2000, "do_to_params"]]
 changes += [["PCI", 0.35, "baseline_decrease", 0.00075]]
-changes += [["PCI", 0.35, "width", 3000]]
-changes += [["PCI", 0.35, "height", 3000]]
+changes += [["PCI", 0.35, "width", 3000, "height", 3000]]
 
 # 3) Fine Prey Capture 19-34
 changes += [["PCI", 0.35, "prey_fluid_displacement", True]]

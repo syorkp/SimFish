@@ -12611,7 +12611,6 @@ dqn_scaffold_23b = [
     },
 ]
 
-
 dqn_scaffold_24a = [
     {
         "Model Name": "dqn_scaffold_24",
@@ -12687,5 +12686,5 @@ dqn_scaffold_24b = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_19, parallel_jobs=3)
+manager = TrialManager(ppo_scaffold_18a, parallel_jobs=3)
 manager.run_priority_loop()
