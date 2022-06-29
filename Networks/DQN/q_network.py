@@ -73,7 +73,8 @@ class QNetwork:
 
         if full_reafference:
             self.conv_with_states = tf.concat(
-                [self.conv4l_flat, self.conv4r_flat, self.prev_actions_one_hot, self.prev_action_impulse, self.prev_action_angle, self.internal_state], 1)
+                [self.conv4l_flat, self.conv4r_flat, self.prev_actions_one_hot, self.prev_action_impulse,
+                 self.prev_action_angle, self.internal_state], 1)
         else:
             self.conv_with_states = tf.concat(
                 [self.conv4l_flat, self.conv4r_flat, self.prev_actions_one_hot, self.internal_state], 1)

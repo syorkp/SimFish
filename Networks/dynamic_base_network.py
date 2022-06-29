@@ -25,7 +25,7 @@ class DynamicBaseNetwork:
 
         # Network inputs
         if algorithm == "dqn":
-            self.prev_actions = tf.placeholder(shape=[None, 3], dtype=tf.int32, name='prev_actions')
+            self.prev_actions = tf.placeholder(shape=[None, 3], dtype=tf.float32, name='prev_actions')
             self.prev_action_consequences = self.prev_actions[:, 1:]
             self.prev_action_impulse = self.prev_action_consequences[:, :1]
             self.prev_action_angle = self.prev_action_consequences[:, 1:]
@@ -70,7 +70,10 @@ class DynamicBaseNetwork:
             if algorithm == "dqn":
                 self.reflected_network_graph = {"observation": self.reshaped_observation,
                                                 "internal_state": self.internal_state,
-                                                "prev_actions": self.prev_actions_one_hot}
+                                                "prev_actions": self.prev_actions_one_hot,
+                                                "prev_action_impulse": self.prev_action_impulse,
+                                                "prev_action_angle": self.prev_action_angle,
+                                                }
             else:
                 self.reflected_network_graph = {"observation": self.reshaped_observation,
                                                 "internal_state": self.internal_state,

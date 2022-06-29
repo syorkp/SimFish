@@ -330,6 +330,7 @@ changes = [
 
 # 4-11
 changes += build_changes_list_gradual("PCI", 0.3, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25, 8)
+# 12-15
 changes += build_changes_list_gradual("PCI", 0.3, "action_reward_scaling", env["action_reward_scaling"], 10000, 4)
 
 changes += [

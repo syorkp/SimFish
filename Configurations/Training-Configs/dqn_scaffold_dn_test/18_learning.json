@@ -120,7 +120,9 @@
                 "conv4l_flat",
                 "conv4r_flat",
                 "internal_state",
-                "prev_actions"
+                "prev_actions",
+                "prev_action_impulse",
+                "prev_action_angle"
             ],
             [
                 "flattened_conv"

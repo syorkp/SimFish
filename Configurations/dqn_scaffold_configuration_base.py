@@ -20,7 +20,7 @@ params = {
        'batch_size': 16,  # How many experience traces to use for each training step.
        'trace_length': 64,  # How long each experience trace will be when training
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
-       'max_epLength': 100,  # The max allowed length of our episode.
+       'max_epLength': 1000,  # The max allowed length of our episode.
        'epsilon_greedy': True,
        'epsilon_greedy_scaffolding': True,
        'startE': 0.2,  # Starting chance of random action
@@ -53,7 +53,7 @@ params = {
 
        # Saving and video parameters
        'time_per_step': 0.03,  # Length of each step used in gif creation
-       'summaryLength': 1,  # Number of episodes to periodically save for analysis
+       'summaryLength': 200,  # Number of episodes to periodically save for analysis
        'rnn_dim_shared': 512,  # number of rnn cells. Should no longer be used.
        'extra_rnn': False,
        'save_gifs': True,
@@ -314,7 +314,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_dn_test"
+scaffold_name = "dqn_scaffold_dn_23"
 
 # 2-10
 changes = [
