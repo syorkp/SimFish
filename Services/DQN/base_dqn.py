@@ -551,26 +551,35 @@ class BaseDQN:
         # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
         train_batch = self.experience_buffer.sample(self.learning_params['batch_size'],
                                                     self.learning_params['trace_length'])
-        previous_actions = np.expand_dims(np.hstack(([0], train_batch[:-1, 1])), 1)
-        previous_actions = previous_actions[:, 0]
+        # previous_actions = np.expand_dims(np.hstack(([0], train_batch[:-1, 1])), 1)
+        # previous_actions = previous_actions[:, 0]
+
+        print(f"""
+        observation: {np.vstack(train_batch[:, 4]),}
+        prev_actions: {np.vstack((np.array([[6, 0, 0]]), np.vstack(train_batch[:-1, 1]))),}
+        train_length: {self.learning_params['trace_length'],}
+        internal_state: {np.vstack(train_batch[:, 3]),}
+        rnn_state_in: {state_train,}
+        batch_size: {self.learning_params['batch_size'],}
+        exp_keep: {1.0,}
+        learning_rate: {self.learning_params["learning_rate"],}
+        """)
 
         # Below we perform the Double-DQN update to the target Q-values
         Q1 = self.sess.run(self.main_QN.predict, feed_dict={
             self.main_QN.observation: np.vstack(train_batch[:, 4]),
-            self.main_QN.prev_actions: previous_actions,
+            self.main_QN.prev_actions: np.vstack((np.array([[6, 0, 0]]), np.vstack(train_batch[:-1, 1]))),
             self.main_QN.train_length: self.learning_params['trace_length'],
             self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
             self.main_QN.rnn_state_in: state_train,
-            # self.main_QN.rnn_state_in_ref: state_train_ref,
             self.main_QN.batch_size: self.learning_params['batch_size'],
             self.main_QN.exp_keep: 1.0,
             self.main_QN.learning_rate: self.learning_params["learning_rate"],
-
         })
 
         Q2 = self.sess.run(self.target_QN.Q_out, feed_dict={
             self.target_QN.observation: np.vstack(train_batch[:, 4]),
-            self.target_QN.prev_actions: previous_actions,
+            self.target_QN.prev_actions: np.vstack((np.array([[6, 0, 0]]), np.vstack(train_batch[:-1, 1]))),
             self.target_QN.train_length: self.learning_params['trace_length'],
             self.target_QN.internal_state: np.vstack(train_batch[:, 3]),
             self.target_QN.rnn_state_in: state_train,
