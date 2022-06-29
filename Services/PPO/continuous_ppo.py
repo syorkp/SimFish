@@ -1654,20 +1654,9 @@ class ContinuousPPO(BasePPO):
             action_batch = np.reshape(np.array(action_batch), (self.learning_params["trace_length"] * current_batch_size, 2))
         except:
             print("Error... ")
-            for a in action_batch:
-                print(type(a))
-                print(a)
-                print("""
-                
-                
-                """)
-                for ab in a:
-                    print(type(ab))
-                    print(ab)
-                print("""
+            action_batch = np.array(action_batch)
+            print(action_batch.shape)
 
-
-                """)
 
         previous_action_batch = np.vstack(np.vstack(previous_action_batch))
         log_action_probability_batch = log_action_probability_batch.flatten()
