@@ -1654,7 +1654,21 @@ class ContinuousPPO(BasePPO):
             action_batch = np.reshape(np.array(action_batch), (self.learning_params["trace_length"] * current_batch_size, 2))
         except:
             print("Error... ")
-            print(f"Action batch: {action_batch}")
+            for a in action_batch:
+                print(type(a))
+                print(a)
+                print("""
+                
+                
+                """)
+                for ab in a:
+                    print(type(ab))
+                    print(ab)
+                print("""
+
+
+                """)
+
         previous_action_batch = np.vstack(np.vstack(previous_action_batch))
         log_action_probability_batch = log_action_probability_batch.flatten()
         advantage_batch = np.vstack(advantage_batch).flatten()
@@ -2009,7 +2023,6 @@ class ContinuousPPO(BasePPO):
             # pv: {np.array(previous_value_batch).shape}
             # cbs: {current_batch_size}
             # """)
-
 
             for i in range(self.learning_params["n_updates_per_iteration"]):
                 # Compute RNN states for start of each trace.

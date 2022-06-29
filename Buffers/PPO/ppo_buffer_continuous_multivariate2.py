@@ -142,7 +142,7 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
 
             observation_batch.append(observation_slice)
             internal_state_batch.append(internal_state_slice)
-            action_batch.append(action_slice)
+            action_batch.append(np.array(action_slice))
             previous_action_batch.append(previous_action_slice)
             log_action_probability_batch.append(log_action_probability_slice)
             advantage_batch.append(advantage_slice)
