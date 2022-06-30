@@ -149,8 +149,8 @@ env = {
        'predator_size': 43.5,  # To be 8.7mm in diameter, formerly 100
        'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
-       'distance_from_fish': 100,  # Distance from the fish at which the predator appears. Formerly 498
-       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
+       'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 498
+       'probability_of_predator': 0.01,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'light_gradient': 200,
@@ -194,7 +194,7 @@ env = {
        'in_light': True,
        'salt': True,  # Inclusion of olfactory salt input and salt death.
        'salt_reward_penalty': 10000,  # Scales with salt concentration.
-       "use_dynamic_network": True,
+       "use_dynamic_network": False,
        'salt_concentration_decay': 0.002,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
        'max_salt_damage': 0.0,  # Salt damage at centre of source. Before, was 0.02
@@ -314,7 +314,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_dn_23"
+scaffold_name = "dqn_scaffold_26"
 
 # 2-10
 changes = [
@@ -336,9 +336,10 @@ changes = [
 changes += build_changes_list_gradual("PCI", 0.3, "light_gain", env["light_gain"], 125.7, 4)
 
 # 2) Exploration 15-18
-changes += [["PCI", 0.35, "max_epLength", 2000, "do_to_params"]]
-changes += [["PCI", 0.35, "baseline_decrease", 0.00075]]
-changes += [["PCI", 0.35, "width", 3000, "height", 3000]]
+changes += [["PCI", 0.35, "max_epLength", 3000, "do_to_params"]]
+changes += [["PCI", 0.35, "baseline_decrease", 0.00075, "prey_num", env["prey_num"]*4, "prey_cloud_num", env["prey_cloud_num"]*4, "width", 3000, "height", 3000]]
+changes += build_changes_list_gradual("PCI", 0.35, "prey_num", env["prey_num"], env["prey_num"]/2, 4)
+changes += build_changes_list_gradual("PCI", 0.35, "prey_cloud_num", env["prey_cloud_num"], env["prey_cloud_num"]/2, 4)
 
 # 3) Fine Prey Capture 19-34
 changes += [["PCI", 0.35, "prey_fluid_displacement", True]]
