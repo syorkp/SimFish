@@ -554,16 +554,16 @@ class BaseDQN:
         # previous_actions = np.expand_dims(np.hstack(([0], train_batch[:-1, 1])), 1)
         # previous_actions = previous_actions[:, 0]
 
-        print(f"""
-        observation: {np.vstack(train_batch[:, 4]),}
-        prev_actions: {np.vstack((np.array([[6, 0, 0]]), np.vstack(train_batch[:-1, 1]))),}
-        train_length: {self.learning_params['trace_length'],}
-        internal_state: {np.vstack(train_batch[:, 3]),}
-        rnn_state_in: {state_train,}
-        batch_size: {self.learning_params['batch_size'],}
-        exp_keep: {1.0,}
-        learning_rate: {self.learning_params["learning_rate"],}
-        """)
+        # print(f"""
+        # observation: {np.vstack(train_batch[:, 4]),}
+        # prev_actions: {np.vstack((np.array([[6, 0, 0]]), np.vstack(train_batch[:-1, 1]))),}
+        # train_length: {self.learning_params['trace_length'],}
+        # internal_state: {np.vstack(train_batch[:, 3]),}
+        # rnn_state_in: {state_train,}
+        # batch_size: {self.learning_params['batch_size'],}
+        # exp_keep: {1.0,}
+        # learning_rate: {self.learning_params["learning_rate"],}
+        # """)
 
         # Below we perform the Double-DQN update to the target Q-values
         Q1 = self.sess.run(self.main_QN.predict, feed_dict={
@@ -600,7 +600,8 @@ class BaseDQN:
                                  self.main_QN.targetQ: target_Q,
                                  self.main_QN.actions: train_batch[:, 1],
                                  self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
-                                 self.main_QN.prev_actions: np.expand_dims(np.hstack(([3], train_batch[:-1, 1])), 1)[:, 0],
+                                 self.main_QN.prev_actions: np.vstack(
+                                     (np.array([[6, 0, 0]]), np.vstack(train_batch[:-1, 1]))),
                                  self.main_QN.train_length: self.learning_params['trace_length'],
                                  self.main_QN.rnn_state_in: state_train,
                                  # self.main_QN.rnn_state_in_ref: state_train_ref,
