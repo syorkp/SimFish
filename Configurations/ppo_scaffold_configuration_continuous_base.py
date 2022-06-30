@@ -17,8 +17,8 @@ from Networks.original_network import connectivity, reflected, base_network_laye
 
 params = {
        # Learning (Universal)
-       'batch_size': 16,  # How many experience traces to use for each training step. Works okay with 1,
-       'trace_length': 64,  # How long each experience trace will be when training. Works okay with 50
+       'batch_size': 1,  # How many experience traces to use for each training step. Works okay with 1.
+       'trace_length': 50,  # How long each experience trace will be when training. Works okay with 50
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
        'max_epLength': 3000,  # The max allowed length of our episode.
        'epsilon_greedy': True,
@@ -281,8 +281,8 @@ env = {
        'max_isomerization_size': 0.0,
 
        # Energy state and hunger-based rewards
-       'ci': 0.0002,  # 0.0004 in previous best.
-       'ca': 0.0002,  # 0.0004 in previous best.
+       'ci': 0.0004,  # 0.0004 in previous best.
+       'ca': 0.0004,  # 0.0004 in previous best.
        'baseline_decrease': 0.0015,
        'trajectory_A': 5.0,
        'trajectory_B': 2.5,
@@ -317,7 +317,7 @@ env = {
        'max_visual_range': False,
 }
 
-scaffold_name = "ppo_scaffold_20_bs"
+scaffold_name = "ppo_scaffold_22"
 
 
 # 2-3
@@ -330,7 +330,10 @@ changes = [
 
 # 4-11
 changes += build_changes_list_gradual("PCI", 0.3, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25, 8)
-# 12-15
+
+# 12-35
+# 3) Available actions
+changes += build_changes_list_gradual("PCI", 0.3, "max_impulse", env["max_impulse"], 20, 20)
 changes += build_changes_list_gradual("PCI", 0.3, "action_reward_scaling", env["action_reward_scaling"], 10000, 4)
 
 changes += [
@@ -347,8 +350,6 @@ changes += [
 changes += build_changes_list_gradual("PCI", 0.4, "light_gain", env["light_gain"], 125.7, 4)
 changes += [["PCI", 0.4, "max_epLength", 5000, "do_to_params"]]
 
-# 3) Available actions
-changes += build_changes_list_gradual("PCI", 0.4, "max_impulse", env["max_impulse"], 20, 20)
 
 # 4) Prey Capture
 changes += [["PCI", 0.4, "prey_fluid_displacement", True]]

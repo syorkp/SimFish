@@ -1655,7 +1655,15 @@ class ContinuousPPO(BasePPO):
         except:
             print("Error... ")
             action_batch = np.array(action_batch)
-            print(action_batch.shape)
+            print("Types, layer 1: ")
+            for a in action_batch:
+                print(type(a))
+            print("""
+            
+            Types, layer 2""")
+            for a in action_batch:
+                for b in a:
+                    print(type(b))
 
 
         previous_action_batch = np.vstack(np.vstack(previous_action_batch))
