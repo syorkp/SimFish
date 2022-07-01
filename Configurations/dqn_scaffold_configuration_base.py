@@ -5,6 +5,7 @@ Created on Mon Oct  5 07:52:17 2020
 
 @author: asaph
 """
+import copy
 import json
 import os
 import numpy as np
@@ -315,10 +316,18 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_dnr_25"
+scaffold_name = "dqn_scaffold_dn_switch_25"
+
+base_network_layers_updated = copy.copy(base_network_layers)
+base_network_layers_updated["new_dense"] = ["dense", 300]
+new_connectivity = copy.copy(connectivity)
+new_connectivity.append(["full", ["rnn", "dense"]])
+
+changes = [["PCI", 0.35, "base_network_layers", base_network_layers_updated,
+            "connectivity", new_connectivity, "do_to_params"]]
 
 # 2-10
-changes = [
+changes += [
        ["PCI", 0.25, "anneling_steps", 500000],
        # 1) Rewards and Penalties
        ["PCI", 0.25, "capture_swim_extra_cost", 50],
