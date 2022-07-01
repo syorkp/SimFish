@@ -124,6 +124,15 @@ class TrainingService(BaseService):
         else:
             self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts, self.new_simulation, self.using_gpu)
 
+    def reload_network(self):
+        self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
+        print("Saved Model")
+        self.create_network()
+        self.init_states()
+        # Load possible parameters
+        self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
+        print("Saved Model")
+
     def check_update_configuration(self):
         next_point = str(self.configuration_index + 1)
         episode_transition_points = self.episode_transitions.keys()
@@ -161,6 +170,8 @@ class TrainingService(BaseService):
             self.learning_params, self.environment_params = self.load_configuration_files()
             self.previous_config_switch = self.episode_number
             self.create_environment()
+
+            # self.reload_network()
 
             # Reset sigma progression
             if self.continuous_actions and self.environment_params["sigma_scaffolding"]:

@@ -148,12 +148,14 @@ class DynamicBaseNetwork:
             if reuse_eyes and layer_name[-1] == "r":
                 # If set to reuse weights of one eye in the other, checks whether a right layer is specified, and if so,
                 # renames it and tells it to reuse the weight.
-                layer_name = layer_name[:-1] + "l"
+                layer_name_ = layer_name[:-1] + "l"
                 reflected = True
+            else:
+                layer_name_ = layer_name
             network_graph[layer_name] = tf.layers.conv1d(inputs=network_graph[layer_input],
                                                          filters=filters,
                                                          kernel_size=kernel_size, strides=strides, padding='valid',
-                                                         activation=tf.nn.relu, name=self.scope + "_" + layer_name,
+                                                         activation=tf.nn.relu, name=self.scope + "_" + layer_name_,
                                                          reuse=reflected)
         elif layer_parameters[0] == "dense":
             units = layer_parameters[1]
