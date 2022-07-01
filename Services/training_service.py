@@ -129,6 +129,10 @@ class TrainingService(BaseService):
         print("Saved Model")
         self.create_network()
         self.init_states()
+
+        self.saver = tf.train.Saver(max_to_keep=5)
+        variables_to_keep = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=G_NETWORK_PREFIX)
+        self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
         # Load possible parameters
         self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
         print("Saved Model")

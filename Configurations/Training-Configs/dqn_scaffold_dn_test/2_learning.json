@@ -82,7 +82,8 @@
         "rnn": [
             "dynamic_rnn",
             512
-        ]
+        ],
+        "new_dense": ["dense", 512]
     },
     "modular_network_layers": {},
     "ops": {
@@ -192,7 +193,8 @@
                 "flattened_conv",
                 "rnn"
             ]
-        ]
+        ],
+        ["full", ["rnn", "new_dense"]]
     ],
     "use_rnd": false
 }
