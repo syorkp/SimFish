@@ -42,7 +42,7 @@ class DynamicBaseNetwork:
             # If re-using weights from one eye to the other, reflect the observation reaching the right eye.
             left_eye = self.reshaped_observation[:, :, :, 0:1]
             right_eye = self.reshaped_observation[:, :, :, 1:2]
-            right_eye = tf.reverse(right_eye, axis=1)
+            right_eye = tf.reverse(right_eye, axis=[1])
             self.reshaped_observation = tf.concat((left_eye, right_eye), axis=3)
 
         # Record of processing step layers
