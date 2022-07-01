@@ -17,6 +17,16 @@ def save_transitions(scaffold_name, transitions):
         json.dump(transitions, f, indent=4)
 
 
+def create_transitions_log(scaffold_name, changes):
+    with open(f"Configurations/Training-Configs/{scaffold_name}/all_transitions.txt", "w") as f:
+        for i, change in enumerate(changes):
+            if len(change) > 4:
+                f.write(f"{str(i+1)}) Metric-{change[0]}: {change[1]}, Multiple changes")
+            else:
+                f.write(f"{str(i+1)}) Metric-{change[0]}: {change[1]}, Variable-{change[2]}: {change[3]}")
+            f.write('\n')
+
+
 def create_scaffold(scaffold_name, initial_env, initial_params, changes):
     """
     Given complete list of changes, and original scaffold, creates the necessary scaffold files.
@@ -41,6 +51,7 @@ def create_scaffold(scaffold_name, initial_env, initial_params, changes):
         "SGB": {},
     }
     save_files(scaffold_name, initial_env, initial_params, 1)
+    create_transitions_log(scaffold_name, changes)
 
     for i, change in enumerate(changes):
         if len(change) > 4:

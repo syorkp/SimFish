@@ -198,14 +198,16 @@ class BasePPOBuffer:
         extra_pads = desired_length - buffer.shape[0]
         padding_shape = (extra_pads, ) + shape_of_data
 
-        try:
-            padding = np.zeros(padding_shape, dtype=float)
-        except ValueError:
+        if extra_pads < 0:
+            # If too long, cut off final.
+            return buffer[:extra_pads]
+        elif extra_pads == 0:
             return buffer
-
-        padding = padding + 0.01
-        buffer = np.concatenate((buffer, padding), axis=0)
-        return buffer
+        else:
+            padding = np.zeros(padding_shape, dtype=float)
+            padding = padding + 0.01
+            buffer = np.concatenate((buffer, padding), axis=0)
+            return buffer
 
     def calculate_advantages_and_returns(self, normalise_advantage=True):
         delta = self.reward_buffer[:-1] + self.gamma * self.value_buffer[1:] - self.value_buffer[:-1]
