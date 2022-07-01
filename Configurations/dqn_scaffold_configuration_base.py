@@ -195,7 +195,7 @@ env = {
        'in_light': True,
        'salt': True,  # Inclusion of olfactory salt input and salt death.
        'salt_reward_penalty': 10000,  # Scales with salt concentration.
-       "use_dynamic_network": False,
+       "use_dynamic_network": True,
        'salt_concentration_decay': 0.002,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
        'max_salt_damage': 0.0,  # Salt damage at centre of source. Before, was 0.02

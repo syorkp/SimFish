@@ -91,7 +91,7 @@
     "in_light": true,
     "salt": true,
     "salt_reward_penalty": 10000,
-    "use_dynamic_network": false,
+    "use_dynamic_network": true,
     "salt_concentration_decay": 0.002,
     "salt_recovery": 0.01,
     "max_salt_damage": 0.0,
