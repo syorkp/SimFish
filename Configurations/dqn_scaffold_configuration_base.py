@@ -67,6 +67,7 @@ params = {
 
        # For RND
        'use_rnd': False,  # Whether to use RND.
+       'reuse_eyes': True,
 }
 
 env = {
@@ -314,7 +315,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_26a"
+scaffold_name = "dqn_scaffold_dnr_25"
 
 # 2-10
 changes = [

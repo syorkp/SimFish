@@ -48,6 +48,10 @@ class ContinuousPPO(BasePPO):
 
         if self.multivariate:
             if self.environment_params["use_dynamic_network"]:
+                if "reuse_eyes" in self.learning_params:
+                    reuse_eyes = self.learning_params['reuse_eyes']
+                else:
+                    reuse_eyes = False
                 self.actor_network = PPONetworkActorMultivariate2Dynamic(simulation=self.simulation,
                                                                          # rnn_dim=self.learning_params['rnn_dim_shared'],
                                                                          # rnn_cell=actor_cell,
@@ -73,6 +77,7 @@ class ContinuousPPO(BasePPO):
                                                                          connectivity=self.learning_params[
                                                                              'connectivity'],
                                                                          reflected=self.learning_params['reflected'],
+                                                                         reuse_eyes=reuse_eyes,
                                                                          )
             else:
                 if self.learning_params["beta_distribution"]:

@@ -103,6 +103,10 @@ class BaseDQN:
         cell_t = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
 
         if self.environment_params["use_dynamic_network"]:
+            if "reuse_eyes" in self.learning_params:
+                reuse_eyes = self.learning_params['reuse_eyes']
+            else:
+                reuse_eyes = False
             self.main_QN = QNetworkDynamic(simulation=self.simulation,
                                            my_scope='main',
                                            internal_states=internal_states,
@@ -116,6 +120,7 @@ class BaseDQN:
                                            connectivity=self.learning_params[
                                                'connectivity'],
                                            reflected=self.learning_params['reflected'],
+                                           reuse_eyes=reuse_eyes,
                                            )
             self.target_QN = QNetworkDynamic(simulation=self.simulation,
 
@@ -131,6 +136,7 @@ class BaseDQN:
                                              connectivity=self.learning_params[
                                                  'connectivity'],
                                              reflected=self.learning_params['reflected'],
+                                             reuse_eyes=reuse_eyes,
                                              )
         else:
             self.main_QN = QNetwork(simulation=self.simulation,

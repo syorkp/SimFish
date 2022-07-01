@@ -310,7 +310,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 
             if save_frames:
-                frame = self.output_frame(activations, internal_state, scale=0.25)
+                scaling_factor = 1500 / self.env_variables["width"]
+                frame = self.output_frame(activations, internal_state, scale=0.25*scaling_factor)
                 frame_buffer.append(frame)
             if self.draw_screen:
                 frame = self.output_frame(activations, internal_state, scale=0.5) / 255.

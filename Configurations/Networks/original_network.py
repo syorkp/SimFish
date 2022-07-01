@@ -5,7 +5,7 @@ File for example configuration of simple network.
 # Whether network is repeated as a reflected version - Currently must be true
 reflected = True
 
-# Layers in the base network: Name: [type, parameters]
+# Layers in the base network: Name: [type, parameters]. Note, is important to specify the left layers first.
 base_network_layers = {
     "conv1l": ['conv1d', 16, 16, 4],  # Filters, kernel_size, strides.
     "conv2l": ['conv1d', 8, 8, 2],

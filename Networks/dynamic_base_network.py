@@ -12,8 +12,7 @@ def flatten_list(t):
 class DynamicBaseNetwork:
 
     def __init__(self, simulation, my_scope, internal_states, internal_state_names, action_dim, num_actions,
-                 base_network_layers, modular_network_layers,
-                 ops, connectivity, reflected, algorithm):
+                 base_network_layers, modular_network_layers, ops, connectivity, reflected, algorithm, reuse_eyes):
 
         self.resolve_connectivity(base_network_layers, modular_network_layers, ops, connectivity)
 
@@ -39,6 +38,12 @@ class DynamicBaseNetwork:
         self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='observation')
         self.reshaped_observation = tf.reshape(self.observation, shape=[-1, self.photoreceptor_num, 3, 2],
                                                name="reshaped_observation")
+        if reuse_eyes:
+            # If re-using weights from one eye to the other, reflect the observation reaching the right eye.
+            left_eye = self.reshaped_observation[:, :, :, 0:1]
+            right_eye = self.reshaped_observation[:, :, :, 1:2]
+            right_eye = tf.reverse(right_eye, axis=1)
+            self.reshaped_observation = tf.concat((left_eye, right_eye), axis=3)
 
         # Record of processing step layers
         self.base_network_layers = base_network_layers
@@ -63,7 +68,7 @@ class DynamicBaseNetwork:
                                   "internal_state": self.internal_state,
                                   "prev_actions": self.prev_actions}
         self.initialize_network(copy.copy(base_network_layers), copy.copy(modular_network_layers), copy.copy(ops),
-                                connectivity, self.network_graph)
+                                connectivity, self.network_graph, reuse_eyes=reuse_eyes)
 
         if reflected:
             print("Building reflected graph")
@@ -79,7 +84,7 @@ class DynamicBaseNetwork:
                                                 "internal_state": self.internal_state,
                                                 "prev_actions": self.prev_actions}
             self.initialize_network(copy.copy(base_network_layers), copy.copy(modular_network_layers), copy.copy(ops),
-                                    connectivity, self.reflected_network_graph, reflected=True)
+                                    connectivity, self.reflected_network_graph, reflected=True, reuse_eyes=reuse_eyes)
 
         # Name the outputs
         self.processing_network_output = self.network_graph["output_layer"]
@@ -134,11 +139,17 @@ class DynamicBaseNetwork:
         else:
             print(f"Undefined op: {op[0]}")
 
-    def create_layer(self, layer_name, layer_input, connection_type, layer_parameters, network_graph, reflected):
+    def create_layer(self, layer_name, layer_input, connection_type, layer_parameters, network_graph, reflected,
+                     reuse_eyes):
         # TODO: build in different levels of connection
 
         if layer_parameters[0] == "conv1d":
             filters, kernel_size, strides = layer_parameters[1:]
+            if reuse_eyes and layer_name[-1] == "r":
+                # If set to reuse weights of one eye in the other, checks whether a right layer is specified, and if so,
+                # renames it and tells it to reuse the weight.
+                layer_name = layer_name[:-1] + "l"
+                reflected = True
             network_graph[layer_name] = tf.layers.conv1d(inputs=network_graph[layer_input],
                                                          filters=filters,
                                                          kernel_size=kernel_size, strides=strides, padding='valid',
@@ -193,7 +204,10 @@ class DynamicBaseNetwork:
             for i, state in enumerate(self.internal_state_names):
                 self.network_graph[state] = self.network_graph["internal_state"][:, i]
 
-    def initialize_network(self, layers, modular_layers, ops, connectivity, network_graph, reflected=False):
+    def initialize_network(self, layers, modular_layers, ops, connectivity, network_graph, reflected=False,
+                           reuse_eyes=False):
+        """reuse_eyes, if true, causes all conv layers to be reused."""
+
         self.separate_internal_state_inputs(reflected)
         layers = {**layers, **modular_layers}
         final_name = None
@@ -216,7 +230,7 @@ class DynamicBaseNetwork:
                     if connection[1][1] == layer:
                         if connection[1][0] in list(network_graph.keys()):
                             self.create_layer(layer, connection[1][0], connection[0], layers[layer], network_graph,
-                                              reflected)
+                                              reflected, reuse_eyes)
                             layer_to_remove = layer
                             final_name = layer
                             break_out = True

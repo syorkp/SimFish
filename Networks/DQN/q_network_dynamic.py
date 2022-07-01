@@ -9,10 +9,10 @@ class QNetworkDynamic(DynamicBaseNetwork):
 
     def __init__(self, simulation, my_scope, internal_states, internal_state_names, num_actions,
                 base_network_layers=None, modular_network_layers=None, ops=None, connectivity=None,
-                 reflected=None):
+                 reflected=None, reuse_eyes=False):
         super().__init__(simulation, my_scope, internal_states, internal_state_names, action_dim=1, num_actions=num_actions,
                          base_network_layers=base_network_layers, modular_network_layers=modular_network_layers, ops=ops,
-                         connectivity=connectivity, reflected=reflected, algorithm="dqn")
+                         connectivity=connectivity, reflected=reflected, algorithm="dqn", reuse_eyes=reuse_eyes)
 
         # Shared
         self.AW = tf.Variable(tf.random_normal([self.processing_network_output.shape[1] // 2, num_actions]), name=my_scope + "aw")

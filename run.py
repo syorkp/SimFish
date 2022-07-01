@@ -9035,7 +9035,43 @@ ppo_scaffold_22 = [
     },
 ]
 
+dqn_scaffold_dnr_25 = [
+    {
+        "Model Name": "dqn_scaffold_dnr_25",
+        "Environment Name": "dqn_scaffold_dnr_25",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "dqn_scaffold_dnr_25",
+        "Environment Name": "dqn_scaffold_dnr_25",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_20_bs, parallel_jobs=3)
+manager = TrialManager(dqn_scaffold_dnr_25, parallel_jobs=3)
 manager.run_priority_loop()

@@ -330,6 +330,8 @@ class BaseEnvironment:
         return extra_area
 
     def output_frame(self, activations, internal_state, scale=0.25):
+        # Adjust scale for larger environments
+
         # Saving mask frames (for debugging)
         if self.visualise_mask:
             frame = self.board.mask_buffer_time_point * 255.0
@@ -392,7 +394,8 @@ class BaseEnvironment:
         if visualisation:
             if self.env_variables["show_previous_actions"]:
                 self._draw_past_actions(self.env_variables["show_previous_actions"])
-            self._draw_shapes_environmental(visualisation, self.env_variables['prey_size_visualisation'])
+            scaling_factor = 1500 / self.env_variables["width"]
+            self._draw_shapes_environmental(visualisation, self.env_variables['prey_size_visualisation']/scaling_factor)
         else:
             self._draw_shapes_environmental(visualisation, self.env_variables['prey_size'])
 

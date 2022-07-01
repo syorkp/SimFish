@@ -64,6 +64,7 @@ params = {
 
        # For RND
        'use_rnd': False,  # Whether to use RND.
+       'reuse_eyes': False,
 }
 
 
