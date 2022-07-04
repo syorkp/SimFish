@@ -61,6 +61,8 @@ def create_scaffold(scaffold_name, initial_env, initial_params, changes):
                     initial_params[things_to_change[j]] = things_to_change[j + 1]
             else:
                 initial_params[change[2]] = change[3]
+        elif change[-1] == "complex":
+            initial_env, initial_params = implement_complex_transitions(change[2:-1], initial_env, initial_params)
         else:
 
             if len(change) > 4:
@@ -88,6 +90,13 @@ def build_changes_list_gradual(threshold_measure, threshold, change_to_make, ini
     return changes
 
 
-def implement_complex_transitions(threshold_measure, threshold, env_changes_to_make, params_changes_to_make,
-                                  initial_env, initial_params):
-    ...
+def implement_complex_transitions(list_of_changes, initial_env, initial_params):
+    """Method that returns the desired env and params from list of changes to both env and params."""
+    for i in range(0, len(list_of_changes), 2):
+        if list_of_changes[i] in initial_env:
+            initial_env[list_of_changes[i]] = list_of_changes[i+1]
+        elif list_of_changes[i] in initial_params:
+            initial_params[list_of_changes[i]] = list_of_changes[i + 1]
+        else:
+            print(f"Error, {list_of_changes[i]} does not exist in config specification")
+    return initial_env, initial_params

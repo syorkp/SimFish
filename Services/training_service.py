@@ -142,7 +142,8 @@ class TrainingService(BaseService):
         filtered_var_list = []
         for var in var_list:
             if any(new_name in var.name for new_name in new_var_names):
-                print(f"Found in {var.name}")
+                #print(f"Found in {var.name}")
+                pass
             else:
                 filtered_var_list.append(var)
         return filtered_var_list

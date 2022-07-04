@@ -169,5 +169,5 @@
     "capture_angle_deviation_allowance": 0.5934119456780723,
     "action_energy_use_scaling": "Sublinear",
     "max_visual_range": 1500,
-    "anneling_steps": 500000
+    "anneling_steps": 1000000
 }

@@ -35,7 +35,7 @@ class DynamicLoadingTest:
             self.trainables = tf.trainable_variables()
             checkpoint = tf.train.get_checkpoint_state(self.model_location)
             self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
-            self.saver.save(self.sess, f"{self.model_location}/model-{str(8009)}.cptk")
+            self.saver.save(self.sess, f"{self.model_location}/model-{str(3000)}.cptk")
 
         tf.reset_default_graph()
         sess = self.create_session()
@@ -61,7 +61,7 @@ class DynamicLoadingTest:
 
             self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
             # Load possible parameters
-            self.saver.save(self.sess, f"{self.model_location}/model-{str(8010)}.cptk")
+            self.saver.save(self.sess, f"{self.model_location}/model-{str(2)}.cptk")
             print("Saved Model")
 
         tf.reset_default_graph()
@@ -186,5 +186,5 @@ class DynamicLoadingTest:
 
 
 
-model_name = "dqn_scaffold_dn_test"
-DynamicLoadingTest(model_name, 1, 1)
+model_name = "dqn_scaffold_dn_switch_25"
+DynamicLoadingTest(model_name, 3, 1)

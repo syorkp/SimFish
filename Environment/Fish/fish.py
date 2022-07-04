@@ -58,9 +58,15 @@ class Fish:
             'sim_steps_per_second']
 
         if self.new_simulation:
-            self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True, env_variables, dark_col, using_gpu)
+            if "max_visual_range" in self.env_variables:
+                max_visual_distance = self.env_variables["max_visual_range"]
+            else:
+                max_visual_distance = (self.env_variables["width"] ** 2 + self.env_variables["height"] ** 2) ** 0.5
 
-            self.right_eye = Eye(board, self.verg_angle, self.retinal_field, False, env_variables, dark_col, using_gpu)
+            self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True, env_variables, dark_col, using_gpu,
+                                max_visual_range=max_visual_distance)
+            self.right_eye = Eye(board, self.verg_angle, self.retinal_field, False, env_variables, dark_col, using_gpu,
+                                 max_visual_range=max_visual_distance)
         else:
             self.left_eye = VisFan(board, self.verg_angle, self.retinal_field, True,
                                    env_variables['num_photoreceptors'], env_variables['min_vis_dist'],

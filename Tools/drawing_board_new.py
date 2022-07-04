@@ -13,7 +13,7 @@ class NewDrawingBoard:
     def __init__(self, width, height, decay_rate, photoreceptor_rf_size, using_gpu, visualise_mask, prey_size=4,
                  predator_size=100, visible_scatter=0.3, background_grating_frequency=50, dark_light_ratio=0.0,
                  dark_gain=0.01, light_gain=1.0, red_occlusion_gain=1.0, uv_occlusion_gain=1.0,
-                 red2_occlusion_gain=1.0, light_gradient=0):
+                 red2_occlusion_gain=1.0, light_gradient=0, max_visual_distance=1500):
 
         self.using_gpu = using_gpu
 
@@ -40,6 +40,7 @@ class NewDrawingBoard:
         self.prey_radius = prey_size
         self.predator_size = predator_size * 2
         self.predator_radius = predator_size
+        self.max_visual_distance = max_visual_distance
 
         self.red_occlusion_gain = red_occlusion_gain
         self.uv_occlusion_gain = uv_occlusion_gain
@@ -764,8 +765,8 @@ class NewDrawingBoard:
             return AB * L * O * S
 
     def compute_n(self, angular_size, number_of_this_feature, max_separation=1, p=None):
-        max_dist = (self.width ** 2 + self.height ** 2) ** 0.5
-        theta_separation = math.asin(max_separation / max_dist)
+
+        theta_separation = math.asin(max_separation / self.max_visual_distance)
         n = (angular_size / theta_separation)
 
         if n * number_of_this_feature > self.max_lines_num:

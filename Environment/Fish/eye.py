@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 class Eye:
 
-    def __init__(self, board, verg_angle, retinal_field, is_left, env_variables, dark_col, using_gpu):
+    def __init__(self, board, verg_angle, retinal_field, is_left, env_variables, dark_col, using_gpu, max_visual_range):
         # Use CUPY if using GPU.
         self.using_gpu = using_gpu
         if using_gpu:
@@ -29,6 +29,7 @@ class Eye:
         self.width, self.height = self.board.get_size()
         self.retinal_field_size = retinal_field
         self.env_variables = env_variables
+        self.max_visual_range = max_visual_range
 
         # To allow padding of channel observations if are of different size
 
@@ -118,10 +119,8 @@ class Eye:
         self.uv_signal_fail = []
         self.red2_signal_fail = []
 
-        if "max_visual_range" in self.env_variables:
-            self.max_visual_range = self.env_variables["max_visual_range"]
-        else:
-            self.max_visual_range = self.width + self.height
+        self.max_visual_range = self.max_visual_range
+
 
     def get_repeated_computations(self):
         if self.shared_photoreceptor_channels:
@@ -754,8 +753,7 @@ class Eye:
             self.board.db[rr, cc] = (0.5, 0, 0)
 
     def compute_n(self, photoreceptor_rf_size, max_separation=1):
-        max_dist = (self.width ** 2 + self.height ** 2) ** 0.5
-        theta_separation = math.asin(max_separation / max_dist)
+        theta_separation = math.asin(max_separation / self.max_visual_range)
         n = (photoreceptor_rf_size / theta_separation)
         return int(n)
 

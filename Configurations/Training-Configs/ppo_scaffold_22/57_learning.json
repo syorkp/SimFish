@@ -196,5 +196,6 @@
             ]
         ]
     ],
-    "use_rnd": false
+    "use_rnd": false,
+    "reuse_eyes": false
 }

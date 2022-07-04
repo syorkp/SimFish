@@ -34,6 +34,11 @@ class BaseEnvironment:
             else:
                 light_gradient = 0
 
+            if "max_visual_range" in self.env_variables:
+                max_visual_distance = self.env_variables["max_visual_range"]
+            else:
+                max_visual_distance = (self.env_variables["width"] ** 2 + self.env_variables["height"] ** 2) ** 0.5
+
             self.board = NewDrawingBoard(self.env_variables['width'], self.env_variables['height'],
                                          decay_rate=self.env_variables['decay_rate'],
                                          photoreceptor_rf_size=max_photoreceptor_rf_size,
@@ -50,6 +55,7 @@ class BaseEnvironment:
                                          uv_occlusion_gain=self.env_variables['uv_occlusion_gain'],
                                          red2_occlusion_gain=self.env_variables['red2_occlusion_gain'],
                                          light_gradient=light_gradient,
+                                         max_visual_distance=max_visual_distance
                                          )
         else:
             self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])
