@@ -321,7 +321,7 @@ scaffold_name = "dqn_scaffold_dn_switch_25"
 base_network_layers_updated = copy.copy(base_network_layers)
 base_network_layers_updated["new_dense"] = ["dense", 300]
 new_connectivity = copy.copy(connectivity)
-new_connectivity.append(["full", ["rnn", "dense"]])
+new_connectivity.append(["full", ["rnn", "new_dense"]])
 
 changes = [["PCI", 0.35, "base_network_layers", base_network_layers_updated,
             "connectivity", new_connectivity, "do_to_params"]]

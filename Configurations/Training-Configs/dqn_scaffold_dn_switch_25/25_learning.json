@@ -201,7 +201,7 @@
             "full",
             [
                 "rnn",
-                "dense"
+                "new_dense"
             ]
         ]
     ],
