@@ -21,9 +21,9 @@ def create_transitions_log(scaffold_name, changes):
     with open(f"Configurations/Training-Configs/{scaffold_name}/all_transitions.txt", "w") as f:
         for i, change in enumerate(changes):
             if len(change) > 4:
-                f.write(f"{str(i+1)}) Metric-{change[0]}: {change[1]}, Multiple changes")
+                f.write(f"{str(i + 1)}) Metric-{change[0]}: {change[1]}, Multiple changes")
             else:
-                f.write(f"{str(i+1)}) Metric-{change[0]}: {change[1]}, Variable-{change[2]}: {change[3]}")
+                f.write(f"{str(i + 1)}) Metric-{change[0]}: {change[1]}, Variable-{change[2]}: {change[3]}")
             f.write('\n')
 
 
@@ -58,7 +58,7 @@ def create_scaffold(scaffold_name, initial_env, initial_params, changes):
             if len(change) > 5:
                 things_to_change = change[2:-1]
                 for j in range(0, len(things_to_change), 2):
-                    initial_params[things_to_change[j]] = things_to_change[j+1]
+                    initial_params[things_to_change[j]] = things_to_change[j + 1]
             else:
                 initial_params[change[2]] = change[3]
         else:
@@ -66,10 +66,10 @@ def create_scaffold(scaffold_name, initial_env, initial_params, changes):
             if len(change) > 4:
                 things_to_change = change[2:]
                 for j in range(0, len(things_to_change), 2):
-                    initial_env[things_to_change[j]] = things_to_change[j+1]
+                    initial_env[things_to_change[j]] = things_to_change[j + 1]
             else:
                 initial_env[change[2]] = change[3]
-        save_files(scaffold_name, initial_env, initial_params, i+2)
+        save_files(scaffold_name, initial_env, initial_params, i + 2)
 
         transitions[change[0]][str(i + 2)] = change[1]
     save_transitions(scaffold_name, transitions)
@@ -79,7 +79,7 @@ def build_changes_list_gradual(threshold_measure, threshold, change_to_make, ini
     """Tool to output gradual changes in a parameter.
     Needs to be a generator???
     """
-    increment = (final_value-initial_value)/num_steps
+    increment = (final_value - initial_value) / num_steps
     current_value = initial_value
     changes = []
     for step in range(num_steps):
@@ -87,3 +87,7 @@ def build_changes_list_gradual(threshold_measure, threshold, change_to_make, ini
         changes += [[threshold_measure, threshold, change_to_make, current_value]]
     return changes
 
+
+def implement_complex_transitions(threshold_measure, threshold, env_changes_to_make, params_changes_to_make,
+                                  initial_env, initial_params):
+    ...
