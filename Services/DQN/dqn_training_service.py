@@ -96,6 +96,12 @@ class DQNTrainingService(TrainingService, BaseDQN):
             print("Switching network configuration...")
             with sess as self.sess:
                 self.create_network()
+                new_output_layer = self.main_QN.processing_network_output
+
+                if new_output_layer != self.original_output_layer:  # If altered shape of final output layer
+                    self.additional_layers += ["targetaw", "mainaw", "mainvw", "targetvw"]
+
+                self.original_output_layer = None
                 self.init_states()
                 TrainingService._run(self)
 

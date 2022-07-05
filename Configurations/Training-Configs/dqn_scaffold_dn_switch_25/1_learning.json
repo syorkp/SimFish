@@ -2,7 +2,7 @@
     "batch_size": 16,
     "trace_length": 64,
     "num_episodes": 50000,
-    "max_epLength": 100,
+    "max_epLength": 1000,
     "epsilon_greedy": true,
     "epsilon_greedy_scaffolding": true,
     "startE": 0.2,
@@ -25,7 +25,7 @@
     "sigma_scaffolding": false,
     "num_actions": 10,
     "time_per_step": 0.03,
-    "summaryLength": 1,
+    "summaryLength": 200,
     "rnn_dim_shared": 512,
     "extra_rnn": false,
     "save_gifs": true,
@@ -195,5 +195,5 @@
         ]
     ],
     "use_rnd": false,
-    "reuse_eyes": true
+    "reuse_eyes": false
 }

@@ -64,6 +64,7 @@ class TrainingService(BaseService):
         self.switch_network_configuration = False
         self.additional_layers = None
         self.removed_layers = None
+        self.original_output_layer = None
 
         self.last_episodes_prey_caught = []
         self.last_episodes_predators_avoided = []
@@ -148,7 +149,6 @@ class TrainingService(BaseService):
                 filtered_var_list.append(var)
         return filtered_var_list
 
-
     def create_environment(self):
         if self.continuous_actions:
             self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts, self.new_simulation, self.using_gpu)
@@ -198,6 +198,7 @@ class TrainingService(BaseService):
             self.previous_config_switch = self.episode_number
             self.create_environment()
 
+
             new_base_network_layers = copy.copy(
                 [layer for layer in self.learning_params["base_network_layers"].keys()])
             new_modular_network_layers = copy.copy(
@@ -206,6 +207,12 @@ class TrainingService(BaseService):
 
             additional_layers = [layer for layer in new_layers if layer not in original_layers]
             removed_layers = [layer for layer in original_layers if layer not in new_layers]
+
+            if self.environment_params["use_dynamic_network"]:
+                if self.continuous_actions:
+                    self.original_output_layer = self.actor_network.processing_network_output
+                else:
+                    self.original_output_layer = self.main_QN.processing_network_output
 
             if len(additional_layers) > 0 or len(removed_layers) > 0:
                 print("Network changed, recreating...")

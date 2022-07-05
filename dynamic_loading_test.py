@@ -53,7 +53,8 @@ class DynamicLoadingTest:
 
             variables_to_keep = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
 
-            variables_to_keep = self.remove_new_variables(variables_to_keep, ["new_dense"])
+            variables_to_keep = self.remove_new_variables(variables_to_keep, ["new_dense", "targetaw", "mainaw",
+                                                                              "mainvw", "targetvw"])
 
             self.saver = tf.train.Saver(max_to_keep=5, var_list=variables_to_keep)
             self.init = tf.global_variables_initializer()
@@ -187,4 +188,5 @@ class DynamicLoadingTest:
 
 
 model_name = "dqn_scaffold_dn_switch_25"
-DynamicLoadingTest(model_name, 3, 1)
+DynamicLoadingTest(model_name, 4, 1)
+

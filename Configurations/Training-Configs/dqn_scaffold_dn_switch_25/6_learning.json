@@ -206,5 +206,5 @@
         ]
     ],
     "use_rnd": false,
-    "reuse_eyes": true
+    "reuse_eyes": false
 }
