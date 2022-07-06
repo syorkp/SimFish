@@ -24,9 +24,11 @@ class DataIndexServiceDiscrete:
         if __name__ == "__main__":
             if not os.path.exists(f"../../Analysis/Data/Figures/{model_name}/"):
                 os.makedirs(f"../../Analysis/Data/Figures/{model_name}/")
+            self.figure_save_location = f"../../Analysis/Data/Figures/{model_name}/"
         else:
             if not os.path.exists(f"./Analysis/Data/Figures/{model_name}/"):
                 os.makedirs(f"./Analysis/Data/Figures/{model_name}/")
+            self.figure_save_location = f"./Analysis/Data/Figures/{model_name}/"
 
     @staticmethod
     def _flatten_data_list(data_list):
