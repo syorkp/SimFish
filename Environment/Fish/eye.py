@@ -119,9 +119,6 @@ class Eye:
         self.uv_signal_fail = []
         self.red2_signal_fail = []
 
-        self.max_visual_range = self.max_visual_range
-
-
     def get_repeated_computations(self):
         if self.shared_photoreceptor_channels:
             channel_angles_surrounding = self.chosen_math_library.expand_dims(self.photoreceptor_angles, 1)

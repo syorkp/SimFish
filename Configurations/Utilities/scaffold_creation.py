@@ -12,7 +12,8 @@ def save_files(scaffold_name, env, params, n):
         json.dump(params, f, indent=4)
 
 
-def save_transitions(scaffold_name, transitions):
+def save_transitions(scaffold_name, transitions, finished_condition):
+    transitions["Finished Condition"] = finished_condition
     with open(f"Configurations/Training-Configs/{scaffold_name}/transitions.json", 'w') as f:
         json.dump(transitions, f, indent=4)
 
@@ -27,7 +28,7 @@ def create_transitions_log(scaffold_name, changes):
             f.write('\n')
 
 
-def create_scaffold(scaffold_name, initial_env, initial_params, changes):
+def create_scaffold(scaffold_name, initial_env, initial_params, changes, finished_condition):
     """
     Given complete list of changes, and original scaffold, creates the necessary scaffold files.
 
@@ -74,7 +75,7 @@ def create_scaffold(scaffold_name, initial_env, initial_params, changes):
         save_files(scaffold_name, initial_env, initial_params, i + 2)
 
         transitions[change[0]][str(i + 2)] = change[1]
-    save_transitions(scaffold_name, transitions)
+    save_transitions(scaffold_name, transitions, finished_condition)
 
 
 def build_changes_list_gradual(threshold_measure, threshold, change_to_make, initial_value, final_value, num_steps):

@@ -35,6 +35,7 @@ class TrainingService(BaseService):
         self.pci_transitions = None
         self.pai_transitions = None
         self.sgb_transitions = None
+        self.finished_conditions = None
         self.load_transitions()
         if configuration_index is not None:
             self.configuration_index = configuration_index
@@ -122,6 +123,12 @@ class TrainingService(BaseService):
             self.episode_number = e_number
             if self.configuration_index < self.total_configurations:
                 self.check_update_configuration()
+            elif self.configuration_index == self.total_configurations:
+                print("Reached final config...")
+                if len(self.last_episodes_prey_caught) >= 20:
+                    if np.mean(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"] > self.finished_conditions["PAI"] and np.mean(self.last_episodes_prey_caught)/self.environment_params["prey_num"] > self.finished_conditions["PCI"]:
+                        print("Final condition surpassed, exiting training...")
+                        break
 
             if self.switch_network_configuration:
                 break
@@ -258,6 +265,9 @@ class TrainingService(BaseService):
         self.pci_transitions = transitions["PCI"]
         self.pai_transitions = transitions["PAI"]
         self.sgb_transitions = transitions["SGB"]
+        if "Finished Condition" in transitions:
+            self.finished_conditions = transitions["Finished Condition"]
+
         configurations = list(self.episode_transitions.keys()) + list(self.pci_transitions.keys()) + \
                          list(self.pai_transitions.keys()) + list(self.sgb_transitions.keys())
         self.total_configurations = len(configurations) + 1

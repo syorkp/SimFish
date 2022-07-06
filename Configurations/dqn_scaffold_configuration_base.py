@@ -316,7 +316,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_dn_switch_25"
+scaffold_name = "dqn_scaffold_dn_switch_250"
 
 base_network_layers_updated = copy.copy(base_network_layers)
 base_network_layers_updated["new_dense"] = ["dense", 300]
@@ -368,4 +368,7 @@ changes += [["PCI", 0.35, "probability_of_predator", 0.01]]
 changes += [["PCI", 0.35, "max_salt_damage", 0.02]]
 changes += [["PCI", 0.35, "current_setting", "Circular"]]
 
-create_scaffold(scaffold_name, env, params, changes)
+finished_condition = {"PCI": 0.3,
+                      "PAI": 300.0}
+
+create_scaffold(scaffold_name, env, params, changes, finished_condition)
