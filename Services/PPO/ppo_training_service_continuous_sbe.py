@@ -4,6 +4,8 @@ import json
 import numpy as np
 import tensorflow.compat.v1 as tf
 
+from Analysis.Indexing.data_index_service import DataIndexServiceContinuous
+
 from Buffers.PPO.ppo_buffer_continuous import PPOBufferContinuous
 from Buffers.PPO.ppo_buffer_continuous_multivariate2 import PPOBufferContinuousMultivariate2
 
@@ -12,7 +14,7 @@ from Configurations.Utilities.turn_model_configs_into_assay_configs import trans
 
 from Services.PPO.continuous_ppo import ContinuousPPO
 from Services.training_service import TrainingService
-from Services.DQN.dqn_assay_service import assay_target
+from Services.PPO.ppo_assay_service_continuous import ppo_assay_target_continuous
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -170,7 +172,13 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
             trial["Assays"][i]["duration"] = self.learning_params["max_epLength"]
             trial["Assays"][i]["save frames"] = False
 
-        assay_target(trial, self.total_steps, self.episode_number, self.memory_fraction)
+        # Run data gathering
+        ppo_assay_target_continuous(trial, self.total_steps, self.episode_number, self.memory_fraction)
+        # TODO: might need to clear data.
+
+        # Perform cursory analysis on data
+        data_index_service = DataIndexServiceContinuous(self.model_id)
+        data_index_service.produce_behavioural_summary_display()
 
     def episode_loop(self):
         """

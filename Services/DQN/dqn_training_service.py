@@ -4,6 +4,8 @@ import json
 import numpy as np
 import tensorflow.compat.v1 as tf
 
+from Analysis.Indexing.data_index_service import DataIndexServiceDiscrete
+
 from Buffers.DQN.experience_buffer import ExperienceBuffer
 from Buffers.DQN.dqn_assay_buffer import DQNAssayBuffer
 
@@ -127,7 +129,13 @@ class DQNTrainingService(TrainingService, BaseDQN):
             trial["Assays"][i]["duration"] = self.learning_params["max_epLength"]
             trial["Assays"][i]["save frames"] = False
 
+        # Run data gathering
         assay_target(trial, self.total_steps, self.episode_number, self.memory_fraction)
+        # TODO: might need to clear data.
+
+        # Perform cursory analysis on data
+        data_index_service = DataIndexServiceDiscrete(self.model_id)
+        data_index_service.produce_behavioural_summary_display()
 
     def episode_loop(self):
         t0 = time()

@@ -18,7 +18,6 @@ def load_configuration_files(model_name):
         with open(f"{model_location}/environment_configuration.json", 'r') as f:
             env = json.load(f)
 
-
     base_network_layers = params["base_network_layers"]
     ops = params["ops"]
     connectivity = params["connectivity"]

@@ -1,22 +1,35 @@
+import os
 import numpy as np
+
 from Analysis.load_data import load_data
 from Analysis.load_model_config import load_configuration_files
 
 
 class DataIndexServiceDiscrete:
+    """Idea is that this provides an easily interpretable wrapper for applying all the standard scripts (already
+    existing in other Analysis directories), in a more standardised, interpretable way."""
 
     def __init__(self, model_name):
         naturalistic_preset = "Behavioural-Data-Free"
         naturalistic_suffix = "Naturalistic-"  # Try loading for all within large range.
 
         self.model_name = model_name
-        self.naturalistic_trial_data = self.load_all_data(naturalistic_preset, naturalistic_suffix)
-        self.flattened_naturalistic_trial_data, self.naturalistic_trial_lengths = self.flatten_data_list(self.naturalistic_trial_data)
-        self.environmental_config, self.learning_config = load_configuration_files(self.model_name)
+        self.environmental_config, self.learning_config, _, _, _ = load_configuration_files(self.model_name)
+
         # Auto-load from all file presets.
+        self.naturalistic_trial_data = self.load_all_data(naturalistic_preset, naturalistic_suffix)
+        self.flattened_naturalistic_trial_data, self.naturalistic_trial_lengths = self._flatten_data_list(self.naturalistic_trial_data)
+
+        # Create output data location
+        if __name__ == "__main__":
+            if not os.path.exists(f"../../Analysis/Data/Figures/{model_name}/"):
+                os.makedirs(f"../../Analysis/Data/Figures/{model_name}/")
+        else:
+            if not os.path.exists(f"./Analysis/Data/Figures/{model_name}/"):
+                os.makedirs(f"./Analysis/Data/Figures/{model_name}/")
 
     @staticmethod
-    def flatten_data_list(data_list):
+    def _flatten_data_list(data_list):
          # TODO: Change to ensure 1D lists e.g. salt position are not being concatenated completely.
         flattened_data_dictionary = {}
         trial_lengths = []
@@ -72,7 +85,11 @@ class DataIndexServiceDiscrete:
     def get_data_combined_simple_conditions(self):
         ...
 
-    def get_data_sequence(self):
+    def produce_behavioural_summary_display(self):
+        """Initially, produce all the elements individually and save them as jpegs"""
+        ...
+
+    def produce_neural_summary_display(self):
         ...
 
 
@@ -82,4 +99,5 @@ class DataIndexServiceContinuous(DataIndexServiceDiscrete):
         super().__init__(model_name)
 
 
-DataIndexServiceDiscrete("dqn_scaffold_19-1")
+if __name__ == "__main__":
+    DataIndexServiceDiscrete("dqn_scaffold_23-1")
