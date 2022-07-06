@@ -90,9 +90,9 @@ class DQNTrainingService(TrainingService, BaseDQN):
             with open(f"{self.model_location}/saved_parameters.json", "w") as file:
                 json.dump(output_data, file)
 
-        tf.reset_default_graph()
-        sess = self.create_session()
         while self.switch_network_configuration:
+            tf.reset_default_graph()
+            sess = self.create_session()
             print("Switching network configuration...")
             with sess as self.sess:
                 self.create_network()
@@ -104,6 +104,8 @@ class DQNTrainingService(TrainingService, BaseDQN):
                 self.original_output_layer = None
                 self.init_states()
                 TrainingService._run(self)
+
+        print("Training finished")
 
     def episode_loop(self):
         t0 = time()

@@ -127,6 +127,30 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
             self.create_network()
             self.init_states()
             TrainingService._run(self)
+            self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
+            # Save the parameters to be carried over.
+            output_data = {"epsilon": self.epsilon, "episode_number": self.episode_number,
+                           "total_steps": self.total_steps, "configuration_index": self.configuration_index}
+            with open(f"{self.model_location}/saved_parameters.json", "w") as file:
+                json.dump(output_data, file)
+
+        while self.switch_network_configuration:
+            tf.reset_default_graph()
+            sess = self.create_session()
+            print("Switching network configuration...")
+            with sess as self.sess:
+                self.create_network()
+                new_output_layer = self.actor_network.processing_network_output
+
+                if new_output_layer != self.original_output_layer:  # If altered shape of final output layer
+                    self.additional_layers += []  # TODO: Consider may need to remove final layers if changing processing_network_output.
+
+                self.original_output_layer = None
+                self.init_states()
+                TrainingService._run(self)
+
+        print("Training finished")
+
 
     def episode_loop(self):
         """

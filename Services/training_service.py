@@ -209,10 +209,12 @@ class TrainingService(BaseService):
             removed_layers = [layer for layer in original_layers if layer not in new_layers]
 
             if self.environment_params["use_dynamic_network"]:
-                if self.continuous_actions:
+                if self.algorithm == "PPO":
                     self.original_output_layer = self.actor_network.processing_network_output
-                else:
+                elif self.algorithm == "DQN":
                     self.original_output_layer = self.main_QN.processing_network_output
+                else:
+                    print("Possible error, algorithm incorrectly specified")
 
             if len(additional_layers) > 0 or len(removed_layers) > 0:
                 print("Network changed, recreating...")
