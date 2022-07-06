@@ -7,8 +7,12 @@ import tensorflow.compat.v1 as tf
 from Buffers.PPO.ppo_buffer_continuous import PPOBufferContinuous
 from Buffers.PPO.ppo_buffer_continuous_multivariate2 import PPOBufferContinuousMultivariate2
 
+from Configurations.Templates.assay_config import naturalistic_assay_config
+from Configurations.Utilities.turn_model_configs_into_assay_configs import transfer_config
+
 from Services.PPO.continuous_ppo import ContinuousPPO
 from Services.training_service import TrainingService
+from Services.DQN.dqn_assay_service import assay_target
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -149,8 +153,24 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
                 self.init_states()
                 TrainingService._run(self)
 
-        print("Training finished")
+        print("Training finished, starting to gather data...")
+        tf.reset_default_graph()
 
+        # Create Assay Config from Training Config
+        transfer_config(self.model_name, self.model_name)
+
+        # Build trial
+        trial = naturalistic_assay_config
+        trial["Model Name"] = self.model_name
+        trial["Environment Name"] = self.model_name
+        trial["Trial Number"] = self.model_number
+        trial["Continuous Actions"] = True
+        trial["Learning Algorithm"] = "PPO"
+        for i, assay in enumerate(trial["Assays"]):
+            trial["Assays"][i]["duration"] = self.learning_params["max_epLength"]
+            trial["Assays"][i]["save frames"] = False
+
+        assay_target(trial, self.total_steps, self.episode_number, self.memory_fraction)
 
     def episode_loop(self):
         """

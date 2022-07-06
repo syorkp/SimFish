@@ -9,7 +9,8 @@ def transfer_config(model_name, assay_config_name):
                     f"./Configurations/Assay-Configs/{assay_config_name}_learning.json")
 
 
-model_name = sys.argv[1]
-assay_config_name = sys.argv[2]
+if __name__ == "__main__":
+    model_name = sys.argv[1]
+    assay_config_name = sys.argv[2]
 
-transfer_config(model_name, assay_config_name)
+    transfer_config(model_name, assay_config_name)

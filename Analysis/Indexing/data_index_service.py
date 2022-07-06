@@ -6,8 +6,11 @@ from Analysis.load_model_config import load_configuration_files
 class DataIndexServiceDiscrete:
 
     def __init__(self, model_name):
+        naturalistic_preset = "Behavioural-Data-Free"
+        naturalistic_suffix = "Naturalistic-"  # Try loading for all within large range.
+
         self.model_name = model_name
-        self.naturalistic_trial_data = self.load_naturalistic_data()
+        self.naturalistic_trial_data = self.load_all_data(naturalistic_preset, naturalistic_suffix)
         self.flattened_naturalistic_trial_data, self.naturalistic_trial_lengths = self.flatten_data_list(self.naturalistic_trial_data)
         self.environmental_config, self.learning_config = load_configuration_files(self.model_name)
         # Auto-load from all file presets.
@@ -27,14 +30,12 @@ class DataIndexServiceDiscrete:
                     flattened_data_dictionary[key] = data_list[j][key]
         return flattened_data_dictionary, trial_lengths
 
-    def load_naturalistic_data(self):
-        naturalistic_preset = "Behavioural-Data-Free"
-        naturalistic_suffix = "Naturalistic-"  # Try loading for all within large range.
+    def load_all_data(self, assay_group, assay_id):
         current_index = 1
         data_list = []
         while True:
             try:
-                data = load_data(self.model_name, naturalistic_preset, naturalistic_suffix + str(current_index))
+                data = load_data(self.model_name, assay_group, assay_id + str(current_index))
                 data_list.append(data)
                 current_index += 1
             except AttributeError:

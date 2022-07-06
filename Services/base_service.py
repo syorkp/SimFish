@@ -34,6 +34,8 @@ class BaseService:
         super().__init__()
 
         # Name and location
+        self.model_name = model_name
+        self.model_number = trial_number
         self.model_id = f"{model_name}-{trial_number}"
         self.model_location = f"./Training-Output/{self.model_id}"
 
