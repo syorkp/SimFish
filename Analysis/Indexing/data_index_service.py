@@ -38,9 +38,10 @@ class DataIndexServiceDiscrete:
         if not os.path.exists(self.figure_save_location):
             os.makedirs(f"{self.figure_save_location}")
             os.makedirs(f"{self.figure_save_location}/Spatial-Density-Plots")
-            os.makedirs(f"{self.figure_save_location}/Sequences")
-            os.makedirs(f"{self.figure_save_location}/Training-Metrics")
-            os.makedirs(f"{self.figure_save_location}/Turn-Analysis")
+            os.makedirs(f"{self.figure_save_location}/Behavioural-Metrics")
+            os.makedirs(f"{self.figure_save_location}/Prey-Capture")
+            os.makedirs(f"{self.figure_save_location}/Exploration")
+            os.makedirs(f"{self.figure_save_location}/Predator-Avoidance")
             os.makedirs(f"{self.figure_save_location}/Phototaxis")
             os.makedirs(f"{self.figure_save_location}/Salt")
 
@@ -114,6 +115,31 @@ class DataIndexServiceDiscrete:
 
     def produce_behavioural_summary_display(self):
         """Initially, produce all the elements individually and save them as jpegs"""
+        capture_sequences, energy_states_cs = get_capture_sequences_with_energy_state(model_name, assay_group,
+                                                                                      assay_name, n)
+        sequences, energy_states = get_exploration_sequences_with_energy_state(model_name, assay_group, assay_name, n)
+
+        # Display all spatial density plots
+        get_all_density_plots(self.flattened_naturalistic_trial_data, self.figure_save_location + "/Spatial-Density-Plots")
+
+        # Prey Capture
+        display_all_sequences(self.capture_sequences[:100], save_figure=True,
+                              figure_save_location=f"{self.figure_save_location}/Prey-Capture/Sequences.jpg")
+
+        # Exploration
+        display_all_sequences(self.exploration_sequences_1[:100], save_figure=True,
+                              figure_save_location=f"{self.figure_save_location}/Exploration/Sequences1.jpg")
+        display_all_sequences(self.exploration_sequences_2[:100], save_figure=True,
+                              figure_save_location=f"{self.figure_save_location}/Exploration/Sequences2.jpg")
+        get_cumulative_switching_probability_plot(self.exploration_sequences_1,
+                                                  figure_save_location=f"{self.figure_save_location}/Exploration/Cumulative-Switching-Probabiolity-1.jpg")
+        get_cumulative_switching_probability_plot(self.exploration_sequences_2,
+                                                  figure_save_location=f"{self.figure_save_location}/Exploration/Cumulative-Switching-Probabiolity-2.jpg")
+
+        # Predator Avoidance
+        display_all_sequences(self.escape_sequences[:100], save_figure=True,
+                              figure_save_location=f"{self.figure_save_location}/Predator-Avoidance/Sequences.jpg")
+
         # Phototaxis
         fish_position_data = self.flattened_naturalistic_trial_data["fish_position"]
         action_data = self.flattened_naturalistic_trial_data["action"]
@@ -121,27 +147,6 @@ class DataIndexServiceDiscrete:
         plot_light_dark_occupancy_kdf(fish_position_data, self.environmental_config, self.figure_save_location + "/Phototaxis/Light-Dark-Occupancy.jpg")
         plot_luminance_driven_choice(observation_data, action_data, fish_position_data, self.environmental_config,
                                      self.figure_save_location + "/Phototaxis/Luminance-Driven-Choice.jpg")
-
-
-
-        # Display all spatial density plots
-        get_all_density_plots(self.flattened_naturalistic_trial_data, self.figure_save_location + "/Spatial-Density-Plots")
-
-        # Display sequences for different conditions
-        display_all_sequences(self.capture_sequences[:100], save_figure=True,
-                              figure_save_location=f"{self.figure_save_location}/Sequences/Captures.jpg")
-        display_all_sequences(self.exploration_sequences_1[:100], save_figure=True,
-                              figure_save_location=f"{self.figure_save_location}/Sequences/Exploration1.jpg")
-        display_all_sequences(self.exploration_sequences_2[:100], save_figure=True,
-                              figure_save_location=f"{self.figure_save_location}/Sequences/Exploration2.jpg")
-        display_all_sequences(self.escape_sequences[:100], save_figure=True,
-                              figure_save_location=f"{self.figure_save_location}/Sequences/Escapes.jpg")
-
-        # Turn plot
-        get_cumulative_switching_probability_plot(self.exploration_sequences_1,
-                                                  figure_save_location=f"{self.figure_save_location}/Turn-Analysis/Cumulative-Switching-Probabiolity-1.jpg")
-
-
 
     def produce_neural_summary_display(self):
         ...
