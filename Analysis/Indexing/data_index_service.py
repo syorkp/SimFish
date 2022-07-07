@@ -12,6 +12,7 @@ from Analysis.Behavioural.VisTools.show_action_sequence_block import display_all
 from Analysis.Behavioural.Discrete.show_spatial_density_discrete import get_all_density_plots
 from Analysis.Behavioural.Both.turning_analysis import get_cumulative_switching_probability_plot
 from Analysis.Behavioural.Both.phototaxis import plot_light_dark_occupancy_kdf, plot_luminance_driven_choice
+from Analysis.Behavioural.Discrete.bout_transition_probabilities_energy_state import plot_energy_state_grouped_action_usage_from_data
 
 
 class DataIndexServiceDiscrete:
@@ -117,7 +118,8 @@ class DataIndexServiceDiscrete:
         """Initially, produce all the elements individually and save them as jpegs"""
         capture_sequences, energy_states_cs = get_capture_sequences_with_energy_state(model_name, assay_group,
                                                                                       assay_name, n)
-        sequences, energy_states = get_exploration_sequences_with_energy_state(model_name, assay_group, assay_name, n)
+        exploration_sequences, energy_states_ex = get_exploration_sequences_with_energy_state(model_name, assay_group, assay_name, n)
+        plot_energy_state_grouped_action_usage_from_data()
 
         # Display all spatial density plots
         get_all_density_plots(self.flattened_naturalistic_trial_data, self.figure_save_location + "/Spatial-Density-Plots")

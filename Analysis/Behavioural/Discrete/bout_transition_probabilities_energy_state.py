@@ -44,35 +44,23 @@ def display_energy_state_grouped_transition_probabilities(model_name, assay_grou
         visualisation_method_2(tp, f"Exploration Sequences {round(c, 1)}-{round(c + difference, 1)}", save_figure=True)
 
 
-def plot_energy_state_grouped_action_usage(model_name, assay_group, assay_name, n=10,
-                                                          energy_state_groups=5):
+def plot_energy_state_grouped_action_usage_from_data(sequences, energy_states, energy_state_groups=5, save_location=None):
     energy_state_groups_cutoffs = np.linspace(0, 1, energy_state_groups, endpoint=False)
     difference = 1/energy_state_groups
     energy_state_groups_middle = np.linspace(difference/2, 1-difference/2, energy_state_groups, endpoint=True)
 
-    capture_sequences, energy_states_cs = get_capture_sequences_with_energy_state(model_name, assay_group, assay_name, n)
-    sequences, energy_states = get_exploration_sequences_with_energy_state(model_name, assay_group, assay_name, n)
     actions_present = np.array([])
-    data = []
-    total_actions = []
 
     action_proportions = np.zeros((10, energy_state_groups))
     for i, c in enumerate(energy_state_groups_cutoffs):
-        # Capture sequences
-        # new_capture_sequences, new_energy_states = group_sequences_by_energy_cutoffs(capture_sequences, energy_states_cs, c, difference)
-        # transition_counts = get_first_order_transition_counts_from_sequences(new_capture_sequences)
-        # tp = compute_transition_probabilities(transition_counts)
-        # visualisation_method_2(tp)
+        new_sequences, new_energy_states = group_sequences_by_energy_cutoffs(sequences, energy_states, c, difference)
+        sequences_flattened = np.concatenate(new_sequences)
 
-        # Exploration sequences
-        new_exploration_sequences, new_energy_states = group_sequences_by_energy_cutoffs(exploration_sequences, energy_states_exp, c, difference)
-        exploration_sequences_flattened = np.concatenate(new_exploration_sequences)
-
-        unique, counts = np.unique(exploration_sequences_flattened, return_counts=True)
+        unique, counts = np.unique(sequences_flattened, return_counts=True)
         actions_present = np.concatenate((actions_present, unique))
         x = list(zip(unique, counts))
         for a in x:
-            action_proportions[a[0], i] = a[1]/len(exploration_sequences_flattened)
+            action_proportions[a[0], i] = a[1]/len(sequences_flattened)
 
     actions_present = list(set(actions_present))
 
@@ -97,7 +85,7 @@ def plot_energy_state_grouped_action_usage(model_name, assay_group, assay_name, 
     ax.tick_params(axis="x", labelsize=20)
     ax.tick_params(axis="y", labelsize=20)
     # plt.legend([get_action_name(int(a)) for a in reversed(actions_present)])
-    plt.savefig("../../Figures/Panels/Panel-5/ES-Action.png")
+    plt.savefig(save_location)
 
     plt.show()
 
