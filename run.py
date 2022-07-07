@@ -9130,5 +9130,5 @@ dqn_scaffold_dn_switch_ = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_dn_23a, parallel_jobs=3)
+manager = TrialManager(dqn_scaffold_dn_23b, parallel_jobs=3)
 manager.run_priority_loop()
