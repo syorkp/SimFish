@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from Analysis.load_data import load_data
-from Analysis.Behavioural.Tools.show_action_sequence_block import display_all_sequences
+from Analysis.Behavioural.VisTools.show_action_sequence_block import display_all_sequences
 
 
 def extract_capture_sequences_with_additional_steps(data, n=20, n2=3):

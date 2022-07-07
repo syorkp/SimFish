@@ -91,7 +91,7 @@ def compute_cumulative_probability(sequence_lengths):
     return cumulative_probability
 
 
-def cumulative_switching_probability_plot(left_durs, right_durs, left_durs2, right_durs2, label):
+def cumulative_switching_probability_plot(left_durs, right_durs, left_durs2, right_durs2, save_location):
     """Given two sets of switching latencies, one random and one from a model, plots the cumulative probability of
     switching direction."""
     # left_durs = [i for i in left_durs if i>1]
@@ -115,8 +115,8 @@ def cumulative_switching_probability_plot(left_durs, right_durs, left_durs2, rig
     plt.plot(x2, cdf2, label="Random Switching")
     plt.xlabel("Turn Streak Length", fontsize=30)
     plt.ylabel("Cumulative Probability", fontsize=30)
-    plt.title(label)
     plt.legend(["Models", "Random Switching"], fontsize=30)
+    plt.savefig(save_location)
     plt.show()
 
 
@@ -169,6 +169,13 @@ def cumulative_switching_probability_plot_multiple_models(left_durs_list, right_
     if save_figure:
         plt.savefig(f"../../Figures/Panels/Panel-4/{label}")
     plt.show()
+
+
+def get_cumulative_switching_probability_plot(action_sequences, figure_save_location):
+    turn_sequences = extract_purely_turn_sequences(action_sequences)
+    l, r, sl, sr = model_of_action_switching(turn_sequences)
+    l2, r2, sl2, sr2 = randomly_switching_fish()
+    cumulative_switching_probability_plot(sl, sr, sl2, sr2, figure_save_location)
 
 
 def cumulative_turn_direction_plot_multiple_models(action_sequences):
@@ -348,80 +355,78 @@ def plot_all_turn_analysis_multiple_models(model_names, assay_config, assay_id, 
     cumulative_switching_probability_plot_multiple_models(compiled_sl_no_prey, compiled_sr_no_prey,  sl2, sr2, label=f"Cumulative Switching Probability (no prey) {model_name}")
 
 
-plot_all_turn_analysis_multiple_models(["dqn_scaffold_14-1", "dqn_scaffold_14-2"], "Behavioural-Data-Free",
-                                       f"Naturalistic", 10)
+if __name__ == "__main__":
+    plot_all_turn_analysis_multiple_models(["dqn_scaffold_14-1", "dqn_scaffold_14-2"], "Behavioural-Data-Free",
+                                           f"Naturalistic", 10)
 
-data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", f"Naturalistic-18")
-exploration_timestamps, exploration_sequences, exploration_fish_orientations = \
-    extract_exploration_action_sequences_with_fish_angles(data)
+    data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", f"Naturalistic-18")
+    exploration_timestamps, exploration_sequences, exploration_fish_orientations = \
+        extract_exploration_action_sequences_with_fish_angles(data)
 
-rt_usage = [i for i, a in enumerate(data["action"]) if a == 1 or a == 2]
-plot_turning_sequences(exploration_fish_orientations[len(exploration_fish_orientations)-1][:-1])
+    rt_usage = [i for i, a in enumerate(data["action"]) if a == 1 or a == 2]
+    plot_turning_sequences(exploration_fish_orientations[len(exploration_fish_orientations)-1][:-1])
 
-# for i in range(len(exploration_fish_orientations)):
-#     # to_keep = [o for t, o in enumerate(exploration_fish_orientations[i])
-#     #            if exploration_timestamps[i][t] in rt_usage]
-#     # if len(to_keep) > 0:
-#     #     plot_turning_sequences(to_keep)
-#     plot_turning_sequences(exploration_fish_orientations[i][:-1])
-
-
-# sl_compiled = []
-# sr_compiled = []
-# sl2_compiled = []
-# sr2_compiled = []
-# turn_exploration_sequences_compiled = []
-# for i in range(1, 5):
-#     data = load_data(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", f"Naturalistic-1")
-#
-#     # Cumulative turn direction plot
-#     exploration_timestamps, exploration_sequences, exploration_fish_positions = extract_exploration_action_sequences_with_positions(data)
-#     turn_exploration_sequences = extract_turn_sequences(exploration_sequences)
-#     cumulative_turn_direction_plot(turn_exploration_sequences)
-#
-#     # Orientation plot
-#     exploration_timestamps, exploration_sequences, exploration_fish_orientations = extract_exploration_action_sequences_with_fish_angles(data)
-#     plot_turning_sequences(exploration_fish_orientations[-2])
-#
-#     # Cumulative probability plot.
-#     l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
-#     l2, r2, sl2, sr2 = randomly_switching_fish()
-#     cumulative_switching_probability_plot(sl, sr, sl2, sr2)
-#
-#     turn_exploration_sequences_compiled += turn_exploration_sequences
-#     sl_compiled += sl
-#     sr_compiled += sr
-#     sl2_compiled += sl2
-#     sr2_compiled += sr2
-#
-# cumulative_switching_probability_plot(sl_compiled, sr_compiled, sl2_compiled, sr2_compiled)
-# cumulative_turn_direction_plot(turn_exploration_sequences_compiled)
+    # for i in range(len(exploration_fish_orientations)):
+    #     # to_keep = [o for t, o in enumerate(exploration_fish_orientations[i])
+    #     #            if exploration_timestamps[i][t] in rt_usage]
+    #     # if len(to_keep) > 0:
+    #     #     plot_turning_sequences(to_keep)
+    #     plot_turning_sequences(exploration_fish_orientations[i][:-1])
 
 
-sl_compiled = []
-sr_compiled = []
-sl2_compiled = []
-sr2_compiled = []
-turn_exploration_sequences_compiled = []
+    # sl_compiled = []
+    # sr_compiled = []
+    # sl2_compiled = []
+    # sr2_compiled = []
+    # turn_exploration_sequences_compiled = []
+    # for i in range(1, 5):
+    #     data = load_data(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", f"Naturalistic-1")
+    #
+    #     # Cumulative turn direction plot
+    #     exploration_timestamps, exploration_sequences, exploration_fish_positions = extract_exploration_action_sequences_with_positions(data)
+    #     turn_exploration_sequences = extract_turn_sequences(exploration_sequences)
+    #     cumulative_turn_direction_plot(turn_exploration_sequences)
+    #
+    #     # Orientation plot
+    #     exploration_timestamps, exploration_sequences, exploration_fish_orientations = extract_exploration_action_sequences_with_fish_angles(data)
+    #     plot_turning_sequences(exploration_fish_orientations[-2])
+    #
+    #     # Cumulative probability plot.
+    #     l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
+    #     l2, r2, sl2, sr2 = randomly_switching_fish()
+    #     cumulative_switching_probability_plot(sl, sr, sl2, sr2)
+    #
+    #     turn_exploration_sequences_compiled += turn_exploration_sequences
+    #     sl_compiled += sl
+    #     sr_compiled += sr
+    #     sl2_compiled += sl2
+    #     sr2_compiled += sr2
+    #
+    # cumulative_switching_probability_plot(sl_compiled, sr_compiled, sl2_compiled, sr2_compiled)
+    # cumulative_turn_direction_plot(turn_exploration_sequences_compiled)
 
-# Exploration sequences based on visual stimulation level
-# plot_all_turn_analysis(f"dqn_scaffold_14-1", "Behavioural-Data-Free", f"Naturalistic", 20)
-# plot_all_turn_analysis(f"dqn_scaffold_14-2", "Behavioural-Data-Free", f"Naturalistic", 10)
 
+    sl_compiled = []
+    sr_compiled = []
+    sl2_compiled = []
+    sr2_compiled = []
+    turn_exploration_sequences_compiled = []
 
-
-
-    # turn_exploration_sequences_compiled += turn_exploration_sequences
-    # sl_compiled += sl
-    # sr_compiled += sr
-    # sl2_compiled += sl2
-    # sr2_compiled += sr2
-
-# cumulative_switching_probability_plot(sl_compiled, sr_compiled, sl2_compiled, sr2_compiled, f"Cumulative Switching Probability Plot all models")
-# cumulative_turn_direction_plot(turn_exploration_sequences_compiled, f"Cumulative turn direction plot all models")
+    # Exploration sequences based on visual stimulation level
+    # plot_all_turn_analysis(f"dqn_scaffold_14-1", "Behavioural-Data-Free", f"Naturalistic", 20)
+    # plot_all_turn_analysis(f"dqn_scaffold_14-2", "Behavioural-Data-Free", f"Naturalistic", 10)
 
 
 
+
+        # turn_exploration_sequences_compiled += turn_exploration_sequences
+        # sl_compiled += sl
+        # sr_compiled += sr
+        # sl2_compiled += sl2
+        # sr2_compiled += sr2
+
+    # cumulative_switching_probability_plot(sl_compiled, sr_compiled, sl2_compiled, sr2_compiled, f"Cumulative Switching Probability Plot all models")
+    # cumulative_turn_direction_plot(turn_exploration_sequences_compiled, f"Cumulative turn direction plot all models")
 
 
 
@@ -432,43 +437,46 @@ turn_exploration_sequences_compiled = []
 
 
 
-# VERSION 1
-
-# for i in range(1, 10):
-#     data = load_data("new_even_prey_ref-2", "Behavioural-Data-Free", f"Prey-{i}")
-#     colored_2d_track_turns(data["position"][100:500], data["behavioural choice"][100:500])
-#
-# orientation_log = []
-# action_sequences = []
-# for j in range(1, 4):
-#     for i in range(1, 11):
-#         data = load_data("new_differential_prey_ref-3", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}")
-#         new_as = get_free_swimming_sequences(data)
-#         action_sequences += [[a for a in seq if a == 1 or a == 2] for seq in new_as]
-#         orientation_changes = [data["fish_angle"][i]-data["fish_angle"][i-1] for i, angle in enumerate(data["fish_angle"]) if i!=0]
-#         orientation_log = orientation_log + orientation_changes
-#         # colored_2d_track_turns(data["position"][-200:], data["behavioural choice"][-200:], orientation_changes[-200:])
-#         plot_turning_sequences(data["fish_angle"])
-
-# all_action_sequences = []
-# for x in [3, 4]:
-#     action_sequences = []
-#     for j in range(1, 4):
-#         for i in range(1, 11):
-#             data = load_data(f"new_differential_prey_ref-{x}", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}")
-#             new_as = get_free_swimming_sequences(data)
-#             action_sequences += [[a for a in seq if a == 1 or a == 2] for seq in new_as]
-#             orientation_changes = [data["fish_angle"][i]-data["fish_angle"][i-1] for i, angle in enumerate(data["fish_angle"]) if i!=0]
-#             orientation_log = orientation_log + orientation_changes
-#     action_sequences = divide_sequences(action_sequences)
-#     all_action_sequences.append(action_sequences)
-#     l, r, sl, sr = model_of_action_switching(action_sequences)
-#     l2, r2, sl2, sr2 = randomly_switching_fish()
-#     plot_switching_distribution(sl, sr, sl2, sr2)
-# # action_sequences = get_frameshift_sequences(action_sequences)
-#
-# new_switching_plot2(all_action_sequences)
 
 
-# plot_turning_sequences(data["fish_angle"])
-# colored_2d_track_turns(data["position"][-200:], data["behavioural choice"][-200:])
+
+    # VERSION 1
+
+    # for i in range(1, 10):
+    #     data = load_data("new_even_prey_ref-2", "Behavioural-Data-Free", f"Prey-{i}")
+    #     colored_2d_track_turns(data["position"][100:500], data["behavioural choice"][100:500])
+    #
+    # orientation_log = []
+    # action_sequences = []
+    # for j in range(1, 4):
+    #     for i in range(1, 11):
+    #         data = load_data("new_differential_prey_ref-3", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}")
+    #         new_as = get_free_swimming_sequences(data)
+    #         action_sequences += [[a for a in seq if a == 1 or a == 2] for seq in new_as]
+    #         orientation_changes = [data["fish_angle"][i]-data["fish_angle"][i-1] for i, angle in enumerate(data["fish_angle"]) if i!=0]
+    #         orientation_log = orientation_log + orientation_changes
+    #         # colored_2d_track_turns(data["position"][-200:], data["behavioural choice"][-200:], orientation_changes[-200:])
+    #         plot_turning_sequences(data["fish_angle"])
+
+    # all_action_sequences = []
+    # for x in [3, 4]:
+    #     action_sequences = []
+    #     for j in range(1, 4):
+    #         for i in range(1, 11):
+    #             data = load_data(f"new_differential_prey_ref-{x}", f"Behavioural-Data-Free-{j}", f"Naturalistic-{i}")
+    #             new_as = get_free_swimming_sequences(data)
+    #             action_sequences += [[a for a in seq if a == 1 or a == 2] for seq in new_as]
+    #             orientation_changes = [data["fish_angle"][i]-data["fish_angle"][i-1] for i, angle in enumerate(data["fish_angle"]) if i!=0]
+    #             orientation_log = orientation_log + orientation_changes
+    #     action_sequences = divide_sequences(action_sequences)
+    #     all_action_sequences.append(action_sequences)
+    #     l, r, sl, sr = model_of_action_switching(action_sequences)
+    #     l2, r2, sl2, sr2 = randomly_switching_fish()
+    #     plot_switching_distribution(sl, sr, sl2, sr2)
+    # # action_sequences = get_frameshift_sequences(action_sequences)
+    #
+    # new_switching_plot2(all_action_sequences)
+
+
+    # plot_turning_sequences(data["fish_angle"])
+    # colored_2d_track_turns(data["position"][-200:], data["behavioural choice"][-200:])

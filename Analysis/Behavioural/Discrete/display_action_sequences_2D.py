@@ -1,15 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 from matplotlib.colors import ListedColormap
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
 from Analysis.load_data import load_data
-from Analysis.Behavioural.Tools.get_action_name import get_action_name
+from Analysis.Behavioural.VisTools.get_action_name import get_action_name
 from Analysis.Behavioural.Tools.extract_capture_sequences import extract_consumption_action_sequences_with_positions
 from Analysis.Behavioural.Tools.extract_escape_sequences import extract_escape_action_sequences_with_positions
 from Analysis.Behavioural.Tools.extract_exploration_sequences import extract_exploration_action_sequences_with_positions
-from Analysis.Behavioural.Tools.anchored_scale_bar import AnchoredHScaleBar
 
 
 def plot_action_sequences_2D_discrete(fish_positions_compiled, actions_compiled, action_sequence_timestamps,

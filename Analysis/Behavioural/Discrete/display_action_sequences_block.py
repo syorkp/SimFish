@@ -1,12 +1,7 @@
 import matplotlib.pyplot as plt
-import seaborn as sns
 
-from Analysis.Behavioural.Tools.extract_capture_sequences import get_capture_sequences
 from Analysis.Behavioural.Tools.extract_exploration_sequences import get_exploration_sequences
 
-from Analysis.Behavioural.Tools.show_action_sequence_block import display_all_sequences
-from Analysis.Behavioural.Tools.extract_failed_capture_sequences import get_failed_capture_sequences
-from Analysis.Behavioural.Tools.extract_event_action_sequence import get_escape_sequences
 from Analysis.Behavioural.Tools.filter_sequences import remove_sCS_heavy
 
 
@@ -45,8 +40,6 @@ def display_average_sequence(sequences):
     #     plt.fill_between((i, i + 1), 1, color=color_set[a])
     # plt.axis("scaled")
     # plt.show()
-
-
 
 
 # VERSION 2

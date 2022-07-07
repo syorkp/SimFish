@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 
 from Analysis.Behavioural.Discrete.show_spatial_density_discrete import get_action_name
-from Analysis.Behavioural.Tools.get_action_colours import create_color_map
+from Analysis.Behavioural.VisTools.get_action_colours import create_color_map
 from Analysis.load_data import load_data
 
 

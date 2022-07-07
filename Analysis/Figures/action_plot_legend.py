@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Analysis.Behavioural.Tools.get_action_name import get_action_name
+from Analysis.Behavioural.VisTools.get_action_name import get_action_name
 
 used_actions = [0, 1, 2, 3, 4, 5, 6, 9]
 used_actions = [0, 1, 2, 3, 4, 5, 6]

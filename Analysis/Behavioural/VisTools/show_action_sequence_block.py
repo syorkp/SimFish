@@ -3,7 +3,7 @@ import numpy as np
 import seaborn as sns
 from matplotlib.patches import Patch
 
-from Analysis.Behavioural.Tools.get_action_name import get_action_name
+from Analysis.Behavioural.VisTools.get_action_name import get_action_name
 
 
 def display_sequences(sequences):
@@ -19,7 +19,9 @@ def display_sequences(sequences):
 
 
 def display_all_sequences(sequences, min_length=None, max_length=None, indicate_consumption=False, save_figure=False,
-                          figure_name=None):
+                          figure_save_location=None):
+    if len(sequences) == 0:
+        return
     sns.set()
     sequences.sort(key=len)
     plot_dim = max([len(seq) for seq in sequences])
@@ -70,6 +72,6 @@ def display_all_sequences(sequences, min_length=None, max_length=None, indicate_
     plt.legend(legend_elements, associated_actions, bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
     plt.axis("scaled")
     if save_figure:
-        plt.savefig(f"../../Figures/Panels/Panel-4/Action-Block-{figure_name}")
+        plt.savefig(figure_save_location)
     # plt.tight_layout()
     plt.show()

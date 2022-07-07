@@ -4,6 +4,15 @@ import numpy as np
 from Analysis.load_data import load_data
 from Analysis.load_model_config import load_configuration_files
 
+from Analysis.Behavioural.Tools.extract_capture_sequences import extract_consumption_action_sequences
+from Analysis.Behavioural.Tools.extract_exploration_sequences import extract_no_prey_stimuli_sequences, extract_exploration_action_sequences_with_positions
+from Analysis.Behavioural.Tools.extract_escape_sequences import extract_escape_action_sequences_with_positions
+
+from Analysis.Behavioural.VisTools.show_action_sequence_block import display_all_sequences
+from Analysis.Behavioural.Discrete.show_spatial_density_discrete import get_all_density_plots
+from Analysis.Behavioural.Both.turning_analysis import get_cumulative_switching_probability_plot
+from Analysis.Behavioural.Both.phototaxis import plot_light_dark_occupancy_kdf, plot_luminance_driven_choice
+
 
 class DataIndexServiceDiscrete:
     """Idea is that this provides an easily interpretable wrapper for applying all the standard scripts (already
@@ -14,7 +23,7 @@ class DataIndexServiceDiscrete:
         naturalistic_suffix = "Naturalistic-"  # Try loading for all within large range.
 
         self.model_name = model_name
-        self.environmental_config, self.learning_config, _, _, _ = load_configuration_files(self.model_name)
+        self.learning_config, self.environmental_config, _, _, _ = load_configuration_files(self.model_name)
 
         # Auto-load from all file presets.
         self.naturalistic_trial_data = self.load_all_data(naturalistic_preset, naturalistic_suffix)
@@ -22,13 +31,22 @@ class DataIndexServiceDiscrete:
 
         # Create output data location
         if __name__ == "__main__":
-            if not os.path.exists(f"../../Analysis/Data/Figures/{model_name}/"):
-                os.makedirs(f"../../Analysis/Data/Figures/{model_name}/")
-            self.figure_save_location = f"../../Analysis/Data/Figures/{model_name}/"
+            self.figure_save_location = f"../../Assay-Output/{model_name}/Figures"
         else:
-            if not os.path.exists(f"./Analysis/Data/Figures/{model_name}/"):
-                os.makedirs(f"./Analysis/Data/Figures/{model_name}/")
-            self.figure_save_location = f"./Analysis/Data/Figures/{model_name}/"
+            self.figure_save_location = f"./Assay-Output/{model_name}/Figures"
+
+        if not os.path.exists(self.figure_save_location):
+            os.makedirs(f"{self.figure_save_location}")
+            os.makedirs(f"{self.figure_save_location}/Spatial-Density-Plots")
+            os.makedirs(f"{self.figure_save_location}/Sequences")
+            os.makedirs(f"{self.figure_save_location}/Training-Metrics")
+            os.makedirs(f"{self.figure_save_location}/Turn-Analysis")
+            os.makedirs(f"{self.figure_save_location}/Phototaxis")
+            os.makedirs(f"{self.figure_save_location}/Salt")
+
+        # Extract main types of sequences
+        self.capture_sequences, self.exploration_sequences_1, self.exploration_sequences_2, self.escape_sequences = [], [], [], []
+        self.extract_sequences_groups()
 
     @staticmethod
     def _flatten_data_list(data_list):
@@ -58,6 +76,13 @@ class DataIndexServiceDiscrete:
                 break
 
         return data_list
+
+    def extract_sequences_groups(self):
+        for d in self.naturalistic_trial_data:
+            self.capture_sequences += extract_consumption_action_sequences(d)[0]
+            self.exploration_sequences_1 += extract_no_prey_stimuli_sequences(d)
+            self.exploration_sequences_2 += extract_exploration_action_sequences_with_positions(d)[1]
+            self.escape_sequences += extract_escape_action_sequences_with_positions(d)[1][0]
 
     def get_data_simple_condition(self, condition, null_alternatives=False, return_as_indexes=False, specific_key=False):
         """To get all data at timestamps where a condition is met - no checking over multiple timestamps.
@@ -89,7 +114,34 @@ class DataIndexServiceDiscrete:
 
     def produce_behavioural_summary_display(self):
         """Initially, produce all the elements individually and save them as jpegs"""
-        ...
+        # Phototaxis
+        fish_position_data = self.flattened_naturalistic_trial_data["fish_position"]
+        action_data = self.flattened_naturalistic_trial_data["action"]
+        observation_data = self.flattened_naturalistic_trial_data["observation"]
+        plot_light_dark_occupancy_kdf(fish_position_data, self.environmental_config, self.figure_save_location + "/Phototaxis/Light-Dark-Occupancy.jpg")
+        plot_luminance_driven_choice(observation_data, action_data, fish_position_data, self.environmental_config,
+                                     self.figure_save_location + "/Phototaxis/Luminance-Driven-Choice.jpg")
+
+
+
+        # Display all spatial density plots
+        get_all_density_plots(self.flattened_naturalistic_trial_data, self.figure_save_location + "/Spatial-Density-Plots")
+
+        # Display sequences for different conditions
+        display_all_sequences(self.capture_sequences[:100], save_figure=True,
+                              figure_save_location=f"{self.figure_save_location}/Sequences/Captures.jpg")
+        display_all_sequences(self.exploration_sequences_1[:100], save_figure=True,
+                              figure_save_location=f"{self.figure_save_location}/Sequences/Exploration1.jpg")
+        display_all_sequences(self.exploration_sequences_2[:100], save_figure=True,
+                              figure_save_location=f"{self.figure_save_location}/Sequences/Exploration2.jpg")
+        display_all_sequences(self.escape_sequences[:100], save_figure=True,
+                              figure_save_location=f"{self.figure_save_location}/Sequences/Escapes.jpg")
+
+        # Turn plot
+        get_cumulative_switching_probability_plot(self.exploration_sequences_1,
+                                                  figure_save_location=f"{self.figure_save_location}/Turn-Analysis/Cumulative-Switching-Probabiolity-1.jpg")
+
+
 
     def produce_neural_summary_display(self):
         ...
@@ -102,4 +154,5 @@ class DataIndexServiceContinuous(DataIndexServiceDiscrete):
 
 
 if __name__ == "__main__":
-    DataIndexServiceDiscrete("dqn_scaffold_23-1")
+    d = DataIndexServiceDiscrete("dqn_scaffold_19-1")
+    d.produce_behavioural_summary_display()

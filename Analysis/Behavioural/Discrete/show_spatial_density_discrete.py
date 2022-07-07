@@ -6,8 +6,8 @@ from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
 
 from Analysis.load_data import load_data
-from Analysis.Behavioural.Tools.get_action_name import get_action_name
-from Analysis.Behavioural.Tools.anchored_scale_bar import AnchoredHScaleBar,AnchoredHScaleBarSimple
+from Analysis.Behavioural.VisTools.get_action_name import get_action_name
+from Analysis.Behavioural.Tools.anchored_scale_bar import AnchoredHScaleBar
 
 """
 To create a graph of the style in Figure 3b of Marques et al. (2018)
@@ -100,7 +100,7 @@ def get_clouds_with_action(data, action=0):
     return prey_cloud, predator_cloud
 
 
-def create_density_cloud(density_list, action_num, stimulus_name, return_objects, model_name):
+def create_density_cloud(density_list, action_num, stimulus_name, return_objects, save_location):
     n_samples = len(density_list)
     x = np.array([i[0] for i in density_list])
     y = np.array([i[1] for i in density_list])
@@ -138,7 +138,7 @@ def create_density_cloud(density_list, action_num, stimulus_name, return_objects
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Feature: {stimulus_name}, Action: {get_action_name(action_num)}, N-Samples: {n_samples}")
-    plt.savefig(f"../../Figures/Panels/Panel-4/{get_action_name(action_num)}-{model_name}-{stimulus_name}.jpg")
+    plt.savefig(f"{save_location}/{stimulus_name}-{get_action_name(action_num)}.jpg")
 
     if return_objects:
         plt.clf()
@@ -147,15 +147,15 @@ def create_density_cloud(density_list, action_num, stimulus_name, return_objects
         plt.show()
 
 
-def get_all_density_plots(data):
+def get_all_density_plots(data, save_location):
     for action_num in range(0, 10):
         prey_1, pred_1 = get_clouds_with_action(data, action_num)
 
         if len(prey_1) > 2:
-            create_density_cloud(prey_1, action_num, "Prey")
+            create_density_cloud(prey_1, action_num, "Prey", False, save_location)
 
         if len(pred_1) > 2:
-            create_density_cloud(pred_1, action_num, "Predator")
+            create_density_cloud(pred_1, action_num, "Predator", False, save_location)
 
 
 def get_all_density_plots_all_subsets(p1, p2, p3, n, return_objects):
@@ -188,6 +188,7 @@ def get_all_density_plots_all_subsets(p1, p2, p3, n, return_objects):
     ax = create_cstart_overlap_plot(p1, p2, p3, n, return_objects)
     axes_objects.append(ax)
     return axes_objects
+
 
 
 def create_overlap_plot(cloud_left, cloud_right, feature, action, model_name):
@@ -655,68 +656,68 @@ def get_all_density_plots_multiple_models(p1, p2, p3, n, n2):
     create_routine_turn_overlap_plot_multiple_models(p1, p2, p3, n, n2)
     create_cstart_overlap_plot_multiple_models(p1, p2, p3, n, n2)
 
+if __name__ == "__main__":
+    # VERSION 2
 
-# VERSION 2
+    # Getting for combination of models
+    # get_all_density_plots_multiple_models(f"dqn_scaffold_14", "Behavioural-Data-Free", "Naturalistic", 10, 4)
 
-# Getting for combination of models
-# get_all_density_plots_multiple_models(f"dqn_scaffold_14", "Behavioural-Data-Free", "Naturalistic", 10, 4)
+    # Getting for individual models
 
-# Getting for individual models
+    # get_all_density_plots_all_subsets(f"dqn_scaffold_20-1", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_scaffold_22-1", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
 
-# get_all_density_plots_all_subsets(f"dqn_scaffold_20-1", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
-# get_all_density_plots_all_subsets(f"dqn_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
-# get_all_density_plots_all_subsets(f"dqn_scaffold_22-1", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
+    # create_routine_turn_overlap_plot("dqn_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+    # get_all_density_plots_all_subsets("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
 
-# create_routine_turn_overlap_plot("dqn_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
-# get_all_density_plots_all_subsets(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
-# get_all_density_plots_all_subsets("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
-
-create_routine_turn_overlap_plot("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
-
-
-# create_cstart_overlap_plot("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
-# get_all_density_plots_all_subsets(f"dqn_scaffold_14-2", "Behavioural-Data-Free", "Naturalistic", 10, return_objects=False)
-# for i in range(1, 2):
-#     # get_all_density_plots_all_subsets(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
-#     get_all_density_plots_all_subsets(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
-#
-# get_all_density_plots_all_subsets(f"dqn_scaffold_20-2", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
+    create_routine_turn_overlap_plot("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
 
 
-# VERSION 1
-# get_all_density_plots_all_subsets("new_even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
-# get_all_density_plots_all_subsets("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
+    # create_cstart_overlap_plot("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_scaffold_14-2", "Behavioural-Data-Free", "Naturalistic", 10, return_objects=False)
+    # for i in range(1, 2):
+    #     # get_all_density_plots_all_subsets(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+    #     get_all_density_plots_all_subsets(f"dqn_scaffold_18-{i}", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+    #
+    # get_all_density_plots_all_subsets(f"dqn_scaffold_20-2", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
 
-# get_all_density_plots_all_subsets("new_even_prey_ref-4", "Ablation-Test-Predator_Only-behavioural_data", "Random-Control", 12)
-# get_all_density_plots_all_subsets("new_even_prey_ref-4", "Ablation-Test-Prey-Large-Central-even_naturalistic", "Random-Control", 12)
-# get_all_density_plots_all_subsets("new_even_prey_ref-4", "Ablation-Test-Predator_Only-behavioural_data", "Random-Control", 12)
+
+    # VERSION 1
+    # get_all_density_plots_all_subsets("new_even_prey_ref-4", "Behavioural-Data-Free", "Prey", 10)
+    # get_all_density_plots_all_subsets("new_even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
+
+    # get_all_density_plots_all_subsets("new_even_prey_ref-4", "Ablation-Test-Predator_Only-behavioural_data", "Random-Control", 12)
+    # get_all_density_plots_all_subsets("new_even_prey_ref-4", "Ablation-Test-Prey-Large-Central-even_naturalistic", "Random-Control", 12)
+    # get_all_density_plots_all_subsets("new_even_prey_ref-4", "Ablation-Test-Predator_Only-behavioural_data", "Random-Control", 12)
 
 
-# get_all_density_plots_all_subsets("new_even_prey_ref-8", "Behavioural-Data-Free", "Naturalistic", 10)
+    # get_all_density_plots_all_subsets("new_even_prey_ref-8", "Behavioural-Data-Free", "Naturalistic", 10)
 
-# get_all_density_plots_all_subsets("even_prey_ref-7", "Behavioural-Data-Free", "Prey", 10)
-# get_all_density_plots_all_subsets("even_prey_ref-7", "Ablation-Test-Spatial-Density", "Prey-Only-Ablated-100", 3)
-# create_j_turn_overlap_plot("even_prey_ref-7", "Behavioural-Data-Free", "Prey", 10)
-# create_j_turn_overlap_plot("even_prey_ref-7", "Ablation-Test-Spatial-Density", "Prey-Only-Ablated-100", 3)
+    # get_all_density_plots_all_subsets("even_prey_ref-7", "Behavioural-Data-Free", "Prey", 10)
+    # get_all_density_plots_all_subsets("even_prey_ref-7", "Ablation-Test-Spatial-Density", "Prey-Only-Ablated-100", 3)
+    # create_j_turn_overlap_plot("even_prey_ref-7", "Behavioural-Data-Free", "Prey", 10)
+    # create_j_turn_overlap_plot("even_prey_ref-7", "Ablation-Test-Spatial-Density", "Prey-Only-Ablated-100", 3)
 
-#THESE ONES:
-# get_all_density_plots_all_subsets("new_even_prey_ref-8", "Behavioural-Data-Free", "Predator", 10)
-# create_cstart_overlap_plot("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 40)
+    #THESE ONES:
+    # get_all_density_plots_all_subsets("new_even_prey_ref-8", "Behavioural-Data-Free", "Predator", 10)
+    # create_cstart_overlap_plot("even_prey_ref-4", "Behavioural-Data-Free", "Predator", 40)
 
-# create_routine_turn_overlap_plot("even_prey_ref-5", "Behavioural-Data-Free", "Prey", 10)
-# get_all_density_plots_all_subsets("even_prey_ref-5", "Behavioural-Data-Free", "Prey", 10)
+    # create_routine_turn_overlap_plot("even_prey_ref-5", "Behavioural-Data-Free", "Prey", 10)
+    # get_all_density_plots_all_subsets("even_prey_ref-5", "Behavioural-Data-Free", "Prey", 10)
 
-# get_all_density_plots_all_subsets("even_prey_ref-5", "Behavioural-Data-Free", "Predator", 10)
-# get_all_density_plots_all_subsets("even_prey_ref-6", "Behavioural-Data-Free", "Predator", 10)
-# get_all_density_plots_all_subsets("even_prey_ref-7", "Behavioural-Data-Free", "Predator", 10)
+    # get_all_density_plots_all_subsets("even_prey_ref-5", "Behavioural-Data-Free", "Predator", 10)
+    # get_all_density_plots_all_subsets("even_prey_ref-6", "Behavioural-Data-Free", "Predator", 10)
+    # get_all_density_plots_all_subsets("even_prey_ref-7", "Behavioural-Data-Free", "Predator", 10)
 
-# get_all_density_plots_all_subsets("new_even_prey_ref-6", "Behavioural-Data-Free", "Prey", 10)
-# get_all_density_plots_all_subsets("new_even_prey_ref-6", "Behavioural-Data-Free", "Naturalistic", 10)
-# get_all_density_plots_all_subsets("new_even_prey_ref-6", "Behavioural-Data-Free", "Predator", 10)
-# # get_all_density_plots_all_subsets("even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
+    # get_all_density_plots_all_subsets("new_even_prey_ref-6", "Behavioural-Data-Free", "Prey", 10)
+    # get_all_density_plots_all_subsets("new_even_prey_ref-6", "Behavioural-Data-Free", "Naturalistic", 10)
+    # get_all_density_plots_all_subsets("new_even_prey_ref-6", "Behavioural-Data-Free", "Predator", 10)
+    # # get_all_density_plots_all_subsets("even_prey_ref-4", "Behavioural-Data-Free", "Naturalistic", 10)
 
-# create_cstart_overlap_plot("even_prey_ref-7", "Behavioural-Data-Free", "Predator", 10)
-# create_j_turn_overlap_plot("even_prey_ref-7", "Behavioural-Data-Free", "Prey", 10)
+    # create_cstart_overlap_plot("even_prey_ref-7", "Behavioural-Data-Free", "Predator", 10)
+    # create_j_turn_overlap_plot("even_prey_ref-7", "Behavioural-Data-Free", "Prey", 10)
 
 
 
