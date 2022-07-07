@@ -87,6 +87,8 @@ class TrainingService(BaseService):
     def _run(self):
         if self.switch_network_configuration:
             variables_to_keep = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+            print("To remove:")
+            print(self.additional_layers)
             variables_to_keep = self.remove_new_variables(variables_to_keep, self.additional_layers)
             self.saver = tf.train.Saver(max_to_keep=5, var_list=variables_to_keep)
         else:
@@ -111,13 +113,17 @@ class TrainingService(BaseService):
             print("First attempt at running model. Starting from scratch.")
             self.sess.run(self.init)
         self.writer = tf.summary.FileWriter(f"{self.model_location}/logs/", tf.get_default_graph())
-        if self.algorithm == "DQN":
-            update_target(self.target_ops, self.sess)  # Set the target network to be equal to the primary network.
 
         if self.switch_network_configuration:
+            # Re-initialise...
+            self.sess.run(self.init)
+
             # Save values, to prevent an error.
             self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
             self.switch_network_configuration = False
+
+        if self.algorithm == "DQN":
+            update_target(self.target_ops, self.sess)  # Set the target network to be equal to the primary network.
 
         for e_number in range(self.episode_number, self.learning_params["num_episodes"]):
             self.episode_number = e_number

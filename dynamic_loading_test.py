@@ -7,6 +7,8 @@ from Networks.DQN.q_network_dynamic import QNetworkDynamic
 
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 
+from Tools.graph_functions import update_target_graph, update_target
+
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
 
@@ -60,9 +62,17 @@ class DynamicLoadingTest:
             self.init = tf.global_variables_initializer()
             self.trainables = tf.trainable_variables()
 
+            self.target_ops = update_target_graph(self.trainables, self.learning_params['tau'])
+            self.sess.run(self.init)
             self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
+            # all_variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+            # sp = [var for var in all_variables if "_new_dense" in var.name]
+            #
+            # tf.variables_initializer(sp)
+            update_target(self.target_ops, self.sess)
+
             # Load possible parameters
-            self.saver.save(self.sess, f"{self.model_location}/model-{str(2)}.cptk")
+            self.saver.save(self.sess, f"{self.model_location}/model-{str(3001)}.cptk")
             print("Saved Model")
 
         tf.reset_default_graph()
@@ -86,11 +96,14 @@ class DynamicLoadingTest:
             self.saver = tf.train.Saver(max_to_keep=5, var_list=variables_to_keep)
             self.init = tf.global_variables_initializer()
             self.trainables = tf.trainable_variables()
+
+
             self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
+
+
             # Load possible parameters
             self.saver.save(self.sess, f"{self.model_location}/model-{str(8011)}.cptk")
             print("Saved Model")
-
 
     def create_session(self):
         print("Creating Session..")
@@ -185,8 +198,6 @@ class DynamicLoadingTest:
                                          )
 
 
-
-
-model_name = "dqn_scaffold_dn_switch_25"
-DynamicLoadingTest(model_name, 4, 1)
+model_name = "dqn_scaffold_dn_switch"
+DynamicLoadingTest(model_name, 1, 1)
 

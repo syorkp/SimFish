@@ -9110,6 +9110,26 @@ dqn_scaffold_dn_switch_25 = [
 ]
 
 
+dqn_scaffold_dn_switch_ = [
+    {
+        "Model Name": "dqn_scaffold_dn_switch",
+        "Environment Name": "dqn_scaffold_dn_switch",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_21, parallel_jobs=3)
+manager = TrialManager(dqn_scaffold_dn_switch_25, parallel_jobs=3)
 manager.run_priority_loop()
