@@ -116,10 +116,11 @@ class DataIndexServiceDiscrete:
 
     def produce_behavioural_summary_display(self):
         """Initially, produce all the elements individually and save them as jpegs"""
-        capture_sequences, energy_states_cs = get_capture_sequences_with_energy_state(model_name, assay_group,
-                                                                                      assay_name, n)
-        exploration_sequences, energy_states_ex = get_exploration_sequences_with_energy_state(model_name, assay_group, assay_name, n)
-        plot_energy_state_grouped_action_usage_from_data()
+        # Bin across energy states.
+        # capture_sequences, energy_states_cs = get_capture_sequences_with_energy_state(model_name, assay_group,
+        #                                                                               assay_name, n)
+        # exploration_sequences, energy_states_ex = get_exploration_sequences_with_energy_state(model_name, assay_group, assay_name, n)
+        # plot_energy_state_grouped_action_usage_from_data()
 
         # Display all spatial density plots
         get_all_density_plots(self.flattened_naturalistic_trial_data, self.figure_save_location + "/Spatial-Density-Plots")
