@@ -1657,7 +1657,7 @@ class ContinuousPPO(BasePPO):
         internal_state_batch = np.vstack(np.vstack(internal_state_batch))
         try:
             action_batch = np.concatenate(np.array(action_batch))
-            print(action_batch.shape)
+            # print(action_batch.shape)
             action_batch = np.reshape(np.array(action_batch), (self.learning_params["trace_length"] * current_batch_size, 2))
         except:
             action_batch = np.concatenate(np.array(action_batch))
