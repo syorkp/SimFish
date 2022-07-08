@@ -422,7 +422,10 @@ class Fish:
 
     def action_scale(self, energy_level):
         """Provides nonlinear scaling for action penalty and energy level change for new simulation"""
-        return self.trajectory_A2 * np.exp(self.trajectory_A * energy_level)
+        if self.trajectory_A:
+            return self.trajectory_A2 * np.exp(self.trajectory_A * energy_level)
+        else:
+            return 1
 
     def update_energy_level(self, reward, consumption):
         """Updates the current energy state for continuous and discrete fish."""

@@ -281,7 +281,7 @@ env = {
        'ci': 0.0000008,  # Final for sublinear PPO: 0.0003
        'ca': 0.0000008,  # Final for sublinear PPO: 0.0003
        'baseline_decrease': 0.0015,  # Final for sublinear PPO: 0.0015
-       'trajectory_A': 5.0,
+       'trajectory_A': False, # Normally 5.0,
        'trajectory_B': 2.5,
        'consumption_energy_gain': 1.0,
 
@@ -316,15 +316,16 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_dn_switch_250"
+scaffold_name = "dqn_scaffold_27"
 
-base_network_layers_updated = copy.copy(base_network_layers)
-base_network_layers_updated["new_dense"] = ["dense", 300]
-new_connectivity = copy.copy(connectivity)
-new_connectivity.append(["full", ["rnn", "new_dense"]])
-
-changes = [["PCI", 0.35, "base_network_layers", base_network_layers_updated,
-            "connectivity", new_connectivity, "do_to_params"]]
+# base_network_layers_updated = copy.copy(base_network_layers)
+# base_network_layers_updated["new_dense"] = ["dense", 300]
+# new_connectivity = copy.copy(connectivity)
+# new_connectivity.append(["full", ["rnn", "new_dense"]])
+#
+# changes = [["PCI", 0.35, "base_network_layers", base_network_layers_updated,
+#             "connectivity", new_connectivity, "do_to_params"]]
+changes = []
 
 # 2-10
 changes += [
