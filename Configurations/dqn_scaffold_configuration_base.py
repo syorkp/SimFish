@@ -286,7 +286,7 @@ env = {
        'consumption_energy_gain': 1.0,
 
        # Reward
-       'action_reward_scaling': 10000,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
+       'action_reward_scaling': 0, # Best working 10000,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
        'consumption_reward_scaling': 1000000,  # Arbitrary (practical) hyperparameter for reward for consumption
 
        'wall_reflection': True,
@@ -316,7 +316,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_27"
+scaffold_name = "dqn_scaffold_28"
 
 # base_network_layers_updated = copy.copy(base_network_layers)
 # base_network_layers_updated["new_dense"] = ["dense", 300]
