@@ -9650,7 +9650,7 @@ dqn_18_visual_interruptions = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "interventions": {"visual_interruption": brief_interruption_profile}
+                "interventions": {"visual_interruptions": brief_interruption_profile}
             },
         ],
         "Full Reafference": True,

@@ -82,11 +82,11 @@ class AssayService(BaseService):
         print("Model loaded")
         for assay in self.assays:
             if assay["interventions"]:
-                if assay["interventions"]["visual_interruptions"]:
+                if "visual_interruptions" in assay["interventions"].keys:
                     self.visual_interruptions = assay["interventions"]["visual_interruptions"]
-                if assay["interventions"]["reafference_interruptions"]:
+                if "reafference_interruptions" in assay["interventions"].keys():
                     self.reafference_interruptions = assay["interventions"]["reafference_interruptions"]
-                if assay["interventions"]["preset_energy_state"]:
+                if "preset_energy_state" in assay["interventions"].keys():
                     self.preset_energy_state = assay["interventions"]["preset_energy_state"]
                 if assay["interventions"]["ablations"]:
                     self.ablate_units(assay["interventions"]["ablations"])
