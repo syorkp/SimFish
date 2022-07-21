@@ -376,7 +376,10 @@ class ContinuousPPO(BasePPO):
         )
 
         if self.use_mu:
-            action = [mu_i[0][0], mu_a[0][0]]
+            action = [mu_i[0][0] * self.environment_params["max_impulse"],
+                      mu_a[0][0] * self.environment_params["max_angle_change"]]
+            if self.step_number == 5:
+                print("Yes")
         else:
             action = [impulse[0][0], angle[0][0]]
 
