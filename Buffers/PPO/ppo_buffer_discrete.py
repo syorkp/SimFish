@@ -128,7 +128,8 @@ class PPOBufferDiscrete(BasePPOBuffer):
 
         # TODO: Add methods for detecting values outside of range.
 
-    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id):
+    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order=None,
+                        salt_location=None):
         hdf5_file, assay_group = BasePPOBuffer.save_assay_data(self, assay_id, data_save_location, assay_configuration_id)
 
         hdf5_file.close()
