@@ -82,7 +82,7 @@ class AssayService(BaseService):
         print("Model loaded")
         for assay in self.assays:
             if assay["interventions"]:
-                if "visual_interruptions" in assay["interventions"].keys:
+                if "visual_interruptions" in assay["interventions"].keys():
                     self.visual_interruptions = assay["interventions"]["visual_interruptions"]
                 if "reafference_interruptions" in assay["interventions"].keys():
                     self.reafference_interruptions = assay["interventions"]["reafference_interruptions"]
