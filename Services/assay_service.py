@@ -88,7 +88,7 @@ class AssayService(BaseService):
                     self.reafference_interruptions = assay["interventions"]["reafference_interruptions"]
                 if "preset_energy_state" in assay["interventions"].keys():
                     self.preset_energy_state = assay["interventions"]["preset_energy_state"]
-                if assay["interventions"]["ablations"]:
+                if "ablations" in assay["interventions"].keys():
                     self.ablate_units(assay["interventions"]["ablations"])
             if self.environment_params["use_dynamic_network"]:
                 if self.ppo_version is not None:
