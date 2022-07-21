@@ -364,7 +364,7 @@ class ContinuousPPO(BasePPO):
              ],
             feed_dict={self.actor_network.observation: o,
                        self.actor_network.internal_state: internal_state,
-                       self.actor_network.prev_actions: np.reshape(a, (1, 2)),
+                       self.actor_network.prev_actions: np.reshape(a, (1, 4)),
                        self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
                        self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
                        self.actor_network.rnn_state_in: rnn_state_actor,
