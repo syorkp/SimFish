@@ -69,9 +69,10 @@ def get_multiple_actions(p1, p2, p3, n=1):
     predation_sequences = np.array([])
     predator_presence_timestamps = np.array([])
     for i in range(1, n+1):
-        if i > 12:
+        if i > 100:
             data = load_data(p1, f"{p2}-2", f"{p3} {i}")
         else:
+            print(i)
             data = load_data(p1, p2, f"{p3}-{i}")
         all_impulses = np.concatenate((all_impulses, data["impulse"][1:]))
         all_angles = np.concatenate((all_angles, data["angle"][1:]))
@@ -123,8 +124,8 @@ data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
 # all_impulses, all_angles, consumption_timestamps, predation_sequences = get_multiple_actions("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic", 8)
 # mu_impulse, mu_angle = get_multiple_means("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic", 8)
 
-all_impulses, all_angles, consumption_timestamps, predation_sequences, predator_presence = get_multiple_actions(model_name, "Behavioural-Data-Free", "Naturalistic", 2)
-mu_impulse, mu_angle = get_multiple_means(model_name, "Behavioural-Data-Free", "Naturalistic", 2)
+all_impulses, all_angles, consumption_timestamps, predation_sequences, predator_presence = get_multiple_actions(model_name, "Behavioural-Data-Free", "Naturalistic", 12)
+mu_impulse, mu_angle = get_multiple_means(model_name, "Behavioural-Data-Free", "Naturalistic", 12)
 
 # all_impulses, all_angles, consumption_timestamps, predation_sequences, predator_presence = \
 #     get_multiple_actions("ppo_continuous_beta_sanity-4", "Behavioural-Data-Free", "Naturalistic", 10)
@@ -138,14 +139,14 @@ plt.scatter(all_impulses, all_angles, alpha=.2)
 plt.show()
 
 
-heatmap, xedges, yedges = np.histogram2d(mu_impulse*10, mu_angle, bins=50)
+heatmap, xedges, yedges = np.histogram2d(mu_impulse*5, mu_angle, bins=50)
 extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
 
 plt.clf()
 plt.imshow(heatmap.T, extent=extent, origin='lower')
 plt.show()
 
-mu_impulse = [i * 10 for i in mu_impulse]
+mu_impulse = [i * 5 for i in mu_impulse]
 mu_angle = [i * np.pi/5 for i in mu_angle]
 plt.scatter(mu_impulse, mu_angle, alpha=.2)
 consumption_mu_imp = [a for i, a in enumerate(mu_impulse) if i in consumption_timestamps]
@@ -154,8 +155,8 @@ plt.scatter(consumption_mu_imp, consumption_mu_ang, alpha=.2, color="r")
 predator_mu_imp = [a for i, a in enumerate(mu_impulse) if i in predator_presence]
 predator_mu_ang = [a for i, a in enumerate(mu_angle) if i in predator_presence]
 plt.scatter(predator_mu_imp, predator_mu_ang, alpha=.2, color="y")
-plt.xlabel("Mu Impulse")
-plt.ylabel("Mu Angle")
+plt.xlabel("Impulse")
+plt.ylabel("Angle")
 plt.show()
 
 

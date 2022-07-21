@@ -202,7 +202,7 @@ def get_all_density_plots_all_subsets(p1, p2, p3, n):
         prey_cloud = []
         pred_cloud = []
         for i in range(1, n+1):
-            if i > 12:
+            if i > 100:
                 data = load_data(p1, f"{p2}-2", f"{p3} {i}")
             else:
                 data = load_data(p1, p2, f"{p3}-{i}")
@@ -390,4 +390,5 @@ def create_cstart_overlap_plot(p1, p2, p3, n):
 
 # get_all_density_plots_all_subsets("ppo_continuous_sbe_is-1", "Behavioural-Data-Free", "Naturalistic", 10)
 
-get_all_density_plots_all_subsets("ppo_scaffold_18x-1", "Behavioural-Data-Free", "Naturalistic", 20)
+get_all_density_plots_all_subsets("ppo_scaffold_18x-1", "Behavioural-Data-Free", "Naturalistic", 12)
+print("Done")

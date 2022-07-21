@@ -67,6 +67,10 @@ class AssayService(BaseService):
 
         self.internal_state_order = self.get_internal_state_order()
 
+        self.preset_energy_state = None
+        self.reafference_interruptions = None
+        self.visual_interruptions = None
+
     def _run(self):
         self.saver = tf.train.Saver(max_to_keep=5)
         self.init = tf.global_variables_initializer()
@@ -77,8 +81,15 @@ class AssayService(BaseService):
         self.saver.restore(self.sess, checkpoint_path)
         print("Model loaded")
         for assay in self.assays:
-            if assay["ablations"]:
-                self.ablate_units(assay["ablations"])
+            if assay["interventions"]:
+                if assay["interventions"]["visual_interruptions"]:
+                    self.visual_interruptions = assay["interventions"]["visual_interruptions"]
+                if assay["interventions"]["reafference_interruptions"]:
+                    self.reafference_interruptions = assay["interventions"]["reafference_interruptions"]
+                if assay["interventions"]["preset_energy_state"]:
+                    self.preset_energy_state = assay["interventions"]["preset_energy_state"]
+                if assay["interventions"]["ablations"]:
+                    self.ablate_units(assay["interventions"]["ablations"])
             if self.environment_params["use_dynamic_network"]:
                 if self.ppo_version is not None:
                     self.buffer.rnn_layer_names = self.actor_network.rnn_layer_names

@@ -106,6 +106,19 @@ class DQNAssayService(AssayService, BaseDQN):
                 np.zeros([1, self.main_QN.rnn_dim]), np.zeros([1, self.main_QN.rnn_dim]))  # Reset RNN hidden state
             self.step_number += 1
 
+            # Deal with interventions
+            if self.visual_interruptions is not None:
+                if self.visual_interruptions[self.step_number] == 1:
+                    o[:, 0, :] = np.min(o[:, 0, :])
+                    o[:, 1, :] = np.min(o[:, 1, :])
+                    o[:, 2, :] = np.min(o[:, 2, :])
+            if self.reafference_interruptions is not None:
+                if self.reafference_interruptions[self.step_number] == 1:
+                    ...
+            if self.preset_energy_state is not None:
+                if self.preset_energy_state[self.step_number] == 1:
+                    ...
+
             o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
                                                                        a=action_reafference, rnn_state=rnn_state)
             o = o1
