@@ -15,7 +15,7 @@ from datetime import datetime
 
 from Services.trial_manager import TrialManager
 from Configurations.Networks.original_network import base_network_layers, ops, connectivity
-from Configurations.AssayTools.visual_interruptions import brief_interruption_profile, long_term_interruption_profile
+from Configurations.AssayTools.interruptions import brief_interruption_profile, long_term_interruption_profile
 
 # Ensure output directories exist
 if not os.path.exists("./Training-Output/"):
@@ -9760,7 +9760,7 @@ dqn_18_long_reafference_interruptions = [
         "New Simulation": True,
         "Assays": [
             {
-                "assay id": "Naturalistic-1",
+                "assay id": "Naturalistic-4",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -9780,7 +9780,7 @@ dqn_18_long_reafference_interruptions = [
                 "interventions": {"reafference_interruptions": long_term_interruption_profile}
             },
             {
-                "assay id": "Naturalistic-2",
+                "assay id": "Naturalistic-5",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
@@ -9800,7 +9800,7 @@ dqn_18_long_reafference_interruptions = [
                 "interventions": {"reafference_interruptions": long_term_interruption_profile}
             },
             {
-                "assay id": "Naturalistic-3",
+                "assay id": "Naturalistic-6",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
