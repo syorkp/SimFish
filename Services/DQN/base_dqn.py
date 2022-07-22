@@ -197,9 +197,11 @@ class BaseDQN:
                                                                                       rnn_state=rnn_state,
                                                                                       rnn_state_ref=rnn_state_ref)
 
+
             all_actions.append(a[0])
             episode_buffer.append(np.reshape(np.array([o, np.array(a), r, internal_state, o1, d]), [1, 6]))
             total_episode_reward += r
+            action_reafference = a
 
             o = o1
             if self.total_steps > self.pre_train_steps:
@@ -474,7 +476,6 @@ class BaseDQN:
         return o, action_reafference, given_reward, internal_state, o1, d, updated_rnn_state
 
     def _assay_step_loop_new_static(self, o, internal_state, a, rnn_state):
-        print(a)
         chosen_a, updated_rnn_state, rnn2_state, sa, sv, o2 = \
             self.sess.run(
                 [self.main_QN.predict, self.main_QN.rnn_state, self.main_QN.rnn_state_ref,

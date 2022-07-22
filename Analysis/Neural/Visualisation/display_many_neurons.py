@@ -324,8 +324,7 @@ def plot_artificial_traces(prey_pred_data, prey_size_data, directional_data, pre
 
 
 if __name__ == "__main__":
-    ...
-    # plot_traces(unit_activity1a)
+    plot_traces(unit_activity1a)
 
 
 
