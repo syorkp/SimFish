@@ -15,6 +15,7 @@ from datetime import datetime
 
 from Services.trial_manager import TrialManager
 from Configurations.Networks.original_network import base_network_layers, ops, connectivity
+from Configurations.AssayTools.visual_interruptions import brief_interruption_profile, long_term_interruption_profile
 
 # Ensure output directories exist
 if not os.path.exists("./Training-Output/"):
@@ -9608,10 +9609,6 @@ ppo_assay_18 = [
     },
 ]
 
-
-brief_interruption_profile = [1 if i > 100 and i % 50 == 0 else 0 for i in range(10000)]
-long_term_interruption_profile = [0 for i in range(200)] + [1 for i in range(10000)]
-
 dqn_18_visual_interruptions = [
         {
         "Model Name": "dqn_scaffold_18",
@@ -9625,7 +9622,7 @@ dqn_18_visual_interruptions = [
         "Continuous Actions": False,
         "Learning Algorithm": "DQN",
         "Priority": 2,
-        "Using GPU": True,
+        "Using GPU": False,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
@@ -9679,6 +9676,46 @@ dqn_18_long_visual_interruptions = [
         "Assays": [
             {
                 "assay id": "Naturalistic-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 2000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "energy_state_control": False,
+                "salt_control": False,
+                "interventions": {"visual_interruptions": long_term_interruption_profile}
+            },
+            {
+                "assay id": "Naturalistic-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 2000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "energy_state_control": False,
+                "salt_control": False,
+                "interventions": {"visual_interruptions": long_term_interruption_profile}
+            },
+            {
+                "assay id": "Naturalistic-3",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 2000,
                 "Tethered": False,
