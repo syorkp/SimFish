@@ -9609,8 +9609,8 @@ ppo_assay_18 = [
 ]
 
 
-brief_interruption_profile = [1 if i % 50 == 0 else 0 for i in range(10000)]
-
+brief_interruption_profile = [1 if i > 100 and i % 50 == 0 else 0 for i in range(10000)]
+long_term_interruption_profile = [0 for i in range(200)] + [1 for i in range(10000)]
 
 dqn_18_visual_interruptions = [
         {
@@ -9657,6 +9657,51 @@ dqn_18_visual_interruptions = [
     },
 ]
 
+dqn_18_long_visual_interruptions = [
+        {
+        "Model Name": "dqn_scaffold_18",
+        "Environment Name": "dqn_18_1",
+        "Assay Configuration Name": "Behavioural-Data-Long-Interruptions",
+        "Trial Number": 1,
+        "Checkpoint": 4200,
+        "Run Mode": "Assay",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "set random seed": False,
+        "New Simulation": True,
+        "Assays": [
+            {
+                "assay id": "Naturalistic-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 2000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "energy_state_control": False,
+                "salt_control": False,
+                "interventions": {"visual_interruptions": long_term_interruption_profile}
+            },
+        ],
+        "Full Reafference": True,
+    },
+]
+
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_18_visual_interruptions, parallel_jobs=3)
+manager = TrialManager(dqn_18_long_visual_interruptions, parallel_jobs=3)
 manager.run_priority_loop()
