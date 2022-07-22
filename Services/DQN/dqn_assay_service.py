@@ -121,7 +121,7 @@ class DQNAssayService(AssayService, BaseDQN):
                 if self.preset_energy_state[self.step_number] == 1:
                     ...
 
-            self.previous_action = action_reafference
+            self.previous_action = a
 
             o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
                                                                        a=action_reafference, rnn_state=rnn_state)
@@ -129,6 +129,11 @@ class DQNAssayService(AssayService, BaseDQN):
 
             if d:
                 break
+            if self.full_reafference:
+                action_reafference = a
+            else:
+                action_reafference = a[0]
+
 
         if self.environment_params["salt"]:
             salt_location = self.simulation.salt_location
