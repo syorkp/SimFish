@@ -114,10 +114,12 @@ class DQNAssayService(AssayService, BaseDQN):
                     o[:, 2, :] = np.min(o[:, 2, :])
             if self.reafference_interruptions is not None:
                 if self.reafference_interruptions[self.step_number] == 1:
-                    ...
+                    action_reafference = self.previous_action
             if self.preset_energy_state is not None:
                 if self.preset_energy_state[self.step_number] == 1:
                     ...
+
+            self.previous_action = action_reafference
 
             o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
                                                                        a=action_reafference, rnn_state=rnn_state)

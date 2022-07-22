@@ -70,6 +70,7 @@ class AssayService(BaseService):
         self.preset_energy_state = None
         self.reafference_interruptions = None
         self.visual_interruptions = None
+        self.previous_action = None
 
     def _run(self):
         self.saver = tf.train.Saver(max_to_keep=5)

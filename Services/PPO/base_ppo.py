@@ -68,6 +68,12 @@ class BasePPO:
             self.predictor_rdn = None
         if not hasattr(self, "separate_networks"):
             self.separate_networks = None
+        if not hasattr(self, "visual_interruptions"):
+            self.visual_interruptions = None
+        if not hasattr(self, "reafference_interruptions"):
+            self.reafference_interruptions = None
+        if not hasattr(self, "preset_energy_state"):
+            self.preset_energy_state = None
 
     def init_states(self):
         # Init states for RNN - For steps, not training.
@@ -154,6 +160,18 @@ class BasePPO:
                     rnn_state_actor_ref = copy.copy(self.init_rnn_state_actor_ref)
                     rnn_state_critic = copy.copy(self.init_rnn_state_critic)
                     rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
+                if self.visual_interruptions is not None:
+                    if self.visual_interruptions[self.step_number] == 1:
+                        o[:, 0, :] = np.min(o[:, 0, :])
+                        o[:, 1, :] = np.min(o[:, 1, :])
+                        o[:, 2, :] = np.min(o[:, 2, :])
+                if self.reafference_interruptions is not None:
+                    if self.reafference_interruptions[self.step_number] == 1:
+                        a = self.previous_action
+                if self.preset_energy_state is not None:
+                    if self.preset_energy_state[self.step_number] == 1:
+                        ...
+                self.previous_action = a
 
             self.step_number += 1
 
