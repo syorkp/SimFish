@@ -9863,5 +9863,5 @@ dqn_18_long_reafference_interruptions = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_21, parallel_jobs=3)
+manager = TrialManager(dqn_scaffold_25b, parallel_jobs=3)
 manager.run_priority_loop()
