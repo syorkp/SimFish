@@ -8904,7 +8904,7 @@ dqn_scaffold_26a = [
         "Full Logs": True,
         "SB Emulator": False,
         "New Simulation": True,
-        "Profile Speed": False,
+        "Profile Speed": True,
     },
     {
         "Model Name": "dqn_scaffold_26",
@@ -8921,7 +8921,7 @@ dqn_scaffold_26a = [
         "Full Logs": True,
         "SB Emulator": False,
         "New Simulation": True,
-        "Profile Speed": False,
+        "Profile Speed": True,
     },
 ]
 
