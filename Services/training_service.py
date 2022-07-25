@@ -119,6 +119,7 @@ class TrainingService(BaseService):
             self.sess.run(self.init)
 
             # Save values, to prevent an error.
+            self.saver = tf.train.Saver(max_to_keep=5)
             self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
             self.switch_network_configuration = False
 

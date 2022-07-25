@@ -70,6 +70,7 @@ class DynamicLoadingTest:
             #
             # tf.variables_initializer(sp)
             update_target(self.target_ops, self.sess)
+            self.saver = tf.train.Saver(max_to_keep=5)
 
             # Load possible parameters
             self.saver.save(self.sess, f"{self.model_location}/model-{str(3001)}.cptk")
@@ -100,6 +101,7 @@ class DynamicLoadingTest:
 
             self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
 
+            self.saver = tf.train.Saver(max_to_keep=5)
 
             # Load possible parameters
             self.saver.save(self.sess, f"{self.model_location}/model-{str(8011)}.cptk")

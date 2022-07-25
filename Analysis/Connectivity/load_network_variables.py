@@ -40,7 +40,7 @@ def load_configuration_files(environment_name):
         with open(f"{configuration_location}_env.json", 'r') as f:
             env = json.load(f)
     except FileNotFoundError:
-        configuration_location = f"../../../../Configurations/Assay-Configs/{environment_name}"
+        configuration_location = f"../../Configurations/Assay-Configs/{environment_name}"
         with open(f"{configuration_location}_learning.json", 'r') as f:
             params = json.load(f)
         with open(f"{configuration_location}_env.json", 'r') as f:
@@ -160,11 +160,11 @@ def load_network_variables_dqn(model_name, conf_name, full_reafference=False):
         saver = tf.train.Saver(max_to_keep=5)
         init = tf.global_variables_initializer()
         try:
-            model_location = f"../../../Training-Output/{model_name}"
+            model_location = f"../../Training-Output/{model_name}"
 
             checkpoint = tf.train.get_checkpoint_state(model_location)
         except FileNotFoundError:
-            model_location = f"../../../../Training-Output/{model_name}"
+            model_location = f"../../../Training-Output/{model_name}"
             checkpoint = tf.train.get_checkpoint_state(model_location)
 
         saver.restore(sess, checkpoint.model_checkpoint_path)
@@ -176,3 +176,6 @@ def load_network_variables_dqn(model_name, conf_name, full_reafference=False):
     return sorted_vars
 
 # v = load_network_variables_ppo("updated_ppo-4", "1")
+v = load_network_variables_dqn("dqn_scaffold_dn_switch_25-1", "dsw_1")
+
+
