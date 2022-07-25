@@ -344,9 +344,6 @@ class TrainingService(BaseService):
                     value=[tf.Summary.Value(tag="capture success rate", simple_value=capture_success_rate)])
                 self.writer.add_summary(capture_success_summary, self.episode_number)
 
-
-
-
         if self.environment_params["probability_of_predator"] != 0:
             predator_avoided_index = predators_avoided / self.environment_params["probability_of_predator"]
             predators_avoided_summary = tf.Summary(
@@ -380,14 +377,30 @@ class TrainingService(BaseService):
             light_dominance = 0.5 / (1-self.environment_params["dark_light_ratio"])
             dark_discount = 0.5 / (self.environment_params["dark_light_ratio"])
             steps_in_light = np.sum((np.array(self.simulation.in_light_history) > 0) * 1)
-            steps_in_light *= light_dominance
+            steps_in_light_d = steps_in_light * light_dominance
             steps_in_dark = self.simulation.num_steps - steps_in_light
-            steps_in_dark *= dark_discount
-            fraction_in_light_normalised = steps_in_light/(steps_in_dark+steps_in_light)
+            steps_in_dark_d = steps_in_dark * dark_discount
+            fraction_in_light_normalised = steps_in_light_d/(steps_in_dark_d+steps_in_light_d)
             salt_summary = tf.Summary(
                 value=[tf.Summary.Value(tag="Phototaxis Index",
                                         simple_value=fraction_in_light_normalised)])
             self.writer.add_summary(salt_summary, self.episode_number)
+
+        if self.environment_params["energy_state"]:
+            energy_used = 0
+            for i, e in enumerate(self.simulation.energy_level_log):
+                if i == 0 or i == len(self.simulation.energy_level_log):
+                    pass
+                else:
+                    if e < self.simulation.energy_level_log[i-1] and e < self.simulation.energy_level_log[i+1]:
+                        energy_used += 1-e
+            energy_used += 1-self.simulation.energy_level_log[-1]
+            energy_efficiency = energy_used/len(self.simulation.energy_level_log)
+
+            energy_efficiency_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="Energy Efficiency Index",
+                                        simple_value=energy_efficiency)])
+            self.writer.add_summary(energy_efficiency_summary, self.episode_number)
 
         if self.switched_configuration:
             configuration_summary = tf.Summary(

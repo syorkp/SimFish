@@ -526,3 +526,5 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.prey_bodies[i].angle = original_orientations[i+1]
         self.fish.body.angle = original_orientations[0]
 
+        # Add to log about swimming against currents...
+
