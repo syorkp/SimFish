@@ -389,7 +389,7 @@ class TrainingService(BaseService):
         if self.environment_params["energy_state"]:
             energy_used = 0
             for i, e in enumerate(self.simulation.energy_level_log):
-                if i == 0 or i == len(self.simulation.energy_level_log):
+                if i == 0 or i == len(self.simulation.energy_level_log)-1
                     pass
                 else:
                     if e < self.simulation.energy_level_log[i-1] and e < self.simulation.energy_level_log[i+1]:
