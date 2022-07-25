@@ -760,11 +760,8 @@ class Eye:
         if self.expand_observation:
 
             if self.using_gpu:
-                # uv_readings = self.uv_readings.get()
-                # red_readings = self.red_readings.get()
-                readings = self.chosen_math_library.concatenate((self.uv_readings, self.red_readings), axis=1).get()
-                uv_readings = readings[:, 0:1, :]
-                red_readings = readings[:, 1:3, :]
+                uv_readings = self.uv_readings.get()
+                red_readings = self.red_readings.get()
 
             else:
                 uv_readings = self.uv_readings
