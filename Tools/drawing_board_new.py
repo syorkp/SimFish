@@ -769,12 +769,12 @@ class NewDrawingBoard:
         theta_separation = math.asin(max_separation / self.max_visual_distance)
         n = (angular_size / theta_separation)
 
-        if n * number_of_this_feature > self.max_lines_num:
-            print(f"""Max lines num needs increase:
-            Max lines num: {self.max_lines_num}
-            Required lines for this feature alone: {n * number_of_this_feature}
-            """)
-            n = (self.max_lines_num * 0.8)/number_of_this_feature
+        # if n * number_of_this_feature > self.max_lines_num:
+        #     print(f"""Max lines num needs increase:
+        #     Max lines num: {self.max_lines_num}
+        #     Required lines for this feature alone: {n * number_of_this_feature}
+        #     """)
+        #     n = (self.max_lines_num * 0.8)/number_of_this_feature
 
         return int(n)
 

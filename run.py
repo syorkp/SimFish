@@ -8904,7 +8904,7 @@ dqn_scaffold_26a = [
         "Full Logs": True,
         "SB Emulator": False,
         "New Simulation": True,
-        "Profile Speed": True,
+        "Profile Speed": False,
     },
     {
         "Model Name": "dqn_scaffold_26",
@@ -8921,7 +8921,7 @@ dqn_scaffold_26a = [
         "Full Logs": True,
         "SB Emulator": False,
         "New Simulation": True,
-        "Profile Speed": True,
+        "Profile Speed": False,
     },
 ]
 
@@ -9863,5 +9863,5 @@ dqn_18_long_reafference_interruptions = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_26a, parallel_jobs=3)
+manager = TrialManager(dqn_scaffold_27a, parallel_jobs=3)
 manager.run_priority_loop()
