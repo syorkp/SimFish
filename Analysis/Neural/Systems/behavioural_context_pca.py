@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.decomposition import PCA
+from matplotlib.lines import Line2D
 
 from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.label_behavioural_context import label_behavioural_context_multiple_trials
@@ -48,24 +49,40 @@ def plot_pca_trajectory_with_context(activity_data, associated_periods):
     for trial in associated_periods:
         for step in trial:
             if 3 in step:
-                prevailing_context_full.append(3)
+                prevailing_context_full.append("black")
             else:
                 if 1 in step:
-                    prevailing_context_full.append(1)
+                    prevailing_context_full.append("y")
                 else:
                     if 2 in step or 4 in step:
-                        prevailing_context_full.append(2)
+                        prevailing_context_full.append("g")
                     else:
-                        prevailing_context_full.append(0)
+                        if 5 in step:
+                            prevailing_context_full.append("r")
+                        else:
+                            prevailing_context_full.append("blue")
 
-    plt.scatter(pca_components[0], pca_components[1], c=prevailing_context_full)
+    legend_elements = [Line2D([0], [0], marker='o', color='blue', label='None',
+                              markerfacecolor='blue', markersize=15),
+                       Line2D([0], [1], marker='o', color='y', label='Prey Capture',
+                              markerfacecolor='y', markersize=15),
+                       Line2D([0], [2], marker='o', color='g', label='Exploration-FS',
+                              markerfacecolor='g', markersize=15),
+                       Line2D([0], [3], marker='o', color='black', label='Avoidance',
+                              markerfacecolor='black', markersize=15),
+                       Line2D([0], [4], marker='o', color='r', label='Wall',
+                              markerfacecolor='r', markersize=15),
+                       ]
+
+    plt.scatter(pca_components[0], pca_components[1], c=prevailing_context_full, alpha=0.1)
+    plt.legend(handles=legend_elements)
     plt.show()
 
 
 if __name__ == "__main__":
     datas = []
-    for i in range(1, 2):
-        data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-{i}")
+    for i in range(1, 10):
+        data = load_data("dqn_scaffold_18-2", "Behavioural-Data-Free", f"Naturalistic-{i}")
         datas.append(data)
     plot_pca_trajectory_with_contexts_multiple_trials(datas, remove_value_stream=False)
 
