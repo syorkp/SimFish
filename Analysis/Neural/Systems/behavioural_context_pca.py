@@ -24,9 +24,12 @@ def mscatter(x,y,ax=None, m=None, **kw):
     return sc
 
 
-def plot_pca_trajectory_with_contexts_multiple_trials(datas):
+def plot_pca_trajectory_with_contexts_multiple_trials(datas, remove_value_stream=False):
     behavioural_labels = label_behavioural_context_multiple_trials(datas, environment_size=1500)
-    all_activity_data = [np.swapaxes(data["rnn_state_actor"][:, 0, 0, :], 0, 1) for data in datas]
+    if remove_value_stream:
+        all_activity_data = [np.swapaxes(data["rnn_state_actor"][:256, 0, 0, :], 0, 1) for data in datas]
+    else:
+        all_activity_data = [np.swapaxes(data["rnn_state_actor"][:, 0, 0, :], 0, 1) for data in datas]
     plot_pca_trajectory_with_context(all_activity_data, behavioural_labels)
 
 
@@ -44,18 +47,17 @@ def plot_pca_trajectory_with_context(activity_data, associated_periods):
     for trial in associated_periods:
         for step in trial:
             if 3 in step:
-                prevailing_context_full.append("^")
+                prevailing_context_full.append(3)
             else:
                 if 1 in step:
-                    prevailing_context_full.append("1")
+                    prevailing_context_full.append(1)
                 else:
-                    if 3 in step or 4 in step:
-                        prevailing_context_full.append("s")
+                    if 2 in step or 4 in step:
+                        prevailing_context_full.append(2)
                     else:
-                        prevailing_context_full.append(".")
+                        prevailing_context_full.append(0)
 
-    plt.rcParams["figure.figsize"] = (20, 20)
-    mscatter(pca_components[0], pca_components[1], c=split_colours, m=prevailing_context_full)
+    plt.scatter(pca_components[0], pca_components[1], c=prevailing_context_full)
     plt.show()
 
 
@@ -64,7 +66,7 @@ if __name__ == "__main__":
     for i in range(1, 11):
         data = load_data("dqn_scaffold_18-2", "Behavioural-Data-Free", f"Naturalistic-{i}")
         datas.append(data)
-    plot_pca_trajectory_with_contexts_multiple_trials(datas)
+    plot_pca_trajectory_with_contexts_multiple_trials(datas, remove_value_stream=True)
 
 
 

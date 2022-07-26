@@ -118,7 +118,7 @@
     "birth_rate_current_pop_scaling": 1,
     "birth_rate_region_size": 240,
     "prey_safe_duration": 100,
-    "p_prey_death": 0.1,
+    "p_prey_death": 0,
     "max_predator_attacks": 5,
     "further_attack_probability": 0.4,
     "max_predator_attack_range": 2000,
