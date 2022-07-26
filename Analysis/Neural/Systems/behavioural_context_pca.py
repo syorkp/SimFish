@@ -27,7 +27,7 @@ def mscatter(x,y,ax=None, m=None, **kw):
 def plot_pca_trajectory_with_contexts_multiple_trials(datas, remove_value_stream=False):
     behavioural_labels = label_behavioural_context_multiple_trials(datas, environment_size=1500)
     if remove_value_stream:
-        all_activity_data = [np.swapaxes(data["rnn_state_actor"][:256, 0, 0, :], 0, 1) for data in datas]
+        all_activity_data = [np.swapaxes(data["rnn_state_actor"][:, 0, 0, :256], 0, 1) for data in datas]
     else:
         all_activity_data = [np.swapaxes(data["rnn_state_actor"][:, 0, 0, :], 0, 1) for data in datas]
     plot_pca_trajectory_with_context(all_activity_data, behavioural_labels)
@@ -44,6 +44,7 @@ def plot_pca_trajectory_with_context(activity_data, associated_periods):
         split_colours = np.concatenate((split_colours, np.arange(len(activity_data[i][0]))))
 
     prevailing_context_full = []
+    x = np.concatenate((associated_periods))
     for trial in associated_periods:
         for step in trial:
             if 3 in step:
@@ -63,10 +64,10 @@ def plot_pca_trajectory_with_context(activity_data, associated_periods):
 
 if __name__ == "__main__":
     datas = []
-    for i in range(1, 11):
-        data = load_data("dqn_scaffold_18-2", "Behavioural-Data-Free", f"Naturalistic-{i}")
+    for i in range(1, 2):
+        data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-{i}")
         datas.append(data)
-    plot_pca_trajectory_with_contexts_multiple_trials(datas, remove_value_stream=True)
+    plot_pca_trajectory_with_contexts_multiple_trials(datas, remove_value_stream=False)
 
 
 

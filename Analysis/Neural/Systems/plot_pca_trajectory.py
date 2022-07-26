@@ -55,7 +55,7 @@ if __name__ == "__main__":
     #
     # # plot_pca_trajectory(rnn_data_full, timepoints_to_label=consumption_points)
     # plot_pca_trajectory_multiple_trials(rnn_data_full, consumption_points)
-    data = load_data("dqn_scaffold_18-2", "Behavioural-Data-Free", f"Naturalistic-3")
+    data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-1")
     rnn_data = np.swapaxes(data["rnn_state_actor"][:, 0, 0, :], 0, 1)
     # reduced_rnn_data = remove_those_with_no_output(rnn_data, "dqn_scaffold_18-2", "dqn_18_2", proportion_to_remove=0.2)
     reduced_rnn_data = rnn_data[:256]
