@@ -1,5 +1,4 @@
 import os
-import shutil
 
 # Remove GPU Cache
 # if os.path.exists("../.nv"):
@@ -14,8 +13,7 @@ import json
 from datetime import datetime
 
 from Services.trial_manager import TrialManager
-from Configurations.Networks.original_network import base_network_layers, ops, connectivity
-from Configurations.AssayTools.interruptions import brief_interruption_profile, long_term_interruption_profile
+from Configurations.Templates.interruptions import brief_interruption_profile, long_term_interruption_profile
 
 # Ensure output directories exist
 if not os.path.exists("./Training-Output/"):
@@ -9646,6 +9644,8 @@ ppo_assay_18 = [
     },
 ]
 
+# Exploratory analysis (since Azores)
+
 dqn_18_visual_interruptions = [
         {
         "Model Name": "dqn_scaffold_18",
@@ -9861,7 +9861,52 @@ dqn_18_long_reafference_interruptions = [
     },
 ]
 
+dqn_18_endless_trial = [
+        {
+        "Model Name": "dqn_scaffold_18",
+        "Environment Name": "dqn_18_1_endless",
+        "Assay Configuration Name": "Behavioural-Data-Endless",
+        "Trial Number": 1,
+        "Checkpoint": 4200,
+        "Run Mode": "Assay",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "set random seed": False,
+        "New Simulation": True,
+        "Assays": [
+            {
+                "assay id": "Naturalistic-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 5000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "energy_state_control": False,
+                "salt_control": False,
+                "interventions": None
+            },
+        ],
+        "Full Reafference": True,
+    },
+]
+
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_22, parallel_jobs=3)
+manager = TrialManager(dqn_18_endless_trial, parallel_jobs=3)
 manager.run_priority_loop()

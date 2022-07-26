@@ -103,6 +103,11 @@ class AssayService(BaseService):
             self.perform_assay(assay)
             if assay["save stimuli"]:
                 self.save_stimuli_data(assay)
+
+            self.visual_interruptions = None
+            self.reafference_interruptions = None
+            self.preset_energy_state = None
+
         self.save_metadata()
         self.save_episode_data()
 

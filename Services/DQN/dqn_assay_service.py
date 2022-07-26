@@ -116,8 +116,8 @@ class DQNAssayService(AssayService, BaseDQN):
                 if self.reafference_interruptions[self.step_number] == 1:
                     action_reafference = self.previous_action
             if self.preset_energy_state is not None:
-                if self.preset_energy_state[self.step_number] == 1:
-                    ...
+                if self.preset_energy_state[self.step_number] is not False:
+                    self.simulation.fish.energy_level = self.preset_energy_state[self.step_number]
 
             self.previous_action = a
 

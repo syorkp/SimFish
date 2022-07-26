@@ -160,14 +160,25 @@ def load_network_variables_dqn(model_name, conf_name, full_reafference=False):
         saver = tf.train.Saver(max_to_keep=5)
         init = tf.global_variables_initializer()
         try:
-            model_location = f"../../Training-Output/{model_name}"
-
+            model_location = f"../Training-Output/{model_name}"
             checkpoint = tf.train.get_checkpoint_state(model_location)
-        except FileNotFoundError:
-            model_location = f"../../../Training-Output/{model_name}"
-            checkpoint = tf.train.get_checkpoint_state(model_location)
+            saver.restore(sess, checkpoint.model_checkpoint_path)
 
-        saver.restore(sess, checkpoint.model_checkpoint_path)
+        except AttributeError:
+            try:
+                model_location = f"../../Training-Output/{model_name}"
+                checkpoint = tf.train.get_checkpoint_state(model_location)
+                saver.restore(sess, checkpoint.model_checkpoint_path)
+            except AttributeError:
+                try:
+                    model_location = f"../../../Training-Output/{model_name}"
+                    checkpoint = tf.train.get_checkpoint_state(model_location)
+                    saver.restore(sess, checkpoint.model_checkpoint_path)
+                except AttributeError:
+                    model_location = f"../../../../Training-Output/{model_name}"
+                    checkpoint = tf.train.get_checkpoint_state(model_location)
+                    saver.restore(sess, checkpoint.model_checkpoint_path)
+
         vars = tf.trainable_variables()
         vals = sess.run(vars)
         sorted_vars = {}
@@ -175,7 +186,9 @@ def load_network_variables_dqn(model_name, conf_name, full_reafference=False):
             sorted_vars[str(var.name)] = val
     return sorted_vars
 
-# v = load_network_variables_ppo("updated_ppo-4", "1")
-v = load_network_variables_dqn("dqn_scaffold_dn_switch_25-1", "dsw_1")
+
+if __name__ == "__main__":
+    # v = load_network_variables_ppo("updated_ppo-4", "1")
+    v = load_network_variables_dqn("dqn_scaffold_dn_switch_25-1", "dsw_1")
 
 

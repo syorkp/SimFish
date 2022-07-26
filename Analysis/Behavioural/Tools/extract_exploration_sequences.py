@@ -222,3 +222,38 @@ def get_exploration_sequences_with_energy_state(model_name, assay_config, assay_
     return all_exploration_sequences, all_energy_states_by_sequence
 
 
+def label_exploration_sequences_no_prey(data, assumed_prey_stim_level=23, assumed_red_stim_level=10):
+    steps = data["observation"].shape[0]
+    timestamps = []
+    # all_uv_stim = np.array([])
+    for s in range(steps):
+        uv_channel = data["observation"][s, :, 1, :]
+        red_channel = data["observation"][s, :, 0, :]
+        # all_uv_stim = np.concatenate((all_uv_stim, np.reshape(red_channel, (-1))))
+        prey_stimuli_present = (uv_channel > assumed_prey_stim_level) * 1
+        wall_stimuli_present = (red_channel > assumed_red_stim_level) * 1
+        if np.sum(prey_stimuli_present) + np.sum(wall_stimuli_present) > 0:
+            pass
+        else:
+            timestamps.append(s)
+    is_exploration = [1 if i in timestamps else 0 for i in range(len(data["consumed"]))]
+    return np.array(is_exploration)
+
+
+def label_exploration_sequences_free_swimming(data, possible_visual_range=100, allowed_proximity_to_wall=200, environment_size=1500):
+    fish_prey_vectors = np.array([data["fish_position"]-data["prey_positions"][:, i, :] for i in range(data["prey_positions"].shape[1])])
+    prey_distances = (fish_prey_vectors[:, :, 0] ** 2 + fish_prey_vectors[:, :, 1] ** 2) ** 0.5
+    within_visual_range = (prey_distances < possible_visual_range) * 1
+    steps = within_visual_range.shape[1]
+    within_range_of_wall = ((data["fish_position"] < allowed_proximity_to_wall) * 1) + ((data["fish_position"] > environment_size - allowed_proximity_to_wall) * 1)
+    within_range_of_wall = within_range_of_wall[:, 0] + within_range_of_wall[:, 1]
+    within_range_of_wall_timestamps = [i for i, v in enumerate(list(within_range_of_wall)) if v > 0]
+
+    predator_timestamps = [i for i, a in enumerate(data["predator_presence"]) if a == 1]
+
+    exploration_timestamps = [i for i in range(steps) if np.sum(within_visual_range[:, i]) == 0]
+    exploration_timestamps = [t for t in exploration_timestamps if t not in predator_timestamps]
+    exploration_timestamps = [t for t in exploration_timestamps if t not in within_range_of_wall_timestamps]
+
+    is_exploration = [1 if i in exploration_timestamps else 0 for i in range(len(data["consumed"]))]
+    return np.array(is_exploration)

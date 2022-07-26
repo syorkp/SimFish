@@ -31,6 +31,10 @@ def extract_escape_action_sequences_with_positions(data):
     return avoidance_timestamps_compiled, actions_compiled, fish_positions_compiled
 
 
+def label_escape_sequences(data):
+    return np.array(data["predator_presence"])
+
+
 
 
 

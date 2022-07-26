@@ -15,6 +15,8 @@ rnn_data = np.swapaxes(rnn_data, 0, 1)
 # plt.plot(data["salt"])
 # plt.show()
 # plot_traces(rnn_data)
+interruptions = [i for i in range(len(data["consumed"])) if i > 100 and i % 10 == 0]
+
 consumption_points = [i for i in range(len(data["consumed"])) if data["consumed"][i]]
 plot_pca_trajectory(rnn_data, timepoints_to_label=[99]+consumption_points)
 

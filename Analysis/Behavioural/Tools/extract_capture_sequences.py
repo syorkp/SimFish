@@ -64,3 +64,16 @@ def get_capture_sequences(model_name, assay_config, assay_id, n):
     return all_capture_sequences
 
 
+def label_capture_sequences(data, n):
+    consumption_timestamps = [i for i, a in enumerate(data["consumed"]) if a == 1]
+    prey_capture_timestamps = []
+    while len(consumption_timestamps) > 0:
+        index = consumption_timestamps.pop(0)
+        prey_capture_timestamps += [i for i in range(index-n+1, index+1) if i >= 0]
+    is_capture = [1 if i in prey_capture_timestamps else 0 for i in range(len(data["consumed"]))]
+    return np.array(is_capture)
+
+
+
+
+

@@ -170,7 +170,7 @@ class BasePPO:
                         a = self.previous_action
                 if self.preset_energy_state is not None:
                     if self.preset_energy_state[self.step_number] == 1:
-                        ...
+                        self.simulation.fish.energy_level = self.preset_energy_state[self.step_number]
                 self.previous_action = a
 
             self.step_number += 1
