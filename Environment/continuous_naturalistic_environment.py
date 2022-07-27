@@ -8,8 +8,10 @@ from Environment.Fish.continuous_fish import ContinuousFish
 
 class ContinuousNaturalisticEnvironment(NaturalisticEnvironment):
 
-    def __init__(self, env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen=False, fish_mass=None, collisions=True):
-        super().__init__(env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen, fish_mass, collisions)
+    def __init__(self, env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen=False, fish_mass=None,
+                 collisions=True, relocate_fish=None):
+        super().__init__(env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen, fish_mass, collisions,
+                         relocate_fish)
 
         # Create the fish class instance and add to the space.
         if fish_mass is None:

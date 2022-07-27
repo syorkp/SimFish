@@ -9,7 +9,8 @@ from Environment.Fish.fish import Fish
 
 class NaturalisticEnvironment(BaseEnvironment):
 
-    def __init__(self, env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen=False, fish_mass=None, collisions=True):
+    def __init__(self, env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen=False, fish_mass=None,
+                 collisions=True, relocate_fish=None):
         super().__init__(env_variables, draw_screen, new_simulation, using_gpu)
 
 
@@ -32,6 +33,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.capture_end = self.capture_start + self.capture_fraction
 
         self.paramecia_distances = []
+        self.relocate_fish = relocate_fish
 
     def reset(self):
         # print(f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -167,6 +169,11 @@ class NaturalisticEnvironment(BaseEnvironment):
                 if self.draw_screen:
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5) / 255.)
                     plt.pause(0.0001)
+
+        # Relocate fish (Assay mode only)
+        if self.relocate_fish is not None:
+            if self.relocate_fish[self.num_steps]:
+                self.transport_fish(self.relocate_fish[self.num_steps])
 
         # Resolve if fish falls out of bounds.
         if self.fish.body.position[0] < 4 or self.fish.body.position[1] < 4 or \
@@ -527,4 +534,13 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.fish.body.angle = original_orientations[0]
 
         # Add to log about swimming against currents...
+
+    def transport_fish(self, target_feature):
+        """In assay mode only, relocates fish to a target feature from the following options:
+           C: Near Prey cluster (with prey in view)
+           E: Away from any prey cluster and walls
+           W: Near walls, with them in view of both eyes.
+           P: Adds a predator nearby (one step away from capture)
+        """
+        ...
 
