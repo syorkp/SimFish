@@ -34,6 +34,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         self.paramecia_distances = []
         self.relocate_fish = relocate_fish
+        self.impulse_against_fish_previous_step = None
 
     def reset(self):
         # print(f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -80,6 +81,8 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         for i in range(self.env_variables['vegetation_num']):
             self.create_vegetation()
+
+        self.impulse_against_fish_previous_step = None
 
     def show_new_channel_sectors(self, left_eye_pos, right_eye_pos):
         left_sectors, right_sectors = self.fish.get_all_sectors([left_eye_pos[0], left_eye_pos[1]], [right_eye_pos[0], right_eye_pos[1]], self.fish.body.angle)
@@ -534,6 +537,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.fish.body.angle = original_orientations[0]
 
         # Add to log about swimming against currents...
+        self.impulse_against_fish_previous_step = [associated_impulse_vectors[0, 1], associated_impulse_vectors[0, 0]]
 
     def transport_fish(self, target_feature):
         """In assay mode only, relocates fish to a target feature from the following options:
