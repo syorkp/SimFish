@@ -51,5 +51,9 @@ class ContinuousFish(Fish):
 
         self.prev_action_impulse = impulse
         self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
+
+        # For logging opposition to current.
+        # TODO: Implement this by computing the [x, y] components of the impulse, using the angle for this.
+
         self.body.angle += angle
         return 0.0
