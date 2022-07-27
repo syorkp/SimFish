@@ -537,10 +537,26 @@ class NaturalisticEnvironment(BaseEnvironment):
 
     def transport_fish(self, target_feature):
         """In assay mode only, relocates fish to a target feature from the following options:
-           C: Near Prey cluster (with prey in view)
+           C: Near Prey cluster
            E: Away from any prey cluster and walls
            W: Near walls, with them in view of both eyes.
            P: Adds a predator nearby (one step away from capture)
         """
-        ...
-
+        if target_feature == "C":
+            chosen_cluster = np.choice(range(len(self.prey_cloud_locations)))
+            cluster_coordinates = self.prey_cloud_locations[chosen_cluster]
+            self.fish.body.position = np.array(cluster_coordinates)
+        elif target_feature == "E":
+            xp, yp = np.arange(200, self.env_variables["width"]-200), np.arange(200, self.env_variables["height"]-200)
+            xy, yp = np.meshgrid(xp, yp)
+            xy = np.expand_dims(xy, 2)
+            yp = np.expand_dims(yp, 2)
+            all_coordinates = np.concatenate((xy, yp), axis=2)
+            all_prey_locations = [b.location for b in self.prey_bodies]
+            for p in all_prey_locations:
+                all_coordinates[p[0]-100: p[0]+100, p[1]-100: p[1]+100] = False
+            suitable_locations = all_coordinates.reshape(-1, all_coordinates.shape[-1])
+            suitable_locations = [c for c in suitable_locations if c[0] != 0]
+            choice = np.choice(range(len(suitable_locations)))
+            location_away = suitable_locations[choice]
+            self.fish.body.position = np.array(location_away)
