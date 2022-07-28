@@ -97,6 +97,17 @@ class DQNAssayBuffer:
         for l in self.unit_recordings.keys():
             self.unit_recordings[l].append(network_layers[l][0])
 
+    def fix_prey_position_buffer(self):
+        """Run in the event of prey reproduction to prevent dim errors."""
+        number_to_add_each_step = 0
+        max_prey_num = 0
+        for p in self.prey_positions_buffer:
+            if p.shape[0] > max_prey_num:
+                max_prey_num = p.shape[0]
+
+        for i, p in enumerate(self.prey_positions_buffer):
+            missing_values =
+
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order, salt_location=None):
         hdf5_file = h5py.File(f"{data_save_location}/{assay_configuration_id}.h5", "a")
 
@@ -139,7 +150,8 @@ class DQNAssayBuffer:
             try:
                 self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
             except:
-                print(self.prey_positions_buffer)
+                self.fix_prey_position_buffer()
+                self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
 
             self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)
 
