@@ -9989,7 +9989,7 @@ dqn_18_endless_trial_test = [
             {
                 "assay id": "Naturalistic-22",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 500,
+                "duration": 1500,
                 "Tethered": False,
                 "save frames": True,
                 "use_mu": True,
@@ -10013,5 +10013,5 @@ dqn_18_endless_trial_test = [
 
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_28a, parallel_jobs=3)
+manager = TrialManager(dqn_18_endless_trial_test, parallel_jobs=3)
 manager.run_priority_loop()
