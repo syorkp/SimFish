@@ -17,19 +17,20 @@ def label_behavioural_context(data, environment_size):
         - 4 Exploration behaviour 2
         - 5 Wall interaction
     """
-    capture_ts = label_capture_sequences(data, n=20) * 1
-    exploration_fs_ts = label_exploration_sequences_free_swimming(data, environment_size=environment_size) * 2
+    # capture_ts = label_capture_sequences(data, n=20) * 1
+    # exploration_fs_ts = label_exploration_sequences_free_swimming(data, environment_size=environment_size) * 2
     predator_avoidance_ts = label_escape_sequences(data) * 3
     exploration_np_ts = label_exploration_sequences_no_prey(data) * 4
     wall_interaction_ts = label_wall_interaction_steps(data, 100, 1500) * 5
 
-    capture_ts = np.expand_dims(capture_ts, 1)
+    # capture_ts = np.expand_dims(capture_ts, 1)
     predator_avoidance_ts = np.expand_dims(predator_avoidance_ts, 1)
     exploration_np_ts = np.expand_dims(exploration_np_ts, 1)
-    exploration_fs_ts = np.expand_dims(exploration_fs_ts, 1)
+    # exploration_fs_ts = np.expand_dims(exploration_fs_ts, 1)
     wall_interaction_ts = np.expand_dims(wall_interaction_ts, 1)
 
-    behavioural_context_label = np.concatenate((capture_ts, predator_avoidance_ts, exploration_np_ts, exploration_fs_ts, wall_interaction_ts), axis=1)
+    # behavioural_context_label = np.concatenate((capture_ts, predator_avoidance_ts, exploration_np_ts, exploration_fs_ts, wall_interaction_ts), axis=1)
+    behavioural_context_label = np.concatenate((predator_avoidance_ts, exploration_np_ts, wall_interaction_ts), axis=1)
     return behavioural_context_label
 
 
