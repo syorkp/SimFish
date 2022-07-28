@@ -99,6 +99,7 @@ class DQNAssayBuffer:
 
     def fix_prey_position_buffer(self):
         """Run in the event of prey reproduction to prevent dim errors."""
+        new_prey_buffer = []
         number_to_add_each_step = 0
         max_prey_num = 0
         for p in self.prey_positions_buffer:
@@ -106,7 +107,13 @@ class DQNAssayBuffer:
                 max_prey_num = p.shape[0]
 
         for i, p in enumerate(self.prey_positions_buffer):
-            missing_values =
+            missing_values = max_prey_num - p.shape[0]
+            new_entries = np.array([[15000, 15000] for i in range(missing_values)])
+            new_prey_buffer.append(np.concatenate((self.prey_positions_buffer[i], new_entries), axis=0))
+
+        new_prey_buffer = np.array(new_prey_buffer)
+        print(new_prey_buffer.shape)
+        return new_prey_buffer
 
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order, salt_location=None):
         hdf5_file = h5py.File(f"{data_save_location}/{assay_configuration_id}.h5", "a")
