@@ -1,14 +1,17 @@
 import numpy as np
 
+
+from Analysis.load_data import load_data
+
 from Analysis.Behavioural.Tools.extract_capture_sequences import label_capture_sequences
 from Analysis.Behavioural.Tools.extract_escape_sequences import label_escape_sequences
 from Analysis.Behavioural.Tools.extract_exploration_sequences import label_exploration_sequences_no_prey, \
     label_exploration_sequences_free_swimming
 from Analysis.Behavioural.Tools.extract_wall_interaction_sequences import label_wall_interaction_steps
-from Analysis.load_data import load_data
+from Analysis.Behavioural.Tools.extract_photogradient_sequences import label_in_light_steps, label_hemispheric_light_gradient
 
 
-def label_behavioural_context(data, environment_size):
+def label_behavioural_context(data, environment_size, model_name):
     """Return list of lists of labels for behavioural context at each step.
         - 0 No recognised context
         - 1 Prey capture behaviour
@@ -17,11 +20,15 @@ def label_behavioural_context(data, environment_size):
         - 4 Exploration behaviour 2
         - 5 Wall interaction
     """
-    # capture_ts = label_capture_sequences(data, n=20) * 1
-    # exploration_fs_ts = label_exploration_sequences_free_swimming(data, environment_size=environment_size) * 2
-    predator_avoidance_ts = label_escape_sequences(data) * 3
-    exploration_np_ts = label_exploration_sequences_no_prey(data) * 4
-    wall_interaction_ts = label_wall_interaction_steps(data, 100, 1500) * 5
+    # TODO: load environment data and use below.
+
+    capture_ts = label_capture_sequences(data, n=20) * 1
+    exploration_fs_ts = label_exploration_sequences_free_swimming(data, environment_size=environment_size) * 1
+    predator_avoidance_ts = label_escape_sequences(data) * 1
+    exploration_np_ts = label_exploration_sequences_no_prey(data) * 1
+    wall_interaction_ts = label_wall_interaction_steps(data, 100, 1500) * 1
+    in_light_ts = label_in_light_steps(data) * 1
+    in_light_ts = label_hemispheric_light_gradient(data, env_variables) * 1
 
     # capture_ts = np.expand_dims(capture_ts, 1)
     predator_avoidance_ts = np.expand_dims(predator_avoidance_ts, 1)

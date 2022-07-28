@@ -107,9 +107,9 @@ class DQNAssayBuffer:
                 max_prey_num = p.shape[0]
 
         for i, p in enumerate(self.prey_positions_buffer):
-            missing_values = max_prey_num - p.shape[0]
+            missing_values = max_prey_num - np.array(p).shape[0]
             new_entries = np.array([[15000, 15000] for i in range(missing_values)])
-            new_prey_buffer.append(np.concatenate((self.prey_positions_buffer[i], new_entries), axis=0))
+            new_prey_buffer.append(np.concatenate((np.array(self.prey_positions_buffer[i]), new_entries), axis=0))
 
         new_prey_buffer = np.array(new_prey_buffer)
         print(new_prey_buffer.shape)
