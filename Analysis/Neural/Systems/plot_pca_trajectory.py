@@ -55,17 +55,16 @@ if __name__ == "__main__":
     rnn_data_full = []
     consumption_points = []
     datas = []
-    for i in range(1, 2):
-        data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-{i}")
+    for i in range(1, 10):
+        data = load_data("dqn_scaffold_18-2", "Behavioural-Data-Free", f"Naturalistic-{i}")
         # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic-1")
-        rnn_data = data["rnn_state_actor"][3000:, 0, 0, :]
+        rnn_data = data["rnn_state_actor"][:, 0, 0, :]
         rnn_data = np.swapaxes(rnn_data, 0, 1)
-        consumption_points.append([i for i in range(len(data["consumed"][3000:])) if data["consumed"][i]])
+        consumption_points.append([i for i in range(len(data["consumed"][:])) if data["consumed"][i]])
         rnn_data_full.append(rnn_data)
         datas.append(data)
-    behavioural_labels = label_behavioural_context_multiple_trials(datas, environment_size=1500)[0]
-    behavioural_labels = behavioural_labels[3000:, 1]
-    # consumption_points = [[i for i, v in enumerate(behavioural_labels) if v == 4]]
+    behavioural_labels = label_behavioural_context_multiple_trials(datas, model_name="dqn_scaffold_18-2")
+    consumption_points = [[i for i, b in enumerate(be[:, 6]) if b == 1] for be in behavioural_labels]
 
     # plot_pca_trajectory(rnn_data_full, timepoints_to_label=consumption_points)
     plot_pca_trajectory_multiple_trials(rnn_data_full, consumption_points)

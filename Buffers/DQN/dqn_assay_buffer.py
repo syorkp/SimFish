@@ -103,7 +103,7 @@ class DQNAssayBuffer:
         number_to_add_each_step = 0
         max_prey_num = 0
         for p in self.prey_positions_buffer:
-            if p.shape[0] > max_prey_num:
+            if np.array(p).shape[0] > max_prey_num:
                 max_prey_num = p.shape[0]
 
         for i, p in enumerate(self.prey_positions_buffer):
