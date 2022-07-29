@@ -82,7 +82,7 @@ class DQNAssayBuffer:
         self.sand_grain_position_buffer.append(sand_grain_positions)
         self.vegetation_position_buffer.append(vegetation_positions)
         self.fish_angle_buffer.append(fish_angle)
-        self.salt_health_buffer(salt_health)
+        self.salt_health_buffer.append(salt_health)
 
     @staticmethod
     def create_data_group(key, data, assay_group):
