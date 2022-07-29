@@ -5,26 +5,9 @@ from matplotlib.lines import Line2D
 
 from Analysis.load_data import load_data
 
-from Analysis.Behavioural.Tools.label_behavioural_context import label_behavioural_context_multiple_trials
-from Analysis.Neural.Systems.plot_pca_trajectory import plot_pca_trajectory
-
-
-def mscatter(x,y,ax=None, m=None, **kw):
-    import matplotlib.markers as mmarkers
-    if not ax: ax=plt.gca()
-    sc = ax.scatter(x,y,**kw)
-    if (m is not None) and (len(m)==len(x)):
-        paths = []
-        for marker in m:
-            if isinstance(marker, mmarkers.MarkerStyle):
-                marker_obj = marker
-            else:
-                marker_obj = mmarkers.MarkerStyle(marker)
-            path = marker_obj.get_path().transformed(
-                        marker_obj.get_transform())
-            paths.append(path)
-        sc.set_paths(paths)
-    return sc
+from Analysis.Behavioural.Tools.label_behavioural_context import label_behavioural_context_multiple_trials,\
+    get_behavioural_context_name_by_index
+from Analysis.Neural.Systems.plot_pca_trajectory import plot_pca_trajectory, plot_pca_trajectory_multiple_trials
 
 
 def plot_pca_trajectory_with_contexts_multiple_trials(datas, remove_value_stream=False):
@@ -81,7 +64,7 @@ def plot_pca_trajectory_with_context(activity_data, associated_periods):
     plt.show()
 
 
-def plot_pca_with_all_behavioural_periods_multiple_trials(datas):
+def plot_pca_with_all_behavioural_periods_multiple_trials(datas, display_timestamps=False):
     rnn_data_full = []
     consumption_points = []
     for data in datas:
@@ -89,21 +72,24 @@ def plot_pca_with_all_behavioural_periods_multiple_trials(datas):
         rnn_data = np.swapaxes(rnn_data, 0, 1)
         consumption_points.append([i for i in range(len(data["consumed"][:])) if data["consumed"][i]])
         rnn_data_full.append(rnn_data)
-        datas.append(data)
     behavioural_labels = label_behavioural_context_multiple_trials(datas, model_name="dqn_scaffold_18-2")
 
     for behaviour in range(behavioural_labels[0].shape[1]):
         behavioural_points = [[i for i, b in enumerate(be[:, behaviour]) if b == 1] for be in behavioural_labels]
-        plot_pca_trajectory(rnn_data_full, behavioural_points)
+        label_name = get_behavioural_context_name_by_index(behaviour)
+        plot_pca_trajectory_multiple_trials(rnn_data_full, behavioural_points, context_name=label_name,
+                                            display_numbers=display_timestamps)
 
 
 if __name__ == "__main__":
     datas = []
-    for i in range(1, 10):
-        data = load_data("dqn_scaffold_18-2", "Behavioural-Data-Free", f"Naturalistic-{i}")
+    for i in range(1, 2):
+        data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", f"Naturalistic-{i}")
+    # for i in range(1, 11):
+    #     data = load_data("dqn_scaffold_18-2", "Behavioural-Data-Free", f"Naturalistic-{i}")
         datas.append(data)
-    plot_pca_with_all_behavioural_periods_multiple_trials(datas)
-    plot_pca_trajectory_with_contexts_multiple_trials(datas, remove_value_stream=False)
+    plot_pca_with_all_behavioural_periods_multiple_trials(datas, display_timestamps=True)
+    # plot_pca_trajectory_with_contexts_multiple_trials(datas, remove_value_stream=False)
 
 
 

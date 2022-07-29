@@ -9882,9 +9882,29 @@ dqn_18_endless_trial = [
         "New Simulation": True,
         "Assays": [
             {
+                "assay id": "Naturalistic-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 10000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "energy_state_control": False,
+                "salt_control": False,
+                "interventions": None
+            },
+            {
                 "assay id": "Naturalistic-2",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 5000,
+                "duration": 10000,
                 "Tethered": False,
                 "save frames": True,
                 "use_mu": True,
@@ -9904,7 +9924,7 @@ dqn_18_endless_trial = [
             {
                 "assay id": "Naturalistic-3",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 5000,
+                "duration": 10000,
                 "Tethered": False,
                 "save frames": True,
                 "use_mu": True,
@@ -9921,10 +9941,10 @@ dqn_18_endless_trial = [
                 "salt_control": False,
                 "interventions": None
             },
-                        {
+            {
                 "assay id": "Naturalistic-4",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 5000,
+                "duration": 10000,
                 "Tethered": False,
                 "save frames": True,
                 "use_mu": True,
@@ -9941,10 +9961,10 @@ dqn_18_endless_trial = [
                 "salt_control": False,
                 "interventions": None
             },
-                        {
+            {
                 "assay id": "Naturalistic-5",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 5000,
+                "duration": 10000,
                 "Tethered": False,
                 "save frames": True,
                 "use_mu": True,
@@ -9966,52 +9986,43 @@ dqn_18_endless_trial = [
     },
 ]
 
-dqn_18_endless_trial_test = [
-        {
-        "Model Name": "dqn_scaffold_18",
-        "Environment Name": "dqn_18_1_endless",
-        "Assay Configuration Name": "Behavioural-Data-Endless",
-        "Trial Number": 1,
-        "Checkpoint": 4200,
-        "Run Mode": "Assay",
+ppo_scaffold_18b = [
+    {
+        "Model Name": "ppo_scaffold_18",
+        "Environment Name": "ppo_scaffold_18b",
+        "Trial Number": 3,
+        "Run Mode": "Training",
         "Tethered": False,
         "Realistic Bouts": True,
-        "Continuous Actions": False,
-        "Learning Algorithm": "DQN",
-        "Priority": 2,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
         "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
-        "set random seed": False,
         "New Simulation": True,
-        "Assays": [
-            {
-                "assay id": "Naturalistic-22",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 1500,
-                "Tethered": False,
-                "save frames": True,
-                "use_mu": True,
-                "save stimuli": False,
-                "random positions": False,
-                "reset": False,
-                "background": None,
-                "moving": False,
-                "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
-                "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn state", "internal state"],
-                "energy_state_control": False,
-                "salt_control": False,
-                "interventions": None
-            },
-        ],
-        "Full Reafference": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "ppo_scaffold_18",
+        "Environment Name": "ppo_scaffold_18b",
+        "Trial Number": 4,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
     },
 ]
 
-
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_18_endless_trial_test, parallel_jobs=3)
+manager = TrialManager(dqn_18_endless_trial, parallel_jobs=3)
 manager.run_priority_loop()

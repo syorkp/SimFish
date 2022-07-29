@@ -5,7 +5,10 @@ from sklearn.decomposition import PCA
 from Analysis.load_data import load_data
 from Analysis.Neural.Tools.remove_inconsequential_neurons import remove_those_with_no_output, \
     remove_those_with_no_output_advantage_only
-from Analysis.Behavioural.Tools.label_behavioural_context import label_behavioural_context_multiple_trials
+from Analysis.Behavioural.Tools.label_behavioural_context import label_behavioural_context_multiple_trials, \
+    get_behavioural_context_name_by_index
+
+from Analysis.Neural.Tools.normalise_activity import normalise_within_neuron
 
 
 def plot_pca_trajectory(activity_data, timepoints_to_label=None):
@@ -21,8 +24,12 @@ def plot_pca_trajectory(activity_data, timepoints_to_label=None):
     plt.show()
 
 
-def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None, display_numbers=False):
+def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None, display_numbers=True,
+                                        context_name="No Label", self_normalise_activity_data=True):
     flattened_activity_data = np.concatenate((activity_data), axis=1)
+    if self_normalise_activity_data:
+        flattened_activity_data = normalise_within_neuron(flattened_activity_data)
+
     pca = PCA(n_components=2)
     pca.fit(flattened_activity_data)
     pca_components = pca.components_[:, :]
@@ -31,9 +38,8 @@ def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None,
     for i in range(len(activity_data)):
         split_colours = np.concatenate((split_colours, np.arange(len(activity_data[i][0]))))
 
+    fig, ax = plt.subplots(figsize=(40, 40))
     if display_numbers:
-        fig, ax = plt.subplots(figsize=(30, 30))
-
         for i in range(len(pca_components[0])):
             ax.annotate(i, (pca_components[0, i], pca_components[1, i]))
 
@@ -47,9 +53,18 @@ def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None,
             adjustment = np.sum(len_of_each[:i+1])
             flattened_timepoints_to_label += [p + adjustment for p in timepoints_to_label[i]]
         pca_points_at_timestamps = np.array([pca_components[:, i] for i in range(pca_components.shape[1]) if i in flattened_timepoints_to_label])
-        plt.scatter(pca_points_at_timestamps[:, 0], pca_points_at_timestamps[:, 1], marker="x", color="r")
+        try:
+            plt.scatter(pca_points_at_timestamps[:, 0], pca_points_at_timestamps[:, 1], marker="x", color="r")
+        except IndexError:
+            pass
+
     plt.colorbar()
+    plt.title(context_name)
     plt.show()
+
+    # fig, ax = plt.subplots(figsize=(10, 10))
+    # plt.plot([i for i in range(len(pca_components[0]))], pca_components[1])
+    # plt.show()
 
 
 if __name__ == "__main__":
@@ -64,11 +79,11 @@ if __name__ == "__main__":
         consumption_points.append([i for i in range(len(data["consumed"][:])) if data["consumed"][i]])
         rnn_data_full.append(rnn_data)
         datas.append(data)
-    behavioural_labels = label_behavioural_context_multiple_trials(datas, model_name="dqn_scaffold_18-2")
+    behavioural_labels = label_behavioural_context_multiple_trials(datas, model_name="dqn_scaffold_18-1")
     consumption_points = [[i for i, b in enumerate(be[:, 6]) if b == 1] for be in behavioural_labels]
-
+    consumption_points = []
     # plot_pca_trajectory(rnn_data_full, timepoints_to_label=consumption_points)
-    plot_pca_trajectory_multiple_trials(rnn_data_full, consumption_points)
+    plot_pca_trajectory_multiple_trials(rnn_data_full, consumption_points, display_numbers=False)
     # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-1")
     # rnn_data = np.swapaxes(data["rnn_state_actor"][:, 0, 0, :], 0, 1)
     # # reduced_rnn_data = remove_those_with_no_output(rnn_data, "dqn_scaffold_18-2", "dqn_18_2", proportion_to_remove=0.2)
