@@ -36,6 +36,7 @@ class DQNAssayBuffer:
         self.vegetation_position_buffer = []
         self.fish_angle_buffer = []
 
+        self.salt_health_buffer = []
         self.rnn_layer_names = []
 
     def reset(self):
@@ -59,6 +60,7 @@ class DQNAssayBuffer:
             self.sand_grain_position_buffer = []
             self.vegetation_position_buffer = []
             self.fish_angle_buffer = []
+            self.salt_health_buffer = []
 
     def add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref):
         self.observation_buffer.append(observation)
@@ -69,7 +71,8 @@ class DQNAssayBuffer:
         self.rnn_state_ref_buffer.append(rnn_state_ref)
 
     def save_environmental_positions(self, action, fish_position, prey_consumed, predator_present, prey_positions,
-                                     predator_position, sand_grain_positions, vegetation_positions, fish_angle):
+                                     predator_position, sand_grain_positions, vegetation_positions, fish_angle,
+                                     salt_health):
         self.action_buffer.append(action)
         self.fish_position_buffer.append(fish_position)
         self.prey_consumed_buffer.append(prey_consumed)
@@ -79,6 +82,7 @@ class DQNAssayBuffer:
         self.sand_grain_position_buffer.append(sand_grain_positions)
         self.vegetation_position_buffer.append(vegetation_positions)
         self.fish_angle_buffer.append(fish_angle)
+        self.salt_health_buffer(salt_health)
 
     @staticmethod
     def create_data_group(key, data, assay_group):
@@ -145,6 +149,7 @@ class DQNAssayBuffer:
                     if salt_location is None:
                         salt_location = [150000, 150000]
                     self.create_data_group("salt_location", np.array(salt_location), assay_group)
+                    self.create_data_group("salt_health", np.array(self.salt_health_buffer), assay_group)
 
         if "environmental positions" in self.recordings:
             self.create_data_group("action", np.array(self.action_buffer), assay_group)
@@ -158,6 +163,11 @@ class DQNAssayBuffer:
                 self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
             except:
                 self.fix_prey_position_buffer()
+                print(self.predator_presence_buffer)
+                print(f"0: {len(self.predator_presence_buffer)}")
+                print(f"1: {len(self.predator_presence_buffer[0])}")
+                print(f"2: {len(self.predator_presence_buffer[0][0])}")
+
                 self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
 
             self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)

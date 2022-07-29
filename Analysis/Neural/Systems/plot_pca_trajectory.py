@@ -67,8 +67,52 @@ def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None,
     # plt.show()
 
 
+def plot_pca_trajectory_multiple_trials_environmental_position(activity_data, fish_position_data, display_numbers=True,
+                                                               context_name="No Label", self_normalise_activity_data=True):
+    flattened_activity_data = np.concatenate((activity_data), axis=1)
+    if self_normalise_activity_data:
+        flattened_activity_data = normalise_within_neuron(flattened_activity_data)
+
+    pca = PCA(n_components=2)
+    pca.fit(flattened_activity_data)
+    pca_components = pca.components_[:, :]
+
+    split_colours = np.array([])
+    for i in range(len(activity_data)):
+        split_colours = np.concatenate((split_colours, fish_position_data[i][:, 0].astype(int)))
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+    if display_numbers:
+        for i in range(len(pca_components[0])):
+            ax.annotate(i, (pca_components[0, i], pca_components[1, i]))
+
+    plt.scatter(pca_components[0], pca_components[1], c=split_colours)
+    plt.colorbar()
+    plt.title(context_name)
+    plt.show()
+
+
+    split_colours = np.array([])
+    for i in range(len(activity_data)):
+        split_colours = np.concatenate((split_colours, fish_position_data[i][:, 1].astype(int)))
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+    if display_numbers:
+        for i in range(len(pca_components[0])):
+            ax.annotate(i, (pca_components[0, i], pca_components[1, i]))
+
+    plt.scatter(pca_components[0], pca_components[1], c=split_colours)
+    plt.colorbar()
+    plt.title(context_name)
+    plt.show()
+
+
+
+
+
 if __name__ == "__main__":
     rnn_data_full = []
+    fish_position_data = []
     consumption_points = []
     datas = []
     for i in range(1, 10):
@@ -78,12 +122,15 @@ if __name__ == "__main__":
         rnn_data = np.swapaxes(rnn_data, 0, 1)
         consumption_points.append([i for i in range(len(data["consumed"][:])) if data["consumed"][i]])
         rnn_data_full.append(rnn_data)
+        fish_position_data.append(data["fish_position"])
         datas.append(data)
-    behavioural_labels = label_behavioural_context_multiple_trials(datas, model_name="dqn_scaffold_18-1")
-    consumption_points = [[i for i, b in enumerate(be[:, 6]) if b == 1] for be in behavioural_labels]
-    consumption_points = []
+
+    plot_pca_trajectory_multiple_trials_environmental_position(rnn_data_full, fish_position_data, display_numbers=False)
+    # behavioural_labels = label_behavioural_context_multiple_trials(datas, model_name="dqn_scaffold_18-1")
+    # consumption_points = [[i for i, b in enumerate(be[:, 6]) if b == 1] for be in behavioural_labels]
+    # consumption_points = []
     # plot_pca_trajectory(rnn_data_full, timepoints_to_label=consumption_points)
-    plot_pca_trajectory_multiple_trials(rnn_data_full, consumption_points, display_numbers=False)
+    # plot_pca_trajectory_multiple_trials(rnn_data_full, consumption_points, display_numbers=False)
     # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-1")
     # rnn_data = np.swapaxes(data["rnn_state_actor"][:, 0, 0, :], 0, 1)
     # # reduced_rnn_data = remove_those_with_no_output(rnn_data, "dqn_scaffold_18-2", "dqn_18_2", proportion_to_remove=0.2)

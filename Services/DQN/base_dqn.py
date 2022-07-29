@@ -469,6 +469,7 @@ class BaseDQN:
                                                      sand_grain_positions,
                                                      vegetation_positions,
                                                      self.simulation.fish.body.angle,
+                                                     self.simulation.fish.salt_health,
                                                      )
         self.buffer.make_desired_recordings(network_layers)
 
@@ -525,6 +526,7 @@ class BaseDQN:
                                                      sand_grain_positions,
                                                      vegetation_positions,
                                                      self.simulation.fish.body.angle,
+                                                     self.simulation.fish.salt_health
                                                      )
 
         return o, action_reafference, given_reward, internal_state, o1, d, updated_rnn_state

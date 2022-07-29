@@ -61,6 +61,7 @@ class BasePPOBuffer:
             self.critic_conv4r_buffer = []
 
             self.rnn_layer_names = []
+            self.salt_health_buffer = []
 
     def reset(self):
         self.action_buffer = []
@@ -105,6 +106,7 @@ class BasePPOBuffer:
             self.critic_conv4r_buffer = []
 
             self.unit_recordings = None
+            self.salt_health_buffer = []
 
         self.pointer = 0
 
@@ -133,7 +135,8 @@ class BasePPOBuffer:
         self.critic_rnn_state_ref_buffer.append(critic_rnn_state_ref)
 
     def save_environmental_positions(self, fish_position, prey_consumed, predator_present, prey_positions,
-                                     predator_position, sand_grain_positions, vegetation_positions, fish_angle):
+                                     predator_position, sand_grain_positions, vegetation_positions, fish_angle,
+                                     salt_health):
         self.fish_position_buffer.append(fish_position)
         self.prey_consumed_buffer.append(prey_consumed)
         self.predator_presence_buffer.append(predator_present)
@@ -142,6 +145,7 @@ class BasePPOBuffer:
         self.sand_grain_position_buffer.append(sand_grain_positions)
         self.vegetation_position_buffer.append(vegetation_positions)
         self.fish_angle_buffer.append(fish_angle)
+        self.salt_health_buffer.append(salt_health)
 
     def save_conv_states(self, actor_conv1l, actor_conv2l, actor_conv3l, actor_conv4l, actor_conv1r, actor_conv2r,
                          actor_conv3r, actor_conv4r,
@@ -260,6 +264,7 @@ class BasePPOBuffer:
                     if salt_location is None:
                         salt_location = [150000, 150000]
                     self.create_data_group("salt_location", np.array(salt_location), assay_group)
+                    self.create_data_group("salt_health", np.array(self.salt_health_buffer), assay_group)
 
         if "rnn state" in self.unit_recordings:
             self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
