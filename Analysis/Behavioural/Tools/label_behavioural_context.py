@@ -12,6 +12,7 @@ from Analysis.Behavioural.Tools.extract_wall_interaction_sequences import label_
 from Analysis.Behavioural.Tools.extract_photogradient_sequences import label_in_light_steps, label_hemispheric_light_gradient
 from Analysis.Behavioural.Tools.extract_salt_interaction_sequences import label_salt_health_decreasing
 from Analysis.Behavioural.Tools.extract_energy_state_sequences import label_energy_state_within_range
+from Analysis.Behavioural.Tools.extract_salt_interaction_sequences import label_salt_health_within_range
 
 
 def get_behavioural_context_name_by_index(index):
@@ -37,6 +38,8 @@ def get_behavioural_context_name_by_index(index):
         return "Starving"
     elif index == 10:
         return "Sated"
+    elif index == 11:
+        return "Low Salt Health"
     else:
         return "ERROR - UNKNOWN"
 
@@ -65,10 +68,12 @@ def label_behavioural_context(data, model_name):
     salt_decreasing_ts = label_salt_health_decreasing(data, env_variables) * 1
     starving_ts = label_energy_state_within_range(data, e_min=0, e_max=0.2)
     sated_ts = label_energy_state_within_range(data, e_min=0.8, e_max=1.0)
+    low_salt_health_ts = label_salt_health_within_range(data, s_min=0.0, s_max=0.5)
+
 
     no_recognised_context = (capture_ts + exploration_fs_ts + predator_avoidance_ts + exploration_np_ts +
                              wall_interaction_ts + in_light_ts + directional_brightness_ts + salt_decreasing_ts +
-                             starving_ts + sated_ts) == 0
+                             starving_ts + sated_ts * low_salt_health_ts) == 0
 
     no_recognised_context = np.expand_dims(no_recognised_context, 1)
     capture_ts = np.expand_dims(capture_ts, 1)
@@ -81,10 +86,12 @@ def label_behavioural_context(data, model_name):
     salt_decreasing_ts = np.expand_dims(salt_decreasing_ts, 1)
     starving_ts = np.expand_dims(starving_ts, 1)
     sated_ts = np.expand_dims(sated_ts, 1)
+    low_salt_health_ts = np.expand_dims(low_salt_health_ts, 1)
 
     behavioural_context_label = np.concatenate((no_recognised_context, capture_ts, predator_avoidance_ts,
                                                 exploration_np_ts, exploration_fs_ts, wall_interaction_ts, in_light_ts,
-                                                directional_brightness_ts, salt_decreasing_ts, starving_ts, sated_ts), axis=1)
+                                                directional_brightness_ts, salt_decreasing_ts, starving_ts, sated_ts,
+                                                low_salt_health_ts), axis=1)
     return behavioural_context_label
 
 
