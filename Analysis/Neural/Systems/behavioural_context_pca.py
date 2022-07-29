@@ -9,7 +9,6 @@ from Analysis.Behavioural.Tools.label_behavioural_context import label_behaviour
     get_behavioural_context_name_by_index
 from Analysis.Neural.Systems.plot_pca_trajectory import plot_pca_trajectory, plot_pca_trajectory_multiple_trials
 
-
 def plot_pca_trajectory_with_contexts_multiple_trials(datas, remove_value_stream=False):
     behavioural_labels = label_behavioural_context_multiple_trials(datas, environment_size=1500)
     if remove_value_stream:
@@ -64,7 +63,8 @@ def plot_pca_trajectory_with_context(activity_data, associated_periods):
     plt.show()
 
 
-def plot_pca_with_all_behavioural_periods_multiple_trials(datas, model_name, display_timestamps=False, remove_value_stream=False):
+def plot_pca_with_all_behavioural_periods_multiple_trials(datas, model_name, display_timestamps=False,
+                                                          remove_value_stream=False, n_components=2):
     rnn_data_full = []
     consumption_points = []
     for data in datas:
@@ -75,24 +75,25 @@ def plot_pca_with_all_behavioural_periods_multiple_trials(datas, model_name, dis
         rnn_data = np.swapaxes(rnn_data, 0, 1)
         consumption_points.append([i for i in range(len(data["consumed"][:])) if data["consumed"][i]])
         rnn_data_full.append(rnn_data)
-    behavioural_labels = label_behavioural_context_multiple_trials(datas, model_name=datas)
+    behavioural_labels = label_behavioural_context_multiple_trials(datas, model_name=model_name)
 
     for behaviour in range(behavioural_labels[0].shape[1]):
         behavioural_points = [[i for i, b in enumerate(be[:, behaviour]) if b == 1] for be in behavioural_labels]
         label_name = get_behavioural_context_name_by_index(behaviour)
         plot_pca_trajectory_multiple_trials(rnn_data_full, behavioural_points, context_name=label_name,
-                                            display_numbers=display_timestamps)
+                                            display_numbers=display_timestamps, n_components=n_components)
 
 
 if __name__ == "__main__":
     datas = []
-    model_name = "dqn_scaffold_18-2"
+    model_name = "dqn_scaffold_18-1"
     # for i in range(1, 2):
     #     data = load_data(model_name, "Behavioural-Data-Free", f"Naturalistic-{i}")
-    for i in range(1, 11):
-        data = load_data("dqn_scaffold_18-2", "Behavioural-Data-Free", f"Naturalistic-{i}")
+    for i in range(1, 3):
+        data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-{i}")
         datas.append(data)
-    plot_pca_with_all_behavioural_periods_multiple_trials(datas, model_name, display_timestamps=False, remove_value_stream=True)
+    plot_pca_with_all_behavioural_periods_multiple_trials(datas, model_name, display_timestamps=False,
+                                                          remove_value_stream=True, n_components=2)
     # plot_pca_trajectory_with_contexts_multiple_trials(datas, remove_value_stream=False)
 
 

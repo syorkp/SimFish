@@ -10024,5 +10024,5 @@ ppo_scaffold_18b = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_18_endless_trial, parallel_jobs=3)
+manager = TrialManager(dqn_18_endleppo_scaffold_22ss_trial, parallel_jobs=3)
 manager.run_priority_loop()

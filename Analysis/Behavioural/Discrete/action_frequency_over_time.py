@@ -41,8 +41,8 @@ def compare_action_usage_over_time_multiple_models(datas):
 
 
 if __name__ == "__main__":
-    data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-22")
-    compare_action_usage_over_time(data, bins=4)
+    data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-2")
+    compare_action_usage_over_time(data, bins=8)
 
 
 

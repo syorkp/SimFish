@@ -25,12 +25,12 @@ def plot_pca_trajectory(activity_data, timepoints_to_label=None):
 
 
 def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None, display_numbers=True,
-                                        context_name="No Label", self_normalise_activity_data=True):
+                                        context_name="No Label", self_normalise_activity_data=True, n_components=2):
     flattened_activity_data = np.concatenate((activity_data), axis=1)
     if self_normalise_activity_data:
         flattened_activity_data = normalise_within_neuron(flattened_activity_data)
 
-    pca = PCA(n_components=2)
+    pca = PCA(n_components=n_components)
     pca.fit(flattened_activity_data)
     pca_components = pca.components_[:, :]
 
@@ -43,7 +43,13 @@ def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None,
         for i in range(len(pca_components[0])):
             ax.annotate(i, (pca_components[0, i], pca_components[1, i]))
 
-    plt.scatter(pca_components[0], pca_components[1], c=split_colours)
+    if n_components == 2:
+        plt.scatter(pca_components[0], pca_components[1], c=split_colours)
+    elif n_components == 3:
+        ax = fig.add_subplot(projection='3d')
+        ax.scatter(pca_components[0], pca_components[1], pca_components[2], c=split_colours)
+    else:
+        print("Unsupported number of components")
 
     if timepoints_to_label is not None:
         # Adjust timepoints to label so follows indexing of RNN data
@@ -52,13 +58,20 @@ def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None,
         for i, c in enumerate(timepoints_to_label):
             adjustment = np.sum(len_of_each[:i+1])
             flattened_timepoints_to_label += [p + adjustment for p in timepoints_to_label[i]]
-        pca_points_at_timestamps = np.array([pca_components[:, i] for i in range(pca_components.shape[1]) if i in flattened_timepoints_to_label])
+        pca_points_at_timestamps = np.array([pca_components[:, i] for i in range(pca_components.shape[1]) if i in
+                                             flattened_timepoints_to_label])
         try:
-            plt.scatter(pca_points_at_timestamps[:, 0], pca_points_at_timestamps[:, 1], marker="x", color="r")
+            if n_components == 2:
+                plt.scatter(pca_points_at_timestamps[:, 0], pca_points_at_timestamps[:, 1], marker="x", color="r")
+            elif n_components == 3:
+                ax.scatter(pca_points_at_timestamps[:, 0], pca_points_at_timestamps[:, 1],
+                           pca_points_at_timestamps[:, 2], marker="x", color="r")
         except IndexError:
             pass
 
-    plt.colorbar()
+    if n_components == 2:
+        plt.colorbar()
+
     plt.title(context_name)
     plt.show()
 
@@ -107,16 +120,13 @@ def plot_pca_trajectory_multiple_trials_environmental_position(activity_data, fi
     plt.show()
 
 
-
-
-
 if __name__ == "__main__":
     rnn_data_full = []
     fish_position_data = []
     consumption_points = []
     datas = []
-    for i in range(1, 10):
-        data = load_data("dqn_scaffold_18-2", "Behavioural-Data-Free", f"Naturalistic-{i}")
+    for i in range(1, 3):
+        data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-{i}")
         # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic-1")
         rnn_data = data["rnn_state_actor"][:, 0, 0, :]
         rnn_data = np.swapaxes(rnn_data, 0, 1)
@@ -125,12 +135,12 @@ if __name__ == "__main__":
         fish_position_data.append(data["fish_position"])
         datas.append(data)
 
-    plot_pca_trajectory_multiple_trials_environmental_position(rnn_data_full, fish_position_data, display_numbers=False)
+    # plot_pca_trajectory_multiple_trials_environmental_position(rnn_data_full, fish_position_data, display_numbers=False)
     # behavioural_labels = label_behavioural_context_multiple_trials(datas, model_name="dqn_scaffold_18-1")
     # consumption_points = [[i for i, b in enumerate(be[:, 6]) if b == 1] for be in behavioural_labels]
     # consumption_points = []
     # plot_pca_trajectory(rnn_data_full, timepoints_to_label=consumption_points)
-    # plot_pca_trajectory_multiple_trials(rnn_data_full, consumption_points, display_numbers=False)
+    plot_pca_trajectory_multiple_trials(rnn_data_full, consumption_points, display_numbers=False)
     # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-1")
     # rnn_data = np.swapaxes(data["rnn_state_actor"][:, 0, 0, :], 0, 1)
     # # reduced_rnn_data = remove_those_with_no_output(rnn_data, "dqn_scaffold_18-2", "dqn_18_2", proportion_to_remove=0.2)
