@@ -100,7 +100,6 @@ class DQNAssayBuffer:
     def fix_prey_position_buffer(self):
         """Run in the event of prey reproduction to prevent dim errors."""
         new_prey_buffer = []
-        number_to_add_each_step = 0
         max_prey_num = 0
         for p in self.prey_positions_buffer:
             if np.array(p).shape[0] > max_prey_num:
@@ -108,8 +107,9 @@ class DQNAssayBuffer:
 
         for i, p in enumerate(self.prey_positions_buffer):
             missing_values = max_prey_num - np.array(p).shape[0]
-            new_entries = np.array([[15000, 15000] for i in range(missing_values)])
-            new_prey_buffer.append(np.concatenate((np.array(self.prey_positions_buffer[i]), new_entries), axis=0))
+            if missing_values > 0:
+                new_entries = np.array([[15000, 15000] for i in range(missing_values)])
+                new_prey_buffer.append(np.concatenate((np.array(self.prey_positions_buffer[i]), new_entries), axis=0))
 
         new_prey_buffer = np.array(new_prey_buffer)
         print(new_prey_buffer.shape)

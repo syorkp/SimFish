@@ -38,7 +38,7 @@ def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None,
     for i in range(len(activity_data)):
         split_colours = np.concatenate((split_colours, np.arange(len(activity_data[i][0]))))
 
-    fig, ax = plt.subplots(figsize=(40, 40))
+    fig, ax = plt.subplots(figsize=(10, 10))
     if display_numbers:
         for i in range(len(pca_components[0])):
             ax.annotate(i, (pca_components[0, i], pca_components[1, i]))
