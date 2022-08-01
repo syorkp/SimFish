@@ -159,6 +159,6 @@ def get_conv_weights_and_biases(params, left=True):
 
 if __name__ == "__main__":
     params = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", full_reafference=True)
-    k, b = get_conv_weights_and_biases(params, left=True)
+    k, b = get_conv_weights_and_biases(params, left=False)
     display_cnn_filters(k, b)
 

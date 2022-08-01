@@ -164,6 +164,7 @@ class DQNAssayBuffer:
             except:
                 self.fix_prey_position_buffer()
                 print(self.prey_positions_buffer)
+                print(f"Shape: {self.prey_positions_buffer.shape}")
                 print(f"0: {len(self.prey_positions_buffer)}")
                 print(f"1: {len(self.prey_positions_buffer[0])}")
                 print(f"2: {len(self.prey_positions_buffer[0][0])}")
