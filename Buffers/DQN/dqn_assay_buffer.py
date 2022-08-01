@@ -116,8 +116,7 @@ class DQNAssayBuffer:
                 new_prey_buffer.append(np.concatenate((np.array(self.prey_positions_buffer[i]), new_entries), axis=0))
 
         new_prey_buffer = np.array(new_prey_buffer)
-        print(new_prey_buffer.shape)
-        return new_prey_buffer
+        self.prey_positions_buffer = new_prey_buffer
 
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order, salt_location=None):
         hdf5_file = h5py.File(f"{data_save_location}/{assay_configuration_id}.h5", "a")
@@ -163,12 +162,6 @@ class DQNAssayBuffer:
                 self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
             except:
                 self.fix_prey_position_buffer()
-                print(self.prey_positions_buffer)
-                print(f"Shape: {self.prey_positions_buffer.shape}")
-                print(f"0: {len(self.prey_positions_buffer)}")
-                print(f"1: {len(self.prey_positions_buffer[0])}")
-                print(f"2: {len(self.prey_positions_buffer[0][0])}")
-
                 self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
 
             self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)
