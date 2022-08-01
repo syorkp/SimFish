@@ -9881,46 +9881,46 @@ dqn_18_endless_trial = [
         "set random seed": False,
         "New Simulation": True,
         "Assays": [
-            {
-                "assay id": "Naturalistic-1",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 10000,
-                "Tethered": False,
-                "save frames": True,
-                "use_mu": True,
-                "save stimuli": False,
-                "random positions": False,
-                "reset": False,
-                "background": None,
-                "moving": False,
-                "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
-                "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn state", "internal state"],
-                "energy_state_control": False,
-                "salt_control": False,
-                "interventions": None
-            },
-            {
-                "assay id": "Naturalistic-2",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 10000,
-                "Tethered": False,
-                "save frames": True,
-                "use_mu": True,
-                "save stimuli": False,
-                "random positions": False,
-                "reset": False,
-                "background": None,
-                "moving": False,
-                "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
-                "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn state", "internal state"],
-                "energy_state_control": False,
-                "salt_control": False,
-                "interventions": None
-            },
+            # {
+            #     "assay id": "Naturalistic-1",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 10000,
+            #     "Tethered": False,
+            #     "save frames": True,
+            #     "use_mu": True,
+            #     "save stimuli": False,
+            #     "random positions": False,
+            #     "reset": False,
+            #     "background": None,
+            #     "moving": False,
+            #     "collisions": True,
+            #     "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+            #     "behavioural recordings": ["environmental positions", "observation"],
+            #     "network recordings": ["rnn state", "internal state"],
+            #     "energy_state_control": False,
+            #     "salt_control": False,
+            #     "interventions": None
+            # },
+            # {
+            #     "assay id": "Naturalistic-2",
+            #     "stimulus paradigm": "Naturalistic",
+            #     "duration": 10000,
+            #     "Tethered": False,
+            #     "save frames": True,
+            #     "use_mu": True,
+            #     "save stimuli": False,
+            #     "random positions": False,
+            #     "reset": False,
+            #     "background": None,
+            #     "moving": False,
+            #     "collisions": True,
+            #     "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+            #     "behavioural recordings": ["environmental positions", "observation"],
+            #     "network recordings": ["rnn state", "internal state"],
+            #     "energy_state_control": False,
+            #     "salt_control": False,
+            #     "interventions": None
+            # },
             {
                 "assay id": "Naturalistic-3",
                 "stimulus paradigm": "Naturalistic",
@@ -10024,5 +10024,5 @@ ppo_scaffold_18b = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_26b, parallel_jobs=3)
+manager = TrialManager(dqn_18_endless_trial, parallel_jobs=3)
 manager.run_priority_loop()

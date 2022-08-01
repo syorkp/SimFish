@@ -163,10 +163,10 @@ class DQNAssayBuffer:
                 self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
             except:
                 self.fix_prey_position_buffer()
-                print(self.predator_presence_buffer)
-                print(f"0: {len(self.predator_presence_buffer)}")
-                print(f"1: {len(self.predator_presence_buffer[0])}")
-                print(f"2: {len(self.predator_presence_buffer[0][0])}")
+                print(self.prey_positions_buffer)
+                print(f"0: {len(self.prey_positions_buffer)}")
+                print(f"1: {len(self.prey_positions_buffer[0])}")
+                print(f"2: {len(self.prey_positions_buffer[0][0])}")
 
                 self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
 
