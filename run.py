@@ -9874,7 +9874,7 @@ dqn_18_endless_trial = [
         "Continuous Actions": False,
         "Learning Algorithm": "DQN",
         "Priority": 2,
-        "Using GPU": True,
+        "Using GPU": False,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
@@ -10024,5 +10024,5 @@ ppo_scaffold_18b = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_18_endless_trial, parallel_jobs=3)
+manager = TrialManager(ppo_scaffold_21, parallel_jobs=3)
 manager.run_priority_loop()
