@@ -36,28 +36,31 @@ dirname = os.path.dirname(__file__)
 # sim_state = NaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True)
 # sim_state = ContinuousNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=False, using_gpu=False)
 
-continuous = True
+continuous = False
 
 
 if continuous:
     if arg is None:
         arg = "continuous_assay"  # Default arg
-        file_path = os.path.join(dirname, f"Configurations/Assay-Configs/{arg}_env.json")
-        with open(file_path, 'r') as f:
-            env = json.load(f)
+    file_path = os.path.join(dirname, f"Configurations/Assay-Configs/{arg}_env.json")
+    with open(file_path, 'r') as f:
+        env = json.load(f)
     sim_state = ContinuousNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=True, using_gpu=False)
 else:
     if arg is None:
         arg = "discrete_dqn_assay"  # Default arg
-        file_path = os.path.join(dirname, f"Configurations/Assay-Configs/{arg}_env.json")
-        with open(file_path, 'r') as f:
-            env = json.load(f)
-    sim_state = DiscreteNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=True, using_gpu=False)
 
+    file_path = os.path.join(dirname, f"Configurations/Assay-Configs/{arg}_env.json")
+    with open(file_path, 'r') as f:
+        env = json.load(f)
+    sim_state = DiscreteNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=True,
+                                                using_gpu=False)
 
 q = False
 d = False
 sim_state.reset()
+sim_state.fish.body.position = [1900, 1900]
+
 if continuous:
     while not q:
         # action = None
@@ -105,6 +108,11 @@ else:
 
         # if angle > 1.0:
         #     sim_state.reset()
+        position = sim_state.fish.body.position
+        distance = ((position[0] - sim_state.prey_bodies[-1].position[0]) ** 2 +
+                    (position[1] - sim_state.prey_bodies[-1].position[1]) ** 2) ** 0.5
+        print(f"Distance: {distance}")
+        print(f"Max UV: {np.max(s[:, 1, :])}")
 
         if d:
             sim_state.reset()

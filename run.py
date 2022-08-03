@@ -1,19 +1,17 @@
 import os
+import sys
 
-# Remove GPU Cache
-# if os.path.exists("../.nv"):
-#     print("Directory exists, removed it")
-#     shutil.rmtree("../.nv")
-# else:
-#     print("Directory didnt exist")
-#     d = '..'
-    # print([os.path.join(d, o) for o in os.listdir(d)
-    #        if os.path.isdir(os.path.join(d, o))])
 import json
 from datetime import datetime
 
 from Services.trial_manager import TrialManager
 from Configurations.Templates.interruptions import brief_interruption_profile, long_term_interruption_profile
+
+# Get config argument
+try:
+    run_config = sys.argv[1]
+except IndexError:
+    run_config = None
 
 # Ensure output directories exist
 if not os.path.exists("./Training-Output/"):
@@ -10024,5 +10022,9 @@ ppo_scaffold_18b = [
 ]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(ppo_scaffold_22, parallel_jobs=3)
+if run_config is None:
+    manager = TrialManager(ppo_scaffold_21, parallel_jobs=3)
+else:
+    manager = TrialManager(run_config, parallel_jobs=3)
+
 manager.run_priority_loop()
