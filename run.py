@@ -10023,7 +10023,7 @@ ppo_scaffold_18b = [
 
 
 if run_config is None:
-    run_config = dqn_scaffold_28a
+    run_config = dqn_scaffold_27a
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 manager = TrialManager(run_config, parallel_jobs=3)
 manager.run_priority_loop()
