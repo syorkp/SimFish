@@ -10023,8 +10023,9 @@ ppo_scaffold_18b = [
 
 
 if run_config is None:
-    run_config = dqn_scaffold_28a
+    run_config = dqn_scaffold_26b
 else:
+    print(f"{run_config} entered.")
     run_config = globals()[run_config]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
