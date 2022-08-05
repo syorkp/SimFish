@@ -10029,5 +10029,5 @@ else:
     run_config = globals()[run_config]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_27a, parallel_jobs=3)
+manager = TrialManager(dqn_scaffold_28a, parallel_jobs=3)
 manager.run_priority_loop()

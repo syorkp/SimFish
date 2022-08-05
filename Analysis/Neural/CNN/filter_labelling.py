@@ -101,13 +101,19 @@ def get_thresholds(kernels, percentile=90):
 
         # TODO: Find threshold
         num_positive = len(positive_values)
+        threshold_positive = num_positive * percentile/100
         num_negative = len(negative_values)
+        threshold_negative = num_negative * percentile/100
 
-        for val in positive_values:
-            x = True
+        for i, val in enumerate(positive_values):
+            if i > threshold_positive:
+                positive_thresholds[c] = val
+                break
 
-        for val in reversed(positive_values):
-            x = True
+        for i, val in enumerate(reversed(negative_values)):
+            if i > threshold_negative:
+                negative_thresholds[c] = val
+                break
 
     return positive_thresholds, negative_thresholds
 
