@@ -125,7 +125,7 @@ if __name__ == "__main__":
     fish_position_data = []
     consumption_points = []
     datas = []
-    for i in range(1, 3):
+    for i in range(1, 6):
         data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-{i}")
         # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic-1")
         rnn_data = data["rnn_state_actor"][:, 0, 0, :]

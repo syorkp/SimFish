@@ -89,7 +89,7 @@ if __name__ == "__main__":
     model_name = "dqn_scaffold_18-1"
     # for i in range(1, 2):
     #     data = load_data(model_name, "Behavioural-Data-Free", f"Naturalistic-{i}")
-    for i in range(1, 3):
+    for i in range(1, 4):
         data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-{i}")
         datas.append(data)
     plot_pca_with_all_behavioural_periods_multiple_trials(datas, model_name, display_timestamps=False,

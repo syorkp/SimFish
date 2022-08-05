@@ -67,7 +67,6 @@ class QNetwork:
         # We take the output from the final convolutional layer and send it to a recurrent layer.
         # The input must be reshaped into [batch x trace x units] for rnn processing,
         # and then returned to [batch x units] when sent through the upper levels.
-
         self.conv4l_flat = tf.layers.flatten(self.conv4l)
         self.conv4r_flat = tf.layers.flatten(self.conv4r)
 
