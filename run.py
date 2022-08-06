@@ -10021,6 +10021,85 @@ ppo_scaffold_18b = [
     },
 ]
 
+dqn_scaffold_26_1 = [
+    {
+        "Model Name": "dqn_scaffold_26",
+        "Environment Name": "dqn_scaffold_26",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    ]
+dqn_scaffold_26_2 = [
+    {
+        "Model Name": "dqn_scaffold_26",
+        "Environment Name": "dqn_scaffold_26",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+dqn_scaffold_26_3 = [
+    {
+        "Model Name": "dqn_scaffold_26",
+        "Environment Name": "dqn_scaffold_26",
+        "Trial Number": 3,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    ]
+
+dqn_scaffold_26_4 = [
+    {
+        "Model Name": "dqn_scaffold_26",
+        "Environment Name": "dqn_scaffold_26",
+        "Trial Number": 4,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
 
 if run_config is None:
     run_config = dqn_scaffold_26b
