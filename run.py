@@ -10144,7 +10144,7 @@ dqn_scaffold_27_2 = [
 
 
 if run_config is None:
-    run_config = dqn_scaffold_27_1
+    run_config = dqn_scaffold_27_2
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]
