@@ -316,7 +316,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_29"
+scaffold_name = "dqn_scaffold_30"
 
 # base_network_layers_updated = copy.copy(base_network_layers)
 # base_network_layers_updated["new_dense"] = ["dense", 300]
@@ -325,6 +325,15 @@ scaffold_name = "dqn_scaffold_29"
 #
 # changes = [["PCI", 0.35, "base_network_layers", base_network_layers_updated,
 #             "connectivity", new_connectivity, "do_to_params"]]
+
+
+params["max_epLength"] = 3000
+env["baseline_decrease"] = 0.00075
+env["prey_num"] *= 4
+env["prey_cloud_num"] *= 4
+env["width"] = 3000
+env["height"] = 3000
+
 changes = []
 
 # 2-10
@@ -347,8 +356,8 @@ changes += [
 changes += build_changes_list_gradual("PCI", 0.3, "light_gain", env["light_gain"], 125.7, 4)
 
 # 2) Exploration 15-18
-changes += [["PCI", 0.35, "max_epLength", 3000, "baseline_decrease", 0.00075, "prey_num", env["prey_num"]*4,
-             "prey_cloud_num", env["prey_cloud_num"]*4, "width", 3000, "height", 3000, "complex"]]
+# changes += [["PCI", 0.35, "max_epLength", 3000, "baseline_decrease", 0.00075, "prey_num", env["prey_num"]*4,
+#              "prey_cloud_num", env["prey_cloud_num"]*4, "width", 3000, "height", 3000, "complex"]]
 changes += build_changes_list_gradual("PCI", 0.35, "prey_num", env["prey_num"], env["prey_num"]/2, 4)
 changes += build_changes_list_gradual("PCI", 0.35, "prey_cloud_num", env["prey_cloud_num"], env["prey_cloud_num"]/2, 4)
 

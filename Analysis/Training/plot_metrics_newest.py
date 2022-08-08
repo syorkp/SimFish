@@ -73,15 +73,26 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
     plt.show()
 
 
+def plot_scaffold_durations(model_name):
+    data = load_all_log_data(model_name)
+    scaffold_switching_points = np.array(data["Configuration change"])
+    scaffold_switching_points = scaffold_switching_points[scaffold_switching_points[:, 1].argsort()]
+
+    config = scaffold_switching_points[:, 1]
+    episode = scaffold_switching_points[:, 0]
+    duration = [d - episode[i-1] if i > 0 else d for i, d in enumerate(episode)]
+    plt.plot(config, duration)
+    plt.show()
+
+
 if __name__ == "__main__":
+    # models = ["ppo_scaffold_21-1", "ppo_scaffold_21-2"]
+    # models = ["ppo_scaffold_22-1", "ppo_scaffold_22-2"]
+    # models = ["dqn_scaffold_26-1", "dqn_scaffold_26-2", "dqn_scaffold_26-3", "dqn_scaffold_26-4"]
+    # models = ["dqn_scaffold_27-1", "dqn_scaffold_27-2"]
     models = ["dqn_scaffold_28-1", "dqn_scaffold_28-2"]
-    models = ["ppo_scaffold_21-1", "ppo_scaffold_21-2"]
-    models = ["ppo_scaffold_22-1", "ppo_scaffold_22-2"]
-    models = ["dqn_scaffold_27-1", "dqn_scaffold_27-2"]
-    models = ["dqn_scaffold_28-1", "dqn_scaffold_28-2"]
-    models = ["dqn_scaffold_26-1", "dqn_scaffold_26-2", "dqn_scaffold_26-3", "dqn_scaffold_26-4"]
 
     chosen_metrics = ["prey capture index (fraction caught)", "prey capture rate (fraction caught per step)"]
     plot_multiple_metrics_multiple_models(models, chosen_metrics, window=40, interpolate_scaffold_points=True)
-
+    plot_scaffold_durations(models[0])
 
