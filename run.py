@@ -10101,7 +10101,6 @@ dqn_scaffold_26_4 = [
     },
 ]
 
-
 dqn_scaffold_27_1 = [
     {
         "Model Name": "dqn_scaffold_27",
@@ -10223,7 +10222,7 @@ dqn_scaffold_30_2 = [
 ]
 
 if run_config is None:
-    run_config = dqn_scaffold_28_2
+    run_config = dqn_scaffold_27_1
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]

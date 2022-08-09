@@ -38,6 +38,7 @@ def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None,
     for i in range(len(activity_data)):
         split_colours = np.concatenate((split_colours, np.arange(len(activity_data[i][0]))))
 
+    # Phase space
     fig, ax = plt.subplots(figsize=(10, 10))
     if display_numbers:
         for i in range(len(pca_components[0])):
@@ -72,12 +73,51 @@ def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None,
     if n_components == 2:
         plt.colorbar()
 
-    plt.title(context_name)
+    plt.title("PCA Phase Space: " + context_name)
     plt.show()
 
-    # fig, ax = plt.subplots(figsize=(10, 10))
-    # plt.plot([i for i in range(len(pca_components[0]))], pca_components[1])
-    # plt.show()
+
+    # Trajectory space
+    pca_components = pca_components[:, 1:] - pca_components[:, :-1]
+    fig, ax = plt.subplots(figsize=(10, 10))
+    if display_numbers:
+        for i in range(len(pca_components[0])):
+            ax.annotate(i, (pca_components[0, i], pca_components[1, i]))
+
+    if n_components == 2:
+        plt.scatter(pca_components[0], pca_components[1], c=split_colours[1:])
+    elif n_components == 3:
+        ax = fig.add_subplot(projection='3d')
+        ax.scatter(pca_components[0], pca_components[1], pca_components[2], c=split_colours[1:])
+    else:
+        print("Unsupported number of components")
+
+    if timepoints_to_label is not None:
+        # Adjust timepoints to label so follows indexing of RNN data
+        len_of_each = [0] + [len(c[0]) for c in activity_data][:-1]
+        flattened_timepoints_to_label = []
+        for i, c in enumerate(timepoints_to_label):
+            adjustment = np.sum(len_of_each[:i+1])
+            flattened_timepoints_to_label += [p + adjustment for p in timepoints_to_label[i]]
+        pca_points_at_timestamps = np.array([pca_components[:, i] for i in range(pca_components.shape[1]) if i in
+                                             flattened_timepoints_to_label])
+        try:
+            if n_components == 2:
+                plt.scatter(pca_points_at_timestamps[:, 0], pca_points_at_timestamps[:, 1], marker="x", color="r")
+            elif n_components == 3:
+                ax.scatter(pca_points_at_timestamps[:, 0], pca_points_at_timestamps[:, 1],
+                           pca_points_at_timestamps[:, 2], marker="x", color="r")
+        except IndexError:
+            pass
+
+    if n_components == 2:
+        plt.colorbar()
+
+    plt.title("PCA Trajectory Space: " + context_name)
+    plt.xlim(-0.0004, 0.0002)
+    plt.ylim(-0.0011, 0.0015)
+    # TODO: Prevent showing outliers...
+    plt.show()
 
 
 def plot_pca_trajectory_multiple_trials_environmental_position(activity_data, fish_position_data, display_numbers=True,

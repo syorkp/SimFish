@@ -49,7 +49,7 @@ def order_cnn_filters_by_kernel_location(layer, colour_channel):
 
 
 def display_cnn_filters(layers, first_is_coloured, mask_background, show_negative_alongside=True, order_filters=False,
-                        mask_red=True, normalisation_mode="upscale"):
+                        mask_red=False, normalisation_mode="upscale"):
     """Displays kernels of CNN filters."""
     # Normalise layers
     if normalisation_mode == "rescale":
@@ -66,6 +66,7 @@ def display_cnn_filters(layers, first_is_coloured, mask_background, show_negativ
         if i == 0 and first_is_coloured:
             layer = np.swapaxes(layer, 0, 1)
             layer = np.swapaxes(layer, 1, 2)
+            layer = np.swapaxes(layer, 0, 1)
             # Make RGB.
             layer = np.concatenate((layer[:, :, 0:1], layer[:, :, 2:3], layer[:, :, 1:2]), axis=2)
             if mask_background:

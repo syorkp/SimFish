@@ -29,7 +29,6 @@ def plot_pca_trajectory_with_context(activity_data, associated_periods):
         split_colours = np.concatenate((split_colours, np.arange(len(activity_data[i][0]))))
 
     prevailing_context_full = []
-    x = np.concatenate((associated_periods))
     for trial in associated_periods:
         for step in trial:
             if 3 in step:
@@ -58,9 +57,17 @@ def plot_pca_trajectory_with_context(activity_data, associated_periods):
                               markerfacecolor='r', markersize=15),
                        ]
 
+    plt.title("PCA Phase Space")
     plt.scatter(pca_components[0], pca_components[1], c=prevailing_context_full, alpha=0.1)
     plt.legend(handles=legend_elements)
     plt.show()
+
+    plt.title("PCA Trajectory Space")
+    pca_trajectory = pca_components[:, 1:] - pca_components[:, :-1]
+    plt.scatter(pca_trajectory[0], pca_trajectory[1], c=prevailing_context_full, alpha=0.1)
+    plt.legend(handles=legend_elements)
+    plt.show()
+
 
 
 def plot_pca_with_all_behavioural_periods_multiple_trials(datas, model_name, display_timestamps=False,

@@ -2,6 +2,7 @@ import numpy as np
 
 from Analysis.Connectivity.load_network_variables import load_network_variables_dqn
 from Analysis.Connectivity.get_conv_weights import get_conv_weights_and_biases
+from Analysis.Neural.CNN.plot_cnn_filters import display_cnn_filters
 
 
 """
@@ -129,8 +130,32 @@ def label_all_filters(kernels):
     return compiled_labels
 
 
+def order_filters_by_label(kernels, labels, length=5):
+    """Just orders by location of first filter of size 3"""
+    location_of_first = np.zeros((16))
+    for i, label in enumerate(labels):
+        size_3 = [l for l in label if f"Length {length}" in l and "UV" in l]
+        if len(size_3) > 0:
+            first_size_3 = size_3[0]
+            location = first_size_3.split("Locations: ")[-1][1:-1]
+            init_loc = int(location.split(",")[0]) + 1
+            location_of_first[i] = init_loc
+
+    new_kernel_array = np.zeros((16, 3, 16))
+    counter = 0
+    for m in range(int(max(location_of_first)+1)):
+        num = np.sum((location_of_first == m) * 1)
+        if num > 0:
+            selected_kernels = kernels[:, :, location_of_first == m]
+            counter += num
+            new_kernel_array[:, :, counter-num:counter] = selected_kernels
+
+    return new_kernel_array
+
+
 if __name__ == "__main__":
     params = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", full_reafference=True)
     k, b = get_conv_weights_and_biases(params, left=True)
     compiled_labels = label_all_filters(k[0])
-
+    ordered_k0 = order_filters_by_label(k[0], compiled_labels, length=4)
+    display_cnn_filters([k[0]], first_is_coloured=True, mask_background=True, normalisation_mode="rescale", mask_red=True)
