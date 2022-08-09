@@ -336,47 +336,50 @@ env["height"] = 3000
 
 changes = []
 
+low_pci = 0.25 / 4
+high_pci = 0.3 / 4
+
 # 2-10
 changes += [
-       ["PCI", 0.25, "anneling_steps", 500000],
+       ["PCI", low_pci, "anneling_steps", 500000],
        # 1) Rewards and Penalties
-       ["PCI", 0.25, "capture_swim_extra_cost", 50],
-       ["PCI", 0.25, "wall_reflection", False],
+       ["PCI", low_pci, "capture_swim_extra_cost", 50],
+       ["PCI", low_pci, "wall_reflection", False],
 
        # 2) Visual System
-       ["PCI", 0.25, "red_photoreceptor_rf_size", 0.0133 * 2],
-       ["PCI", 0.25, "uv_photoreceptor_rf_size", 0.0133 * 2],
-       ["PCI", 0.25, "red_photoreceptor_rf_size", 0.0133 * 1],
-       ["PCI", 0.25, "uv_photoreceptor_rf_size", 0.0133 * 1],
-       ["PCI", 0.35, "shot_noise", True],
-       ["PCI", 0.35, "bkg_scatter", 0.1],
+       ["PCI", low_pci, "red_photoreceptor_rf_size", 0.0133 * 2],
+       ["PCI", low_pci, "uv_photoreceptor_rf_size", 0.0133 * 2],
+       ["PCI", low_pci, "red_photoreceptor_rf_size", 0.0133 * 1],
+       ["PCI", low_pci, "uv_photoreceptor_rf_size", 0.0133 * 1],
+       ["PCI", low_pci, "shot_noise", True],
+       ["PCI", low_pci, "bkg_scatter", 0.1],
 ]
 
 # 11-14
-changes += build_changes_list_gradual("PCI", 0.3, "light_gain", env["light_gain"], 125.7, 4)
+changes += build_changes_list_gradual("PCI", high_pci, "light_gain", env["light_gain"], 125.7, 4)
 
 # 2) Exploration 15-18
 # changes += [["PCI", 0.35, "max_epLength", 3000, "baseline_decrease", 0.00075, "prey_num", env["prey_num"]*4,
 #              "prey_cloud_num", env["prey_cloud_num"]*4, "width", 3000, "height", 3000, "complex"]]
-changes += build_changes_list_gradual("PCI", 0.35, "prey_num", env["prey_num"], env["prey_num"]/2, 4)
-changes += build_changes_list_gradual("PCI", 0.35, "prey_cloud_num", env["prey_cloud_num"], env["prey_cloud_num"]/2, 4)
+changes += build_changes_list_gradual("PCI", high_pci, "prey_num", env["prey_num"], env["prey_num"]/2, 4)
+changes += build_changes_list_gradual("PCI", high_pci, "prey_cloud_num", env["prey_cloud_num"], env["prey_cloud_num"]/2, 4)
 
 # 3) Fine Prey Capture 19-34
-changes += [["PCI", 0.35, "prey_fluid_displacement", True]]
-changes += [["PCI", 0.35, "prey_jump", True]]
-changes += build_changes_list_gradual("PCI", 0.35, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
-changes += build_changes_list_gradual("PCI", 0.35, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.5, 4)
-changes += build_changes_list_gradual("PCI", 0.35, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (34*np.pi)/180, 4)
-changes += [["PCI", 0.35, "capture_swim_extra_cost", 100]]
-changes += [["PCI", 0.35, "anneling_steps", 1000000]]
+changes += [["PCI", high_pci, "prey_fluid_displacement", True]]
+changes += [["PCI", high_pci, "prey_jump", True]]
+changes += build_changes_list_gradual("PCI",high_pci, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
+changes += build_changes_list_gradual("PCI",high_pci, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.5, 4)
+changes += build_changes_list_gradual("PCI",high_pci, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (34*np.pi)/180, 4)
+changes += [["PCI", high_pci, "capture_swim_extra_cost", 100]]
+changes += [["PCI", high_pci, "anneling_steps", 1000000]]
 
 # 4) Predator avoidance 35
-changes += [["PCI", 0.35, "probability_of_predator", 0.01]]
+changes += [["PCI", high_pci, "probability_of_predator", 0.01]]
 # TODO: Complex predator
 
 # 5) Other Behaviours 36-37
-changes += [["PCI", 0.35, "max_salt_damage", 0.02]]
-changes += [["PCI", 0.35, "current_setting", "Circular"]]
+changes += [["PCI", high_pci, "max_salt_damage", 0.02]]
+changes += [["PCI", high_pci, "current_setting", "Circular"]]
 
 finished_condition = {"PCI": 0.3,
                       "PAI": 300.0}

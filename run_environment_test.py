@@ -53,13 +53,15 @@ else:
     file_path = os.path.join(dirname, f"Configurations/Assay-Configs/{arg}_env.json")
     with open(file_path, 'r') as f:
         env = json.load(f)
+    env["prey_num"] = 1
     sim_state = DiscreteNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=True,
                                                 using_gpu=False)
 
 q = False
 d = False
 sim_state.reset()
-sim_state.fish.body.position = [1900, 1900]
+sim_state.fish.body.position = [900, 900]
+sim_state.prey_bodies[0].position = [1000, 1000]
 
 if continuous:
     while not q:
