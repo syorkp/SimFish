@@ -73,7 +73,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             if not self.env_variables["prey_reproduction_mode"]:
                 self.build_prey_cloud_walls()
 
-        for i in range(self.env_variables['prey_num']):
+        for i in range(int(self.env_variables['prey_num'])):
             self.create_prey()
 
         for i in range(self.env_variables['sand_grain_num']):

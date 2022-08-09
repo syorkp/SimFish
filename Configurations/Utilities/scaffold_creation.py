@@ -78,7 +78,8 @@ def create_scaffold(scaffold_name, initial_env, initial_params, changes, finishe
     save_transitions(scaffold_name, transitions, finished_condition)
 
 
-def build_changes_list_gradual(threshold_measure, threshold, change_to_make, initial_value, final_value, num_steps):
+def build_changes_list_gradual(threshold_measure, threshold, change_to_make, initial_value, final_value, num_steps,
+                               discrete):
     """Tool to output gradual changes in a parameter.
     Needs to be a generator???
     """
@@ -87,6 +88,8 @@ def build_changes_list_gradual(threshold_measure, threshold, change_to_make, ini
     changes = []
     for step in range(num_steps):
         current_value += increment
+        if discrete:
+            current_value = int(current_value)
         changes += [[threshold_measure, threshold, change_to_make, current_value]]
     return changes
 

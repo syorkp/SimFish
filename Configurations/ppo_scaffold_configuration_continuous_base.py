@@ -330,12 +330,14 @@ changes = [
 ]
 
 # 4-11
-changes += build_changes_list_gradual("PCI", 0.3, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25, 8)
+changes += build_changes_list_gradual("PCI", 0.3, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25,
+                                      8, discrete=False)
 
 # 12-35
 # 3) Available actions
-changes += build_changes_list_gradual("PCI", 0.3, "max_impulse", env["max_impulse"], 20, 20)
-changes += build_changes_list_gradual("PCI", 0.3, "action_reward_scaling", env["action_reward_scaling"], 10000, 4)
+changes += build_changes_list_gradual("PCI", 0.3, "max_impulse", env["max_impulse"], 20, 20, discrete=False)
+changes += build_changes_list_gradual("PCI", 0.3, "action_reward_scaling", env["action_reward_scaling"], 10000, 4,
+                                      discrete=False)
 
 changes += [
        # 2) Visual System
@@ -348,14 +350,15 @@ changes += [
 ]
 
 
-changes += build_changes_list_gradual("PCI", 0.4, "light_gain", env["light_gain"], 125.7, 4)
+changes += build_changes_list_gradual("PCI", 0.4, "light_gain", env["light_gain"], 125.7, 4, discrete=False)
 changes += [["PCI", 0.4, "max_epLength", 5000, "do_to_params"]]
 
 
 # 4) Prey Capture
 changes += [["PCI", 0.4, "prey_fluid_displacement", True]]
-changes += build_changes_list_gradual("PCI", 0.4, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
-changes += build_changes_list_gradual("PCI", 0.4, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (17*np.pi)/180, 8)
+changes += build_changes_list_gradual("PCI", 0.4, "fish_mouth_size", env["fish_mouth_size"], 4, 4, discrete=False)
+changes += build_changes_list_gradual("PCI", 0.4, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"],
+                                      (17*np.pi)/180, 8, discrete=False)
 changes += [["PCI", 0.4, "anneling_steps", 1000000]]
 
 # 5) Predator avoidance
@@ -368,9 +371,12 @@ changes += [["PAI", 500.0, "salt", True]]
 changes += [["PCI", 0.5, "current_setting", "Circular"]]
 
 # 7) Final Features
-changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_x", env["impulse_effect_noise_sd_x"], 0.98512558, 8)
-changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_c", env["impulse_effect_noise_sd_c"], 0.06, 8)
-changes += build_changes_list_gradual("PCI", 0.4, "angle_effect_noise_sd_x", env["angle_effect_noise_sd_x"], 0.86155083, 8)
-changes += build_changes_list_gradual("PCI", 0.4, "angle_effect_noise_sd_c", env["angle_effect_noise_sd_c"], 0.0010472, 8)
+changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_x", env["impulse_effect_noise_sd_x"], 0.98512558, 8, discrete=False)
+changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_c", env["impulse_effect_noise_sd_c"], 0.06, 8, discrete=False)
+changes += build_changes_list_gradual("PCI", 0.4, "angle_effect_noise_sd_x", env["angle_effect_noise_sd_x"], 0.86155083, 8, discrete=False)
+changes += build_changes_list_gradual("PCI", 0.4, "angle_effect_noise_sd_c", env["angle_effect_noise_sd_c"], 0.0010472, 8, discrete=False)
 
-create_scaffold(scaffold_name, env, params, changes)
+finished_condition = {"PCI": 0.3,
+                      "PAI": 300.0}
+
+create_scaffold(scaffold_name, env, params, changes, finished_condition)

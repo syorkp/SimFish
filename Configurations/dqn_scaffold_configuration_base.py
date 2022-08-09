@@ -329,8 +329,8 @@ scaffold_name = "dqn_scaffold_30"
 
 params["max_epLength"] = 3000
 env["baseline_decrease"] = 0.00075
-env["prey_num"] *= 4
-env["prey_cloud_num"] *= 4
+env["prey_num"] = int(env["prey_num"] * 4)
+env["prey_cloud_num"] *= int(env["prey_cloud_num"] * 4)
 env["width"] = 3000
 env["height"] = 3000
 
@@ -356,20 +356,23 @@ changes += [
 ]
 
 # 11-14
-changes += build_changes_list_gradual("PCI", high_pci, "light_gain", env["light_gain"], 125.7, 4)
+changes += build_changes_list_gradual("PCI", high_pci, "light_gain", env["light_gain"], 125.7, 4, discrete=False)
 
 # 2) Exploration 15-18
 # changes += [["PCI", 0.35, "max_epLength", 3000, "baseline_decrease", 0.00075, "prey_num", env["prey_num"]*4,
 #              "prey_cloud_num", env["prey_cloud_num"]*4, "width", 3000, "height", 3000, "complex"]]
-changes += build_changes_list_gradual("PCI", high_pci, "prey_num", env["prey_num"], env["prey_num"]/2, 4)
-changes += build_changes_list_gradual("PCI", high_pci, "prey_cloud_num", env["prey_cloud_num"], env["prey_cloud_num"]/2, 4)
+changes += build_changes_list_gradual("PCI", high_pci, "prey_num", env["prey_num"], env["prey_num"]/2, 4, discrete=True)
+changes += build_changes_list_gradual("PCI", high_pci, "prey_cloud_num", env["prey_cloud_num"], env["prey_cloud_num"]/2,
+                                      4, discrete=True)
 
 # 3) Fine Prey Capture 19-34
 changes += [["PCI", high_pci, "prey_fluid_displacement", True]]
 changes += [["PCI", high_pci, "prey_jump", True]]
-changes += build_changes_list_gradual("PCI",high_pci, "fish_mouth_size", env["fish_mouth_size"], 4, 4)
-changes += build_changes_list_gradual("PCI",high_pci, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.5, 4)
-changes += build_changes_list_gradual("PCI",high_pci, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"], (34*np.pi)/180, 4)
+changes += build_changes_list_gradual("PCI", high_pci, "fish_mouth_size", env["fish_mouth_size"], 4, 4, discrete=True)
+changes += build_changes_list_gradual("PCI", high_pci, "fraction_capture_permitted", env["fraction_capture_permitted"],
+                                      0.5, 4, discrete=False)
+changes += build_changes_list_gradual("PCI", high_pci, "capture_angle_deviation_allowance",
+                                      env["capture_angle_deviation_allowance"], (34*np.pi)/180, 4, discrete=False)
 changes += [["PCI", high_pci, "capture_swim_extra_cost", 100]]
 changes += [["PCI", high_pci, "anneling_steps", 1000000]]
 
