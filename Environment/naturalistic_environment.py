@@ -69,7 +69,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                                    high=self.env_variables['height'] - (
                                            self.env_variables['prey_size'] + self.env_variables[
                                        'fish_mouth_size']) - 120)]
-                for cloud in range(self.env_variables["prey_cloud_num"])]
+                for cloud in range(int(self.env_variables["prey_cloud_num"]))]
             if not self.env_variables["prey_reproduction_mode"]:
                 self.build_prey_cloud_walls()
 

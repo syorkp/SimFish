@@ -63,13 +63,16 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
                                                       enumerate(ordered_chosen_model_data_rolling_averages)]
 
     num_metrics = len(metrics)
-    fig, axs = plt.subplots(num_metrics, 1, figsize=(10, int(4*num_metrics)), sharex=True)
+    fig, axs = plt.subplots(num_metrics, 1, figsize=(15, int(4*num_metrics)), sharex=True)
     for model in ordered_chosen_model_data_rolling_averages:
         for i, metric in enumerate(metrics):
             axs[i].plot(model[metric][:, 0], model[metric][:, 1])
             axs[i].set_ylabel(metric)
     axs[-1].set_xlabel("Scaffold Point")
-
+    sc = np.concatenate(([np.array(s) for s in scaffold_switching_points]))
+    axs[-1].set_xticks([int(t) for t in np.linspace(0, np.max(sc[:, 1]))])
+    plt.grid(axis="x")
+    axs[-1].set_xlim(1, np.max(sc[:, 1])+1)
     plt.show()
 
 
@@ -86,11 +89,11 @@ def plot_scaffold_durations(model_name):
 
 
 if __name__ == "__main__":
-    # models = ["ppo_scaffold_21-1", "ppo_scaffold_21-2"]
+    models = ["ppo_scaffold_21-1", "ppo_scaffold_21-2"]
     # models = ["ppo_scaffold_22-1", "ppo_scaffold_22-2"]
     # models = ["dqn_scaffold_26-1", "dqn_scaffold_26-2", "dqn_scaffold_26-3", "dqn_scaffold_26-4"]
     # models = ["dqn_scaffold_27-1", "dqn_scaffold_27-2"]
-    models = ["dqn_scaffold_28-1", "dqn_scaffold_28-2"]
+    # models = ["dqn_scaffold_28-1", "dqn_scaffold_28-2"]
 
     chosen_metrics = ["prey capture index (fraction caught)", "prey capture rate (fraction caught per step)"]
     plot_multiple_metrics_multiple_models(models, chosen_metrics, window=40, interpolate_scaffold_points=True)

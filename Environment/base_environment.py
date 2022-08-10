@@ -99,7 +99,7 @@ class BaseEnvironment:
                                                                      self.env_variables[
                                                                          'fish_mouth_size']) + (self.env_variables[
                                                                                                     'birth_rate_region_size'] / 2)))]
-                for cloud in range(self.env_variables["prey_cloud_num"])]
+                for cloud in range(int(self.env_variables["prey_cloud_num"]))]
         self.predator_bodies = []
         self.predator_shapes = []
 

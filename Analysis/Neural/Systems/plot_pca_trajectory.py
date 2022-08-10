@@ -24,8 +24,21 @@ def plot_pca_trajectory(activity_data, timepoints_to_label=None):
     plt.show()
 
 
+def estimate_gaussian(dataset):
+
+    mu = np.mean(dataset) # moyenne cf mu
+    sigma = np.std(dataset) # écart_type/standard deviation
+    limit = sigma * 10
+
+    min_threshold = mu - limit
+    max_threshold = mu + limit
+
+    return mu, sigma, min_threshold, max_threshold
+
+
 def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None, display_numbers=True,
-                                        context_name="No Label", self_normalise_activity_data=True, n_components=2):
+                                        context_name="No Label", self_normalise_activity_data=True, n_components=2,
+                                        exclude_outliers=True):
     flattened_activity_data = np.concatenate((activity_data), axis=1)
     if self_normalise_activity_data:
         flattened_activity_data = normalise_within_neuron(flattened_activity_data)
@@ -114,9 +127,11 @@ def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None,
         plt.colorbar()
 
     plt.title("PCA Trajectory Space: " + context_name)
-    plt.xlim(-0.0004, 0.0002)
-    plt.ylim(-0.0011, 0.0015)
-    # TODO: Prevent showing outliers...
+    if exclude_outliers:
+        mu, sigma, min_threshold, max_threshold = estimate_gaussian(pca_components[0])
+        mu, sigma, min_threshold2, max_threshold2 = estimate_gaussian(pca_components[1])
+        plt.xlim(min_threshold, max_threshold)
+        plt.ylim(min_threshold2, max_threshold2)
     plt.show()
 
 
