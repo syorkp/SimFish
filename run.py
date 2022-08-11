@@ -10479,5 +10479,5 @@ else:
     run_config = globals()[run_config]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(run_config, parallel_jobs=1)
+manager = TrialManager(ppo_21_data_gathering, parallel_jobs=1)
 manager.run_priority_loop()
