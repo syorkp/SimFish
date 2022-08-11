@@ -417,6 +417,7 @@ class ContinuousPPO(BasePPO):
                                                      sand_grain_positions,
                                                      vegetation_positions,
                                                      self.simulation.fish.body.angle,
+                                                     self.simulation.fish.salt_health
                                                      )
         if "convolutional layers" in self.buffer.recordings:
             self.buffer.save_conv_states(conv1l_actor, conv2l_actor, conv3l_actor, conv4l_actor, conv1r_actor,
