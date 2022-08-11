@@ -409,7 +409,13 @@ class NewDrawingBoard:
         max_y = self.chosen_math_library.max(vertices_yvals, axis=1)
 
         # SEGMENT COMPUTATION  - Compute length of x and y ranges to test
-        x_lens = self.chosen_math_library.max(max_x - min_x)
+        try:
+            x_lens = self.chosen_math_library.max(max_x - min_x)
+        except ValueError:
+            print(f"Prey positions: {prey_locations}")
+            print(f"Predator positions: {predator_locations}")
+            print(f"Vertices: {vertices}")
+
         y_lens = self.chosen_math_library.max(max_y - min_y)
 
         x_len = self.chosen_math_library.around(x_lens)
