@@ -74,7 +74,6 @@ def display_cnn_filters(layers, first_is_coloured, mask_background, show_negativ
             if mask_red:
                 layer[:, :, 0] = 0
 
-
             if order_filters:
                 layer = order_cnn_filters_by_kernel_location(layer, 0)
 

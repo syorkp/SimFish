@@ -7,19 +7,17 @@ from Analysis.Connectivity.get_conv_weights import get_conv_weights_and_biases
 from Analysis.Neural.CNN.plot_cnn_filters import display_cnn_filters
 
 
-def get_filter_shapes(kernels):
+def get_filter_shapes(kernels, biases):
     """From first kernel, constructs shape of later kernels through computation, preserving the original kernel size.
     Works by summing input filters, weighted by weights between.
     Returns shape of: (kernel_size_first_layer, channels_first_layer, n_units_final_layer)
     """
     n_layers = len(kernels)
-    output_shape = (kernels[0].shape[0], kernels[0].shape[1], kernels[-1].shape[-1])
-    output_filters = np.zeros(output_shape)
 
     # Compile weights (reduce their dimensionality)
-    layer_2 = kernels[-1]
+    layer_2 = kernels[-1] + biases[-1]
     for l in range(1, n_layers):
-        layer_1 = kernels[-(l+1)]
+        layer_1 = kernels[-(l+1)] + biases[-(l+1)]
         output = np.zeros((layer_1.shape[0], layer_1.shape[1], layer_2.shape[-1]))
 
         for unit in range(layer_2.shape[-1]):
@@ -46,9 +44,9 @@ def get_filter_shapes(kernels):
     # plt.show()
 
 
-def compute_filter_shapes_rnn(kernels_l, kernels_r, rnn_in_weights):
-    final_filter_shapes_l = get_filter_shapes(kernels_l)
-    final_filter_shapes_r = get_filter_shapes(kernels_r)
+def compute_filter_shapes_rnn(kernels_l, kernels_r, bias_l, bias_r, rnn_in_weights):
+    final_filter_shapes_l = get_filter_shapes(kernels_l, bias_l)
+    final_filter_shapes_r = get_filter_shapes(kernels_r, bias_r)
 
     output_size = final_filter_shapes_l.shape[-1]*2
 
@@ -84,10 +82,15 @@ if __name__ == "__main__":
     params = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", full_reafference=True)
     k_l, b_l = get_conv_weights_and_biases(params, left=True)
     k_r, b_r = get_conv_weights_and_biases(params, left=False)
+
+    final_filter_shapes_l = get_filter_shapes(k_l[:2], b_l[:2])
+    display_cnn_filters([final_filter_shapes_l], True, True, mask_red=True, normalisation_mode="rescale")
+
+
     # get_filter_shapes_poc(k[0], k[1])
     # filters = get_filter_shapes(k)
     # display_cnn_filters([filters], True, True, mask_red=True, normalisation_mode="rescale")
-    rnn_filter_shapes = compute_filter_shapes_rnn(k_l, k_r, params["main_rnn_in/kernel:0"])
+    rnn_filter_shapes = compute_filter_shapes_rnn(k_l, k_r, b_l, b_r, params["main_rnn_in/kernel:0"])
     rnn_filter_shapes_l = np.swapaxes(rnn_filter_shapes[0, :20], 0, 2)
     rnn_filter_shapes_r = np.swapaxes(rnn_filter_shapes[1, :20], 0, 2)
     rnn_filter_shapes_l = np.swapaxes(rnn_filter_shapes_l, 0, 1)

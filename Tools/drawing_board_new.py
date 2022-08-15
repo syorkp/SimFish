@@ -412,11 +412,8 @@ class NewDrawingBoard:
         try:
             x_lens = self.chosen_math_library.max(max_x - min_x)
         except ValueError:
-            print(f"Fish Position: {fish_position}")
-            print(f"Prey positions: {prey_locations}")
-            print(f"Predator positions: {predator_locations}")
-            print(f"valid_intersection_coordinates: {valid_intersection_coordinates}")
-            print(f"points_on_features: {points_on_features}")
+            # In the event that all prey are further away than max visual distance.
+            return self.empty_mask
 
         y_lens = self.chosen_math_library.max(max_y - min_y)
 

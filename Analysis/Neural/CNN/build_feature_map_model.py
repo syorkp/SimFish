@@ -80,6 +80,7 @@ def get_feature_maps(model_name, observations):
     simulation = DiscreteNaturalisticEnvironment(environment_params, True, True, False)
     sess = tf.Session()
     conv = []
+    rnn_in_compiled = []
     with sess as sess:
         network = build_network(environment_params, params, simulation)
         saver = tf.train.Saver(max_to_keep=5)
@@ -89,16 +90,20 @@ def get_feature_maps(model_name, observations):
         saver.restore(sess, checkpoint.model_checkpoint_path)
 
         for observation in observations:
-            conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r = sess.run(
+            conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r, rnn_in = sess.run(
                 [
                     network.conv1l, network.conv2l, network.conv3l, network.conv4l,
                     network.conv1r, network.conv2r, network.conv3r, network.conv4r,
+                    network.rnn_in
                 ],
-                feed_dict={network.observation: observation}
+                feed_dict={network.observation: observation,
+                           network.internal_state: [[0, 0, 0]],
+                           network.prev_actions: [[0, 0, 0]]}
             )
             conv.append([conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r])
+            rnn_in_compiled.append(rnn_in)
 
-    return conv
+    return conv, rnn_in_compiled
 
 
 def plot_feature_map_with_observation(feature_map, observation):
@@ -127,11 +132,18 @@ def plot_feature_map_with_observation(feature_map, observation):
 
 if __name__ == "__main__":
     model = "dqn_scaffold_18-1"
-    observations = get_prey_stimuli_across_visual_field(60, 10, "dqn_scaffold_18-1")
+    observations = get_prey_stimuli_across_visual_field(30, 10, "dqn_scaffold_18-1")
 
-    feature_maps = get_feature_maps(model, observations)
+    feature_maps, rnn_in_compiled = get_feature_maps(model, observations)
+    rnn_in_compiled = np.array(rnn_in_compiled)
+    rnn_in_compiled = rnn_in_compiled[:, 0, :20]
+
+    # for i in range(rnn_in_compiled.shape[-1]):
+    #     plt.plot(rnn_in_compiled[:, i])
+    #     plt.show()
+
     for i in range(observations.shape[0]):
 
-        plot_feature_map_with_observation(feature_maps[i][3][0], observations[i, :, :, 0])
+        plot_feature_map_with_observation(feature_maps[i][1][0], observations[i, :, :, 0])
         # for j in range(4):
         #     plot_feature_map_with_observation(feature_maps[j][0], observations[i, :, :, 0])
