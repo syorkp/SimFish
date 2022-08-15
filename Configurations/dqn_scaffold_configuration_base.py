@@ -336,8 +336,8 @@ env["height"] = 3000
 
 changes = []
 
-low_pci = 0.25 / 4
-high_pci = 0.3 / 4
+low_pci = 0.25 / 3
+high_pci = 0.3 / 3
 
 # 2-10
 changes += [
@@ -361,8 +361,20 @@ changes += build_changes_list_gradual("PCI", high_pci, "light_gain", env["light_
 # 2) Exploration 15-18
 # changes += [["PCI", 0.35, "max_epLength", 3000, "baseline_decrease", 0.00075, "prey_num", env["prey_num"]*4,
 #              "prey_cloud_num", env["prey_cloud_num"]*4, "width", 3000, "height", 3000, "complex"]]
-changes += build_changes_list_gradual("PCI", high_pci, "prey_num", env["prey_num"], env["prey_num"]/2, 4, discrete=True)
-changes += build_changes_list_gradual("PCI", high_pci, "prey_cloud_num", env["prey_cloud_num"], env["prey_cloud_num"]/2,
+original_prey_num = env["prey_num"]
+changes += [["PCI", high_pci, "prey_num", original_prey_num * 7/8],
+            ["PCI", high_pci * 10/8, "prey_num", original_prey_num * 6/8],
+            ["PCI", high_pci * 12/8, "prey_num", original_prey_num * 5/8],
+            ["PCI", high_pci * 14/8, "prey_num", original_prey_num * 4/8],
+            ["PCI", high_pci * 16/8, "prey_num", original_prey_num * 3/8],
+            ["PCI", high_pci * 18/8, "prey_num", original_prey_num * 2/8],
+            ]
+
+low_pci *= 18/8
+high_pci *= 18/8
+
+# changes += build_changes_list_gradual("PCI", high_pci, "prey_num", env["prey_num"], env["prey_num"]/2, 4, discrete=True)
+changes += build_changes_list_gradual("PCI", high_pci, "prey_cloud_num", env["prey_cloud_num"], env["prey_cloud_num"]/4,
                                       4, discrete=True)
 
 # 3) Fine Prey Capture 19-34
