@@ -12,3 +12,7 @@ long_term_interruption_profile = [0 for i in range(100)] + [1 for i in range(100
 energy_state_profile = [0.5] + [False for i in range(2000)]
 
 
+# Relocating fish
+fish_relocation_to_nowhere = [0 for i in range(100)] + ["E"] + [0 for i in range(10000)]
+
+

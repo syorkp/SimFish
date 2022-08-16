@@ -132,7 +132,7 @@ def plot_feature_map_with_observation(feature_map, observation):
 
 if __name__ == "__main__":
     model = "dqn_scaffold_18-1"
-    observations = get_prey_stimuli_across_visual_field(30, 10, "dqn_scaffold_18-1")
+    observations = get_prey_stimuli_across_visual_field(20, 10, "dqn_scaffold_18-1")
 
     feature_maps, rnn_in_compiled = get_feature_maps(model, observations)
     rnn_in_compiled = np.array(rnn_in_compiled)

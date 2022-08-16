@@ -82,6 +82,9 @@ def get_multiple_actions(p1, p2, p3, n=1):
         x = [i for s in x for i in s]
         predation_sequences = np.concatenate((predation_sequences, x))
 
+    consumption_timestamps = consumption_timestamps.astype(int)
+    consumption_timestamps = consumption_timestamps.tolist()
+
     return all_impulses, all_angles, consumption_timestamps, predation_sequences, predator_presence_timestamps
 
 
@@ -109,78 +112,66 @@ def extract_consumption_action_sequences(data, n=20):
         prey_c_t.append(prey_capture_timestamps)
     return prey_c_t
 
+
+def plot_action_histograms(all_impulses, all_actions):
+    ...
+    plt.hist(all_impulses, bins=60)
+    plt.show()
+
+    plt.hist(all_angles, bins=60)
+    plt.show()
+
+
+def plot_action_space_usage(all_impulses, all_angles, consumption_timestamps, mu_impulse, mu_angle, max_impulse,
+                            abs_angles=True):
+
+    if abs_angles:
+        all_angles = np.absolute(all_angles)
+        mu_angle = np.absolute(mu_angle)
+
+    plt.scatter(all_impulses, all_angles, alpha=.1)
+    plt.show()
+
+    heatmap, xedges, yedges = np.histogram2d(mu_impulse * max_impulse, mu_angle, bins=50)
+    extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
+
+    plt.clf()
+    plt.imshow(heatmap.T, extent=extent, origin='lower')
+    plt.show()
+
+    mu_impulse = [i * max_impulse for i in mu_impulse]
+    mu_angle = [i * np.pi / 5 for i in mu_angle]
+    plt.scatter(mu_impulse, mu_angle, alpha=.1)
+    consumption_mu_imp = [a for i, a in enumerate(mu_impulse) if i in consumption_timestamps]
+    consumption_mu_ang = [a for i, a in enumerate(mu_angle) if i in consumption_timestamps]
+    plt.scatter(consumption_mu_imp, consumption_mu_ang, alpha=.1, color="r")
+    predator_mu_imp = [a for i, a in enumerate(mu_impulse) if i in predator_presence]
+    predator_mu_ang = [a for i, a in enumerate(mu_angle) if i in predator_presence]
+    plt.scatter(predator_mu_imp, predator_mu_ang, alpha=.2, color="y")
+    plt.xlabel("Impulse")
+    plt.ylabel("Angle")
+    plt.show()
+
+    plt.scatter(mu_impulse, mu_angle, alpha=.1)
+    consumption_mu_imp = [a for i, a in enumerate(mu_impulse) if i in predation_sequences]
+    consumption_mu_ang = [a for i, a in enumerate(mu_angle) if i in predation_sequences]
+    plt.scatter(consumption_mu_imp, consumption_mu_ang, alpha=.1, color="r")
+    plt.show()
+
+
 # model_name = "ppo_continuous_sbe_is-1"
 # model_name = "/scaffold_version_4-4"
-model_name = "ppo_scaffold_18x-1"
-
+# model_name = "ppo_scaffold_18x-1"
+model_name = "ppo_scaffold_21-1"
+max_impulse = 15
 data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
-# data = load_data("ppo_continuous_multivariate-7", "MultivariateData", "Naturalistic-1")
-# data = load_data("ppo_multivariate_bptt-2", "MultivariateData", "Naturalistic-1")
 
+all_impulses, all_angles, consumption_timestamps, predation_sequences, predator_presence = \
+    get_multiple_actions(model_name, "Behavioural-Data-Free", "Naturalistic", 5)
+mu_impulse, mu_angle = get_multiple_means(model_name, "Behavioural-Data-Free", "Naturalistic", 5)
 
-# all_impulses, all_angles = get_multiple_actions("ppo_continuous_multivariate-7", "MultivariateData", "Naturalistic", 8)
-# mu_impulse, mu_angle = get_multiple_means("ppo_continuous_multivariate-7", "MultivariateData", "Naturalistic", 8)
-
-# all_impulses, all_angles, consumption_timestamps, predation_sequences = get_multiple_actions("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic", 8)
-# mu_impulse, mu_angle = get_multiple_means("ppo_continuous_multivariate-9", "MultivariateData", "Naturalistic", 8)
-
-all_impulses, all_angles, consumption_timestamps, predation_sequences, predator_presence = get_multiple_actions(model_name, "Behavioural-Data-Free", "Naturalistic", 12)
-mu_impulse, mu_angle = get_multiple_means(model_name, "Behavioural-Data-Free", "Naturalistic", 12)
-
-# all_impulses, all_angles, consumption_timestamps, predation_sequences, predator_presence = \
-#     get_multiple_actions("ppo_continuous_beta_sanity-4", "Behavioural-Data-Free", "Naturalistic", 10)
-# mu_impulse, mu_angle = \
-#     get_multiple_means("ppo_continuous_beta_sanity-4", "Behavioural-Data-Free", "Naturalistic", 10)
-
-consumption_timestamps = consumption_timestamps.astype(int)
-consumption_timestamps = consumption_timestamps.tolist()
-
-plt.scatter(all_impulses, all_angles, alpha=.2)
-plt.show()
-
-
-heatmap, xedges, yedges = np.histogram2d(mu_impulse*5, mu_angle, bins=50)
-extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
-
-plt.clf()
-plt.imshow(heatmap.T, extent=extent, origin='lower')
-plt.show()
-
-mu_impulse = [i * 5 for i in mu_impulse]
-mu_angle = [i * np.pi/5 for i in mu_angle]
-plt.scatter(mu_impulse, mu_angle, alpha=.2)
-consumption_mu_imp = [a for i, a in enumerate(mu_impulse) if i in consumption_timestamps]
-consumption_mu_ang = [a for i, a in enumerate(mu_angle) if i in consumption_timestamps]
-plt.scatter(consumption_mu_imp, consumption_mu_ang, alpha=.2, color="r")
-predator_mu_imp = [a for i, a in enumerate(mu_impulse) if i in predator_presence]
-predator_mu_ang = [a for i, a in enumerate(mu_angle) if i in predator_presence]
-plt.scatter(predator_mu_imp, predator_mu_ang, alpha=.2, color="y")
-plt.xlabel("Impulse")
-plt.ylabel("Angle")
-plt.show()
-
-
-plt.scatter(mu_impulse, mu_angle, alpha=.2)
-consumption_mu_imp = [a for i, a in enumerate(mu_impulse) if i in predation_sequences]
-consumption_mu_ang = [a for i, a in enumerate(mu_angle) if i in predation_sequences]
-plt.scatter(consumption_mu_imp, consumption_mu_ang, alpha=.2, color="r")
-plt.show()
-
-
-# sigma_impulse = data["sigma_impulse"]
-# sigma_angle = data["sigma_angle"]
-#
-# plt.scatter(sigma_impulse, sigma_angle, alpha=.5)
-# plt.show()
-
+plot_action_space_usage(all_impulses, all_angles, consumption_timestamps, mu_impulse, mu_angle, max_impulse)
 plot_all_consumption_sequences(all_impulses, all_angles, consumption_timestamps)
-
-plt.hist(all_impulses, bins=60)
-plt.show()
-
-plt.hist(all_angles, bins=60)
-plt.show()
-
 
 plot_capture_sequences_orientation(data["fish_position"], all_angles, consumption_timestamps)
 plot_capture_sequences_impulse(data["fish_position"], all_impulses, consumption_timestamps)

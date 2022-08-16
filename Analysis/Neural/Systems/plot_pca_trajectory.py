@@ -8,7 +8,7 @@ from Analysis.Neural.Tools.remove_inconsequential_neurons import remove_those_wi
 from Analysis.Behavioural.Tools.label_behavioural_context import label_behavioural_context_multiple_trials, \
     get_behavioural_context_name_by_index
 
-from Analysis.Neural.Tools.normalise_activity import normalise_within_neuron
+from Analysis.Neural.Tools.normalise_activity import normalise_within_neuron_multiple_traces
 
 
 def plot_pca_trajectory(activity_data, timepoints_to_label=None):
@@ -41,7 +41,7 @@ def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None,
                                         exclude_outliers=True):
     flattened_activity_data = np.concatenate((activity_data), axis=1)
     if self_normalise_activity_data:
-        flattened_activity_data = normalise_within_neuron(flattened_activity_data)
+        flattened_activity_data = normalise_within_neuron_multiple_traces(flattened_activity_data)
 
     pca = PCA(n_components=n_components)
     pca.fit(flattened_activity_data)
@@ -139,7 +139,7 @@ def plot_pca_trajectory_multiple_trials_environmental_position(activity_data, fi
                                                                context_name="No Label", self_normalise_activity_data=True):
     flattened_activity_data = np.concatenate((activity_data), axis=1)
     if self_normalise_activity_data:
-        flattened_activity_data = normalise_within_neuron(flattened_activity_data)
+        flattened_activity_data = normalise_within_neuron_multiple_traces(flattened_activity_data)
 
     pca = PCA(n_components=2)
     pca.fit(flattened_activity_data)

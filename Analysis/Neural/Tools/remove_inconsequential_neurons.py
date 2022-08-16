@@ -5,7 +5,7 @@ import numpy as np
 
 from Analysis.load_data import load_data
 from Analysis.Connectivity.load_network_variables import load_network_variables_dqn, load_network_variables_ppo
-from Analysis.Neural.Tools.normalise_activity import normalise_within_neuron
+from Analysis.Neural.Tools.normalise_activity import normalise_within_neuron_multiple_traces
 
 
 def remove_those_with_no_output_advantage_only(rnn_data, model_name, conf_name, dqn=True, proportion_to_remove=0.1):
@@ -19,7 +19,7 @@ def remove_those_with_no_output_advantage_only(rnn_data, model_name, conf_name, 
     output_aw = all_weights["mainaw:0"]
 
     # Normalise activity profiles
-    rnn_data_normalised = normalise_within_neuron(rnn_data)
+    rnn_data_normalised = normalise_within_neuron_multiple_traces(rnn_data)
     rnn_n_units = rnn_data.shape[0]
 
     # Compute effect of each neuron on output layer at each timepoint.
@@ -65,7 +65,7 @@ def remove_those_with_no_output(rnn_data, model_name, conf_name, dqn=True, propo
     output_vw = all_weights["mainvw:0"]
 
     # Normalise activity profiles
-    rnn_data_normalised = normalise_within_neuron(rnn_data)
+    rnn_data_normalised = normalise_within_neuron_multiple_traces(rnn_data)
     half_rnn_n_units = int(rnn_data.shape[0]/2)
 
     # Compute effect of each neuron on output layer at each timepoint.

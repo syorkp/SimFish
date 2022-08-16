@@ -97,7 +97,6 @@ def label_behavioural_context(data, model_name):
 
 def label_behavioural_context_multiple_trials(datas, model_name):
     associated_behavioural_context_labels = []
-
     for data in datas:
         associated_behavioural_context_labels.append(label_behavioural_context(data, model_name))
 

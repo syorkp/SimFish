@@ -90,6 +90,8 @@ def display_cnn_filters(layers, first_is_coloured, mask_background, show_negativ
                 plt.imshow(compiled_layers)
                 plt.xlabel("Point Across kernel")
                 plt.ylabel("Unit")
+                for i in range(2, len(compiled_layers), 2):
+                    plt.hlines(i-0.5, -0.5, compiled_layers.shape[0]-0.5, color="r")
                 plt.tight_layout()
                 plt.show()
 

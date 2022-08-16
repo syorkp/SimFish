@@ -83,6 +83,7 @@ if __name__ == "__main__":
     k_l, b_l = get_conv_weights_and_biases(params, left=True)
     k_r, b_r = get_conv_weights_and_biases(params, left=False)
 
+    # Looking at different conv layer filters:
     final_filter_shapes_l = get_filter_shapes(k_l[:2], b_l[:2])
     display_cnn_filters([final_filter_shapes_l], True, True, mask_red=True, normalisation_mode="rescale")
 
@@ -90,10 +91,12 @@ if __name__ == "__main__":
     # get_filter_shapes_poc(k[0], k[1])
     # filters = get_filter_shapes(k)
     # display_cnn_filters([filters], True, True, mask_red=True, normalisation_mode="rescale")
-    rnn_filter_shapes = compute_filter_shapes_rnn(k_l, k_r, b_l, b_r, params["main_rnn_in/kernel:0"])
-    rnn_filter_shapes_l = np.swapaxes(rnn_filter_shapes[0, :20], 0, 2)
-    rnn_filter_shapes_r = np.swapaxes(rnn_filter_shapes[1, :20], 0, 2)
-    rnn_filter_shapes_l = np.swapaxes(rnn_filter_shapes_l, 0, 1)
-    rnn_filter_shapes_r = np.swapaxes(rnn_filter_shapes_r, 0, 1)
-    display_cnn_filters([rnn_filter_shapes_l], True, True, mask_red=True, normalisation_mode="rescale")
-    display_cnn_filters([rnn_filter_shapes_r], True, True, mask_red=True, normalisation_mode="rescale")
+
+    # Looking at RNN filters
+    # rnn_filter_shapes = compute_filter_shapes_rnn(k_l, k_r, b_l, b_r, params["main_rnn_in/kernel:0"])
+    # rnn_filter_shapes_l = np.swapaxes(rnn_filter_shapes[0, :20], 0, 2)
+    # rnn_filter_shapes_r = np.swapaxes(rnn_filter_shapes[1, :20], 0, 2)
+    # rnn_filter_shapes_l = np.swapaxes(rnn_filter_shapes_l, 0, 1)
+    # rnn_filter_shapes_r = np.swapaxes(rnn_filter_shapes_r, 0, 1)
+    # display_cnn_filters([rnn_filter_shapes_l], True, True, mask_red=True, normalisation_mode="rescale")
+    # display_cnn_filters([rnn_filter_shapes_r], True, True, mask_red=True, normalisation_mode="rescale")
