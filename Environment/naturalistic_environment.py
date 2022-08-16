@@ -556,7 +556,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             xy = np.expand_dims(xy, 2)
             yp = np.expand_dims(yp, 2)
             all_coordinates = np.concatenate((xy, yp), axis=2)
-            all_prey_locations = [b.location for b in self.prey_bodies]
+            all_prey_locations = [b.position for b in self.prey_bodies]
             for p in all_prey_locations:
                 all_coordinates[p[0]-100: p[0]+100, p[1]-100: p[1]+100] = False
             suitable_locations = all_coordinates.reshape(-1, all_coordinates.shape[-1])
