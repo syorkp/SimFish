@@ -547,7 +547,7 @@ class NaturalisticEnvironment(BaseEnvironment):
            P: Adds a predator nearby (one step away from capture)
         """
         if target_feature == "C":
-            chosen_cluster = np.choice(range(len(self.prey_cloud_locations)))
+            chosen_cluster = np.random.choice(range(len(self.prey_cloud_locations)))
             cluster_coordinates = self.prey_cloud_locations[chosen_cluster]
             self.fish.body.position = np.array(cluster_coordinates)
         elif target_feature == "E":
@@ -561,6 +561,6 @@ class NaturalisticEnvironment(BaseEnvironment):
                 all_coordinates[int(p[0]-100): int(p[0]+100), int(p[1]-100): int(p[1]+100)] = False
             suitable_locations = all_coordinates.reshape(-1, all_coordinates.shape[-1])
             suitable_locations = [c for c in suitable_locations if c[0] != 0]
-            choice = np.choice(range(len(suitable_locations)))
+            choice = np.random.choice(range(len(suitable_locations)))
             location_away = suitable_locations[choice]
             self.fish.body.position = np.array(location_away)
