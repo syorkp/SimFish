@@ -558,7 +558,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             all_coordinates = np.concatenate((xy, yp), axis=2)
             all_prey_locations = [b.position for b in self.prey_bodies]
             for p in all_prey_locations:
-                all_coordinates[p[0]-100: p[0]+100, p[1]-100: p[1]+100] = False
+                all_coordinates[int(p[0]-100): int(p[0]+100), int(p[1]-100): int(p[1]+100)] = False
             suitable_locations = all_coordinates.reshape(-1, all_coordinates.shape[-1])
             suitable_locations = [c for c in suitable_locations if c[0] != 0]
             choice = np.choice(range(len(suitable_locations)))
