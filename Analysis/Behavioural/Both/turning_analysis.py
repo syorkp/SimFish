@@ -296,11 +296,11 @@ def plot_all_turn_analysis(model_name, assay_config, assay_id, n, use_purely_tur
     # Cumulative probability plot.
     l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
     l2, r2, sl2, sr2 = randomly_switching_fish()
-    cumulative_switching_probability_plot(sl, sr, sl2, sr2, label=f"Cumulative Switching Probability (exploration) {model_name}")
+    cumulative_switching_probability_plot(sl, sr, sl2, sr2, save_location=f"Cumulative Switching Probability (exploration) {model_name}")
 
     l, r, sl, sr = model_of_action_switching(turn_no_prey_sequences)
     l2, r2, sl2, sr2 = randomly_switching_fish()
-    cumulative_switching_probability_plot(sl, sr, sl2, sr2, label=f"Cumulative Switching Probability (no prey) {model_name}")
+    cumulative_switching_probability_plot(sl, sr, sl2, sr2, save_location=f"Cumulative Switching Probability (no prey) {model_name}")
 
 
 def plot_all_turn_analysis_multiple_models(model_names, assay_config, assay_id, n, use_purely_turn_sequences=True):
@@ -356,6 +356,11 @@ def plot_all_turn_analysis_multiple_models(model_names, assay_config, assay_id, 
 
 
 if __name__ == "__main__":
+    plot_all_turn_analysis("dqn_scaffold_18-1", "Behavioural-Data-Endless",
+                           f"Naturalistic", 3)
+    plot_all_turn_analysis("dqn_scaffold_18-1", "Behavioural-Data-Full-Interruptions",
+                                           f"Naturalistic", 3)
+
     plot_all_turn_analysis_multiple_models(["dqn_scaffold_14-1", "dqn_scaffold_14-2"], "Behavioural-Data-Free",
                                            f"Naturalistic", 10)
 
