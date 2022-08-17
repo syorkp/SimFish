@@ -10739,7 +10739,7 @@ dqn_14_full_long_term_interruptions = [
                                   }
             },
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
     {
         "Model Name": "dqn_scaffold_14",
@@ -10830,7 +10830,7 @@ dqn_14_full_long_term_interruptions = [
                                   }
             },
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
 ]
 
