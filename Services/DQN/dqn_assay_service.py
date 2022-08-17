@@ -130,7 +130,7 @@ class DQNAssayService(AssayService, BaseDQN):
             if self.full_reafference:
                 action_reafference = a
             else:
-                action_reafference = a[0]
+                action_reafference = a
 
         if self.environment_params["salt"]:
             salt_location = self.simulation.salt_location
