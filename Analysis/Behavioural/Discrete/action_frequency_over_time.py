@@ -22,7 +22,7 @@ def compare_action_usage_over_time(data, bins=5):
     action_proportions = action_counts / np.sum(action_counts[:, 0])
     color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'gold', "c", "m", "m", "black"]
     actions_present = list(set(actions_present))
-    fig, ax = plt.subplots(figsize=(10, 10))
+    fig, ax = plt.subplots(figsize=(20, 10))
     for a in reversed(list(actions_present)):
         total = sum([action_proportions[int(i)] for i in range(int(a + 1))])
         ax.bar([i for i in range(bins)], total,  color=color_set[int(a)], width=0.4)

@@ -144,6 +144,6 @@ if __name__ == "__main__":
 
     for i in range(observations.shape[0]):
 
-        plot_feature_map_with_observation(feature_maps[i][1][0], observations[i, :, :, 0])
+        plot_feature_map_with_observation(feature_maps[i][3][0], observations[i, :, :, 0])
         # for j in range(4):
         #     plot_feature_map_with_observation(feature_maps[j][0], observations[i, :, :, 0])

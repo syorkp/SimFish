@@ -8,6 +8,8 @@ from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.label_behavioural_context import label_behavioural_context_multiple_trials,\
     get_behavioural_context_name_by_index
 from Analysis.Neural.Systems.plot_pca_trajectory import plot_pca_trajectory, plot_pca_trajectory_multiple_trials
+from Analysis.Neural.Regression.label_cell_roles import get_category_indices
+
 
 def plot_pca_trajectory_with_contexts_multiple_trials(datas, remove_value_stream=False):
     behavioural_labels = label_behavioural_context_multiple_trials(datas, environment_size=1500)
@@ -69,16 +71,22 @@ def plot_pca_trajectory_with_context(activity_data, associated_periods):
     plt.show()
 
 
-
 def plot_pca_with_all_behavioural_periods_multiple_trials(datas, model_name, display_timestamps=False,
-                                                          remove_value_stream=False, n_components=2):
+                                                          remove_value_stream=False, n_components=2,
+                                                          selected_neurons=None):
     rnn_data_full = []
     consumption_points = []
     for data in datas:
-        if remove_value_stream:
-            rnn_data = data["rnn_state_actor"][:, 0, 0, :256]
+        if selected_neurons is None:
+            if remove_value_stream:
+                rnn_data = data["rnn_state_actor"][:, 0, 0, :256]
+            else:
+                rnn_data = data["rnn_state_actor"][:, 0, 0, :]
         else:
-            rnn_data = data["rnn_state_actor"][:, 0, 0, :]
+            if remove_value_stream:
+                selected_neurons = [i for i in selected_neurons if i < 256]
+            rnn_data = data["rnn_state_actor"][:, 0, 0, selected_neurons]
+
         rnn_data = np.swapaxes(rnn_data, 0, 1)
         consumption_points.append([i for i in range(len(data["consumed"][:])) if data["consumed"][i]])
         rnn_data_full.append(rnn_data)
@@ -99,8 +107,12 @@ if __name__ == "__main__":
     for i in range(1, 4):
         data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-{i}")
         datas.append(data)
+
+    energy_state_neurons = get_category_indices("dqn_scaffold_18-1", "Behavioural-Data-Endless", "Naturalistic", 3,
+                                                "Starving", score_threshold=0.2)
     plot_pca_with_all_behavioural_periods_multiple_trials(datas, model_name, display_timestamps=False,
-                                                          remove_value_stream=True, n_components=2)
+                                                          remove_value_stream=True, n_components=2,
+                                                          selected_neurons=energy_state_neurons)
     # plot_pca_trajectory_with_contexts_multiple_trials(datas, remove_value_stream=False)
 
 

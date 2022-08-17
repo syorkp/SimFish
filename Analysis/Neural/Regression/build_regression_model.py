@@ -86,7 +86,7 @@ def normalise_continuous_regressors(regressors):
     return regressors
 
 
-def build_all_regression_models(datas):
+def build_all_regression_models(datas, model_name):
     labels, label_names = build_full_regressor_set(datas, model_name)
 
     labels = np.concatenate(labels, axis=0)
@@ -108,7 +108,7 @@ def build_all_regression_models(datas):
         scores.append(score)
 
     compiled_coefficients = np.array(compiled_coefficients)
-    compiled_coefficients = compiled_coefficients[:20]
+    # compiled_coefficients = compiled_coefficients[:20]
 
     neg_scaling = abs(np.min(compiled_coefficients))
     positive_scaling = abs(np.max(compiled_coefficients))
@@ -117,18 +117,20 @@ def build_all_regression_models(datas):
     compiled_coefficients[compiled_coefficients < 0] /= neg_scaling
 
     scores = np.array(scores)
-    scores = scores[:20]
+    # scores = scores[:20]
     positive_scaling = abs(np.max(scores))
     scores /= positive_scaling
 
     coeff_and_scores = np.concatenate((np.expand_dims(scores, 1), compiled_coefficients), axis=1)
 
-    plt.imshow(coeff_and_scores, cmap="seismic")
-    plt.tight_layout()
-    plt.show()
+    # plt.imshow(coeff_and_scores, cmap="seismic")
+    # plt.tight_layout()
+    # plt.show()
+
+    return compiled_coefficients, scores, label_names
 
 
-def build_all_regression_models_activity_differential(datas):
+def build_all_regression_models_activity_differential(datas, model_name):
     labels, label_names = build_full_regressor_set(datas, model_name)
 
     labels = [label[1:] for label in labels]
@@ -152,7 +154,7 @@ def build_all_regression_models_activity_differential(datas):
         scores.append(score)
 
     compiled_coefficients = np.array(compiled_coefficients)
-    compiled_coefficients = compiled_coefficients[:20]
+    # compiled_coefficients = compiled_coefficients[:20]
 
     neg_scaling = abs(np.min(compiled_coefficients))
     positive_scaling = abs(np.max(compiled_coefficients))
@@ -161,15 +163,16 @@ def build_all_regression_models_activity_differential(datas):
     compiled_coefficients[compiled_coefficients < 0] /= neg_scaling
 
     scores = np.array(scores)
-    scores = scores[:20]
+    # scores = scores[:20]
     positive_scaling = abs(np.max(scores))
     scores /= positive_scaling
 
     coeff_and_scores = np.concatenate((np.expand_dims(scores, 1), compiled_coefficients), axis=1)
 
-    plt.imshow(coeff_and_scores, cmap="seismic")
-    plt.tight_layout()
-    plt.show()
+    # plt.imshow(coeff_and_scores, cmap="seismic")
+    # plt.tight_layout()
+    # plt.show()
+    return compiled_coefficients, scores, label_names
 
 
 if __name__ == "__main__":
@@ -179,5 +182,5 @@ if __name__ == "__main__":
         data = load_data(model_name, "Behavioural-Data-Endless", f"Naturalistic-{i}")
         datas.append(data)
 
-    build_all_regression_models(datas)
+    build_all_regression_models(datas, model_name)
     build_all_regression_models_activity_differential(datas)

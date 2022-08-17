@@ -91,7 +91,7 @@ def display_cnn_filters(layers, first_is_coloured, mask_background, show_negativ
                 plt.xlabel("Point Across kernel")
                 plt.ylabel("Unit")
                 for i in range(2, len(compiled_layers), 2):
-                    plt.hlines(i-0.5, -0.5, compiled_layers.shape[0]-0.5, color="r")
+                    plt.hlines(i-0.5, -0.5, compiled_layers.shape[1]-0.5, color="r")
                 plt.tight_layout()
                 plt.show()
 
@@ -124,4 +124,4 @@ def display_cnn_filters(layers, first_is_coloured, mask_background, show_negativ
 if __name__ == "__main__":
     params = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", full_reafference=True)
     k, b = get_conv_weights_and_biases(params, left=True)
-    display_cnn_filters(k, first_is_coloured=True, mask_background=True, mask_red=True, normalisation_mode="upscale")
+    display_cnn_filters(k, first_is_coloured=True, mask_background=True, mask_red=True, normalisation_mode="rescale")

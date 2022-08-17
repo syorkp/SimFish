@@ -84,7 +84,7 @@ if __name__ == "__main__":
     k_r, b_r = get_conv_weights_and_biases(params, left=False)
 
     # Looking at different conv layer filters:
-    final_filter_shapes_l = get_filter_shapes(k_l[:2], b_l[:2])
+    final_filter_shapes_l = get_filter_shapes(k_l[:4], b_l[:4])
     display_cnn_filters([final_filter_shapes_l], True, True, mask_red=True, normalisation_mode="rescale")
 
 
