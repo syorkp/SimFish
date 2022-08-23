@@ -48,20 +48,17 @@ if continuous:
     sim_state = ContinuousNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=True, using_gpu=False)
 else:
     if arg is None:
-        arg = "discrete_dqn_assay"  # Default arg
+        arg = "dqn_14_1"  # Default arg
 
     file_path = os.path.join(dirname, f"Configurations/Assay-Configs/{arg}_env.json")
     with open(file_path, 'r') as f:
         env = json.load(f)
-    env["prey_num"] = 1
     sim_state = DiscreteNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=True,
                                                 using_gpu=False)
 
 q = False
 d = False
 sim_state.reset()
-sim_state.fish.body.position = [900, 900]
-sim_state.prey_bodies[0].position = [1000, 1000]
 
 if continuous:
     while not q:
@@ -88,10 +85,12 @@ if continuous:
 
         # print(f"Prey position: {np.array(sim_state.prey_bodies[-1].position)}")
         # print(f"Fish position: {np.array(sim_state.fish.body.position)}")
-        print(f"Distance: {distance}")
-        print(f"Max UV: {np.max(s[:, 1, :])}")
-        print(f"Max stimulus at L: {np.argmax(s[:, 1, 0])} and R: {np.argmax(s[:, 1, 1])}")
-        print("\n")
+
+
+        # print(f"Distance: {distance}")
+        # print(f"Max UV: {np.max(s[:, 1, :])}")
+        # print(f"Max stimulus at L: {np.argmax(s[:, 1, 0])} and R: {np.argmax(s[:, 1, 1])}")
+        # print("\n")
 
         # if angle > 1.0:
         #     sim_state.reset()
@@ -113,8 +112,14 @@ else:
         position = sim_state.fish.body.position
         distance = ((position[0] - sim_state.prey_bodies[-1].position[0]) ** 2 +
                     (position[1] - sim_state.prey_bodies[-1].position[1]) ** 2) ** 0.5
-        print(f"Distance: {distance}")
-        print(f"Max UV: {np.max(s[:, 1, :])}")
+        # print(f"Distance: {distance}")
+        # print(f"Max UV: {np.max(s[:, 1, :])}")
+
+        print(f"""
+        Red: {np.min(s[:, 0, :])}
+        UV: {np.min(s[:, 1, :])}
+        Red2: {np.min(s[:, 2, :])}
+        """)
 
         if d:
             sim_state.reset()

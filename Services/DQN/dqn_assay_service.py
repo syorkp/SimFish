@@ -109,9 +109,9 @@ class DQNAssayService(AssayService, BaseDQN):
             # Deal with interventions
             if self.visual_interruptions is not None:
                 if self.visual_interruptions[self.step_number] == 1:
-                    o[:, 0, :] = np.min(o[:, 0, :])
-                    o[:, 1, :] = np.min(o[:, 1, :])
-                    o[:, 2, :] = np.min(o[:, 2, :])
+                    o[:, 0, :] = 4
+                    o[:, 1, :] = 4
+                    o[:, 2, :] = 4
             if self.reafference_interruptions is not None:
                 if self.reafference_interruptions[self.step_number] == 1:
                     action_reafference = self.previous_action
