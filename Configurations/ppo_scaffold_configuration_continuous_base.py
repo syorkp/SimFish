@@ -333,11 +333,11 @@ changes = [
 changes += build_changes_list_gradual("PCI", 0.3, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25,
                                       8, discrete=False)
 
-# 12-35
+# 12-27
 # 3) Available actions
 changes += build_changes_list_gradual("PCI", 0.3, "max_impulse", env["max_impulse"], 16, 16, discrete=False)
-changes += build_changes_list_gradual("PCI", 0.3, "action_reward_scaling", env["action_reward_scaling"], 10000, 4,
-                                      discrete=False)
+# changes += build_changes_list_gradual("PCI", 0.3, "action_reward_scaling", env["action_reward_scaling"], 10000, 4,
+#                                       discrete=False)
 
 changes += [
        # 2) Visual System
