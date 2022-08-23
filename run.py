@@ -10652,7 +10652,7 @@ dqn_14_full_long_term_interruptions = [
     {
         "Model Name": "dqn_scaffold_14",
         "Environment Name": "dqn_14_1",
-        "Assay Configuration Name": "Behavioural-Data-Full-Interruptions",
+        "Assay Configuration Name": "Behavioural-Data-Full-Interruptions2",
         "Trial Number": 1,
         "Checkpoint": None,
         "Run Mode": "Assay",
@@ -10743,7 +10743,7 @@ dqn_14_full_long_term_interruptions = [
     {
         "Model Name": "dqn_scaffold_14",
         "Environment Name": "dqn_14_2",
-        "Assay Configuration Name": "Behavioural-Data-Full-Interruptions",
+        "Assay Configuration Name": "Behavioural-Data-Full-Interruptions2",
         "Trial Number": 2,
         "Checkpoint": None,
         "Run Mode": "Assay",
