@@ -326,6 +326,7 @@ def plot_all_turn_analysis_multiple_models(model_names, assay_config, assay_id, 
         else:
             turn_exploration_sequences = extract_turn_sequences(otherwise_exploration_sequences)
             turn_no_prey_sequences = extract_turn_sequences(no_prey_actions)
+            turn_no_prey_sequences_list.append(turn_no_prey_sequences)
 
         l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
 
@@ -359,8 +360,8 @@ if __name__ == "__main__":
     # plot_all_turn_analysis("dqn_scaffold_14-1", "Behavioural-Data-Full-Interruptions",
     #                        f"Naturalistic", 3)
 
-    plot_all_turn_analysis_multiple_models(["dqn_scaffold_14-1", "dqn_scaffold_14-2"], "Behavioural-Data-Full-Interruptions",
-                                           f"Naturalistic", 3)
+    plot_all_turn_analysis_multiple_models(["dqn_scaffold_14-1", "dqn_scaffold_14-2"], "Behavioural-Data-Free",
+                                           f"Naturalistic", 10)
 
     data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", f"Naturalistic-18")
     exploration_timestamps, exploration_sequences, exploration_fish_orientations = \
