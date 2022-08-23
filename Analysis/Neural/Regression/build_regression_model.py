@@ -45,7 +45,7 @@ def build_full_regressor_set(datas, model_name):
     label_names = [get_behavioural_context_name_by_index(i) for i in range(labels[0].shape[1])]
 
     # Continuous basic variables
-    continuous_variables = ["energy_state", "salt", "salt_health"]
+    continuous_variables = ["energy_state", "salt", "salt_health"]# TODO: , "reward"]
 
     for i, data in enumerate(datas):
         # Continuous variables
@@ -65,14 +65,17 @@ def build_full_regressor_set(datas, model_name):
     return labels, label_names
 
 
-def build_regression_model_for_neuron(rnn_data, labels, label_names):
+def build_regression_model_for_neuron(rnn_data, labels, label_names, cv_prop=0.1):
+    """Does cross validated scoring."""
     # TODO: Need to find way of determining whether there is an association
+
+    cv_index = int(rnn_data.shape[0] * (1 - cv_prop))
     # labels = labels.astype(int)
     regr = linear_model.LinearRegression(fit_intercept=False)
-    regr.fit(labels, rnn_data)
+    regr.fit(labels[:cv_index, :], rnn_data[:cv_index])
     coefficients = regr.coef_
 
-    score = regr.score(labels, rnn_data)
+    score = regr.score(labels[cv_index:], rnn_data[cv_index:])
 
     return coefficients, score
 
@@ -183,4 +186,4 @@ if __name__ == "__main__":
         datas.append(data)
 
     build_all_regression_models(datas, model_name)
-    build_all_regression_models_activity_differential(datas)
+    build_all_regression_models_activity_differential(datas, model_name)

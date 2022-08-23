@@ -10254,7 +10254,7 @@ ppo_21_data_gathering = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
@@ -10274,7 +10274,7 @@ ppo_21_data_gathering = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
@@ -10294,7 +10294,7 @@ ppo_21_data_gathering = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
@@ -10314,7 +10314,7 @@ ppo_21_data_gathering = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
@@ -10334,7 +10334,7 @@ ppo_21_data_gathering = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
@@ -10648,7 +10648,6 @@ dqn_18_full_long_term_interruptions = [
     },
 ]
 
-
 dqn_14_full_long_term_interruptions = [
     {
         "Model Name": "dqn_scaffold_14",
@@ -10682,7 +10681,7 @@ dqn_14_full_long_term_interruptions = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
@@ -10705,7 +10704,7 @@ dqn_14_full_long_term_interruptions = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
@@ -10728,7 +10727,7 @@ dqn_14_full_long_term_interruptions = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
@@ -10773,7 +10772,7 @@ dqn_14_full_long_term_interruptions = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
@@ -10796,7 +10795,7 @@ dqn_14_full_long_term_interruptions = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
@@ -10819,7 +10818,7 @@ dqn_14_full_long_term_interruptions = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
@@ -10834,6 +10833,8 @@ dqn_14_full_long_term_interruptions = [
     },
 ]
 
+
+# Remember "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
 
 if run_config is None:
     run_config = dqn_14_full_long_term_interruptions
