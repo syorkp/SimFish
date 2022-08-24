@@ -10872,7 +10872,7 @@ ppo_scaffold_23 = [
     },
 ]
 
-dqn_scaffold_31 = [
+dqn_scaffold_31_1 = [
     {
         "Model Name": "dqn_scaffold_31",
         "Environment Name": "dqn_scaffold_31",
@@ -10890,6 +10890,9 @@ dqn_scaffold_31 = [
         "New Simulation": True,
         "Profile Speed": False,
     },
+]
+
+dqn_scaffold_31_2 = [
     {
         "Model Name": "dqn_scaffold_31",
         "Environment Name": "dqn_scaffold_31",
@@ -10909,7 +10912,7 @@ dqn_scaffold_31 = [
     },
 ]
 
-dqn_scaffold_32 = [
+dqn_scaffold_32_1 = [
     {
         "Model Name": "dqn_scaffold_32",
         "Environment Name": "dqn_scaffold_32",
@@ -10927,6 +10930,9 @@ dqn_scaffold_32 = [
         "New Simulation": True,
         "Profile Speed": False,
     },
+]
+
+dqn_scaffold_32_2 = [
     {
         "Model Name": "dqn_scaffold_32",
         "Environment Name": "dqn_scaffold_32",
