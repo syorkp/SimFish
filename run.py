@@ -10875,7 +10875,7 @@ ppo_scaffold_23 = [
 # Remember "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
 
 if run_config is None:
-    run_config = dqn_14_full_long_term_interruptions
+    run_config = ppo_scaffold_23
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]
