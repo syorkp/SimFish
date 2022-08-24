@@ -17,10 +17,10 @@
 17) Metric-PCI: 0.175, Variable-prey_num: 50.0
 18) Metric-PCI: 0.19999999999999998, Variable-prey_num: 37.5
 19) Metric-PCI: 0.22499999999999998, Variable-prey_num: 25.0
-20) Metric-PCI: 0.22499999999999998, Variable-prey_cloud_num: 52
-21) Metric-PCI: 0.22499999999999998, Variable-prey_cloud_num: 40
-22) Metric-PCI: 0.22499999999999998, Variable-prey_cloud_num: 28
-23) Metric-PCI: 0.22499999999999998, Variable-prey_cloud_num: 16
+20) Metric-PCI: 0.22499999999999998, Variable-prey_cloud_num: 13
+21) Metric-PCI: 0.22499999999999998, Variable-prey_cloud_num: 10
+22) Metric-PCI: 0.22499999999999998, Variable-prey_cloud_num: 7
+23) Metric-PCI: 0.22499999999999998, Variable-prey_cloud_num: 4
 24) Metric-PCI: 0.22499999999999998, Variable-prey_fluid_displacement: True
 25) Metric-PCI: 0.22499999999999998, Variable-prey_jump: True
 26) Metric-PCI: 0.22499999999999998, Variable-fish_mouth_size: 7

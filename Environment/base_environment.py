@@ -663,7 +663,7 @@ class BaseEnvironment:
                 self.prey_bodies[-1].position = (
                     np.random.randint(low=cloud[0] - (self.env_variables["birth_rate_region_size"] / 2),
                                       high=cloud[0] + (self.env_variables["birth_rate_region_size"] / 2)),
-                    np.random.randint(low=cloud[1] - (self.env_variables["birth_rate_region_size"] / 2),
+                    np.random.randint(low=cloud[1] - (self.env_variables["birth_rate_regi on_size"] / 2),
                                       high=cloud[1] + (self.env_variables["birth_rate_region_size"] / 2))
                 )
         else:
@@ -1180,7 +1180,12 @@ class BaseEnvironment:
             np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
                               self.env_variables['height'] - (
                                       self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'])))
-        self.sand_grain_shapes[-1].color = (0, 0, 1)
+
+        if "sand_grain_colour" in self.env_variables:
+            self.sand_grain_shapes[-1].color = self.env_variables["sand_grain_colour"]
+        else:
+            self.sand_grain_shapes[-1].color = (0, 0, 1)
+
         self.sand_grain_shapes[-1].collision_type = 4
         self.sand_grain_shapes[-1].filter = pymunk.ShapeFilter(
             mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # prevents collisions with predator
@@ -1196,6 +1201,7 @@ class BaseEnvironment:
             'displacement_scaling_factor']  # Scaled down both for mass effects and to make it possible for the prey to be caught.
 
     def displace_sand_grains(self):
+        penalty = 0
         for i, body in enumerate(self.sand_grain_bodies):
             if self.check_proximity(self.sand_grain_bodies[i].position,
                                     self.env_variables['sand_grain_displacement_distance']):
@@ -1206,6 +1212,10 @@ class BaseEnvironment:
                 #     self.sand_grain_bodies[i].angle -= np.pi / 2
                 self.sand_grain_bodies[i].apply_impulse_at_local_point(
                     (self.get_last_action_magnitude(), 0))
+
+                if "sand_grain_touch_penalty" in self.env_variables:
+                    penalty -= self.env_variables["sand_grain_touch_penalty"]
+        return penalty
 
     def create_vegetation(self):
         size = self.env_variables['vegetation_size']

@@ -54,7 +54,7 @@
     "prey_fluid_displacement": true,
     "prey_jump": true,
     "differential_prey": true,
-    "prey_cloud_num": 16,
+    "prey_cloud_num": 4,
     "predator_mass": 10.0,
     "predator_inertia": 40.0,
     "predator_size": 43.5,

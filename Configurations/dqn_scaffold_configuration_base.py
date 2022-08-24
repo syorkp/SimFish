@@ -79,13 +79,6 @@ env = {
 
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
 
-       'sand_grain_mass': 1.,
-       'sand_grain_inertia': 40.,
-       'sand_grain_size': 4.,
-       'sand_grain_num': 0,
-       'sand_grain_displacement_impulse_scaling_factor': 0.5,
-       'sand_grain_displacement_distance': 20,
-
        'vegetation_size': 100.,
        'vegetation_num': 0,
        'vegetation_effect_distance': 150,
@@ -140,7 +133,7 @@ env = {
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
        'prey_max_turning_angle': 0.04,
-       # This is the turn (pi radians) that happens every step, designed to replicate linear wavy movement.
+        # This is the turn (pi radians) that happens every step, designed to replicate linear wavy movement.
        'prey_fluid_displacement': False,
        'prey_jump': False,
        'differential_prey': True,
@@ -153,6 +146,15 @@ env = {
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 498
        'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
+
+       'sand_grain_mass': 1.,
+       'sand_grain_inertia': 40.,
+       'sand_grain_size': 1.,
+       'sand_grain_num': 0,
+       'sand_grain_displacement_impulse_scaling_factor': 0.5,
+       'sand_grain_displacement_distance': 20,
+       'sand_grain_colour': (1, 0, 1),
+       'sand_grain_touch_penalty': 10,
 
        'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'light_gradient': 200,
@@ -316,7 +318,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_30"
+scaffold_name = "dqn_scaffold_32"
 
 # base_network_layers_updated = copy.copy(base_network_layers)
 # base_network_layers_updated["new_dense"] = ["dense", 300]
@@ -326,18 +328,32 @@ scaffold_name = "dqn_scaffold_30"
 # changes = [["PCI", 0.35, "base_network_layers", base_network_layers_updated,
 #             "connectivity", new_connectivity, "do_to_params"]]
 
-
+# When starting with larger environment:
 params["max_epLength"] = 3000
 env["baseline_decrease"] = 0.00075
 env["prey_num"] = int(env["prey_num"] * 4)
-env["prey_cloud_num"] *= int(env["prey_cloud_num"] * 4)
+env["prey_cloud_num"] = int(env["prey_cloud_num"] * 4)
 env["width"] = 3000
 env["height"] = 3000
+
+# For Sand Grains
+env["sand_grain_num"] = env["prey_num"]
+
 
 changes = []
 
 low_pci = 0.25 / 3
 high_pci = 0.3 / 3
+
+# For sand grain simplifying
+changes += [
+       ["PCI", high_pci, "sand_grain_colour", (1, 0, 0.75)],
+       ["PCI", high_pci, "sand_grain_colour", (1, 0, 0.5)],
+       ["PCI", high_pci, "sand_grain_colour", (1, 0, 0.25)],
+       ["PCI", high_pci, "sand_grain_colour", (1, 0, 0)],
+]
+
+low_pci = 1.0
 
 # 2-10
 changes += [
@@ -355,8 +371,12 @@ changes += [
        ["PCI", low_pci, "bkg_scatter", 0.1],
 ]
 
+
+
 # 11-14
 changes += build_changes_list_gradual("PCI", high_pci, "light_gain", env["light_gain"], 125.7, 4, discrete=False)
+
+
 
 # 2) Exploration 15-18
 # changes += [["PCI", 0.35, "max_epLength", 3000, "baseline_decrease", 0.00075, "prey_num", env["prey_num"]*4,
