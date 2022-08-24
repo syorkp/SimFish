@@ -663,7 +663,7 @@ class BaseEnvironment:
                 self.prey_bodies[-1].position = (
                     np.random.randint(low=cloud[0] - (self.env_variables["birth_rate_region_size"] / 2),
                                       high=cloud[0] + (self.env_variables["birth_rate_region_size"] / 2)),
-                    np.random.randint(low=cloud[1] - (self.env_variables["birth_rate_regi on_size"] / 2),
+                    np.random.randint(low=cloud[1] - (self.env_variables["birth_rate_region_size"] / 2),
                                       high=cloud[1] + (self.env_variables["birth_rate_region_size"] / 2))
                 )
         else:
