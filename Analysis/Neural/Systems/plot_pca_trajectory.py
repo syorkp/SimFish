@@ -18,16 +18,16 @@ def plot_pca_trajectory(activity_data, timepoints_to_label=None):
     pca_components = pca.components_
     plt.scatter(pca_components[0], pca_components[1], c=np.arange(len(pca_components[0])))
     if timepoints_to_label is not None:
-        pca_points_at_timestamps = np.array([pca_components[:, i] for i in range(pca_components.shape[1]) if i in timepoints_to_label])
+        pca_points_at_timestamps = np.array(
+            [pca_components[:, i] for i in range(pca_components.shape[1]) if i in timepoints_to_label])
         plt.scatter(pca_points_at_timestamps[:, 0], pca_points_at_timestamps[:, 1], marker="x", color="r")
     plt.colorbar()
     plt.show()
 
 
 def estimate_gaussian(dataset):
-
-    mu = np.mean(dataset) # moyenne cf mu
-    sigma = np.std(dataset) # écart_type/standard deviation
+    mu = np.mean(dataset)  # moyenne cf mu
+    sigma = np.std(dataset)  # écart_type/standard deviation
     limit = sigma * 10
 
     min_threshold = mu - limit
@@ -70,7 +70,7 @@ def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None,
         len_of_each = [0] + [len(c[0]) for c in activity_data][:-1]
         flattened_timepoints_to_label = []
         for i, c in enumerate(timepoints_to_label):
-            adjustment = np.sum(len_of_each[:i+1])
+            adjustment = np.sum(len_of_each[:i + 1])
             flattened_timepoints_to_label += [p + adjustment for p in timepoints_to_label[i]]
         pca_points_at_timestamps = np.array([pca_components[:, i] for i in range(pca_components.shape[1]) if i in
                                              flattened_timepoints_to_label])
@@ -88,7 +88,6 @@ def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None,
 
     plt.title("PCA Phase Space: " + context_name)
     plt.show()
-
 
     # Trajectory space
     pca_components = pca_components[:, 1:] - pca_components[:, :-1]
@@ -110,7 +109,7 @@ def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None,
         len_of_each = [0] + [len(c[0]) for c in activity_data][:-1]
         flattened_timepoints_to_label = []
         for i, c in enumerate(timepoints_to_label):
-            adjustment = np.sum(len_of_each[:i+1])
+            adjustment = np.sum(len_of_each[:i + 1])
             flattened_timepoints_to_label += [p + adjustment for p in timepoints_to_label[i]]
         pca_points_at_timestamps = np.array([pca_components[:, i] for i in range(pca_components.shape[1]) if i in
                                              flattened_timepoints_to_label])
@@ -136,7 +135,8 @@ def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None,
 
 
 def plot_pca_trajectory_multiple_trials_environmental_position(activity_data, fish_position_data, display_numbers=True,
-                                                               context_name="No Label", self_normalise_activity_data=True):
+                                                               context_name="No Label",
+                                                               self_normalise_activity_data=True):
     flattened_activity_data = np.concatenate((activity_data), axis=1)
     if self_normalise_activity_data:
         flattened_activity_data = normalise_within_neuron_multiple_traces(flattened_activity_data)
@@ -159,7 +159,6 @@ def plot_pca_trajectory_multiple_trials_environmental_position(activity_data, fi
     plt.title(context_name)
     plt.show()
 
-
     split_colours = np.array([])
     for i in range(len(activity_data)):
         split_colours = np.concatenate((split_colours, fish_position_data[i][:, 1].astype(int)))
@@ -172,6 +171,93 @@ def plot_pca_trajectory_multiple_trials_environmental_position(activity_data, fi
     plt.scatter(pca_components[0], pca_components[1], c=split_colours)
     plt.colorbar()
     plt.title(context_name)
+    plt.show()
+
+
+def plot_pca_directly(pca_components, activity_data, timepoints_to_label, n_components, context_name,
+                      exclude_outliers=False, plot_name="No Name", alph=0.05):
+    # Phase space
+    fig, ax = plt.subplots(figsize=(10, 10))
+
+    len_of_each = [0] + [len(c[0]) for c in activity_data][:-1]
+    flattened_timepoints_to_label = []
+    for i, c in enumerate(timepoints_to_label):
+        adjustment = np.sum(len_of_each[:i + 1])
+        flattened_timepoints_to_label += [p + adjustment for p in timepoints_to_label[i]]
+
+    if n_components == 2:
+        plt.scatter(pca_components[0], pca_components[1], alpha=alph)
+        plt.scatter(pca_components[0, flattened_timepoints_to_label], pca_components[1, flattened_timepoints_to_label],
+                    alpha=alph, color="r")
+    elif n_components == 3:
+        ax = fig.add_subplot(projection='3d')
+        ax.scatter(pca_components[0], pca_components[1], pca_components[2], alpha=alph)
+        ax.scatter(pca_components[0, flattened_timepoints_to_label],
+                   pca_components[1, flattened_timepoints_to_label],
+                   pca_components[2, flattened_timepoints_to_label], alpha=alph, color="r")
+    else:
+        print("Unsupported number of components")
+
+    plt.title(f"PCA {plot_name}: " + context_name)
+
+    if exclude_outliers:
+        mu, sigma, min_threshold, max_threshold = estimate_gaussian(pca_components[0])
+        mu, sigma, min_threshold2, max_threshold2 = estimate_gaussian(pca_components[1])
+        plt.xlim(min_threshold, max_threshold)
+        plt.ylim(min_threshold2, max_threshold2)
+    plt.show()
+
+
+def plot_pca_directly_hist(pca_components, activity_data, timepoints_to_label, n_components, context_name,
+                           exclude_outliers=False, plot_name="No Name", alph=0.05, valid_threshold=10):
+    # Phase space
+    fig, ax = plt.subplots(figsize=(10, 10))
+
+    len_of_each = [0] + [len(c[0]) for c in activity_data][:-1]
+    flattened_timepoints_to_label = []
+    for i, c in enumerate(timepoints_to_label):
+        adjustment = np.sum(len_of_each[:i + 1])
+        flattened_timepoints_to_label += [p + adjustment for p in timepoints_to_label[i]]
+
+    if n_components == 2:
+        all_points_hist = np.histogram2d(pca_components[0], pca_components[1], bins=100)
+        # Need to use the bins from all_points for the next histogram!
+        selected_points_hist = np.histogram2d(pca_components[0, flattened_timepoints_to_label],
+                                              pca_components[1, flattened_timepoints_to_label],
+                                              bins=[all_points_hist[1], all_points_hist[2]])[0]
+
+        hist_proportions = selected_points_hist / all_points_hist[0]
+        hist_proportions[np.isnan(hist_proportions)] = 0
+        normal_proportions = all_points_hist[0] / np.max(all_points_hist[0])
+
+        few_present = all_points_hist[0] < valid_threshold
+
+        hist_proportions = np.expand_dims(hist_proportions, 2)
+        normal_proportions = np.expand_dims(normal_proportions, 2)
+        coloured = np.concatenate((hist_proportions, np.zeros(hist_proportions.shape), normal_proportions), axis=2)
+
+        coloured[few_present] = 0
+        plt.imshow(coloured)
+
+        # Can also have conditional to only show areas where there is a high enough density...
+
+
+    elif n_components == 3:
+        ax = fig.add_subplot(projection='3d')
+        ax.scatter(pca_components[0], pca_components[1], pca_components[2], alpha=alph)
+        ax.scatter(pca_components[0, flattened_timepoints_to_label],
+                   pca_components[1, flattened_timepoints_to_label],
+                   pca_components[2, flattened_timepoints_to_label], alpha=alph, color="r")
+    else:
+        print("Unsupported number of components")
+
+    plt.title(f"PCA {plot_name}: " + context_name)
+
+    # if exclude_outliers:
+    #     mu, sigma, min_threshold, max_threshold = estimate_gaussian(pca_components[0])
+    #     mu, sigma, min_threshold2, max_threshold2 = estimate_gaussian(pca_components[1])
+    #     plt.xlim(min_threshold, max_threshold)
+    #     plt.ylim(min_threshold2, max_threshold2)
     plt.show()
 
 
@@ -208,4 +294,3 @@ if __name__ == "__main__":
     # positions = data["fish_position"][3000:]
     # plt.scatter(positions[:, 0], positions[:, 1])
     # plt.show()
-

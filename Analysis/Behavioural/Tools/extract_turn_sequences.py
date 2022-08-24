@@ -15,7 +15,7 @@ def extract_turn_sequences(action_sequences):
         percentage_retained += len(new_sequence)
         num_sequences += len(sequence)
     percentage_retained = percentage_retained/num_sequences
-    print(f"Percentage retained: {percentage_retained*100}")
+    # print(f"Percentage retained: {percentage_retained*100}")
     return new_sequences
 
 

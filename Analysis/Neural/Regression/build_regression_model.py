@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn import linear_model
+from sklearn.feature_selection import f_regression
 import matplotlib.pyplot as plt
 
 from Analysis.load_data import load_data
@@ -65,20 +66,44 @@ def build_full_regressor_set(datas, model_name):
     return labels, label_names
 
 
-def build_regression_model_for_neuron(rnn_data, labels, label_names, cv_prop=0.1):
+def build_regression_model_for_neuron(rnn_data, labels, cv_prop=0.1, ridge=True):
     """Does cross validated scoring."""
-    # TODO: Need to find way of determining whether there is an association
 
+    # Specify model
+    if ridge:
+        regr = linear_model.Ridge(fit_intercept=False)
+    else:
+        regr = linear_model.LinearRegression(fit_intercept=False)
+
+    # Separate Data
     cv_index = int(rnn_data.shape[0] * (1 - cv_prop))
-    # labels = labels.astype(int)
-    regr = linear_model.LinearRegression(fit_intercept=False)
-    regr.fit(labels[:cv_index, :], rnn_data[:cv_index])
+    X = labels[:cv_index, :]
+    Y = rnn_data[:cv_index]
+
+    # Fit model
+    regr.fit(X, Y)
     coefficients = regr.coef_
+
+    # Compute f statistic
+    f_statistic, p_value = f_regression(X, Y)
+    f_statistic[np.isnan(f_statistic)] = 0
 
     score = regr.score(labels[cv_index:], rnn_data[cv_index:])
 
-    return coefficients, score
+    return coefficients, score, f_statistic
 
+
+def get_score_proportions(rnn_data, labels, cv_prop=0.1):
+    cv_index = int(rnn_data.shape[0] * (1 - cv_prop))
+    scores = []
+
+    for i in range(labels.shape[1]):
+        regr = linear_model.LinearRegression(fit_intercept=False)
+        regr.fit(labels[:cv_index, i:i+1], rnn_data[:cv_index])
+        score = regr.score(labels[cv_index:, i:i+1], rnn_data[cv_index:])
+        scores.append(score)
+
+    return scores
 
 def normalise_continuous_regressors(regressors):
     continuous_indices = [12, 13]
@@ -97,6 +122,7 @@ def build_all_regression_models(datas, model_name):
 
     compiled_coefficients = []
     scores = []
+    relative_scores_compiled = []
     for n in range(512):
 
         compiled_rnn_data = datas[0]["rnn_state_actor"][:, 0, 0, n]
@@ -105,10 +131,11 @@ def build_all_regression_models(datas, model_name):
 
         compiled_rnn_data = normalise_within_neuron(compiled_rnn_data)
 
-        coefficient, score = build_regression_model_for_neuron(compiled_rnn_data, labels, label_names)
+        coefficient, score, relative_scores = build_regression_model_for_neuron(compiled_rnn_data, labels)
 
         compiled_coefficients.append(coefficient)
         scores.append(score)
+        relative_scores_compiled.append(relative_scores)
 
     compiled_coefficients = np.array(compiled_coefficients)
     # compiled_coefficients = compiled_coefficients[:20]
@@ -130,7 +157,7 @@ def build_all_regression_models(datas, model_name):
     # plt.tight_layout()
     # plt.show()
 
-    return compiled_coefficients, scores, label_names
+    return compiled_coefficients, scores, relative_scores_compiled, label_names
 
 
 def build_all_regression_models_activity_differential(datas, model_name):
@@ -142,6 +169,7 @@ def build_all_regression_models_activity_differential(datas, model_name):
 
     compiled_coefficients = []
     scores = []
+    relative_scores_compiled = []
     for n in range(512):
 
         compiled_rnn_data = datas[0]["rnn_state_actor"][1:, 0, 0, n] - datas[0]["rnn_state_actor"][:-1, 0, 0, n]
@@ -151,10 +179,11 @@ def build_all_regression_models_activity_differential(datas, model_name):
 
         compiled_rnn_data = normalise_within_neuron(compiled_rnn_data)
 
-        coefficient, score = build_regression_model_for_neuron(compiled_rnn_data, labels, label_names)
+        coefficient, score, relative_scores = build_regression_model_for_neuron(compiled_rnn_data, labels)
 
         compiled_coefficients.append(coefficient)
         scores.append(score)
+        relative_scores_compiled.append(relative_scores)
 
     compiled_coefficients = np.array(compiled_coefficients)
     # compiled_coefficients = compiled_coefficients[:20]
@@ -175,7 +204,7 @@ def build_all_regression_models_activity_differential(datas, model_name):
     # plt.imshow(coeff_and_scores, cmap="seismic")
     # plt.tight_layout()
     # plt.show()
-    return compiled_coefficients, scores, label_names
+    return compiled_coefficients, scores, relative_scores_compiled, label_names
 
 
 if __name__ == "__main__":
@@ -185,5 +214,5 @@ if __name__ == "__main__":
         data = load_data(model_name, "Behavioural-Data-Endless", f"Naturalistic-{i}")
         datas.append(data)
 
-    build_all_regression_models(datas, model_name)
-    build_all_regression_models_activity_differential(datas, model_name)
+    coefficients, scores, label_names, relative_scores = build_all_regression_models(datas, model_name)
+    coefficients2, scores2, label_names2, relative_scores2 = build_all_regression_models_activity_differential(datas, model_name)
