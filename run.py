@@ -10834,6 +10834,44 @@ dqn_14_full_long_term_interruptions = [
 ]
 
 
+ppo_scaffold_23 = [
+    {
+        "Model Name": "ppo_scaffold_23",
+        "Environment Name": "ppo_scaffold_23",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "ppo_scaffold_23",
+        "Environment Name": "ppo_scaffold_23",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+
 # Remember "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
 
 if run_config is None:

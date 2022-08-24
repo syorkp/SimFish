@@ -464,6 +464,7 @@ class TrainingService(BaseService):
         value_summary = tf.Summary(value=[tf.Summary.Value(tag="min value", simple_value=min_value)])
         self.writer.add_summary(value_summary, self.episode_number)
 
+
         if self.full_logs:
             # Save Loss
             mean_critic_loss = np.mean(self.buffer.critic_loss_buffer)
