@@ -10993,6 +10993,51 @@ dqn_scaffold_32_2 = [
 ]
 
 
+dqn_18_cnn_data = [
+    {
+        "Model Name": "dqn_scaffold_18",
+        "Environment Name": "dqn_18_1_endless",
+        "Assay Configuration Name": "Behavioural-Data-CNN",
+        "Trial Number": 1,
+        "Checkpoint": 4200,
+        "Run Mode": "Assay",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "set random seed": False,
+        "New Simulation": True,
+        "Assays": [
+            {
+                "assay id": "Naturalistic-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state", "convolutional layers"],
+                "energy_state_control": False,
+                "salt_control": False,
+                "interventions": None
+            },
+        ],
+        "Full Reafference": True,
+    },
+]
+
 dqn_18_endless_trial_extra = [
     {
         "Model Name": "dqn_scaffold_18",
@@ -11041,7 +11086,7 @@ dqn_18_endless_trial_extra = [
 # Remember "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
 
 if run_config is None:
-    run_config = dqn_18_endless_trial_extra
+    run_config = dqn_18_cnn_data
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]

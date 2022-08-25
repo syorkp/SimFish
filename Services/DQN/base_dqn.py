@@ -477,12 +477,15 @@ class BaseDQN:
         return o, action_reafference, given_reward, internal_state, o1, d, updated_rnn_state
 
     def _assay_step_loop_new_static(self, o, internal_state, a, rnn_state):
-        chosen_a, updated_rnn_state, rnn2_state, sa, sv, o2 = \
+        chosen_a, updated_rnn_state, rnn2_state, sa, sv, o2, conv_layers = \
             self.sess.run(
                 [self.main_QN.predict, self.main_QN.rnn_state, self.main_QN.rnn_state_ref,
                  self.main_QN.streamA,
                  self.main_QN.streamV,
                  [self.main_QN.ref_left_eye, self.main_QN.ref_right_eye],
+                 [self.main_QN.conv1l, self.main_QN.conv2l, self.main_QN.conv3l, self.main_QN.conv4l,
+                  self.main_QN.conv1r, self.main_QN.conv2r, self.main_QN.conv3r, self.main_QN.conv4r,
+                  ]
                  ],
                 feed_dict={self.main_QN.observation: o,
                            self.main_QN.internal_state: internal_state,
@@ -528,6 +531,8 @@ class BaseDQN:
                                                      self.simulation.fish.body.angle,
                                                      self.simulation.fish.salt_health
                                                      )
+        if "convolutional layers" in self.buffer.unit_recordings:
+            self.buffer.save_cnn_data(conv_layers)
 
         return o, action_reafference, given_reward, internal_state, o1, d, updated_rnn_state
 

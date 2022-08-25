@@ -8,7 +8,7 @@ from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.label_behavioural_context import label_behavioural_context_multiple_trials,\
     get_behavioural_context_name_by_index
 from Analysis.Neural.Systems.plot_pca_trajectory import plot_pca_trajectory, plot_pca_trajectory_multiple_trials, \
-    plot_pca_directly, plot_pca_directly_hist, plot_pca_directly_all_behaviours
+    plot_pca_directly, plot_pca_directly_hist, plot_pca_directly_all_behaviours, plot_pca_directly_hist_all_behaviours
 from Analysis.Neural.Regression.label_cell_roles import get_category_indices
 from Analysis.Neural.Tools.normalise_activity import normalise_within_neuron_multiple_traces
 
@@ -150,10 +150,19 @@ def plot_pca_with_all_behavioural_periods_multiple_trials_2(datas, model_name, d
 
 
     behav_indices = [5, 9]  # Only show a few of the conditions, otherwise is overwhelemed by common contexts.
+
+    plot_pca_directly_hist_all_behaviours(pca_components, rnn_data_full, behavioural_labels, n_components=n_components,
+                                     plot_name="Phase Space", selected_behaviours=behav_indices)
+    plot_pca_directly_hist_all_behaviours(pca_components_trajectory, rnn_data_full, behavioural_labels, n_components=n_components,
+                                     plot_name="Phase Space", selected_behaviours=behav_indices, exclude_outliers=True)
+
+
     plot_pca_directly_all_behaviours(pca_components, rnn_data_full, behavioural_labels, n_components=n_components,
                                      plot_name="Phase Space", alph=0.01, selected_behaviours=behav_indices)
     plot_pca_directly_all_behaviours(pca_components_trajectory, rnn_data_full, behavioural_labels, n_components=n_components,
                                      plot_name="Phase Space", alph=0.01, selected_behaviours=behav_indices, exclude_outliers=True)
+
+
 
 if __name__ == "__main__":
     datas = []

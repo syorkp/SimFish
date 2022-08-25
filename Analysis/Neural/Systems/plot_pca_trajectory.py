@@ -212,8 +212,6 @@ def plot_pca_directly_all_behaviours(pca_components, activity_data, behavioural_
                                      selected_behaviours, exclude_outliers=False, plot_name="No Name", alph=0.05):
     # Phase space
     fig, ax = plt.subplots(figsize=(10, 10))
-
-    len_of_each = [0] + [len(c[0]) for c in activity_data][:-1]
     flattened_behavioural_labels = np.concatenate((behavioural_labels), axis=0)
 
     flattened_behavioural_labels = flattened_behavioural_labels[:, selected_behaviours]
@@ -324,6 +322,73 @@ def plot_pca_directly_hist(pca_components, activity_data, timepoints_to_label, n
 
     plt.title(f"PCA {plot_name}: " + context_name)
     plt.show()
+
+
+def plot_pca_directly_hist_all_behaviours(pca_components, activity_data, behavioural_labels, n_components,
+                                     selected_behaviours, exclude_outliers=False, plot_name="No Name", valid_threshold=10):
+
+
+    flattened_behavioural_labels = np.concatenate((behavioural_labels), axis=0)
+    flattened_behavioural_labels = flattened_behavioural_labels[:, selected_behaviours]
+
+    if exclude_outliers:
+        mu, sigma, min_threshold, max_threshold = estimate_gaussian(pca_components[0])
+        mu, sigma, min_threshold2, max_threshold2 = estimate_gaussian(pca_components[1])
+        pca_to_exclude = (pca_components[0, :] < min_threshold) + (pca_components[0, :] > max_threshold) + \
+                         (pca_components[1, :] < min_threshold2) + (pca_components[1, :] > max_threshold2)
+        pca_components = pca_components[:, ~pca_to_exclude]
+        flattened_behavioural_labels = flattened_behavioural_labels[~pca_to_exclude, :]
+
+    # Phase space
+    fig, ax = plt.subplots(figsize=(10, 10))
+
+    colour_groups = [(1, 0, 0), (0, 1, 0)]  # No behaviour appears as blue.
+
+    if n_components == 2:
+        all_points_hist = np.histogram2d(pca_components[0], pca_components[1], bins=100)
+
+        normal_proportions = all_points_hist[0] / np.max(all_points_hist[0])
+        normal_proportions = np.expand_dims(normal_proportions, 2)
+        few_present = all_points_hist[0] < valid_threshold
+
+        additional_dims = np.zeros(all_points_hist[0].shape)
+        additional_dims = np.expand_dims(additional_dims, 2)
+        coloured = np.concatenate((additional_dims, additional_dims, normal_proportions), 2)
+
+        for behaviour in range(flattened_behavioural_labels.shape[1]):
+            behavioural_points = flattened_behavioural_labels[:, behaviour].astype(int)
+            behavioural_points = [i for i, p in enumerate(behavioural_points) if p == 1]
+
+            selected_points_x = pca_components[0, behavioural_points]
+            selected_points_y = pca_components[1, behavioural_points]
+            selected_points_hist = np.histogram2d(selected_points_x,
+                                                  selected_points_y,
+                                                  bins=[all_points_hist[1], all_points_hist[2]])
+            selected_points_hist = selected_points_hist[0]
+
+
+            hist_proportions = selected_points_hist / all_points_hist[0]
+            hist_proportions[np.isnan(hist_proportions)] = 0
+            hist_proportions = np.expand_dims(hist_proportions, 2)
+            hist_proportions = np.repeat(hist_proportions, 3, 2)
+
+            hist_proportions = hist_proportions * colour_groups[behaviour]
+            coloured += hist_proportions
+
+        coloured[few_present] = 0
+        plt.imshow(coloured)
+
+        # Can also have conditional to only show areas where there is a high enough density...
+
+
+    elif n_components == 3:
+        print("Not Implemented")
+    else:
+        print("Unsupported number of components")
+
+    plt.title(f"PCA {plot_name}: ")
+    plt.show()
+
 
 
 if __name__ == "__main__":

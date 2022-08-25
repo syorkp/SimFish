@@ -39,6 +39,8 @@ class DQNAssayBuffer:
         self.salt_health_buffer = []
         self.rnn_layer_names = []
 
+        self.conv_layer_buffer = []
+
     def reset(self):
         self.action_buffer = []
         self.observation_buffer = []
@@ -62,6 +64,8 @@ class DQNAssayBuffer:
             self.fish_angle_buffer = []
             self.salt_health_buffer = []
 
+            self.conv_layer_buffer = []
+
     def add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
@@ -69,6 +73,10 @@ class DQNAssayBuffer:
 
         self.rnn_state_buffer.append(rnn_state)
         self.rnn_state_ref_buffer.append(rnn_state_ref)
+
+    def save_cnn_data(self, cnn_layers):
+        self.conv_layer_buffer.append(cnn_layers)
+
 
     def save_environmental_positions(self, action, fish_position, prey_consumed, predator_present, prey_positions,
                                      predator_position, sand_grain_positions, vegetation_positions, fish_angle,
@@ -109,11 +117,9 @@ class DQNAssayBuffer:
             if np.array(p).shape[0] > max_prey_num:
                 max_prey_num = np.array(p).shape[0]
 
-        print(max_prey_num)
 
         for i, p in enumerate(self.prey_positions_buffer):
             missing_values = max_prey_num - np.array(p).shape[0]
-            print(missing_values)
             if missing_values > 0:
                 new_entries = np.array([[15000, 15000] for i in range(missing_values)])
                 new_prey_buffer.append(np.concatenate((np.array(self.prey_positions_buffer[i]), new_entries), axis=0))
@@ -121,8 +127,16 @@ class DQNAssayBuffer:
                 new_prey_buffer.append(np.array(self.prey_positions_buffer[i]))
 
         new_prey_buffer = np.array(new_prey_buffer)
-        print(new_prey_buffer.shape)
         self.prey_positions_buffer = new_prey_buffer
+
+    def organise_conv_recordings(self):
+        new_conv_layers = [[] for i in range(8)]
+        for timepoint in self.conv_layer_buffer:
+            for i in range(8):
+                new_conv_layers[i].append(timepoint[i][0])
+        for j in range(8):
+            new_conv_layers[j] = np.array(new_conv_layers[j])
+        self.conv_layer_buffer = new_conv_layers
 
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order, salt_location=None):
         hdf5_file = h5py.File(f"{data_save_location}/{assay_configuration_id}.h5", "a")
@@ -137,24 +151,35 @@ class DQNAssayBuffer:
         if "observation" in self.recordings:
             self.create_data_group("observation", np.array(self.observation_buffer), assay_group)
 
-        if "rnn state" in self.unit_recordings:
-            self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer), assay_group)
-
         if self.use_dynamic_network:
             for layer in self.unit_recordings.keys():
                 self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
+        else:
+            if "rnn state" in self.unit_recordings:
+                self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer), assay_group)
 
-        if "internal state" in self.unit_recordings:
-            self.internal_state_buffer = np.array(self.internal_state_buffer)
-            self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
-            # Get internal state names and save each.
-            for i, state in enumerate(internal_state_order):
-                self.create_data_group(state, np.array(self.internal_state_buffer[:, i]), assay_group)
-                if state == "salt":
-                    if salt_location is None:
-                        salt_location = [150000, 150000]
-                    self.create_data_group("salt_location", np.array(salt_location), assay_group)
-                    self.create_data_group("salt_health", np.array(self.salt_health_buffer), assay_group)
+            if "internal state" in self.unit_recordings:
+                self.internal_state_buffer = np.array(self.internal_state_buffer)
+                self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
+                # Get internal state names and save each.
+                for i, state in enumerate(internal_state_order):
+                    self.create_data_group(state, np.array(self.internal_state_buffer[:, i]), assay_group)
+                    if state == "salt":
+                        if salt_location is None:
+                            salt_location = [150000, 150000]
+                        self.create_data_group("salt_location", np.array(salt_location), assay_group)
+                        self.create_data_group("salt_health", np.array(self.salt_health_buffer), assay_group)
+
+            if "convolutional layers" in self.unit_recordings:
+                self.organise_conv_recordings()
+                self.create_data_group("conv1l", np.array(self.conv_layer_buffer[0]), assay_group)
+                self.create_data_group("conv2l", np.array(self.conv_layer_buffer[1]), assay_group)
+                self.create_data_group("conv3l", np.array(self.conv_layer_buffer[2]), assay_group)
+                self.create_data_group("conv4l", np.array(self.conv_layer_buffer[3]), assay_group)
+                self.create_data_group("conv1r", np.array(self.conv_layer_buffer[4]), assay_group)
+                self.create_data_group("conv2r", np.array(self.conv_layer_buffer[5]), assay_group)
+                self.create_data_group("conv3r", np.array(self.conv_layer_buffer[6]), assay_group)
+                self.create_data_group("conv4r", np.array(self.conv_layer_buffer[7]), assay_group)
 
         if "environmental positions" in self.recordings:
             self.create_data_group("action", np.array(self.action_buffer), assay_group)
@@ -174,24 +199,6 @@ class DQNAssayBuffer:
 
             self.create_data_group("sand_grain_positions", np.array(self.sand_grain_position_buffer), assay_group)
             self.create_data_group("vegetation_positions", np.array(self.vegetation_position_buffer), assay_group)
-
-        if "convolutional layers" in self.unit_recordings:
-            self.create_data_group("actor_conv1l", np.array(self.actor_conv1l_buffer), assay_group)
-            self.create_data_group("actor_conv2l", np.array(self.actor_conv2l_buffer), assay_group)
-            self.create_data_group("actor_conv3l", np.array(self.actor_conv3l_buffer), assay_group)
-            self.create_data_group("actor_conv4l", np.array(self.actor_conv4l_buffer), assay_group)
-            self.create_data_group("actor_conv1r", np.array(self.actor_conv1r_buffer), assay_group)
-            self.create_data_group("actor_conv2r", np.array(self.actor_conv2r_buffer), assay_group)
-            self.create_data_group("actor_conv3r", np.array(self.actor_conv3r_buffer), assay_group)
-            self.create_data_group("actor_conv4r", np.array(self.actor_conv4r_buffer), assay_group)
-            self.create_data_group("critic_conv1l", np.array(self.critic_conv1l_buffer), assay_group)
-            self.create_data_group("critic_conv2l", np.array(self.critic_conv2l_buffer), assay_group)
-            self.create_data_group("critic_conv3l", np.array(self.critic_conv3l_buffer), assay_group)
-            self.create_data_group("critic_conv4l", np.array(self.critic_conv4l_buffer), assay_group)
-            self.create_data_group("critic_conv1r", np.array(self.critic_conv1r_buffer), assay_group)
-            self.create_data_group("critic_conv2r", np.array(self.critic_conv2r_buffer), assay_group)
-            self.create_data_group("critic_conv3r", np.array(self.critic_conv3r_buffer), assay_group)
-            self.create_data_group("critic_conv4r", np.array(self.critic_conv4r_buffer), assay_group)
 
         if "reward assessments" in self.recordings:
             self.create_data_group("reward", np.array(self.reward_buffer), assay_group)
