@@ -208,6 +208,39 @@ def plot_pca_directly(pca_components, activity_data, timepoints_to_label, n_comp
     plt.show()
 
 
+def plot_pca_directly_all_behaviours(pca_components, activity_data, behavioural_labels, n_components,
+                                     selected_behaviours, exclude_outliers=False, plot_name="No Name", alph=0.05):
+    # Phase space
+    fig, ax = plt.subplots(figsize=(10, 10))
+
+    len_of_each = [0] + [len(c[0]) for c in activity_data][:-1]
+    flattened_behavioural_labels = np.concatenate((behavioural_labels), axis=0)
+
+    flattened_behavioural_labels = flattened_behavioural_labels[:, selected_behaviours]
+    plt.scatter(pca_components[0], pca_components[1],
+                alpha=alph, color="grey")
+    colours = ["b", "r", "g", "k", "l"]
+    for behaviour in range(flattened_behavioural_labels.shape[1]):
+        current_labels = flattened_behavioural_labels[:, behaviour]
+        timestamps = np.array([i for i, l in enumerate(current_labels) if l == 1])
+        if n_components == 2:
+            plt.scatter(pca_components[0, timestamps], pca_components[1, timestamps],
+                        alpha=alph, color=colours[behaviour])
+        elif n_components == 3:
+            print("Not implemented")
+        else:
+            print("Unsupported number of components")
+
+    plt.title(f"PCA {plot_name}: ")
+
+    if exclude_outliers:
+        mu, sigma, min_threshold, max_threshold = estimate_gaussian(pca_components[0])
+        mu, sigma, min_threshold2, max_threshold2 = estimate_gaussian(pca_components[1])
+        plt.xlim(min_threshold, max_threshold)
+        plt.ylim(min_threshold2, max_threshold2)
+    plt.show()
+
+
 def plot_pca_directly_hist(pca_components, activity_data, timepoints_to_label, n_components, context_name,
                            exclude_outliers=False, plot_name="No Name", alph=0.05, valid_threshold=10):
 

@@ -109,13 +109,19 @@ class DQNAssayBuffer:
             if np.array(p).shape[0] > max_prey_num:
                 max_prey_num = np.array(p).shape[0]
 
+        print(max_prey_num)
+
         for i, p in enumerate(self.prey_positions_buffer):
             missing_values = max_prey_num - np.array(p).shape[0]
+            print(missing_values)
             if missing_values > 0:
                 new_entries = np.array([[15000, 15000] for i in range(missing_values)])
                 new_prey_buffer.append(np.concatenate((np.array(self.prey_positions_buffer[i]), new_entries), axis=0))
+            else:
+                new_prey_buffer.append(np.array(self.prey_positions_buffer[i]))
 
         new_prey_buffer = np.array(new_prey_buffer)
+        print(new_prey_buffer.shape)
         self.prey_positions_buffer = new_prey_buffer
 
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order, salt_location=None):
