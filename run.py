@@ -9977,7 +9977,7 @@ dqn_18_endless_trial = [
                 "salt_control": False,
                 "interventions": None
             },
-                        {
+            {
                 "assay id": "Naturalistic-10",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 10000,
@@ -9997,7 +9997,7 @@ dqn_18_endless_trial = [
                 "salt_control": False,
                 "interventions": None
             },
-                                    {
+            {
                 "assay id": "Naturalistic-8",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 10000,
@@ -10993,10 +10993,55 @@ dqn_scaffold_32_2 = [
 ]
 
 
+dqn_18_endless_trial_extra = [
+    {
+        "Model Name": "dqn_scaffold_18",
+        "Environment Name": "dqn_18_1_endless",
+        "Assay Configuration Name": "Behavioural-Data-Endless",
+        "Trial Number": 1,
+        "Checkpoint": 4200,
+        "Run Mode": "Assay",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 2,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "set random seed": False,
+        "New Simulation": True,
+        "Assays": [
+            {
+                "assay id": "Naturalistic-4",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 10000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "energy_state_control": False,
+                "salt_control": False,
+                "interventions": None
+            },
+        ],
+        "Full Reafference": True,
+    },
+]
+
 # Remember "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
 
 if run_config is None:
-    run_config = dqn_18_endless_trial
+    run_config = dqn_18_endless_trial_extra
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]

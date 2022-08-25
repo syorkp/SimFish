@@ -142,17 +142,21 @@ def plot_pca_with_all_behavioural_periods_multiple_trials_2(datas, model_name, d
                           n_components=n_components, plot_name="Phase Space")
         plot_pca_directly(pca_components, rnn_data_full, behavioural_points, context_name=label_name,
                           n_components=n_components, plot_name="Phase Space")
+        plot_pca_directly_hist(pca_components_trajectory, rnn_data_full, behavioural_points, context_name=label_name,
+                               n_components=n_components, plot_name="Trajectory Space", exclude_outliers=True)
         plot_pca_directly(pca_components_trajectory, rnn_data_full, behavioural_points, context_name=label_name,
                           n_components=n_components, plot_name="Trajectory Space", exclude_outliers=True)
+
 
 if __name__ == "__main__":
     datas = []
     model_name = "dqn_scaffold_18-1"
     # for i in range(1, 2):
     #     data = load_data(model_name, "Behavioural-Data-Free", f"Naturalistic-{i}")
-    for i in range(1, 4):
-        data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-{i}")
-        datas.append(data)
+    for i in range(1, 11):
+        if i != 40:
+            data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-{i}")
+            datas.append(data)
 
     # energy_state_neurons = get_category_indices("dqn_scaffold_18-1", "Behavioural-Data-Endless", "Naturalistic", 3,
     #                                             "Starving", score_threshold=0.2)

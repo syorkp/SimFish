@@ -210,8 +210,7 @@ def plot_pca_directly(pca_components, activity_data, timepoints_to_label, n_comp
 
 def plot_pca_directly_hist(pca_components, activity_data, timepoints_to_label, n_components, context_name,
                            exclude_outliers=False, plot_name="No Name", alph=0.05, valid_threshold=10):
-    # Phase space
-    fig, ax = plt.subplots(figsize=(10, 10))
+
 
     len_of_each = [0] + [len(c[0]) for c in activity_data][:-1]
     flattened_timepoints_to_label = []
@@ -219,12 +218,51 @@ def plot_pca_directly_hist(pca_components, activity_data, timepoints_to_label, n
         adjustment = np.sum(len_of_each[:i + 1])
         flattened_timepoints_to_label += [p + adjustment for p in timepoints_to_label[i]]
 
+    if len(flattened_timepoints_to_label) == 0:
+        return
+
+
+    if exclude_outliers:
+        mu, sigma, min_threshold, max_threshold = estimate_gaussian(pca_components[0])
+        mu, sigma, min_threshold2, max_threshold2 = estimate_gaussian(pca_components[1])
+        pca_to_exclude = (pca_components[0, :] < min_threshold) + (pca_components[0, :] > max_threshold) + \
+                         (pca_components[1, :] < min_threshold2) + (pca_components[1, :] > max_threshold2)
+        pca_components = pca_components[:, ~pca_to_exclude]
+        timepoints_to_exclude = [i for i, b in enumerate(pca_to_exclude) if b]
+
+        actual_excluded_points = [t for t in timepoints_to_exclude if t in flattened_timepoints_to_label]
+        flattened_timepoint_index = 0
+        new_flattened_timepoints_to_label = []
+        current_timepoint = flattened_timepoints_to_label[flattened_timepoint_index]
+        for i, t in enumerate(actual_excluded_points):
+            while current_timepoint < t:
+                new_flattened_timepoints_to_label.append(current_timepoint-(i))
+                flattened_timepoint_index += 1
+                current_timepoint = flattened_timepoints_to_label[flattened_timepoint_index]
+            flattened_timepoint_index += 1
+            current_timepoint = flattened_timepoints_to_label[flattened_timepoint_index]
+
+        # flattened_timepoint_index -= 1
+        # for c in range(flattened_timepoint_index+1, len(flattened_timepoints_to_label)):
+        #     new_flattened_timepoints_to_label.append(flattened_timepoints_to_label[c] - (i+1))
+
+        new_flattened_timepoints_to_label = np.array(new_flattened_timepoints_to_label)
+        # flattened_timepoints_to_label = np.array(flattened_timepoints_to_label)
+        flattened_timepoints_to_label = new_flattened_timepoints_to_label
+
+    # Phase space
+    fig, ax = plt.subplots(figsize=(10, 10))
+
     if n_components == 2:
         all_points_hist = np.histogram2d(pca_components[0], pca_components[1], bins=100)
-        # Need to use the bins from all_points for the next histogram!
+
+        if len(flattened_timepoints_to_label) == 0:
+            return
         selected_points_hist = np.histogram2d(pca_components[0, flattened_timepoints_to_label],
                                               pca_components[1, flattened_timepoints_to_label],
                                               bins=[all_points_hist[1], all_points_hist[2]])[0]
+
+
 
         hist_proportions = selected_points_hist / all_points_hist[0]
         hist_proportions[np.isnan(hist_proportions)] = 0
@@ -252,12 +290,6 @@ def plot_pca_directly_hist(pca_components, activity_data, timepoints_to_label, n
         print("Unsupported number of components")
 
     plt.title(f"PCA {plot_name}: " + context_name)
-
-    # if exclude_outliers:
-    #     mu, sigma, min_threshold, max_threshold = estimate_gaussian(pca_components[0])
-    #     mu, sigma, min_threshold2, max_threshold2 = estimate_gaussian(pca_components[1])
-    #     plt.xlim(min_threshold, max_threshold)
-    #     plt.ylim(min_threshold2, max_threshold2)
     plt.show()
 
 
