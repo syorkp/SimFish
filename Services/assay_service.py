@@ -87,6 +87,7 @@ class AssayService(BaseService):
         self.saver.restore(self.sess, checkpoint_path)
         print("Model loaded")
         for assay in self.assays:
+            print(self.get_internal_state_order())
             if assay["interventions"]:
                 if "visual_interruptions" in assay["interventions"].keys():
                     self.visual_interruptions = assay["interventions"]["visual_interruptions"]

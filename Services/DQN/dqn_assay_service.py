@@ -124,16 +124,19 @@ class DQNAssayService(AssayService, BaseDQN):
             if self.preset_energy_state is not None:
                 if self.preset_energy_state[self.step_number] is not False:
                     self.simulation.fish.energy_level = self.preset_energy_state[self.step_number]
+                    internal_state_order = self.get_internal_state_order()
+                    index = internal_state_order.index("energy_state")
+                    internal_state[0, index] = self.preset_energy_state[self.step_number]
             if self.in_light_interruptions is not None:
                 if self.in_light_interruptions[self.step_number] == 1:
                     internal_state_order = self.get_internal_state_order()
                     index = internal_state_order.index("in_light")
-                    internal_state[index] = 1
+                    internal_state[0, index] = 1
             if self.salt_interruptions is not None:
                 if self.salt_interruptions[self.step_number] == 1:
                     internal_state_order = self.get_internal_state_order()
                     index = internal_state_order.index("salt")
-                    internal_state[index] = 0.0
+                    internal_state[0, index] = 0.0
 
             self.previous_action = a
 
