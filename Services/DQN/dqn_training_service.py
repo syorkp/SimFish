@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from Analysis.Indexing.data_index_service import DataIndexServiceDiscrete
-from Analysis.Behavioural.Both.turn_chain_metric import get_normalised_turn_chain_metric_dqn
+from Analysis.Behavioural.TurnChains.turn_chain_metric import get_normalised_turn_chain_metric_dqn
 
 from Buffers.DQN.experience_buffer import ExperienceBuffer
 from Buffers.DQN.dqn_assay_buffer import DQNAssayBuffer

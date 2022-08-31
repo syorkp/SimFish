@@ -6,9 +6,12 @@ import os
 def load_data(model_name, assay_configuration, assay_id):
     """Loads the data of an individual assay from an assay configuration file."""
     try:
-        file = h5py.File(f"../../../Assay-Output/{model_name}/{assay_configuration}.h5", "r")
+        file = h5py.File(f"../../../../Assay-Output/{model_name}/{assay_configuration}.h5", "r")
     except OSError:
-        file = h5py.File(f"../../Assay-Output/{model_name}/{assay_configuration}.h5", "r")
+        try:
+            file = h5py.File(f"../../../Assay-Output/{model_name}/{assay_configuration}.h5", "r")
+        except OSError:
+            file = h5py.File(f"../../Assay-Output/{model_name}/{assay_configuration}.h5", "r")
 
     g = file.get(assay_id)
     data = {key: np.array(g.get(key)) for key in g.keys()}
