@@ -112,6 +112,84 @@ def build_model(observation_data, activity_data, train_prop=0.9, save_model=True
     return compiled_loss
 
 
+def build_model_multiple_neurons(observation_data, activity_data, train_prop=0.9, save_model=True,
+                                 model_name="test_model"):
+
+    # Test and train split
+    n_units = activity_data.shape[-1]
+    train_index = int(observation_data.shape[0] * train_prop)
+    train_observation_data = observation_data[:train_index]
+    train_activity_data = activity_data[:train_index]
+    test_observation_data = observation_data[train_index:]
+    test_activity_data = activity_data[train_index:]
+    n_repeats = 1
+
+    with tf.Session() as sess:
+        # Creating graph
+        core = MEICore()
+        # core_outputs = [tf.identity(core.output, name="output_"+str(unit)) for unit in range(n_units)]
+        # readout_blocks = tf.split(core.output, axis=0, num_or_size_splits=n_units)
+        readout_blocks = {}
+        for unit in range(n_units):
+            readout_blocks[f"Unit {unit}"] = MEIReadout(core.output, my_scope="MEIReadout_" + str(unit))
+        combined_readout = tf.concat([readout_blocks[block].predicted_neural_activity for block in readout_blocks.keys()],
+                                      axis=1)
+        trainer = Trainer(combined_readout)
+
+        if save_model:
+            saver = tf.train.Saver(max_to_keep=5)
+
+        # Init variables
+        init = tf.global_variables_initializer()
+        trainables = tf.trainable_variables()
+
+        sess.run(init)
+
+        compiled_loss = []
+
+        # Pre-training evaluation
+        pre_compiled_predicted_neural_activity = []
+        for step in range(test_observation_data.shape[0]):
+            predicted_neural_activity = sess.run(combined_readout,
+                            feed_dict={
+                                core.observation: test_observation_data[step:step+1],
+                            })
+            pre_compiled_predicted_neural_activity.append(predicted_neural_activity[0, 0])
+
+        # Training
+        for i in range(n_repeats):
+            for step in range(0, train_observation_data.shape[0], 50):
+                _, loss = sess.run([trainer.train, trainer.total_loss],
+                                feed_dict={
+                                    core.observation: train_observation_data[step:step+50],
+                                    trainer.actual_responses: train_activity_data[step:step+50]
+                                })
+                compiled_loss.append(loss)
+
+        # Cross validation
+        compiled_predicted_neural_activity = []
+        for step in range(test_observation_data.shape[0]):
+            predicted_neural_activity = sess.run(readout.predicted_neural_activity,
+                            feed_dict={
+                                core.observation: test_observation_data[step:step+1],
+                            })
+            compiled_predicted_neural_activity.append(predicted_neural_activity[0, 0])
+
+        if save_model:
+            saver.save(sess, f"MEI-Models/{model_name}/1")
+
+    pre_compiled_predicted_neural_activity = np.array(pre_compiled_predicted_neural_activity)
+    compiled_predicted_neural_activity = np.array(compiled_predicted_neural_activity)
+    pre_prediction_error = (pre_compiled_predicted_neural_activity - test_activity_data) ** 2
+    prediction_error = (compiled_predicted_neural_activity - test_activity_data) ** 2
+
+    print(np.mean(prediction_error))
+    print(np.mean(pre_prediction_error))
+
+    compiled_loss = np.array([c[0][0] for c in compiled_loss])
+    return compiled_loss
+
+
 def shuffle_data(observation_data, activity_data):
     indices = np.arange(observation_data.shape[0])
     np.random.shuffle(indices)
@@ -140,12 +218,6 @@ def produce_mei(model_name):
         model_location = "MEI-Models/" + model_name
         checkpoint = tf.train.get_checkpoint_state(model_location)
         saver.restore(sess, checkpoint.model_checkpoint_path)
-
-
-        # previous_predicted_neural_activity = sess.run(readout.predicted_neural_activity,
-        #                                              feed_dict={
-        #                                                  core.observation: np.expand_dims(image, 0),
-        #                                              })
 
         # Constants
         step_size = 1.5
@@ -181,16 +253,24 @@ def produce_mei(model_name):
         plt.show()
 
 
+def build_unit_observation_pairs(cnn_activity_data, associated_observations):
+    n_repeats = cnn_activity_data.shape[1]
+    associated_observations_repeated = np.repeat(associated_observations, n_repeats, axis=(0))
+    cnn_activity_data_flat = np.reshape(cnn_activity_data, (-1, cnn_activity_data.shape[-1]))
+    return cnn_activity_data_flat, associated_observations_repeated
+
+
 if __name__ == "__main__":
     cnn_activity = get_all_cnn_activity("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10)
     observations = get_all_observations("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10)
     cnn_activity = normalise_cnn_data(cnn_activity)
     observations = observations.astype(float) / 255
 
-    relevant_observations = observations[:, :, :, 0]
-    selected_activity_data = cnn_activity["conv3l"][:, 2, 0]
-    # relevant_observations, selected_activity_data = shuffle_data(relevant_observations, selected_activity_data)
-    # TODO: should actually find way of flattening across the data dimension (22), while repeating the relevant obsevations
+    # relevant_observations = observations[:, :, :, 0]
+    # selected_activity_data = cnn_activity["conv3l"][:, 2, 0]
+    selected_activity_data, relevant_observations = build_unit_observation_pairs(cnn_activity["conv3l"], observations[:, :, :, 0])
+    relevant_observations, selected_activity_data = shuffle_data(relevant_observations, selected_activity_data)
+    loss_data = build_model_multiple_neurons(relevant_observations, selected_activity_data, model_name="extended_test")
     # loss_data = build_model(relevant_observations, selected_activity_data)
     # plt.plot(loss_data)
     # plt.show()

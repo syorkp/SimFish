@@ -10692,7 +10692,7 @@ dqn_14_full_long_term_interruptions = [
     {
         "Model Name": "dqn_scaffold_14",
         "Environment Name": "dqn_14_1",
-        "Assay Configuration Name": "Behavioural-Data-Full-Interruptions3b",
+        "Assay Configuration Name": "Behavioural-Data-Full-Interruptions2b",
         "Trial Number": 1,
         "Checkpoint": None,
         "Run Mode": "Assay",
@@ -10789,7 +10789,7 @@ dqn_14_full_long_term_interruptions = [
     {
         "Model Name": "dqn_scaffold_14",
         "Environment Name": "dqn_14_2",
-        "Assay Configuration Name": "Behavioural-Data-Full-Interruptions3b",
+        "Assay Configuration Name": "Behavioural-Data-Full-Interruptions2b",
         "Trial Number": 2,
         "Checkpoint": None,
         "Run Mode": "Assay",
@@ -11265,5 +11265,5 @@ else:
     run_config = globals()[run_config]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(run_config, parallel_jobs=1)
+manager = TrialManager(run_config, parallel_jobs=3)
 manager.run_priority_loop()

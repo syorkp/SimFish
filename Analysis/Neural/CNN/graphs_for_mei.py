@@ -33,8 +33,8 @@ class MEICore:
 class MEIReadout:
 
     def __init__(self, readout_input, my_scope="MEIReadout"):
-        # TODO: Try their method after simple dense POC
         flattened_readout_input = tf.layers.flatten(readout_input)
+
         self.predicted_neural_activity = tf.layers.dense(flattened_readout_input, 1, activation=tf.nn.elu,
                                                          kernel_initializer=tf.orthogonal_initializer,
                                                          name=my_scope + "_readout_dense", trainable=True)

@@ -119,7 +119,7 @@ class DQNAssayService(AssayService, BaseDQN):
                     o[:, 2, :] = 16
             if self.reafference_interruptions is not None:
                 if self.reafference_interruptions[self.step_number] == 1:
-                    action_reafference = 4
+                    action_reafference = 0
                     # action_reafference = self.previous_action  TODO: Consider best way to do it...
             if self.preset_energy_state is not None:
                 if self.preset_energy_state[self.step_number] is not False:
