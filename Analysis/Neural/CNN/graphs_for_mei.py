@@ -44,7 +44,7 @@ class Trainer:
 
     def __init__(self, predicted_responses, learning_rate=0.01, max_gradient_norm=1.5):
         self.actual_responses = tf.placeholder(shape=[None], dtype=float)
-        self.total_loss = tf.squared_difference(predicted_responses, self.actual_responses)
+        self.total_loss = tf.squared_difference(predicted_responses, self.actual_responses)  # TODO: Think should reduce mean here
 
         self.model_params = tf.trainable_variables()
         self.model_gradients = tf.gradients(self.total_loss, self.model_params)
@@ -53,3 +53,19 @@ class Trainer:
 
         self.trainer = tf.train.AdamOptimizer(learning_rate=learning_rate, epsilon=1e-5)
         self.train = self.trainer.apply_gradients(self.model_gradients)
+
+
+class TrainerExtended:
+
+    def __init__(self, predicted_responses, n_units, learning_rate=0.01, max_gradient_norm=1.5):
+        self.actual_responses = tf.placeholder(shape=[None, n_units], dtype=float)
+        self.total_loss = tf.reduce_mean(tf.squared_difference(predicted_responses, self.actual_responses))
+
+        self.model_params = tf.trainable_variables()
+        self.model_gradients = tf.gradients(self.total_loss, self.model_params)
+        self.model_gradients, _grad_norm = tf.clip_by_global_norm(self.model_gradients, max_gradient_norm)
+        self.model_gradients = list(zip(self.model_gradients, self.model_params))
+
+        self.trainer = tf.train.AdamOptimizer(learning_rate=learning_rate, epsilon=1e-5)
+        self.train = self.trainer.apply_gradients(self.model_gradients)
+
