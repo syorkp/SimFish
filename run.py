@@ -10729,6 +10729,8 @@ dqn_14_full_long_term_interruptions = [
                 "interventions": {"visual_interruptions": long_term_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
                                   "reafference_interruptions": long_term_interruption_profile,
+                                  "salt_interruptions": long_term_interruption_profile,
+                                  "in_light_interruptions": long_term_interruption_profile,
                                   }
             },
             {
@@ -10752,6 +10754,8 @@ dqn_14_full_long_term_interruptions = [
                 "interventions": {"visual_interruptions": long_term_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
                                   "reafference_interruptions": long_term_interruption_profile,
+                                  "salt_interruptions": long_term_interruption_profile,
+                                  "in_light_interruptions": long_term_interruption_profile,
                                   }
             },
             {
@@ -10775,6 +10779,8 @@ dqn_14_full_long_term_interruptions = [
                 "interventions": {"visual_interruptions": long_term_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
                                   "reafference_interruptions": long_term_interruption_profile,
+                                  "salt_interruptions": long_term_interruption_profile,
+                                  "in_light_interruptions": long_term_interruption_profile,
                                   }
             },
         ],
@@ -10783,7 +10789,7 @@ dqn_14_full_long_term_interruptions = [
     {
         "Model Name": "dqn_scaffold_14",
         "Environment Name": "dqn_14_2",
-        "Assay Configuration Name": "Behavioural-Data-Full-Interruptions3",
+        "Assay Configuration Name": "Behavioural-Data-Full-Interruptions3b",
         "Trial Number": 2,
         "Checkpoint": None,
         "Run Mode": "Assay",
@@ -10820,6 +10826,8 @@ dqn_14_full_long_term_interruptions = [
                 "interventions": {"visual_interruptions": long_term_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
                                   "reafference_interruptions": long_term_interruption_profile,
+                                  "salt_interruptions": long_term_interruption_profile,
+                                  "in_light_interruptions": long_term_interruption_profile,
                                   }
             },
             {
@@ -10843,6 +10851,8 @@ dqn_14_full_long_term_interruptions = [
                 "interventions": {"visual_interruptions": long_term_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
                                   "reafference_interruptions": long_term_interruption_profile,
+                                  "salt_interruptions": long_term_interruption_profile,
+                                  "in_light_interruptions": long_term_interruption_profile,
                                   }
             },
             {
@@ -10866,6 +10876,8 @@ dqn_14_full_long_term_interruptions = [
                 "interventions": {"visual_interruptions": long_term_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
                                   "reafference_interruptions": long_term_interruption_profile,
+                                  "salt_interruptions": long_term_interruption_profile,
+                                  "in_light_interruptions": long_term_interruption_profile,
                                   }
             },
         ],

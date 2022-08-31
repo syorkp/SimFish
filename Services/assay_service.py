@@ -74,6 +74,8 @@ class AssayService(BaseService):
         self.visual_interruptions = None
         self.previous_action = None
         self.relocate_fish = None
+        self.salt_interruptions = None
+        self.in_light_interruptions = None
 
     def _run(self):
         self.saver = tf.train.Saver(max_to_keep=5)
@@ -94,6 +96,10 @@ class AssayService(BaseService):
                     self.preset_energy_state = assay["interventions"]["preset_energy_state"]
                 if "relocate_fish" in assay["interventions"].keys():
                     self.relocate_fish = assay["interventions"]["relocate_fish"]
+                if "in_light_interruptions" in assay["interventions"].keys():
+                    self.in_light_interruptions = assay["interventions"]["in_light_interruptions"]
+                if "salt_interruptions" in assay["interventions"].keys():
+                    self.salt_interruptions = assay["interventions"]["salt_interruptions"]
                 if "ablations" in assay["interventions"].keys():
                     self.ablate_units(assay["interventions"]["ablations"])
             if self.environment_params["use_dynamic_network"]:
