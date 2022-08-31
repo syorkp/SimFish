@@ -5,7 +5,7 @@ from matplotlib.lines import Line2D
 
 from Analysis.load_data import load_data
 
-from Analysis.Behavioural.Tools.label_behavioural_context import label_behavioural_context_multiple_trials,\
+from Analysis.Behavioural.Tools.label_behavioural_context import label_behavioural_context_multiple_trials, \
     get_behavioural_context_name_by_index
 from Analysis.Neural.Systems.plot_pca_trajectory import plot_pca_trajectory, plot_pca_trajectory_multiple_trials, \
     plot_pca_directly, plot_pca_directly_hist, plot_pca_directly_all_behaviours, plot_pca_directly_hist_all_behaviours
@@ -102,8 +102,8 @@ def plot_pca_with_all_behavioural_periods_multiple_trials(datas, model_name, dis
 
 
 def plot_pca_with_all_behavioural_periods_multiple_trials_2(datas, model_name, display_timestamps=False,
-                                                          remove_value_stream=False, n_components=2,
-                                                          selected_neurons=None, self_normalise_activity_data=True):
+                                                            remove_value_stream=False, n_components=2,
+                                                            selected_neurons=None, self_normalise_activity_data=True):
     """Second version of previous, with difference being - is more efficient in that computes PCA once only, then plots
     behavioural contexts as colours (to allow distinguishing relative density), rather than crosses.
     """
@@ -148,20 +148,21 @@ def plot_pca_with_all_behavioural_periods_multiple_trials_2(datas, model_name, d
     #     plot_pca_directly(pca_components_trajectory, rnn_data_full, behavioural_points, context_name=label_name,
     #                       n_components=n_components, plot_name="Trajectory Space", exclude_outliers=True)
 
-
-    behav_indices = [5, 9]  # Only show a few of the conditions, otherwise is overwhelemed by common contexts.
+    behav_indices = [1, 4]  # Only show a few of the conditions, otherwise is overwhelemed by common contexts.
 
     plot_pca_directly_hist_all_behaviours(pca_components, rnn_data_full, behavioural_labels, n_components=n_components,
-                                     plot_name="Phase Space", selected_behaviours=behav_indices)
-    plot_pca_directly_hist_all_behaviours(pca_components_trajectory, rnn_data_full, behavioural_labels, n_components=n_components,
-                                     plot_name="Phase Space", selected_behaviours=behav_indices, exclude_outliers=True)
-
+                                          plot_name="Phase Space", selected_behaviours=behav_indices)
+    plot_pca_directly_hist_all_behaviours(pca_components_trajectory, rnn_data_full, behavioural_labels,
+                                          n_components=n_components,
+                                          plot_name="Trajectory Space", selected_behaviours=behav_indices,
+                                          exclude_outliers=True)
 
     plot_pca_directly_all_behaviours(pca_components, rnn_data_full, behavioural_labels, n_components=n_components,
                                      plot_name="Phase Space", alph=0.01, selected_behaviours=behav_indices)
-    plot_pca_directly_all_behaviours(pca_components_trajectory, rnn_data_full, behavioural_labels, n_components=n_components,
-                                     plot_name="Phase Space", alph=0.01, selected_behaviours=behav_indices, exclude_outliers=True)
-
+    plot_pca_directly_all_behaviours(pca_components_trajectory, rnn_data_full, behavioural_labels,
+                                     n_components=n_components,
+                                     plot_name="Trajectory Space", alph=0.01, selected_behaviours=behav_indices,
+                                     exclude_outliers=True)
 
 
 if __name__ == "__main__":
@@ -169,23 +170,20 @@ if __name__ == "__main__":
     model_name = "dqn_scaffold_18-1"
     # for i in range(1, 2):
     #     data = load_data(model_name, "Behavioural-Data-Free", f"Naturalistic-{i}")
+    observations = []
     for i in range(1, 11):
         data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-{i}")
-        datas.append(data)
 
+        datas.append(data)
+        observations.append(data["observation"])
+    observations = np.concatenate((observations), axis=0)
+    means = np.mean(observations, axis=(0, 1, 3))
     # energy_state_neurons = get_category_indices("dqn_scaffold_18-1", "Behavioural-Data-Endless", "Naturalistic", 3,
     #                                             "Starving", score_threshold=0.2)
 
     plot_pca_with_all_behavioural_periods_multiple_trials_2(datas, model_name, display_timestamps=False,
-                                                          remove_value_stream=True, n_components=2)
+                                                            remove_value_stream=True, n_components=2)
     # plot_pca_with_all_behavioural_periods_multiple_trials(datas, model_name, display_timestamps=False,
     #                                                       remove_value_stream=True, n_components=2,
     #                                                       selected_neurons=energy_state_neurons)
     # plot_pca_trajectory_with_contexts_multiple_trials(datas, remove_value_stream=False)
-
-
-
-
-
-
-

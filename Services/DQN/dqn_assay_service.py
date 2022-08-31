@@ -109,9 +109,14 @@ class DQNAssayService(AssayService, BaseDQN):
             # Deal with interventions
             if self.visual_interruptions is not None:
                 if self.visual_interruptions[self.step_number] == 1:
+                    # original
                     o[:, 0, :] = 4
                     o[:, 1, :] = 4
                     o[:, 2, :] = 4
+                    # mean values over all data
+                    o[:, 0, :] = 4
+                    o[:, 1, :] = 11
+                    o[:, 2, :] = 16
             if self.reafference_interruptions is not None:
                 if self.reafference_interruptions[self.step_number] == 1:
                     action_reafference = 4

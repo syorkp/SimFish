@@ -10692,7 +10692,7 @@ dqn_14_full_long_term_interruptions = [
     {
         "Model Name": "dqn_scaffold_14",
         "Environment Name": "dqn_14_1",
-        "Assay Configuration Name": "Behavioural-Data-Full-Interruptions3",
+        "Assay Configuration Name": "Behavioural-Data-Full-Interruptions3b",
         "Trial Number": 1,
         "Checkpoint": None,
         "Run Mode": "Assay",
@@ -10992,7 +10992,6 @@ dqn_scaffold_32_2 = [
     },
 ]
 
-
 dqn_18_cnn_data = [
     {
         "Model Name": "dqn_scaffold_18",
@@ -11248,7 +11247,7 @@ dqn_18_endless_trial_extra = [
 # Remember "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
 
 if run_config is None:
-    run_config = dqn_18_cnn_data
+    run_config = dqn_14_full_long_term_interruptions
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]

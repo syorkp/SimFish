@@ -215,4 +215,5 @@ if __name__ == "__main__":
         datas.append(data)
 
     coefficients, scores, label_names, relative_scores = build_all_regression_models(datas, model_name)
-    coefficients2, scores2, label_names2, relative_scores2 = build_all_regression_models_activity_differential(datas, model_name)
+    coefficients2, scores2, label_names2, relative_scores2 = build_all_regression_models_activity_differential(datas,
+                                                                                                               model_name)

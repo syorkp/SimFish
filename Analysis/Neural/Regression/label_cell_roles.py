@@ -48,7 +48,7 @@ def get_category_indices(model_name, assay_config, assay_id, n, chosen_category,
     # reduced_labels = labels[:15]
     # neuron_categories_1 = categorise_neurons(reduced_coefficients, scores_1, reduced_labels)
 
-    coefficients_2, scores_2, labels = build_all_regression_models_activity_differential(datas, model_name)
+    coefficients_2, scores_2, relative_scores, labels = build_all_regression_models_activity_differential(datas, model_name)
     if ignore_actions:
         coefficients_2 = coefficients_2[:, :15]
         labels = labels[:15]
