@@ -15,10 +15,7 @@ class MEICore:
     def __init__(self, my_scope="MEICore"):
         # Observation (from one eye)
         self.observation = tf.placeholder(shape=[None, 100, 3], dtype=tf.float32, name='obs')
-        # self.reshaped_observation = tf.reshape(self.observation, shape=[-1, input_shape[0], input_shape[1]],
-        #                                        name="reshaped_observation")
 
-        # TODO: get their hyperparameters.
         self.conv1l = tf.layers.conv1d(inputs=self.observation, filters=16, kernel_size=16, strides=4,
                                        padding='valid', activation=tf.nn.elu, name=my_scope + '_conv1l',
                                        use_bias=False)
@@ -35,16 +32,17 @@ class MEIReadout:
     def __init__(self, readout_input, my_scope="MEIReadout"):
         flattened_readout_input = tf.layers.flatten(readout_input)
 
-        self.predicted_neural_activity = tf.layers.dense(flattened_readout_input, 1, activation=tf.nn.elu,
-                                                         kernel_initializer=tf.orthogonal_initializer,
-                                                         name=my_scope + "_readout_dense", trainable=True)
+        self.predicted_neural_activity = tf.add(tf.layers.dense(flattened_readout_input, 1, activation=tf.nn.elu,
+                                                                kernel_initializer=tf.orthogonal_initializer,
+                                                                name=my_scope + "_readout_dense", trainable=True),
+                                                1)
 
 
 class Trainer:
 
     def __init__(self, predicted_responses, learning_rate=0.01, max_gradient_norm=1.5):
         self.actual_responses = tf.placeholder(shape=[None], dtype=float)
-        self.total_loss = tf.squared_difference(predicted_responses, self.actual_responses)  # TODO: Think should reduce mean here
+        self.total_loss = tf.reduce_mean(tf.squared_difference(predicted_responses, self.actual_responses))
 
         self.model_params = tf.trainable_variables()
         self.model_gradients = tf.gradients(self.total_loss, self.model_params)
@@ -59,7 +57,10 @@ class TrainerExtended:
 
     def __init__(self, predicted_responses, n_units, learning_rate=0.01, max_gradient_norm=1.5):
         self.actual_responses = tf.placeholder(shape=[None, n_units], dtype=float)
-        self.total_loss = tf.reduce_mean(tf.squared_difference(predicted_responses, self.actual_responses))
+        # MSE loss
+        # self.total_loss = tf.reduce_mean(tf.squared_difference(predicted_responses, self.actual_responses))
+        # Poisson loss
+        self.total_loss = tf.reduce_mean(predicted_responses-(self.actual_responses * tf.log(predicted_responses + 0.000001)))
 
         self.model_params = tf.trainable_variables()
         self.model_gradients = tf.gradients(self.total_loss, self.model_params)

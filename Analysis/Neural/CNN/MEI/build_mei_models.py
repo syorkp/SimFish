@@ -216,14 +216,15 @@ def fit_hyperparameters_to_models(model_name, assay_config, assay_id, n, layer):
     cnn_activity = normalise_cnn_data(cnn_activity)
     observations = observations.astype(float) / 255
 
+    selected_activity_data, relevant_observations = build_unit_observation_pairs(cnn_activity["conv3l"], observations[:, :, :, 0])
+    relevant_observations, selected_activity_data = shuffle_data(relevant_observations, selected_activity_data)
+
     # Hyperparameters to test
     batch_size_values = [1, 5, 10, 50, 100]
     learning_rate_values = [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05]
     batch_size_values = np.repeat(batch_size_values, 6, 0).astype(int)
     learning_rate_values = np.reshape(np.repeat([learning_rate_values], 5, 0), (-1))
 
-    selected_activity_data, relevant_observations = build_unit_observation_pairs(cnn_activity["conv3l"], observations[:, :, :, 0])
-    relevant_observations, selected_activity_data = shuffle_data(relevant_observations, selected_activity_data)
 
     for lr, bs in zip(learning_rate_values, batch_size_values):
         print(f"LR: {lr}, BS: {bs}")
@@ -250,12 +251,27 @@ def fit_hyperparameters_to_models(model_name, assay_config, assay_id, n, layer):
 
 
 if __name__ == "__main__":
-    # cnn_activity = get_all_cnn_activity("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10)
-    # observations = get_all_observations("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10)
-    # cnn_activity = normalise_cnn_data(cnn_activity)
-    # observations = observations.astype(float) / 255
+    cnn_activity = get_all_cnn_activity("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10)
+    observations = get_all_observations("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10)
+    cnn_activity = normalise_cnn_data(cnn_activity)
+    observations = observations.astype(float) / 255
 
-    fit_hyperparameters_to_models("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10, "conv3l")
+    selected_activity_data_2, relevant_observations = build_unit_observation_pairs(cnn_activity["conv2l"], observations[:, :, :, 0])
+    selected_activity_data_3, _relevant_observations = build_unit_observation_pairs(cnn_activity["conv3l"], observations[:, :, :, 0])
+    selected_activity_data_4, _relevant_observations = build_unit_observation_pairs(cnn_activity["conv4l"], observations[:, :, :, 0])
+
+    selected_activity_data_3 = np.repeat(selected_activity_data_3, 2, 0)
+    selected_activity_data_4 = np.repeat(selected_activity_data_4, 5, 0)
+
+    final_shape = selected_activity_data_2.shape[0]
+
+    selected_activity_data_3 = selected_activity_data_3[:final_shape]
+    selected_activity_data_4 = selected_activity_data_4[:final_shape]
+
+    selected_activity_data = np.concatenate((selected_activity_data_4, selected_activity_data_3, selected_activity_data_2), axis=1)
+    relevant_observations, selected_activity_data = shuffle_data(relevant_observations, selected_activity_data)
+
+    # fit_hyperparameters_to_models("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10, "conv3l")
 
     # relevant_observations = observations[:, :, :, 0]
     # selected_activity_data = cnn_activity["conv3l"][:, :, 0]
@@ -279,3 +295,25 @@ if __name__ == "__main__":
     #                                              )
     #     model_building.start()
     #     model_building.join()
+
+    model_building = multiprocessing.Process(target=build_model_multiple_neurons,
+                                             args=(relevant_observations, selected_activity_data, 0.9, False, "layer_3",
+                                                   10, 74.4, 100)
+                                             )
+    model_building.start()
+    model_building.join()
+
+    model_building = multiprocessing.Process(target=build_model_multiple_neurons,
+                                             args=(relevant_observations, selected_activity_data, 0.9, False, "layer_3",
+                                                   10, 74.4, 100)
+                                             )
+    model_building.start()
+    model_building.join()
+
+    model_building = multiprocessing.Process(target=build_model_multiple_neurons,
+                                             args=(relevant_observations, selected_activity_data, 0.9, False, "layer_3",
+                                                   10, 74.4, 100)
+                                             )
+    model_building.start()
+    model_building.join()
+
