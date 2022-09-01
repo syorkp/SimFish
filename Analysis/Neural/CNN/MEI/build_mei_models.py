@@ -228,21 +228,21 @@ def fit_hyperparameters_to_models(model_name, assay_config, assay_id, n, layer):
     for lr, bs in zip(learning_rate_values, batch_size_values):
         print(f"LR: {lr}, BS: {bs}")
         model_building = multiprocessing.Process(target=build_model_multiple_neurons,
-                                                 args=(relevant_observations, selected_activity_data, 0.9, True, "layer_3",
+                                                 args=(relevant_observations, selected_activity_data, 0.9, False, "layer_3",
                                                        1, lr, bs)
                                                  )
         model_building.start()
         model_building.join()
 
         model_building = multiprocessing.Process(target=build_model_multiple_neurons,
-                                                 args=(relevant_observations, selected_activity_data, 0.9, True, "layer_3",
+                                                 args=(relevant_observations, selected_activity_data, 0.9, False, "layer_3",
                                                        1, lr, bs)
                                                  )
         model_building.start()
         model_building.join()
 
         model_building = multiprocessing.Process(target=build_model_multiple_neurons,
-                                                 args=(relevant_observations, selected_activity_data, 0.9, True, "layer_3",
+                                                 args=(relevant_observations, selected_activity_data, 0.9, False, "layer_3",
                                                        1, lr, bs)
                                                  )
         model_building.start()
