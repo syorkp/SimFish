@@ -297,3 +297,21 @@ def label_exploration_sequences_free_swimming(data, possible_visual_range=100, a
 
     is_exploration = [1 if i in exploration_timestamps else 0 for i in range(len(data["consumed"]))]
     return np.array(is_exploration)
+
+
+def label_exploration_sequences_no_prey_multiple_trials(model_name, assay_config, assay_id, n):
+    compiled_no_prey_exploration = []
+    for trial in range(1, n+1):
+        data = load_data(model_name, assay_config, f"{assay_id}-{trial}")
+        no_prey_exploration = label_exploration_sequences_no_prey(data)
+        compiled_no_prey_exploration.append(no_prey_exploration)
+    return compiled_no_prey_exploration
+
+
+def label_exploration_sequences_free_swimming_multiple_trials(model_name, assay_config, assay_id, n):
+    compiled_free_swimming_exploration = []
+    for trial in range(1, n + 1):
+        data = load_data(model_name, assay_config, f"{assay_id}-{trial}")
+        free_swimming_exploration = label_exploration_sequences_free_swimming(data)
+        compiled_free_swimming_exploration.append(free_swimming_exploration)
+    return compiled_free_swimming_exploration

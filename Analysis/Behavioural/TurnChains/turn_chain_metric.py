@@ -1,7 +1,7 @@
 import numpy as np
 
 from Analysis.Behavioural.Tools.extract_turn_sequences import extract_turn_sequences
-from Analysis.Behavioural.TurnChains.turning_analysis import model_of_action_switching, randomly_switching_fish
+from Analysis.Behavioural.TurnChains.turning_analysis_discrete import model_of_action_switching, randomly_switching_fish
 
 from Analysis.load_data import load_data
 
