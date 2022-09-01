@@ -13,6 +13,7 @@ from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEn
 from Services.base_service import BaseService
 from Tools.make_gif import make_gif
 from Tools.graph_functions import update_target_graph, update_target
+from Analysis.Behavioural.TurnChains.turn_chain_metric import get_normalised_turn_chain_metric_continuous
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -521,6 +522,11 @@ class TrainingService(BaseService):
         self.writer.add_summary(value_summary, self.episode_number)
         value_summary = tf.Summary(value=[tf.Summary.Value(tag="min value", simple_value=min_value)])
         self.writer.add_summary(value_summary, self.episode_number)
+
+        # Turn Chain metric
+        turn_chain_preference = get_normalised_turn_chain_metric_continuous(angles)
+        turn_chain_preference_summary = tf.Summary(value=[tf.Summary.Value(tag="turn chain preference", simple_value=turn_chain_preference)])
+        self.writer.add_summary(turn_chain_preference_summary, self.episode_number)
 
         if self.full_logs:
             # Save Loss

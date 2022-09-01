@@ -1,3 +1,4 @@
+import multiprocessing
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -41,7 +42,7 @@ def normalise_cnn_data(cnn_data):
     return cnn_data
 
 
-def build_model(observation_data, activity_data, train_prop=0.9, save_model=True, model_name="test_model"):
+def build_model(observation_data, activity_data, n_repeats, train_prop=0.9, save_model=True, model_name="test_model"):
 
     # Test and train split
     train_index = int(observation_data.shape[0] * train_prop)
@@ -49,7 +50,6 @@ def build_model(observation_data, activity_data, train_prop=0.9, save_model=True
     train_activity_data = activity_data[:train_index]
     test_observation_data = observation_data[train_index:]
     test_activity_data = activity_data[train_index:]
-    n_repeats = 300
 
 
     with tf.Session() as sess:
@@ -107,13 +107,13 @@ def build_model(observation_data, activity_data, train_prop=0.9, save_model=True
 
     print(f"Pre-Prediction Error: {np.mean(pre_prediction_error)}")
     print(f"Prediction Error: {np.mean(prediction_error)}")
+    print(f"Performance difference: {100*(np.mean(pre_prediction_error)-np.mean(prediction_error))/np.mean(pre_prediction_error)}%")
 
     compiled_loss = np.array([c[0][0] for c in compiled_loss])
-    return compiled_loss
 
 
 def build_model_multiple_neurons(observation_data, activity_data, train_prop=0.9, save_model=True,
-                                 model_name="test_model", n_repeats=100):
+                                 model_name="test_model", n_repeats=100, learning_rate=0.001, batch_size=50):
 
     # Test and train split
     n_units = activity_data.shape[-1]
@@ -133,7 +133,7 @@ def build_model_multiple_neurons(observation_data, activity_data, train_prop=0.9
             readout_blocks[f"Unit {unit}"] = MEIReadout(core.output, my_scope="MEIReadout_" + str(unit))
         combined_readout = tf.concat([readout_blocks[block].predicted_neural_activity for block in readout_blocks.keys()],
                                       axis=1)
-        trainer = TrainerExtended(combined_readout, n_units)
+        trainer = TrainerExtended(combined_readout, n_units, learning_rate=learning_rate)
 
         if save_model:
             saver = tf.train.Saver(max_to_keep=5)
@@ -161,8 +161,8 @@ def build_model_multiple_neurons(observation_data, activity_data, train_prop=0.9
             for step in range(0, train_observation_data.shape[0], 50):
                 _, loss = sess.run([trainer.train, trainer.total_loss],
                                 feed_dict={
-                                    core.observation: train_observation_data[step:step+50],
-                                    trainer.actual_responses: train_activity_data[step:step+50]
+                                    core.observation: train_observation_data[step:step+batch_size],
+                                    trainer.actual_responses: train_activity_data[step:step+batch_size]
                                 })
                 compiled_loss.append(loss)
 
@@ -176,7 +176,7 @@ def build_model_multiple_neurons(observation_data, activity_data, train_prop=0.9
             compiled_predicted_neural_activity.append(predicted_neural_activity[0])
 
         if save_model:
-            saver.save(sess, f"../MEI-Models/{model_name}/1")
+            saver.save(sess, f"MEI-Models/{model_name}/1")
 
     pre_compiled_predicted_neural_activity = np.array(pre_compiled_predicted_neural_activity)
     compiled_predicted_neural_activity = np.array(compiled_predicted_neural_activity)
@@ -185,6 +185,7 @@ def build_model_multiple_neurons(observation_data, activity_data, train_prop=0.9
 
     print(f"Pre-Prediction Error: {np.mean(pre_prediction_error)}")
     print(f"Prediction Error: {np.mean(prediction_error)}")
+    print(f"Performance difference: {100*(np.mean(pre_prediction_error)-np.mean(prediction_error))/np.mean(pre_prediction_error)}%")
 
     plt.plot(compiled_loss)
     plt.show()
@@ -207,16 +208,74 @@ def build_unit_observation_pairs(cnn_activity_data, associated_observations):
     return cnn_activity_data_flat, associated_observations_repeated
 
 
-if __name__ == "__main__":
-    cnn_activity = get_all_cnn_activity("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10)
-    observations = get_all_observations("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10)
+def fit_hyperparameters_to_models(model_name, assay_config, assay_id, n, layer):
+    """Performs grid search on models trained"""
+
+    cnn_activity = get_all_cnn_activity(model_name, assay_config, assay_id, n)
+    observations = get_all_observations(model_name, assay_config, assay_id, n)
     cnn_activity = normalise_cnn_data(cnn_activity)
     observations = observations.astype(float) / 255
 
-    # relevant_observations = observations[:, :, :, 0]
-    # selected_activity_data = cnn_activity["conv3l"][:, 2, 0]
-    selected_activity_data, relevant_observations = build_unit_observation_pairs(cnn_activity["conv1l"], observations[:, :, :, 0])
-    relevant_observations, selected_activity_data = shuffle_data(relevant_observations, selected_activity_data)
-    build_model_multiple_neurons(relevant_observations, selected_activity_data, model_name="layer_1", n_repeats=1)
-    # loss_data = build_model(relevant_observations, selected_activity_data)
+    # Hyperparameters to test
+    batch_size_values = [1, 5, 10, 50, 100]
+    learning_rate_values = [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05]
+    batch_size_values = np.repeat(batch_size_values, 6, 0).astype(int)
+    learning_rate_values = np.reshape(np.repeat([learning_rate_values], 5, 0), (-1))
 
+    selected_activity_data, relevant_observations = build_unit_observation_pairs(cnn_activity["conv3l"], observations[:, :, :, 0])
+    relevant_observations, selected_activity_data = shuffle_data(relevant_observations, selected_activity_data)
+
+    for lr, bs in zip(learning_rate_values, batch_size_values):
+        print(f"LR: {lr}, BS: {bs}")
+        model_building = multiprocessing.Process(target=build_model_multiple_neurons,
+                                                 args=(relevant_observations, selected_activity_data, 0.9, True, "layer_3",
+                                                       1, lr, bs)
+                                                 )
+        model_building.start()
+        model_building.join()
+
+        model_building = multiprocessing.Process(target=build_model_multiple_neurons,
+                                                 args=(relevant_observations, selected_activity_data, 0.9, True, "layer_3",
+                                                       1, lr, bs)
+                                                 )
+        model_building.start()
+        model_building.join()
+
+        model_building = multiprocessing.Process(target=build_model_multiple_neurons,
+                                                 args=(relevant_observations, selected_activity_data, 0.9, True, "layer_3",
+                                                       1, lr, bs)
+                                                 )
+        model_building.start()
+        model_building.join()
+
+
+if __name__ == "__main__":
+    # cnn_activity = get_all_cnn_activity("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10)
+    # observations = get_all_observations("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10)
+    # cnn_activity = normalise_cnn_data(cnn_activity)
+    # observations = observations.astype(float) / 255
+
+    fit_hyperparameters_to_models("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10, "conv3l")
+
+    # relevant_observations = observations[:, :, :, 0]
+    # selected_activity_data = cnn_activity["conv3l"][:, :, 0]
+    # selected_activity_data2 = np.reshape(selected_activity_data, (-1))
+    # relevant_observations2 = np.repeat(relevant_observations, 5, 0)
+    # print("\n")
+    # print("Only one neuron")
+    # model_building = multiprocessing.Process(target=build_model, args=(relevant_observations2, selected_activity_data2, 10))
+    # model_building.start()
+    # model_building.join()
+
+    # repeats_to_test = [1, 5, 10, 100]
+    # selected_activity_data, relevant_observations = build_unit_observation_pairs(cnn_activity["conv3l"], observations[:, :, :, 0])
+    # relevant_observations, selected_activity_data = shuffle_data(relevant_observations, selected_activity_data)
+    # for repeats in repeats_to_test:
+    #     print("\n")
+    #     print(str(repeats) + " Repeat")
+    #     model_building = multiprocessing.Process(target=build_model_multiple_neurons,
+    #                                              args=(relevant_observations, selected_activity_data, 0.9, True, "layer_3",
+    #                                                    repeats)
+    #                                              )
+    #     model_building.start()
+    #     model_building.join()

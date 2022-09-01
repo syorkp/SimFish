@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from Analysis.Indexing.data_index_service import DataIndexServiceDiscrete
-from Analysis.Behavioural.TurnChains.turn_chain_metric import get_normalised_turn_chain_metric_dqn
+from Analysis.Behavioural.TurnChains.turn_chain_metric import get_normalised_turn_chain_metric_discrete
 
 from Buffers.DQN.experience_buffer import ExperienceBuffer
 from Buffers.DQN.dqn_assay_buffer import DQNAssayBuffer
@@ -180,7 +180,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
 
         # Turn chain metric
         turn_chain_summary = tf.Summary(value=[tf.Summary.Value(tag="turn chain preference",
-                                                                simple_value=get_normalised_turn_chain_metric_dqn(all_actions))])
+                                                                simple_value=get_normalised_turn_chain_metric_discrete(all_actions))])
         self.writer.add_summary(turn_chain_summary, self.episode_number)
 
         # Save the parameters to be carried over.
