@@ -136,48 +136,50 @@ def plot_pca_with_all_behavioural_periods_multiple_trials_2(datas, model_name, d
     pca_components_trajectory = pca_components[:, 1:] - pca_components[:, :-1]
     pca_components_trajectory = np.concatenate((pca_components_trajectory[:, 0:1], pca_components_trajectory), axis=1)
 
-    # for behaviour in range(behavioural_labels[0].shape[1]):
-    #     behavioural_points = [[i for i, b in enumerate(be[:, behaviour]) if b == 1] for be in behavioural_labels]
-    #     label_name = get_behavioural_context_name_by_index(behaviour)
-    #     plot_pca_directly_hist(pca_components, rnn_data_full, behavioural_points, context_name=label_name,
-    #                       n_components=n_components, plot_name="Phase Space")
-    #     plot_pca_directly(pca_components, rnn_data_full, behavioural_points, context_name=label_name,
-    #                       n_components=n_components, plot_name="Phase Space")
-    #     plot_pca_directly_hist(pca_components_trajectory, rnn_data_full, behavioural_points, context_name=label_name,
-    #                            n_components=n_components, plot_name="Trajectory Space", exclude_outliers=True)
-    #     plot_pca_directly(pca_components_trajectory, rnn_data_full, behavioural_points, context_name=label_name,
-    #                       n_components=n_components, plot_name="Trajectory Space", exclude_outliers=True)
+    for behaviour in range(behavioural_labels[0].shape[1]):
+        behavioural_points = [[i for i, b in enumerate(be[:, behaviour]) if b == 1] for be in behavioural_labels]
+        label_name = get_behavioural_context_name_by_index(behaviour)
+        plot_pca_directly_hist(pca_components, rnn_data_full, behavioural_points, context_name=label_name,
+                          n_components=n_components, plot_name="Phase Space")
+        plot_pca_directly(pca_components, rnn_data_full, behavioural_points, context_name=label_name,
+                          n_components=n_components, plot_name="Phase Space")
+        plot_pca_directly_hist(pca_components_trajectory, rnn_data_full, behavioural_points, context_name=label_name,
+                               n_components=n_components, plot_name="Trajectory Space", exclude_outliers=True)
+        plot_pca_directly(pca_components_trajectory, rnn_data_full, behavioural_points, context_name=label_name,
+                          n_components=n_components, plot_name="Trajectory Space", exclude_outliers=True)
 
-    behav_indices = [1, 4]  # Only show a few of the conditions, otherwise is overwhelemed by common contexts.
-
-    plot_pca_directly_hist_all_behaviours(pca_components, rnn_data_full, behavioural_labels, n_components=n_components,
-                                          plot_name="Phase Space", selected_behaviours=behav_indices)
-    plot_pca_directly_hist_all_behaviours(pca_components_trajectory, rnn_data_full, behavioural_labels,
-                                          n_components=n_components,
-                                          plot_name="Trajectory Space", selected_behaviours=behav_indices,
-                                          exclude_outliers=True)
-
-    plot_pca_directly_all_behaviours(pca_components, rnn_data_full, behavioural_labels, n_components=n_components,
-                                     plot_name="Phase Space", alph=0.01, selected_behaviours=behav_indices)
-    plot_pca_directly_all_behaviours(pca_components_trajectory, rnn_data_full, behavioural_labels,
-                                     n_components=n_components,
-                                     plot_name="Trajectory Space", alph=0.01, selected_behaviours=behav_indices,
-                                     exclude_outliers=True)
-
+    # behav_indices = [1, 4]  # Only show a few of the conditions, otherwise is overwhelemed by common contexts.
+    #
+    # plot_pca_directly_hist_all_behaviours(pca_components, rnn_data_full, behavioural_labels, n_components=n_components,
+    #                                       plot_name="Phase Space", selected_behaviours=behav_indices)
+    # plot_pca_directly_hist_all_behaviours(pca_components_trajectory, rnn_data_full, behavioural_labels,
+    #                                       n_components=n_components,
+    #                                       plot_name="Trajectory Space", selected_behaviours=behav_indices,
+    #                                       exclude_outliers=True)
+    #
+    # plot_pca_directly_all_behaviours(pca_components, rnn_data_full, behavioural_labels, n_components=n_components,
+    #                                  plot_name="Phase Space", alph=0.01, selected_behaviours=behav_indices)
+    # plot_pca_directly_all_behaviours(pca_components_trajectory, rnn_data_full, behavioural_labels,
+    #                                  n_components=n_components,
+    #                                  plot_name="Trajectory Space", alph=0.01, selected_behaviours=behav_indices,
+    #                                  exclude_outliers=True)
+    #
 
 if __name__ == "__main__":
-    datas = []
-    model_name = "dqn_scaffold_18-1"
     # for i in range(1, 2):
     #     data = load_data(model_name, "Behavioural-Data-Free", f"Naturalistic-{i}")
-    observations = []
+    datas = []
+    model_name = "dqn_scaffold_18-1"
     for i in range(1, 11):
-        data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-{i}")
-
+        data = load_data(model_name, "Behavioural-Data-Endless", f"Naturalistic-{i}")
         datas.append(data)
-        observations.append(data["observation"])
-    observations = np.concatenate((observations), axis=0)
-    means = np.mean(observations, axis=(0, 1, 3))
+
+    datas = []
+    model_name = "dqn_scaffold_14-1"
+    for i in range(2, 4):
+        data = load_data(model_name, "Behavioural-Data-Full-Interruptions3b", f"Naturalistic-{i}")
+        datas.append(data)
+
     # energy_state_neurons = get_category_indices("dqn_scaffold_18-1", "Behavioural-Data-Endless", "Naturalistic", 3,
     #                                             "Starving", score_threshold=0.2)
 

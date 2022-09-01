@@ -10282,7 +10282,7 @@ ppo_21_data_gathering = [
         "New Simulation": True,
         "Assays": [
             {
-                "assay id": "Naturalistic-1",
+                "assay id": "Naturalistic-6",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 10000,
                 "Tethered": False,
@@ -10302,7 +10302,7 @@ ppo_21_data_gathering = [
                 "interventions": None
             },
             {
-                "assay id": "Naturalistic-2",
+                "assay id": "Naturalistic-7",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 10000,
                 "Tethered": False,
@@ -10322,7 +10322,7 @@ ppo_21_data_gathering = [
                 "interventions": None
             },
             {
-                "assay id": "Naturalistic-3",
+                "assay id": "Naturalistic-8",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 10000,
                 "Tethered": False,
@@ -10342,7 +10342,7 @@ ppo_21_data_gathering = [
                 "interventions": None
             },
             {
-                "assay id": "Naturalistic-4",
+                "assay id": "Naturalistic-9",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 10000,
                 "Tethered": False,
@@ -10362,7 +10362,7 @@ ppo_21_data_gathering = [
                 "interventions": None
             },
             {
-                "assay id": "Naturalistic-5",
+                "assay id": "Naturalistic-10",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 10000,
                 "Tethered": False,
@@ -10404,7 +10404,7 @@ ppo_21_data_gathering = [
         "New Simulation": True,
         "Assays": [
             {
-                "assay id": "Naturalistic-1",
+                "assay id": "Naturalistic-6",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 10000,
                 "Tethered": False,
@@ -10416,7 +10416,7 @@ ppo_21_data_gathering = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
@@ -10424,7 +10424,7 @@ ppo_21_data_gathering = [
                 "interventions": None
             },
             {
-                "assay id": "Naturalistic-2",
+                "assay id": "Naturalistic-7",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 10000,
                 "Tethered": False,
@@ -10436,7 +10436,7 @@ ppo_21_data_gathering = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
@@ -10444,7 +10444,7 @@ ppo_21_data_gathering = [
                 "interventions": None
             },
             {
-                "assay id": "Naturalistic-3",
+                "assay id": "Naturalistic-8",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 10000,
                 "Tethered": False,
@@ -10456,7 +10456,7 @@ ppo_21_data_gathering = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
@@ -10464,7 +10464,7 @@ ppo_21_data_gathering = [
                 "interventions": None
             },
             {
-                "assay id": "Naturalistic-4",
+                "assay id": "Naturalistic-9",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 10000,
                 "Tethered": False,
@@ -10476,7 +10476,7 @@ ppo_21_data_gathering = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
@@ -10484,7 +10484,7 @@ ppo_21_data_gathering = [
                 "interventions": None
             },
             {
-                "assay id": "Naturalistic-5",
+                "assay id": "Naturalistic-10",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 10000,
                 "Tethered": False,
@@ -10496,7 +10496,7 @@ ppo_21_data_gathering = [
                 "background": None,
                 "moving": False,
                 "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
@@ -11259,7 +11259,7 @@ dqn_18_endless_trial_extra = [
 # Remember "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
 
 if run_config is None:
-    run_config = dqn_14_full_long_term_interruptions
+    run_config = ppo_21_data_gathering
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]
