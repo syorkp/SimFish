@@ -1,5 +1,4 @@
 import json
-import matplotlib.pyplot as plt
 
 from Analysis.Neural.Visualisation.plot_activity import plot_activity
 
@@ -7,7 +6,6 @@ from Analysis.Neural.Visualisation.plot_activity import plot_activity
 from Analysis.Neural.Visualisation.display_many_neurons import plot_traces
 from Analysis.load_data import load_data
 from Analysis.load_stimuli_data import load_stimulus_data
-from Analysis.Behavioural.Tools.extract_exploration_sequences import extract_exploration_action_sequences_with_positions
 
 
 def display_neurons_with_selectivities(model_name, naturalistic, selectivity=False, action_association=False):

@@ -1,10 +1,9 @@
 import numpy as np
 from sklearn import linear_model
 from sklearn.feature_selection import f_regression
-import matplotlib.pyplot as plt
 
 from Analysis.load_data import load_data
-from Analysis.Behavioural.Tools.label_behavioural_context import label_behavioural_context_multiple_trials,\
+from Analysis.Behavioural.Tools.BehavLabels.label_behavioural_context import label_behavioural_context_multiple_trials,\
     get_behavioural_context_name_by_index
 from Analysis.Behavioural.VisTools.get_action_name import get_action_name
 from Analysis.Neural.Tools.normalise_activity import normalise_within_neuron

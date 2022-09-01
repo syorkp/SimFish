@@ -3,10 +3,6 @@ import numpy as np
 from sklearn.decomposition import PCA
 
 from Analysis.load_data import load_data
-from Analysis.Neural.Tools.remove_inconsequential_neurons import remove_those_with_no_output, \
-    remove_those_with_no_output_advantage_only
-from Analysis.Behavioural.Tools.label_behavioural_context import label_behavioural_context_multiple_trials, \
-    get_behavioural_context_name_by_index
 
 from Analysis.Neural.Tools.normalise_activity import normalise_within_neuron_multiple_traces
 

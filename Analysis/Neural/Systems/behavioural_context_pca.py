@@ -5,11 +5,10 @@ from matplotlib.lines import Line2D
 
 from Analysis.load_data import load_data
 
-from Analysis.Behavioural.Tools.label_behavioural_context import label_behavioural_context_multiple_trials, \
+from Analysis.Behavioural.Tools.BehavLabels.label_behavioural_context import label_behavioural_context_multiple_trials, \
     get_behavioural_context_name_by_index
-from Analysis.Neural.Systems.plot_pca_trajectory import plot_pca_trajectory, plot_pca_trajectory_multiple_trials, \
-    plot_pca_directly, plot_pca_directly_hist, plot_pca_directly_all_behaviours, plot_pca_directly_hist_all_behaviours
-from Analysis.Neural.Regression.label_cell_roles import get_category_indices
+from Analysis.Neural.Systems.plot_pca_trajectory import plot_pca_trajectory_multiple_trials, \
+    plot_pca_directly, plot_pca_directly_hist
 from Analysis.Neural.Tools.normalise_activity import normalise_within_neuron_multiple_traces
 
 

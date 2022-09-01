@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from Analysis.Behavioural.Tools.extract_exploration_sequences import get_exploration_sequences
+from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import get_exploration_sequences
 from Analysis.Behavioural.Tools.filter_sequences import remove_sCS_heavy
 
 

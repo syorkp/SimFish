@@ -1,11 +1,7 @@
-
-import numpy as np
-
 import matplotlib.pyplot as plt
 
 from Analysis.load_data import load_data
-from Analysis.Behavioural.Tools.extract_exploration_sequences import extract_exploration_action_sequences_with_positions
-from Analysis.load_stimuli_data import load_stimulus_data
+from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import extract_exploration_action_sequences_with_positions
 
 
 def display_neurons_with_exploration_timestamps(model_name, assay_config, assay_id, neuron_indexes):

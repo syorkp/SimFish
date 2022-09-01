@@ -3,8 +3,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from Analysis.Behavioural.Tools.extract_capture_sequences import get_capture_sequences_with_energy_state
-from Analysis.Behavioural.Tools.extract_exploration_sequences import get_exploration_sequences_with_energy_state
+from Analysis.Behavioural.Tools.BehavLabels.extract_capture_sequences import get_capture_sequences_with_energy_state
+from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import get_exploration_sequences_with_energy_state
 from Analysis.Behavioural.VisTools.get_action_name import get_action_name
 from Analysis.Behavioural.Discrete.bout_transition_probabilities import visualisation_method_2, \
     compute_transition_probabilities, get_first_order_transition_counts_from_sequences

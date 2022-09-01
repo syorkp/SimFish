@@ -5,8 +5,8 @@ import seaborn as sns
 import numpy as np
 
 from Analysis.load_data import load_data
-from Analysis.Behavioural.Tools.extract_capture_sequences import get_capture_sequences
-from Analysis.Behavioural.Tools.extract_exploration_sequences import get_exploration_sequences
+from Analysis.Behavioural.Tools.BehavLabels.extract_capture_sequences import get_capture_sequences
+from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import get_exploration_sequences
 
 
 def get_first_order_transition_counts(p1, p2, p3, n):

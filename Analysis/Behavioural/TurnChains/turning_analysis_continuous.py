@@ -1,19 +1,12 @@
-import matplotlib.pyplot as plt
-import seaborn as sns
-from scipy.interpolate import UnivariateSpline
 import numpy as np
 
 from Analysis.load_data import load_data
-from Analysis.Behavioural.Tools.extract_exploration_sequences import extract_exploration_action_sequences_with_positions
 from Analysis.Behavioural.Tools.extract_turn_sequences import extract_turn_sequences, extract_purely_turn_sequences
-from Analysis.Behavioural.Tools.extract_exploration_sequences import extract_exploration_action_sequences_with_fish_angles
-from Analysis.Behavioural.Tools.extract_exploration_sequences import get_no_prey_stimuli_sequences, get_exploration_sequences
 from Analysis.Behavioural.TurnChains.turning_analysis_shared import randomly_switching_fish, model_of_action_switching, \
-    cumulative_switching_probability_plot, cumulative_turn_direction_plot_multiple_models, cumulative_turn_direction_plot, \
+    cumulative_turn_direction_plot_multiple_models, cumulative_turn_direction_plot, \
     cumulative_switching_probability_plot_multiple_models
-from Analysis.Behavioural.Tools.label_behavioural_context import label_behavioural_context
-from Analysis.Behavioural.Tools.extract_exploration_sequences import label_exploration_sequences_no_prey, \
-    label_exploration_sequences_free_swimming, label_exploration_sequences_free_swimming_multiple_trials, \
+from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import \
+    label_exploration_sequences_free_swimming_multiple_trials, \
     label_exploration_sequences_no_prey_multiple_trials
 
 
