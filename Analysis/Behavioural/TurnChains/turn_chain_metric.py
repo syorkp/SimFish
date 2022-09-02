@@ -1,6 +1,6 @@
 import numpy as np
 
-from Analysis.Behavioural.Tools.extract_turn_sequences import extract_turn_sequences
+from Analysis.Behavioural.Tools.BehavLabels.extract_turn_sequences import extract_turn_sequences
 from Analysis.Behavioural.TurnChains.turning_analysis_discrete import model_of_action_switching, randomly_switching_fish
 from Analysis.Behavioural.TurnChains.turning_analysis_continuous import convert_continuous_angles_to_turn_directions
 

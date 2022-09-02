@@ -6,7 +6,7 @@ from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 from Analysis.load_data import load_data
 from Analysis.Behavioural.VisTools.get_action_name import get_action_name
 from Analysis.Behavioural.Tools.BehavLabels.extract_capture_sequences import extract_consumption_action_sequences_with_positions
-from Analysis.Behavioural.Tools.extract_escape_sequences import extract_escape_action_sequences_with_positions
+from Analysis.Behavioural.Tools.BehavLabels.extract_escape_sequences import extract_escape_action_sequences_with_positions
 from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import extract_exploration_action_sequences_with_positions
 
 

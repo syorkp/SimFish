@@ -5,7 +5,7 @@ import numpy as np
 
 from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import extract_exploration_action_sequences_with_positions
-from Analysis.Behavioural.Tools.extract_turn_sequences import extract_turn_sequences, extract_purely_turn_sequences
+from Analysis.Behavioural.Tools.BehavLabels.extract_turn_sequences import extract_turn_sequences, extract_purely_turn_sequences
 from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import extract_exploration_action_sequences_with_fish_angles
 from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import get_no_prey_stimuli_sequences, get_exploration_sequences
 from Analysis.Behavioural.TurnChains.turning_analysis_shared import model_of_action_switching, plot_turning_sequences, \

@@ -1,7 +1,7 @@
 import numpy as np
 
 from Analysis.load_data import load_data
-from Analysis.Behavioural.Tools.extract_turn_sequences import extract_turn_sequences, extract_purely_turn_sequences
+from Analysis.Behavioural.Tools.BehavLabels.extract_turn_sequences import extract_turn_sequences, extract_purely_turn_sequences
 from Analysis.Behavioural.TurnChains.turning_analysis_shared import randomly_switching_fish, model_of_action_switching, \
     cumulative_turn_direction_plot_multiple_models, cumulative_turn_direction_plot, \
     cumulative_switching_probability_plot_multiple_models
