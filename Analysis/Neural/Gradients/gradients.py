@@ -24,6 +24,8 @@ from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEn
 def get_most_common_network_inputs(data):
     # TODO: make this work for multiple datas
     mean_observation = np.mean(data["observation"], axis=(0))
+    mean_rnn_state = np.mean(data["rnn_state_actor"], axis=(0))
+    mean_rnn_state = (mean_rnn_state[0], mean_rnn_state[1])
     mean_energy_state = np.mean(data["energy_state"])
     mean_salt_input = np.mean(data["salt"])
 
@@ -33,7 +35,7 @@ def get_most_common_network_inputs(data):
     in_light_bin_counts = Counter(data["in_light"])
     inputted_in_light = in_light_bin_counts.most_common(1)[0][0]
 
-    return mean_observation, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light
+    return mean_observation, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light, mean_rnn_state
 
 
 def get_target_unit(network, target_layer, i):
@@ -97,7 +99,7 @@ def get_num_target_units(params, network, target_layer):
     return num_units
 
 
-def save_all_gradients(model_name, target_layer, dy_dobs, dy_deff, dy_dlight, dy_denergy, dy_dsalt):
+def save_all_gradients(model_name, target_layer, dy_dobs, dy_deff, dy_dlight, dy_denergy, dy_dsalt, dy_drnns):
     if not os.path.exists("./Gradients-Data/"):
         os.makedirs("./Gradients-Data/")
 
@@ -110,14 +112,15 @@ def save_all_gradients(model_name, target_layer, dy_dobs, dy_deff, dy_dlight, dy
         "dY_dLIT": dy_dlight.tolist(),
         "dY_dENR": dy_denergy.tolist(),
         "dY_dSLT": dy_dsalt.tolist(),
+        "dY_dRNN": dy_drnns.tolist()
     }
 
     with open(f"./Gradients-Data/{model_name}/{target_layer}.json", "w") as outfile:
         json.dump(json_format, outfile, indent=4)
 
 
-def compute_gradient_for_input(model_name, observation, energy_state, salt_input, efference, in_light, dqn=True,
-                               full_reafference=True, target_layer="rnn", save_gradients=True):
+def compute_gradient_for_input(model_name, observation, energy_state, salt_input, efference, in_light, rnn_state,
+                               dqn=True, full_reafference=True, target_layer="rnn", save_gradients=True):
     model_location = f"../../../Training-Output/{model_name}"
     params, environment_params, _, _, _ = load_configuration_files(model_name)
 
@@ -142,6 +145,7 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
         unit_gradients_obs = {}
         unit_gradients_efference = {}
         unit_gradients_internal_state = {}
+        unit_gradients_rnn_state = {}
 
         num_target_units = get_num_target_units(params, network, target_layer)
 
@@ -154,11 +158,13 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
                 unit_gradients_obs[f"Unit {i}"] = tf.gradients(particular_unit, network.observation)
                 unit_gradients_internal_state[f"Unit {i}"] = tf.gradients(particular_unit, network.internal_state)
                 unit_gradients_efference[f"Unit {i}"] = tf.gradients(particular_unit, network.prev_actions_one_hot)
+                unit_gradients_rnn_state[f"Unit {i}"] = tf.gradients(particular_unit, network.rnn_state_in)
 
         unit_gradients_obs_vals = [unit_gradients_obs[key][0] for key in unit_gradients_obs.keys()]
         unit_gradients_internal_state_vals = [unit_gradients_internal_state[key][0] for key in
                                               unit_gradients_internal_state.keys()]
         unit_gradients_efference_vals = [unit_gradients_efference[key][0] for key in unit_gradients_efference.keys()]
+        unit_gradients_rnn_state_vals = [unit_gradients_rnn_state[key][0] for key in unit_gradients_rnn_state.keys()]
 
         if None in unit_gradients_obs_vals:
             dy_dobs = np.array([])
@@ -169,6 +175,7 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
                                           network.internal_state: [[in_light, energy_state, salt_input]],
                                           network.batch_size: 1,
                                           network.trainLength: 1,
+                                          network.rnn_state_in: rnn_state
                                           }
                                )
 
@@ -181,6 +188,7 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
                                      network.internal_state: [[in_light, energy_state, salt_input]],
                                      network.batch_size: 1,
                                      network.trainLength: 1,
+                                     network.rnn_state_in: rnn_state
                                      }
                           )
         if None in unit_gradients_efference_vals:
@@ -192,13 +200,29 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
                                       network.internal_state: [[in_light, energy_state, salt_input]],
                                       network.batch_size: 1,
                                       network.trainLength: 1,
+                                      network.rnn_state_in: rnn_state
                                       }
                            )
+        if None in unit_gradients_rnn_state_vals:
+            dy_drnns = np.array([])
+        else:
+            dy_drnns = sess.run([unit_gradients_rnn_state[unit] for unit in unit_gradients_rnn_state.keys()],
+                           feed_dict={network.observation: observation,
+                                      network.prev_actions: [efference],
+                                      network.internal_state: [[in_light, energy_state, salt_input]],
+                                      network.batch_size: 1,
+                                      network.trainLength: 1,
+                                      network.rnn_state_in: rnn_state
+                                      }
+                           )
+
+
 
     # Tidy and return all gradients.
     dy_dobs = np.array([v[0] for v in dy_dobs])
     dy_deff = np.array([v[0][0] for v in dy_deff])
     dy_dis = np.array([v[0][0] for v in dy_dis])
+    dy_drnns = np.array([[v[0][0], v[1][0]] for v in dy_drnns])
     try:
         dy_dlight = dy_dis[:, 0]
         dy_denergy = dy_dis[:, 1]
@@ -209,22 +233,24 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
         dy_dsalt = dy_dis
 
     if save_gradients:
-        save_all_gradients(model_name, target_layer, dy_dobs, dy_deff, dy_dlight, dy_denergy, dy_dsalt)
+        save_all_gradients(model_name, target_layer, dy_dobs, dy_deff, dy_dlight, dy_denergy, dy_dsalt, dy_drnns)
 
-    return dy_dobs, dy_deff, dy_dlight, dy_denergy, dy_dsalt
+    return dy_dobs, dy_deff, dy_dlight, dy_denergy, dy_dsalt, dy_drnns
 
 
 if __name__ == "__main__":
     model_name = "dqn_scaffold_14-1"
     data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
-    mean_observation, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light = get_most_common_network_inputs(
+    mean_observation, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light, mean_rnn_state = get_most_common_network_inputs(
         data)
-    dy_dobs, dy_deff, dy_dlight, dy_denergy, dy_dsalt = compute_gradient_for_input(model_name, mean_observation,
+    dy_dobs, dy_deff, dy_dlight, dy_denergy, dy_dsalt, dy_drnn = compute_gradient_for_input(model_name, mean_observation,
                                                                                    mean_energy_state, mean_salt_input,
                                                                                    inputted_action,
                                                                                    inputted_in_light,
+                                                                                   mean_rnn_state,
                                                                                    full_reafference=False,
-                                                                                   target_layer="conv2l")
+                                                                                   target_layer="Advantage",
+                                                                                   )
     # Load full graph
     # Compute tf.gradients for activity of specific neurons with respect to inputs.
     # See how this differs for different behavioural contexts

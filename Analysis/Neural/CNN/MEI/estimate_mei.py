@@ -62,14 +62,14 @@ def produce_mei(model_name):
         plt.show()
 
 
-def produce_meis(model_name, n_units=8):
+def produce_meis(model_name, n_units=8, iterations=1000):
     """Does the same thing for the multiple neurons of a given model"""
 
     # Initial, random image.
     all_images = np.zeros((n_units, 100, 3))
 
     # image = np.random.uniform(size=(100, 3))
-    iterations = 1000
+
 
     with tf.Session() as sess:
         # Creating graph
@@ -106,6 +106,7 @@ def produce_meis(model_name, n_units=8):
                 gradients.append(dy_dx)
                 update = (step_size / (np.mean(np.abs(dy_dx[0])) + eps)) * (step_gain / 255)
                 input_image += update * dy_dx[0][0]
+                input_image[16:] = 0
                 # image = input_image[:, 0:2]
                 input_image = np.clip(input_image, 0, 1)
                 reds.append(red)
@@ -136,6 +137,5 @@ def produce_meis(model_name, n_units=8):
     plt.show()
 
 
-
 if __name__ == "__main__":
-    produce_meis("layer_1", n_units=16)
+    produce_meis("layer_3", n_units=8, iterations=2000)
