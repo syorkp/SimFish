@@ -10924,10 +10924,10 @@ ppo_scaffold_23 = [
     },
 ]
 
-dqn_scaffold_31_1 = [
+dqn_scaffold_33_1 = [
     {
-        "Model Name": "dqn_scaffold_31",
-        "Environment Name": "dqn_scaffold_31",
+        "Model Name": "dqn_scaffold_33",
+        "Environment Name": "dqn_scaffold_33",
         "Trial Number": 1,
         "Run Mode": "Training",
         "Tethered": False,
@@ -10944,10 +10944,10 @@ dqn_scaffold_31_1 = [
     },
 ]
 
-dqn_scaffold_31_2 = [
+dqn_scaffold_33_2 = [
     {
-        "Model Name": "dqn_scaffold_31",
-        "Environment Name": "dqn_scaffold_31",
+        "Model Name": "dqn_scaffold_33",
+        "Environment Name": "dqn_scaffold_33",
         "Trial Number": 2,
         "Run Mode": "Training",
         "Tethered": False,
@@ -10964,10 +10964,10 @@ dqn_scaffold_31_2 = [
     },
 ]
 
-dqn_scaffold_32_1 = [
+dqn_scaffold_34_1 = [
     {
-        "Model Name": "dqn_scaffold_32",
-        "Environment Name": "dqn_scaffold_32",
+        "Model Name": "dqn_scaffold_34",
+        "Environment Name": "dqn_scaffold_34",
         "Trial Number": 1,
         "Run Mode": "Training",
         "Tethered": False,
@@ -10984,10 +10984,10 @@ dqn_scaffold_32_1 = [
     },
 ]
 
-dqn_scaffold_32_2 = [
+dqn_scaffold_34_2 = [
     {
-        "Model Name": "dqn_scaffold_32",
-        "Environment Name": "dqn_scaffold_32",
+        "Model Name": "dqn_scaffold_34",
+        "Environment Name": "dqn_scaffold_34",
         "Trial Number": 2,
         "Run Mode": "Training",
         "Tethered": False,

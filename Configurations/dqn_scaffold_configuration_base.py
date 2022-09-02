@@ -71,6 +71,7 @@ params = {
        'reuse_eyes': False,
 }
 
+
 env = {
        #                            Old Simulation (Parameters ignored in new simulation)
        'num_photoreceptors': 120,  # number of visual 'rays' per eye
@@ -154,7 +155,7 @@ env = {
        'sand_grain_displacement_impulse_scaling_factor': 0.5,
        'sand_grain_displacement_distance': 20,
        'sand_grain_colour': (1, 0, 1),
-       'sand_grain_touch_penalty': 10,
+       'sand_grain_touch_penalty': 2,
 
        'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'light_gradient': 200,
@@ -318,7 +319,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_32"
+scaffold_name = "dqn_scaffold_33"
 
 # base_network_layers_updated = copy.copy(base_network_layers)
 # base_network_layers_updated["new_dense"] = ["dense", 300]
