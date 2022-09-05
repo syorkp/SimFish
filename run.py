@@ -10975,7 +10975,7 @@ dqn_scaffold_34_1 = [
         "Continuous Actions": False,
         "Learning Algorithm": "DQN",
         "Priority": 1,
-        "Using GPU": False,
+        "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": False,
@@ -11211,11 +11211,11 @@ dqn_18_cnn_data = [
     },
 ]
 
-dqn_18_endless_trial_extra = [
+dqn_18_endless_trial_extraTEST = [
     {
         "Model Name": "dqn_scaffold_18",
         "Environment Name": "dqn_18_1_endless",
-        "Assay Configuration Name": "Behavioural-Data-Endless",
+        "Assay Configuration Name": "Behavioural-Data-Test",
         "Trial Number": 1,
         "Checkpoint": 4200,
         "Run Mode": "Assay",
@@ -11234,7 +11234,7 @@ dqn_18_endless_trial_extra = [
             {
                 "assay id": "Naturalistic-4",
                 "stimulus paradigm": "Naturalistic",
-                "duration": 10000,
+                "duration": 1000,
                 "Tethered": False,
                 "save frames": True,
                 "use_mu": True,
@@ -11259,7 +11259,7 @@ dqn_18_endless_trial_extra = [
 # Remember "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
 
 if run_config is None:
-    run_config = dqn_scaffold_34_1
+    run_config = dqn_18_endless_trial_extraTEST
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]

@@ -63,6 +63,38 @@ def display_pdf_and_cdf(bout_id):
         plt.show()
 
 
+def convert_action_to_bout_id(action):
+    if action == 0:
+        return 8
+    elif action == 1 or action == 2:
+        return 7
+    elif action == 3:
+        return 0
+    elif action == 4 or action == 5:
+        return 4
+    elif action == 7 or action == 8:
+        return 5
+    elif action == 9:
+        return 10
+
+
+def get_modal_impulse_and_angle(action):
+    if action == 6:
+        return 0.0, 0.0
+    bout_id = convert_action_to_bout_id(action)
+
+    with h5py.File('../../../Environment/Action_Space/bout_distributions.mat', 'r') as fl:
+        p_angle = np.array(fl['p_angle']).T[bout_id, :]
+        angles = np.array(fl['angles']).T[bout_id, :]
+        p_dist = np.array(fl['p_dist']).T[bout_id, :]
+        dists = np.array(fl['dists']).T[bout_id, :]
+
+        # Get modal of both
+        angle = angles[np.argmax(p_angle)]
+        dist = dists[np.argmax(p_dist)]
+
+        # Convert dist to impulse.
+
 def draw_angle_dist(bout_id):
 
     try:

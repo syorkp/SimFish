@@ -19,6 +19,7 @@ from Analysis.Neural.Gradients.get_average_inputs import get_most_common_network
 
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
+from Environment.Action_Space.draw_angle_dist import
 
 
 def get_target_unit(network, target_layer, i):
@@ -107,6 +108,9 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
                                dqn=True, full_reafference=True, target_layer="rnn", save_gradients=True):
     model_location = f"../../../Training-Output/{model_name}"
     params, environment_params, _, _, _ = load_configuration_files(model_name)
+
+    if full_reafference:
+        efference = [efference, ]
 
     sess = tf.Session()
     with sess as sess:
