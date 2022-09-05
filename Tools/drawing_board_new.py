@@ -725,7 +725,7 @@ class NewDrawingBoard:
         # Get the luminance mask
         L = self.luminance_mask
 
-        if prey_locations.size + predator_locations.size == 0:
+        if prey_locations.size == 0:
             O = self.chosen_math_library.ones((self.width, self.height, 1), dtype=np.float64)
         else:
             O = self.create_obstruction_mask_lines_cupy(self.chosen_math_library.array(fish_position),
