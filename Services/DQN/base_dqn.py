@@ -470,6 +470,7 @@ class BaseDQN:
                                                      vegetation_positions,
                                                      self.simulation.fish.body.angle,
                                                      self.simulation.fish.salt_health,
+                                                     efference_copy=action_reafference
                                                      )
         self.buffer.make_desired_recordings(network_layers)
 
@@ -529,7 +530,8 @@ class BaseDQN:
                                                      sand_grain_positions,
                                                      vegetation_positions,
                                                      self.simulation.fish.body.angle,
-                                                     self.simulation.fish.salt_health
+                                                     self.simulation.fish.salt_health,
+                                                     efference_copy=action_reafference
                                                      )
         if "convolutional layers" in self.buffer.unit_recordings:
             self.buffer.save_cnn_data(conv_layers)

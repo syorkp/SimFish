@@ -19,7 +19,7 @@ from Analysis.Neural.Gradients.get_average_inputs import get_most_common_network
 
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
-from Environment.Action_Space.draw_angle_dist import
+from Environment.Action_Space.draw_angle_dist import get_modal_impulse_and_angle
 
 
 def get_target_unit(network, target_layer, i):
@@ -103,14 +103,17 @@ def save_all_gradients(model_name, target_layer, context_name, dy_dobs, dy_deff,
         json.dump(json_format, outfile, indent=4)
 
 
-def compute_gradient_for_input(model_name, observation, energy_state, salt_input, efference, in_light, rnn_state,
+def compute_gradient_for_input(model_name, observation, energy_state, salt_input, action, in_light, rnn_state,
                                context_name,
                                dqn=True, full_reafference=True, target_layer="rnn", save_gradients=True):
     model_location = f"../../../Training-Output/{model_name}"
     params, environment_params, _, _, _ = load_configuration_files(model_name)
 
     if full_reafference:
-        efference = [efference, ]
+        i, a = get_modal_impulse_and_angle(action)
+        efference = [action, i, a]
+    else:
+        efference = action
 
     sess = tf.Session()
     with sess as sess:
@@ -226,49 +229,49 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
 
 if __name__ == "__main__":
     model_name = "dqn_scaffold_18-1"
-    mean_observation, mean_rnn_state, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light = \
-        get_mean_inputs_for_context("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10, 1)
+    # mean_observation, mean_rnn_state, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light = \
+    #     get_mean_inputs_for_context("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10, 1)
+    #
+    # dy_dobs, dy_deff, dy_dlight, dy_denergy, dy_dsalt, dy_drnn = compute_gradient_for_input(model_name, mean_observation,
+    #                                                                                         mean_energy_state,
+    #                                                                                         mean_salt_input,
+    #                                                                                         inputted_action,
+    #                                                                                         inputted_in_light,
+    #                                                                                         mean_rnn_state,
+    #                                                                                         context_name="Prey Capture",
+    #                                                                                         full_reafference=True,
+    #                                                                                         target_layer="Advantage",
+    #                                                                                         )
 
-    dy_dobs, dy_deff, dy_dlight, dy_denergy, dy_dsalt, dy_drnn = compute_gradient_for_input(model_name, mean_observation,
-                                                                                            mean_energy_state,
-                                                                                            mean_salt_input,
-                                                                                            inputted_action,
-                                                                                            inputted_in_light,
-                                                                                            mean_rnn_state,
-                                                                                            context_name="Prey Capture",
-                                                                                            full_reafference=True,
-                                                                                            target_layer="Advantage",
-                                                                                            )
+    # mean_observation, mean_rnn_state, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light = \
+    #     get_mean_inputs_for_context("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10, 4)
+    #
+    # dy_dobs, dy_deff, dy_dlight, dy_denergy, dy_dsalt, dy_drnn = compute_gradient_for_input(model_name,
+    #                                                                                         mean_observation,
+    #                                                                                         mean_energy_state,
+    #                                                                                         mean_salt_input,
+    #                                                                                         inputted_action,
+    #                                                                                         inputted_in_light,
+    #                                                                                         mean_rnn_state,
+    #                                                                                         context_name="Exploration",
+    #                                                                                         full_reafference=True,
+    #                                                                                         target_layer="Advantage",
+    #                                                                                         )
 
-    mean_observation, mean_rnn_state, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light = \
-        get_mean_inputs_for_context("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10, 4)
-
-    dy_dobs, dy_deff, dy_dlight, dy_denergy, dy_dsalt, dy_drnn = compute_gradient_for_input(model_name,
-                                                                                            mean_observation,
-                                                                                            mean_energy_state,
-                                                                                            mean_salt_input,
-                                                                                            inputted_action,
-                                                                                            inputted_in_light,
-                                                                                            mean_rnn_state,
-                                                                                            context_name="Exploration",
-                                                                                            full_reafference=True,
-                                                                                            target_layer="Advantage",
-                                                                                            )
-
-    mean_observation, mean_rnn_state, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light = \
-        get_mean_inputs_for_context("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10, 5)
-
-    dy_dobs, dy_deff, dy_dlight, dy_denergy, dy_dsalt, dy_drnn = compute_gradient_for_input(model_name,
-                                                                                            mean_observation,
-                                                                                            mean_energy_state,
-                                                                                            mean_salt_input,
-                                                                                            inputted_action,
-                                                                                            inputted_in_light,
-                                                                                            mean_rnn_state,
-                                                                                            context_name="Wall Interaction",
-                                                                                            full_reafference=True,
-                                                                                            target_layer="Advantage",
-                                                                                            )
+    # mean_observation, mean_rnn_state, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light = \
+    #     get_mean_inputs_for_context("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10, 5)
+    #
+    # dy_dobs, dy_deff, dy_dlight, dy_denergy, dy_dsalt, dy_drnn = compute_gradient_for_input(model_name,
+    #                                                                                         mean_observation,
+    #                                                                                         mean_energy_state,
+    #                                                                                         mean_salt_input,
+    #                                                                                         inputted_action,
+    #                                                                                         inputted_in_light,
+    #                                                                                         mean_rnn_state,
+    #                                                                                         context_name="Wall Interaction",
+    #                                                                                         full_reafference=True,
+    #                                                                                         target_layer="Advantage",
+    #                                                                                         )
 
     mean_observation, mean_rnn_state, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light = \
         get_mean_inputs_for_context("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10, 9)

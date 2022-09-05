@@ -93,7 +93,10 @@ def get_modal_impulse_and_angle(action):
         angle = angles[np.argmax(p_angle)]
         dist = dists[np.argmax(p_dist)]
 
-        # Convert dist to impulse.
+        # Convert dist to impulse
+        impulse = (dist * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
+
+    return impulse, angle
 
 def draw_angle_dist(bout_id):
 

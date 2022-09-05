@@ -76,15 +76,12 @@ class DQNAssayBuffer:
         self.rnn_state_buffer.append(rnn_state)
         self.rnn_state_ref_buffer.append(rnn_state_ref)
 
-        self.efference_copy_buffer.append(action)
-
     def save_cnn_data(self, cnn_layers):
         self.conv_layer_buffer.append(cnn_layers)
 
-
     def save_environmental_positions(self, action, fish_position, prey_consumed, predator_present, prey_positions,
                                      predator_position, sand_grain_positions, vegetation_positions, fish_angle,
-                                     salt_health):
+                                     salt_health, efference_copy):
         self.action_buffer.append(action)
         self.fish_position_buffer.append(fish_position)
         self.prey_consumed_buffer.append(prey_consumed)
@@ -95,6 +92,9 @@ class DQNAssayBuffer:
         self.vegetation_position_buffer.append(vegetation_positions)
         self.fish_angle_buffer.append(fish_angle)
         self.salt_health_buffer.append(salt_health)
+
+        self.efference_copy_buffer.append(efference_copy)
+
 
     @staticmethod
     def create_data_group(key, data, assay_group):
