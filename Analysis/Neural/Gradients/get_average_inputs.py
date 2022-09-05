@@ -54,19 +54,20 @@ def get_average_input_during_context(data, labels):
     return mean_observation, mean_rnn_state, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light
 
 
-
-def get_average_input_during_context_multiple_trials(datas, labels):
+def get_average_input_during_context_multiple_trials(datas, labels_compiled):
     """Takes one hot encoded event and returns the average input during this period."""
-    labels = np.array(labels)
+    labels_compiled = np.array(labels_compiled)
 
-    observations
-    rnn_state
-    salt
-    energy_state
-    actions
-    in_light
+    compiled_observations = np.zeros((0, datas[0]["observation"].shape[1], datas[0]["observation"].shape[2],
+                                      datas[0]["observation"].shape[3]))
+    compiled_rnn_state = np.zeros((0, datas[0]["rnn_state_actor"].shape[1], datas[0]["rnn_state_actor"].shape[2],
+                                   datas[0]["rnn_state_actor"].shape[3]))
+    compiled_salt = np.zeros((0))
+    compiled_energy_state = np.zeros((0))
+    compiled_actions = np.zeros((0))
+    compiled_in_light = np.zeros((0))
 
-    for data, label in zip(datas, labels):
+    for data, labels in zip(datas, labels_compiled):
         observations = data["observation"][labels == 1]
         rnn_state = data["rnn_state_actor"][labels == 1]
         salt = data["salt"][labels == 1]
@@ -74,14 +75,29 @@ def get_average_input_during_context_multiple_trials(datas, labels):
         actions = data["action"][labels == 1]
         in_light = data["in_light"][labels == 1]
 
+        compiled_observations = np.concatenate((compiled_observations, observations), axis=0)
+        compiled_rnn_state = np.concatenate((compiled_rnn_state, rnn_state), axis=0)
+        compiled_salt = np.concatenate((compiled_salt, salt), axis=0)
+        compiled_energy_state = np.concatenate((compiled_energy_state, energy_state), axis=0)
+        compiled_actions = np.concatenate((compiled_actions, actions), axis=0)
+        compiled_in_light = np.concatenate((compiled_in_light, in_light), axis=0)
+
     mean_observation, mean_rnn_state, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light = \
-        get_most_common_network_inputs(observations, rnn_state, energy_state, salt, actions, in_light)
+        get_most_common_network_inputs(compiled_observations,
+                                       compiled_rnn_state,
+                                       compiled_energy_state,
+                                       compiled_salt,
+                                       compiled_actions,
+                                       compiled_in_light)
 
     return mean_observation, mean_rnn_state, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light
 
 
 if __name__ == "__main__":
     data = load_data("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic-1")
+    data1 = load_data("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic-2")
     x = get_average_input_during_context(data, [1 for i in range(1000)] + [0 for i in range(1000)])
 
+    x = get_average_input_during_context_multiple_trials([data, data1], [[1 for i in range(1000)] + [0 for i in range(1000)],
+                                                                        [1 for i in range(1000)] + [0 for i in range(1000)]])
 
