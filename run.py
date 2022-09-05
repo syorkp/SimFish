@@ -10975,7 +10975,7 @@ dqn_scaffold_34_1 = [
         "Continuous Actions": False,
         "Learning Algorithm": "DQN",
         "Priority": 1,
-        "Using GPU": True,
+        "Using GPU": False,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": False,

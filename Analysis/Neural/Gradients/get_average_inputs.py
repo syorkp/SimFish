@@ -2,6 +2,7 @@ from collections import Counter
 import numpy as np
 
 from Analysis.load_data import load_data
+from Analysis.Behavioural.Tools.BehavLabels.label_behavioural_context import label_behavioural_context_multiple_trials
 
 
 def get_most_common_network_inputs(observations, rnn_state, energy_state, salt, actions, in_light):
@@ -34,7 +35,7 @@ def get_most_common_network_inputs_from_data(data):
     in_light_bin_counts = Counter(data["in_light"])
     inputted_in_light = in_light_bin_counts.most_common(1)[0][0]
 
-    return mean_observation, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light, mean_rnn_state
+    return mean_observation, mean_rnn_state, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light
 
 
 def get_average_input_during_context(data, labels):
@@ -93,11 +94,20 @@ def get_average_input_during_context_multiple_trials(datas, labels_compiled):
     return mean_observation, mean_rnn_state, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light
 
 
-if __name__ == "__main__":
-    data = load_data("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic-1")
-    data1 = load_data("dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic-2")
-    x = get_average_input_during_context(data, [1 for i in range(1000)] + [0 for i in range(1000)])
+def get_mean_inputs_for_context(model_name, assay_config, assay_id, n, context):
+    datas_compiled = []
 
-    x = get_average_input_during_context_multiple_trials([data, data1], [[1 for i in range(1000)] + [0 for i in range(1000)],
-                                                                        [1 for i in range(1000)] + [0 for i in range(1000)]])
+    for i in range(1, n+1):
+        datas_compiled.append(load_data(model_name, assay_config, f"{assay_id}-{i}"))
+
+    labels = label_behavioural_context_multiple_trials(datas_compiled, model_name)
+
+    labels = [label[:, context] for label in labels]
+
+    return get_average_input_during_context_multiple_trials(datas_compiled, labels)
+
+
+if __name__ == "__main__":
+
+    x = get_mean_inputs_for_context("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10, 1)
 

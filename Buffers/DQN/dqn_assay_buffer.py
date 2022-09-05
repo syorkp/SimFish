@@ -40,6 +40,7 @@ class DQNAssayBuffer:
         self.rnn_layer_names = []
 
         self.conv_layer_buffer = []
+        self.efference_copy_buffer = []
 
     def reset(self):
         self.action_buffer = []
@@ -52,6 +53,7 @@ class DQNAssayBuffer:
         self.rnn_state_ref_buffer = []
 
         self.loss_buffer = []
+        self.efference_copy_buffer = []
 
         if self.assay:
             self.fish_position_buffer = []
@@ -73,6 +75,8 @@ class DQNAssayBuffer:
 
         self.rnn_state_buffer.append(rnn_state)
         self.rnn_state_ref_buffer.append(rnn_state_ref)
+
+        self.efference_copy_buffer.append(action)
 
     def save_cnn_data(self, cnn_layers):
         self.conv_layer_buffer.append(cnn_layers)
@@ -169,6 +173,9 @@ class DQNAssayBuffer:
                             salt_location = [150000, 150000]
                         self.create_data_group("salt_location", np.array(salt_location), assay_group)
                         self.create_data_group("salt_health", np.array(self.salt_health_buffer), assay_group)
+
+                self.efference_copy_buffer = np.array(self.efference_copy_buffer)
+                self.create_data_group("efference_copy", self.efference_copy_buffer, assay_group)
 
             if "convolutional layers" in self.unit_recordings:
                 self.organise_conv_recordings()
