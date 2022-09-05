@@ -11224,7 +11224,7 @@ dqn_18_endless_trial_extraTEST = [
         "Continuous Actions": False,
         "Learning Algorithm": "DQN",
         "Priority": 2,
-        "Using GPU": False,
+        "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
