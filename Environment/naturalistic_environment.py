@@ -36,6 +36,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.relocate_fish = relocate_fish
         self.impulse_against_fish_previous_step = None
 
+
     def reset(self):
         # print(f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
         # print(f"Mean UV: {sum([i[1] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -113,8 +114,8 @@ class NaturalisticEnvironment(BaseEnvironment):
             frame_buffer = []
         if self.env_variables["show_previous_actions"]:
             self.action_buffer.append(action)
-            self.position_buffer.append(np.array(self.fish.body.position))
             self.fish_angle_buffer.append(self.fish.body.angle)
+        self.position_buffer.append(np.array(self.fish.body.position))
 
         if impulse is not None:
             # To calculate calibration curve.

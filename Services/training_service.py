@@ -387,6 +387,7 @@ class TrainingService(BaseService):
                                         simple_value=fraction_in_light_normalised)])
             self.writer.add_summary(salt_summary, self.episode_number)
 
+        # Energy efficiency index - Just the average energy used per step.
         if self.environment_params["energy_state"]:
             energy_used = 0
             for i, e in enumerate(self.simulation.energy_level_log):
@@ -402,6 +403,20 @@ class TrainingService(BaseService):
                 value=[tf.Summary.Value(tag="Energy Efficiency Index",
                                         simple_value=energy_efficiency)])
             self.writer.add_summary(energy_efficiency_summary, self.episode_number)
+
+        # Exploration index
+        fish_positions = self.simulation.position_buffer / 100
+        fish_positions = np.around(fish_positions).astype(int)
+        grid = np.zeros((int(self.environment_params["width"]/100), int(self.environment_params["height"]/100)))
+        for p in fish_positions:
+            grid[p] += 1
+        grid /= fish_positions.shape[0]
+        grid = 1 / grid
+        exploration_quotient = np.sum(grid)
+        exploration_summary = tf.Summary(
+            value=[tf.Summary.Value(tag="Exploration Quotient",
+                                    simple_value=exploration_quotient)])
+        self.writer.add_summary(exploration_summary, self.episode_number)
 
         if self.switched_configuration:
             configuration_summary = tf.Summary(
