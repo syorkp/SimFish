@@ -10,32 +10,17 @@ import os
 import json
 
 import numpy as np
-from collections import Counter
 import tensorflow.compat.v1 as tf
 
 from Analysis.load_data import load_data
 from Analysis.Model.build_network import build_network_dqn
 from Analysis.load_model_config import load_configuration_files
+from Analysis.Neural.Gradients.get_average_inputs import get_most_common_network_inputs_from_data
 
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 
 
-def get_most_common_network_inputs(data):
-    # TODO: make this work for multiple datas
-    mean_observation = np.mean(data["observation"], axis=(0))
-    mean_rnn_state = np.mean(data["rnn_state_actor"], axis=(0))
-    mean_rnn_state = (mean_rnn_state[0], mean_rnn_state[1])
-    mean_energy_state = np.mean(data["energy_state"])
-    mean_salt_input = np.mean(data["salt"])
-
-    action_bin_counts = Counter(data["action"])
-    inputted_action = action_bin_counts.most_common(1)[0][0]
-
-    in_light_bin_counts = Counter(data["in_light"])
-    inputted_in_light = in_light_bin_counts.most_common(1)[0][0]
-
-    return mean_observation, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light, mean_rnn_state
 
 
 def get_target_unit(network, target_layer, i):
@@ -216,8 +201,6 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
                                       }
                            )
 
-
-
     # Tidy and return all gradients.
     dy_dobs = np.array([v[0] for v in dy_dobs])
     dy_deff = np.array([v[0][0] for v in dy_deff])
@@ -241,7 +224,7 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
 if __name__ == "__main__":
     model_name = "dqn_scaffold_14-1"
     data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
-    mean_observation, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light, mean_rnn_state = get_most_common_network_inputs(
+    mean_observation, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light, mean_rnn_state = get_most_common_network_inputs_from_data(
         data)
     dy_dobs, dy_deff, dy_dlight, dy_denergy, dy_dsalt, dy_drnn = compute_gradient_for_input(model_name, mean_observation,
                                                                                    mean_energy_state, mean_salt_input,

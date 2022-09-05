@@ -406,7 +406,7 @@ class TrainingService(BaseService):
             self.writer.add_summary(energy_efficiency_summary, self.episode_number)
 
         # Exploration index
-        fish_positions = self.simulation.position_buffer / 100
+        fish_positions = np.array(self.simulation.position_buffer) / 100
         fish_positions = np.around(fish_positions).astype(int)
         grid = np.zeros((int(self.environment_params["width"]/100), int(self.environment_params["height"]/100)))
         for p in fish_positions:
