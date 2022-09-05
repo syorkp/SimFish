@@ -411,9 +411,10 @@ class TrainingService(BaseService):
         grid = np.zeros((int(self.environment_params["width"]/100), int(self.environment_params["height"]/100)))
         for p in fish_positions:
             grid[p] += 1
-        grid /= fish_positions.shape[0]
-        grid = 1 / grid
-        exploration_quotient = np.sum(grid)
+        vals = grid[(grid > 0)]
+        vals /= fish_positions.shape[0]
+        vals = 1 / vals
+        exploration_quotient = np.sum(vals)
         exploration_summary = tf.Summary(
             value=[tf.Summary.Value(tag="Exploration Quotient",
                                     simple_value=exploration_quotient)])
