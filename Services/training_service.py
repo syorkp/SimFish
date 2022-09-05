@@ -382,10 +382,11 @@ class TrainingService(BaseService):
             steps_in_dark = self.simulation.num_steps - steps_in_light
             steps_in_dark_d = steps_in_dark * dark_discount
             fraction_in_light_normalised = steps_in_light_d/(steps_in_dark_d+steps_in_light_d)
-            salt_summary = tf.Summary(
+            phototaxis_index = (fraction_in_light_normalised-0.5) * 2
+            phototaxis_summary = tf.Summary(
                 value=[tf.Summary.Value(tag="Phototaxis Index",
-                                        simple_value=fraction_in_light_normalised)])
-            self.writer.add_summary(salt_summary, self.episode_number)
+                                        simple_value=phototaxis_index)])
+            self.writer.add_summary(phototaxis_summary, self.episode_number)
 
         # Energy efficiency index - Just the average energy used per step.
         if self.environment_params["energy_state"]:
