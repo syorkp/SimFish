@@ -31,6 +31,7 @@ class BasePPOBuffer:
         self.critic_rnn_state_ref_buffer = []
 
         self.critic_loss_buffer = []
+        self.efference_copy_buffer = []
 
         if assay:
             self.fish_position_buffer = []
@@ -75,6 +76,7 @@ class BasePPOBuffer:
         self.critic_rnn_state_ref_buffer = []
 
         self.critic_loss_buffer = []
+        self.efference_copy_buffer = []
 
         if self.assay:
             self.fish_position_buffer = []
@@ -136,7 +138,7 @@ class BasePPOBuffer:
 
     def save_environmental_positions(self, fish_position, prey_consumed, predator_present, prey_positions,
                                      predator_position, sand_grain_positions, vegetation_positions, fish_angle,
-                                     salt_health):
+                                     salt_health, efference_copy):
         self.fish_position_buffer.append(fish_position)
         self.prey_consumed_buffer.append(prey_consumed)
         self.predator_presence_buffer.append(predator_present)
@@ -146,6 +148,7 @@ class BasePPOBuffer:
         self.vegetation_position_buffer.append(vegetation_positions)
         self.fish_angle_buffer.append(fish_angle)
         self.salt_health_buffer.append(salt_health)
+        self.efference_copy_buffer.append(efference_copy)
 
     def save_conv_states(self, actor_conv1l, actor_conv2l, actor_conv3l, actor_conv4l, actor_conv1r, actor_conv2r,
                          actor_conv3r, actor_conv4r,
@@ -285,6 +288,8 @@ class BasePPOBuffer:
             self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)
             self.create_data_group("sand_grain_positions", np.array(self.sand_grain_position_buffer), assay_group)
             self.create_data_group("vegetation_positions", np.array(self.vegetation_position_buffer), assay_group)
+            self.efference_copy_buffer = np.array(self.efference_copy_buffer)
+            self.create_data_group("efference_copy", self.efference_copy_buffer, assay_group)
 
         if "convolutional layers" in self.unit_recordings:
             self.create_data_group("actor_conv1l", np.array(self.actor_conv1l_buffer), assay_group)

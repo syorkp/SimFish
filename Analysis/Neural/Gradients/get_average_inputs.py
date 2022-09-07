@@ -91,6 +91,8 @@ def get_average_input_during_context_multiple_trials(datas, labels_compiled):
                                        compiled_actions,
                                        compiled_in_light)
 
+    mean_observation = np.around(mean_observation).astype(int)
+
     return mean_observation, mean_rnn_state, mean_energy_state, mean_salt_input, inputted_action, inputted_in_light
 
 

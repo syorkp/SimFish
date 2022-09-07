@@ -174,9 +174,6 @@ class DQNAssayBuffer:
                         self.create_data_group("salt_location", np.array(salt_location), assay_group)
                         self.create_data_group("salt_health", np.array(self.salt_health_buffer), assay_group)
 
-                self.efference_copy_buffer = np.array(self.efference_copy_buffer)
-                self.create_data_group("efference_copy", self.efference_copy_buffer, assay_group)
-
             if "convolutional layers" in self.unit_recordings:
                 self.organise_conv_recordings()
                 self.create_data_group("conv1l", np.array(self.conv_layer_buffer[0]), assay_group)
@@ -206,6 +203,9 @@ class DQNAssayBuffer:
 
             self.create_data_group("sand_grain_positions", np.array(self.sand_grain_position_buffer), assay_group)
             self.create_data_group("vegetation_positions", np.array(self.vegetation_position_buffer), assay_group)
+
+            self.efference_copy_buffer = np.array(self.efference_copy_buffer)
+            self.create_data_group("efference_copy", self.efference_copy_buffer, assay_group)
 
         if "reward assessments" in self.recordings:
             self.create_data_group("reward", np.array(self.reward_buffer), assay_group)
