@@ -111,7 +111,7 @@ def build_model(observation_data, activity_data, n_repeats, train_prop=0.9, save
     compiled_loss = np.array([c[0][0] for c in compiled_loss])
 
 
-def build_model_multiple_neurons(observation_data, activity_data, train_prop=0.9, save_model=True,
+def build_model_multiple_neurons(observation_data, activity_data, train_prop=0.9, save_model=True, trial_name="dqn_ex",
                                  model_name="test_model", n_repeats=100, learning_rate=0.001, batch_size=50):
     # Test and train split
     n_units = activity_data.shape[-1]
@@ -159,10 +159,10 @@ def build_model_multiple_neurons(observation_data, activity_data, train_prop=0.9
             print(f"Repeat: {i}")
             for step in range(0, train_observation_data.shape[0], 50):
                 _, loss, lossl2 = sess.run([trainer.train, trainer.total_loss, trainer.lossL2],
-                                   feed_dict={
-                                       core.observation: train_observation_data[step:step + batch_size],
-                                       trainer.actual_responses: train_activity_data[step:step + batch_size]
-                                   })
+                                           feed_dict={
+                                               core.observation: train_observation_data[step:step + batch_size],
+                                               trainer.actual_responses: train_activity_data[step:step + batch_size]
+                                           })
                 compiled_loss.append(loss)
 
         # Cross validation
@@ -175,7 +175,7 @@ def build_model_multiple_neurons(observation_data, activity_data, train_prop=0.9
             compiled_predicted_neural_activity.append(predicted_neural_activity[0])
 
         if save_model:
-            saver.save(sess, f"MEI-Models/{model_name}/1")
+            saver.save(sess, f"MEI-Models/{trial_name}/{model_name}/1")
 
     pre_compiled_predicted_neural_activity = np.array(pre_compiled_predicted_neural_activity)
     compiled_predicted_neural_activity = np.array(compiled_predicted_neural_activity)
@@ -228,24 +228,27 @@ def fit_hyperparameters_to_models(model_name, assay_config, assay_id, n, layer):
         print(f"LR: {lr}, BS: {bs}")
         model_building = multiprocessing.Process(target=build_model_multiple_neurons,
                                                  args=(
-                                                 relevant_observations, selected_activity_data, 0.9, False, "layer_3",
-                                                 1, lr, bs)
+                                                     relevant_observations, selected_activity_data, 0.9, False,
+                                                     "layer_3",
+                                                     1, lr, bs)
                                                  )
         model_building.start()
         model_building.join()
 
         model_building = multiprocessing.Process(target=build_model_multiple_neurons,
                                                  args=(
-                                                 relevant_observations, selected_activity_data, 0.9, False, "layer_3",
-                                                 1, lr, bs)
+                                                     relevant_observations, selected_activity_data, 0.9, False,
+                                                     "layer_3",
+                                                     1, lr, bs)
                                                  )
         model_building.start()
         model_building.join()
 
         model_building = multiprocessing.Process(target=build_model_multiple_neurons,
                                                  args=(
-                                                 relevant_observations, selected_activity_data, 0.9, False, "layer_3",
-                                                 1, lr, bs)
+                                                     relevant_observations, selected_activity_data, 0.9, False,
+                                                     "layer_3",
+                                                     1, lr, bs)
                                                  )
         model_building.start()
         model_building.join()
@@ -261,7 +264,7 @@ if __name__ == "__main__":
     # selected_activity_data_2, relevant_observations = build_unit_observation_pairs(cnn_activity["conv2l"],
     #                                                                                observations[:, :, :, 0])
     selected_activity_data_3, relevant_observations = build_unit_observation_pairs(cnn_activity["conv1l"],
-                                                                                    observations[:, :, :, 0])
+                                                                                   observations[:, :, :, 0])
     # selected_activity_data_4, _relevant_observations = build_unit_observation_pairs(cnn_activity["conv4l"],
     #                                                                                 observations[:, :, :, 0])
 
@@ -306,32 +309,36 @@ if __name__ == "__main__":
     # Args order: observastions, cnn activity, train proportion, save model, model name, num repeats, learning rate, batch size.
     model_building = multiprocessing.Process(target=build_model_multiple_neurons,
                                              args=(
-                                             relevant_observations, selected_activity_data, 0.9, True, model_name, "layer_1_1",
-                                             10, 0.0005, 100)
+                                                 relevant_observations, selected_activity_data, 0.9, True, model_name,
+                                                 "layer_1_1b",
+                                                 10, 0.0005, 100)
                                              )
     model_building.start()
     model_building.join()
 
     model_building = multiprocessing.Process(target=build_model_multiple_neurons,
                                              args=(
-                                             relevant_observations, selected_activity_data, 0.9, True, model_name, "layer_1_2",
-                                             10, 0.0005, 100)
+                                                 relevant_observations, selected_activity_data, 0.9, True, model_name,
+                                                 "layer_1_2b",
+                                                 10, 0.0005, 100)
                                              )
     model_building.start()
     model_building.join()
 
     model_building = multiprocessing.Process(target=build_model_multiple_neurons,
                                              args=(
-                                             relevant_observations, selected_activity_data, 0.9, True, model_name, "layer_1_3",
-                                             10, 0.0005, 100)
+                                                 relevant_observations, selected_activity_data, 0.9, True, model_name,
+                                                 "layer_1_3b",
+                                                 10, 0.0005, 100)
                                              )
     model_building.start()
     model_building.join()
 
     model_building = multiprocessing.Process(target=build_model_multiple_neurons,
                                              args=(
-                                             relevant_observations, selected_activity_data, 0.9, True, model_name, "layer_1_4",
-                                             10, 0.0005, 100)
+                                                 relevant_observations, selected_activity_data, 0.9, True, model_name,
+                                                 "layer_1_4b",
+                                                 10, 0.0005, 100)
                                              )
     model_building.start()
     model_building.join()

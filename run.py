@@ -11025,7 +11025,7 @@ dqn_18_cnn_data = [
         "New Simulation": True,
         "Assays": [
             {
-                "assay id": "Naturalistic-2",
+                "assay id": "Naturalistic-11",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 3000,
                 "Tethered": False,
@@ -11045,7 +11045,7 @@ dqn_18_cnn_data = [
                 "interventions": None
             },
             {
-                "assay id": "Naturalistic-3",
+                "assay id": "Naturalistic-12",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 3000,
                 "Tethered": False,
@@ -11065,7 +11065,7 @@ dqn_18_cnn_data = [
                 "interventions": None
             },
             {
-                "assay id": "Naturalistic-4",
+                "assay id": "Naturalistic-13",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 3000,
                 "Tethered": False,
@@ -11085,7 +11085,7 @@ dqn_18_cnn_data = [
                 "interventions": None
             },
             {
-                "assay id": "Naturalistic-5",
+                "assay id": "Naturalistic-14",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 3000,
                 "Tethered": False,
@@ -11105,7 +11105,7 @@ dqn_18_cnn_data = [
                 "interventions": None
             },
             {
-                "assay id": "Naturalistic-6",
+                "assay id": "Naturalistic-15",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 3000,
                 "Tethered": False,
@@ -11125,7 +11125,7 @@ dqn_18_cnn_data = [
                 "interventions": None
             },
             {
-                "assay id": "Naturalistic-7",
+                "assay id": "Naturalistic-16",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 3000,
                 "Tethered": False,
@@ -11145,7 +11145,7 @@ dqn_18_cnn_data = [
                 "interventions": None
             },
             {
-                "assay id": "Naturalistic-8",
+                "assay id": "Naturalistic-17",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 3000,
                 "Tethered": False,
@@ -11164,29 +11164,48 @@ dqn_18_cnn_data = [
                 "salt_control": False,
                 "interventions": None
             },
-                        {
-                "assay id": "Naturalistic-9",
-                "stimulus paradigm": "Naturalistic",
-                "duration": 3000,
-                "Tethered": False,
-                "save frames": True,
-                "use_mu": True,
-                "save stimuli": False,
-                "random positions": False,
-                "reset": False,
-                "background": None,
-                "moving": False,
-                "collisions": True,
-                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
-                "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn state", "internal state", "convolutional layers"],
-                "energy_state_control": False,
-                "salt_control": False,
-                "interventions": None
-            },
-
             {
-                "assay id": "Naturalistic-10",
+                "assay id": "Naturalistic-18",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 3000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state", "convolutional layers"],
+                "energy_state_control": False,
+                "salt_control": False,
+                "interventions": None
+            },
+            {
+                "assay id": "Naturalistic-19",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 3000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state", "convolutional layers"],
+                "energy_state_control": False,
+                "salt_control": False,
+                "interventions": None
+            },
+            {
+                "assay id": "Naturalistic-20",
                 "stimulus paradigm": "Naturalistic",
                 "duration": 3000,
                 "Tethered": False,
@@ -11259,7 +11278,7 @@ dqn_18_endless_trial_extraTEST = [
 # Remember "recordings": ["rnn state", "environmental positions", "observation", "internal state", "reward assessments"],
 
 if run_config is None:
-    run_config = dqn_18_endless_trial_extraTEST
+    run_config = dqn_18_cnn_data
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]
