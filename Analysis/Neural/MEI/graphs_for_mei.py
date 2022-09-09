@@ -57,9 +57,9 @@ class TrainerExtended:
     def __init__(self, predicted_responses, n_units, learning_rate=0.01, max_gradient_norm=1.5):
         self.actual_responses = tf.placeholder(shape=[None, n_units], dtype=float)
         # MSE loss
-        # self.total_loss = tf.reduce_mean(tf.squared_difference(predicted_responses, self.actual_responses))
+        self.total_loss = tf.reduce_mean(tf.squared_difference(predicted_responses, self.actual_responses))
         # Poisson loss
-        self.total_loss = tf.reduce_mean(predicted_responses-(self.actual_responses * tf.log(predicted_responses + 0.000001)))
+        # self.total_loss = tf.reduce_mean(predicted_responses-(self.actual_responses * tf.log(predicted_responses + 0.000001)))
 
         self.model_params = tf.trainable_variables()
 

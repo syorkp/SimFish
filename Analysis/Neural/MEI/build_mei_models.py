@@ -6,7 +6,6 @@ import tensorflow.compat.v1 as tf
 
 from Analysis.load_data import load_data
 from Analysis.Neural.MEI.graphs_for_mei import MEICore, MEIReadout, Trainer, TrainerExtended
-
 tf.logging.set_verbosity(tf.logging.ERROR)
 
 
@@ -256,14 +255,14 @@ def fit_hyperparameters_to_models(model_name, assay_config, assay_id, n, layer):
 
 if __name__ == "__main__":
     model_name = "dqn_scaffold_18-1"
-    cnn_activity = get_all_cnn_activity(model_name, "Behavioural-Data-CNN", "Naturalistic", 10)
-    observations = get_all_observations(model_name, "Behavioural-Data-CNN", "Naturalistic", 10)
+    cnn_activity = get_all_cnn_activity(model_name, "Behavioural-Data-CNN", "Naturalistic", 20)
+    observations = get_all_observations(model_name, "Behavioural-Data-CNN", "Naturalistic", 20)
     cnn_activity = normalise_cnn_data(cnn_activity)
-    observations = observations.astype(float) / 255
+    # observations = observations.astype(float) / 255
 
     # selected_activity_data_2, relevant_observations = build_unit_observation_pairs(cnn_activity["conv2l"],
     #                                                                                observations[:, :, :, 0])
-    selected_activity_data_3, relevant_observations = build_unit_observation_pairs(cnn_activity["conv1l"],
+    selected_activity_data_3, relevant_observations = build_unit_observation_pairs(cnn_activity["conv4l"],
                                                                                    observations[:, :, :, 0])
     # selected_activity_data_4, _relevant_observations = build_unit_observation_pairs(cnn_activity["conv4l"],
     #                                                                                 observations[:, :, :, 0])
@@ -306,11 +305,12 @@ if __name__ == "__main__":
     #     model_building.start()
     #     model_building.join()
 
+
     # Args order: observastions, cnn activity, train proportion, save model, model name, num repeats, learning rate, batch size.
     model_building = multiprocessing.Process(target=build_model_multiple_neurons,
                                              args=(
                                                  relevant_observations, selected_activity_data, 0.9, True, model_name,
-                                                 "layer_1_1b",
+                                                 "layer_4_1",
                                                  10, 0.0005, 100)
                                              )
     model_building.start()
@@ -319,7 +319,7 @@ if __name__ == "__main__":
     model_building = multiprocessing.Process(target=build_model_multiple_neurons,
                                              args=(
                                                  relevant_observations, selected_activity_data, 0.9, True, model_name,
-                                                 "layer_1_2b",
+                                                 "layer_4_2",
                                                  10, 0.0005, 100)
                                              )
     model_building.start()
@@ -328,7 +328,7 @@ if __name__ == "__main__":
     model_building = multiprocessing.Process(target=build_model_multiple_neurons,
                                              args=(
                                                  relevant_observations, selected_activity_data, 0.9, True, model_name,
-                                                 "layer_1_3b",
+                                                 "layer_4_3",
                                                  10, 0.0005, 100)
                                              )
     model_building.start()
@@ -337,7 +337,7 @@ if __name__ == "__main__":
     model_building = multiprocessing.Process(target=build_model_multiple_neurons,
                                              args=(
                                                  relevant_observations, selected_activity_data, 0.9, True, model_name,
-                                                 "layer_1_4b",
+                                                 "layer_4_4",
                                                  10, 0.0005, 100)
                                              )
     model_building.start()
