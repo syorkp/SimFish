@@ -5,7 +5,7 @@
     "max_epLength": 3000,
     "epsilon_greedy": true,
     "epsilon_greedy_scaffolding": true,
-    "startE": 0.2,
+    "startE": 0.3,
     "endE": 0.01,
     "update_freq": 100,
     "y": 0.99,
