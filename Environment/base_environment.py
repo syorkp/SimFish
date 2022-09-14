@@ -467,7 +467,10 @@ class BaseEnvironment:
         if len(self.sand_grain_bodies) > 0:
             px = np.round(np.array([pr.position[0] for pr in self.sand_grain_bodies])).astype(int)
             py = np.round(np.array([pr.position[1] for pr in self.sand_grain_bodies])).astype(int)
-            rrs, ccs = self.board.multi_circles(px, py, self.env_variables['sand_grain_size'])
+            if visualisation:
+                rrs, ccs = self.board.multi_circles(px, py, prey_size)
+            else:
+                rrs, ccs = self.board.multi_circles(px, py, self.env_variables['sand_grain_size'])
 
             try:
                 if visualisation:

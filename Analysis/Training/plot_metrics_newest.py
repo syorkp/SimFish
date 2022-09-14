@@ -9,25 +9,23 @@ def interpolate_metric_data(data, scaffold_points):
     scaffold_points = np.array(scaffold_points)
     scaffold_points = scaffold_points[scaffold_points[:, 1].argsort()]
     previous_switch_ep = 0
-    previous_switch_len = 0
 
     for s in scaffold_points:
         switch_ep = s[0]
         data_before_switch = (data[:, 0] < switch_ep) * (data[:, 0] >= previous_switch_ep)
-        switch_len = np.sum(data_before_switch * 1)
 
-        data[data_before_switch, 0] -= previous_switch_len
-        data[data_before_switch, 0] /= switch_len
+        switch_ep_difference = switch_ep - previous_switch_ep
+        data[data_before_switch, 0] -= previous_switch_ep
+        data[data_before_switch, 0] /= switch_ep_difference
         data[data_before_switch, 0] += (s[1] - 1)
 
         previous_switch_ep = switch_ep
-        previous_switch_len += switch_len
 
     data_before_switch = (data[:, 0] >= previous_switch_ep)
-    switch_len = np.sum(data_before_switch * 1)
+    switch_ep_difference = np.sum(data_before_switch * 1) * 2
 
-    data[data_before_switch, 0] -= previous_switch_len
-    data[data_before_switch, 0] /= switch_len
+    data[data_before_switch, 0] -= previous_switch_ep
+    data[data_before_switch, 0] /= switch_ep_difference
     data[data_before_switch, 0] += s[1]
 
     return data
@@ -43,6 +41,44 @@ def compute_rolling_averages_over_data(data, window):
     return rolling_average
 
 
+def get_metric_name(metric_label):
+
+    if metric_label == "prey caught":
+        metric_name = "Prey Caught (per episode)"
+
+    elif metric_label == "capture success rate":
+        metric_name = "Capture Success Rate"
+
+    elif metric_label == "prey capture rate (fraction caught per step)":
+        metric_name = "Prey Capture Rate (fraction caught per step)"
+
+    elif metric_label == "Energy Efficiency Index":
+        metric_name = "Energy Efficiency Index"
+
+    elif metric_label == "Episode Duration":
+        metric_name = "Episode Duration"
+
+    elif metric_label == "Mean salt damage taken per step":
+        metric_name = "Salt Damage (mean per step)"
+
+    elif metric_label == "Phototaxis Index":
+        metric_name = "Phototaxis Index"
+
+    elif metric_label == "episode reward":
+        metric_name = "Episode Reward"
+
+    elif metric_label == "predator avoidance index (avoided":
+        metric_name = "Predator Avoidance Index"
+
+    elif metric_label == "predators avoided":
+        metric_name = "Predators Avoided"
+
+    else:
+        metric_name = metric_label
+
+    return metric_name
+
+
 def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpolate_scaffold_points):
     """Different to previous versions in that it uses data directly from log files, and scales points between scaffold
     switching points to allow plotting between models. The resulting graph is x: config change point, y: metric.
@@ -53,10 +89,18 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
     model_data = [load_all_log_data(model) for model in model_list]
     ordered_chosen_model_data = [{metric: order_metric_data(model[metric]) for metric in metrics} for model in
                                  model_data]
+
     ordered_chosen_model_data_rolling_averages = [{metric: compute_rolling_averages_over_data(model[metric], window) for metric
                                                    in metrics} for model in ordered_chosen_model_data]
+    # episodes = np.array(ordered_chosen_model_data_rolling_averages[0]["prey caught"])[:, 0]
+    # plt.plot(sorted(episodes))
+    # plt.show()
+
     if interpolate_scaffold_points:
+        # TODO: Problem below here
         scaffold_switching_points = [model["Configuration change"] for model in model_data]
+        new_orders = [np.argsort(np.array(model)[:, 1]) for model in scaffold_switching_points]
+        scaffold_switching_points = [np.array(model)[new_orders[i]] for i, model in enumerate(scaffold_switching_points)]
         ordered_chosen_model_data_rolling_averages = [{metric: interpolate_metric_data(model[metric],
                                                                                        scaffold_switching_points[i])
                                                        for metric in metrics} for i, model in
@@ -66,8 +110,9 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
     fig, axs = plt.subplots(num_metrics, 1, figsize=(15, int(4*num_metrics)), sharex=True)
     for model in ordered_chosen_model_data_rolling_averages:
         for i, metric in enumerate(metrics):
+            metric_name = get_metric_name(metric)
             axs[i].plot(model[metric][:, 0], model[metric][:, 1])
-            axs[i].set_ylabel(metric)
+            axs[i].set_ylabel(metric_name)
             axs[i].grid(True, axis="x")
 
     axs[-1].set_xlabel("Scaffold Point")
@@ -111,5 +156,5 @@ if __name__ == "__main__":
     """
     chosen_metrics = ["prey caught", "capture success rate"]
     plot_multiple_metrics_multiple_models(models, chosen_metrics, window=40, interpolate_scaffold_points=True)
-    plot_scaffold_durations(models[0])
+    # plot_scaffold_durations(models[0])
 
