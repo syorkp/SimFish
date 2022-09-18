@@ -7,6 +7,8 @@ from Analysis.Connectivity.load_network_variables import load_network_variables_
 from Analysis.load_data import load_data
 from Analysis.Neural.Tools.normalise_activity import normalise_within_neuron_multiple_traces
 
+import tensorflow.compat.v1 as tf
+
 
 def get_rnn_interconnectivity(all_network_variables):
     keys = all_network_variables.keys()
@@ -34,11 +36,15 @@ def get_rnn_interconnectivity(all_network_variables):
     return all_forget_gate_weights
 
 
-def plot_hist_all_weights(all_weights):
-    all_weights = all_weights.flatten()
-    plt.hist(all_weights, bins=100)
+def plot_hist_all_weights(all_weights_1, all_weights_2=None):
+    all_weights_1 = all_weights_1.flatten()
+    all_weights_2 = all_weights_2.flatten()
+
+    plt.hist(all_weights_1, bins=100, alpha=0.5)
+    plt.hist(all_weights_2, bins=100, alpha=0.5)
+
     plt.savefig("hist_all_weights.png")
-    plt.show()
+    plt.clf()
 
 
 def get_strongly_connected_neuron_pairs(all_weights, threshold, absolute_weights):
@@ -70,7 +76,7 @@ def get_weights_to_self(all_weights):
     weights_to_self = all_weights[indices[:, 0], indices[:, 1]]
     plt.hist(weights_to_self, bins=10)
     plt.savefig("hist_weights_to_self.png")
-    plt.show()
+    plt.clf()
 
 
 def compare_weights_to_and_from(all_weights):
@@ -114,6 +120,7 @@ def plot_rnn_activity_pairs(activity_by_pair):
         axs[trace].plot(activity_pairs[trace, 0])
         axs[trace].plot(activity_pairs[trace, 1])
     plt.savefig("Comparison plots.png")
+    plt.clf()
 
 
 def compute_paired_similarity_metrics(activity_profiles):
@@ -164,17 +171,59 @@ def group_neuron_pairs_by_connection_strength(all_weights, bin_size, absolute_we
         selected_pairs = np.unique(selected_pairs, axis=0)
         binned_pairs.append(selected_pairs)
 
-    return binned_pairs
+    return binned_pairs, bins
 
+
+def plot_mse_across(bins, mse, mse_diff, mse_random, mse_diff_random):
+    # bins = np.array([-0.11949778, -0.09839867, -0.07729957, -0.05620046,
+    #                  -0.03510136, -0.01400225,  0.00709685,  0.02819595,  0.04929506,  0.07039416,  0.09149327,  0.11259237,
+    #                  0.13369148,])
+
+    # mse = [0.14077806, 0.28180635, 0.44530493, 0.61818, 0.63800067, 0.65239006, 0.6836712, 0.68562895, 0.6042702, 0.55133086],
+    # mse_random = [0.14077806, 0.2597273, 0.46050373, 0.61027795, 0.638971,  0.64753425, 0.6749977, 0.69010156, 0.58166707, 0.5513309,]
+    # mse_diff = [0.005095943, 0.008683029, 0.0037848349, 0.0020505749, 0.001801332, 0.0016352658, 0.0013567825, 0.0012184646, 0.0013878962, 0.0040659336]
+    # mse_diff_random = [0.005095943, 0.0069771274, 0.0037635076, 0.0020360008, 0.0017907234, 0.0016454477,0.0013632916,0.0012090596,0.001801214, 0.0040659336]
+
+    bin_edges = np.array(bins)[:, 0]
+
+    plt.plot(bin_edges, mse)
+    plt.plot(bin_edges, mse_random)
+    plt.savefig("MSE bins.png")
+    plt.clf()
+
+    plt.plot(bin_edges, mse_diff)
+    plt.plot(bin_edges, mse_diff_random)
+    plt.savefig("MSE diff bins.png")
+    plt.clf()
+
+    x = True
 
 
 if __name__ == "__main__":
-    network_variables = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", True)
-    rnn_interconnectivity = get_rnn_interconnectivity(network_variables)
-    only_layer = rnn_interconnectivity[list(rnn_interconnectivity.keys())[0]]
-    sc_pairs = get_strongly_connected_neuron_pairs(only_layer, 0.08, absolute_weights=True)
-    binned_sc_pairs = group_neuron_pairs_by_connection_strength(only_layer, 0.02, absolute_weights=False)
+    network_variables_1 = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", True)
+    rnn_interconnectivity_1 = get_rnn_interconnectivity(network_variables_1)
+    only_layer_1 = rnn_interconnectivity_1[list(rnn_interconnectivity_1.keys())[0]]
+    tf.reset_default_graph()
 
+    network_variables_2 = load_network_variables_dqn("dqn_scaffold_18-2", "dqn_18_2", True)
+    rnn_interconnectivity_2 = get_rnn_interconnectivity(network_variables_2)
+    only_layer_2 = rnn_interconnectivity_2[list(rnn_interconnectivity_2.keys())[0]]
+
+    # Plot all Hist weights
+    plot_hist_all_weights(only_layer_1, only_layer_2)
+
+    compare_weights_to_and_from(only_layer_1)
+
+    # Strongly connected unit weights
+    sc_pairs = get_strongly_connected_neuron_pairs(only_layer_1, 0.08, absolute_weights=True)
+    binned_sc_pairs, bins = group_neuron_pairs_by_connection_strength(only_layer_1, 0.02, absolute_weights=False)
+
+    bins = [[bins[i], bins[i+1]] for i, b in enumerate(binned_sc_pairs) if b.shape[0] > 0]
+
+    mse = []
+    mse_diff = []
+    rnd_mse = []
+    rnd_mse_diff = []
     for sc_pairs in binned_sc_pairs:
         if sc_pairs.shape[0] == 0:
             pass
@@ -185,6 +234,9 @@ if __name__ == "__main__":
             print(similarity)
             print(similarity_diff)
             print()
+            mse.append(similarity)
+            mse_diff.append(similarity_diff)
+
 
             comp_rnd_similarity = []
             comp_rnd_similarity_diff = []
@@ -202,6 +254,10 @@ if __name__ == "__main__":
             print(np.mean(comp_rnd_similarity_diff))
             print()
 
+            rnd_mse.append(np.mean(comp_rnd_similarity))
+            rnd_mse_diff.append(np.mean(comp_rnd_similarity_diff))
+
+    plot_mse_across(bins, mse, mse_diff, rnd_mse, rnd_mse_diff)
+
     # plot_rnn_activity_pairs(activity_pairs)
-    # compare_weights_to_and_from(only_layer)
-    # plot_hist_all_weights(only_layer)
+

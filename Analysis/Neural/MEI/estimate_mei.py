@@ -64,7 +64,7 @@ def produce_mei(model_name):
         plt.clf()
 
 
-def produce_meis(model_name, n_units=8, iterations=1000):
+def produce_meis(model_name, layer_name, n_units=8, iterations=1000):
     """Does the same thing for the multiple neurons of a given model"""
 
     # Initial, random image.
@@ -74,25 +74,23 @@ def produce_meis(model_name, n_units=8, iterations=1000):
 
     with tf.Session() as sess:
         # Creating graph
-        core = MEICore(model_name)
+        core = MEICore(layer_name)
         readout_blocks = {}
         for unit in range(n_units):
-            readout_blocks[f"Unit {unit}"] = MEIReadout(core.output, my_scope=model_name + "_readout_" + str(unit))
+            readout_blocks[f"Unit {unit}"] = MEIReadout(core.output, my_scope=layer_name + "_readout_" + str(unit))
 
         saver = tf.train.Saver(max_to_keep=5)
-        model_location = "MEI-Models/" + model_name
+        model_location = f"MEI-Models/{model_name}/{layer_name}"
         checkpoint = tf.train.get_checkpoint_state(model_location)
         saver.restore(sess, checkpoint.model_checkpoint_path)
 
         # Constants
-        step_size = 0.15#1.5
-        step_gain = 1
+        step_size = 0.15*100 #1.5
         eps = 1e-12
 
         for unit in range(n_units):
-            input_image = np.random.normal(128, 8, size=(100, 3))
+            input_image = np.random.normal(10, 8, size=(100, 3))
             input_image = np.clip(input_image, 0, 255)
-            input_image /= 255
 
             grad = tf.gradients(readout_blocks[f"Unit {unit}"].predicted_neural_activity, core.observation, name='grad')
             red_grad = tf.reduce_sum(grad)
@@ -105,10 +103,13 @@ def produce_meis(model_name, n_units=8, iterations=1000):
                 dy_dx, p, red = sess.run([grad, readout_blocks[f"Unit {unit}"].predicted_neural_activity, red_grad],
                                          feed_dict={core.observation: np.expand_dims(input_image, 0)})
                 gradients.append(dy_dx)
-                update = (step_size / (np.mean(np.abs(dy_dx[0])) + eps)) * (step_gain / 255)
-                input_image += update * dy_dx[0][0]
+                update = (step_size / (np.mean(np.abs(dy_dx[0])) + eps)) * (1 / 255)
+                update = update * dy_dx[0][0]
                 # image = input_image[:, 0:2]
-                input_image = np.clip(input_image, 0, 1)
+                input_image = input_image.astype(float)
+                input_image += update
+
+                input_image = np.clip(input_image, 0, 255)
                 reds.append(red)
                 if np.max(np.absolute(dy_dx[0])) == 0:
                     print(f"{i}-ERROR")
@@ -216,13 +217,17 @@ def produce_meis_mulitiple_models(model_names, overall_model_name, n_units=8, it
 
     # plt.imshow(np.concatenate((all_images[:, :, 0:1], np.zeros((n_units, 100, 1)), all_images[:, :, 1:2]), axis=2))
     # plt.imshow(np.concatenate((all_images[:, :, 0:1], np.zeros((n_units, 100, 1)), all_images[:, :, 1:2]), axis=2))
-    fig, axs = plt.subplots(4, 1)
+    if n_units == 64:
+        fig, axs = plt.subplots(4, 1, figsize=(6, 40))
+    else:
+        fig, axs = plt.subplots(4, 1, figsize=(15, 15))
+
     all_images = np.concatenate((all_images[:, :, 0:1], all_images[:, :, 2:3], all_images[:, :, 1:2]), axis=2)
     axs[0].imshow(all_images.astype(int))
-    axs[1].imshow(np.concatenate((np.zeros((n_units, 100, 2)), all_images[:, :, 1:2]), axis=2).astype(int))
+    axs[1].imshow(np.concatenate((np.zeros((n_units, 100, 2)), all_images[:, :, 2:3]), axis=2).astype(int))
     axs[2].imshow(np.concatenate((all_images[:, :, 0:1], np.zeros((n_units, 100, 2))), axis=2).astype(int))
-    axs[3].imshow(np.concatenate((np.zeros((n_units, 100, 1)), all_images[:, :, 2:3], np.zeros((n_units, 100, 1))), axis=2).astype(int))
-    plt.savefig(f"./mei-{model_names[0][:-2]}")
+    axs[3].imshow(np.concatenate((np.zeros((n_units, 100, 1)), all_images[:, :, 1:2], np.zeros((n_units, 100, 1))), axis=2).astype(int))
+    plt.savefig(f"Generated-MEIs/mei-{model_names[0][:-2]}")
     plt.clf()
 
     # Save Optimal activation
@@ -230,18 +235,19 @@ def produce_meis_mulitiple_models(model_names, overall_model_name, n_units=8, it
         np.save(f, all_images)
 
     plt.plot([np.sum(g) for g in gradients])
-    plt.savefig(f"./mei-{model_names[0][:-2]}-gradients")
+    plt.savefig(f"Generated-MEIs/mei-{model_names[0][:-2]}-gradients")
     plt.clf()
 
     plt.plot(preds)
-    plt.savefig(f"./mei-{model_names[0][:-2]}-predicted_activity")
+    plt.savefig(f"Generated-MEIs/mei-{model_names[0][:-2]}-predicted_activity")
     plt.clf()
 
 
 if __name__ == "__main__":
-    maximal_activity, observations_responsible = get_maximal_activation("dqn_scaffold_18-1", "Behavioural-Data-CNN",
-                                                                        f"Naturalistic", 20, "conv3l")
-    # produce_meis("layer_1_4", n_units=16, iterations=4000)
+    # maximal_activity, observations_responsible = get_maximal_activation("dqn_scaffold_18-1", "Behavioural-Data-CNN",
+    #                                                                     f"Naturalistic", 20, "conv3l")
+    produce_meis("dqn_scaffold_18-1", "conv1l_4", n_units=16, iterations=10000)
+
     # produce_meis_mulitiple_models(["layer_1_1", "layer_1_2", "layer_1_3", "layer_1_4"],
     #                               overall_model_name="dqn_scaffold_18-1", n_units=16, iterations=10000)
     # produce_meis_mulitiple_models(["layer_2_1", "layer_2_2", "layer_2_3", "layer_2_4"],
@@ -249,8 +255,16 @@ if __name__ == "__main__":
     # produce_meis_mulitiple_models(["layer_3_1", "layer_3_2", "layer_3_3", "layer_3_4"],
     #                               overall_model_name="dqn_scaffold_18-1", n_units=8, iterations=10000)
 
-
-    produce_meis_mulitiple_models(["layer_3_1", "layer_3_2", "layer_3_3", "layer_3_4"],
-                                  overall_model_name="dqn_scaffold_18-1", n_units=8, iterations=10000,
-                                  input_images=observations_responsible)
+    # produce_meis_mulitiple_models(["conv1l_1", "conv1l_2", "conv1l_3", "conv1l_4"],
+    #                               overall_model_name="dqn_scaffold_18-1", n_units=16, iterations=10000,
+    #                               input_images=None)
+    # produce_meis_mulitiple_models(["conv2l_1", "conv2l_2", "conv2l_3", "conv2l_4"],
+    #                               overall_model_name="dqn_scaffold_18-1", n_units=8, iterations=10000,
+    #                               input_images=None)
+    # produce_meis_mulitiple_models(["conv3l_1", "conv3l_2", "conv3l_3", "conv3l_4"],
+    #                               overall_model_name="dqn_scaffold_18-1", n_units=8, iterations=10000,
+    #                               input_images=None)
+    # produce_meis_mulitiple_models(["conv4l_1", "conv4l_2", "conv4l_3", "conv4l_4"],
+    #                               overall_model_name="dqn_scaffold_18-1", n_units=64, iterations=10000,
+    #                               input_images=None)
     x = True

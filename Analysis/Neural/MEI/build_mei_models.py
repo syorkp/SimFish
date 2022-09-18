@@ -157,7 +157,7 @@ def build_model_multiple_neurons(observation_data, activity_data, train_prop=0.9
         for i in range(n_repeats):
             print(f"Repeat: {i}")
             for step in range(0, train_observation_data.shape[0], 50):
-                _, loss, lossl2 = sess.run([trainer.train, trainer.total_loss, trainer.lossL2],
+                _, loss, lossl2 = sess.run([trainer.train, trainer.total_loss, trainer.total_loss],
                                            feed_dict={
                                                core.observation: train_observation_data[step:step + batch_size],
                                                trainer.actual_responses: train_activity_data[step:step + batch_size]
@@ -185,7 +185,19 @@ def build_model_multiple_neurons(observation_data, activity_data, train_prop=0.9
     print(f"Prediction Error: {np.mean(prediction_error)}")
     # print(f"Final-Score: {0.0001/np.mean(prediction_error)}")
 
+    with open(f"MEI-Models/{trial_name}/{model_name}/prediction_error.npy", "wb") as f:
+        np.save(f, np.array(prediction_error))
+
+    with open(f"MEI-Models/{trial_name}/{model_name}/compiled_loss.npy", "wb") as f:
+        np.save(f, np.array(compiled_loss))
+
+
+    plt.plot(prediction_error)
+    plt.savefig(f"MEI-Models/{trial_name}/{model_name}/prediction_error.png")
+    plt.show()
+
     plt.plot(compiled_loss)
+    plt.savefig(f"MEI-Models/{trial_name}/{model_name}/compiled_loss.png")
     plt.show()
 
 
@@ -253,92 +265,32 @@ def fit_hyperparameters_to_models(model_name, assay_config, assay_id, n, layer):
         model_building.join()
 
 
-if __name__ == "__main__":
-    model_name = "dqn_scaffold_18-1"
-    cnn_activity = get_all_cnn_activity(model_name, "Behavioural-Data-CNN", "Naturalistic", 20)
-    observations = get_all_observations(model_name, "Behavioural-Data-CNN", "Naturalistic", 20)
+def build_all_possible_cnn_models(model_name, assay_config, assay_id, n, n_models=4):
+    cnn_activity = get_all_cnn_activity(model_name, assay_config, assay_id, n)
+    observations = get_all_observations(model_name, assay_config, assay_id, n)
+
     cnn_activity = normalise_cnn_data(cnn_activity)
-    # observations = observations.astype(float) / 255
 
-    # selected_activity_data_2, relevant_observations = build_unit_observation_pairs(cnn_activity["conv2l"],
-    #                                                                                observations[:, :, :, 0])
-    selected_activity_data_3, relevant_observations = build_unit_observation_pairs(cnn_activity["conv4l"],
-                                                                                   observations[:, :, :, 0])
-    # selected_activity_data_4, _relevant_observations = build_unit_observation_pairs(cnn_activity["conv4l"],
-    #                                                                                 observations[:, :, :, 0])
+    layers = ["conv1l", "conv2l", "conv3l", "conv4l"]
+    for layer in layers:
+        selected_activity_data, relevant_observations = build_unit_observation_pairs(cnn_activity[layer],
+                                                                                       observations[:, :, :, 0])
+        relevant_observations, selected_activity_data = shuffle_data(relevant_observations, selected_activity_data)
 
-    # selected_activity_data_3 = np.repeat(selected_activity_data_3, 2, 0)
-    # selected_activity_data_4 = np.repeat(selected_activity_data_4, 5, 0)
-    #
-    # final_shape = selected_activity_data_2.shape[0]
-    #
-    # selected_activity_data_3 = selected_activity_data_3[:final_shape]
-    # selected_activity_data_4 = selected_activity_data_4[:final_shape]
-
-    # selected_activity_data = np.concatenate(
-    #     (selected_activity_data_4, selected_activity_data_3, selected_activity_data_2), axis=1)
-    selected_activity_data = selected_activity_data_3
-    relevant_observations, selected_activity_data = shuffle_data(relevant_observations, selected_activity_data)
-
-    # fit_hyperparameters_to_models("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 10, "conv3l")
-
-    # relevant_observations = observations[:, :, :, 0]
-    # selected_activity_data = cnn_activity["conv3l"][:, :, 0]
-    # selected_activity_data2 = np.reshape(selected_activity_data, (-1))
-    # relevant_observations2 = np.repeat(relevant_observations, 5, 0)
-    # print("\n")
-    # print("Only one neuron")
-    # model_building = multiprocessing.Process(target=build_model, args=(relevant_observations2, selected_activity_data2, 10))
-    # model_building.start()
-    # model_building.join()
-
-    # repeats_to_test = [1, 5, 10, 100]
-    # selected_activity_data, relevant_observations = build_unit_observation_pairs(cnn_activity["conv3l"], observations[:, :, :, 0])
-    # relevant_observations, selected_activity_data = shuffle_data(relevant_observations, selected_activity_data)
-    # for repeats in repeats_to_test:
-    #     print("\n")
-    #     print(str(repeats) + " Repeat")
-    #     model_building = multiprocessing.Process(target=build_model_multiple_neurons,
-    #                                              args=(relevant_observations, selected_activity_data, 0.9, True, "layer_3",
-    #                                                    repeats)
-    #                                              )
-    #     model_building.start()
-    #     model_building.join()
+        for i in range(1, n_models + 1):
+            # Args order: observations, cnn activity, train proportion, save model, model name, num repeats,
+            # learning rate, batch size.
+            model_building = multiprocessing.Process(target=build_model_multiple_neurons,
+                                                     args=(
+                                                         relevant_observations, selected_activity_data, 0.9, True,
+                                                         model_name,
+                                                         f"{layer}_{i}",
+                                                         10, 0.0005, 100)
+                                                     )
+            model_building.start()
+            model_building.join()
 
 
-    # Args order: observastions, cnn activity, train proportion, save model, model name, num repeats, learning rate, batch size.
-    model_building = multiprocessing.Process(target=build_model_multiple_neurons,
-                                             args=(
-                                                 relevant_observations, selected_activity_data, 0.9, True, model_name,
-                                                 "layer_4_1",
-                                                 10, 0.0005, 100)
-                                             )
-    model_building.start()
-    model_building.join()
+if __name__ == "__main__":
+    cnn_activity = build_all_possible_cnn_models("dqn_scaffold_18-1", "Behavioural-Data-CNN", "Naturalistic", 40)
 
-    model_building = multiprocessing.Process(target=build_model_multiple_neurons,
-                                             args=(
-                                                 relevant_observations, selected_activity_data, 0.9, True, model_name,
-                                                 "layer_4_2",
-                                                 10, 0.0005, 100)
-                                             )
-    model_building.start()
-    model_building.join()
-
-    model_building = multiprocessing.Process(target=build_model_multiple_neurons,
-                                             args=(
-                                                 relevant_observations, selected_activity_data, 0.9, True, model_name,
-                                                 "layer_4_3",
-                                                 10, 0.0005, 100)
-                                             )
-    model_building.start()
-    model_building.join()
-
-    model_building = multiprocessing.Process(target=build_model_multiple_neurons,
-                                             args=(
-                                                 relevant_observations, selected_activity_data, 0.9, True, model_name,
-                                                 "layer_4_4",
-                                                 10, 0.0005, 100)
-                                             )
-    model_building.start()
-    model_building.join()

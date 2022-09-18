@@ -104,13 +104,15 @@ def get_best_images(artificial_activity, artificial_images, real_activity, real_
 
 if __name__ == "__main__":
     model_name = "dqn_scaffold_18-1"
-    maximal_activity, observations_responsible = get_maximal_activation(model_name, "Behavioural-Data-CNN", f"Naturalistic", 20, "conv3l")
-    image = load_optimal_activation(model_name, "layer_3")
-    c, cown = get_activity_cnn(model_name, image, "conv3l")
+    layer = "conv4l"
+    maximal_activity, observations_responsible = get_maximal_activation(model_name, "Behavioural-Data-CNN", f"Naturalistic", 40, layer)
+    image = load_optimal_activation(model_name, layer)
+    # Getting the actual activity of the artificial images
+    c, cown = get_activity_cnn(model_name, image, layer)
 
     observations_responsible = np.concatenate((observations_responsible[:, :, 0:1], observations_responsible[:, :, 2:3],
                                                observations_responsible[:, :, 1:2]), axis=2)
 
     plt.imshow(observations_responsible)
-    plt.show()
+    plt.savefig(f"{model_name}-{layer}-Actual-MEI")
     get_best_images(cown, image, maximal_activity, observations_responsible)

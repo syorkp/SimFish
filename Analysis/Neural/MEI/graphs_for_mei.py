@@ -63,12 +63,12 @@ class TrainerExtended:
 
         self.model_params = tf.trainable_variables()
 
-        targeted_params = [param for param in self.model_params if "conv1l" in param.name]
-        targeted_params_shapes = [param.shape[0] for param in targeted_params]
-        indices = [tf.range(0, shape, dtype=tf.float32) for shape in targeted_params_shapes]
-        distance_from_centre = tf.abs([indices_s-targeted_params_shapes[j] for j, indices_s in enumerate(indices)])
-        gaussian_operations = 1 * (1 - tf.exp(-(1/2*(0.5**2))*distance_from_centre))
-        self.lossL2 = tf.reduce_mean(tf.add_n([tf.math.square(param) * gaussian_operations[i] for i, param in enumerate(targeted_params)]))
+        # targeted_params = [param for param in self.model_params if "conv1l" in param.name]
+        # targeted_params_shapes = [param.shape[0] for param in targeted_params]
+        # indices = [tf.range(0, shape, dtype=tf.float32) for shape in targeted_params_shapes]
+        # distance_from_centre = tf.abs([indices_s-targeted_params_shapes[j] for j, indices_s in enumerate(indices)])
+        # gaussian_operations = 1 * (1 - tf.exp(-(1/2*(0.5**2))*distance_from_centre))
+        # self.lossL2 = tf.reduce_mean(tf.add_n([tf.math.square(param) * gaussian_operations[i] for i, param in enumerate(targeted_params)]))
 
         # self.lossL2 = [tf.nn.l2_loss(param) for param in self.model_params if "conv1l" in param.name] * 0.001
         # self.total_loss = tf.add(self.total_loss, self.lossL2)
