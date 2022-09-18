@@ -21,6 +21,7 @@ GPU-Caches
 /Analysis/Figures/Panels/
 /Analysis/Neural/MEI/Generated-MEIs/
 /Analysis/Neural/MEI/MEI-Models/
+Analysis/Neural/Gradients/Gradients-Data/
 
 /Analysis/Calibration/Motor-Effect-Noise/Bolton et al. (2019)/
 /Analysis/Calibration/Motor-Effect-Noise/Marques
