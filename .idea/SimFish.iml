@@ -18,6 +18,12 @@
       <excludeFolder url="file://$MODULE_DIR$/Analysis/Data/Action-Use-Data" />
       <excludeFolder url="file://$MODULE_DIR$/Analysis/Data/Metrics" />
       <excludeFolder url="file://$MODULE_DIR$/Analysis/Figures/Panels" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Calibration/Visual-Distance/Full-Model-Distinguishability-Scores" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Neural/Gradients/Gradients-Data" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Neural/MEI/Generated-MEIs" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Neural/MEI/MEI-Models" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Neural/MEI/MEI-Models/dqn_scaffold_18-1/layer_3_1/logs" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Video/Current-Videos" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
