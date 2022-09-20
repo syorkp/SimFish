@@ -269,6 +269,10 @@ class BasePPOBuffer:
                     self.create_data_group("salt_location", np.array(salt_location), assay_group)
                     self.create_data_group("salt_health", np.array(self.salt_health_buffer), assay_group)
 
+            # Save efference copy
+            self.efference_copy_buffer = np.array(self.efference_copy_buffer)
+            self.create_data_group("efference_copy", self.efference_copy_buffer, assay_group)
+
         if "rnn state" in self.unit_recordings:
             self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
 

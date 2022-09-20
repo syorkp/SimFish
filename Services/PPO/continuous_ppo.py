@@ -292,7 +292,8 @@ class ContinuousPPO(BasePPO):
         )
 
         if self.use_mu:
-            action = [mu_i[0][0], mu_a[0][0]]
+            action = [mu_i[0][0] * self.environment_params['max_impulse'],
+                      mu_a[0][0] * self.environment_params['max_angle_change']]
         else:
             action = [impulse[0][0], angle[0][0]]
 
@@ -337,8 +338,6 @@ class ContinuousPPO(BasePPO):
                                            rnn_state_critic,
                                            rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
-        # a = [a[0] / self.environment_params['max_impulse'],
-        #      a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
 
         a = [a[0],
              a[1],
@@ -376,10 +375,8 @@ class ContinuousPPO(BasePPO):
         )
 
         if self.use_mu:
-            action = [mu_i[0][0] * self.environment_params["max_impulse"],
-                      mu_a[0][0] * self.environment_params["max_angle_change"]]
-            if self.step_number == 5:
-                print("Yes")
+            action = [mu_i[0][0] * self.environment_params['max_impulse'],
+                      mu_a[0][0] * self.environment_params['max_angle_change']]
         else:
             action = [impulse[0][0], angle[0][0]]
 
@@ -405,6 +402,7 @@ class ContinuousPPO(BasePPO):
                                  actor_rnn_state_ref=rnn_state_actor_ref,
                                  critic_rnn_state=rnn_state_critic,
                                  critic_rnn_state_ref=rnn_state_critic_ref,
+                                 efference_copy=a,
                                  )
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
 

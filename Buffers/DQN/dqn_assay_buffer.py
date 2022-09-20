@@ -95,7 +95,6 @@ class DQNAssayBuffer:
 
         self.efference_copy_buffer.append(efference_copy)
 
-
     @staticmethod
     def create_data_group(key, data, assay_group):
         # TODO: Compress data.
