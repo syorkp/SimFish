@@ -5,11 +5,10 @@ import json
 from datetime import datetime
 
 from Services.trial_manager import TrialManager
-from Configurations.Templates.interruptions import
 from Configurations.Templates.interruptions import energy_state_profile_long_term, salt_profile_long_term, \
     in_light_profile_long_term, efference_A, efference_B, efference_C, efference_D, efference_E, efference_F, \
     efference_G, efference_H, efference_V, efference_W, efference_X, efference_Y, efference_Z, long_term_visual_interruption_profile, \
-    brief_interruption_profile, fish_relocation_to_nowhere, energy_state_profile_long_term
+    brief_interruption_profile, fish_relocation_to_nowhere, energy_state_profile_long_term, long_term_interruption_profile
 
 # Get config argument
 try:
