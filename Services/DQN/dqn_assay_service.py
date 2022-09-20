@@ -97,7 +97,7 @@ class DQNAssayService(AssayService, BaseDQN):
                                                                                      activations=(sa,))
         a = 0
         if self.full_reafference:
-            action_reafference = [a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+            action_reafference = [[a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]]
         else:
             action_reafference = [a]
 
@@ -120,7 +120,7 @@ class DQNAssayService(AssayService, BaseDQN):
                     action = self.reafference_interruptions[self.step_number]
                     if self.full_reafference:
                         i, a = get_modal_impulse_and_angle(action)
-                        action_reafference = [action, i, a]
+                        action_reafference = [[action, i, a]]
                     # action_reafference = self.previous_action  TODO: Consider best way to do it...
             if self.preset_energy_state is not None:
                 if self.preset_energy_state[self.step_number] is not False:
@@ -148,8 +148,8 @@ class DQNAssayService(AssayService, BaseDQN):
             if d:
                 break
             if self.full_reafference:
-                action_reafference = [a, self.simulation.fish.prev_action_impulse,
-                                      self.simulation.fish.prev_action_angle]
+                action_reafference = [[a, self.simulation.fish.prev_action_impulse,
+                                      self.simulation.fish.prev_action_angle]]
             else:
                 action_reafference = [a]
 
