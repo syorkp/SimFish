@@ -148,8 +148,8 @@ class DQNAssayService(AssayService, BaseDQN):
             if d:
                 break
             if self.full_reafference:
-                action_reafference = [[a, self.simulation.fish.prev_action_impulse,
-                                      self.simulation.fish.prev_action_angle]]
+                # As simulation step returns full action
+                action_reafference = [a]
             else:
                 action_reafference = [a]
 
