@@ -99,7 +99,8 @@ class DQNAssayService(AssayService, BaseDQN):
         if self.full_reafference:
             action_reafference = [a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
         else:
-            action_reafference = a
+            action_reafference = [a]
+
         self.step_number = 0
         while self.step_number < assay["duration"]:
             if assay["reset"] and self.step_number % assay["reset interval"] == 0:
@@ -150,7 +151,7 @@ class DQNAssayService(AssayService, BaseDQN):
                 action_reafference = [a, self.simulation.fish.prev_action_impulse,
                                       self.simulation.fish.prev_action_angle]
             else:
-                action_reafference = a
+                action_reafference = [a]
 
         if self.environment_params["salt"]:
             salt_location = self.simulation.salt_location
