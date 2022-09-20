@@ -6,6 +6,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from Buffers.DQN.dqn_assay_buffer import DQNAssayBuffer
+from Environment.Action_Space.draw_angle_dist import get_modal_impulse_and_angle
 from Services.assay_service import AssayService
 from Services.DQN.base_dqn import BaseDQN
 from Tools.make_gif import make_gif
@@ -109,17 +110,16 @@ class DQNAssayService(AssayService, BaseDQN):
             # Deal with interventions
             if self.visual_interruptions is not None:
                 if self.visual_interruptions[self.step_number] == 1:
-                    # original
-                    # o[:, 0, :] = 4
-                    # o[:, 1, :] = 4
-                    # o[:, 2, :] = 4
                     # mean values over all data
                     o[:, 0, :] = 4
                     o[:, 1, :] = 11
                     o[:, 2, :] = 16
             if self.reafference_interruptions is not None:
-                if self.reafference_interruptions[self.step_number] == 1:
-                    action_reafference = 0
+                if self.reafference_interruptions[self.step_number] is not False:
+                    action = self.reafference_interruptions[self.step_number]
+                    if self.full_reafference:
+                        i, a = get_modal_impulse_and_angle(action)
+                        action_reafference = [action, i, a]
                     # action_reafference = self.previous_action  TODO: Consider best way to do it...
             if self.preset_energy_state is not None:
                 if self.preset_energy_state[self.step_number] is not False:
@@ -127,16 +127,16 @@ class DQNAssayService(AssayService, BaseDQN):
                     internal_state_order = self.get_internal_state_order()
                     index = internal_state_order.index("energy_state")
                     internal_state[0, index] = self.preset_energy_state[self.step_number]
-            if self.in_light_interruptions is not None:
+            if self.in_light_interruptions is not False:
                 if self.in_light_interruptions[self.step_number] == 1:
                     internal_state_order = self.get_internal_state_order()
                     index = internal_state_order.index("in_light")
-                    internal_state[0, index] = 1
-            if self.salt_interruptions is not None:
+                    internal_state[0, index] = self.in_light_interruptions[self.step_number]
+            if self.salt_interruptions is not False:
                 if self.salt_interruptions[self.step_number] == 1:
                     internal_state_order = self.get_internal_state_order()
                     index = internal_state_order.index("salt")
-                    internal_state[0, index] = 0.0
+                    internal_state[0, index] = self.salt_interruptions[self.step_number]
 
             self.previous_action = a
 
@@ -147,7 +147,8 @@ class DQNAssayService(AssayService, BaseDQN):
             if d:
                 break
             if self.full_reafference:
-                action_reafference = a
+                action_reafference = [a, self.simulation.fish.prev_action_impulse,
+                                      self.simulation.fish.prev_action_angle]
             else:
                 action_reafference = a
 
