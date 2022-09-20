@@ -155,26 +155,36 @@ class BasePPO:
         while self.step_number < self.current_episode_max_duration:
             # print(self.step_number)
             if self.assay is not None:
-                if self.assay["reset"] and self.step_number % self.assay["reset interval"] == 0:
-                    rnn_state_actor = copy.copy(self.init_rnn_state_actor)
-                    rnn_state_actor_ref = copy.copy(self.init_rnn_state_actor_ref)
-                    rnn_state_critic = copy.copy(self.init_rnn_state_critic)
-                    rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
+                # Deal with interventions
                 if self.visual_interruptions is not None:
                     if self.visual_interruptions[self.step_number] == 1:
-                        o[:, 0, :] = np.min(o[:, 0, :])
-                        o[:, 1, :] = np.min(o[:, 1, :])
-                        o[:, 2, :] = np.min(o[:, 2, :])
+                        # mean values over all data
+                        o[:, 0, :] = 4
+                        o[:, 1, :] = 11
+                        o[:, 2, :] = 16
                 if self.reafference_interruptions is not None:
-                    if self.reafference_interruptions[self.step_number] == 1:
-                        a = self.previous_action
+                    if self.reafference_interruptions[self.step_number] is not False:
+                        a = [self.reafference_interruptions[self.step_number]]
                 if self.preset_energy_state is not None:
-                    if self.preset_energy_state[self.step_number] == 1:
+                    if self.preset_energy_state[self.step_number] is not False:
                         self.simulation.fish.energy_level = self.preset_energy_state[self.step_number]
+                        internal_state_order = self.get_internal_state_order()
+                        index = internal_state_order.index("energy_state")
+                        internal_state[0, index] = self.preset_energy_state[self.step_number]
+                if self.in_light_interruptions is not False:
+                    if self.in_light_interruptions[self.step_number] == 1:
+                        internal_state_order = self.get_internal_state_order()
+                        index = internal_state_order.index("in_light")
+                        internal_state[0, index] = self.in_light_interruptions[self.step_number]
+                if self.salt_interruptions is not False:
+                    if self.salt_interruptions[self.step_number] == 1:
+                        internal_state_order = self.get_internal_state_order()
+                        index = internal_state_order.index("salt")
+                        internal_state[0, index] = self.salt_interruptions[self.step_number]
+
                 self.previous_action = a
 
             self.step_number += 1
-
 
             r, internal_state, o, d, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic, rnn_state_critic_ref, a = self.step_loop(
                 o=o,

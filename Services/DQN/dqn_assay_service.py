@@ -121,7 +121,6 @@ class DQNAssayService(AssayService, BaseDQN):
                     if self.full_reafference:
                         i, a = get_modal_impulse_and_angle(action)
                         action_reafference = [[action, i, a]]
-                    # action_reafference = self.previous_action  TODO: Consider best way to do it...
             if self.preset_energy_state is not None:
                 if self.preset_energy_state[self.step_number] is not False:
                     self.simulation.fish.energy_level = self.preset_energy_state[self.step_number]

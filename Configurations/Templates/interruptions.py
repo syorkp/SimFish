@@ -25,11 +25,11 @@ efference_F = [False for i in range(200)] + [5 for i in range(2000)]
 efference_G = [False for i in range(200)] + [6 for i in range(2000)]
 efference_H = [False for i in range(200)] + [9 for i in range(2000)]
 
-efference_V = [False for i in range(200)] + [3 for i in range(2000)]
-efference_W = [False for i in range(200)] + [4 for i in range(2000)]
-efference_X = [False for i in range(200)] + [5 for i in range(2000)]
-efference_Y = [False for i in range(200)] + [6 for i in range(2000)]
-efference_Z = [False for i in range(200)] + [9 for i in range(2000)]
+efference_V = [False for i in range(200)] + [[1, 0] for i in range(2000)]
+efference_W = [False for i in range(200)] + [[4, 0] for i in range(2000)]
+efference_X = [False for i in range(200)] + [[10, 0] for i in range(2000)]
+efference_Y = [False for i in range(200)] + [[5, -0.3] for i in range(2000)]
+efference_Z = [False for i in range(200)] + [[5, 0.3] for i in range(2000)]
 
 # Relocating fish
 fish_relocation_to_nowhere = [0 for i in range(200)] + ["E"] + [0 for i in range(10000)]
