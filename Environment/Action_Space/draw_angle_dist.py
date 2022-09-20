@@ -83,18 +83,32 @@ def get_modal_impulse_and_angle(action):
         return 0.0, 0.0
     bout_id = convert_action_to_bout_id(action)
 
-    with h5py.File('../../../Environment/Action_Space/bout_distributions.mat', 'r') as fl:
-        p_angle = np.array(fl['p_angle']).T[bout_id, :]
-        angles = np.array(fl['angles']).T[bout_id, :]
-        p_dist = np.array(fl['p_dist']).T[bout_id, :]
-        dists = np.array(fl['dists']).T[bout_id, :]
+    try:
+        with h5py.File('../../../Environment/Action_Space/bout_distributions.mat', 'r') as fl:
+            p_angle = np.array(fl['p_angle']).T[bout_id, :]
+            angles = np.array(fl['angles']).T[bout_id, :]
+            p_dist = np.array(fl['p_dist']).T[bout_id, :]
+            dists = np.array(fl['dists']).T[bout_id, :]
 
-        # Get modal of both
-        angle = angles[np.argmax(p_angle)]
-        dist = dists[np.argmax(p_dist)]
+            # Get modal of both
+            angle = angles[np.argmax(p_angle)]
+            dist = dists[np.argmax(p_dist)]
 
-        # Convert dist to impulse
-        impulse = (dist * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
+            # Convert dist to impulse
+            impulse = (dist * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
+    except OSError:
+        with h5py.File('./Environment/Action_Space/bout_distributions.mat', 'r') as fl:
+            p_angle = np.array(fl['p_angle']).T[bout_id, :]
+            angles = np.array(fl['angles']).T[bout_id, :]
+            p_dist = np.array(fl['p_dist']).T[bout_id, :]
+            dists = np.array(fl['dists']).T[bout_id, :]
+
+            # Get modal of both
+            angle = angles[np.argmax(p_angle)]
+            dist = dists[np.argmax(p_dist)]
+
+            # Convert dist to impulse
+            impulse = (dist * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
 
     return impulse, angle
 
