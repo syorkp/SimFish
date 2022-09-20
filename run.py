@@ -13555,7 +13555,7 @@ dqn_18_2_complete_interruptions = [
 ]
 
 if run_config is None:
-    run_config = dqn_18_1_complete_interruptions
+    run_config = dqn_18_2_complete_interruptions
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]
