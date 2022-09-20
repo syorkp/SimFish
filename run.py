@@ -13703,7 +13703,7 @@ complete_interruptions_dqn = [
             },
 
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
     {
         "Model Name": "dqn_scaffold_14",
@@ -13851,7 +13851,7 @@ complete_interruptions_dqn = [
             },
 
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
     {
         "Model Name": "dqn_scaffold_14",
@@ -13998,7 +13998,7 @@ complete_interruptions_dqn = [
                                   }
             },
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
     {
         "Model Name": "dqn_scaffold_14",
@@ -14146,7 +14146,7 @@ complete_interruptions_dqn = [
             },
 
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
     {
         "Model Name": "dqn_scaffold_14",
@@ -14293,7 +14293,7 @@ complete_interruptions_dqn = [
                                   }
             },
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
     {
         "Model Name": "dqn_scaffold_14",
@@ -14440,7 +14440,7 @@ complete_interruptions_dqn = [
                                   }
             },
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
     {
         "Model Name": "dqn_scaffold_14",
@@ -14587,7 +14587,7 @@ complete_interruptions_dqn = [
                                   }
             },
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
     {
         "Model Name": "dqn_scaffold_14",
@@ -14734,7 +14734,7 @@ complete_interruptions_dqn = [
                                   }
             },
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
 
     # Trial 2
@@ -14884,7 +14884,7 @@ complete_interruptions_dqn = [
             },
 
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
     {
         "Model Name": "dqn_scaffold_14",
@@ -15032,7 +15032,7 @@ complete_interruptions_dqn = [
             },
 
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
     {
         "Model Name": "dqn_scaffold_14",
@@ -15179,7 +15179,7 @@ complete_interruptions_dqn = [
                                   }
             },
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
     {
         "Model Name": "dqn_scaffold_14",
@@ -15327,7 +15327,7 @@ complete_interruptions_dqn = [
             },
 
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
     {
         "Model Name": "dqn_scaffold_14",
@@ -15474,7 +15474,7 @@ complete_interruptions_dqn = [
                                   }
             },
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
     {
         "Model Name": "dqn_scaffold_14",
@@ -15621,7 +15621,7 @@ complete_interruptions_dqn = [
                                   }
             },
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
     {
         "Model Name": "dqn_scaffold_14",
@@ -15768,7 +15768,7 @@ complete_interruptions_dqn = [
                                   }
             },
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
     {
         "Model Name": "dqn_scaffold_14",
