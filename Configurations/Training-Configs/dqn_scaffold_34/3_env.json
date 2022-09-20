@@ -63,9 +63,9 @@
     "sand_grain_displacement_impulse_scaling_factor": 0.5,
     "sand_grain_displacement_distance": 20,
     "sand_grain_colour": [
-        1,
+        0.5,
         0,
-        0.5
+        1
     ],
     "sand_grain_touch_penalty": 2,
     "dark_light_ratio": 0.3,

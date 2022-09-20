@@ -319,7 +319,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_33"
+scaffold_name = "dqn_scaffold_34"
 
 # base_network_layers_updated = copy.copy(base_network_layers)
 # base_network_layers_updated["new_dense"] = ["dense", 300]
@@ -348,10 +348,10 @@ high_pci = 0.3 / 3
 
 # For sand grain simplifying
 changes += [
-       ["PCI", high_pci, "sand_grain_colour", (1, 0, 0.75)],
-       ["PCI", high_pci, "sand_grain_colour", (1, 0, 0.5)],
-       ["PCI", high_pci, "sand_grain_colour", (1, 0, 0.25)],
-       ["PCI", high_pci, "sand_grain_colour", (1, 0, 0)],
+       ["PCI", high_pci, "sand_grain_colour", (0.75, 0, 1)],
+       ["PCI", high_pci, "sand_grain_colour", (0.5, 0, 1)],
+       ["PCI", high_pci, "sand_grain_colour", (0.25, 0, 1)],
+       ["PCI", high_pci, "sand_grain_colour", (0, 0, 1)],
 ]
 
 low_pci = 1.0
