@@ -165,6 +165,35 @@ def assess_all_ppo_binned(model_name, n=5, bin_size=200, mu_i_scaling=10, mu_a_s
     return i_compiled_results, a_compiled_results
 
 
+def assess_ppo_binned(model_name, assay_config, n=5, bin_size=200, mu_i_scaling=10, mu_a_scaling=np.pi/4):
+    i_bins = []
+    a_bins = []
+    score_count_bins = []
+
+    for i in range(1, n+1):
+        d = load_data(model_name, assay_config, f"Naturalistic-{i}")
+        n_bins_required = math.ceil(d["mu_angle"].shape[0]/bin_size)
+        while n_bins_required > len(score_count_bins):
+            i_bins.append(0)
+            a_bins.append(0)
+            score_count_bins.append(0)
+
+        for bin in range(int(n_bins_required)):
+            impulse_slice = d["mu_impulse"][int(bin*bin_size): int(bin*bin_size)+bin_size, 0] * mu_i_scaling
+            angle_slice = d["mu_angle"][int(bin*bin_size): int(bin*bin_size)+bin_size, 0] * mu_a_scaling
+            i_het, a_het = compute_action_heterogeneity_continuous(impulse_slice, angle_slice, mu_i_scaling, mu_a_scaling)
+            i_bins[bin] += i_het
+            a_bins[bin] += a_het
+            score_count_bins[bin] += 1
+
+        i_bins = np.array(i_bins) / np.array(score_count_bins)
+        a_bins = np.array(a_bins) / np.array(score_count_bins)
+
+        i_compiled_results = i_bins
+        a_compiled_results = a_bins
+    return i_compiled_results, a_compiled_results
+
+
 def plot_binned_results(results, model_names, bin_size, initialisation_period):
     configs = results[0].keys()
 
@@ -191,14 +220,15 @@ def plot_binned_results(results, model_names, bin_size, initialisation_period):
 
 
 if __name__ == "__main__":
-
+    actions = load_data("ppo_scaffold_21-2", "Interruptions-W", "Naturalistic-4")
+    ppo_control_i, ppo_control_a = assess_ppo_binned("ppo_scaffold_21-2", "Behavioural-Data-Free", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
     ppo_results_i, ppo_results_a = assess_all_ppo_binned("ppo_scaffold_21-1", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
-    plot_binned_results([ppo_results_i], ["ppo_scaffold_21-1"], 101, 200)
-    plot_binned_results([ppo_results_a], ["ppo_scaffold_21-1"], 101, 200)
+    ppo_results_i2, ppo_results_a2 = assess_all_ppo_binned("ppo_scaffold_21-2", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
+    plot_binned_results([ppo_results_i, ppo_results_i2], ["ppo_scaffold_21-1", "ppo_scaffold_21-2"], 101, 200)
+    plot_binned_results([ppo_results_a, ppo_results_a2], ["ppo_scaffold_21-1", "ppo_scaffold_21-2"], 101, 200)
     # nearly_uniform = np.repeat(np.array([i for i in range(10)]), 8, 0)
     # nearly_uniform[0] = 1
     # compute_action_heterogeneity_discrete(nearly_uniform)
-    actions = load_data("ppo_scaffold_21-1", "Interruptions-W", "Naturalistic-3")
 
     results1 = assess_all_dqn_binned("dqn_scaffold_18-1", 5, 101)
     results2 = assess_all_dqn_binned("dqn_scaffold_18-2", 5, 101)
