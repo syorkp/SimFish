@@ -186,11 +186,11 @@ def assess_ppo_binned(model_name, assay_config, n=5, bin_size=200, mu_i_scaling=
             a_bins[bin] += a_het
             score_count_bins[bin] += 1
 
-        i_bins = np.array(i_bins) / np.array(score_count_bins)
-        a_bins = np.array(a_bins) / np.array(score_count_bins)
+    i_bins = np.array(i_bins) / np.array(score_count_bins)
+    a_bins = np.array(a_bins) / np.array(score_count_bins)
 
-        i_compiled_results = i_bins
-        a_compiled_results = a_bins
+    i_compiled_results = i_bins
+    a_compiled_results = a_bins
     return i_compiled_results, a_compiled_results
 
 
@@ -222,10 +222,16 @@ def plot_binned_results(results, model_names, bin_size, initialisation_period):
 if __name__ == "__main__":
     actions = load_data("ppo_scaffold_21-2", "Interruptions-W", "Naturalistic-4")
     ppo_control_i, ppo_control_a = assess_ppo_binned("ppo_scaffold_21-2", "Behavioural-Data-Free", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
+
     ppo_results_i, ppo_results_a = assess_all_ppo_binned("ppo_scaffold_21-1", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
     ppo_results_i2, ppo_results_a2 = assess_all_ppo_binned("ppo_scaffold_21-2", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
-    plot_binned_results([ppo_results_i, ppo_results_i2], ["ppo_scaffold_21-1", "ppo_scaffold_21-2"], 101, 200)
-    plot_binned_results([ppo_results_a, ppo_results_a2], ["ppo_scaffold_21-1", "ppo_scaffold_21-2"], 101, 200)
+
+    ppo_control_i = {key: ppo_control_i for key in ppo_results_i.keys()}
+    ppo_control_a = {key: ppo_control_a for key in ppo_results_a.keys()}
+
+
+    plot_binned_results([ppo_results_i, ppo_results_i2, ppo_control_i], ["ppo_scaffold_21-1", "ppo_scaffold_21-2", "Control"], 101, 200)
+    plot_binned_results([ppo_results_a, ppo_results_a2, ppo_control_a], ["ppo_scaffold_21-1", "ppo_scaffold_21-2", "Control"], 101, 200)
     # nearly_uniform = np.repeat(np.array([i for i in range(10)]), 8, 0)
     # nearly_uniform[0] = 1
     # compute_action_heterogeneity_discrete(nearly_uniform)
@@ -233,7 +239,7 @@ if __name__ == "__main__":
     results1 = assess_all_dqn_binned("dqn_scaffold_18-1", 5, 101)
     results2 = assess_all_dqn_binned("dqn_scaffold_18-2", 5, 101)
     results3 = assess_all_dqn_binned("dqn_scaffold_14-1", 5, 101)
-    # results4 = assess_all_dqn_binned("dqn_scaffold_14-2", 5, 80)
+    results4 = assess_all_dqn_binned("dqn_scaffold_14-2", 5, 101)
     results5 = assess_all_dqn_binned("dqn_scaffold_26-1", 5, 101)
     results6 = assess_all_dqn_binned("dqn_scaffold_26-2", 5, 101)
     # results7 = assess_all_dqn_binned("dqn_scaffold_30-1", 5, 80)
@@ -241,9 +247,9 @@ if __name__ == "__main__":
 
     actions = load_data("dqn_scaffold_14-1", "Interruptions-H", "Naturalistic-1")
 
-    model_names = ["dqn_scaffold_18-1", "dqn_scaffold_18-2", "dqn_scaffold_14-1", "dqn_scaffold_26-1", "dqn_scaffold_26-2"]
+    model_names = ["dqn_scaffold_18-1", "dqn_scaffold_18-2", "dqn_scaffold_14-1", "dqn_scaffold_14-2", "dqn_scaffold_26-1", "dqn_scaffold_26-2"]
     # results4 = assess_all_dqn_binned("dqn_scaffold_14-2", 5, 80)
-    plot_binned_results([results1, results2, results3, results5, results6], model_names, bin_size=101, initialisation_period=200, )
+    plot_binned_results([results1, results2, results3, results4, results5, results6], model_names, bin_size=101, initialisation_period=200, )
     # assess_all_dqn("dqn_scaffold_18-2", 5, 200)
 
 

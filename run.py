@@ -18297,7 +18297,7 @@ dqn_30_complete_interruptions = [
         "Continuous Actions": False,
         "Learning Algorithm": "DQN",
         "Priority": 2,
-        "Using GPU": True,
+        "Using GPU": False,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
