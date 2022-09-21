@@ -20645,9 +20645,9 @@ complete_interruptions_dqn = [
         ],
         "Full Reafference": True,
     },
-# ]
+]
 
-# complete_interruptions_ppo = [
+complete_interruptions_ppo = [
     # Trial 1
     {
         "Model Name": "ppo_scaffold_21",
@@ -22131,7 +22131,7 @@ complete_interruptions_dqn = [
 
 
 if run_config is None:
-    run_config = complete_interruptions_dqn
+    run_config = complete_interruptions_ppo
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]
