@@ -36,13 +36,14 @@ def compare_action_usage_over_time(data, bins=5):
     # plt.legend([get_action_name(int(a)) for a in reversed(actions_present)])
     plt.show()
 
+
 def compare_action_usage_over_time_multiple_models(datas):
     ...
 
 
 if __name__ == "__main__":
-    data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-2")
-    compare_action_usage_over_time(data, bins=8)
+    data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", f"Naturalistic-1")
+    compare_action_usage_over_time(data, bins=5)
 
 
 
