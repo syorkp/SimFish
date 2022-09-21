@@ -18430,7 +18430,7 @@ dqn_30_complete_interruptions = [
                                   }
             },
         ],
-        "Full Reafference": True,
+        "Full Reafference": False,
     },
 
     # Trial 1
