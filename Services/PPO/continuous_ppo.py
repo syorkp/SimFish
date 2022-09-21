@@ -402,7 +402,6 @@ class ContinuousPPO(BasePPO):
                                  actor_rnn_state_ref=rnn_state_actor_ref,
                                  critic_rnn_state=rnn_state_critic,
                                  critic_rnn_state_ref=rnn_state_critic_ref,
-                                 efference_copy=a,
                                  )
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
 
@@ -415,7 +414,8 @@ class ContinuousPPO(BasePPO):
                                                      sand_grain_positions,
                                                      vegetation_positions,
                                                      self.simulation.fish.body.angle,
-                                                     self.simulation.fish.salt_health
+                                                     self.simulation.fish.salt_health,
+                                                     efference_copy=a,
                                                      )
         if "convolutional layers" in self.buffer.recordings:
             self.buffer.save_conv_states(conv1l_actor, conv2l_actor, conv3l_actor, conv4l_actor, conv1r_actor,

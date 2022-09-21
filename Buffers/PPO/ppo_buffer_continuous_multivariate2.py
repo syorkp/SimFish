@@ -66,7 +66,7 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
 
     def add_training(self, observation, internal_state, action, reward, value, l_p_action, actor_rnn_state,
                      actor_rnn_state_ref, critic_rnn_state=None, critic_rnn_state_ref=None, prediction_error=None,
-                     target_output=None, efference_copy=None):
+                     target_output=None):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
         self.reward_buffer.append(reward)
@@ -84,9 +84,6 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         if self.use_rnd:  # If using RND
             self.target_output_buffer.append(target_output[0])
             self.prediction_error_buffer.append(prediction_error)
-
-        if efference_copy is not None:
-            self.efference_copy_buffer.append(efference_copy)
 
     def add_logging(self, mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref):
         self.mu_i_buffer.append(mu_i)

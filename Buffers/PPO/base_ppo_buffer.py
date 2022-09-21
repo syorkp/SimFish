@@ -292,8 +292,6 @@ class BasePPOBuffer:
             self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)
             self.create_data_group("sand_grain_positions", np.array(self.sand_grain_position_buffer), assay_group)
             self.create_data_group("vegetation_positions", np.array(self.vegetation_position_buffer), assay_group)
-            self.efference_copy_buffer = np.array(self.efference_copy_buffer)
-            self.create_data_group("efference_copy", self.efference_copy_buffer, assay_group)
 
         if "convolutional layers" in self.unit_recordings:
             self.create_data_group("actor_conv1l", np.array(self.actor_conv1l_buffer), assay_group)

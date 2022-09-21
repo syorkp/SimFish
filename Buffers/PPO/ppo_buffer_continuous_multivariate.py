@@ -51,14 +51,11 @@ class PPOBufferContinuousMultivariate(BasePPOBuffer):
         self.efference_copy_buffer = []
 
     def add_training(self, observation, internal_state, action, reward, value, l_p_action, actor_rnn_state,
-                     actor_rnn_state_ref, critic_rnn_state, critic_rnn_state_ref, efference_copy=None):
+                     actor_rnn_state_ref, critic_rnn_state, critic_rnn_state_ref):
         super().add_training(observation, internal_state, reward, action, value, actor_rnn_state,
                      actor_rnn_state_ref, critic_rnn_state, critic_rnn_state_ref)
         self.log_action_probability_buffer.append(l_p_action)
         self.action_buffer.append(action)
-
-        if efference_copy is not None:
-            self.efference_copy_buffer.append(efference_copy)
 
     def add_logging(self, mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref):
         self.mu_i_buffer.append(mu_i)
