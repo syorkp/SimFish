@@ -97,10 +97,12 @@ def extract_exploration_action_sequences_with_positions(data, possible_visual_ra
     return exploration_timestamps_compiled, actions_compiled, fish_positions_compiled
 
 
-def get_exploration_sequences(model_name, assay_config, assay_id, n):
+def get_exploration_sequences(model_name, assay_config, assay_id, n, data_cutoff=None):
     all_exploration_sequences = []
     for i in range(1, n+1):
         data = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        if data_cutoff is not None:
+            data = {key: data[key][:data_cutoff] for key in data.keys()}
         all_exploration_sequences = all_exploration_sequences + extract_exploration_action_sequences_with_positions(data)[1]
     return all_exploration_sequences
 
@@ -239,11 +241,13 @@ def return_no_prey_stimuli_sequences(data, assumed_prey_stim_level=23, assumed_r
     return all_action_sequences
 
 
-def get_no_prey_stimuli_sequences(model_name, assay_config, assay_id, n):
+def get_no_prey_stimuli_sequences(model_name, assay_config, assay_id, n, data_cutoff=None):
     """Gathers all sequences (timestamps, actions) where UV channel shows no prey stimuli."""
     all_exploration_sequences = []
     for i in range(1, n + 1):
         data = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        if data_cutoff is not None:
+            data = {key: data[key][:data_cutoff] for key in data.keys()}
         all_exploration_sequences = all_exploration_sequences + extract_no_prey_stimuli_sequences(data)
     return all_exploration_sequences, None
 

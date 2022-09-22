@@ -1,8 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+from matplotlib.patches import Patch
 
 from Analysis.load_data import load_data
+from Analysis.Behavioural.VisTools.get_action_name import get_action_name
 
 
 def get_provided_efference(letter):
@@ -249,22 +251,170 @@ def plot_binned_results(results, model_names, bin_size, initialisation_period, f
     plt.clf()
 
 
+def display_action_plots_discrete(model_name, assay_config, assay_id, n, figure_name, slice_size=200):
+    actions_compiled = []
+    for i in range(1, n+1):
+        model_compiled = []
+        d = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        for i in range(0, d["action"].shape[0], slice_size):
+            model_compiled.append(d["action"][i: i+slice_size])
+        actions_compiled.append(model_compiled)
+
+    actions_compiled2 = [[actions_compiled[trial][slice] for trial in range(len(actions_compiled))] for slice in range(10)]
+    actions_compiled2 = [actions_compiled2[i] + [(np.ones(slice_size)*10).astype(int) for j in range(len(actions_compiled2[i]))] for i in range(len(actions_compiled2))]
+    actions_compiled2 = np.concatenate((actions_compiled2))
+
+    color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'gold', "c", "m", "m", "black", "white"]
+    fig, ax = plt.subplots(figsize=(14, 10))
+    for i, seq in enumerate(actions_compiled2):
+        for j, a in enumerate(reversed(seq)):
+            ax.fill_between((j, j + 1), -i, -i - 1, color=color_set[a])
+
+    seen = set()
+    seen_add = seen.add
+    # actions_compiled_flattened = np.concatenate(np.array(used_sequences))
+    actions_present = [i for i in range(10)]
+    # actions_present = [x for x in actions_compiled_flattened if not (x in seen or seen_add(x))]
+    ordered_actions_present = sorted(actions_present)
+    associated_actions = [get_action_name(a) for a in ordered_actions_present]
+
+    legend_elements = [Patch(facecolor=color_set[a], label=associated_actions[i]) for i, a in enumerate(ordered_actions_present)]# [0], [0], marker="o", color=color_set[i], label=associated_actions[i]) for i in actions_present]
+
+
+    plt.legend(legend_elements, associated_actions, bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
+    plt.axis("scaled")
+    plt.savefig(f"{figure_name}.png")
+    plt.close(fig)
+    plt.clf()
+
+
+def bin_impulses_and_angles(impulses, angles, max_i, max_a):
+    impulse_bins = np.linspace(0, max_i, 11)
+    angle_bins = np.linspace(0, max_a, 11)
+
+    discrete_impulses = np.zeros((len(impulses)))
+    discrete_angles = np.zeros((len(angles)))
+
+    for i in range(10):
+        within_bin = (impulse_bins[i] <= impulses) * (impulses < impulse_bins[i + 1]) * 1
+        discrete_impulses[within_bin] = i
+
+        within_bin = (angle_bins[i] <= angles) * (angles < angle_bins[i + 1]) * 1
+        discrete_angles[within_bin] = i
+    return discrete_impulses, discrete_angles
+
+
+def display_action_plots_continuous(model_name, assay_config, assay_id, n, figure_name, max_i, max_a, slice_size=200):
+    impulses_compiled = []
+    angles_compiled = []
+    for i in range(1, n+1):
+        model_compiled_i = []
+        model_compiled_a = []
+        d = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        for i in range(0, d["impulse"].shape[0], slice_size):
+            model_compiled_i.append(d["impulse"][i: i+slice_size])
+            model_compiled_a.append(d["angle"][i: i + slice_size])
+        impulses_compiled.append(model_compiled_a)
+        angles_compiled.append(model_compiled_a)
+
+    # Bin all
+    impulses_compiled, angles_compiled = [[bin_impulses_and_angles(impulses_compiled[i], angles_compiled[i], max_i, max_a)]
+                                          for i in range(len(impulses_compiled))]
+
+
+    actions_compiled2 = [[actions_compiled[trial][slice] for trial in range(len(actions_compiled))] for slice in range(10)]
+    actions_compiled2 = [actions_compiled2[i] + [(np.ones(slice_size)*10).astype(int) for j in range(len(actions_compiled2[i]))] for i in range(len(actions_compiled2))]
+    actions_compiled2 = np.concatenate((actions_compiled2))
+
+    color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'gold', "c", "m", "m", "black", "white"]
+    fig, ax = plt.subplots(figsize=(14, 10))
+    for i, seq in enumerate(actions_compiled2):
+        for j, a in enumerate(reversed(seq)):
+            ax.fill_between((j, j + 1), -i, -i - 1, color=color_set[a])
+
+    seen = set()
+    seen_add = seen.add
+    # actions_compiled_flattened = np.concatenate(np.array(used_sequences))
+    actions_present = [i for i in range(10)]
+    # actions_present = [x for x in actions_compiled_flattened if not (x in seen or seen_add(x))]
+    ordered_actions_present = sorted(actions_present)
+    associated_actions = [get_action_name(a) for a in ordered_actions_present]
+
+    legend_elements = [Patch(facecolor=color_set[a], label=associated_actions[i]) for i, a in enumerate(ordered_actions_present)]# [0], [0], marker="o", color=color_set[i], label=associated_actions[i]) for i in actions_present]
+
+    plt.legend(legend_elements, associated_actions, bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
+    plt.axis("scaled")
+    plt.savefig(f"{figure_name}.png")
+    plt.close(fig)
+    plt.clf()
+
+
+def display_ppo_action_choice(model_name, assay_config, assay_config_control, assay_id, n):
+    impulses_compiled = []
+    angles_compiled = []
+
+    impulses_compiled_control = []
+    angles_compiled_control = []
+    for i in range(1, n+1):
+        data = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        impulses_compiled.append(data["impulse"])
+        angles_compiled.append(data["angle"])
+
+        data = load_data(model_name, assay_config_control, f"{assay_id}-{i}")
+        impulses_compiled_control.append(data["impulse"])
+        angles_compiled_control.append(data["angle"])
+
+    for impulse, impulse_c in zip(impulses_compiled, impulses_compiled_control):
+        plt.plot(impulse, color="blue", alpha=0.5)
+        plt.plot(impulse_c, color="orange", alpha=0.5)
+
+    mini, maxi = np.min(np.concatenate((np.concatenate((impulses_compiled)), np.concatenate((impulses_compiled_control))))),\
+                 np.max(np.concatenate((np.concatenate((impulses_compiled)), np.concatenate((impulses_compiled_control)))))
+    plt.vlines(200, mini, maxi, color="r")
+    plt.xlabel("Step")
+    plt.ylabel("Impulse")
+    plt.savefig("PPO impulses.png")
+    plt.clf()
+
+    for angle, angle_c in zip(angles_compiled, angles_compiled_control):
+        plt.plot(angle, color="blue", alpha=0.5)
+        plt.plot(angle_c, color="orange", alpha=0.5)
+
+    mina, maxa = np.min(np.concatenate((np.concatenate((angles_compiled)), np.concatenate((angles_compiled_control))))),\
+                 np.max(np.concatenate((np.concatenate((angles_compiled)), np.concatenate((angles_compiled_control)))))
+    plt.vlines(200, mina, maxa,  color="r")
+    plt.xlabel("Step")
+    plt.ylabel("Angle (pi radians)")
+    plt.savefig("PPO angles.png")
+    plt.clf()
+
+
 if __name__ == "__main__":
+
+    display_ppo_action_choice("ppo_scaffold_21-2", "Interruptions-Z", "Behavioural-Data-Free", "Naturalistic", 5)
+    # display_action_plots_continuous("ppo_scaffold_21-2", "Interruptions-W", "Naturalistic", 5, "ppo_21_2_actions",
+    #                                 max_i=16, max_a=1)
     # PPO
-    # actions = load_data("ppo_scaffold_21-2", "Interruptions-W", "Naturalistic-4")
-    ppo_control_i, ppo_control_a = assess_ppo_binned("ppo_scaffold_21-1", "Behavioural-Data-Free", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
-    ppo_control_i2, ppo_control_a2 = assess_ppo_binned("ppo_scaffold_21-2", "Behavioural-Data-Free", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
-
-    ppo_results_i, ppo_results_a = assess_all_ppo_binned("ppo_scaffold_21-1", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
-    ppo_results_i2, ppo_results_a2 = assess_all_ppo_binned("ppo_scaffold_21-2", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
-
-    plot_binned_results([ppo_results_i, ppo_results_i2], ["ppo_scaffold_21-1", "ppo_scaffold_21-2"], 101,
-                        200, figure_name="all_ppo_heterogeneity_impulse", control_results=[ppo_control_i, ppo_control_i2])
-    plot_binned_results([ppo_results_a, ppo_results_a2], ["ppo_scaffold_21-1", "ppo_scaffold_21-2"], 101,
-                        200, figure_name="all_ppo_heterogeneity_angle", control_results=[ppo_control_a, ppo_control_a2])
+    # ppo_control_i, ppo_control_a = assess_ppo_binned("ppo_scaffold_21-1", "Behavioural-Data-Free", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
+    # ppo_control_i2, ppo_control_a2 = assess_ppo_binned("ppo_scaffold_21-2", "Behavioural-Data-Free", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
+    #
+    # ppo_results_i, ppo_results_a = assess_all_ppo_binned("ppo_scaffold_21-1", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
+    # ppo_results_i2, ppo_results_a2 = assess_all_ppo_binned("ppo_scaffold_21-2", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
+    #
+    # plot_binned_results([ppo_results_i, ppo_results_i2], ["ppo_scaffold_21-1", "ppo_scaffold_21-2"], 101,
+    #                     200, figure_name="all_ppo_heterogeneity_impulse", control_results=[ppo_control_i, ppo_control_i2])
+    # plot_binned_results([ppo_results_a, ppo_results_a2], ["ppo_scaffold_21-1", "ppo_scaffold_21-2"], 101,
+    #                     200, figure_name="all_ppo_heterogeneity_angle", control_results=[ppo_control_a, ppo_control_a2])
 
 
     # DQN
+    # display_action_plots_discrete("dqn_scaffold_14-1", "Interruptions-H", "Naturalistic", 5,
+    #                               figure_name="dqn_14_1_H_actions", slice_size=100)
+    # display_action_plots_discrete("dqn_scaffold_30-2", "Interruptions-H", "Naturalistic", 5,
+    #                               figure_name="dqn_30_2_H_actions", slice_size=100)
+    # display_action_plots_discrete("dqn_scaffold_18-2", "Interruptions-H", "Naturalistic", 5,
+    #                               figure_name="dqn_18_2_H_actions", slice_size=100)
+
     # results1 = assess_all_dqn_binned("dqn_scaffold_18-1", 5, 101)
     # results2 = assess_all_dqn_binned("dqn_scaffold_18-2", 5, 101)
     # results3 = assess_all_dqn_binned("dqn_scaffold_14-1", 5, 101)

@@ -22349,6 +22349,127 @@ complete_interruptions_ppo = [
     },
 ]
 
+# New, specific models to test
+
+dqn_scaffold_30_noiseless_1 = [
+    {
+        "Model Name": "dqn_scaffold_30_noiseless",
+        "Environment Name": "dqn_scaffold_30_noiseless",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+dqn_scaffold_30_noiseless_2 = [
+    {
+        "Model Name": "dqn_scaffold_30_noiseless",
+        "Environment Name": "dqn_scaffold_30_noiseless",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+dqn_scaffold_30_even_p_1 = [
+    {
+        "Model Name": "dqn_scaffold_30_even_p",
+        "Environment Name": "dqn_scaffold_30_even_p",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+dqn_scaffold_30_even_p_2 = [
+    {
+        "Model Name": "dqn_scaffold_30_even_p",
+        "Environment Name": "dqn_scaffold_30_even_p",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+dqn_scaffold_30_static_p_1 = [
+    {
+        "Model Name": "dqn_scaffold_30_static_p",
+        "Environment Name": "dqn_scaffold_30_static_p",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+dqn_scaffold_30_static_p_2 = [
+    {
+        "Model Name": "dqn_scaffold_30_static_p",
+        "Environment Name": "dqn_scaffold_30_static_p",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
 
 if run_config is None:
     run_config = ppo_21_data_gathering

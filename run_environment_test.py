@@ -53,6 +53,7 @@ else:
     file_path = os.path.join(dirname, f"Configurations/Assay-Configs/{arg}_env.json")
     with open(file_path, 'r') as f:
         env = json.load(f)
+
     sim_state = DiscreteNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=True,
                                                 using_gpu=False)
 

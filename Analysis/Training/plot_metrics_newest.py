@@ -136,10 +136,10 @@ def plot_scaffold_durations(model_name):
 
 if __name__ == "__main__":
     # models = ["ppo_scaffold_22-1", "ppo_scaffold_22-2"]
-    models = ["dqn_scaffold_26-1", "dqn_scaffold_26-2", "dqn_scaffold_26-3", "dqn_scaffold_26-4"]
-    models = ["dqn_scaffold_27-1", "dqn_scaffold_27-2"]
-    models = ["dqn_scaffold_28-1", "dqn_scaffold_28-2"]
-    models = ["ppo_scaffold_21-1", "ppo_scaffold_21-2"]
+    models = ["dqn_scaffold_26-1", "dqn_scaffold_26-2"]#, "dqn_scaffold_26-3", "dqn_scaffold_26-4"]
+    # models = ["dqn_scaffold_27-1", "dqn_scaffold_27-2"]
+    models = ["dqn_scaffold_30-1", "dqn_scaffold_30-2"]
+    # models = ["ppo_scaffold_21-1", "ppo_scaffold_21-2"]
 
     """Possible metrics:
        - "prey capture index (fraction caught)"
@@ -154,7 +154,7 @@ if __name__ == "__main__":
        - "predators avoided"
        - "prey caught"
     """
-    chosen_metrics = ["prey caught", "capture success rate"]
+    chosen_metrics = ["prey capture index (fraction caught)", "capture success rate", "Phototaxis Index"]
     plot_multiple_metrics_multiple_models(models, chosen_metrics, window=40, interpolate_scaffold_points=True)
     # plot_scaffold_durations(models[0])
 

@@ -55,7 +55,7 @@ def get_all_angle_sequences_labelled(compiled_turn_directions, compiled_labels):
 
 
 def plot_all_turn_analysis_multiple_models_continuous(model_names, assay_config, assay_id, n,
-                                                      use_purely_turn_sequences=False, threshold_for_angle=0.1):
+                                                      use_purely_turn_sequences=False, threshold_for_angle=0.1, data_cutoff=None):
     compiled_l_exploration = []
     compiled_r_exploration = []
     compiled_sl_exploration = []
@@ -75,14 +75,17 @@ def plot_all_turn_analysis_multiple_models_continuous(model_names, assay_config,
                                                                                                        assay_id, n)
         all_angles = get_all_angles(model_name, assay_config, assay_id, n)
 
+        if data_cutoff is not None:
+            no_prey_exploration_labelled = [labels[:data_cutoff] for labels in no_prey_exploration_labelled]
+            free_swimming_exploration_labelled = [labels[:data_cutoff] for labels in free_swimming_exploration_labelled]
+            all_angles = [angles[:data_cutoff] for angles in all_angles]
+
         # Convert angle sequences to int encoding
         all_directions = [convert_continuous_angles_to_turn_directions(trial, threshold_for_angle=0.05) for trial in all_angles]
 
         # Get sequences of angles
         no_prey_exploration_angle_sequences = get_all_angle_sequences_labelled(all_directions, no_prey_exploration_labelled)
         free_swimming_exploration_angle_sequences = get_all_angle_sequences_labelled(all_directions, free_swimming_exploration_labelled)
-
-
 
         if use_purely_turn_sequences:
             turn_exploration_sequences = extract_purely_turn_sequences(free_swimming_exploration_angle_sequences, 5)
@@ -123,7 +126,7 @@ def plot_all_turn_analysis_multiple_models_continuous(model_names, assay_config,
 
 if __name__ == "__main__":
     plot_all_turn_analysis_multiple_models_continuous(["ppo_scaffold_21-1", "ppo_scaffold_21-2"], "Behavioural-Data-Free",
-                                           f"Naturalistic", 10, threshold_for_angle=0.05)
+                                           f"Naturalistic", 10, threshold_for_angle=0.05, data_cutoff=None)
     # d = load_data("ppo_scaffold_21-1", "Behavioural-Data-Free", "Naturalistic-3")
     # exploration_np_ts = label_exploration_sequences_free_swimming(d) * 1
     # all_turns = d["angle"][1:]

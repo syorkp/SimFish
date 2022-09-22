@@ -11,10 +11,7 @@ from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import
 from Analysis.Behavioural.TurnChains.turning_analysis_shared import model_of_action_switching, plot_turning_sequences, \
     randomly_switching_fish, cumulative_switching_probability_plot, cumulative_turn_direction_plot_multiple_models, \
     cumulative_switching_probability_plot_multiple_models
-
-
-
-
+from Analysis.Behavioural.TurnChains.turning_analysis_shared import cumulative_turn_direction_plot
 
 
 def get_cumulative_switching_probability_plot(action_sequences, figure_save_location):
@@ -22,9 +19,6 @@ def get_cumulative_switching_probability_plot(action_sequences, figure_save_loca
     l, r, sl, sr = model_of_action_switching(turn_sequences)
     l2, r2, sl2, sr2 = randomly_switching_fish()
     cumulative_switching_probability_plot(sl, sr, sl2, sr2, figure_save_location)
-
-
-
 
 
 def divide_sequences(action_sequences):
@@ -47,11 +41,9 @@ def get_frameshift_sequences(action_sequences):
     return new_sequences
 
 
-
-
-def plot_all_turn_analysis(model_name, assay_config, assay_id, n, use_purely_turn_sequences=True):
-    no_prey_actions, no_prey_timestamps = get_no_prey_stimuli_sequences(model_name, assay_config, assay_id, n)
-    otherwise_exploration_sequences = get_exploration_sequences(model_name, assay_config, assay_id, n)
+def plot_all_turn_analysis(model_name, assay_config, assay_id, n, use_purely_turn_sequences=True, data_cutoff=None):
+    no_prey_actions, no_prey_timestamps = get_no_prey_stimuli_sequences(model_name, assay_config, assay_id, n, data_cutoff)
+    otherwise_exploration_sequences = get_exploration_sequences(model_name, assay_config, assay_id, n, data_cutoff)
 
     if use_purely_turn_sequences:
         turn_exploration_sequences = extract_purely_turn_sequences(otherwise_exploration_sequences, 5)
@@ -76,7 +68,8 @@ def plot_all_turn_analysis(model_name, assay_config, assay_id, n, use_purely_tur
     cumulative_switching_probability_plot(sl, sr, sl2, sr2, save_location=f"Cumulative Switching Probability (no prey) {model_name}")
 
 
-def plot_all_turn_analysis_multiple_models_discrete(model_names, assay_config, assay_id, n, use_purely_turn_sequences=True):
+def plot_all_turn_analysis_multiple_models_discrete(model_names, assay_config, assay_id, n, use_purely_turn_sequences=True,
+                                                    data_cutoff=None):
     compiled_l_exploration = []
     compiled_r_exploration = []
     compiled_sl_exploration = []
@@ -89,8 +82,8 @@ def plot_all_turn_analysis_multiple_models_discrete(model_names, assay_config, a
 
     turn_no_prey_sequences_list = []
     for model_name in model_names:
-        no_prey_actions, no_prey_timestamps = get_no_prey_stimuli_sequences(model_name, assay_config, assay_id, n)
-        otherwise_exploration_sequences = get_exploration_sequences(model_name, assay_config, assay_id, n)
+        no_prey_actions, no_prey_timestamps = get_no_prey_stimuli_sequences(model_name, assay_config, assay_id, n, data_cutoff=data_cutoff)
+        otherwise_exploration_sequences = get_exploration_sequences(model_name, assay_config, assay_id, n, data_cutoff=data_cutoff)
 
         if use_purely_turn_sequences:
             turn_exploration_sequences = extract_purely_turn_sequences(otherwise_exploration_sequences, 5)
@@ -134,14 +127,14 @@ if __name__ == "__main__":
     #                        f"Naturalistic", 3)
 
     plot_all_turn_analysis_multiple_models_discrete(["dqn_scaffold_14-1", "dqn_scaffold_14-2"], "Behavioural-Data-Free",
-                                           f"Naturalistic", 10)
+                                                    f"Naturalistic", 10, data_cutoff=1000)
 
-    data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", f"Naturalistic-18")
-    exploration_timestamps, exploration_sequences, exploration_fish_orientations = \
-        extract_exploration_action_sequences_with_fish_angles(data)
-
-    rt_usage = [i for i, a in enumerate(data["action"]) if a == 1 or a == 2]
-    plot_turning_sequences(exploration_fish_orientations[len(exploration_fish_orientations)-1][:-1])
+    # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", f"Naturalistic-18")
+    # exploration_timestamps, exploration_sequences, exploration_fish_orientations = \
+    #     extract_exploration_action_sequences_with_fish_angles(data)
+    #
+    # rt_usage = [i for i, a in enumerate(data["action"]) if a == 1 or a == 2]
+    # plot_turning_sequences(exploration_fish_orientations[len(exploration_fish_orientations)-1][:-1])
 
     # for i in range(len(exploration_fish_orientations)):
     #     # to_keep = [o for t, o in enumerate(exploration_fish_orientations[i])
@@ -182,15 +175,15 @@ if __name__ == "__main__":
     # cumulative_switching_probability_plot(sl_compiled, sr_compiled, sl2_compiled, sr2_compiled)
     # cumulative_turn_direction_plot(turn_exploration_sequences_compiled)
 
-
-    sl_compiled = []
-    sr_compiled = []
-    sl2_compiled = []
-    sr2_compiled = []
-    turn_exploration_sequences_compiled = []
+    #
+    # sl_compiled = []
+    # sr_compiled = []
+    # sl2_compiled = []
+    # sr2_compiled = []
+    # turn_exploration_sequences_compiled = []
 
     # Exploration sequences based on visual stimulation level
-    # plot_all_turn_analysis(f"dqn_scaffold_14-1", "Behavioural-Data-Free", f"Naturalistic", 20)
+    # plot_all_turn_analysis(f"dqn_scaffold_14-1", "Behavioural-Data-Free", f"Naturalistic", 20, data_cutoff=200)
     # plot_all_turn_analysis(f"dqn_scaffold_14-2", "Behavioural-Data-Free", f"Naturalistic", 10)
 
 
