@@ -131,6 +131,28 @@ def assess_all_dqn_binned(model_name, n=5, bin_size=200):
     return compiled_results
 
 
+def assess_dqn_binned(model_name, assay_config, n=5, bin_size=200):
+    bins = []
+    score_count_bins = []
+
+    for i in range(1, n+1):
+        d = load_data(model_name, assay_config, f"Naturalistic-{i}")
+        n_bins_required = math.ceil(d["action"].shape[0]/bin_size)
+        while n_bins_required > len(bins):
+            bins.append(0)
+            score_count_bins.append(0)
+
+        for bin in range(int(n_bins_required)):
+            action_slice = d["action"][int(bin*bin_size): int(bin*bin_size)+bin_size]
+            bins[bin] += compute_action_heterogeneity_discrete(action_slice)
+            score_count_bins[bin] += 1
+
+    bins = np.array(bins) / np.array(score_count_bins)
+    compiled_results = bins
+
+    return compiled_results
+
+
 def assess_all_ppo_binned(model_name, n=5, bin_size=200, mu_i_scaling=10, mu_a_scaling=np.pi/4):
     ppo_assay_config_suffixes = ["V", "W", "X", "Y", "Z"]
     i_compiled_results = {}
@@ -194,63 +216,83 @@ def assess_ppo_binned(model_name, assay_config, n=5, bin_size=200, mu_i_scaling=
     return i_compiled_results, a_compiled_results
 
 
-def plot_binned_results(results, model_names, bin_size, initialisation_period):
+def plot_binned_results(results, model_names, bin_size, initialisation_period, figure_name, control_results=None):
     configs = results[0].keys()
 
-    fig, axs = plt.subplots(len(configs), sharex=True)
+    fig, axs = plt.subplots(len(configs), sharex=True, figsize=(16, 20))
+
+    colours = ["b", "r", "g", "orange", "k", "black", "yellow", "m"]
 
     for i, config in enumerate(configs):
         max_score = 0
 
         for model in range(len(results)):
             bin_labels = [i * bin_size for i in range(results[model][config].shape[0])]
-            axs[i].plot(bin_labels, results[model][config])
+            axs[i].plot(bin_labels, results[model][config], color=colours[model])
 
             if np.max(results[model][config]) > max_score:
                 max_score = np.max(results[model][config])
 
+        if control_results is not None:
+            for model in range(len(results)):
+                bin_labels = [i * bin_size for i in range(control_results[model].shape[0])]
+                axs[i].plot(bin_labels, control_results[model], linestyle="dashed", alpha=0.5, color=colours[model])
+
         axs[i].vlines(initialisation_period, 0, max_score, color="r")
         axs[i].set_ylabel(get_provided_efference(config))
-    axs[-1].set_xlabel("Step")
-    fig.text(0.04, 0.5, 'Efference Copy', va='center', ha='center', rotation='vertical')#, fontsize=rcParams['axes.labelsize'])
+    axs[-1].set_xlabel("Step", fontsize=25)
+    fig.text(0.04, 0.5, 'Efference Copy', va='center', ha='center', rotation='vertical', fontsize=25)
     plt.legend(model_names, loc='center left', bbox_to_anchor=(1, 0.5))
     plt.autoscale()
 
-    plt.show()
+    plt.savefig(f"{figure_name}.jpg")
+    plt.clf()
 
 
 if __name__ == "__main__":
-    actions = load_data("ppo_scaffold_21-2", "Interruptions-W", "Naturalistic-4")
-    ppo_control_i, ppo_control_a = assess_ppo_binned("ppo_scaffold_21-2", "Behavioural-Data-Free", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
+    # PPO
+    # actions = load_data("ppo_scaffold_21-2", "Interruptions-W", "Naturalistic-4")
+    ppo_control_i, ppo_control_a = assess_ppo_binned("ppo_scaffold_21-1", "Behavioural-Data-Free", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
+    ppo_control_i2, ppo_control_a2 = assess_ppo_binned("ppo_scaffold_21-2", "Behavioural-Data-Free", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
 
     ppo_results_i, ppo_results_a = assess_all_ppo_binned("ppo_scaffold_21-1", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
     ppo_results_i2, ppo_results_a2 = assess_all_ppo_binned("ppo_scaffold_21-2", 5, 101, mu_i_scaling=16, mu_a_scaling=1)
 
-    ppo_control_i = {key: ppo_control_i for key in ppo_results_i.keys()}
-    ppo_control_a = {key: ppo_control_a for key in ppo_results_a.keys()}
+    plot_binned_results([ppo_results_i, ppo_results_i2], ["ppo_scaffold_21-1", "ppo_scaffold_21-2"], 101,
+                        200, figure_name="all_ppo_heterogeneity_impulse", control_results=[ppo_control_i, ppo_control_i2])
+    plot_binned_results([ppo_results_a, ppo_results_a2], ["ppo_scaffold_21-1", "ppo_scaffold_21-2"], 101,
+                        200, figure_name="all_ppo_heterogeneity_angle", control_results=[ppo_control_a, ppo_control_a2])
 
 
-    plot_binned_results([ppo_results_i, ppo_results_i2, ppo_control_i], ["ppo_scaffold_21-1", "ppo_scaffold_21-2", "Control"], 101, 200)
-    plot_binned_results([ppo_results_a, ppo_results_a2, ppo_control_a], ["ppo_scaffold_21-1", "ppo_scaffold_21-2", "Control"], 101, 200)
+    # DQN
+    # results1 = assess_all_dqn_binned("dqn_scaffold_18-1", 5, 101)
+    # results2 = assess_all_dqn_binned("dqn_scaffold_18-2", 5, 101)
+    # results3 = assess_all_dqn_binned("dqn_scaffold_14-1", 5, 101)
+    # results4 = assess_all_dqn_binned("dqn_scaffold_14-2", 5, 101)
+    # results5 = assess_all_dqn_binned("dqn_scaffold_26-1", 5, 101)
+    # results6 = assess_all_dqn_binned("dqn_scaffold_26-2", 5, 101)
+    # results7 = assess_all_dqn_binned("dqn_scaffold_30-1", 5, 101)
+    # results8 = assess_all_dqn_binned("dqn_scaffold_30-2", 5, 101)
+    #
+    # control1 = assess_dqn_binned("dqn_scaffold_18-1", "Behavioural-Data-Free", 10, 101)
+    # control2 = assess_dqn_binned("dqn_scaffold_18-2", "Behavioural-Data-Free", 10, 101)
+    # control3 = assess_dqn_binned("dqn_scaffold_14-1", "Behavioural-Data-Free", 10, 101)
+    # control4 = assess_dqn_binned("dqn_scaffold_14-2", "Behavioural-Data-Free", 10, 101)
+    # control5 = assess_dqn_binned("dqn_scaffold_18-1", "Behavioural-Data-Free", 10, 101)
+    # control6 = assess_dqn_binned("dqn_scaffold_18-2", "Behavioural-Data-Free", 10, 101)
+    # control7 = assess_dqn_binned("dqn_scaffold_14-1", "Behavioural-Data-Free", 10, 101)
+    # control8 = assess_dqn_binned("dqn_scaffold_14-2", "Behavioural-Data-Free", 10, 101)
+    #
+    # model_names = ["dqn_scaffold_18-1", "dqn_scaffold_18-2", "dqn_scaffold_14-1", "dqn_scaffold_14-2",
+    #                "dqn_scaffold_26-1", "dqn_scaffold_26-2", "dqn_scaffold_30-1", "dqn_scaffold_30-2"]
+    #
+    # plot_binned_results([results1, results2, results3, results4, results5, results6, results7, results8],
+    #                     model_names, bin_size=101, initialisation_period=200, figure_name="all_dqn_heterogeneity",
+    #                     control_results=[control1, control2, control3, control4, control5, control6, control7, control8])
+
+
+    # Example for nearly fully heterogenous actions
     # nearly_uniform = np.repeat(np.array([i for i in range(10)]), 8, 0)
     # nearly_uniform[0] = 1
     # compute_action_heterogeneity_discrete(nearly_uniform)
-
-    results1 = assess_all_dqn_binned("dqn_scaffold_18-1", 5, 101)
-    results2 = assess_all_dqn_binned("dqn_scaffold_18-2", 5, 101)
-    results3 = assess_all_dqn_binned("dqn_scaffold_14-1", 5, 101)
-    results4 = assess_all_dqn_binned("dqn_scaffold_14-2", 5, 101)
-    results5 = assess_all_dqn_binned("dqn_scaffold_26-1", 5, 101)
-    results6 = assess_all_dqn_binned("dqn_scaffold_26-2", 5, 101)
-    # results7 = assess_all_dqn_binned("dqn_scaffold_30-1", 5, 80)
-    # results8 = assess_all_dqn_binned("dqn_scaffold_30-2", 5, 80)
-
-    actions = load_data("dqn_scaffold_14-1", "Interruptions-H", "Naturalistic-1")
-
-    model_names = ["dqn_scaffold_18-1", "dqn_scaffold_18-2", "dqn_scaffold_14-1", "dqn_scaffold_14-2", "dqn_scaffold_26-1", "dqn_scaffold_26-2"]
-    # results4 = assess_all_dqn_binned("dqn_scaffold_14-2", 5, 80)
-    plot_binned_results([results1, results2, results3, results4, results5, results6], model_names, bin_size=101, initialisation_period=200, )
-    # assess_all_dqn("dqn_scaffold_18-2", 5, 200)
-
-
 
