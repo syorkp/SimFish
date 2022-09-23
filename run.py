@@ -104,7 +104,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -122,7 +122,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -140,7 +140,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -158,7 +158,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -176,7 +176,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -194,7 +194,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -212,7 +212,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -230,7 +230,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -248,7 +248,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -266,7 +266,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
     },
@@ -305,7 +305,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -323,7 +323,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -341,7 +341,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -359,7 +359,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -377,7 +377,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -395,7 +395,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -413,7 +413,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -431,7 +431,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -449,7 +449,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -467,7 +467,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
     },
@@ -506,7 +506,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -524,7 +524,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -542,7 +542,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -560,7 +560,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -578,7 +578,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -596,7 +596,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -614,7 +614,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -632,7 +632,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -650,7 +650,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -668,7 +668,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
     },
@@ -707,7 +707,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -725,7 +725,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -743,7 +743,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -761,7 +761,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -779,7 +779,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -797,7 +797,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -815,7 +815,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -833,7 +833,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -851,7 +851,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -869,7 +869,7 @@ dqn_14_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
     }
@@ -911,7 +911,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -929,7 +929,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -947,7 +947,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -965,7 +965,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -983,7 +983,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -1001,7 +1001,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -1019,7 +1019,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -1037,7 +1037,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -1055,7 +1055,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -1073,7 +1073,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": False,
@@ -1113,7 +1113,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -1131,7 +1131,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -1149,7 +1149,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -1167,7 +1167,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -1185,7 +1185,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -1203,7 +1203,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -1221,7 +1221,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -1239,7 +1239,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -1257,7 +1257,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -1275,7 +1275,7 @@ dqn_14_naturalistic_data_2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": False,
@@ -1920,7 +1920,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -1940,7 +1940,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -1960,7 +1960,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -1980,7 +1980,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -2000,7 +2000,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -2020,7 +2020,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -2040,7 +2040,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -2060,7 +2060,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -2080,7 +2080,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -2100,7 +2100,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": False,
@@ -2142,7 +2142,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -2162,7 +2162,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -2182,7 +2182,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -2202,7 +2202,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -2222,7 +2222,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -2242,7 +2242,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -2262,7 +2262,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -2282,7 +2282,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -2302,7 +2302,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -2322,7 +2322,7 @@ dqn_15_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": False,
@@ -2367,7 +2367,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -2387,7 +2387,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -2407,7 +2407,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -2427,7 +2427,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -2447,7 +2447,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -2467,7 +2467,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -2487,7 +2487,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -2507,7 +2507,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -2527,7 +2527,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -2547,7 +2547,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -2589,7 +2589,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -2609,7 +2609,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -2629,7 +2629,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -2649,7 +2649,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -2669,7 +2669,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -2689,7 +2689,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -2709,7 +2709,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -2729,7 +2729,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -2749,7 +2749,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -2769,7 +2769,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -2811,7 +2811,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -2831,7 +2831,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -2851,7 +2851,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -2871,7 +2871,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -2891,7 +2891,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -2911,7 +2911,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -2931,7 +2931,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -2951,7 +2951,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -2971,7 +2971,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -2991,7 +2991,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -3033,7 +3033,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -3053,7 +3053,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -3073,7 +3073,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -3093,7 +3093,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -3113,7 +3113,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -3133,7 +3133,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -3153,7 +3153,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -3173,7 +3173,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -3193,7 +3193,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -3213,7 +3213,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -3255,7 +3255,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -3275,7 +3275,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -3295,7 +3295,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -3315,7 +3315,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -3335,7 +3335,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -3355,7 +3355,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -3375,7 +3375,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -3395,7 +3395,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -3415,7 +3415,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -3435,7 +3435,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -3477,7 +3477,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -3497,7 +3497,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -3517,7 +3517,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -3537,7 +3537,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -3557,7 +3557,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -3577,7 +3577,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -3597,7 +3597,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -3617,7 +3617,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -3637,7 +3637,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -3657,7 +3657,7 @@ dqn_16_17_18_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -3702,7 +3702,7 @@ dqn_18_extra = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -3722,7 +3722,7 @@ dqn_18_extra = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -3742,7 +3742,7 @@ dqn_18_extra = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -3762,7 +3762,7 @@ dqn_18_extra = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -3782,7 +3782,7 @@ dqn_18_extra = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -3802,7 +3802,7 @@ dqn_18_extra = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -3822,7 +3822,7 @@ dqn_18_extra = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -3842,7 +3842,7 @@ dqn_18_extra = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -3862,7 +3862,7 @@ dqn_18_extra = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -3882,7 +3882,7 @@ dqn_18_extra = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -3900,7 +3900,7 @@ dqn_18_extra = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -3918,7 +3918,7 @@ dqn_18_extra = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -3936,7 +3936,7 @@ dqn_18_extra = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -3954,7 +3954,7 @@ dqn_18_extra = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -3972,7 +3972,7 @@ dqn_18_extra = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -3990,7 +3990,7 @@ dqn_18_extra = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -4008,7 +4008,7 @@ dqn_18_extra = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -4026,7 +4026,7 @@ dqn_18_extra = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -4044,7 +4044,7 @@ dqn_18_extra = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -4062,7 +4062,7 @@ dqn_18_extra = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -4107,7 +4107,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -4127,7 +4127,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -4147,7 +4147,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -4167,7 +4167,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -4187,7 +4187,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -4207,7 +4207,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -4227,7 +4227,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -4247,7 +4247,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -4267,7 +4267,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -4287,7 +4287,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -4305,7 +4305,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -4323,7 +4323,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -4341,7 +4341,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -4359,7 +4359,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -4377,7 +4377,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -4395,7 +4395,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -4413,7 +4413,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -4431,7 +4431,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -4449,7 +4449,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -4467,7 +4467,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-21",
@@ -4487,7 +4487,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-22",
@@ -4507,7 +4507,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-23",
@@ -4527,7 +4527,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-24",
@@ -4547,7 +4547,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-25",
@@ -4567,7 +4567,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-26",
@@ -4587,7 +4587,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-27",
@@ -4607,7 +4607,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-28",
@@ -4627,7 +4627,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-29",
@@ -4647,7 +4647,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-30",
@@ -4667,7 +4667,7 @@ dqn_20_naturalistic_data2 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-31",
@@ -4685,7 +4685,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-32",
@@ -4703,7 +4703,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-33",
@@ -4721,7 +4721,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-34",
@@ -4739,7 +4739,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-35",
@@ -4757,7 +4757,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-36",
@@ -4775,7 +4775,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-37",
@@ -4793,7 +4793,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-38",
@@ -4811,7 +4811,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-39",
@@ -4829,7 +4829,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-40",
@@ -4847,7 +4847,7 @@ dqn_20_naturalistic_data2 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -4893,7 +4893,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -4913,7 +4913,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -4933,7 +4933,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -4953,7 +4953,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -4973,7 +4973,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -4993,7 +4993,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -5013,7 +5013,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -5033,7 +5033,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -5053,7 +5053,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -5073,7 +5073,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -5091,7 +5091,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -5109,7 +5109,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -5127,7 +5127,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -5145,7 +5145,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -5163,7 +5163,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -5181,7 +5181,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -5199,7 +5199,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -5217,7 +5217,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -5235,7 +5235,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -5253,7 +5253,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-21",
@@ -5273,7 +5273,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-22",
@@ -5293,7 +5293,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-23",
@@ -5313,7 +5313,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-24",
@@ -5333,7 +5333,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-25",
@@ -5353,7 +5353,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-26",
@@ -5373,7 +5373,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-27",
@@ -5393,7 +5393,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-28",
@@ -5413,7 +5413,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-29",
@@ -5433,7 +5433,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-30",
@@ -5453,7 +5453,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-31",
@@ -5471,7 +5471,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-32",
@@ -5489,7 +5489,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-33",
@@ -5507,7 +5507,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-34",
@@ -5525,7 +5525,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-35",
@@ -5543,7 +5543,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-36",
@@ -5561,7 +5561,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-37",
@@ -5579,7 +5579,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-38",
@@ -5597,7 +5597,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-39",
@@ -5615,7 +5615,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-40",
@@ -5633,7 +5633,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -5675,7 +5675,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -5695,7 +5695,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -5715,7 +5715,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -5735,7 +5735,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -5755,7 +5755,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -5775,7 +5775,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -5795,7 +5795,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -5815,7 +5815,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -5835,7 +5835,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -5855,7 +5855,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -5873,7 +5873,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -5891,7 +5891,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -5909,7 +5909,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -5927,7 +5927,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -5945,7 +5945,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -5963,7 +5963,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -5981,7 +5981,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -5999,7 +5999,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -6017,7 +6017,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -6035,7 +6035,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-21",
@@ -6055,7 +6055,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-22",
@@ -6075,7 +6075,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-23",
@@ -6095,7 +6095,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-24",
@@ -6115,7 +6115,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-25",
@@ -6135,7 +6135,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-26",
@@ -6155,7 +6155,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-27",
@@ -6175,7 +6175,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-28",
@@ -6195,7 +6195,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-29",
@@ -6215,7 +6215,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-30",
@@ -6235,7 +6235,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-31",
@@ -6253,7 +6253,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-32",
@@ -6271,7 +6271,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-33",
@@ -6289,7 +6289,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-34",
@@ -6307,7 +6307,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-35",
@@ -6325,7 +6325,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-36",
@@ -6343,7 +6343,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-37",
@@ -6361,7 +6361,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-38",
@@ -6379,7 +6379,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-39",
@@ -6397,7 +6397,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-40",
@@ -6415,7 +6415,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -6457,7 +6457,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -6477,7 +6477,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -6497,7 +6497,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -6517,7 +6517,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -6537,7 +6537,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -6557,7 +6557,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -6577,7 +6577,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -6597,7 +6597,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -6617,7 +6617,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -6637,7 +6637,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -6655,7 +6655,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -6673,7 +6673,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -6691,7 +6691,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -6709,7 +6709,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -6727,7 +6727,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -6745,7 +6745,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -6763,7 +6763,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -6781,7 +6781,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -6799,7 +6799,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -6817,7 +6817,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-21",
@@ -6837,7 +6837,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-22",
@@ -6857,7 +6857,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-23",
@@ -6877,7 +6877,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-24",
@@ -6897,7 +6897,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-25",
@@ -6917,7 +6917,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-26",
@@ -6937,7 +6937,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-27",
@@ -6957,7 +6957,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-28",
@@ -6977,7 +6977,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-29",
@@ -6997,7 +6997,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-30",
@@ -7017,7 +7017,7 @@ dqn_20123_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-31",
@@ -7035,7 +7035,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-32",
@@ -7053,7 +7053,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-33",
@@ -7071,7 +7071,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-34",
@@ -7089,7 +7089,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-35",
@@ -7107,7 +7107,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-36",
@@ -7125,7 +7125,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-37",
@@ -7143,7 +7143,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-38",
@@ -7161,7 +7161,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-39",
@@ -7179,7 +7179,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-40",
@@ -7197,7 +7197,7 @@ dqn_20123_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -7243,7 +7243,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -7263,7 +7263,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -7283,7 +7283,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -7303,7 +7303,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -7323,7 +7323,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -7343,7 +7343,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -7363,7 +7363,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -7383,7 +7383,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -7403,7 +7403,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -7423,7 +7423,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -7441,7 +7441,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -7459,7 +7459,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -7477,7 +7477,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -7495,7 +7495,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -7513,7 +7513,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -7531,7 +7531,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -7549,7 +7549,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -7567,7 +7567,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -7585,7 +7585,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -7603,7 +7603,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -7645,7 +7645,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -7665,7 +7665,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -7685,7 +7685,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -7705,7 +7705,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -7725,7 +7725,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -7745,7 +7745,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -7765,7 +7765,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -7785,7 +7785,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -7805,7 +7805,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -7825,7 +7825,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -7843,7 +7843,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -7861,7 +7861,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -7879,7 +7879,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -7897,7 +7897,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -7915,7 +7915,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -7933,7 +7933,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -7951,7 +7951,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -7969,7 +7969,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -7987,7 +7987,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -8005,7 +8005,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -8047,7 +8047,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -8067,7 +8067,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -8087,7 +8087,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -8107,7 +8107,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -8127,7 +8127,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -8147,7 +8147,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -8167,7 +8167,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -8187,7 +8187,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -8207,7 +8207,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -8227,7 +8227,7 @@ dqn_19_19nl_naturalistic_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -8245,7 +8245,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -8263,7 +8263,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -8281,7 +8281,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -8299,7 +8299,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -8317,7 +8317,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -8335,7 +8335,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -8353,7 +8353,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -8371,7 +8371,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -8389,7 +8389,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -8407,7 +8407,7 @@ dqn_19_19nl_naturalistic_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
 
         ],
@@ -9275,7 +9275,7 @@ ppo_assay_18 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -9295,7 +9295,7 @@ ppo_assay_18 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -9315,7 +9315,7 @@ ppo_assay_18 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -9335,7 +9335,7 @@ ppo_assay_18 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -9355,7 +9355,7 @@ ppo_assay_18 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -9375,7 +9375,7 @@ ppo_assay_18 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -9395,7 +9395,7 @@ ppo_assay_18 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -9415,7 +9415,7 @@ ppo_assay_18 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -9435,7 +9435,7 @@ ppo_assay_18 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -9455,7 +9455,7 @@ ppo_assay_18 = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -9473,7 +9473,7 @@ ppo_assay_18 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -9491,7 +9491,7 @@ ppo_assay_18 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -9509,7 +9509,7 @@ ppo_assay_18 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -9527,7 +9527,7 @@ ppo_assay_18 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -9545,7 +9545,7 @@ ppo_assay_18 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -9563,7 +9563,7 @@ ppo_assay_18 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -9581,7 +9581,7 @@ ppo_assay_18 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -9599,7 +9599,7 @@ ppo_assay_18 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -9617,7 +9617,7 @@ ppo_assay_18 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -9635,7 +9635,7 @@ ppo_assay_18 = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -22511,7 +22511,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -22531,7 +22531,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -22551,7 +22551,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -22571,7 +22571,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -22591,7 +22591,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -22611,7 +22611,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -22631,7 +22631,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -22651,7 +22651,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -22671,7 +22671,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -22691,7 +22691,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -22709,7 +22709,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -22727,7 +22727,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -22745,7 +22745,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -22763,7 +22763,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -22781,7 +22781,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -22799,7 +22799,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -22817,7 +22817,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -22835,7 +22835,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -22853,7 +22853,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -22871,7 +22871,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -22913,7 +22913,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -22933,7 +22933,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -22953,7 +22953,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -22973,7 +22973,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -22993,7 +22993,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -23013,7 +23013,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -23033,7 +23033,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -23053,7 +23053,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -23073,7 +23073,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -23093,7 +23093,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -23111,7 +23111,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -23129,7 +23129,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -23147,7 +23147,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -23165,7 +23165,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -23183,7 +23183,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -23201,7 +23201,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -23219,7 +23219,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -23237,7 +23237,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -23255,7 +23255,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -23273,7 +23273,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -23315,7 +23315,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -23335,7 +23335,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -23355,7 +23355,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -23375,7 +23375,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -23395,7 +23395,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -23415,7 +23415,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -23435,7 +23435,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -23455,7 +23455,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -23475,7 +23475,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -23495,7 +23495,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -23513,7 +23513,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -23531,7 +23531,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -23549,7 +23549,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -23567,7 +23567,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -23585,7 +23585,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -23603,7 +23603,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -23621,7 +23621,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -23639,7 +23639,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -23657,7 +23657,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -23675,7 +23675,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -23717,7 +23717,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -23737,7 +23737,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -23757,7 +23757,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -23777,7 +23777,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -23797,7 +23797,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -23817,7 +23817,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -23837,7 +23837,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -23857,7 +23857,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -23877,7 +23877,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -23897,7 +23897,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -23915,7 +23915,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -23933,7 +23933,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -23951,7 +23951,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -23969,7 +23969,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -23987,7 +23987,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -24005,7 +24005,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -24023,7 +24023,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -24041,7 +24041,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -24059,7 +24059,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -24077,7 +24077,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -24119,7 +24119,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -24139,7 +24139,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -24159,7 +24159,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -24179,7 +24179,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -24199,7 +24199,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -24219,7 +24219,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -24239,7 +24239,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -24259,7 +24259,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -24279,7 +24279,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -24299,7 +24299,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -24317,7 +24317,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -24335,7 +24335,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -24353,7 +24353,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -24371,7 +24371,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -24389,7 +24389,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -24407,7 +24407,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -24425,7 +24425,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -24443,7 +24443,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -24461,7 +24461,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -24479,7 +24479,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": False,
@@ -24521,7 +24521,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -24541,7 +24541,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -24561,7 +24561,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -24581,7 +24581,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -24601,7 +24601,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -24621,7 +24621,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -24641,7 +24641,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -24661,7 +24661,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -24681,7 +24681,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -24701,7 +24701,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -24719,7 +24719,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -24737,7 +24737,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -24755,7 +24755,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -24773,7 +24773,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -24791,7 +24791,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -24809,7 +24809,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -24827,7 +24827,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -24845,7 +24845,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -24863,7 +24863,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -24881,7 +24881,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": False,
@@ -24923,7 +24923,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -24943,7 +24943,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -24963,7 +24963,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -24983,7 +24983,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -25003,7 +25003,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -25023,7 +25023,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -25043,7 +25043,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -25063,7 +25063,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -25083,7 +25083,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -25103,7 +25103,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -25121,7 +25121,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -25139,7 +25139,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -25157,7 +25157,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -25175,7 +25175,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -25193,7 +25193,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -25211,7 +25211,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -25229,7 +25229,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -25247,7 +25247,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -25265,7 +25265,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -25283,7 +25283,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
@@ -25325,7 +25325,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-2",
@@ -25345,7 +25345,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-3",
@@ -25365,7 +25365,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-4",
@@ -25385,7 +25385,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-5",
@@ -25405,7 +25405,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-6",
@@ -25425,7 +25425,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-7",
@@ -25445,7 +25445,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-8",
@@ -25465,7 +25465,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-9",
@@ -25485,7 +25485,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-10",
@@ -25505,7 +25505,7 @@ turning_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-11",
@@ -25523,7 +25523,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-12",
@@ -25541,7 +25541,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-13",
@@ -25559,7 +25559,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-14",
@@ -25577,7 +25577,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-15",
@@ -25595,7 +25595,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-16",
@@ -25613,7 +25613,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-17",
@@ -25631,7 +25631,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-18",
@@ -25649,7 +25649,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-19",
@@ -25667,7 +25667,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
             {
                 "assay id": "Naturalistic-20",
@@ -25685,7 +25685,7 @@ turning_data = [
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
                 "network recordings": ["rnn state", "internal state"],
-                "ablations": []
+                "interventions": None
             },
         ],
         "Full Reafference": True,
