@@ -53,6 +53,7 @@ else:
     file_path = os.path.join(dirname, f"Configurations/Assay-Configs/{arg}_env.json")
     with open(file_path, 'r') as f:
         env = json.load(f)
+    env["prey_num"] = 0
 
     sim_state = DiscreteNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=True,
                                                 using_gpu=False)
@@ -111,8 +112,8 @@ else:
         # if angle > 1.0:
         #     sim_state.reset()
         position = sim_state.fish.body.position
-        distance = ((position[0] - sim_state.prey_bodies[-1].position[0]) ** 2 +
-                    (position[1] - sim_state.prey_bodies[-1].position[1]) ** 2) ** 0.5
+        # distance = ((position[0] - sim_state.prey_bodies[-1].position[0]) ** 2 +
+        #             (position[1] - sim_state.prey_bodies[-1].position[1]) ** 2) ** 0.5
         # print(f"Distance: {distance}")
         # print(f"Max UV: {np.max(s[:, 1, :])}")
 

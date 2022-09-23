@@ -162,16 +162,16 @@ def plot_action_space_usage(all_impulses, all_angles, consumption_timestamps, mu
 # model_name = "ppo_continuous_sbe_is-1"
 # model_name = "/scaffold_version_4-4"
 # model_name = "ppo_scaffold_18x-1"
-model_name = "ppo_scaffold_21-1"
-max_impulse = 15
+model_name = "ppo_scaffold_21-2"
+max_impulse = 16
 data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
 
 all_impulses, all_angles, consumption_timestamps, predation_sequences, predator_presence = \
-    get_multiple_actions(model_name, "Behavioural-Data-Free", "Naturalistic", 5)
-mu_impulse, mu_angle = get_multiple_means(model_name, "Behavioural-Data-Free", "Naturalistic", 5)
+    get_multiple_actions(model_name, "Behavioural-Data-Free", "Naturalistic", 10)
+mu_impulse, mu_angle = get_multiple_means(model_name, "Behavioural-Data-Free", "Naturalistic", 10)
 
 plot_action_space_usage(all_impulses, all_angles, consumption_timestamps, mu_impulse, mu_angle, max_impulse)
-plot_all_consumption_sequences(all_impulses, all_angles, consumption_timestamps)
-
-plot_capture_sequences_orientation(data["fish_position"], all_angles, consumption_timestamps)
-plot_capture_sequences_impulse(data["fish_position"], all_impulses, consumption_timestamps)
+# plot_all_consumption_sequences(all_impulses, all_angles, consumption_timestamps)
+#
+# plot_capture_sequences_orientation(data["fish_position"], all_angles, consumption_timestamps)
+# plot_capture_sequences_impulse(data["fish_position"], all_impulses, consumption_timestamps)

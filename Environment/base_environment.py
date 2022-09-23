@@ -729,6 +729,9 @@ class BaseEnvironment:
                 self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_impulse'], 0))
 
     def _move_prey_new(self, micro_step):
+        if len(self.prey_bodies) == 0:
+            return
+
         # Generate impulses
         impulse_types = [0, self.env_variables["slow_speed_paramecia"], self.env_variables["fast_speed_paramecia"]]
         impulses = [impulse_types[gait] for gait in self.paramecia_gaits]
