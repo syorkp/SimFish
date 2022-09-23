@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import cupy as cp
 import matplotlib.pyplot as plt
@@ -13,7 +15,6 @@ class NaturalisticEnvironment(BaseEnvironment):
                  collisions=True, relocate_fish=None):
         super().__init__(env_variables, draw_screen, new_simulation, using_gpu)
 
-
         if using_gpu:
             self.chosen_math_library = cp
         else:
@@ -28,14 +29,14 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.impulse_vector_field = None
             self.coordinates_in_current = None  # May be used to provide efficient checking. Although vector comp probably faster.
             self.create_current()
-            self.capture_fraction = int(self.env_variables["phys_steps_per_sim_step"] * self.env_variables['fraction_capture_permitted'])
+            self.capture_fraction = int(
+                self.env_variables["phys_steps_per_sim_step"] * self.env_variables['fraction_capture_permitted'])
             self.capture_start = int((self.env_variables['phys_steps_per_sim_step'] - self.capture_fraction) / 2)
             self.capture_end = self.capture_start + self.capture_fraction
 
         self.paramecia_distances = []
         self.relocate_fish = relocate_fish
         self.impulse_against_fish_previous_step = None
-
 
     def reset(self):
         # print(f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -50,10 +51,10 @@ class NaturalisticEnvironment(BaseEnvironment):
         super().reset()
         self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_size'] + 40,
                                                      self.env_variables['width'] - (self.env_variables[
-                                                         'fish_mouth_size']+40)),
+                                                                                        'fish_mouth_size'] + 40)),
                                    np.random.randint(self.env_variables['fish_mouth_size'] + 40,
                                                      self.env_variables['height'] - (self.env_variables[
-                                                         'fish_mouth_size']+40)))
+                                                                                         'fish_mouth_size'] + 40)))
         self.fish.body.angle = np.random.random() * 2 * np.pi
         self.fish.body.velocity = (0, 0)
         if self.env_variables["current_setting"]:
@@ -71,6 +72,24 @@ class NaturalisticEnvironment(BaseEnvironment):
                                            self.env_variables['prey_size'] + self.env_variables[
                                        'fish_mouth_size']) - 120)]
                 for cloud in range(int(self.env_variables["prey_cloud_num"]))]
+
+            if "fixed_prey_distribution" in self.env_variables:
+                if self.env_variables["fixed_prey_distribution"]:
+                    x_locations = np.linspace(
+                        120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
+                        self.env_variables['width'] - (
+                                self.env_variables['prey_size'] + self.env_variables['fish_mouth_size']) - 120,
+                        math.ceil(self.env_variables["prey_cloud_num"]**0.5))
+                    y_locations = np.linspace(
+                        120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
+                        self.env_variables['width'] - (
+                                self.env_variables['prey_size'] + self.env_variables['fish_mouth_size']) - 120,
+                        math.ceil(self.env_variables["prey_cloud_num"]**0.5))
+
+                    self.prey_cloud_locations = np.concatenate((np.expand_dims(x_locations, 1),
+                                                                np.expand_dims(y_locations, 1)), axis=1)
+                    self.prey_cloud_locations = self.prey_cloud_locations[:self.env_variables["prey_cloud_num"]]
+
             if not self.env_variables["prey_reproduction_mode"]:
                 self.build_prey_cloud_walls()
 
@@ -86,7 +105,9 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.impulse_against_fish_previous_step = None
 
     def show_new_channel_sectors(self, left_eye_pos, right_eye_pos):
-        left_sectors, right_sectors = self.fish.get_all_sectors([left_eye_pos[0], left_eye_pos[1]], [right_eye_pos[0], right_eye_pos[1]], self.fish.body.angle)
+        left_sectors, right_sectors = self.fish.get_all_sectors([left_eye_pos[0], left_eye_pos[1]],
+                                                                [right_eye_pos[0], right_eye_pos[1]],
+                                                                self.fish.body.angle)
         # l_top_left, l_bottom_left, l_top_right, l_bottom_right = self.fish.left_eye.get_corner_sectors(left_sectors)
         # r_top_left, r_bottom_left, r_top_right, r_bottom_right = self.fish.right_eye.get_corner_sectors(right_sectors)
 
@@ -183,8 +204,8 @@ class NaturalisticEnvironment(BaseEnvironment):
         if self.fish.body.position[0] < 4 or self.fish.body.position[1] < 4 or \
                 self.fish.body.position[0] > self.env_variables["width"] - 4 or \
                 self.fish.body.position[1] > self.env_variables["height"] - 4:
-            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 6, self.env_variables["width"]-7),
-                                        np.clip(self.fish.body.position[1], 6, self.env_variables["height"]-7))
+            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 6, self.env_variables["width"] - 7),
+                                        np.clip(self.fish.body.position[1], 6, self.env_variables["height"] - 7))
             self.fish.body.position = new_position
 
         if self.new_simulation:
@@ -207,7 +228,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                     print("Fish too salty")
                     done = True
                 if "salt_reward_penalty" in self.env_variables:
-                    if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables["salt_recovery"]:
+                    if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables[
+                        "salt_recovery"]:
                         reward -= self.env_variables["salt_reward_penalty"] * salt_damage
 
             if self.predator_body is not None:
@@ -221,7 +243,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.reproduce_prey()
                 self.prey_ages = [age + 1 for age in self.prey_ages]
                 for i, age in enumerate(self.prey_ages):
-                    if age > self.env_variables["prey_safe_duration"] and np.random.rand(1) < self.env_variables["p_prey_death"]:
+                    if age > self.env_variables["prey_safe_duration"] and np.random.rand(1) < self.env_variables[
+                        "p_prey_death"]:
                         print("Removed prey")
                         self.remove_prey(i)
 
@@ -267,9 +290,11 @@ class NaturalisticEnvironment(BaseEnvironment):
         #     internal_state = np.array([[in_light]])
 
         if self.new_simulation:
-            observation, frame_buffer = self.resolve_visual_input_new(save_frames, activations, internal_state, frame_buffer)
+            observation, frame_buffer = self.resolve_visual_input_new(save_frames, activations, internal_state,
+                                                                      frame_buffer)
         else:
-            observation, frame_buffer = self.resolve_visual_input(save_frames, activations, internal_state, frame_buffer)
+            observation, frame_buffer = self.resolve_visual_input(save_frames, activations, internal_state,
+                                                                  frame_buffer)
 
         # comb_obs = np.concatenate((observation[:, :, 0], observation[:, :, 1]), axis=0)
         # self.mean_observation_vals += [np.sum(comb_obs, axis=0)/len(comb_obs)]
@@ -313,7 +338,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         if save_frames or self.draw_screen:
             self.board.erase_visualisation(bkg=0.3)
             self.draw_shapes(visualisation=True)
-            relative_dark_gain = self.env_variables["dark_gain"]/self.env_variables["light_gain"]
+            relative_dark_gain = self.env_variables["dark_gain"] / self.env_variables["light_gain"]
             self.board.apply_light(self.dark_col, relative_dark_gain, 1, visualisation=True)
 
             if self.env_variables['show_channel_sectors']:
@@ -322,7 +347,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
             if save_frames:
                 scaling_factor = 1500 / self.env_variables["width"]
-                frame = self.output_frame(activations, internal_state, scale=0.25*scaling_factor)
+                frame = self.output_frame(activations, internal_state, scale=0.25 * scaling_factor)
                 frame_buffer.append(frame)
             if self.draw_screen:
                 frame = self.output_frame(activations, internal_state, scale=0.5) / 255.
@@ -349,7 +374,9 @@ class NaturalisticEnvironment(BaseEnvironment):
     def plot_observation(self, observation):
         if self.using_gpu:
             observation = observation.get()
-        observation = np.concatenate((observation[:, 0:1, :], np.zeros((observation.shape[0], 1, observation.shape[2])), observation[:, 1:2, :]), axis=1)
+        observation = np.concatenate(
+            (observation[:, 0:1, :], np.zeros((observation.shape[0], 1, observation.shape[2])), observation[:, 1:2, :]),
+            axis=1)
 
         left_1 = observation[:, :, 0]
         right_1 = observation[:, :, 1]
@@ -379,7 +406,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         if save_frames or self.draw_screen:
             self.board.erase_visualisation(bkg=0.3)
             self.draw_shapes(visualisation=True)
-            relative_dark_gain = self.env_variables["dark_gain"]/self.env_variables["light_gain"]
+            relative_dark_gain = self.env_variables["dark_gain"] / self.env_variables["light_gain"]
             self.board.apply_light(self.dark_col, relative_dark_gain, 1, visualisation=True)
             self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
             self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
@@ -418,12 +445,12 @@ class NaturalisticEnvironment(BaseEnvironment):
             # self.impulse_vector_field = np.zeros((self.env_variables["width"], self.env_variables["height"], 2))
 
     def create_circular_current(self):
-        unit_circle_radius = self.env_variables["unit_circle_diameter"]/2
+        unit_circle_radius = self.env_variables["unit_circle_diameter"] / 2
         circle_width = self.env_variables['current_width']
         circle_variance = self.env_variables['current_strength_variance']
         max_current_strength = self.env_variables['max_current_strength']
 
-        arena_center = np.array([self.env_variables["width"]/2, self.env_variables["height"]/2])
+        arena_center = np.array([self.env_variables["width"] / 2, self.env_variables["height"] / 2])
 
         # All coordinates:
         xp, yp = np.arange(self.env_variables["width"]), np.arange(self.env_variables["height"])
@@ -431,14 +458,14 @@ class NaturalisticEnvironment(BaseEnvironment):
         xy = np.expand_dims(xy, 2)
         yp = np.expand_dims(yp, 2)
         all_coordinates = np.concatenate((xy, yp), axis=2)
-        relative_coordinates = all_coordinates-arena_center  # TO compute coordinates relative to position in center
+        relative_coordinates = all_coordinates - arena_center  # TO compute coordinates relative to position in center
         distances_from_center = (relative_coordinates[:, :, 0] ** 2 + relative_coordinates[:, :, 1] ** 2) ** 0.5
         distances_from_center = np.expand_dims(distances_from_center, 2)
 
         xy1 = relative_coordinates[:, :, 0]
         yp1 = relative_coordinates[:, :, 1]
-        u = -yp1/np.sqrt(xy1 ** 2 + yp1 ** 2)
-        v = xy1/np.sqrt(xy1 ** 2 + yp1 ** 2)
+        u = -yp1 / np.sqrt(xy1 ** 2 + yp1 ** 2)
+        v = xy1 / np.sqrt(xy1 ** 2 + yp1 ** 2)
         # u, v = np.meshgrid(u, v)
         u = np.expand_dims(u, 2)
         v = np.expand_dims(v, 2)
@@ -447,21 +474,21 @@ class NaturalisticEnvironment(BaseEnvironment):
         ### Impose ND structure
         # Compute distance from center at each point
         absolute_distances_from_center = np.absolute(distances_from_center[:, :, 0])
-        normalised_distance_from_center = absolute_distances_from_center/np.max(absolute_distances_from_center)
+        normalised_distance_from_center = absolute_distances_from_center / np.max(absolute_distances_from_center)
         distance_from_talweg = normalised_distance_from_center - unit_circle_radius
         distance_from_talweg = np.abs(distance_from_talweg)
         distance_from_talweg = np.expand_dims(distance_from_talweg, 2)
-        talweg_closeness = 1-distance_from_talweg
+        talweg_closeness = 1 - distance_from_talweg
         talweg_closeness = (talweg_closeness ** 2) * circle_variance
-        current_strength = (talweg_closeness/np.max(talweg_closeness)) * max_current_strength
+        current_strength = (talweg_closeness / np.max(talweg_closeness)) * max_current_strength
         current_strength = current_strength[:, :, 0]
 
         # (Distances - optimal_distance). This forms a subtraction matrix which can be related to the variance.
         adjusted_normalised_distance_from_center = normalised_distance_from_center ** 2
 
         ### Set cutoffs to 0 outside width
-        inside_radius2 = (unit_circle_radius-(circle_width/2)) ** 2
-        outside_radius2 = (unit_circle_radius+(circle_width/2)) ** 2
+        inside_radius2 = (unit_circle_radius - (circle_width / 2)) ** 2
+        outside_radius2 = (unit_circle_radius + (circle_width / 2)) ** 2
         inside = inside_radius2 < adjusted_normalised_distance_from_center
         outside = adjusted_normalised_distance_from_center < outside_radius2
         within_current = inside * outside * 1
@@ -472,7 +499,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         vector_field = current_strength * vector_field
 
         # Prevent middle index being Nan, which causes error.
-        vector_field[int(self.env_variables["width"]/2), int(self.env_variables["height"]/2)] = 0
+        vector_field[int(self.env_variables["width"] / 2), int(self.env_variables["height"] / 2)] = 0
 
         self.impulse_vector_field = vector_field
 
@@ -492,7 +519,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         vector_field = np.tile(vector, (self.env_variables["width"], self.env_variables["height"], 1))
 
         # Scale as distance from y=h/2
-        centre = self.env_variables["height"]/2
+        centre = self.env_variables["height"] / 2
         xp, yp = np.arange(self.env_variables["width"]), np.arange(self.env_variables["height"])
         xy, yp = np.meshgrid(xp, yp)
         # all_coordinates = np.concatenate((xy, yp), axis=2)
@@ -500,11 +527,11 @@ class NaturalisticEnvironment(BaseEnvironment):
         relative_y_coordinates = np.absolute(relative_y_coordinates)
         closeness_to_centre = centre - relative_y_coordinates
         closeness_to_centre = (closeness_to_centre ** 2) * current_variance
-        current_strength = (closeness_to_centre/np.max(closeness_to_centre)) * max_current_strength
+        current_strength = (closeness_to_centre / np.max(closeness_to_centre)) * max_current_strength
 
         # Cut off outside of width
-        upper_cut_off = int(centre - (current_width/2))
-        lower_cut_off = int(centre + (current_width/2))
+        upper_cut_off = int(centre - (current_width / 2))
+        lower_cut_off = int(centre + (current_width / 2))
         current_strength[lower_cut_off:, :] = 0
         current_strength[:upper_cut_off, :] = 0
         current_strength = np.expand_dims(current_strength, 2)
@@ -519,22 +546,25 @@ class NaturalisticEnvironment(BaseEnvironment):
 
     def resolve_currents(self):
         """Currents act on prey and fish."""
-        all_feature_coordinates = np.array([self.fish.body.position] + [body.position for body in self.prey_bodies]).astype(int)
+        all_feature_coordinates = np.array(
+            [self.fish.body.position] + [body.position for body in self.prey_bodies]).astype(int)
         original_orientations = np.array([self.fish.body.angle] + [body.angle for body in self.prey_bodies])
 
         try:
-            associated_impulse_vectors = self.impulse_vector_field[all_feature_coordinates[:, 0], all_feature_coordinates[:, 1]]
+            associated_impulse_vectors = self.impulse_vector_field[
+                all_feature_coordinates[:, 0], all_feature_coordinates[:, 1]]
         except:
             print("Feature coordinates out of range, exception thrown.")
             print(f"Feature coordinates: {all_feature_coordinates}")
             associated_impulse_vectors = np.array([[0.0, 0.0] for i in range(all_feature_coordinates.shape[0])])
 
         self.fish.body.angle = np.pi
-        self.fish.body.apply_impulse_at_local_point((associated_impulse_vectors[0, 1], associated_impulse_vectors[0, 0]))
+        self.fish.body.apply_impulse_at_local_point(
+            (associated_impulse_vectors[0, 1], associated_impulse_vectors[0, 0]))
         for i, vector in enumerate(associated_impulse_vectors[1:]):
             self.prey_bodies[i].angle = np.pi
             self.prey_bodies[i].apply_impulse_at_local_point((vector[1], vector[0]))
-            self.prey_bodies[i].angle = original_orientations[i+1]
+            self.prey_bodies[i].angle = original_orientations[i + 1]
         self.fish.body.angle = original_orientations[0]
 
         # Add to log about swimming against currents...
@@ -552,14 +582,15 @@ class NaturalisticEnvironment(BaseEnvironment):
             cluster_coordinates = self.prey_cloud_locations[chosen_cluster]
             self.fish.body.position = np.array(cluster_coordinates)
         elif target_feature == "E":
-            xp, yp = np.arange(200, self.env_variables["width"]-200), np.arange(200, self.env_variables["height"]-200)
+            xp, yp = np.arange(200, self.env_variables["width"] - 200), np.arange(200,
+                                                                                  self.env_variables["height"] - 200)
             xy, yp = np.meshgrid(xp, yp)
             xy = np.expand_dims(xy, 2)
             yp = np.expand_dims(yp, 2)
             all_coordinates = np.concatenate((xy, yp), axis=2)
             all_prey_locations = [b.position for b in self.prey_bodies]
             for p in all_prey_locations:
-                all_coordinates[int(p[0]-100): int(p[0]+100), int(p[1]-100): int(p[1]+100)] = False
+                all_coordinates[int(p[0] - 100): int(p[0] + 100), int(p[1] - 100): int(p[1] + 100)] = False
             suitable_locations = all_coordinates.reshape(-1, all_coordinates.shape[-1])
             suitable_locations = [c for c in suitable_locations if c[0] != 0]
             choice = np.random.choice(range(len(suitable_locations)))

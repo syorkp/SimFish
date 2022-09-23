@@ -316,6 +316,8 @@ env = {
        'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
 
        'max_visual_range': False,
+       'fixed_prey_distribution': False,
+
 }
 
 scaffold_name = "ppo_scaffold_23"

@@ -111,8 +111,8 @@
     "background_grating_frequency": 50,
     "displacement_scaling_factor": 0.018,
     "known_max_fish_i": 100,
-    "p_slow": 0,
-    "p_fast": 0,
+    "p_slow": 1.0,
+    "p_fast": 0.0,
     "p_escape": 0.5,
     "p_switch": 0.01,
     "p_reorient": 0.04,
@@ -175,5 +175,6 @@
     "capture_angle_deviation_allowance": 3.141592653589793,
     "action_energy_use_scaling": "Sublinear",
     "max_visual_range": 1500,
+    "fixed_prey_distribution": true,
     "anneling_steps": 500000
 }

@@ -316,10 +316,11 @@ env = {
        'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
 
        'max_visual_range': 1500,
+       'fixed_prey_distribution': False,
 }
 
 
-scaffold_name = "dqn_scaffold_30_even_p"
+scaffold_name = "dqn_scaffold_30_fixed_p"
 
 
 # base_network_layers_updated = copy.copy(base_network_layers)
@@ -337,6 +338,7 @@ env["prey_num"] = int(env["prey_num"] * 4)
 env["prey_cloud_num"] = int(env["prey_cloud_num"] * 4)
 env["width"] = 3000
 env["height"] = 3000
+# env["fixed_prey_distribution"] = True
 
 # For Sand Grains
 # env["sand_grain_num"] = env["prey_num"]

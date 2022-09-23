@@ -307,7 +307,7 @@ env = {
        # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
        'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
        'max_visual_range': False,
-
+       'fixed_prey_distribution': False,
 }
 
 # Equal to that given in the file name.
