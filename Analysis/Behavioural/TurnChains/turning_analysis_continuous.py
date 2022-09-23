@@ -4,7 +4,7 @@ from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.BehavLabels.extract_turn_sequences import extract_turn_sequences, extract_purely_turn_sequences
 from Analysis.Behavioural.TurnChains.turning_analysis_shared import randomly_switching_fish, model_of_action_switching, \
     cumulative_turn_direction_plot_multiple_models, cumulative_turn_direction_plot, \
-    cumulative_switching_probability_plot_multiple_models
+    cumulative_switching_probability_plot_multiple_models, randomly_switching_fish_new
 from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import \
     label_exploration_sequences_free_swimming_multiple_trials, \
     label_exploration_sequences_no_prey_multiple_trials
@@ -116,11 +116,11 @@ def plot_all_turn_analysis_multiple_models_continuous(model_names, assay_config,
                                    label=f"Cumulative Turn Direction (no prey or walls, only turns) {model_name}")
 
     # Cumulative probability plot.
-    l2, r2, sl2, sr2 = randomly_switching_fish()
+    l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_exploration_sequences)
     cumulative_switching_probability_plot_multiple_models(compiled_sl_exploration, compiled_sr_exploration, sl2, sr2,
                                                           label=f"Cumulative Switching Probability (exploration) {model_name}")
 
-    l2, r2, sl2, sr2 = randomly_switching_fish()
+    l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_no_prey_sequences)
     cumulative_switching_probability_plot_multiple_models(compiled_sl_no_prey, compiled_sr_no_prey,  sl2, sr2, label=f"Cumulative Switching Probability (no prey) {model_name}")
 
 

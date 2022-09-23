@@ -9,7 +9,7 @@ from Analysis.Behavioural.Tools.BehavLabels.extract_turn_sequences import extrac
 from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import extract_exploration_action_sequences_with_fish_angles
 from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import get_no_prey_stimuli_sequences, get_exploration_sequences
 from Analysis.Behavioural.TurnChains.turning_analysis_shared import model_of_action_switching, plot_turning_sequences, \
-    randomly_switching_fish, cumulative_switching_probability_plot, cumulative_turn_direction_plot_multiple_models, \
+    randomly_switching_fish, randomly_switching_fish_new, cumulative_switching_probability_plot, cumulative_turn_direction_plot_multiple_models, \
     cumulative_switching_probability_plot_multiple_models
 from Analysis.Behavioural.TurnChains.turning_analysis_shared import cumulative_turn_direction_plot
 
@@ -17,7 +17,7 @@ from Analysis.Behavioural.TurnChains.turning_analysis_shared import cumulative_t
 def get_cumulative_switching_probability_plot(action_sequences, figure_save_location):
     turn_sequences = extract_purely_turn_sequences(action_sequences)
     l, r, sl, sr = model_of_action_switching(turn_sequences)
-    l2, r2, sl2, sr2 = randomly_switching_fish()
+    l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_sequences)
     cumulative_switching_probability_plot(sl, sr, sl2, sr2, figure_save_location)
 
 
@@ -60,11 +60,11 @@ def plot_all_turn_analysis(model_name, assay_config, assay_id, n, use_purely_tur
 
     # Cumulative probability plot.
     l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
-    l2, r2, sl2, sr2 = randomly_switching_fish()
+    l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_exploration_sequences)
     cumulative_switching_probability_plot(sl, sr, sl2, sr2, save_location=f"Cumulative Switching Probability (exploration) {model_name}")
 
     l, r, sl, sr = model_of_action_switching(turn_no_prey_sequences)
-    l2, r2, sl2, sr2 = randomly_switching_fish()
+    l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_no_prey_sequences)
     cumulative_switching_probability_plot(sl, sr, sl2, sr2, save_location=f"Cumulative Switching Probability (no prey) {model_name}")
 
 
@@ -114,11 +114,11 @@ def plot_all_turn_analysis_multiple_models_discrete(model_names, assay_config, a
                                    label=f"Cumulative Turn Direction (no prey or walls, only turns) {model_name}")
 
     # Cumulative probability plot.
-    l2, r2, sl2, sr2 = randomly_switching_fish()
+    l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_exploration_sequences)
     cumulative_switching_probability_plot_multiple_models(compiled_sl_exploration, compiled_sr_exploration, sl2, sr2,
                                                           label=f"Cumulative Switching Probability (exploration) {model_name}")
 
-    l2, r2, sl2, sr2 = randomly_switching_fish()
+    l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_no_prey_sequences)
     cumulative_switching_probability_plot_multiple_models(compiled_sl_no_prey, compiled_sr_no_prey,  sl2, sr2, label=f"Cumulative Switching Probability (no prey) {model_name}")
 
 
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     #                        f"Naturalistic", 3)
 
     plot_all_turn_analysis_multiple_models_discrete(["dqn_scaffold_14-1", "dqn_scaffold_14-2"], "Behavioural-Data-Free",
-                                                    f"Naturalistic", 10, data_cutoff=1000)
+                                                    f"Naturalistic", 10, data_cutoff=None)
 
     # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", f"Naturalistic-18")
     # exploration_timestamps, exploration_sequences, exploration_fish_orientations = \

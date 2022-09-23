@@ -1,3 +1,5 @@
+import random
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -215,6 +217,19 @@ def randomly_switching_fish(n_sequences=100):
         seq = [1 if i == 1 else 2 for i in seq]
         sequences.append(seq)
     return model_of_action_switching(sequences)
+
+
+def randomly_switching_fish_new(real_fish_actions):
+    sequence_lengths = [len(seq) for seq in real_fish_actions]
+    flattened_real_fish_actions = [item for seq in real_fish_actions for item in seq]
+    random.shuffle(flattened_real_fish_actions)
+    random_sequences = []
+    i = 0
+    for l in sequence_lengths:
+        i2 = i
+        i += l
+        random_sequences.append(flattened_real_fish_actions[i2: i])
+    return model_of_action_switching(random_sequences)
 
 
 def cumulative_switching_probability_plot(left_durs, right_durs, left_durs2, right_durs2, save_location):
