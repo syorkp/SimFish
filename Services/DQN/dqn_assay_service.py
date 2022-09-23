@@ -109,34 +109,35 @@ class DQNAssayService(AssayService, BaseDQN):
             self.step_number += 1
 
             # Deal with interventions
-            if self.visual_interruptions is not None:
-                if self.visual_interruptions[self.step_number] == 1:
-                    # mean values over all data
-                    o[:, 0, :] = 4
-                    o[:, 1, :] = 11
-                    o[:, 2, :] = 16
-            if self.reafference_interruptions is not None:
-                if self.reafference_interruptions[self.step_number] is not False:
-                    action = self.reafference_interruptions[self.step_number]
-                    if self.full_reafference:
-                        i, a = get_modal_impulse_and_angle(action)
-                        action_reafference = [[action, i, a]]
-            if self.preset_energy_state is not None:
-                if self.preset_energy_state[self.step_number] is not False:
-                    self.simulation.fish.energy_level = self.preset_energy_state[self.step_number]
-                    internal_state_order = self.get_internal_state_order()
-                    index = internal_state_order.index("energy_state")
-                    internal_state[0, index] = self.preset_energy_state[self.step_number]
-            if self.in_light_interruptions is not False:
-                if self.in_light_interruptions[self.step_number] == 1:
-                    internal_state_order = self.get_internal_state_order()
-                    index = internal_state_order.index("in_light")
-                    internal_state[0, index] = self.in_light_interruptions[self.step_number]
-            if self.salt_interruptions is not False:
-                if self.salt_interruptions[self.step_number] == 1:
-                    internal_state_order = self.get_internal_state_order()
-                    index = internal_state_order.index("salt")
-                    internal_state[0, index] = self.salt_interruptions[self.step_number]
+            if self.interruptions:
+                if self.visual_interruptions is not None:
+                    if self.visual_interruptions[self.step_number] == 1:
+                        # mean values over all data
+                        o[:, 0, :] = 4
+                        o[:, 1, :] = 11
+                        o[:, 2, :] = 16
+                if self.reafference_interruptions is not None:
+                    if self.reafference_interruptions[self.step_number] is not False:
+                        action = self.reafference_interruptions[self.step_number]
+                        if self.full_reafference:
+                            i, a = get_modal_impulse_and_angle(action)
+                            action_reafference = [[action, i, a]]
+                if self.preset_energy_state is not None:
+                    if self.preset_energy_state[self.step_number] is not False:
+                        self.simulation.fish.energy_level = self.preset_energy_state[self.step_number]
+                        internal_state_order = self.get_internal_state_order()
+                        index = internal_state_order.index("energy_state")
+                        internal_state[0, index] = self.preset_energy_state[self.step_number]
+                if self.in_light_interruptions is not False:
+                    if self.in_light_interruptions[self.step_number] == 1:
+                        internal_state_order = self.get_internal_state_order()
+                        index = internal_state_order.index("in_light")
+                        internal_state[0, index] = self.in_light_interruptions[self.step_number]
+                if self.salt_interruptions is not False:
+                    if self.salt_interruptions[self.step_number] == 1:
+                        internal_state_order = self.get_internal_state_order()
+                        index = internal_state_order.index("salt")
+                        internal_state[0, index] = self.salt_interruptions[self.step_number]
 
             self.previous_action = a
 

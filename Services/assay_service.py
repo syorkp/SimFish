@@ -76,6 +76,7 @@ class AssayService(BaseService):
         self.relocate_fish = None
         self.salt_interruptions = None
         self.in_light_interruptions = None
+        self.interruptions = False
 
     def _run(self):
         self.saver = tf.train.Saver(max_to_keep=5)
@@ -103,6 +104,9 @@ class AssayService(BaseService):
                     self.salt_interruptions = assay["interventions"]["salt_interruptions"]
                 if "ablations" in assay["interventions"].keys():
                     self.ablate_units(assay["interventions"]["ablations"])
+                self.interruptions = True
+            else:
+                self.interruptions = False
             if self.environment_params["use_dynamic_network"]:
                 if self.ppo_version is not None:
                     self.buffer.rnn_layer_names = self.actor_network.rnn_layer_names
