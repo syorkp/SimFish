@@ -14,15 +14,15 @@ def modify_training_configs(config_name, variable, new_value, num_configs, prefi
 
 
 if __name__ == "__main__":
-    modify_training_configs("dqn_scaffold_26", "wall_touch_penalty", 4, 43, prefix="env")
-    modify_training_configs("dqn_scaffold_30", "wall_touch_penalty", 4, 43, prefix="env")
+    modify_training_configs("dqn_scaffold_33", "sand_grain_num", 50, 47, prefix="env")
+    modify_training_configs("dqn_scaffold_34", "wall_touch_penalty", 50, 47, prefix="env")
 
-    modify_training_configs("dqn_scaffold_26", "ci", 4e-07, 43, prefix="env")
-    modify_training_configs("dqn_scaffold_30", "ci", 4e-07, 43, prefix="env")
-
-    modify_training_configs("dqn_scaffold_26", "ca", 4e-07, 43, prefix="env")
-    modify_training_configs("dqn_scaffold_30", "ca", 4e-07, 43, prefix="env")
-
-    modify_training_configs("dqn_scaffold_26", "startE", 0.3, 43, prefix="learning")
-    modify_training_configs("dqn_scaffold_30", "startE", 0.3, 43, prefix="learning")
+    # modify_training_configs("dqn_scaffold_26", "ci", 4e-07, 43, prefix="env")
+    # modify_training_configs("dqn_scaffold_30", "ci", 4e-07, 43, prefix="env")
+    #
+    # modify_training_configs("dqn_scaffold_26", "ca", 4e-07, 43, prefix="env")
+    # modify_training_configs("dqn_scaffold_30", "ca", 4e-07, 43, prefix="env")
+    #
+    # modify_training_configs("dqn_scaffold_26", "startE", 0.3, 43, prefix="learning")
+    # modify_training_configs("dqn_scaffold_30", "startE", 0.3, 43, prefix="learning")
 
