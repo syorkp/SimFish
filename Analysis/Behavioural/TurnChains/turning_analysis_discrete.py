@@ -109,9 +109,9 @@ def plot_all_turn_analysis_multiple_models_discrete(model_names, assay_config, a
         compiled_sr_no_prey.append(sr)
 
     # Cumulative turn direction plots:
-    cumulative_turn_direction_plot_multiple_models(turn_no_prey_sequences_list)
-    cumulative_turn_direction_plot(turn_exploration_sequences,
-                                   label=f"Cumulative Turn Direction (no prey or walls, only turns) {model_name}")
+    # cumulative_turn_direction_plot_multiple_models(turn_no_prey_sequences_list)
+    # cumulative_turn_direction_plot(turn_exploration_sequences,
+    #                                label=f"Cumulative Turn Direction (no prey or walls, only turns) {model_name}")
 
     # Cumulative probability plot.
     l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_exploration_sequences)
@@ -119,15 +119,16 @@ def plot_all_turn_analysis_multiple_models_discrete(model_names, assay_config, a
                                                           label=f"Cumulative Switching Probability (exploration) {model_name}")
 
     l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_no_prey_sequences)
-    cumulative_switching_probability_plot_multiple_models(compiled_sl_no_prey, compiled_sr_no_prey,  sl2, sr2, label=f"Cumulative Switching Probability (no prey) {model_name}")
+    cumulative_switching_probability_plot_multiple_models(compiled_sl_no_prey, compiled_sr_no_prey,  sl2, sr2,
+                                                          label=f"Cumulative Switching Probability (no prey) {model_name}")
 
 
 if __name__ == "__main__":
     # plot_all_turn_analysis("dqn_scaffold_14-1", "Behavioural-Data-Full-Interruptions",
     #                        f"Naturalistic", 3)
 
-    plot_all_turn_analysis_multiple_models_discrete(["dqn_scaffold_14-1", "dqn_scaffold_14-2"], "Behavioural-Data-Free",
-                                                    f"Naturalistic", 10, data_cutoff=None)
+    plot_all_turn_analysis_multiple_models_discrete(["dqn_scaffold_14-1", "dqn_scaffold_14-2"], "Behavioural-Data-Empty",
+                                                    f"Naturalistic", 20, data_cutoff=200)
 
     # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", f"Naturalistic-18")
     # exploration_timestamps, exploration_sequences, exploration_fish_orientations = \

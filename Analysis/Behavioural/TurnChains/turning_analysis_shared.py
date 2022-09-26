@@ -73,8 +73,10 @@ def cumulative_turn_direction_plot(action_sequences, label):
     plt.ylabel("Cumulative Turn Direction", fontsize=20)
     plt.hlines(0, 0, 10, color="r")
     plt.title(label)
+    plt.savefig(label)
+    plt.clf()
     # plt.fill_between(range(11), err_min, err_max)
-    plt.show()
+    # plt.clf()
 
 
 def cumulative_switching_probability_plot_multiple_models(left_durs_list, right_durs_list, left_durs2, right_durs2,
@@ -124,8 +126,8 @@ def cumulative_switching_probability_plot_multiple_models(left_durs_list, right_
     plt.title(label)
     ax.legend(prop={'size': 30}, loc="lower right")
     if save_figure:
-        plt.savefig(f"../../Figures/Panels/Panel-4/{label}")
-    plt.show()
+        plt.savefig(label)
+    plt.clf()
 
 
 

@@ -125,8 +125,8 @@ def plot_all_turn_analysis_multiple_models_continuous(model_names, assay_config,
 
 
 if __name__ == "__main__":
-    plot_all_turn_analysis_multiple_models_continuous(["ppo_scaffold_21-1", "ppo_scaffold_21-2"], "Behavioural-Data-Free",
-                                           f"Naturalistic", 10, threshold_for_angle=0.05, data_cutoff=None)
+    plot_all_turn_analysis_multiple_models_continuous(["ppo_scaffold_21-1", "ppo_scaffold_21-2"], "Behavioural-Data-Empty",
+                                           f"Naturalistic", 20, threshold_for_angle=0.05, data_cutoff=None)
     # d = load_data("ppo_scaffold_21-1", "Behavioural-Data-Free", "Naturalistic-3")
     # exploration_np_ts = label_exploration_sequences_free_swimming(d) * 1
     # all_turns = d["angle"][1:]
