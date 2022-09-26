@@ -20,8 +20,6 @@ def load_data(model_name, assay_configuration, assay_id):
                     file = h5py.File(f"Assay-Output/{model_name}/{assay_configuration}.h5", "r")
 
     g = file.get(assay_id)
-    print(model_name)
-    print(assay_id)
     data = {key: np.array(g.get(key)) for key in g.keys()}
     file.close()
     return data

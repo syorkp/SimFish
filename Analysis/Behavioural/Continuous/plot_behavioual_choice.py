@@ -72,7 +72,6 @@ def get_multiple_actions(p1, p2, p3, n=1):
         if i > 100:
             data = load_data(p1, f"{p2}-2", f"{p3} {i}")
         else:
-            print(i)
             data = load_data(p1, p2, f"{p3}-{i}")
         all_impulses = np.concatenate((all_impulses, data["impulse"][1:]))
         all_angles = np.concatenate((all_angles, data["angle"][1:]))
@@ -92,7 +91,7 @@ def get_multiple_means(p1, p2, p3, n=1):
     all_impulses = np.array([])
     all_angles = np.array([])
     for i in range(1, n+1):
-        if i > 12:
+        if i > 100:
             data = load_data(p1, f"{p2}-2", f"{p3} {i}")
         else:
             data = load_data(p1, p2, f"{p3}-{i}")
@@ -123,21 +122,22 @@ def plot_action_histograms(all_impulses, all_actions):
 
 
 def plot_action_space_usage(all_impulses, all_angles, consumption_timestamps, mu_impulse, mu_angle, max_impulse,
-                            abs_angles=True):
+                            model_name, abs_angles=True):
 
     if abs_angles:
         all_angles = np.absolute(all_angles)
         mu_angle = np.absolute(mu_angle)
 
     plt.scatter(all_impulses, all_angles, alpha=.1)
-    plt.show()
+    plt.savefig(f"{model_name}-impulse_angles.jpg")
+    plt.clf()
 
     heatmap, xedges, yedges = np.histogram2d(mu_impulse * max_impulse, mu_angle, bins=50)
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
 
-    plt.clf()
     plt.imshow(heatmap.T, extent=extent, origin='lower')
-    plt.show()
+    plt.savefig(f"{model_name}-heatmap.jpg")
+    plt.clf()
 
     mu_impulse = [i * max_impulse for i in mu_impulse]
     mu_angle = [i * np.pi / 5 for i in mu_angle]
@@ -150,27 +150,28 @@ def plot_action_space_usage(all_impulses, all_angles, consumption_timestamps, mu
     plt.scatter(predator_mu_imp, predator_mu_ang, alpha=.2, color="y")
     plt.xlabel("Impulse")
     plt.ylabel("Angle")
-    plt.show()
+    plt.savefig(f"{model_name}-mu_impulse_angles.jpg")
+    plt.clf()
 
     plt.scatter(mu_impulse, mu_angle, alpha=.1)
     consumption_mu_imp = [a for i, a in enumerate(mu_impulse) if i in predation_sequences]
     consumption_mu_ang = [a for i, a in enumerate(mu_angle) if i in predation_sequences]
     plt.scatter(consumption_mu_imp, consumption_mu_ang, alpha=.1, color="r")
-    plt.show()
-
+    plt.savefig(f"{model_name}-mu_impulse_angles_sequences.jpg")
+    plt.clf()
 
 # model_name = "ppo_continuous_sbe_is-1"
 # model_name = "/scaffold_version_4-4"
 # model_name = "ppo_scaffold_18x-1"
-model_name = "ppo_scaffold_21-2"
+model_name = "ppo_scaffold_21-1"
 max_impulse = 16
-data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
+data = load_data(model_name, "Behavioural-Data-Empty", "Naturalistic-1")
 
 all_impulses, all_angles, consumption_timestamps, predation_sequences, predator_presence = \
-    get_multiple_actions(model_name, "Behavioural-Data-Free", "Naturalistic", 10)
-mu_impulse, mu_angle = get_multiple_means(model_name, "Behavioural-Data-Free", "Naturalistic", 10)
+    get_multiple_actions(model_name, "Behavioural-Data-Empty", "Naturalistic", 20)
+mu_impulse, mu_angle = get_multiple_means(model_name, "Behavioural-Data-Empty", "Naturalistic", 20)
 
-plot_action_space_usage(all_impulses, all_angles, consumption_timestamps, mu_impulse, mu_angle, max_impulse)
+plot_action_space_usage(all_impulses, all_angles, consumption_timestamps, mu_impulse, mu_angle, max_impulse, model_name)
 # plot_all_consumption_sequences(all_impulses, all_angles, consumption_timestamps)
 #
 # plot_capture_sequences_orientation(data["fish_position"], all_angles, consumption_timestamps)

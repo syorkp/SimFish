@@ -111,9 +111,9 @@ def plot_all_turn_analysis_multiple_models_continuous(model_names, assay_config,
         compiled_sr_no_prey.append(sr)
 
     # Cumulative turn direction plots:
-    cumulative_turn_direction_plot_multiple_models(turn_no_prey_sequences_list)
-    cumulative_turn_direction_plot(turn_exploration_sequences,
-                                   label=f"Cumulative Turn Direction (no prey or walls, only turns) {model_name}")
+    # cumulative_turn_direction_plot_multiple_models(turn_no_prey_sequences_list)
+    # cumulative_turn_direction_plot(turn_exploration_sequences,
+    #                                label=f"Cumulative Turn Direction (no prey or walls, only turns) {model_name}")
 
     # Cumulative probability plot.
     l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_exploration_sequences)
@@ -126,7 +126,7 @@ def plot_all_turn_analysis_multiple_models_continuous(model_names, assay_config,
 
 if __name__ == "__main__":
     plot_all_turn_analysis_multiple_models_continuous(["ppo_scaffold_21-1", "ppo_scaffold_21-2"], "Behavioural-Data-Empty",
-                                           f"Naturalistic", 20, threshold_for_angle=0.05, data_cutoff=None)
+                                           f"Naturalistic", 20, threshold_for_angle=0.05, data_cutoff=200)
     # d = load_data("ppo_scaffold_21-1", "Behavioural-Data-Free", "Naturalistic-3")
     # exploration_np_ts = label_exploration_sequences_free_swimming(d) * 1
     # all_turns = d["angle"][1:]

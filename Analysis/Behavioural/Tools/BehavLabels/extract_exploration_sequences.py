@@ -284,7 +284,8 @@ def label_exploration_sequences_no_prey(data, assumed_prey_stim_level=23, assume
     return np.array(is_exploration)
 
 
-def label_exploration_sequences_free_swimming(data, possible_visual_range=100, allowed_proximity_to_wall=200, environment_size=1500):
+def label_exploration_sequences_free_swimming(data, possible_visual_range=100, allowed_proximity_to_wall=200,
+                                              environment_size=1500):
     fish_prey_vectors = np.array([data["fish_position"]-data["prey_positions"][:, i, :] for i in range(data["prey_positions"].shape[1])])
     prey_distances = (fish_prey_vectors[:, :, 0] ** 2 + fish_prey_vectors[:, :, 1] ** 2) ** 0.5
     within_visual_range = (prey_distances < possible_visual_range) * 1
