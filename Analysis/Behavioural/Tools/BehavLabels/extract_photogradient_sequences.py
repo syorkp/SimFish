@@ -2,7 +2,10 @@ import numpy as np
 
 
 def label_in_light_steps(data):
-    return data["in_light"]
+    try:
+        return data["in_light"]
+    except KeyError:
+        return np.ones((data["observation"].shape[0]))
 
 
 def label_hemispheric_light_gradient(data, env_variables):

@@ -17,6 +17,7 @@ GPU-Caches
 /Analysis/Calibration/Visual-Distance/LuminanceCalibration/
 /Analysis/Calibration/Visual-Distance/Luminance-Distinguishability/
 /Analysis/Calibration/Visual-Distance/Full-Model-Distinguishability-Scores/
+
 /Analysis/Video/Current-Videos/
 /Analysis/Figures/Panels/
 /Analysis/Neural/MEI/Generated-MEIs/
@@ -25,6 +26,8 @@ Analysis/Neural/Gradients/Gradients-Data/
 
 /Analysis/Calibration/Motor-Effect-Noise/Bolton et al. (2019)/
 /Analysis/Calibration/Motor-Effect-Noise/Marques
+
+/Analysis/Behavioural/Continuous/All-Plots
 
 /Environment/__pycache__/
 /Environment/Fish/__pycache__/
