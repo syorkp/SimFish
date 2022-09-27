@@ -19,13 +19,16 @@ def display_sequences(sequences):
 
 
 def display_all_sequences(sequences, min_length=None, max_length=None, indicate_consumption=False, save_figure=False,
-                          figure_save_location=None):
+                          figure_save_location=None, alternate_action_names=None):
     if len(sequences) == 0:
         return
     sns.set()
     sequences.sort(key=len)
     plot_dim = max([len(seq) for seq in sequences])
-    color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'gold', "c", "m", "m", "black"]
+    if alternate_action_names is None:
+        color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'gold', "c", "m", "m", "black"]
+    else:
+        color_set = ["b", "g", "r", "y", "c", "m", "black"]
 
     seen = set()
     seen_add = seen.add
@@ -59,9 +62,12 @@ def display_all_sequences(sequences, min_length=None, max_length=None, indicate_
     actions_compiled_flattened = np.concatenate(np.array(used_sequences))
     actions_present = [x for x in actions_compiled_flattened if not (x in seen or seen_add(x))]
     ordered_actions_present = sorted(actions_present)
-    associated_actions = [get_action_name(a) for a in ordered_actions_present]
-
-    legend_elements = [Patch(facecolor=color_set[a], label=associated_actions[i]) for i, a in enumerate(ordered_actions_present)]# [0], [0], marker="o", color=color_set[i], label=associated_actions[i]) for i in actions_present]
+    if alternate_action_names is not None:
+        associated_actions = alternate_action_names
+        legend_elements = [Patch(facecolor=color_set[a], label=associated_actions[a]) for i, a in enumerate(ordered_actions_present)]# [0], [0], marker="o", color=color_set[i], label=associated_actions[i]) for i in actions_present]
+    else:
+        associated_actions = [get_action_name(a) for a in ordered_actions_present]
+        legend_elements = [Patch(facecolor=color_set[a], label=associated_actions[i]) for i, a in enumerate(ordered_actions_present)]# [0], [0], marker="o", color=color_set[i], label=associated_actions[i]) for i in actions_present]
 
     # if indicate_consumption:
     #     # outline = plt.Polygon(np.array([[plot_dim, 0], [plot_dim+1, 0], [plot_dim+1, len(used_sequences)], [plot_dim, len(used_sequences)]]))

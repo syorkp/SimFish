@@ -146,6 +146,7 @@ def plot_action_use_density(mu_impulse, mu_angle, model_name, n_bins=100):
     plt.ylabel("Angle (pi radians)")
     plt.savefig(f"All-Plots/{model_name}/heatmap.jpg")
     plt.clf()
+    plt.close()
 
     X = np.linspace(extent[0], extent[1], n_bins)
     Y = np.linspace(extent[2], extent[3], n_bins)
@@ -157,6 +158,7 @@ def plot_action_use_density(mu_impulse, mu_angle, model_name, n_bins=100):
     ax.set_zlabel("Density")
     plt.savefig(f"All-Plots/{model_name}/contour.jpg")
     plt.clf()
+    plt.close()
 
 
 def plot_action_space_usage(model_name, assay_config, assay_id, n, impulse_scaling, angle_scaling, abs_angles=True):

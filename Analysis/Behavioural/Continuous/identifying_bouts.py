@@ -25,7 +25,10 @@ def cluster_bouts(impulses, angles, cluster_type, cluster_num, model_name, angle
     nbrs = cluster_obj.fit([[imp, ang] for imp, ang in zip(impulses, angles)])
     labels_new = nbrs.labels_
 
-    scatter = plt.scatter(mu_impulse, mu_angle, c=labels_new)
+    colours = ["b", "g", "r", "y", "c", "m", "black"]
+    ind = labels_new.astype(int)
+    action_colours = [colours[i] for i in ind]
+    scatter = plt.scatter(mu_impulse, mu_angle, c=action_colours)
     plt.legend(handles=scatter.legend_elements()[0], labels=[str(i) for i in range(max(labels_new + 1))])
     plt.savefig(f"All-Plots/{model_name}/{cluster_type}-{cluster_num}-clustered.jpg")
     plt.clf()
@@ -91,15 +94,20 @@ def get_ppo_exploration_seq(model_name, assay_config, assay_id, n, predictor):
     return prey_capture_sequences
 
 
+def get_ppo_spatial_density_plots(model_name, assay_config, assay_id, n, predictor):
+    ...
+
+
 if __name__ == "__main__":
     model_name, assay_config, assay_id, n = "ppo_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 20
+    n_clusters = 5
     mu_impulse, mu_angle = get_multiple_means(model_name, assay_config, assay_id, n)
-    p = cluster_bouts(mu_impulse, mu_angle, "KNN", 5, model_name)
+    p = cluster_bouts(mu_impulse, mu_angle, "KNN", n_clusters, model_name)
     seqs = get_ppo_prey_capture_seq(model_name, assay_config, assay_id, n, predictor=p)
-    display_all_sequences(seqs, max_length=20)
+    display_all_sequences(seqs, max_length=20, alternate_action_names=[str(i) for i in range(n_clusters)])
 
     seqs = get_ppo_exploration_seq(model_name, "Behavioural-Data-Empty", assay_id, n, predictor=p)
-    display_all_sequences(seqs, max_length=100)
+    display_all_sequences(seqs, max_length=100, alternate_action_names=[str(i) for i in range(n_clusters)])
 
     # sil = []
     # for i in range(2, 10):
