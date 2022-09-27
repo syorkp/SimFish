@@ -1,3 +1,5 @@
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -113,21 +115,10 @@ def extract_consumption_action_sequences(data, n=20):
     return prey_c_t
 
 
-def plot_action_histograms(all_impulses, all_actions):
-    ...
-    plt.hist(all_impulses, bins=60)
-    plt.show()
-
-    plt.hist(all_angles, bins=60)
-    plt.show()
-
-
 def plot_action_scatter(impulses, angles, model_name, special_impulses=None, special_angles=None, special_names=None):
-    plot_name = f"{model_name}-action_scatter.jpg"
+    plot_name = f"{model_name}-action_scatter"
 
     plt.scatter(impulses, angles, alpha=.1)
-    plt.xlabel("Impulse")
-    plt.ylabel("Angle")
 
     special_colours = ["r", "g", "y"]
     i = 0
@@ -137,7 +128,9 @@ def plot_action_scatter(impulses, angles, model_name, special_impulses=None, spe
             i += 1
         plot_name = "-".join(special_names) + "-" + plot_name
 
-    plt.savefig("All-Plots/" + plot_name)
+    plt.xlabel("Impulse")
+    plt.ylabel("Angle (pi radians)")
+    plt.savefig(f"All-Plots/{model_name}/{plot_name}.jpg")
     plt.clf()
 
 
@@ -149,7 +142,9 @@ def plot_action_use_density(mu_impulse, mu_angle, model_name, n_bins=100):
 
     fig = plt.figure(figsize=(10, 10))
     plt.imshow(hmp, extent=extent, origin='lower', aspect=8)
-    plt.savefig(f"All-Plots/{model_name}-heatmap.jpg")
+    plt.xlabel("Impulse")
+    plt.ylabel("Angle (pi radians)")
+    plt.savefig(f"All-Plots/{model_name}/heatmap.jpg")
     plt.clf()
 
     X = np.linspace(extent[0], extent[1], n_bins)
@@ -157,12 +152,23 @@ def plot_action_use_density(mu_impulse, mu_angle, model_name, n_bins=100):
     fig = plt.figure(figsize=(10, 10))
     ax = plt.axes(projection='3d')
     ax.contour3D(X, Y, hmp, 100, color='binary')
-    plt.savefig(f"All-Plots/{model_name}-contour.jpg")
+    ax.set_xlabel("Impulse")
+    ax.set_ylabel("Angle (pi radians)")
+    ax.set_zlabel("Density")
+    plt.savefig(f"All-Plots/{model_name}/contour.jpg")
     plt.clf()
 
 
-def plot_action_space_usage(all_impulses, all_angles, consumption_timestamps, mu_impulse, mu_angle, impulse_scaling,
-                            angle_scaling, model_name, abs_angles=True):
+def plot_action_space_usage(model_name, assay_config, assay_id, n, impulse_scaling, angle_scaling, abs_angles=True):
+    if not os.path.exists(f"All-Plots/{model_name}/"):
+        os.makedirs(f"All-Plots/{model_name}/")
+
+    all_impulses, all_angles, consumption_timestamps, predation_sequences, predator_presence = \
+        get_multiple_actions(model_name, assay_config, assay_id, n)
+    mu_impulse, mu_angle = get_multiple_means(model_name, assay_config, assay_id, n)
+
+    mu_impulse *= impulse_scaling
+    angle_scaling *= angle_scaling
 
     if abs_angles:
         all_angles = np.absolute(all_angles)
@@ -189,6 +195,9 @@ def plot_action_space_usage(all_impulses, all_angles, consumption_timestamps, mu
 
 
 def plot_actions_under_all_contexts(model_name, assay_config, assay_id, n, impulse_scaling, angle_scaling, abs_angles=True):
+    if not os.path.exists(f"All-Plots/{model_name}/"):
+        os.makedirs(f"All-Plots/{model_name}/")
+
     datas = []
     for i in range(1, n+1):
         datas.append(load_data(model_name, assay_config, f"{assay_id}-{i}"))
@@ -213,23 +222,14 @@ def plot_actions_under_all_contexts(model_name, assay_config, assay_id, n, impul
                             [get_behavioural_context_name_by_index(context)])
 
 
-def get_action_distribution_plots(model_name, assay_config, assay_id, n):
-    all_impulses, all_angles, consumption_timestamps, predation_sequences, predator_presence = \
-        get_multiple_actions(model_name, assay_config, assay_id, n)
-    mu_impulse, mu_angle = get_multiple_means(model_name, assay_config, assay_id, n)
-
-    plot_action_space_usage(all_impulses, all_angles, consumption_timestamps, mu_impulse, mu_angle, max_impulse,
-                            angle_scaling,
-                            model_name)
-
-
 if __name__ == "__main__":
     model_name = "ppo_scaffold_21-2"
 
     max_impulse = 16
     angle_scaling = 1
 
-    plot_actions_under_all_contexts(model_name, "Behavioural-Data-Free", "Naturalistic", 10, max_impulse, angle_scaling)
+    plot_action_space_usage(model_name, "Behavioural-Data-Free", "Naturalistic", 20, max_impulse, angle_scaling)
+    plot_actions_under_all_contexts(model_name, "Behavioural-Data-Free", "Naturalistic", 20, max_impulse, angle_scaling)
 
 
 
