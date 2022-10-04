@@ -1,7 +1,7 @@
 import numpy as np
 
 from Analysis.Behavioural.Tools.BehavLabels.extract_turn_sequences import extract_turn_sequences
-from Analysis.Behavioural.TurnChains.turning_analysis_discrete import model_of_action_switching, randomly_switching_fish
+from Analysis.Behavioural.TurnChains.turning_analysis_discrete import model_of_action_switching, randomly_switching_fish_new
 from Analysis.Behavioural.TurnChains.turning_analysis_continuous import convert_continuous_angles_to_turn_directions
 
 from Analysis.load_data import load_data
@@ -42,7 +42,7 @@ def get_normalised_turn_chain_metric_continuous(angles, threshold_for_angle=0.05
     directions = convert_continuous_angles_to_turn_directions(angles, threshold_for_angle=threshold_for_angle)
     turn_sequences = extract_turn_sequences([directions])
     l, r, sl, sr = model_of_action_switching(turn_sequences)
-    l2, r2, sl2, sr2 = randomly_switching_fish()
+    l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_sequences)
 
     mean_real_l = np.mean(sl)
     mean_real_r = np.mean(sr)

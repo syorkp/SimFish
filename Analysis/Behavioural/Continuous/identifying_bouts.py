@@ -11,9 +11,11 @@ from Analysis.load_data import load_data
 from Analysis.Behavioural.VisTools.show_action_sequence_block import display_all_sequences
 
 
-def cluster_bouts(impulses, angles, cluster_type, cluster_num, model_name, angle_absolute=True):
+def cluster_bouts(impulses, angles, cluster_type, cluster_num, model_name, impulse_scaling, angle_scaling, angle_absolute=True):
     if angle_absolute:
-        angles = np.absolute(angles)
+        angles_a = np.absolute(angles)
+    else:
+        angles_a = angles
 
     if cluster_type == "KNN":
         cluster_obj = KMeans(n_clusters=cluster_num, n_init=20)
@@ -22,16 +24,19 @@ def cluster_bouts(impulses, angles, cluster_type, cluster_num, model_name, angle
     else:
         cluster_obj = None
 
-    nbrs = cluster_obj.fit([[imp, ang] for imp, ang in zip(impulses, angles)])
+    nbrs = cluster_obj.fit([[imp, ang] for imp, ang in zip(impulses, angles_a)])
     labels_new = nbrs.labels_
 
     colours = ["b", "g", "r", "y", "c", "m", "black"]
     ind = labels_new.astype(int)
-    action_colours = [colours[i] for i in ind]
-    scatter = plt.scatter(mu_impulse, mu_angle, c=action_colours)
-    plt.legend(handles=scatter.legend_elements()[0], labels=[str(i) for i in range(max(labels_new + 1))])
+    for a in range(cluster_num):
+        plt.scatter(impulses[labels_new == a] * impulse_scaling, angles[labels_new == a] * angle_scaling, c=colours[a])
+    plt.legend([str(a) for a in range(cluster_num)])
+    plt.xlabel("Impulse")
+    plt.ylabel("Angle")
     plt.savefig(f"All-Plots/{model_name}/{cluster_type}-{cluster_num}-clustered.jpg")
     plt.clf()
+    plt.close()
 
     return nbrs
 
@@ -102,7 +107,7 @@ if __name__ == "__main__":
     model_name, assay_config, assay_id, n = "ppo_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 20
     n_clusters = 5
     mu_impulse, mu_angle = get_multiple_means(model_name, assay_config, assay_id, n)
-    p = cluster_bouts(mu_impulse, mu_angle, "KNN", n_clusters, model_name)
+    p = cluster_bouts(mu_impulse, mu_angle, "KNN", n_clusters, model_name, 16, 1)
     seqs = get_ppo_prey_capture_seq(model_name, assay_config, assay_id, n, predictor=p)
     display_all_sequences(seqs, max_length=20, alternate_action_names=[str(i) for i in range(n_clusters)])
 

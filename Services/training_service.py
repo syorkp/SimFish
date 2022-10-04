@@ -307,6 +307,22 @@ class TrainingService(BaseService):
 
         #                  Environmental Logs                   #
 
+        # Cause of death
+        death = self.simulation.recent_cause_of_death
+        if death is None:
+            death_int = 0
+        elif death == "Predation":
+            death_int = 1
+        elif death == "Prey-All-Eaten":
+            death_int = 2
+        elif death == "Starvation":
+            death_int = 3
+        else:
+            print("Cause of death label wrong")
+            death_int = 99
+        cause_of_death_summary = tf.Summary(value=[tf.Summary.Value(tag="Cause of Death", simple_value=death_int)])
+        self.writer.add_summary(cause_of_death_summary, self.episode_number)
+
         # Raw logs
         prey_caught_summary = tf.Summary(value=[tf.Summary.Value(tag="prey caught", simple_value=prey_caught)])
         self.writer.add_summary(prey_caught_summary, self.episode_number)
@@ -327,6 +343,15 @@ class TrainingService(BaseService):
             self.writer.add_summary(steps_near_vegetation_summary, self.episode_number)
 
         # Normalised Logs
+        if self.environment_params["prey_num"] != 0 and self.environment_params["sand_grain_num"] != 0:
+            prey_capture_index = prey_caught / self.environment_params["prey_num"]
+            sand_grain_capture_index = sand_grains_bumped / self.environment_params["sand_grain_num"]
+            # Note, generally would expect to prefer sand grains as each bump counts as a capture.
+            prey_preference = prey_capture_index / sand_grain_capture_index
+            prey_preference_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="Prey-Sand-Grain-Preference", simple_value=prey_preference)])
+            self.writer.add_summary(prey_preference_summary, self.episode_number)
+
         if self.environment_params["prey_num"] != 0:
             fraction_prey_caught = prey_caught / self.environment_params["prey_num"]
             prey_caught_summary = tf.Summary(

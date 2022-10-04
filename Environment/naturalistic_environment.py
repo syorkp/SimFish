@@ -38,6 +38,8 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.relocate_fish = relocate_fish
         self.impulse_against_fish_previous_step = None
 
+        self.recent_cause_of_death = None
+
     def reset(self):
         # print(f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
         # print(f"Mean UV: {sum([i[1] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -103,6 +105,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.create_vegetation()
 
         self.impulse_against_fish_previous_step = None
+        self.recent_cause_of_death = None
 
     def show_new_channel_sectors(self, left_eye_pos, right_eye_pos):
         left_sectors, right_sectors = self.fish.get_all_sectors([left_eye_pos[0], left_eye_pos[1]],
@@ -180,6 +183,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.fish.hungry *= self.env_variables['hunger_dec_tau']
                 if len(self.prey_shapes) == 0:
                     done = True
+                    self.recent_cause_of_death = "Prey-All-Eaten"
+
                 self.fish.prey_consumed = False
             if self.fish.touched_edge:
                 self.fish.touched_edge = False
@@ -187,6 +192,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                 reward -= self.env_variables['predator_cost']
                 done = True
                 self.fish.touched_predator = False
+                self.recent_cause_of_death = "Predator"
 
             if self.show_all:
                 self.board.erase_visualisation(bkg=0.3)
@@ -216,6 +222,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                 if self.fish.energy_level < 0:
                     print("Fish ran out of energy")
                     done = True
+                    self.recent_cause_of_death = "Starvation"
 
             # Salt health
             if self.env_variables["salt"]:
@@ -227,6 +234,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                 if self.fish.salt_health < 0:
                     print("Fish too salty")
                     done = True
+                    self.recent_cause_of_death = "Salt"
+
                 if "salt_reward_penalty" in self.env_variables:
                     if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables[
                         "salt_recovery"]:

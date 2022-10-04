@@ -14,7 +14,7 @@ from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEn
 
 
 def load_optimal_activation(model_name, layer):
-    with open(f"./MEI-Models/{model_name}/{layer}-optimal_activation.npy", "rb") as f:
+    with open(f"./Generated-MEIs/Direct/{model_name}/{layer}-optimal_activation.npy", "rb") as f:
         optimal_image = np.load(f)
     return optimal_image
 

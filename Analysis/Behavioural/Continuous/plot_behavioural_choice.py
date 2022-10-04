@@ -44,7 +44,7 @@ def plot_capture_sequences_impulse(position, impulses, consumption_timestamps):
 
     consumption_positions = [p for i, p in enumerate(position) if i in consumption_timestamps]
 
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(6, 6))
     sns.relplot(x="x", y="y", size="Impulses",
                 sizes=(40, 400), alpha=.5, palette="muted",
                 height=6, data=data)
@@ -140,7 +140,7 @@ def plot_action_use_density(mu_impulse, mu_angle, model_name, n_bins=100):
     hmp = np.clip(heatmap.T, 0, 100)
     hmp = heatmap.T
 
-    fig = plt.figure(figsize=(10, 10))
+    fig = plt.figure(figsize=(6, 6))
     plt.imshow(hmp, extent=extent, origin='lower', aspect=8)
     plt.xlabel("Impulse")
     plt.ylabel("Angle (pi radians)")
@@ -150,7 +150,7 @@ def plot_action_use_density(mu_impulse, mu_angle, model_name, n_bins=100):
 
     X = np.linspace(extent[0], extent[1], n_bins)
     Y = np.linspace(extent[2], extent[3], n_bins)
-    fig = plt.figure(figsize=(10, 10))
+    fig = plt.figure(figsize=(6, 6))
     ax = plt.axes(projection='3d')
     ax.contour3D(X, Y, hmp, 100, color='binary')
     ax.set_xlabel("Impulse")
