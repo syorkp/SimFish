@@ -36,7 +36,7 @@ dirname = os.path.dirname(__file__)
 # sim_state = NaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True)
 # sim_state = ContinuousNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=False, using_gpu=False)
 
-continuous = False
+continuous = True
 
 
 if continuous:

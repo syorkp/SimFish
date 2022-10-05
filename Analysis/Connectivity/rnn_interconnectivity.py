@@ -10,7 +10,7 @@ from Analysis.Neural.Tools.normalise_activity import normalise_within_neuron_mul
 import tensorflow.compat.v1 as tf
 
 
-def get_rnn_interconnectivity(all_network_variables):
+def get_rnn_interconnectivity(all_network_variables, gate_num=2, rnn_num=512):
     keys = all_network_variables.keys()
     relevant_keys = [key for key in keys if "lstm_cell" in key and "bias" not in key]
     rnn_related = {key: all_network_variables[key] for key in relevant_keys}
@@ -31,8 +31,9 @@ def get_rnn_interconnectivity(all_network_variables):
     #
     # w_xo = w_o[:input_size, :]
     # w_ho = w_o[input_size:, :]
+    gate_index_start = rnn_num * gate_num
 
-    all_forget_gate_weights = {key: rnn_related[key][:, 1024:1536] for key in rnn_related.keys()}
+    all_forget_gate_weights = {key: rnn_related[key][:, gate_index_start:gate_index_start+rnn_num] for key in rnn_related.keys()}
     return all_forget_gate_weights
 
 

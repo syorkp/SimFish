@@ -193,11 +193,14 @@ def transform_to_egocentric(feature_positions, fish_position, fish_orientation):
     return transformed_coordinates
 
 
-def get_clouds_with_action(data, action, predictor, steps_prior=0, direction=None):
+def get_clouds_with_action(data, action, predictor, steps_prior=0, direction=None, labels=None):
     prey_cloud = []
     predator_cloud = []
-    all_actions = predictor.predict(
-        [[imp, ang] for imp, ang in zip(data["mu_impulse"][:, 0], np.absolute(data["mu_angle"][:, 0]))])
+    if labels is not None:
+        all_actions = labels
+    else:
+        all_actions = predictor.predict(
+            [[imp, ang] for imp, ang in zip(data["mu_impulse"][:, 0], np.absolute(data["mu_angle"][:, 0]))])
     all_actions = all_actions[1:]
 
     if direction == "Left":
@@ -233,15 +236,17 @@ def get_clouds_with_action(data, action, predictor, steps_prior=0, direction=Non
 
 def get_all_density_plots_all_subsets_continuous(model_name, assay_config, assay_id, n, impulse_scaling, angle_scaling,
                                                  return_objects=False, steps_prior=0, n_clusters=5,
-                                                 threshold_for_laterality=0.1, normalise_laterality=True):
+                                                 threshold_for_laterality=0.1, normalise_laterality=True, cluster_algo="KNN"):
     if not os.path.exists(f"{model_name}/"):
         os.makedirs(f"{model_name}/")
 
     mu_impulse, mu_angle = get_multiple_means(model_name, assay_config, assay_id, n)
-    predictor = cluster_bouts(mu_impulse, mu_angle, "KNN", n_clusters, model_name, impulse_scaling, angle_scaling)
+    predictor = cluster_bouts(mu_impulse, mu_angle, cluster_algo, n_clusters, model_name, impulse_scaling, angle_scaling)
 
-    all_actions = predictor.predict([[imp, ang] for imp, ang in zip(mu_impulse, np.absolute(mu_angle))])
+    all_actions = predictor.labels_
     action_mean_angle = []
+
+    n_clusters = len(set(all_actions))
     for c in range(n_clusters):
         action_mean_angle.append(np.mean(np.absolute(mu_angle[all_actions == c])))
     action_mean_angle = np.array(action_mean_angle)
@@ -258,15 +263,18 @@ def get_all_density_plots_all_subsets_continuous(model_name, assay_config, assay
         prey_cloud_right = []
         pred_cloud_right = []
 
+        current_index = 0
+
         for i in range(1, n + 1):
             if i > 100:
                 data = load_data(f"{model_name}", f"{assay_config}", f"{assay_id}-{i}")
             else:
                 data = load_data(f"{model_name}", f"{assay_config}", f"{assay_id}-{i}")
+            existing_labels = predictor.labels_[current_index: current_index+data["observation"].shape[0]]
 
             if lateralised_bout[action_num]:
-                prey_left, pred_left = get_clouds_with_action(data, action_num, predictor, direction="Left")
-                prey_right, pred_right = get_clouds_with_action(data, action_num, predictor, direction="Right")
+                prey_left, pred_left = get_clouds_with_action(data, action_num, predictor, direction="Left", labels=existing_labels)
+                prey_right, pred_right = get_clouds_with_action(data, action_num, predictor, direction="Right", labels=existing_labels)
 
                 prey_cloud_left = prey_cloud_left + prey_left
                 pred_cloud_left = pred_cloud_left + pred_left
@@ -274,9 +282,10 @@ def get_all_density_plots_all_subsets_continuous(model_name, assay_config, assay
                 prey_cloud_right = prey_cloud_right + prey_right
                 pred_cloud_right = pred_cloud_right + pred_right
             else:
-                prey, pred = get_clouds_with_action(data, action_num, predictor)
+                prey, pred = get_clouds_with_action(data, action_num, predictor, labels=existing_labels)
                 prey_cloud = prey_cloud + prey
                 pred_cloud = pred_cloud + pred
+            current_index += data["observation"].shape[0]
 
         if lateralised_bout[action_num]:
             if len(prey_cloud_left) > 2:
@@ -327,4 +336,4 @@ def get_all_density_plots_all_subsets_continuous(model_name, assay_config, assay
 if __name__ == "__main__":
     model_name, assay_config, assay_id, n = "ppo_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 20
     get_all_density_plots_all_subsets_continuous(model_name, assay_config, assay_id, n, impulse_scaling=16,
-                                                 angle_scaling=1)
+                                                 angle_scaling=1, cluster_algo="DBSCAN")

@@ -420,7 +420,11 @@ class BaseEnvironment:
             adjusted_colour_index = ((1-self.env_variables["bkg_scatter"]) * (i+1)/len(actions_to_show)) + self.env_variables["bkg_scatter"]
             if self.continuous_actions:
                 # action_colour = (1 * ((i+1)/len(actions_to_show)), 0, 0)
-                action_colour = (adjusted_colour_index, self.env_variables["bkg_scatter"], self.env_variables["bkg_scatter"])
+                if a[1] < 0:
+                    action_colour = (adjusted_colour_index, self.env_variables["bkg_scatter"], self.env_variables["bkg_scatter"])
+                else:
+                    action_colour = (self.env_variables["bkg_scatter"], self.env_variables["bkg_scatter"], adjusted_colour_index)
+
                 self.board.show_action_continuous(a[0], a[1], fish_angles_to_show[i], positions_to_show[i][0],
                                        positions_to_show[i][1], action_colour)
             else:
