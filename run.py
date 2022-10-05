@@ -19707,7 +19707,7 @@ dqn_scaffold_transition_data = [
 
 
 if run_config is None:
-    run_config = dqn_scaffold_transition_data
+    run_config = dqn_scaffold_30_fixed_p_1
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]

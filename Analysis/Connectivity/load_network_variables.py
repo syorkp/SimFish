@@ -1,3 +1,4 @@
+import numpy as np
 import tensorflow.compat.v1 as tf
 import json
 
@@ -189,6 +190,8 @@ def load_network_variables_dqn(model_name, conf_name, full_reafference=False):
 
 if __name__ == "__main__":
     # v = load_network_variables_ppo("updated_ppo-4", "1")
-    v = load_network_variables_dqn("dqn_scaffold_dn_switch_25-1", "dsw_1")
-
+    v = load_network_variables_dqn("dqn_scaffold_14-1", "dqn_14_1")
+    rnn = v["main_rnn/lstm_cell/kernel:0"]
+    with open('dqn14_1_rnn.npy', 'wb') as f:
+        np.save(f, rnn)
 
