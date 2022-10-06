@@ -19817,11 +19817,11 @@ dqn_ablation_data = [
 
 
 if run_config is None:
-    run_config = dqn_scaffold_30_fixed_p_1
+    run_config = dqn_scaffold_30_even_p_2
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(dqn_scaffold_26_5, parallel_jobs=1)   # TODO: ALWAYS CHECK THIS RIGHT
+manager = TrialManager(run_config, parallel_jobs=1)   # TODO: ALWAYS CHECK THIS RIGHT
 manager.run_priority_loop()
