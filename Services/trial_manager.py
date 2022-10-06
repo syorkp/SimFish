@@ -16,7 +16,7 @@ import Services.A2C.a2c_training_service as a2c_training
 import Services.A2C.a2c_assay_service as a2c_assay
 
 
-multiprocessing.set_start_method('spawn', force=True)
+# multiprocessing.set_start_method('spawn', force=True)
 
 
 class TrialManager:
