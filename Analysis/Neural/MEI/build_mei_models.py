@@ -8,6 +8,8 @@ from Analysis.load_data import load_data
 from Analysis.Neural.MEI.graphs_for_mei import MEICore, MEIReadout, Trainer, TrainerExtended
 tf.logging.set_verbosity(tf.logging.ERROR)
 
+multiprocessing.set_start_method('spawn', force=True)
+
 
 def get_all_observations(model_name, assay_config, assay_id, n):
     observations = []
