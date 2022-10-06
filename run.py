@@ -3,6 +3,7 @@ import sys
 
 import json
 from datetime import datetime
+import numpy as np
 
 from Services.trial_manager import TrialManager
 from Configurations.Templates.interruptions import energy_state_profile_long_term, salt_profile_long_term, \
@@ -67,6 +68,10 @@ vrv_config["Assays"][0]["stimuli"]["prey 1"]["steps"] = 200
 vrv_config["Assays"][0]["duration"] = 200
 
 vrv_config = [vrv_config]
+
+# Ablation configs
+with open('Configurations/Ablation-Matrices/post_ablation_weights_dqn_14_1.npy', 'rb') as f:
+    ablation_matrix = np.load(f)
 
 
 # New 30.06
@@ -13233,7 +13238,7 @@ dqn_scaffold_30_fixed_p_1 = [
         "Continuous Actions": False,
         "Learning Algorithm": "DQN",
         "Priority": 1,
-        "Using GPU": False,
+        "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": False,
@@ -19705,9 +19710,94 @@ dqn_scaffold_transition_data = [
     },
 ]
 
+dqn_ablation_data = [
+    {
+        "Model Name": "dqn_scaffold_14",
+        "Environment Name": "dqn_14_1",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 1,
+        "Checkpoint": None,
+        "Run Mode": "Assay",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "set random seed": False,
+        "New Simulation": True,
+        "Full Reafference": False,
+        "Assays": [
+            {
+                "assay id": "Naturalistic-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 2000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "energy_state_control": False,
+                "salt_control": False,
+                "interventions": {"ablations": {"rnn_weights": ablation_matrix}}
+            },
+            {
+                "assay id": "Naturalistic-2",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 2000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "energy_state_control": False,
+                "salt_control": False,
+                "interventions": None
+            },
+            {
+                "assay id": "Naturalistic-3",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 2000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "energy_state_control": False,
+                "salt_control": False,
+                "interventions": None
+            },
+        ],
+    },
+]
+
 
 if run_config is None:
-    run_config = dqn_scaffold_30_fixed_p_1
+    run_config = dqn_ablation_data
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]

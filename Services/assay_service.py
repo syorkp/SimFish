@@ -225,19 +225,31 @@ class AssayService(BaseService):
                                                                   self.new_simulation, self.using_gpu,
                                                                   relocate_fish=self.relocate_fish)
 
-    def ablate_units(self, unit_indexes):
-        # TODO: Will need to update for new network architecture.
-        for unit in unit_indexes:
-            if unit < 256:
-                output = self.sess.graph.get_tensor_by_name('mainaw:0')
-                new_tensor = output.eval()
-                new_tensor[unit] = np.array([0 for i in range(10)])
-                self.sess.run(tf.assign(output, new_tensor))
+    def ablate_units(self, ablated_layers):
+
+        for layer in ablated_layers.keys():
+            if layer == "rnn_weights":
+                target = "main_rnn/lstm_cell/kernel:0"
+            elif layer == "Advantage":
+                target = "mainaw:0"
             else:
-                output = self.sess.graph.get_tensor_by_name('mainvw:0')
-                new_tensor = output.eval()
-                new_tensor[unit - 256] = np.array([0])
-                self.sess.run(tf.assign(output, new_tensor))
+                target = 'mainvw:0'
+
+            original_matrix = self.sess.graph.get_tensor_by_name(target)
+            self.sess.run(tf.assign(original_matrix, ablated_layers[layer]))
+            print(f"Ablated {layer}")
+
+        # for unit in unit_indexes:
+        #     if unit < 256:
+        #         output = self.sess.graph.get_tensor_by_name('mainaw:0')
+        #         new_tensor = output.eval()
+        #         new_tensor[unit] = np.array([0 for i in range(10)])
+        #         self.sess.run(tf.assign(output, new_tensor))
+        #     else:
+        #         output = self.sess.graph.get_tensor_by_name('mainvw:0')
+        #         new_tensor = output.eval()
+        #         new_tensor[unit - 256] = np.array([0])
+        #         self.sess.run(tf.assign(output, new_tensor))
 
     def create_output_data_storage(self, assay):
         self.output_data = {key: [] for key in assay["behavioural recordings"] + assay["network recordings"]}

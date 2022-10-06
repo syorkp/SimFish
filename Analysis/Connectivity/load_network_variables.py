@@ -190,8 +190,8 @@ def load_network_variables_dqn(model_name, conf_name, full_reafference=False):
 
 if __name__ == "__main__":
     # v = load_network_variables_ppo("updated_ppo-4", "1")
-    v = load_network_variables_dqn("dqn_scaffold_14-1", "dqn_14_1")
+    v = load_network_variables_dqn("dqn_scaffold_26-2", "dqn_26_2", full_reafference=True)
     rnn = v["main_rnn/lstm_cell/kernel:0"]
-    with open('dqn14_1_rnn.npy', 'wb') as f:
+    with open('dqn26_2_rnn.npy', 'wb') as f:
         np.save(f, rnn)
 

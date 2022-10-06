@@ -31,20 +31,25 @@ def get_rnn_interconnectivity(all_network_variables, gate_num=2, rnn_num=512):
     #
     # w_xo = w_o[:input_size, :]
     # w_ho = w_o[input_size:, :]
-    gate_index_start = rnn_num * gate_num
+    if gate_num is None:
+        selected_weights = {key: rnn_related[key] for key in rnn_related.keys()}
+    else:
+        gate_index_start = rnn_num * gate_num
+        selected_weights = {key: rnn_related[key][:, gate_index_start:gate_index_start+rnn_num] for key in rnn_related.keys()}
+    return selected_weights
 
-    all_forget_gate_weights = {key: rnn_related[key][:, gate_index_start:gate_index_start+rnn_num] for key in rnn_related.keys()}
-    return all_forget_gate_weights
 
-
-def plot_hist_all_weights(all_weights_1, all_weights_2=None):
+def plot_hist_all_weights(all_weights_1, all_weights_2=None, name="unspecified", bins=100):
     all_weights_1 = all_weights_1.flatten()
-    all_weights_2 = all_weights_2.flatten()
 
-    plt.hist(all_weights_1, bins=100, alpha=0.5)
-    plt.hist(all_weights_2, bins=100, alpha=0.5)
+    plt.hist(all_weights_1, bins=bins, alpha=0.5)
 
-    plt.savefig("hist_all_weights.png")
+    if all_weights_2 is not None:
+        all_weights_2 = all_weights_2.flatten()
+        plt.hist(all_weights_2, bins=bins, alpha=0.5)
+    plt.show()
+
+    plt.savefig(f"{name}-hist_all_weights.png")
     plt.clf()
 
 
@@ -200,65 +205,78 @@ def plot_mse_across(bins, mse, mse_diff, mse_random, mse_diff_random):
     x = True
 
 
+
 if __name__ == "__main__":
-    network_variables_1 = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", True)
-    rnn_interconnectivity_1 = get_rnn_interconnectivity(network_variables_1)
+    network_variables_1 = load_network_variables_dqn("dqn_scaffold_14-1", "dqn_14_1", False)
+    rnn_interconnectivity_1 = get_rnn_interconnectivity(network_variables_1, gate_num=None)
     only_layer_1 = rnn_interconnectivity_1[list(rnn_interconnectivity_1.keys())[0]]
     tf.reset_default_graph()
 
-    network_variables_2 = load_network_variables_dqn("dqn_scaffold_18-2", "dqn_18_2", True)
-    rnn_interconnectivity_2 = get_rnn_interconnectivity(network_variables_2)
+    network_variables_2 = load_network_variables_dqn("dqn_scaffold_26-2", "dqn_26_2", True)
+    rnn_interconnectivity_2 = get_rnn_interconnectivity(network_variables_2, gate_num=1)
     only_layer_2 = rnn_interconnectivity_2[list(rnn_interconnectivity_2.keys())[0]]
 
+    rnn_interconnectivity_1 = rnn_interconnectivity_1["main_rnn/lstm_cell/kernel:0"]
+    selected_weights = rnn_interconnectivity_1[:, 512:1024]
+    to_include = 4 * np.std(selected_weights)
+    selected_weights *= (np.absolute(selected_weights) > to_include)
+    rnn_interconnectivity_1[:, 512:1024] = selected_weights
+    with open('../../Configurations/Ablation-Matrices/post_ablation_weights_dqn_14_1.npy', 'wb') as f:
+        np.save(f, rnn_interconnectivity_1)
+
+    # rnn_interconnectivity_2 = rnn_interconnectivity_2["main_rnn/lstm_cell/kernel:0"][:512]
+
+
     # Plot all Hist weights
-    plot_hist_all_weights(only_layer_1, only_layer_2)
+    # plot_hist_all_weights(rnn_interconnectivity_1, name="dqn_scaffold_14-1", bins=2000)
+    # plot_hist_all_weights(rnn_interconnectivity_2, name="dqn_scaffold_26-2", bins=2000)
 
-    compare_weights_to_and_from(only_layer_1)
-
-    # Strongly connected unit weights
-    sc_pairs = get_strongly_connected_neuron_pairs(only_layer_1, 0.08, absolute_weights=True)
-    binned_sc_pairs, bins = group_neuron_pairs_by_connection_strength(only_layer_1, 0.02, absolute_weights=False)
-
-    bins = [[bins[i], bins[i+1]] for i, b in enumerate(binned_sc_pairs) if b.shape[0] > 0]
-
-    mse = []
-    mse_diff = []
-    rnd_mse = []
-    rnd_mse_diff = []
-    for sc_pairs in binned_sc_pairs:
-        if sc_pairs.shape[0] == 0:
-            pass
-        else:
-            d = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic-1")
-            activity_pairs = get_activity_profiles_by_indices_pairs(d, sc_pairs)
-            similarity, similarity_diff = compute_paired_similarity_metrics(activity_pairs)
-            print(similarity)
-            print(similarity_diff)
-            print()
-            mse.append(similarity)
-            mse_diff.append(similarity_diff)
-
-
-            comp_rnd_similarity = []
-            comp_rnd_similarity_diff = []
-            for i in range(10):
-                shuffled_sc_pairs = copy.copy(sc_pairs)
-                np.random.shuffle(shuffled_sc_pairs[:, 0])
-                np.random.shuffle(shuffled_sc_pairs[:, 1])
-
-                activity_pairs_shuffled = get_activity_profiles_by_indices_pairs(d, shuffled_sc_pairs)
-                rnd_similarity, rnd_similarity_diff = compute_paired_similarity_metrics(activity_pairs_shuffled)
-                comp_rnd_similarity.append(rnd_similarity)
-                comp_rnd_similarity_diff.append(rnd_similarity_diff)
-
-            print(np.mean(comp_rnd_similarity))
-            print(np.mean(comp_rnd_similarity_diff))
-            print()
-
-            rnd_mse.append(np.mean(comp_rnd_similarity))
-            rnd_mse_diff.append(np.mean(comp_rnd_similarity_diff))
-
-    plot_mse_across(bins, mse, mse_diff, rnd_mse, rnd_mse_diff)
-
-    # plot_rnn_activity_pairs(activity_pairs)
+    # compare_weights_to_and_from(only_layer_1)
+    #
+    # # Strongly connected unit weights
+    # sc_pairs = get_strongly_connected_neuron_pairs(only_layer_1, 0.08, absolute_weights=True)
+    # binned_sc_pairs, bins = group_neuron_pairs_by_connection_strength(only_layer_1, 0.02, absolute_weights=False)
+    #
+    # bins = [[bins[i], bins[i+1]] for i, b in enumerate(binned_sc_pairs) if b.shape[0] > 0]
+    #
+    # mse = []
+    # mse_diff = []
+    # rnd_mse = []
+    # rnd_mse_diff = []
+    # for sc_pairs in binned_sc_pairs:
+    #     if sc_pairs.shape[0] == 0:
+    #         pass
+    #     else:
+    #         d = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic-1")
+    #         activity_pairs = get_activity_profiles_by_indices_pairs(d, sc_pairs)
+    #         similarity, similarity_diff = compute_paired_similarity_metrics(activity_pairs)
+    #         print(similarity)
+    #         print(similarity_diff)
+    #         print()
+    #         mse.append(similarity)
+    #         mse_diff.append(similarity_diff)
+    #
+    #
+    #         comp_rnd_similarity = []
+    #         comp_rnd_similarity_diff = []
+    #         for i in range(10):
+    #             shuffled_sc_pairs = copy.copy(sc_pairs)
+    #             np.random.shuffle(shuffled_sc_pairs[:, 0])
+    #             np.random.shuffle(shuffled_sc_pairs[:, 1])
+    #
+    #             activity_pairs_shuffled = get_activity_profiles_by_indices_pairs(d, shuffled_sc_pairs)
+    #             rnd_similarity, rnd_similarity_diff = compute_paired_similarity_metrics(activity_pairs_shuffled)
+    #             comp_rnd_similarity.append(rnd_similarity)
+    #             comp_rnd_similarity_diff.append(rnd_similarity_diff)
+    #
+    #         print(np.mean(comp_rnd_similarity))
+    #         print(np.mean(comp_rnd_similarity_diff))
+    #         print()
+    #
+    #         rnd_mse.append(np.mean(comp_rnd_similarity))
+    #         rnd_mse_diff.append(np.mean(comp_rnd_similarity_diff))
+    #
+    # plot_mse_across(bins, mse, mse_diff, rnd_mse, rnd_mse_diff)
+    #
+    # # plot_rnn_activity_pairs(activity_pairs)
 

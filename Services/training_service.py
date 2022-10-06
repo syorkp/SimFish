@@ -18,9 +18,9 @@ from Analysis.Behavioural.TurnChains.turn_chain_metric import get_normalised_tur
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
 
-from tensorflow.python.client import device_lib
-device_lib.list_local_devices()
-print(device_lib.list_local_devices())
+# from tensorflow.python.client import device_lib
+# device_lib.list_local_devices()
+# print(device_lib.list_local_devices())
 
 class TrainingService(BaseService):
 

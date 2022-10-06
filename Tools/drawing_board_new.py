@@ -19,6 +19,7 @@ class NewDrawingBoard:
 
         if using_gpu:
             self.chosen_math_library = cp
+            print("Using GPU")
         else:
             self.chosen_math_library = np
 
