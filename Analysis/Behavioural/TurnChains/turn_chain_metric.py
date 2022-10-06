@@ -15,7 +15,7 @@ def get_normalised_turn_chain_metric_discrete(actions):
     """
     turn_sequences = extract_turn_sequences([actions])
     l, r, sl, sr = model_of_action_switching(turn_sequences)
-    l2, r2, sl2, sr2 = randomly_switching_fish()
+    l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_sequences)
 
     mean_real_l = np.mean(sl)
     mean_real_r = np.mean(sr)

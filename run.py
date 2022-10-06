@@ -977,6 +977,26 @@ dqn_scaffold_26_2 = [
     },
 ]
 
+dqn_scaffold_26_5 = [
+    {
+        "Model Name": "dqn_scaffold_26",
+        "Environment Name": "dqn_scaffold_26x",
+        "Trial Number": 5,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
 dqn_scaffold_30_1 = [
     {
         "Model Name": "dqn_scaffold_30",
@@ -19797,11 +19817,11 @@ dqn_ablation_data = [
 
 
 if run_config is None:
-    run_config = dqn_ablation_data
+    run_config = dqn_scaffold_30_fixed_p_1
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(run_config, parallel_jobs=1)   # TODO: ALWAYS CHECK THIS RIGHT
+manager = TrialManager(dqn_scaffold_26_5, parallel_jobs=1)   # TODO: ALWAYS CHECK THIS RIGHT
 manager.run_priority_loop()
