@@ -128,12 +128,12 @@ class DQNAssayService(AssayService, BaseDQN):
                         internal_state_order = self.get_internal_state_order()
                         index = internal_state_order.index("energy_state")
                         internal_state[0, index] = self.preset_energy_state[self.step_number]
-                if self.in_light_interruptions is not False:
+                if self.in_light_interruptions is not None:
                     if self.in_light_interruptions[self.step_number] == 1:
                         internal_state_order = self.get_internal_state_order()
                         index = internal_state_order.index("in_light")
                         internal_state[0, index] = self.in_light_interruptions[self.step_number]
-                if self.salt_interruptions is not False:
+                if self.salt_interruptions is not None:
                     if self.salt_interruptions[self.step_number] == 1:
                         internal_state_order = self.get_internal_state_order()
                         index = internal_state_order.index("salt")
