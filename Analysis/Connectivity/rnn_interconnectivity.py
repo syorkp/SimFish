@@ -236,8 +236,8 @@ if __name__ == "__main__":
     to_include = 4 * np.std(selected_weights)
     print(np.sum((np.absolute(selected_weights) > to_include) * 1))
     selected_weights *= (np.absolute(selected_weights) > to_include)
-    rnn_interconnectivity_1[:, 512:1024] = selected_weights
-    with open('../../Configurations/Ablation-Matrices/post_ablation_weights_1_dqn_26_1.npy', 'wb') as f:
+    rnn_interconnectivity_1[:512, 512:1024] = 0#selected_weights
+    with open('../../Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_26_1.npy', 'wb') as f:
         np.save(f, rnn_interconnectivity_1)
 
 
