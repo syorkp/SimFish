@@ -70,7 +70,7 @@ vrv_config["Assays"][0]["duration"] = 200
 vrv_config = [vrv_config]
 
 # Ablation configs
-with open('Configurations/Ablation-Matrices/post_ablation_weights_dqn_14_1.npy', 'rb') as f:
+with open('Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_14_1.npy', 'rb') as f:
     ablation_matrix = np.load(f)
 
 
@@ -19734,7 +19734,7 @@ dqn_ablation_data = [
     {
         "Model Name": "dqn_scaffold_14",
         "Environment Name": "dqn_14_1",
-        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Assay Configuration Name": "Behavioural-Data-AblationB",
         "Trial Number": 1,
         "Checkpoint": None,
         "Run Mode": "Assay",
@@ -19789,7 +19789,7 @@ dqn_ablation_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "interventions": None
+                "interventions": {"ablations": {"rnn_weights": ablation_matrix}}
             },
             {
                 "assay id": "Naturalistic-3",
@@ -19809,7 +19809,47 @@ dqn_ablation_data = [
                 "network recordings": ["rnn state", "internal state"],
                 "energy_state_control": False,
                 "salt_control": False,
-                "interventions": None
+                "interventions": {"ablations": {"rnn_weights": ablation_matrix}}
+            },
+            {
+                "assay id": "Naturalistic-4",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 2000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "energy_state_control": False,
+                "salt_control": False,
+                "interventions": {"ablations": {"rnn_weights": ablation_matrix}}
+            },
+            {
+                "assay id": "Naturalistic-5",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 2000,
+                "Tethered": False,
+                "save frames": True,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "energy_state_control": False,
+                "salt_control": False,
+                "interventions": {"ablations": {"rnn_weights": ablation_matrix}}
             },
         ],
     },
@@ -19817,7 +19857,7 @@ dqn_ablation_data = [
 
 
 if run_config is None:
-    run_config = dqn_scaffold_30_even_p_2
+    run_config = dqn_ablation_data
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]

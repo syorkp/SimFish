@@ -116,7 +116,19 @@ class AssayService(BaseService):
             self.save_frames = assay["save frames"]
             self.create_output_data_storage(assay)
             self.create_testing_environment(assay)
+
+            # TODO: Delete, just to check ablations happened
+            vars = tf.trainable_variables()
+            vals = self.sess.run(vars)
+            sorted_vars = {}
+            for var, val in zip(vars, vals):
+                sorted_vars[str(var.name)] = val
+            rnn_weights = sorted_vars["main_rnn/lstm_cell/kernel:0"]
+            with open('ablatedValues.npy', 'wb') as f:
+                np.save(f, rnn_weights)
+
             self.perform_assay(assay)
+
             if assay["save stimuli"]:
                 self.save_stimuli_data(assay)
 
