@@ -150,11 +150,14 @@ if __name__ == "__main__":
        - "Phototaxis Index"
        - "capture success rate"
        - "episode reward"
-       - "predator avoidance index (avoided"
+       - "predator avoidance index (avoided/p_pred)"
        - "predators avoided"
        - "prey caught"
     """
-    chosen_metrics = ["prey capture index (fraction caught)", "capture success rate", "Phototaxis Index"]
+    chosen_metrics = ["prey capture index (fraction caught)",
+                      # "predator avoidance index (avoided/p_pred)",
+                      "capture success rate",
+                      "Phototaxis Index"]
     plot_multiple_metrics_multiple_models(models, chosen_metrics, window=40, interpolate_scaffold_points=True)
     # plot_scaffold_durations(models[0])
 

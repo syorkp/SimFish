@@ -286,8 +286,8 @@ if __name__ == "__main__":
     # with open('dqn26_2_rnn.npy', 'wb') as f:
     #     np.save(f, rnn)
     v = load_network_variables_ppo("ppo_scaffold_21-2", "ppo_21_2")
-    rnn = v["main_rnn/lstm_cell/kernel:0"]
-    with open('dqn26_2_rnn.npy', 'wb') as f:
+    rnn = v["actor_rnn/lstm_cell/kernel:0"]
+    with open('ppo21_2_rnn.npy', 'wb') as f:
         np.save(f, rnn)
 
 

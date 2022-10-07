@@ -81,12 +81,12 @@ class NaturalisticEnvironment(BaseEnvironment):
                         120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
                         self.env_variables['width'] - (
                                 self.env_variables['prey_size'] + self.env_variables['fish_mouth_size']) - 120,
-                        math.ceil(self.env_variables["prey_cloud_num"]**0.5))
+                        math.ceil(self.env_variables["prey_cloud_num"] ** 0.5))
                     y_locations = np.linspace(
                         120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
                         self.env_variables['width'] - (
                                 self.env_variables['prey_size'] + self.env_variables['fish_mouth_size']) - 120,
-                        math.ceil(self.env_variables["prey_cloud_num"]**0.5))
+                        math.ceil(self.env_variables["prey_cloud_num"] ** 0.5))
 
                     self.prey_cloud_locations = np.concatenate((np.expand_dims(x_locations, 1),
                                                                 np.expand_dims(y_locations, 1)), axis=1)

@@ -320,6 +320,8 @@ class TrainingService(BaseService):
             death_int = 2
         elif death == "Starvation":
             death_int = 3
+        elif death == "Salt":
+            death_int = 4
         else:
             print("Cause of death label wrong")
             death_int = 99
