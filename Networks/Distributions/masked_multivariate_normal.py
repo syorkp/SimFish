@@ -16,7 +16,11 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
         self.mu_vals = loc
 
         # Compute KDF here.
-        mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
+        try:
+            mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
+        except FileNotFoundError:
+            mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
+
         bout_kinematic_parameters_final_array = mat["BoutKinematicParametersFinalArray"]
         dist_angles = bout_kinematic_parameters_final_array[:, 10]  # Angles including glide
         distance_x_inc_glide = bout_kinematic_parameters_final_array[:, 18]  # In mm
