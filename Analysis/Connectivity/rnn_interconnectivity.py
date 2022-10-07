@@ -207,37 +207,37 @@ if __name__ == "__main__":
     # with open('ablatedValues.npy', 'rb') as f:
     #     ablated = np.load(f)
     # PPO
-    with open("ppo21_2_rnn.npy", "rb") as f:
-        network_variables_ppo = np.load(f)
-    plot_hist_all_weights(network_variables_ppo, name="ppo_21-2-all", bins=2000)
-    plot_hist_all_weights(network_variables_ppo[:512, 512:1024], name="ppo_21-2-selected", bins=2000)
-
-
-    # DQN untrained model
-    network_variables_2 = load_network_variables_dqn("dqn_scaffold_26-5", "dqn_26_2", True)
-    rnn_interconnectivity_1 = get_rnn_interconnectivity(network_variables_2, gate_num=None)
-    rnn_interconnectivity_1 = rnn_interconnectivity_1["main_rnn/lstm_cell/kernel:0"]
-    plot_hist_all_weights(rnn_interconnectivity_1, name="untrained-full", bins=2000)
-
-    tf.reset_default_graph()
+    # with open("ppo21_2_rnn.npy", "rb") as f:
+    #     network_variables_ppo = np.load(f)
+    # plot_hist_all_weights(network_variables_ppo, name="ppo_21-2-all", bins=2000)
+    # plot_hist_all_weights(network_variables_ppo[:512, 512:1024], name="ppo_21-2-selected", bins=2000)
+    #
+    #
+    # # DQN untrained model
+    # network_variables_2 = load_network_variables_dqn("dqn_scaffold_26-5", "dqn_26_2", True)
+    # rnn_interconnectivity_1 = get_rnn_interconnectivity(network_variables_2, gate_num=None)
+    # rnn_interconnectivity_1 = rnn_interconnectivity_1["main_rnn/lstm_cell/kernel:0"]
+    # plot_hist_all_weights(rnn_interconnectivity_1, name="untrained-full", bins=2000)
+    #
+    # tf.reset_default_graph()
 
     # DQN
-    network_variables_1 = load_network_variables_dqn("dqn_scaffold_14-1", "dqn_14_1", False)
+    network_variables_1 = load_network_variables_dqn("dqn_scaffold_26-1", "dqn_26_1", True)
     rnn_interconnectivity_1 = get_rnn_interconnectivity(network_variables_1, gate_num=None)
     only_layer_1 = rnn_interconnectivity_1[list(rnn_interconnectivity_1.keys())[0]]
     tf.reset_default_graph()
 
-    network_variables_2 = load_network_variables_dqn("dqn_scaffold_26-2", "dqn_26_2", True)
-    rnn_interconnectivity_2 = get_rnn_interconnectivity(network_variables_2, gate_num=1)
-    only_layer_2 = rnn_interconnectivity_2[list(rnn_interconnectivity_2.keys())[0]]
+    # network_variables_2 = load_network_variables_dqn("dqn_scaffold_26-2", "dqn_26_2", True)
+    # rnn_interconnectivity_2 = get_rnn_interconnectivity(network_variables_2, gate_num=1)
+    # only_layer_2 = rnn_interconnectivity_2[list(rnn_interconnectivity_2.keys())[0]]
 
     rnn_interconnectivity_1 = rnn_interconnectivity_1["main_rnn/lstm_cell/kernel:0"]
     selected_weights = rnn_interconnectivity_1[:512, 512:1024]
     to_include = 4 * np.std(selected_weights)
     print(np.sum((np.absolute(selected_weights) > to_include) * 1))
     selected_weights *= (np.absolute(selected_weights) > to_include)
-    rnn_interconnectivity_1[:, 512:1024] = 0#selected_weights
-    with open('../../Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_14_1.npy', 'wb') as f:
+    rnn_interconnectivity_1[:, 512:1024] = selected_weights
+    with open('../../Configurations/Ablation-Matrices/post_ablation_weights_1_dqn_26_1.npy', 'wb') as f:
         np.save(f, rnn_interconnectivity_1)
 
 

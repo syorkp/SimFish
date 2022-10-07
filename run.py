@@ -70,9 +70,9 @@ vrv_config["Assays"][0]["duration"] = 200
 vrv_config = [vrv_config]
 
 # Ablation configs
-with open('Configurations/Ablation-Matrices/post_ablation_weights_dqn_14_1.npy', 'rb') as f:
+with open('Configurations/Ablation-Matrices/post_ablation_weights_dqn_26_1.npy', 'rb') as f:
     ablation_matrix = np.load(f)
-with open('Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_14_1.npy', 'rb') as f:
+with open('Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_26_1.npy', 'rb') as f:
     full_ablation_matrix = np.load(f)
 
 
@@ -20110,5 +20110,5 @@ else:
     run_config = globals()[run_config]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(run_config, parallel_jobs=3)   # TODO: ALWAYS CHECK THIS RIGHT
+manager = TrialManager(run_config, parallel_jobs=1)   # TODO: ALWAYS CHECK THIS RIGHT
 manager.run_priority_loop()
