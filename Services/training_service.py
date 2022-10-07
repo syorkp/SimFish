@@ -306,7 +306,7 @@ class TrainingService(BaseService):
         # SUMMARIES
         # Rewards
         episode_summary = tf.Summary(value=[tf.Summary.Value(tag="episode reward", simple_value=total_episode_reward)])
-        self.writer.add_summary(episode_summary, self.total_steps)
+        self.writer.add_summary(episode_summary, self.episode_number)
 
         #                  Environmental Logs                   #
 

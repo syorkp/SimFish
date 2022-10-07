@@ -176,7 +176,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
         for act in range(self.learning_params['num_actions']):
             action_freq = np.sum(np.array(all_actions) == act) / len(all_actions)
             a_freq = tf.Summary(value=[tf.Summary.Value(tag="action " + str(act), simple_value=action_freq)])
-            self.writer.add_summary(a_freq, self.total_steps)
+            self.writer.add_summary(a_freq, self.episode_number)
 
         # Turn chain metric
         turn_chain_summary = tf.Summary(value=[tf.Summary.Value(tag="turn chain preference",
