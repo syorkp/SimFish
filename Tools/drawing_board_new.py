@@ -860,7 +860,7 @@ class NewDrawingBoard:
 
     def show_salt_location(self, location):
         rr, cc = draw.circle(location[1], location[0], 10, self.db.shape)
-        self.db_visualisation[rr, cc, :] = (0, 1, 0)
+        self.db_visualisation[rr, cc, :] = (1, 0, 0)
 
     def tail(self, head, left, right, tip, color, visualisation):
         tail_coordinates = np.array((head, left, tip, right))

@@ -153,11 +153,23 @@ if __name__ == "__main__":
        - "predator avoidance index (avoided/p_pred)"
        - "predators avoided"
        - "prey caught"
+       - "Exploration Quotient"
+       - "turn chain preference"                      
+       - "Cause of Death"
     """
     chosen_metrics = ["prey capture index (fraction caught)",
-                      # "predator avoidance index (avoided/p_pred)",
                       "capture success rate",
-                      "Phototaxis Index"]
+                      "episode reward",
+                      "Energy Efficiency Index",
+                      "Episode Duration",
+                      "Exploration Quotient",
+                      "turn chain preference",
+                      "Cause of Death",
+                      # Sand grain attempted captures.
+                      # DQN only
+                      # "predator avoidance index (avoided/p_pred)",
+                      "Phototaxis Index"
+                      ]
     plot_multiple_metrics_multiple_models(models, chosen_metrics, window=40, interpolate_scaffold_points=True)
     # plot_scaffold_durations(models[0])
 
