@@ -19751,7 +19751,7 @@ dqn_ablation_data = [
         "SB Emulator": True,
         "set random seed": True,
         "New Simulation": True,
-        "Full Reafference": False,
+        "Full Reafference": True,
         "Assays": [
             {
                 "assay id": "Naturalistic-1",
@@ -19873,7 +19873,7 @@ dqn_ablation_data = [
         "SB Emulator": True,
         "set random seed": True,
         "New Simulation": True,
-        "Full Reafference": False,
+        "Full Reafference": True,
         "Assays": [
             {
                 "assay id": "Naturalistic-1",
@@ -19995,7 +19995,7 @@ dqn_ablation_data = [
         "SB Emulator": True,
         "set random seed": True,
         "New Simulation": True,
-        "Full Reafference": False,
+        "Full Reafference": True,
         "Assays": [
             {
                 "assay id": "Naturalistic-1",
