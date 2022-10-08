@@ -70,9 +70,9 @@ vrv_config["Assays"][0]["duration"] = 200
 vrv_config = [vrv_config]
 
 # Ablation configs
-with open('Configurations/Ablation-Matrices/post_ablation_weights_1_dqn_26_1.npy', 'rb') as f:
+with open('Configurations/Ablation-Matrices/post_ablation_weights_1_dqn_26_2.npy', 'rb') as f:
     ablation_matrix = np.load(f)
-with open('Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_26_1.npy', 'rb') as f:
+with open('Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_26_2.npy', 'rb') as f:
     full_ablation_matrix = np.load(f)
 
 
