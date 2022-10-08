@@ -19735,9 +19735,9 @@ dqn_scaffold_transition_data = [
 dqn_ablation_data = [
     {
         "Model Name": "dqn_scaffold_26",
-        "Environment Name": "dqn_26_1",
+        "Environment Name": "dqn_26_2",
         "Assay Configuration Name": "Behavioural-Data-Free",
-        "Trial Number": 1,
+        "Trial Number": 2,
         "Checkpoint": None,
         "Run Mode": "Assay",
         "Tethered": False,
@@ -19857,9 +19857,9 @@ dqn_ablation_data = [
     },
     {
         "Model Name": "dqn_scaffold_26",
-        "Environment Name": "dqn_26_1",
+        "Environment Name": "dqn_26_2",
         "Assay Configuration Name": "Behavioural-Data-Ablations-A",
-        "Trial Number": 1,
+        "Trial Number": 2,
         "Checkpoint": None,
         "Run Mode": "Assay",
         "Tethered": False,
@@ -19979,9 +19979,9 @@ dqn_ablation_data = [
     },
     {
         "Model Name": "dqn_scaffold_26",
-        "Environment Name": "dqn_26_1",
+        "Environment Name": "dqn_26_2",
         "Assay Configuration Name": "Behavioural-Data-Ablations-B",
-        "Trial Number": 1,
+        "Trial Number": 2,
         "Checkpoint": None,
         "Run Mode": "Assay",
         "Tethered": False,
@@ -20110,5 +20110,5 @@ else:
     run_config = globals()[run_config]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(run_config, parallel_jobs=3)   # TODO: ALWAYS CHECK THIS RIGHT
+manager = TrialManager(run_config, parallel_jobs=1)   # TODO: ALWAYS CHECK THIS RIGHT
 manager.run_priority_loop()

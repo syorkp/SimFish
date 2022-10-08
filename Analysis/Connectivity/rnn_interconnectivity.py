@@ -222,7 +222,7 @@ if __name__ == "__main__":
     # tf.reset_default_graph()
 
     # DQN
-    network_variables_1 = load_network_variables_dqn("dqn_scaffold_26-1", "dqn_26_1", True)
+    network_variables_1 = load_network_variables_dqn("dqn_scaffold_26-2", "dqn_26_2", True)
     rnn_interconnectivity_1 = get_rnn_interconnectivity(network_variables_1, gate_num=None)
     only_layer_1 = rnn_interconnectivity_1[list(rnn_interconnectivity_1.keys())[0]]
     tf.reset_default_graph()
@@ -236,8 +236,12 @@ if __name__ == "__main__":
     to_include = 4 * np.std(selected_weights)
     print(np.sum((np.absolute(selected_weights) > to_include) * 1))
     selected_weights *= (np.absolute(selected_weights) > to_include)
-    rnn_interconnectivity_1[:512, 512:1024] = 0#selected_weights
-    with open('../../Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_26_1.npy', 'wb') as f:
+
+    rnn_interconnectivity_1[:512, 512:1024] = selected_weights
+    with open('../../Configurations/Ablation-Matrices/post_ablation_weights_1_dqn_26_2.npy', 'wb') as f:
+        np.save(f, rnn_interconnectivity_1)
+    rnn_interconnectivity_1[:512, 512:1024] = 0
+    with open('../../Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_26_2.npy', 'wb') as f:
         np.save(f, rnn_interconnectivity_1)
 
 
