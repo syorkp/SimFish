@@ -118,14 +118,14 @@ class AssayService(BaseService):
             self.create_testing_environment(assay)
 
             # TODO: Delete, just to check ablations happened
-            vars = tf.trainable_variables()
-            vals = self.sess.run(vars)
-            sorted_vars = {}
-            for var, val in zip(vars, vals):
-                sorted_vars[str(var.name)] = val
-            rnn_weights = sorted_vars["main_rnn/lstm_cell/kernel:0"]
-            with open('ablatedValues.npy', 'wb') as f:
-                np.save(f, rnn_weights)
+            # vars = tf.trainable_variables()
+            # vals = self.sess.run(vars)
+            # sorted_vars = {}
+            # for var, val in zip(vars, vals):
+            #     sorted_vars[str(var.name)] = val
+            # rnn_weights = sorted_vars["main_rnn/lstm_cell/kernel:0"]
+            # with open('ablatedValues.npy', 'wb') as f:
+            #     np.save(f, rnn_weights)
 
             self.perform_assay(assay)
 
