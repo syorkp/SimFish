@@ -18,36 +18,36 @@ def cluster_bouts(impulses, angles, cluster_type, cluster_num, model_name, impul
     else:
         angles_a = angles
 
-    for ep in np.linspace(0.0001, 0.05, 10):
-        if cluster_type == "KNN":
-            cluster_obj = KMeans(n_clusters=cluster_num, n_init=20)
-            start_i = 0
-        elif cluster_type == "AGG":
-            cluster_obj = AgglomerativeClustering(n_clusters=cluster_num)
-            start_i = 0
-        elif cluster_type == "DBSCAN":
-            cluster_obj = DBSCAN(eps=ep, min_samples=80)
-            start_i = -1
-        else:
-            cluster_obj = None
-            start_i = 0
-        nbrs = cluster_obj.fit([[imp, ang] for imp, ang in zip(impulses, angles_a)])
-        labels_new = nbrs.labels_
-        cluster_num = len(set(labels_new))
-        print(cluster_num)
+    # for ep in np.linspace(0.0001, 0.05, 10):
+    if cluster_type == "KNN":
+        cluster_obj = KMeans(n_clusters=cluster_num, n_init=20)
+        start_i = 0
+    elif cluster_type == "AGG":
+        cluster_obj = AgglomerativeClustering(n_clusters=cluster_num)
+        start_i = 0
+    elif cluster_type == "DBSCAN":
+        cluster_obj = DBSCAN(eps=ep, min_samples=80)
+        start_i = -1
+    else:
+        cluster_obj = None
+        start_i = 0
+    nbrs = cluster_obj.fit([[imp, ang] for imp, ang in zip(impulses, angles_a)])
+    labels_new = nbrs.labels_
+    cluster_num = len(set(labels_new))
+    print(cluster_num)
 
-        if cluster_num > 7 or cluster_num == 1:
-            continue
-        colours = ["b", "g", "r", "y", "c", "m", "black"]
-        ind = labels_new.astype(int)
-        for a in range(start_i, cluster_num-start_i):
-            plt.scatter(impulses[labels_new == a] * impulse_scaling, angles[labels_new == a] * angle_scaling, c=colours[a])
-        plt.legend([str(a) for a in range(cluster_num)])
-        plt.xlabel("Impulse")
-        plt.ylabel("Angle")
-        plt.savefig(f"All-Plots/{model_name}/{cluster_type}-{cluster_num}-{ep}-clustered.jpg")
-        plt.clf()
-        plt.close()
+    # if cluster_num > 7 or cluster_num == 1:
+    #     continue
+    colours = ["b", "g", "r", "y", "c", "m", "black"]
+    ind = labels_new.astype(int)
+    for a in range(start_i, cluster_num-start_i):
+        plt.scatter(impulses[labels_new == a] * impulse_scaling, angles[labels_new == a] * angle_scaling, c=colours[a])
+    plt.legend([str(a) for a in range(cluster_num)])
+    plt.xlabel("Impulse")
+    plt.ylabel("Angle")
+    plt.savefig(f"All-Plots/{model_name}/{cluster_type}-{cluster_num}-clustered.jpg")
+    plt.clf()
+    plt.close()
 
     return nbrs
 
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     model_name, assay_config, assay_id, n = "ppo_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 20
     n_clusters = 5
     mu_impulse, mu_angle = get_multiple_means(model_name, assay_config, assay_id, n)
-    p = cluster_bouts(mu_impulse, mu_angle, "DBSCAN", n_clusters, model_name, 16, 1)
+    p = cluster_bouts(mu_impulse, mu_angle, "AGG", n_clusters, model_name, 16, 1)
     # seqs = get_ppo_prey_capture_seq(model_name, assay_config, assay_id, n, predictor=p)
     # display_all_sequences(seqs, max_length=20, alternate_action_names=[str(i) for i in range(n_clusters)])
     #

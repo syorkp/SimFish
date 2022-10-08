@@ -8,6 +8,7 @@ from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.BehavLabels.label_behavioural_context import label_behavioural_context_multiple_trials, \
     get_behavioural_context_name_by_index
 
+
 def plot_capture_sequences_orientation(position, orientation_changes, consumption_timestamps):
     # Note that due to the inverse scale in the environment, should be rotated in y axis.
     data = {}
@@ -134,6 +135,26 @@ def plot_action_scatter(impulses, angles, model_name, special_impulses=None, spe
     plt.clf()
 
 
+def plot_action_scatter_with_mask_and_bouts(impulses, angles, model_name, special_impulses=None, special_angles=None,
+                                            special_names=None):
+    plot_name = f"{model_name}-action_scatter"
+
+    plt.scatter(impulses, angles, alpha=.1)
+
+    special_colours = ["r", "g", "y"]
+    i = 0
+    if special_names is not None:
+        for impulses_s, angles_s in zip(special_impulses, special_angles):
+            plt.scatter(impulses_s, angles_s, color=special_colours[i], alpha=0.2)
+            i += 1
+        plot_name = "-".join(special_names) + "-" + plot_name
+
+    plt.xlabel("Impulse")
+    plt.ylabel("Angle (pi radians)")
+    plt.savefig(f"All-Plots/{model_name}/{plot_name}.jpg")
+    plt.clf()
+
+
 def plot_action_use_density(mu_impulse, mu_angle, model_name, n_bins=100):
     heatmap, xedges, yedges = np.histogram2d(mu_impulse * max_impulse, mu_angle, bins=n_bins)
     extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
@@ -161,7 +182,8 @@ def plot_action_use_density(mu_impulse, mu_angle, model_name, n_bins=100):
     plt.close()
 
 
-def plot_action_space_usage(model_name, assay_config, assay_id, n, impulse_scaling, angle_scaling, abs_angles=True):
+def plot_action_space_usage(model_name, assay_config, assay_id, n, impulse_scaling, angle_scaling, abs_angles=True,
+                            show_action_mask=False):
     if not os.path.exists(f"All-Plots/{model_name}/"):
         os.makedirs(f"All-Plots/{model_name}/")
 
@@ -179,7 +201,7 @@ def plot_action_space_usage(model_name, assay_config, assay_id, n, impulse_scali
     plot_action_scatter(all_impulses, all_angles, model_name)
     plot_action_use_density(mu_impulse, mu_angle, model_name)
 
-
+    # Display with consumptions
     mu_impulse = [i * impulse_scaling for i in mu_impulse]
     mu_angle = [i * angle_scaling for i in mu_angle]
     consumption_mu_imp = [a for i, a in enumerate(mu_impulse) if i in consumption_timestamps]
@@ -190,10 +212,15 @@ def plot_action_space_usage(model_name, assay_config, assay_id, n, impulse_scali
     plot_action_scatter(mu_impulse, mu_angle, model_name, [consumption_mu_imp, predator_mu_imp],
                         [consumption_mu_ang, predator_mu_ang], ["Consumption", "Predator Present"])
 
+    # Plot with consumptions
     consumption_mu_imp = [a for i, a in enumerate(mu_impulse) if i in predation_sequences]
     consumption_mu_ang = [a for i, a in enumerate(mu_angle) if i in predation_sequences]
     plot_action_scatter(mu_impulse, mu_angle, model_name, [consumption_mu_imp],
                         [consumption_mu_ang], ["Prey Capture"])
+
+    if show_action_mask:
+        plot_action_scatter_with_mask(mu_impulse, mu_angle, model_name, [consumption_mu_imp],
+                                      [consumption_mu_ang], ["Prey Capture"])
 
 
 def plot_actions_under_all_contexts(model_name, assay_config, assay_id, n, impulse_scaling, angle_scaling, abs_angles=True):
@@ -222,6 +249,8 @@ def plot_actions_under_all_contexts(model_name, assay_config, assay_id, n, impul
 
         plot_action_scatter(mu_impulse, mu_angle, model_name, [mu_impulse_s], [mu_angle_s],
                             [get_behavioural_context_name_by_index(context)])
+
+
 
 
 if __name__ == "__main__":

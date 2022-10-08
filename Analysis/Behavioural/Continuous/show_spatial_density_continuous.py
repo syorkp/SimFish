@@ -336,4 +336,4 @@ def get_all_density_plots_all_subsets_continuous(model_name, assay_config, assay
 if __name__ == "__main__":
     model_name, assay_config, assay_id, n = "ppo_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 20
     get_all_density_plots_all_subsets_continuous(model_name, assay_config, assay_id, n, impulse_scaling=16,
-                                                 angle_scaling=1, cluster_algo="DBSCAN")
+                                                 angle_scaling=1, cluster_algo="AGG")
