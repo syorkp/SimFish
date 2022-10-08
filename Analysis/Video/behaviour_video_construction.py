@@ -232,11 +232,11 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 def draw_episode(data, config_name, model_name, continuous_actions, draw_past_actions=True, show_energy_state=True,
                  scale=0.25, draw_action_space_usage=True):
-    with open(f"../../Configurations/Training-Configs/{config_name}/1_env.json", 'r') as f:
+    with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
         env_variables = json.load(f)
 
     n_actions_to_show = 50
-    board = DrawingBoard(1500, 1500)
+    board = DrawingBoard(env_variables["width"], env_variables["height"])
     if show_energy_state:
         energy_levels = data["internal_state"][:, 0]
     fish_positions = data["fish_position"]
@@ -302,11 +302,8 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
 
 
 if __name__ == "__main__":
-    # model_name = "parameterised_speed_test_fast-1"
-    model_name = "ppo_scaffold_version_on_8_se-1"
-    model_name = "dqn_scaffold_10-3"
-
+    model_name = "dqn_scaffold_26-2"
     data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
-    config_name = "dqn_scaffold_10"
+    assay_config_name = "dqn_26_2"
 
-    draw_episode(data, config_name, model_name, continuous_actions=False, show_energy_state=False)
+    draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False)

@@ -36,7 +36,7 @@ dirname = os.path.dirname(__file__)
 # sim_state = NaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True)
 # sim_state = ContinuousNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=False, using_gpu=False)
 
-continuous = True
+continuous = False
 
 
 if continuous:
@@ -48,12 +48,12 @@ if continuous:
     sim_state = ContinuousNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=True, using_gpu=False)
 else:
     if arg is None:
-        arg = "dqn_14_1"  # Default arg
+        arg = "dqn_26_1_videos"  # Default arg
 
     file_path = os.path.join(dirname, f"Configurations/Assay-Configs/{arg}_env.json")
     with open(file_path, 'r') as f:
         env = json.load(f)
-    env["prey_num"] = 0
+    # env["prey_num"] = 0
 
     sim_state = DiscreteNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=True,
                                                 using_gpu=False)

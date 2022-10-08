@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+
 
 from Analysis.load_data import load_data
 
@@ -32,6 +34,9 @@ def get_fish_prey_relationships(data, sequences):
         # Will generate values between -pi/2 and pi/2 which require adjustment depending on quadrant.
         fish_prey_angles = np.arctan(fish_prey_vectors[:, 1] / fish_prey_vectors[:, 0]) - fish_angles
         fish_prey_angles %= np.pi
+        # Adjust so between -pi/2 and pi/2
+        higher_portion = (fish_prey_angles > np.pi/2)
+        fish_prey_angles[higher_portion] -= np.pi
 
         fish_prey_angles_compiled.append(fish_prey_angles[:-1])
         fish_prey_distances_compiled.append(fish_prey_distances[:-1])
@@ -44,12 +49,34 @@ def get_fish_prey_relationships(data, sequences):
 if __name__ == "__main__":
     dist = []
     angs = []
-    for i in range(2, 4):
-        d = load_data("dqn_scaffold_14-1", "Behavioural-Data-Free", f"Naturalistic-{i}")
+    for i in range(1, 11):
+        d = load_data("dqn_scaffold_14-2", "Behavioural-Data-Free", f"Naturalistic-{i}")
         ts = get_prey_capture_timestamps(d)
         dis, ang = get_fish_prey_relationships(d, ts)
-        dist.append(dis)
-        angs.append(ang)
+        if dis.shape[0] > 0:
+            dist.append(dis)
+        if ang.shape[0] > 0:
+            angs.append(ang)
 
     dist = np.concatenate((dist))
     angs = np.concatenate((angs))
+
+    mean_dist = np.mean(dist, axis=0)
+    mean_ang = np.mean(np.absolute(angs), axis=0)
+
+    plt.plot(np.swapaxes(angs, 0, 1), color="grey", alpha=0.5)
+    plt.plot(mean_ang, color="r")
+    plt.xlabel("Bouts before consumption")
+    plt.ylabel("Angle to prey (pi radians)")
+    plt.savefig("fish_prey_angle.jpg")
+    plt.clf()
+    plt.close()
+
+    plt.plot(np.swapaxes(dist, 0, 1)/10, color="grey", alpha=0.5)
+    plt.plot(mean_dist/10, color="r")
+    plt.xlabel("Bouts before consumption")
+    plt.ylabel("Distance from Prey (mm)")
+    plt.ylim(0, 10)
+    plt.savefig("fish_prey_distance.jpg")
+    plt.clf()
+    plt.close()
