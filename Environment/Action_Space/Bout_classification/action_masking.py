@@ -44,277 +44,309 @@ Important indices (subtract 1?):
   - distBoutDistanceY = 20 Distance moved in left right direction including glide (left positive, mm)
 """
 
-mat = scipy.io.loadmat("bouts.mat")
-bout_kinematic_parameters_final_array = mat["BoutKinematicParametersFinalArray"]
-angles = bout_kinematic_parameters_final_array[:, 9]
-dist_angles = bout_kinematic_parameters_final_array[:, 10]  # This one
-max_angles = bout_kinematic_parameters_final_array[:, 11]
-distance_x = bout_kinematic_parameters_final_array[:, 14]
-distance_y = bout_kinematic_parameters_final_array[:, 15]
-distance_x_inc_glide = bout_kinematic_parameters_final_array[:, 18]
-distance_y_inc_glide = bout_kinematic_parameters_final_array[:, 19]
+
+def get_action_mask():
+    try:
+        mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
+    except FileNotFoundError:
+        mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
+
+    bout_kinematic_parameters_final_array = mat["BoutKinematicParametersFinalArray"]
+    dist_angles = bout_kinematic_parameters_final_array[:, 10]  # Angles including glide
+    distance_x_inc_glide = bout_kinematic_parameters_final_array[:, 18]  # In mm
+    distance_y_inc_glide = bout_kinematic_parameters_final_array[:, 19]  # In mm
+
+    distance = (distance_x_inc_glide ** 2 + distance_y_inc_glide ** 2) ** 0.5
+
+    impulse = (distance * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
+    dist_angles_radians = (np.absolute(dist_angles) / 180) * np.pi
+    actions = np.concatenate((impulse, dist_angles_radians), axis=1)
+
+    model = DBSCAN(eps=0.8125, min_samples=5).fit(actions)
+    sorted_actions = actions[model.labels_ != -1]
+
+    # Extra step - cut off negative impulse values
+    sorted_actions = sorted_actions[sorted_actions[:, 0] >= 0]
+    sorted_actions = sorted_actions[sorted_actions[:, 1] >= 0]
+
+    # self.kde_impulse = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 0], var_type='c', bw='cv_ml')
+    # self.kde_angle = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
+    print("Creating action mask...")
+    kde_impulse = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 0], var_type='c', bw='cv_ml')
+    kde_angle = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
+
+if __name__ == "__main__":
+    mat = scipy.io.loadmat("bouts.mat")
+    bout_kinematic_parameters_final_array = mat["BoutKinematicParametersFinalArray"]
+    angles = bout_kinematic_parameters_final_array[:, 9]
+    dist_angles = bout_kinematic_parameters_final_array[:, 10]  # This one
+    max_angles = bout_kinematic_parameters_final_array[:, 11]
+    distance_x = bout_kinematic_parameters_final_array[:, 14]
+    distance_y = bout_kinematic_parameters_final_array[:, 15]
+    distance_x_inc_glide = bout_kinematic_parameters_final_array[:, 18]
+    distance_y_inc_glide = bout_kinematic_parameters_final_array[:, 19]
 
 
-# plt.hist(max_angles, bins=1000)
-# plt.show()
-#
-# plt.hist(distance_x, bins=1000)
-# plt.show()
-#
-# plt.hist(distance_y, bins=1000)
-# plt.show()
+    # plt.hist(max_angles, bins=1000)
+    # plt.show()
+    #
+    # plt.hist(distance_x, bins=1000)
+    # plt.show()
+    #
+    # plt.hist(distance_y, bins=1000)
+    # plt.show()
 
-# Verification that these are the desired columns:
-# plt.scatter(distance_x, distance_x_inc_glide)
-# plt.show()
-#
-# plt.scatter(distance_y, distance_y_inc_glide)
-# plt.show()
-
-
-# Want actual distance moved - combination of both.
-distance = (distance_x_inc_glide**2 + distance_y_inc_glide**2)**0.5
-
-# Plot distance against angles in heatmap to get idea of distribution.
-# plt.scatter(np.absolute(angles), distance, alpha=0.2)
-# plt.xlabel("Angle (degrees)")
-# plt.ylabel("Distance moved (mm)")
-# plt.show()
-#
-# plt.scatter(np.absolute(dist_angles), distance, alpha=0.2)
-# plt.xlabel("Full Angle (degrees)")
-# plt.ylabel("Distance moved (mm)")
-# plt.show()
-#
-# # Convert impulse for specific mass
-impulse = (distance * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
-dist_angles_radians = (np.absolute(dist_angles)/180) * np.pi
-plt.scatter(dist_angles_radians, impulse, alpha=0.2)
-plt.xlabel("Angle (pi radians)")
-plt.ylabel("Impulse")
-plt.show()
-
-# Scale as scaled in PPO
-# impulse = impulse#/10.0
-# dist_angles_radians = dist_angles_radians# / (np.pi/5)
-
-# Computing kernel density
-# ang, imp = np.linspace(0, 500, 500), np.linspace(0, 20, 500)
-# ang, imp = np.meshgrid(ang, imp)
-# ang, imp = np.expand_dims(ang, 2), np.expand_dims(imp, 2)
-# action_range = np.concatenate((ang, imp), axis=2)
-# action_range = action_range.reshape(-1, action_range.shape[-1])
-#
-impulse = np.expand_dims(impulse, 1)
-dist_angles_radians = np.expand_dims(dist_angles_radians, 1)
-actions = np.concatenate((impulse, dist_angles_radians), axis=1)
-kde = KernelDensity(bandwidth=20, kernel='gaussian').fit(actions)
-log_density_of_original = kde.score_samples(actions)
-params = kde.get_params()
-
-#             OUTLIER IDENTIFICATION
-
-# Z-score based
-# z = np.abs(stats.zscore(actions, axis=None))
-# # z = z[:, 0] + z[:, 1]
-# outliers = actions[z[:, 0]>1.5 or z[:, 1]>1.5]
+    # Verification that these are the desired columns:
+    # plt.scatter(distance_x, distance_x_inc_glide)
+    # plt.show()
+    #
+    # plt.scatter(distance_y, distance_y_inc_glide)
+    # plt.show()
 
 
-# for i, s in enumerate(range(1, 20)):
-#     figure, axs = plt.subplots(3, 3)
-#     figure.set_size_inches(18, 18)
-#     for j, ep in enumerate(np.linspace(0.5, 1.0, 9)):
-#         model = DBSCAN(eps=ep, min_samples=s).fit(actions)
-#         colors = model.labels_
-#
-#         axs[j//3, j%3].scatter(actions[:, 0], actions[:, 1], c=colors, alpha=0.9)
-#         # plt.scatter(outliers[:, 0], outliers[:, 1], alpha=0.2, color="r")
-#         axs[j//3, j%3].set_ylabel("Full Angle (Radians)")
-#         axs[j//3, j%3].set_xlabel(f"Impulse,Samples: {s}, eps: {ep}")
-#     plt.show()
+    # Want actual distance moved - combination of both.
+    distance = (distance_x_inc_glide**2 + distance_y_inc_glide**2)**0.5
+
+    # Plot distance against angles in heatmap to get idea of distribution.
+    # plt.scatter(np.absolute(angles), distance, alpha=0.2)
+    # plt.xlabel("Angle (degrees)")
+    # plt.ylabel("Distance moved (mm)")
+    # plt.show()
+    #
+    # plt.scatter(np.absolute(dist_angles), distance, alpha=0.2)
+    # plt.xlabel("Full Angle (degrees)")
+    # plt.ylabel("Distance moved (mm)")
+    # plt.show()
+    #
+    # # Convert impulse for specific mass
+    impulse = (distance * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
+    dist_angles_radians = (np.absolute(dist_angles)/180) * np.pi
+    plt.scatter(dist_angles_radians, impulse, alpha=0.2)
+    plt.xlabel("Angle (pi radians)")
+    plt.ylabel("Impulse")
+    plt.show()
+
+    # Scale as scaled in PPO
+    # impulse = impulse#/10.0
+    # dist_angles_radians = dist_angles_radians# / (np.pi/5)
+
+    # Computing kernel density
+    # ang, imp = np.linspace(0, 500, 500), np.linspace(0, 20, 500)
+    # ang, imp = np.meshgrid(ang, imp)
+    # ang, imp = np.expand_dims(ang, 2), np.expand_dims(imp, 2)
+    # action_range = np.concatenate((ang, imp), axis=2)
+    # action_range = action_range.reshape(-1, action_range.shape[-1])
+    #
+    impulse = np.expand_dims(impulse, 1)
+    dist_angles_radians = np.expand_dims(dist_angles_radians, 1)
+    actions = np.concatenate((impulse, dist_angles_radians), axis=1)
+    kde = KernelDensity(bandwidth=20, kernel='gaussian').fit(actions)
+    log_density_of_original = kde.score_samples(actions)
+    params = kde.get_params()
+
+    #             OUTLIER IDENTIFICATION
+
+    # Z-score based
+    # z = np.abs(stats.zscore(actions, axis=None))
+    # # z = z[:, 0] + z[:, 1]
+    # outliers = actions[z[:, 0]>1.5 or z[:, 1]>1.5]
 
 
-# Best parameters; 1.0, 5    -    0.775, 4   -    5, 0.6625       -      5, 0.8125
-model = DBSCAN(eps=0.8125, min_samples=5).fit(actions)
-colors = model.labels_
-moutliers = actions[model.labels_ == -1]
-
-# plt.scatter(actions[:, 0], actions[:, 1], c=colors, alpha=0.9)
-# plt.show()
-#
-plt.scatter(actions[:, 1], actions[:, 0], alpha=0.3)
-plt.scatter(moutliers[:, 1], moutliers[:, 0], color="r", alpha=0.3)
-plt.xlabel("Angle (pi radians)")
-plt.ylabel("Impulse")
-plt.show()
-#
-sorted_actions = actions[model.labels_ != -1]
-# plt.scatter(sorted_actions[:, 0], sorted_actions[:, 1], color="r", alpha=0.3)
-# plt.show()
-
-# Extra step - cut off negative impulse values
-sorted_actions = sorted_actions[sorted_actions[:, 0] >= 0]
-sorted_actions = sorted_actions[sorted_actions[:, 1] >= 0]
-
-#                      Final KDE Formation
-
-kde_sorted = KernelDensity(bandwidth=20, kernel='exponential').fit(sorted_actions)
-
-log_density_of_original = kde_sorted.score_samples(actions)
-#
-# xi = np.linspace(np.min(actions[:, 0]), np.max(actions[:, 0]), 100)
-# yi = np.linspace(np.min(actions[:, 1]), np.max(actions[:, 1]), 100)
-# xi, yi = np.meshgrid(xi, yi)
-# zi = griddata(actions, log_density_of_original, (xi, yi), method="linear")
-# plt.pcolormesh(xi, yi, zi)
-# plt.show()
-
-# plt.scatter(impulse[:, 0], np.exp(log_density_of_original))
-# plt.show()
-#
-# plt.scatter(dist_angles_radians[:, 0], np.exp(log_density_of_original))
-# plt.show()
-#
-# fig = plt.figure(figsize=(12, 12))
-# ax = fig.add_subplot(projection='3d')
-# ax.scatter(impulse[:, 0], dist_angles_radians[:, 0], np.exp(log_density_of_original))
-# plt.show()
+    # for i, s in enumerate(range(1, 20)):
+    #     figure, axs = plt.subplots(3, 3)
+    #     figure.set_size_inches(18, 18)
+    #     for j, ep in enumerate(np.linspace(0.5, 1.0, 9)):
+    #         model = DBSCAN(eps=ep, min_samples=s).fit(actions)
+    #         colors = model.labels_
+    #
+    #         axs[j//3, j%3].scatter(actions[:, 0], actions[:, 1], c=colors, alpha=0.9)
+    #         # plt.scatter(outliers[:, 0], outliers[:, 1], alpha=0.2, color="r")
+    #         axs[j//3, j%3].set_ylabel("Full Angle (Radians)")
+    #         axs[j//3, j%3].set_xlabel(f"Impulse,Samples: {s}, eps: {ep}")
+    #     plt.show()
 
 
-# Jointplot
+    # Best parameters; 1.0, 5    -    0.775, 4   -    5, 0.6625       -      5, 0.8125
+    model = DBSCAN(eps=0.8125, min_samples=5).fit(actions)
+    colors = model.labels_
+    moutliers = actions[model.labels_ == -1]
 
-# action_data = {"x": actions[:, 0], "y": actions[:, 1]}
-# g = sns.jointplot(x="x", y="y", data=action_data, kind="kde")
-#
-# g.plot_joint(plt.scatter, c="w")
-# g.ax_joint.collections[0].set_alpha(0)
-#
-# plt.show()
+    # plt.scatter(actions[:, 0], actions[:, 1], c=colors, alpha=0.9)
+    # plt.show()
+    #
+    plt.scatter(actions[:, 1], actions[:, 0], alpha=0.3)
+    plt.scatter(moutliers[:, 1], moutliers[:, 0], color="r", alpha=0.3)
+    plt.xlabel("Angle (pi radians)")
+    plt.ylabel("Impulse")
+    plt.show()
+    #
+    sorted_actions = actions[model.labels_ != -1]
+    # plt.scatter(sorted_actions[:, 0], sorted_actions[:, 1], color="r", alpha=0.3)
+    # plt.show()
 
+    # Extra step - cut off negative impulse values
+    sorted_actions = sorted_actions[sorted_actions[:, 0] >= 0]
+    sorted_actions = sorted_actions[sorted_actions[:, 1] >= 0]
 
-# KDF 2
-indices_of_valid = (model.labels_ != -1) * 1
-sorted_actions = np.array([sorted_actions])
-actions = np.array([actions])
-bw_ml_x = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, :, 0], var_type='c', bw='cv_ml')
-bw_ml_y = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, :, 1], var_type='c', bw='cv_ml')
-probs = bw_ml_x.pdf(actions[:, :, 0]) * bw_ml_y.pdf(actions[:, :, 1])
-probs2 = copy.copy(probs)
+    #                      Final KDE Formation
 
+    kde_sorted = KernelDensity(bandwidth=20, kernel='exponential').fit(sorted_actions)
 
-fig = plt.figure(figsize=(12, 12))
-ax = fig.add_subplot(projection='3d')
-ax.scatter(dist_angles_radians[:, 0], impulse[:, 0], probs)
-ax.set_ylabel("Impulse")
-ax.set_xlabel("Angle (pi radians)")
-ax.set_zlabel("Probability density")
-plt.show()
+    log_density_of_original = kde_sorted.score_samples(actions)
+    #
+    # xi = np.linspace(np.min(actions[:, 0]), np.max(actions[:, 0]), 100)
+    # yi = np.linspace(np.min(actions[:, 1]), np.max(actions[:, 1]), 100)
+    # xi, yi = np.meshgrid(xi, yi)
+    # zi = griddata(actions, log_density_of_original, (xi, yi), method="linear")
+    # plt.pcolormesh(xi, yi, zi)
+    # plt.show()
 
-
-# Thresholding                                       Best: [2.3733733733733735e-05, 8183]
-# print(f"Total inliers: {np.sum(indices_of_valid)}")
-# current_best = [0, 0]
-# for threshold in np.linspace(0.000005, 0.0001, 1000):
-#     probs2[probs < threshold] = 0
-#     probs2[probs > threshold] = 1
-#     match = np.sum((probs2 == indices_of_valid) * 1)
-#     if match > current_best[1]:
-#         current_best = [threshold, match]
-#         print(f"Computed inliers for {threshold}: {match}")
-#
-#     if np.array_equal(indices_of_valid, probs2):
-#         print(f"FOUND Threshold {threshold}")
-# #
-# print(f"Best: {current_best}")
-#
-# probs2[probs < 0.0000729] = 0
-# probs2[probs > 0.0000729] = 1
-# sames = (probs2 == indices_of_valid) * 1
-# print(np.sum(sames))
-# print(actions.shape[0])
-# # Multiply by integral.
-#
-# plt.scatter(impulse[:, 0], probs2)
-# plt.show()
-#
-# plt.scatter(dist_angles_radians[:, 0], probs2)
-# plt.show()
-#
-# fig = plt.figure(figsize=(12, 12))
-# ax = fig.add_subplot(projection='3d')
-# ax.scatter(impulse[:, 0], dist_angles_radians[:, 0], probs2)
-# plt.show()
-
-#                     Integrating distribution
-
-# Number of should have samples = 12 x 350
-possible_impulse = np.linspace(0, 350, 1000)   # Divide total by 100
-possible_angle = np.linspace(0, 12, 1000)   # Divide total by 100
-possible_impulse, possible_angle = np.meshgrid(possible_angle, possible_impulse)
-possible_impulse, possible_angle = possible_impulse.flatten(), possible_angle.flatten()
-
-# probs = bw_ml_x.pdf(possible_angle) * bw_ml_y.pdf(possible_impulse)
-
-probs2 = copy.copy(probs)
-t = 0.01587368
-
-for threshold in np.linspace(t, 0.1, 20):
-
-    # probs2[probs < threshold] = 0
-    # probs2[probs > threshold] = 1
+    # plt.scatter(impulse[:, 0], np.exp(log_density_of_original))
+    # plt.show()
+    #
+    # plt.scatter(dist_angles_radians[:, 0], np.exp(log_density_of_original))
+    # plt.show()
     #
     # fig = plt.figure(figsize=(12, 12))
     # ax = fig.add_subplot(projection='3d')
-    # ax.scatter(dist_angles_radians[:, 0], impulse[:, 0], probs2)
-    # ax.set_ylabel("Impulse")
-    # ax.set_xlabel("Angle (pi radians)")
-    # ax.set_zlabel("Probability density")
-    # plt.title(str(threshold))
+    # ax.scatter(impulse[:, 0], dist_angles_radians[:, 0], np.exp(log_density_of_original))
     # plt.show()
-    # print(np.sum(probs2))
-    plt.scatter(dist_angles_radians[probs > threshold][:, 0], impulse[probs > threshold][:, 0])
+
+
+    # Jointplot
+
+    # action_data = {"x": actions[:, 0], "y": actions[:, 1]}
+    # g = sns.jointplot(x="x", y="y", data=action_data, kind="kde")
+    #
+    # g.plot_joint(plt.scatter, c="w")
+    # g.ax_joint.collections[0].set_alpha(0)
+    #
+    # plt.show()
+
+
+    # KDF 2
+    indices_of_valid = (model.labels_ != -1) * 1
+    sorted_actions = np.array([sorted_actions])
+    actions = np.array([actions])
+    bw_ml_x = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, :, 0], var_type='c', bw='cv_ml')
+    bw_ml_y = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, :, 1], var_type='c', bw='cv_ml')
+    probs = bw_ml_x.pdf(actions[:, :, 0]) * bw_ml_y.pdf(actions[:, :, 1])
+    probs2 = copy.copy(probs)
+
+
+    fig = plt.figure(figsize=(12, 12))
+    ax = fig.add_subplot(projection='3d')
+    ax.scatter(dist_angles_radians[:, 0], impulse[:, 0], probs)
+    ax.set_ylabel("Impulse")
+    ax.set_xlabel("Angle (pi radians)")
+    ax.set_zlabel("Probability density")
     plt.show()
 
 
+    # Thresholding                                       Best: [2.3733733733733735e-05, 8183]
+    # print(f"Total inliers: {np.sum(indices_of_valid)}")
+    # current_best = [0, 0]
+    # for threshold in np.linspace(0.000005, 0.0001, 1000):
+    #     probs2[probs < threshold] = 0
+    #     probs2[probs > threshold] = 1
+    #     match = np.sum((probs2 == indices_of_valid) * 1)
+    #     if match > current_best[1]:
+    #         current_best = [threshold, match]
+    #         print(f"Computed inliers for {threshold}: {match}")
+    #
+    #     if np.array_equal(indices_of_valid, probs2):
+    #         print(f"FOUND Threshold {threshold}")
+    # #
+    # print(f"Best: {current_best}")
+    #
+    # probs2[probs < 0.0000729] = 0
+    # probs2[probs > 0.0000729] = 1
+    # sames = (probs2 == indices_of_valid) * 1
+    # print(np.sum(sames))
+    # print(actions.shape[0])
+    # # Multiply by integral.
+    #
+    # plt.scatter(impulse[:, 0], probs2)
+    # plt.show()
+    #
+    # plt.scatter(dist_angles_radians[:, 0], probs2)
+    # plt.show()
+    #
+    # fig = plt.figure(figsize=(12, 12))
+    # ax = fig.add_subplot(projection='3d')
+    # ax.scatter(impulse[:, 0], dist_angles_radians[:, 0], probs2)
+    # plt.show()
+
+    #                     Integrating distribution
+
+    # Number of should have samples = 12 x 350
+    possible_impulse = np.linspace(0, 350, 1000)   # Divide total by 100
+    possible_angle = np.linspace(0, 12, 1000)   # Divide total by 100
+    possible_impulse, possible_angle = np.meshgrid(possible_angle, possible_impulse)
+    possible_impulse, possible_angle = possible_impulse.flatten(), possible_angle.flatten()
+
+    # probs = bw_ml_x.pdf(possible_angle) * bw_ml_y.pdf(possible_impulse)
+
+    probs2 = copy.copy(probs)
+    t = 0.01587368
+
+    for threshold in np.linspace(t, 0.1, 20):
+
+        # probs2[probs < threshold] = 0
+        # probs2[probs > threshold] = 1
+        #
+        # fig = plt.figure(figsize=(12, 12))
+        # ax = fig.add_subplot(projection='3d')
+        # ax.scatter(dist_angles_radians[:, 0], impulse[:, 0], probs2)
+        # ax.set_ylabel("Impulse")
+        # ax.set_xlabel("Angle (pi radians)")
+        # ax.set_zlabel("Probability density")
+        # plt.title(str(threshold))
+        # plt.show()
+        # print(np.sum(probs2))
+        plt.scatter(dist_angles_radians[probs > threshold][:, 0], impulse[probs > threshold][:, 0])
+        plt.show()
 
 
 
 
-x = True
 
-# sess = tf.Session()
-# with sess as sess:
-#
-#     init = tf.global_variables_initializer()
-#     trainables = tf.trainable_variables()
-#     sess.run(init)
-# x = True
 
-# plt.scatter(impulse[:, 0], log_density_of_original)
-# plt.show()
-#
-# plt.scatter(dist_angles_radians[:, 0], log_density_of_original)
-# plt.show()
-#
-#
-# # # Visualise KDF for all original data points
-# log_density_of_original = kde.score_samples(actions)
-# #
-# xi = np.linspace(np.min(actions[:, 0]),np.max(actions[:, 0]),100)
-# yi = np.linspace(np.min(actions[:, 1]),np.max(actions[:, 1]),100)
-# xi, yi = np.meshgrid(xi, yi)
-# zi = griddata(actions, log_density_of_original, (xi, yi), method="linear")
-# plt.pcolormesh(xi, yi, zi)
-# plt.show()
-#
-# # Visualise KDF for larger range
-# log_density = kde.score_samples(action_range)
-#
-# xi = np.linspace(np.min(action_range[:, 0]),np.max(action_range[:, 0]),100)
-# yi = np.linspace(np.min(action_range[:, 1]),np.max(action_range[:, 1]),100)
-# xi, yi = np.meshgrid(xi, yi)
-# zi = griddata(action_range, log_density, (xi, yi), method="linear")
-# plt.pcolormesh(xi, yi, zi)
-# plt.show()
-#
+    x = True
+
+    # sess = tf.Session()
+    # with sess as sess:
+    #
+    #     init = tf.global_variables_initializer()
+    #     trainables = tf.trainable_variables()
+    #     sess.run(init)
+    # x = True
+
+    # plt.scatter(impulse[:, 0], log_density_of_original)
+    # plt.show()
+    #
+    # plt.scatter(dist_angles_radians[:, 0], log_density_of_original)
+    # plt.show()
+    #
+    #
+    # # # Visualise KDF for all original data points
+    # log_density_of_original = kde.score_samples(actions)
+    # #
+    # xi = np.linspace(np.min(actions[:, 0]),np.max(actions[:, 0]),100)
+    # yi = np.linspace(np.min(actions[:, 1]),np.max(actions[:, 1]),100)
+    # xi, yi = np.meshgrid(xi, yi)
+    # zi = griddata(actions, log_density_of_original, (xi, yi), method="linear")
+    # plt.pcolormesh(xi, yi, zi)
+    # plt.show()
+    #
+    # # Visualise KDF for larger range
+    # log_density = kde.score_samples(action_range)
+    #
+    # xi = np.linspace(np.min(action_range[:, 0]),np.max(action_range[:, 0]),100)
+    # yi = np.linspace(np.min(action_range[:, 1]),np.max(action_range[:, 1]),100)
+    # xi, yi = np.meshgrid(xi, yi)
+    # zi = griddata(action_range, log_density, (xi, yi), method="linear")
+    # plt.pcolormesh(xi, yi, zi)
+    # plt.show()
+    #
 

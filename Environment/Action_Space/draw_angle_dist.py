@@ -112,6 +112,7 @@ def get_modal_impulse_and_angle(action):
 
     return impulse, angle
 
+
 def draw_angle_dist(bout_id):
 
     try:

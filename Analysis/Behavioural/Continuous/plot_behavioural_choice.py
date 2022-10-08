@@ -7,6 +7,7 @@ import seaborn as sns
 from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.BehavLabels.label_behavioural_context import label_behavioural_context_multiple_trials, \
     get_behavioural_context_name_by_index
+from Environment.Action_Space.draw_angle_dist import get_modal_impulse_and_angle
 
 
 def plot_capture_sequences_orientation(position, orientation_changes, consumption_timestamps):
@@ -137,7 +138,7 @@ def plot_action_scatter(impulses, angles, model_name, special_impulses=None, spe
 
 def plot_action_scatter_with_mask_and_bouts(impulses, angles, model_name, special_impulses=None, special_angles=None,
                                             special_names=None):
-    plot_name = f"{model_name}-action_scatter"
+    plot_name = f"action_scatter-with-bouts-and-mask"
 
     plt.scatter(impulses, angles, alpha=.1)
 
@@ -149,10 +150,19 @@ def plot_action_scatter_with_mask_and_bouts(impulses, angles, model_name, specia
             i += 1
         plot_name = "-".join(special_names) + "-" + plot_name
 
+    bouts = [0, 1, 3, 4, 7, 9]
+    bout_names = ["Slow2", "RT", "sCS", "J-Turn", "SLC", "AS"]
+    for index, bout in enumerate(bouts):
+        i, a = get_modal_impulse_and_angle(bout)
+        a = np.pi * a/180
+        plt.scatter(i, a, c="black")
+        plt.text(i+0.1, a+0.03, bout_names[index])
+
     plt.xlabel("Impulse")
     plt.ylabel("Angle (pi radians)")
     plt.savefig(f"All-Plots/{model_name}/{plot_name}.jpg")
     plt.clf()
+    plt.close()
 
 
 def plot_action_use_density(mu_impulse, mu_angle, model_name, n_bins=100):
@@ -202,8 +212,6 @@ def plot_action_space_usage(model_name, assay_config, assay_id, n, impulse_scali
     plot_action_use_density(mu_impulse, mu_angle, model_name)
 
     # Display with consumptions
-    mu_impulse = [i * impulse_scaling for i in mu_impulse]
-    mu_angle = [i * angle_scaling for i in mu_angle]
     consumption_mu_imp = [a for i, a in enumerate(mu_impulse) if i in consumption_timestamps]
     consumption_mu_ang = [a for i, a in enumerate(mu_angle) if i in consumption_timestamps]
     predator_mu_imp = [a for i, a in enumerate(mu_impulse) if i in predator_presence]
@@ -219,8 +227,8 @@ def plot_action_space_usage(model_name, assay_config, assay_id, n, impulse_scali
                         [consumption_mu_ang], ["Prey Capture"])
 
     if show_action_mask:
-        plot_action_scatter_with_mask(mu_impulse, mu_angle, model_name, [consumption_mu_imp],
-                                      [consumption_mu_ang], ["Prey Capture"])
+        plot_action_scatter_with_mask_and_bouts(mu_impulse, mu_angle, model_name, [],
+                                      [], ["Prey Capture"])
 
 
 def plot_actions_under_all_contexts(model_name, assay_config, assay_id, n, impulse_scaling, angle_scaling, abs_angles=True):
@@ -259,8 +267,9 @@ if __name__ == "__main__":
     max_impulse = 16
     angle_scaling = 1
 
-    plot_action_space_usage(model_name, "Behavioural-Data-Free", "Naturalistic", 20, max_impulse, angle_scaling)
-    plot_actions_under_all_contexts(model_name, "Behavioural-Data-Free", "Naturalistic", 20, max_impulse, angle_scaling)
+    plot_action_space_usage(model_name, "Behavioural-Data-Free", "Naturalistic", 20, max_impulse, angle_scaling,
+                            show_action_mask=True)
+    # plot_actions_under_all_contexts(model_name, "Behavioural-Data-Free", "Naturalistic", 20, max_impulse, angle_scaling)
 
 
 
