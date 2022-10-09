@@ -24,6 +24,7 @@
       <excludeFolder url="file://$MODULE_DIR$/Analysis/Neural/MEI/MEI-Models" />
       <excludeFolder url="file://$MODULE_DIR$/Analysis/Neural/MEI/MEI-Models/dqn_scaffold_18-1/layer_3_1/logs" />
       <excludeFolder url="file://$MODULE_DIR$/Analysis/Video/Current-Videos" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis/Behavioural/Continuous/All-Plots" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

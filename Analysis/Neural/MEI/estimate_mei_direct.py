@@ -65,7 +65,7 @@ def create_network(simulation, environment_params, learning_params, full_reaffer
     return main_QN
 
 
-def produce_meis(model_name, layer_name, full_reafference, iterations=1000):
+def produce_meis(model_name, layer_name, full_reafference, iterations=1000, limited_area=False):
     """Does the same thing for the multiple neurons of a given model"""
     if not os.path.exists(f"./Generated-MEIs/Direct/{model_name}/"):
         os.makedirs(f"./Generated-MEIs/Direct/{model_name}/")
@@ -111,7 +111,10 @@ def produce_meis(model_name, layer_name, full_reafference, iterations=1000):
                 # input_image = np.concatenate((image, np.zeros((100, 1))), axis=1)
                 dy_dx, activity, red = sess.run([grad, tf.math.reduce_sum(target_layer[:, :, unit]), red_grad],
                                                 feed_dict={network.observation: input_image.astype(int)})
+                if limited_area:
+                    dy_dx[0, 80:] = 0
                 gradients.append(dy_dx)
+
                 update = (step_size / (np.mean(np.abs(dy_dx[0])) + eps)) * (1 / 255)
                 update = update * dy_dx[0]
                 # image = input_image[:, 0:2]
@@ -180,7 +183,7 @@ def produce_meis(model_name, layer_name, full_reafference, iterations=1000):
 
 
 if __name__ == "__main__":
-    produce_meis("dqn_scaffold_18-1", "conv1l", full_reafference=True, iterations=100)
+    produce_meis("dqn_scaffold_26-2", "conv1l", full_reafference=True, iterations=100, limited_area=True)
 
 
 

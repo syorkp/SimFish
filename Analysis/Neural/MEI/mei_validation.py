@@ -114,5 +114,5 @@ if __name__ == "__main__":
                                                observations_responsible[:, :, 1:2]), axis=2)
 
     plt.imshow(observations_responsible)
-    plt.savefig(f"{model_name}-{layer}-Actual-MEI")
+    plt.savefig(f"/Generated=MEIS/Actual/{model_name}-{layer}-Actual-MEI")
     get_best_images(cown, image, maximal_activity, observations_responsible)
