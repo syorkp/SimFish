@@ -8,7 +8,6 @@ except IndexError:
     run_config = None
 
 produce_meis("dqn_scaffold_26-2", "conv4l", True, 10)
-# os.system(f"python3 {run_config}")
 
 
 
