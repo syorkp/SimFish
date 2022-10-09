@@ -62,10 +62,10 @@ def create_network(simulation, environment_params, learning_params, full_reaffer
                            extra_layer=learning_params['extra_rnn'],
                            full_reafference=full_reafference
                            )
-    return main_QN
+    return main_QN, internal_states
 
 
-def produce_meis(model_name, layer_name, full_reafference, iterations=1000):
+def produce_meis(model_name, layer_name, full_reafference, iterations=1000, conv=True):
     """Does the same thing for the multiple neurons of a given model"""
     if not os.path.exists(f"./Generated-MEIs/Direct/{model_name}/"):
         os.makedirs(f"./Generated-MEIs/Direct/{model_name}/")
@@ -76,7 +76,7 @@ def produce_meis(model_name, layer_name, full_reafference, iterations=1000):
         simulation = DiscreteNaturalisticEnvironment(environment_params, True, True, False)
 
         # Creating graph
-        network = create_network(simulation, environment_params, params, full_reafference)
+        network, n_internal_states = create_network(simulation, environment_params, params, full_reafference)
 
         saver = tf.train.Saver(max_to_keep=5)
         try:
@@ -99,6 +99,7 @@ def produce_meis(model_name, layer_name, full_reafference, iterations=1000):
         step_size = 0.15*10000 #1.5
         eps = 1e-12
         compiled_activity_log = []
+        internal_state = [[0 for i in range(n_internal_states)]]
 
         for unit in range(n_units):
             print()
@@ -107,7 +108,11 @@ def produce_meis(model_name, layer_name, full_reafference, iterations=1000):
             input_image = np.clip(input_image, 0, 255)
 
             # grad = tf.gradients(readout_blocks[f"Unit {unit}"], network.observation, name='grad')
-            grad = tf.gradients(target_layer[:, :, unit], network.observation, name='grad')
+            if conv:
+                grad = tf.gradients(target_layer[:, :, unit], network.observation, name='grad')
+            else:
+                grad = tf.gradients(target_layer[:, unit], network.observation, name='grad')
+
             red_grad = tf.reduce_sum(grad)
             gradients = []
             # writer = tf.summary.FileWriter(f"MEI-Models/test/logs/", tf.get_default_graph())
@@ -115,8 +120,16 @@ def produce_meis(model_name, layer_name, full_reafference, iterations=1000):
             activity_log = []
             for i in range(iterations):
                 # input_image = np.concatenate((image, np.zeros((100, 1))), axis=1)
-                dy_dx, activity, red = sess.run([grad, tf.math.reduce_sum(target_layer[:, :, unit]), red_grad],
+                if conv:
+                    dy_dx, activity, red = sess.run([grad, tf.math.reduce_sum(target_layer[:, :, unit]), red_grad],
                                                 feed_dict={network.observation: input_image.astype(int)})
+                else:
+                    dy_dx, activity, red = sess.run([grad, tf.math.reduce_sum(target_layer[:, unit]), red_grad],
+                                                feed_dict={network.observation: input_image.astype(int),
+                                                           network.prev_actions: [[0, 0, 0]],
+                                                           network.internal_state: internal_state,
+
+                                                           })
                 gradients.append(dy_dx)
 
                 update = (step_size / (np.mean(np.abs(dy_dx[0])) + eps)) * (1 / 255)
@@ -304,7 +317,7 @@ def produce_meis_extended(model_name, layer_name, full_reafference, iterations=1
 if __name__ == "__main__":
     # produce_meis("dqn_scaffold_26-2", "conv4l", full_reafference=True, iterations=100)
 
-    produce_meis("dqn_scaffold_26-2", "main_rnn_in", full_reafference=True, iterations=2)
+    produce_meis("dqn_scaffold_26-2", "rnn_in", full_reafference=True, iterations=2, conv=False)
 
 
 
