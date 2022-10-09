@@ -104,7 +104,7 @@ class BaseService:
         if self.using_gpu:
             # options = tf.GPUOptions(per_process_gpu_memory_fraction=self.memory_fraction)
             # config = tf.ConfigProto(gpu_options=options)
-
+            print("Using GPU")
             # delete_nv_folder()
             config = tf.ConfigProto()
             config.gpu_options.allow_growth = True
@@ -112,6 +112,7 @@ class BaseService:
             config = None
 
         if config:
+            print("Using GPU Confirmed")
             return tf.Session(config=config)
         else:
             return tf.Session()

@@ -8,6 +8,7 @@ from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.BehavLabels.label_behavioural_context import label_behavioural_context_multiple_trials, \
     get_behavioural_context_name_by_index
 from Environment.Action_Space.draw_angle_dist import get_modal_impulse_and_angle
+from Environment.Action_Space.Bout_classification.action_masking import get_action_mask
 
 
 def plot_capture_sequences_orientation(position, orientation_changes, consumption_timestamps):
@@ -157,6 +158,9 @@ def plot_action_scatter_with_mask_and_bouts(impulses, angles, model_name, specia
         a = np.pi * a/180
         plt.scatter(i, a, c="black")
         plt.text(i+0.1, a+0.03, bout_names[index])
+
+    available_actions = get_action_mask()
+    plt.scatter(available_actions[:, 0], available_actions[:, 1], c="grey", alpha=0.1)
 
     plt.xlabel("Impulse")
     plt.ylabel("Angle (pi radians)")

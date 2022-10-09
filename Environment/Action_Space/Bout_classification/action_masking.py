@@ -49,7 +49,11 @@ def get_action_mask():
     try:
         mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
     except FileNotFoundError:
-        mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
+        try:
+            mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
+        except FileNotFoundError:
+            mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
+
 
     bout_kinematic_parameters_final_array = mat["BoutKinematicParametersFinalArray"]
     dist_angles = bout_kinematic_parameters_final_array[:, 10]  # Angles including glide
@@ -60,6 +64,10 @@ def get_action_mask():
 
     impulse = (distance * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
     dist_angles_radians = (np.absolute(dist_angles) / 180) * np.pi
+
+    impulse = np.expand_dims(impulse, 1)
+    dist_angles_radians = np.expand_dims(dist_angles_radians, 1)
+
     actions = np.concatenate((impulse, dist_angles_radians), axis=1)
 
     model = DBSCAN(eps=0.8125, min_samples=5).fit(actions)
@@ -69,11 +77,15 @@ def get_action_mask():
     sorted_actions = sorted_actions[sorted_actions[:, 0] >= 0]
     sorted_actions = sorted_actions[sorted_actions[:, 1] >= 0]
 
-    # self.kde_impulse = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 0], var_type='c', bw='cv_ml')
-    # self.kde_angle = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
     print("Creating action mask...")
     kde_impulse = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 0], var_type='c', bw='cv_ml')
     kde_angle = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
+    print("Action mask created")
+
+    accepted_actions = (kde_impulse.pdf(sorted_actions[:, 0]) * kde_angle.pdf(np.absolute(sorted_actions[:, 1]))) >= 0.0000389489489
+    valid_actions = sorted_actions[accepted_actions]
+    return valid_actions
+
 
 if __name__ == "__main__":
     mat = scipy.io.loadmat("bouts.mat")
