@@ -275,8 +275,8 @@ def produce_meis_extended(model_name, layer_name, full_reafference, iterations=1
     all_images = all_images.astype(int)
     # plt.imshow(np.concatenate((all_images[:, :, 0:1], np.zeros((n_units, 100, 1)), all_images[:, :, 1:2]), axis=2))
     # plt.imshow(np.concatenate((all_images[:, :, 0:1], np.zeros((n_units, 100, 1)), all_images[:, :, 1:2]), axis=2))
-    fig, axs = plt.subplots(4, 1)
     for a in range(n_applications):
+        fig, axs = plt.subplots(4, 1)
         axs[0].imshow(all_images[:, a, :, :, 0])
         axs[1].imshow(np.concatenate((np.zeros((n_units, 100, 2)), all_images[:, a, :, 1:2, 0]), axis=2).astype(int))
         axs[2].imshow(np.concatenate((all_images[:, a, :, 0:1, 0], np.zeros((n_units, 100, 2))), axis=2).astype(int))
