@@ -21590,7 +21590,7 @@ ppo_video_data = [
         "Continuous Actions": True,
         "Learning Algorithm": "PPO",
         "Priority": 2,
-        "Using GPU": False,
+        "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
