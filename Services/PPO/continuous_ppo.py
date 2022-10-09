@@ -295,7 +295,14 @@ class ContinuousPPO(BasePPO):
             action = [mu_i[0][0] * self.environment_params['max_impulse'],
                       mu_a[0][0] * self.environment_params['max_angle_change']]
         else:
-            action = [impulse[0][0], angle[0][0]]
+            if self.epsilon_greedy:
+                if np.random.rand(1) < self.e:
+                    action = [impulse[0][0], angle[0][0]]
+                else:
+                    action = [mu_i[0][0] * self.environment_params["max_impulse"],
+                              mu_a[0][0] * self.environment_params["max_angle_change"]]
+            else:
+                action = [impulse[0][0], angle[0][0]]
 
         o1, given_reward, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=action,
                                                                                                      frame_buffer=self.frame_buffer,
@@ -384,9 +391,6 @@ class ContinuousPPO(BasePPO):
                 else:
                     action = [mu_i[0][0] * self.environment_params["max_impulse"],
                               mu_a[0][0] * self.environment_params["max_angle_change"]]
-
-                if self.e > self.learning_params['endE']:
-                    self.e -= self.step_drop
             else:
                 action = [impulse[0][0], angle[0][0]]
 
