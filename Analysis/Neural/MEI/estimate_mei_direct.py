@@ -112,7 +112,7 @@ def produce_meis(model_name, layer_name, full_reafference, iterations=1000, limi
                 dy_dx, activity, red = sess.run([grad, tf.math.reduce_sum(target_layer[:, :, unit]), red_grad],
                                                 feed_dict={network.observation: input_image.astype(int)})
                 if limited_area:
-                    dy_dx[0, 80:] = 0
+                    dy_dx[0][80:] = 0
                 gradients.append(dy_dx)
 
                 update = (step_size / (np.mean(np.abs(dy_dx[0])) + eps)) * (1 / 255)
@@ -133,13 +133,13 @@ def produce_meis(model_name, layer_name, full_reafference, iterations=1000, limi
                     if np.sum(activity_changes[-10:]) <= 0:
                         print("Reducing step size")
                         step_size = step_size * 0.9
-                    if np.sum(activity_changes[-100:]) <= 0:
-                        print("Stopping early.")
-                        activity_log += [activity for x in range(iterations-i)]
-                        break
+                    # if np.sum(activity_changes[-100:]) <= 0:
+                    #     print("Stopping early.")
+                    #     activity_log += [activity for x in range(iterations-i)]
+                    #     continue
 
                 if np.max(np.absolute(dy_dx[0])) == 0:
-                    print(f"Resetting: {unit}")
+                    print(f"Resetting: {unit + 1}")
                     input_image = np.random.normal(10, 8, size=(100, 3, 2))
                     input_image = np.clip(input_image, 0, 255)
 
@@ -183,7 +183,7 @@ def produce_meis(model_name, layer_name, full_reafference, iterations=1000, limi
 
 
 if __name__ == "__main__":
-    produce_meis("dqn_scaffold_26-2", "conv1l", full_reafference=True, iterations=100, limited_area=True)
+    produce_meis("dqn_scaffold_26-2", "conv4l", full_reafference=True, iterations=100, limited_area=False)
 
 
 
