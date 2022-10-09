@@ -11,7 +11,8 @@ from Analysis.load_data import load_data
 from Analysis.Behavioural.VisTools.show_action_sequence_block import display_all_sequences
 
 
-def cluster_bouts(impulses, angles, cluster_type, cluster_num, model_name, impulse_scaling, angle_scaling, angle_absolute=True):
+def cluster_bouts(impulses, angles, cluster_type, cluster_num, model_name, impulse_scaling, angle_scaling,
+                  angle_absolute=True, return_actions=False):
     """Returns index labels for all impulse-angle pairs provided."""
     if angle_absolute:
         angles_a = np.absolute(angles)
@@ -49,10 +50,16 @@ def cluster_bouts(impulses, angles, cluster_type, cluster_num, model_name, impul
     plt.clf()
     plt.close()
 
-    return nbrs
+    if return_actions:
+        impulses *= impulse_scaling
+        angles *= angle_scaling
+
+        return nbrs, np.concatenate((np.expand_dims(impulses, 1), np.expand_dims(angles, 1)), axis=1)
+    else:
+        return nbrs
 
 
-def get_ppo_prey_capture_seq(model_name, assay_config, assay_id, n, predictor):
+def get_ppo_prey_capture_seq(model_name, assay_config, assay_id, n, predictor, associated_actions):
     """Predictor object contains labels for all sequences - just have to find new standardised way of accessing."""
     prey_capture_sequences = []
 
@@ -76,13 +83,19 @@ def get_ppo_prey_capture_seq(model_name, assay_config, assay_id, n, predictor):
         for sequence in capture_ts_separated:
             impulses_separated = data["impulse"][sequence]
             angles_separated = data["angle"][sequence]
-            actions = predictor.fit_predict([[imp, ang] for imp, ang in zip(impulses_separated, angles_separated)])
+            index_i = np.where(associated_actions[:, 0] == impulses_separated[0])
+            index_a = np.where(associated_actions[:, 1] == angles_separated[0])
+            if index_i[0] == index_a[0]:
+                actions = predictor.labels_[int(index_i[0]):int(index_i[0])+len(sequence)]
+            else:
+                print("Matching error...")
+                actions = []
             prey_capture_sequences.append(actions)
 
     return prey_capture_sequences
 
 
-def get_ppo_exploration_seq(model_name, assay_config, assay_id, n, predictor):
+def get_ppo_exploration_seq(model_name, assay_config, assay_id, n, predictor, associated_actions):
     prey_capture_sequences = []
 
     for i in range(1, n+1):
@@ -104,8 +117,15 @@ def get_ppo_exploration_seq(model_name, assay_config, assay_id, n, predictor):
         for sequence in capture_ts_separated:
             impulses_separated = data["impulse"][sequence]
             angles_separated = data["angle"][sequence]
+            index_i = np.where(associated_actions[:, 0] == impulses_separated[0])
+            index_a = np.where(associated_actions[:, 1] == angles_separated[0])
+
             if len(impulses_separated) > 4:
-                actions = predictor.predict([[imp, ang] for imp, ang in zip(impulses_separated, angles_separated)])
+                if index_i[0] == index_a[0]:
+                    actions = predictor.labels_[int(index_i[0]):int(index_i[0]) + len(sequence)]
+                else:
+                    print("Matching error...")
+                    actions = []
                 prey_capture_sequences.append(actions)
 
     return prey_capture_sequences
@@ -117,14 +137,20 @@ def get_ppo_spatial_density_plots(model_name, assay_config, assay_id, n, predict
 
 if __name__ == "__main__":
     model_name, assay_config, assay_id, n = "ppo_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 20
+    assay_config_emtpy = "Behavioural-Data-Empty"
     n_clusters = 5
     mu_impulse, mu_angle = get_multiple_means(model_name, assay_config, assay_id, n)
-    p = cluster_bouts(mu_impulse, mu_angle, "AGG", n_clusters, model_name, 16, 1)
-    # seqs = get_ppo_prey_capture_seq(model_name, assay_config, assay_id, n, predictor=p)
-    # display_all_sequences(seqs, max_length=20, alternate_action_names=[str(i) for i in range(n_clusters)])
-    #
-    # seqs = get_ppo_exploration_seq(model_name, "Behavioural-Data-Empty", assay_id, n, predictor=p)
-    # display_all_sequences(seqs, max_length=100, alternate_action_names=[str(i) for i in range(n_clusters)])
+    mu_impulse_empty, mu_angle_empty = get_multiple_means(model_name, assay_config_emtpy, assay_id, n)
+    mu_impulse = np.concatenate((mu_impulse, mu_impulse_empty))
+    mu_angle = np.concatenate((mu_angle, mu_angle_empty))
+
+    p, associated_bouts = cluster_bouts(mu_impulse, mu_angle, "KNN", n_clusters, model_name, 16, 1, return_actions=True)
+
+    seqs = get_ppo_prey_capture_seq(model_name, assay_config, assay_id, n, predictor=p, associated_actions=associated_bouts)
+    display_all_sequences(seqs, max_length=20, alternate_action_names=[str(i) for i in range(n_clusters)])
+
+    seqs = get_ppo_exploration_seq(model_name, "Behavioural-Data-Empty", assay_id, n, predictor=p, associated_actions=associated_bouts)
+    display_all_sequences(seqs, max_length=100, alternate_action_names=[str(i) for i in range(n_clusters)])
 
     # sil = []
     # for i in range(2, 10):

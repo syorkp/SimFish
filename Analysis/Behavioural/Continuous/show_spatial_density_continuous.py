@@ -34,7 +34,7 @@ def draw_fish(x, y, mouth_size, head_size, tail_length, ax):
     return ax
 
 
-def create_density_cloud(density_list, action_num, stimulus_name, return_objects, save_location, assay_config,
+def create_density_cloud(density_list, action_num, stimulus_name, return_objects, model_name, assay_config,
                          steps_prior):
     n_samples = len(density_list)
     x = np.array([i[0] for i in density_list])
@@ -73,7 +73,7 @@ def create_density_cloud(density_list, action_num, stimulus_name, return_objects
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Feature: {stimulus_name}, Action: {action_num}, N-Samples: {n_samples}")
-    plt.savefig(f"{save_location}/{assay_config}-{stimulus_name}-{action_num}-steps_prior: {steps_prior}.jpg")
+    plt.savefig(f"All-Plots/{model_name}/{assay_config}-{stimulus_name}-{action_num}-steps_prior: {steps_prior}.jpg")
 
     if return_objects:
         plt.clf()
@@ -236,7 +236,8 @@ def get_clouds_with_action(data, action, predictor, steps_prior=0, direction=Non
 
 def get_all_density_plots_all_subsets_continuous(model_name, assay_config, assay_id, n, impulse_scaling, angle_scaling,
                                                  return_objects=False, steps_prior=0, n_clusters=5,
-                                                 threshold_for_laterality=0.1, normalise_laterality=True, cluster_algo="KNN"):
+                                                 threshold_for_laterality=0.1, normalise_laterality=True,
+                                                 cluster_algo="KNN"):
     if not os.path.exists(f"{model_name}/"):
         os.makedirs(f"{model_name}/")
 
