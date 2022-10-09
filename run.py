@@ -22072,7 +22072,7 @@ ppo_video_data = [
 
 
 if run_config is None:
-    run_config = ppo_video_data
+    run_config = dqn_video_data
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]
