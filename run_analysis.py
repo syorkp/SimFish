@@ -7,7 +7,7 @@ try:
 except IndexError:
     run_config = None
 
-produce_meis("dqn_scaffold_26-2", "conv4l", True, 10)
+produce_meis("dqn_scaffold_26-2", "conv4l", True, 1000)
 
 
 
