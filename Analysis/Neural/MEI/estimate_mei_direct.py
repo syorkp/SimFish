@@ -79,9 +79,15 @@ def produce_meis(model_name, layer_name, full_reafference, iterations=1000):
         network = create_network(simulation, environment_params, params, full_reafference)
 
         saver = tf.train.Saver(max_to_keep=5)
-        model_location = f"../../../Training-Output/{model_name}"
-        checkpoint = tf.train.get_checkpoint_state(model_location)
-        saver.restore(sess, checkpoint.model_checkpoint_path)
+        try:
+            model_location = f"../../../Training-Output/{model_name}"
+            checkpoint = tf.train.get_checkpoint_state(model_location)
+            saver.restore(sess, checkpoint.model_checkpoint_path)
+        except AttributeError:
+            model_location = f"Training-Output/{model_name}"
+            checkpoint = tf.train.get_checkpoint_state(model_location)
+            saver.restore(sess, checkpoint.model_checkpoint_path)
+
 
         # Defining Outputs to be measured
         # readout_blocks = {f"Unit {unit}": getattr(network, layer_name)[:, :, unit] for unit in range(n_units)}
@@ -298,7 +304,7 @@ def produce_meis_extended(model_name, layer_name, full_reafference, iterations=1
 if __name__ == "__main__":
     # produce_meis("dqn_scaffold_26-2", "conv4l", full_reafference=True, iterations=100)
 
-    produce_meis_extended("dqn_scaffold_26-2", "conv4l", full_reafference=True, iterations=2)
+    produce_meis("dqn_scaffold_26-2", "main_rnn_in", full_reafference=True, iterations=2)
 
 
 
