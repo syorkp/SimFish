@@ -33,7 +33,7 @@ class ContinuousPPO(BasePPO):
 
         # Placeholders
         self.epsilon_greedy = None
-        self.e = None
+        # self.e = None
         self.step_drop = None
 
         self.output_dimensions = 2
@@ -382,13 +382,16 @@ class ContinuousPPO(BasePPO):
         )
 
         if self.use_mu:
+            print("Mu")
             action = [mu_i[0][0] * self.environment_params['max_impulse'],
                       mu_a[0][0] * self.environment_params['max_angle_change']]
         else:
             if self.epsilon_greedy:
                 if np.random.rand(1) < self.e:
+                    print(f"Random... {self.e}")
                     action = [impulse[0][0], angle[0][0]]
                 else:
+                    print(f"Actual...")
                     action = [mu_i[0][0] * self.environment_params["max_impulse"],
                               mu_a[0][0] * self.environment_params["max_angle_change"]]
             else:

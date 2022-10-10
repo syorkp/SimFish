@@ -127,8 +127,8 @@ if __name__ == "__main__":
     # plot_all_turn_analysis("dqn_scaffold_14-1", "Behavioural-Data-Full-Interruptions",
     #                        f"Naturalistic", 3)
 
-    plot_all_turn_analysis_multiple_models_discrete(["dqn_scaffold_14-1", "dqn_scaffold_14-2"], "Behavioural-Data-Empty",
-                                                    f"Naturalistic", 20, data_cutoff=200)
+    plot_all_turn_analysis_multiple_models_discrete(["dqn_scaffold_26-1", "dqn_scaffold_26-2"], "Behavioural-Data-Empty",
+                                                    f"Naturalistic", 20, data_cutoff=None)
 
     # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", f"Naturalistic-18")
     # exploration_timestamps, exploration_sequences, exploration_fish_orientations = \
