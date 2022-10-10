@@ -154,11 +154,11 @@ def produce_meis(model_name, layer_name, full_reafference, iterations=1000, conv
                 activity_log.append(activity)
                 activity_changes = np.array(activity_log)[1:] - np.array(activity_log)[:-1]
                 if i > 0:
-                    print(f"Activity change: {activity_log[-1] - activity_log[-2]}")
+                    print(f"{i}-Activity change: {activity_log[-1] - activity_log[-2]}")
 
                 if i > 20:
                     if np.sum(activity_changes[-10:]) <= 0:
-                        print("Reducing step size")
+                        print(f"{i}-Reducing step size")
                         step_size = step_size * 0.9
                     # if np.sum(activity_changes[-100:]) <= 0:
                     #     print("Stopping early.")

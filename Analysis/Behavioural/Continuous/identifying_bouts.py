@@ -11,6 +11,7 @@ from Analysis.Behavioural.Continuous.plot_behavioural_choice import get_multiple
 from Analysis.load_data import load_data
 from Analysis.Behavioural.VisTools.show_action_sequence_block import display_all_sequences
 from Analysis.Behavioural.Continuous.show_spatial_density_continuous import get_all_density_plots_all_subsets_continuous
+from Environment.Action_Space.draw_angle_dist import get_modal_impulse_and_angle
 
 
 def cluster_bouts(impulses, angles, cluster_type, cluster_num, model_name, impulse_scaling, angle_scaling,
@@ -29,6 +30,7 @@ def cluster_bouts(impulses, angles, cluster_type, cluster_num, model_name, impul
         cluster_obj = AgglomerativeClustering(n_clusters=cluster_num)
         start_i = 0
     elif cluster_type == "DBSCAN":
+        ep = 0.1
         cluster_obj = DBSCAN(eps=ep, min_samples=80)
         start_i = -1
     else:
@@ -46,7 +48,18 @@ def cluster_bouts(impulses, angles, cluster_type, cluster_num, model_name, impul
     for a in range(start_i, cluster_num-start_i):
         plt.scatter(impulses[labels_new == a] * impulse_scaling, angles[labels_new == a] * angle_scaling, c=colours[a])
     if overlay_bouts:
-        ...
+        bouts = [0, 1, 3, 4, 7, 9]
+        bouts = [0, 1, 3, 4, 9]
+        bout_names = ["Slow2", "RT", "sCS", "J-Turn", "SLC", "AS"]
+        bout_names = ["Slow2", "RT", "sCS", "J-Turn", "AS"]
+        for index, bout in enumerate(bouts):
+            i, a = get_modal_impulse_and_angle(bout)
+            a = np.pi * a / 180
+            plt.scatter(i, a, c="black")
+            if bout_names[index] == "AS":
+                plt.text(i-0.2, a + 0.03, bout_names[index])
+            else:
+                plt.text(i+0.1, a + 0.03, bout_names[index])
 
     plt.legend([str(a) for a in range(cluster_num)])
     plt.xlabel("Impulse")
