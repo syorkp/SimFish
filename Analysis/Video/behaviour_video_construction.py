@@ -242,8 +242,12 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 def draw_episode(data, config_name, model_name, continuous_actions, draw_past_actions=True, show_energy_state=True,
                  scale=0.15, draw_action_space_usage=True, trim_to_fish=False, showed_region_quad=500):
-    with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
-        env_variables = json.load(f)
+    try:
+        with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
+            env_variables = json.load(f)
+    except FileNotFoundError:
+        with open(f"Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
+            env_variables = json.load(f)
 
     n_actions_to_show = 50
     board = DrawingBoard(env_variables["width"], env_variables["height"])
