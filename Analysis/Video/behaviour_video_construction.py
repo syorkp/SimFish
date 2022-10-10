@@ -276,7 +276,7 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
             board, action_buffer, position_buffer, orientation_buffer = draw_previous_actions(board, action_buffer,
                                                                                               position_buffer, orientation_buffer,
                                                                                               continuous_actions=continuous_actions,
-                                                                                              comsumptions=consumption_buffer)
+                                                                                              consumption_buffer=consumption_buffer)
 
 
 
