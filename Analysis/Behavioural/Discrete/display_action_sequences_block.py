@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 
 from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import get_exploration_sequences
 from Analysis.Behavioural.Tools.BehavLabels.extract_capture_sequences import get_capture_sequences
+from Analysis.Behavioural.Tools.BehavLabels.extract_event_action_sequence import get_escape_sequences
 
 from Analysis.Behavioural.Tools.filter_sequences import remove_sCS_heavy
 from Analysis.Behavioural.VisTools.show_action_sequence_block import display_all_sequences
@@ -56,6 +57,10 @@ if __name__ == "__main__":
     exploration_sequences_26 = get_exploration_sequences(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 40)
     display_all_sequences(exploration_sequences_26, min_length=20, max_length=200, save_figure=True,
                           figure_save_location="Exploration-dqn_scaffold_26-2",)
+
+    escape_sequences_26 = get_escape_sequences(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 40)
+    display_all_sequences(escape_sequences_26, min_length=20, max_length=200, save_figure=True,
+                          figure_save_location="Escape-dqn_scaffold_26-2",)
 
     # Exploration DQN 14
     # exploration_sequences_14 = get_exploration_sequences(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20)

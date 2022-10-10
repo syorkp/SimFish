@@ -40,7 +40,7 @@ def draw_fish(x, y, mouth_size, head_size, tail_length, ax):
     return ax
 
 
-def get_nearby_features(data, step, proximity=300):
+def get_nearby_features(data, step, proximity=500):
     """For a single step, returns the positions of nearby prey and predators."""
     nearby_prey_coordinates = []
     nearby_predator_coordinates = []
@@ -56,6 +56,7 @@ def get_nearby_features(data, step, proximity=300):
         if is_in_area:
             nearby_prey_coordinates.append(i)
     j = data["predator_positions"][step]
+
     is_in_area = nearby_area[0][0] <= j[0] <= nearby_area[0][1] and \
                  nearby_area[1][0] <= j[1] <= nearby_area[1][1]
     if is_in_area:
@@ -829,8 +830,10 @@ if __name__ == "__main__":
     #                                        "Naturalistic", 40)
 
     # Getting for individual models
-    get_all_density_plots_all_subsets(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20,
-                                      return_objects=False, steps_prior=0, position_predictive=True)
+    x = True
+    create_cstart_overlap_plot(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 40, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 40,
+    #                                   return_objects=False, steps_prior=0, position_predictive=False)
     # get_all_density_plots_all_subsets(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False, steps_prior=9)
     # get_all_density_plots_all_subsets(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False, steps_prior=10)
     # get_all_density_plots_all_subsets(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False, steps_prior=11)

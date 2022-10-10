@@ -14,7 +14,7 @@ from Analysis.Behavioural.Continuous.show_spatial_density_continuous import get_
 
 
 def cluster_bouts(impulses, angles, cluster_type, cluster_num, model_name, impulse_scaling, angle_scaling,
-                  angle_absolute=True, return_actions=False):
+                  angle_absolute=True, return_actions=False, overlay_bouts=False):
     """Returns index labels for all impulse-angle pairs provided."""
     if angle_absolute:
         angles_a = np.absolute(angles)
@@ -45,6 +45,9 @@ def cluster_bouts(impulses, angles, cluster_type, cluster_num, model_name, impul
     ind = labels_new.astype(int)
     for a in range(start_i, cluster_num-start_i):
         plt.scatter(impulses[labels_new == a] * impulse_scaling, angles[labels_new == a] * angle_scaling, c=colours[a])
+    if overlay_bouts:
+        ...
+
     plt.legend([str(a) for a in range(cluster_num)])
     plt.xlabel("Impulse")
     plt.ylabel("Angle")
@@ -146,20 +149,21 @@ if __name__ == "__main__":
     mu_impulse = np.concatenate((mu_impulse, mu_impulse_empty))
     mu_angle = np.concatenate((mu_angle, mu_angle_empty))
 
-    p, associated_bouts = cluster_bouts(mu_impulse, mu_angle, "KNN", n_clusters, model_name, 16, 1, return_actions=True)
+    p, associated_bouts = cluster_bouts(mu_impulse, mu_angle, "KNN", n_clusters, model_name, 16, 1, return_actions=True,
+                                        overlay_bouts=True)
 
-    get_all_density_plots_all_subsets_continuous(model_name, assay_config, assay_id, n,  predictor=p, mu_impulse=mu_impulse,
-                                                 mu_angle=mu_angle,
-                                                 impulse_scaling=16,
-                                                 angle_scaling=1, cluster_algo="KNN")
-
-    seqs = get_ppo_prey_capture_seq(model_name, assay_config, assay_id, n, predictor=p, associated_actions=associated_bouts)
-    display_all_sequences(seqs, max_length=20, alternate_action_names=[str(i) for i in range(n_clusters)],
-                          figure_save_location=f"All-Plots/{model_name}/prey_capture_sequences.jpg", save_figure=True)
-
-    seqs = get_ppo_exploration_seq(model_name, "Behavioural-Data-Empty", assay_id, n, predictor=p, associated_actions=associated_bouts)
-    display_all_sequences(seqs, max_length=100, alternate_action_names=[str(i) for i in range(n_clusters)],
-                          figure_save_location=f"All-Plots/{model_name}/exploration_sequences.jpg", save_figure=True)
+    # get_all_density_plots_all_subsets_continuous(model_name, assay_config, assay_id, n,  predictor=p, mu_impulse=mu_impulse,
+    #                                              mu_angle=mu_angle,
+    #                                              impulse_scaling=16,
+    #                                              angle_scaling=1, cluster_algo="KNN")
+    #
+    # seqs = get_ppo_prey_capture_seq(model_name, assay_config, assay_id, n, predictor=p, associated_actions=associated_bouts)
+    # display_all_sequences(seqs, max_length=20, alternate_action_names=[str(i) for i in range(n_clusters)],
+    #                       figure_save_location=f"All-Plots/{model_name}/prey_capture_sequences.jpg", save_figure=True)
+    #
+    # seqs = get_ppo_exploration_seq(model_name, "Behavioural-Data-Empty", assay_id, n, predictor=p, associated_actions=associated_bouts)
+    # display_all_sequences(seqs, max_length=100, alternate_action_names=[str(i) for i in range(n_clusters)],
+    #                       figure_save_location=f"All-Plots/{model_name}/exploration_sequences.jpg", save_figure=True)
 
     # sil = []
     # for i in range(2, 10):
