@@ -27,7 +27,7 @@ elif run_config == "3l":
 elif run_config == "4l":
     produce_meis("dqn_scaffold_26-2", "conv4l", True, 1000)
 elif run_config == "dense":
-    produce_meis("dqn_scaffold_26-2", "rnn_in", full_reafference=True, iterations=500, conv=False)
+    produce_meis("dqn_scaffold_26-2", "rnn_in", full_reafference=True, iterations=100, conv=False)
 elif run_config == "draw_ep":
     model_name = "dqn_scaffold_26-2"
     data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-3")
