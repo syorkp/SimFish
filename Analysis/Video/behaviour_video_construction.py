@@ -231,7 +231,7 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 
 def draw_episode(data, config_name, model_name, continuous_actions, draw_past_actions=True, show_energy_state=True,
-                 scale=0.25, draw_action_space_usage=True):
+                 scale=0.25, draw_action_space_usage=True, trim_to_fish=False, showed_region_quad=500):
     with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
         env_variables = json.load(f)
 
@@ -245,8 +245,10 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
     action_buffer = []
     position_buffer = []
     orientation_buffer = []
+    num_steps = 200
 
     for step in range(num_steps):
+        print(step)
         if continuous_actions:
             action_buffer.append([data["impulse"][step], data["angle"][step]])
         else:
@@ -290,7 +292,31 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
         else:
             frame = board.db
 
-        frames.append(rescale(copy.copy(frame), scale, multichannel=True, anti_aliasing=True))
+        if trim_to_fish:
+            centre_y, centre_x = fish_positions[step][0], fish_positions[step][1]
+            print(centre_x, centre_y)
+            dist_x1 = centre_x
+            dist_x2 = env_variables["width"] - centre_x
+            dist_y1 = centre_y
+            dist_y2 = env_variables["height"] - centre_y
+            print(dist_x1, dist_x2, dist_y1, dist_y2)
+            if dist_x1 < showed_region_quad:
+                centre_x += showed_region_quad - dist_x1
+            elif dist_x2 < showed_region_quad:
+                centre_x -= showed_region_quad - dist_x2
+            if dist_y1 < showed_region_quad:
+                centre_y += showed_region_quad - dist_y1
+            if dist_y2 < showed_region_quad:
+                centre_y -= showed_region_quad - dist_y2
+            centre_x = int(centre_x)
+            centre_y = int(centre_y)
+            # Compute centre position - so can deal with edges
+            frame = frame[centre_x-showed_region_quad:centre_x+showed_region_quad,
+                    centre_y-showed_region_quad:centre_y+showed_region_quad]
+            frames.append(rescale(copy.copy(frame), scale * 2, multichannel=True, anti_aliasing=True))
+
+        else:
+            frames.append(rescale(copy.copy(frame), scale, multichannel=True, anti_aliasing=True))
         board.db = board.get_base_arena(0.3)
 
     fig, ax = plt.subplots(figsize=(18, 18))
@@ -305,4 +331,4 @@ if __name__ == "__main__":
     model_name = "dqn_scaffold_26-2"
     data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-3")
     assay_config_name = "dqn_26_2_videos"
-    draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False)
+    draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False, trim_to_fish=True)
