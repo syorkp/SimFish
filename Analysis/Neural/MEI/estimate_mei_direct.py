@@ -84,9 +84,19 @@ def produce_meis(model_name, layer_name, full_reafference, iterations=1000, conv
             checkpoint = tf.train.get_checkpoint_state(model_location)
             saver.restore(sess, checkpoint.model_checkpoint_path)
         except AttributeError:
-            model_location = f"Training-Output/{model_name}"
-            checkpoint = tf.train.get_checkpoint_state(model_location)
-            saver.restore(sess, checkpoint.model_checkpoint_path)
+            try:
+                model_location = f"../../Training-Output/{model_name}"
+                checkpoint = tf.train.get_checkpoint_state(model_location)
+                saver.restore(sess, checkpoint.model_checkpoint_path)
+            except AttributeError:
+                try:
+                    model_location = f"../Training-Output/{model_name}"
+                    checkpoint = tf.train.get_checkpoint_state(model_location)
+                    saver.restore(sess, checkpoint.model_checkpoint_path)
+                except AttributeError:
+                    model_location = f"Training-Output/{model_name}"
+                    checkpoint = tf.train.get_checkpoint_state(model_location)
+                    saver.restore(sess, checkpoint.model_checkpoint_path)
 
 
         # Defining Outputs to be measured
