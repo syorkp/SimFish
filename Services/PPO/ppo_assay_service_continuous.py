@@ -84,6 +84,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
         self.use_rnd = self.learning_params["use_rnd"]
         self.sb_emulator = sb_emulator
         self.e = self.learning_params["startE"] / 2
+        self.epsilon_greedy = self.learning_params["epsilon_greedy"]
 
     def run(self):
         sess = self.create_session()
