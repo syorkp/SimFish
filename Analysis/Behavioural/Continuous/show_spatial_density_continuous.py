@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 from scipy.stats import kde
 
 from Analysis.load_data import load_data
-from Analysis.Behavioural.Continuous.plot_behavioural_choice import get_multiple_means
-from Analysis.Behavioural.Continuous.identifying_bouts import cluster_bouts
+# from Analysis.Behavioural.Continuous.plot_behavioural_choice import get_multiple_means
+# from Analysis.Behavioural.Continuous.identifying_bouts import cluster_bouts
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
 
@@ -145,7 +145,7 @@ def create_density_cloud_overlap(cloud_left, cloud_right, action_num, stimulus_n
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Feature: {stimulus_name}, Action: {action_num}, N-Samples: {n_samples}")
-    plt.savefig(f"{model_name}/{assay_config}-{stimulus_name}-{action_num}-steps_prior: {steps_prior}.jpg")
+    plt.savefig(f"All-Plots/{model_name}/{assay_config}-{stimulus_name}-{action_num}-steps_prior: {steps_prior}.jpg")
 
     if return_objects:
         plt.clf()
@@ -234,15 +234,16 @@ def get_clouds_with_action(data, action, predictor, steps_prior=0, direction=Non
     return prey_cloud, predator_cloud
 
 
-def get_all_density_plots_all_subsets_continuous(model_name, assay_config, assay_id, n, impulse_scaling, angle_scaling,
+def get_all_density_plots_all_subsets_continuous(model_name, assay_config, assay_id, n, predictor, mu_impulse, mu_angle,
+                                                 impulse_scaling, angle_scaling,
                                                  return_objects=False, steps_prior=0, n_clusters=5,
                                                  threshold_for_laterality=0.1, normalise_laterality=True,
                                                  cluster_algo="KNN"):
     if not os.path.exists(f"{model_name}/"):
         os.makedirs(f"{model_name}/")
 
-    mu_impulse, mu_angle = get_multiple_means(model_name, assay_config, assay_id, n)
-    predictor = cluster_bouts(mu_impulse, mu_angle, cluster_algo, n_clusters, model_name, impulse_scaling, angle_scaling)
+    # mu_impulse, mu_angle = get_multiple_means(model_name, assay_config, assay_id, n)
+    # predictor = cluster_bouts(mu_impulse, mu_angle, cluster_algo, n_clusters, model_name, impulse_scaling, angle_scaling)
 
     all_actions = predictor.labels_
     action_mean_angle = []
@@ -291,12 +292,12 @@ def get_all_density_plots_all_subsets_continuous(model_name, assay_config, assay
         if lateralised_bout[action_num]:
             if len(prey_cloud_left) > 2:
                 ax = create_density_cloud(prey_cloud_left, str(action_num) + "-Left", "Prey", return_objects,
-                                          save_location=model_name,
+                                          model_name=model_name,
                                           assay_config=assay_config, steps_prior=steps_prior)
                 axes_objects.append(ax)
             if len(prey_cloud_right) > 2:
                 ax = create_density_cloud(prey_cloud_right, str(action_num) + "-Right", "Prey", return_objects,
-                                          save_location=model_name,
+                                          model_name=model_name,
                                           assay_config=assay_config, steps_prior=steps_prior)
                 axes_objects.append(ax)
 
@@ -307,12 +308,12 @@ def get_all_density_plots_all_subsets_continuous(model_name, assay_config, assay
 
             if len(pred_cloud_left) > 2:
                 ax = create_density_cloud(pred_cloud_left, str(action_num) + "-Left", "Predator", return_objects,
-                                          save_location=model_name,
+                                          model_name=model_name,
                                           assay_config=assay_config, steps_prior=steps_prior)
                 axes_objects.append(ax)
             if len(pred_cloud_right) > 2:
                 ax = create_density_cloud(pred_cloud_right, str(action_num) + "-Right", "Predator", return_objects,
-                                          save_location=model_name,
+                                          model_name=model_name,
                                           assay_config=assay_config, steps_prior=steps_prior)
                 axes_objects.append(ax)
 
@@ -324,12 +325,12 @@ def get_all_density_plots_all_subsets_continuous(model_name, assay_config, assay
 
         else:
             if len(prey_cloud) > 2:
-                ax = create_density_cloud(prey_cloud, action_num, "Prey", return_objects, save_location=model_name,
+                ax = create_density_cloud(prey_cloud, action_num, "Prey", return_objects, model_name=model_name,
                                           assay_config=assay_config, steps_prior=steps_prior)
                 axes_objects.append(ax)
 
             if len(pred_cloud) > 2:
-                ax = create_density_cloud(pred_cloud, action_num, "Predator", return_objects, save_location=model_name,
+                ax = create_density_cloud(pred_cloud, action_num, "Predator", return_objects, model_name=model_name,
                                           assay_config=assay_config, steps_prior=steps_prior)
                 axes_objects.append(ax)
 

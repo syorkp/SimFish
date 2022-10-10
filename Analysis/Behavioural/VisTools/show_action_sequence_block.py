@@ -64,7 +64,7 @@ def display_all_sequences(sequences, min_length=None, max_length=None, indicate_
     ordered_actions_present = sorted(actions_present)
     if alternate_action_names is not None:
         associated_actions = alternate_action_names
-        legend_elements = [Patch(facecolor=color_set[a], label=associated_actions[a]) for i, a in enumerate(ordered_actions_present)]# [0], [0], marker="o", color=color_set[i], label=associated_actions[i]) for i in actions_present]
+        legend_elements = [Patch(facecolor=color_set[int(a)], label=associated_actions[int(a)]) for i, a in enumerate(ordered_actions_present)]# [0], [0], marker="o", color=color_set[i], label=associated_actions[i]) for i in actions_present]
     else:
         associated_actions = [get_action_name(a) for a in ordered_actions_present]
         legend_elements = [Patch(facecolor=color_set[a], label=associated_actions[i]) for i, a in enumerate(ordered_actions_present)]# [0], [0], marker="o", color=color_set[i], label=associated_actions[i]) for i in actions_present]
@@ -79,5 +79,9 @@ def display_all_sequences(sequences, min_length=None, max_length=None, indicate_
     plt.axis("scaled")
     if save_figure:
         plt.savefig(figure_save_location)
+        plt.clf()
+        plt.close()
+    else:
+        plt.show()
+
     # plt.tight_layout()
-    plt.show()

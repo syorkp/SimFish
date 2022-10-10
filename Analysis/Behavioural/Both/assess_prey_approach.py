@@ -49,8 +49,9 @@ def get_fish_prey_relationships(data, sequences):
 if __name__ == "__main__":
     dist = []
     angs = []
-    for i in range(1, 11):
-        d = load_data("dqn_scaffold_14-2", "Behavioural-Data-Free", f"Naturalistic-{i}")
+    model_name, assay_config, assay_id, n = "ppo_scaffold_21-1", "Behavioural-Data-Free", f"Naturalistic", 10
+    for i in range(1, n+1):
+        d = load_data(model_name, assay_config, f"{assay_id}-{i}")
         ts = get_prey_capture_timestamps(d)
         dis, ang = get_fish_prey_relationships(d, ts)
         if dis.shape[0] > 0:
@@ -68,7 +69,7 @@ if __name__ == "__main__":
     plt.plot(mean_ang, color="r")
     plt.xlabel("Bouts before consumption")
     plt.ylabel("Angle to prey (pi radians)")
-    plt.savefig("fish_prey_angle.jpg")
+    plt.savefig(f"{model_name}-fish_prey_angle.jpg")
     plt.clf()
     plt.close()
 
@@ -77,6 +78,6 @@ if __name__ == "__main__":
     plt.xlabel("Bouts before consumption")
     plt.ylabel("Distance from Prey (mm)")
     plt.ylim(0, 10)
-    plt.savefig("fish_prey_distance.jpg")
+    plt.savefig(f"{model_name}-fish_prey_distance.jpg")
     plt.clf()
     plt.close()
