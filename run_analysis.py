@@ -1,11 +1,14 @@
 import sys
 import os
 from Analysis.Neural.MEI.estimate_mei_direct import produce_meis, produce_meis_extended
+from Analysis.Video.behaviour_video_construction import draw_episode
+from Analysis.load_data import load_data
 
 try:
     run_config = sys.argv[1]
 except IndexError:
-    run_config = None
+    run_config = "1l"
+
 
 if run_config == "extended_1l":
     produce_meis_extended("dqn_scaffold_26-2", "conv1l", True, 1000)
@@ -23,6 +26,12 @@ elif run_config == "3l":
     produce_meis("dqn_scaffold_26-2", "conv3l", True, 1000)
 elif run_config == "4l":
     produce_meis("dqn_scaffold_26-2", "conv4l", True, 1000)
+elif run_config == "draw_ep":
+    model_name = "dqn_scaffold_26-2"
+    data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-3")
+    assay_config_name = "dqn_26_2_videos"
+    draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
+                 trim_to_fish=True, showed_region_quad=750)
 else:
     produce_meis_extended("dqn_scaffold_26-2", "conv1l", True, 1000)
 

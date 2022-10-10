@@ -76,6 +76,10 @@ class DrawingBoard:
         rr, cc = draw.ellipse(int(y_position), int(x_position), 5, 3, rotation=-fish_angle)
         self.db[rr, cc, :] = colour
 
+    def show_consumption(self, fish_angle, x_position, y_position, colour):
+        rr, cc = draw.ellipse(int(y_position), int(x_position), 5, 3, rotation=-fish_angle)
+        self.db[rr, cc, :] = colour
+
     def get_action_colour(self, action):
         """Returns the (R, G, B) for associated actions"""
         if action == 0:  # Slow2
@@ -144,13 +148,15 @@ class DrawingBoard:
                 self.db[:, dark_col:] *= light_gain
 
 
-def draw_previous_actions(board, past_actions, past_positions, fish_angles, continuous_actions=True, n_actions_to_show=50):
+def draw_previous_actions(board, past_actions, past_positions, fish_angles, continuous_actions=True, n_actions_to_show=50, consumption_buffer=None):
     while len(past_actions) > n_actions_to_show:
         past_actions.pop(0)
     while len(past_positions) > n_actions_to_show:
         past_positions.pop(0)
     while len(fish_angles) > n_actions_to_show:
         fish_angles.pop(0)
+    while len(consumption_buffer) > n_actions_to_show:
+        consumption_buffer.pop(0)
 
     for i, a in enumerate(past_actions):
         if continuous_actions:
@@ -161,6 +167,10 @@ def draw_previous_actions(board, past_actions, past_positions, fish_angles, cont
             action_colour = board.get_action_colour(past_actions[i])
             board.show_action_discrete(fish_angles[i], past_positions[i][0],
                                             past_positions[i][1], action_colour)
+        if consumption_buffer is not None:
+            if consumption_buffer[i] == 1:
+                board.show_consumption(fish_angles[i], past_positions[i][0],
+                                       past_positions[i][1], (1, 1, 1))
     return board, past_actions, past_positions, fish_angles
 
 
@@ -245,7 +255,8 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
     action_buffer = []
     position_buffer = []
     orientation_buffer = []
-    num_steps = 200
+    consumption_buffer = []
+    # num_steps = 200
 
     for step in range(num_steps):
         print(step)
@@ -255,11 +266,15 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
             action_buffer.append(data["action"][step])
         position_buffer.append(fish_positions[step])
         orientation_buffer.append(data["fish_angle"][step])
+        consumption_buffer.append(data["consumed"][step])
 
         if draw_past_actions:
             board, action_buffer, position_buffer, orientation_buffer = draw_previous_actions(board, action_buffer,
                                                                                               position_buffer, orientation_buffer,
-                                                                                              continuous_actions=continuous_actions)
+                                                                                              continuous_actions=continuous_actions,
+                                                                                              comsumptions=consumption_buffer)
+
+
 
         if show_energy_state:
             fish_body_colour = (1-energy_levels[step], energy_levels[step], 0)
@@ -294,12 +309,12 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
 
         if trim_to_fish:
             centre_y, centre_x = fish_positions[step][0], fish_positions[step][1]
-            print(centre_x, centre_y)
+            # print(centre_x, centre_y)
             dist_x1 = centre_x
             dist_x2 = env_variables["width"] - centre_x
             dist_y1 = centre_y
             dist_y2 = env_variables["height"] - centre_y
-            print(dist_x1, dist_x2, dist_y1, dist_y2)
+            # print(dist_x1, dist_x2, dist_y1, dist_y2)
             if dist_x1 < showed_region_quad:
                 centre_x += showed_region_quad - dist_x1
             elif dist_x2 < showed_region_quad:
