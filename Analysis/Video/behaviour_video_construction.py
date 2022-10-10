@@ -231,7 +231,7 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 
 def draw_episode(data, config_name, model_name, continuous_actions, draw_past_actions=True, show_energy_state=True,
-                 scale=0.25, draw_action_space_usage=True, trim_to_fish=False, showed_region_quad=500):
+                 scale=0.15, draw_action_space_usage=True, trim_to_fish=False, showed_region_quad=500):
     with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
         env_variables = json.load(f)
 
@@ -313,7 +313,7 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
             # Compute centre position - so can deal with edges
             frame = frame[centre_x-showed_region_quad:centre_x+showed_region_quad,
                     centre_y-showed_region_quad:centre_y+showed_region_quad]
-            frames.append(rescale(copy.copy(frame), scale * 2, multichannel=True, anti_aliasing=True))
+            frames.append(rescale(copy.copy(frame), scale * env_variables["width"]/(showed_region_quad*2), multichannel=True, anti_aliasing=True))
 
         else:
             frames.append(rescale(copy.copy(frame), scale, multichannel=True, anti_aliasing=True))
@@ -331,4 +331,6 @@ if __name__ == "__main__":
     model_name = "dqn_scaffold_26-2"
     data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-3")
     assay_config_name = "dqn_26_2_videos"
-    draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False, trim_to_fish=True)
+    draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
+                 trim_to_fish=True, showed_region_quad=750)
+

@@ -48,12 +48,13 @@ def display_average_sequence(sequences):
 if __name__ == "__main__":
 
     #                            EXPLORATION SEQUENCES
-    capture_sequences_26 =get_capture_sequences(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 20)
-    display_all_sequences(capture_sequences_26, min_length=0, max_length=1000, save_figure=True,
-                          figure_save_location="Exploration-dqn_scaffold_26-2",)
+    capture_sequences_26 =get_capture_sequences(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic",
+                                                20, dur=100)
+    display_all_sequences(capture_sequences_26, min_length=20, max_length=200, save_figure=True,
+                          figure_save_location="Prey-Capture-dqn_scaffold_26-2",)
 
     exploration_sequences_26 = get_exploration_sequences(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 20)
-    display_all_sequences(exploration_sequences_26, min_length=0, max_length=1000, save_figure=True,
+    display_all_sequences(exploration_sequences_26, min_length=20, max_length=200, save_figure=True,
                           figure_save_location="Exploration-dqn_scaffold_26-2",)
 
     # Exploration DQN 14

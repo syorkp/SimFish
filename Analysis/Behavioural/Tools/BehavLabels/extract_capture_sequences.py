@@ -56,11 +56,11 @@ def get_capture_sequences_with_energy_state(model_name, assay_config, assay_id, 
     return all_capture_sequences, all_energy_states_by_sequence
 
 
-def get_capture_sequences(model_name, assay_config, assay_id, n):
+def get_capture_sequences(model_name, assay_config, assay_id, n, dur=20):
     all_capture_sequences = []
     for i in range(1, n+1):
         data = load_data(model_name, assay_config, f"{assay_id}-{i}")
-        all_capture_sequences = all_capture_sequences + extract_consumption_action_sequences(data)[0]
+        all_capture_sequences = all_capture_sequences + extract_consumption_action_sequences(data, dur)[0]
     return all_capture_sequences
 
 

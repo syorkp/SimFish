@@ -67,7 +67,7 @@ def display_all_sequences(sequences, min_length=None, max_length=None, indicate_
         legend_elements = [Patch(facecolor=color_set[int(a)], label=associated_actions[int(a)]) for i, a in enumerate(ordered_actions_present)]# [0], [0], marker="o", color=color_set[i], label=associated_actions[i]) for i in actions_present]
     else:
         associated_actions = [get_action_name(a) for a in ordered_actions_present]
-        legend_elements = [Patch(facecolor=color_set[a], label=associated_actions[i]) for i, a in enumerate(ordered_actions_present)]# [0], [0], marker="o", color=color_set[i], label=associated_actions[i]) for i in actions_present]
+        legend_elements = [Patch(facecolor=color_set[int(a)], label=associated_actions[i]) for i, a in enumerate(ordered_actions_present)]# [0], [0], marker="o", color=color_set[i], label=associated_actions[i]) for i in actions_present]
 
     # if indicate_consumption:
     #     # outline = plt.Polygon(np.array([[plot_dim, 0], [plot_dim+1, 0], [plot_dim+1, len(used_sequences)], [plot_dim, len(used_sequences)]]))
