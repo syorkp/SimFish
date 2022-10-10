@@ -9,7 +9,7 @@ from skimage import io
 
 from Analysis.load_data import load_data
 from Configurations.Networks.original_network import base_network_layers, ops, connectivity
-from Tools.make_gif import make_gif
+from Tools.make_video import make_video
 from skimage.transform import resize, rescale
 
 
@@ -261,7 +261,15 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
     orientation_buffer = []
     consumption_buffer = []
     # num_steps = 200
-
+    if trim_to_fish:
+        frames = np.zeros((num_steps, np.int(scale * showed_region_quad*2), np.int(scale * showed_region_quad*2), 3))
+    else:
+        if draw_action_space_usage:
+            addon = 300
+        else:
+            addon = 0
+                
+        frames = np.zeros((num_steps, np.int(env_variables["height"]*scale), np.int((env_variables["width"]+addon)*scale), 3))
     for step in range(num_steps):
         print(step)
         if continuous_actions:
@@ -332,18 +340,18 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
             # Compute centre position - so can deal with edges
             frame = frame[centre_x-showed_region_quad:centre_x+showed_region_quad,
                     centre_y-showed_region_quad:centre_y+showed_region_quad]
-            frames.append(rescale(copy.copy(frame), scale * env_variables["width"]/(showed_region_quad*2), multichannel=True, anti_aliasing=True))
 
-        else:
-            frames.append(rescale(copy.copy(frame), scale, multichannel=True, anti_aliasing=True))
+        frames[step, :, :, :] = rescale(frame, scale, multichannel=True, anti_aliasing=True)
+
         board.db = board.get_base_arena(0.3)
 
     fig, ax = plt.subplots(figsize=(18, 18))
     ax.imshow(frame)
     plt.show()
-    frames = np.array(frames)
+
     frames *= 255
-    make_gif(frames, f"{model_name}-4-behaviour.gif", duration=len(frames) * 0.03, true_image=True)
+
+    make_video(frames, f"{model_name}-4-behaviour.mp4", duration=len(frames) * 0.03, true_image=True)
 
 
 if __name__ == "__main__":
