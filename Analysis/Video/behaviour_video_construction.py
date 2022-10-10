@@ -274,8 +274,8 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
         py = np.round(np.array([pr[1] for pr in data["prey_positions"][step]])).astype(int)
         rrs, ccs = board.multi_circles(px, py, env_variables["prey_size_visualisation"])
 
-        rrs = np.clip(rrs, 0, 1499)
-        ccs = np.clip(ccs, 0, 1499)
+        rrs = np.clip(rrs, 0, env_variables["width"]-1)
+        ccs = np.clip(ccs, 0, env_variables["height"]-1)
 
         board.db[rrs, ccs] = (0, 0, 1)
 
