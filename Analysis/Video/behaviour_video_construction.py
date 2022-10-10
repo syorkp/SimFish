@@ -303,7 +303,6 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
 
 if __name__ == "__main__":
     model_name = "dqn_scaffold_26-2"
-    data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
-    assay_config_name = "dqn_26_2"
-
+    data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-3")
+    assay_config_name = "dqn_26_2_videos"
     draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False)

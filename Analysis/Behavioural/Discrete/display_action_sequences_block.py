@@ -1,8 +1,10 @@
 import matplotlib.pyplot as plt
 
 from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import get_exploration_sequences
+from Analysis.Behavioural.Tools.BehavLabels.extract_capture_sequences import get_capture_sequences
 
 from Analysis.Behavioural.Tools.filter_sequences import remove_sCS_heavy
+from Analysis.Behavioural.VisTools.show_action_sequence_block import display_all_sequences
 
 
 def display_average_sequence(sequences):
@@ -46,28 +48,35 @@ def display_average_sequence(sequences):
 if __name__ == "__main__":
 
     #                            EXPLORATION SEQUENCES
+    capture_sequences_26 =get_capture_sequences(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 20)
+    display_all_sequences(capture_sequences_26, min_length=0, max_length=1000, save_figure=True,
+                          figure_save_location="Exploration-dqn_scaffold_26-2",)
+
+    exploration_sequences_26 = get_exploration_sequences(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 20)
+    display_all_sequences(exploration_sequences_26, min_length=0, max_length=1000, save_figure=True,
+                          figure_save_location="Exploration-dqn_scaffold_26-2",)
 
     # Exploration DQN 14
-    exploration_sequences_14 = get_exploration_sequences(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20)
-    # display_all_sequences(exploration_sequences, min_length=23, max_length=42, save_figure=True,
-    #                       figure_name="Exploration-dqn_scaffold_14-1")
-
-    # Exploration DQN 19
-    exploration_sequences_19 = get_exploration_sequences(f"dqn_scaffold_19-1", "Behavioural-Data-Free", "Naturalistic", 20)
-    exploration_sequences_19 = remove_sCS_heavy(exploration_sequences_19, max_sCS=6)
-    # display_all_sequences(exploration_sequences, min_length=15, max_length=42, save_figure=True,
-    #                       figure_name="Exploration-dqn_scaffold_19-1")
-
-    # Exploration DQN 18
-    exploration_sequences_18 = get_exploration_sequences(f"dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic", 20)
-    # display_all_sequences(exploration_sequences, min_length=23, max_length=42, save_figure=True,
-    #                       figure_name="Exploration-dqn_scaffold_18-1")
-
-    # Exploration DQN_nl 19
-    exploration_sequences_nl = get_exploration_sequences(f"dqn_scaffold_nl_19-1", "Behavioural-Data-Free", "Naturalistic", 20)
-    exploration_sequences_nl = remove_sCS_heavy(exploration_sequences_nl, max_sCS=6)
-    # display_all_sequences(exploration_sequences, min_length=23, max_length=42, save_figure=True,
-    #                       figure_name="Exploration-dqn_scaffold_nl_19-1")
+    # exploration_sequences_14 = get_exploration_sequences(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20)
+    # # display_all_sequences(exploration_sequences, min_length=23, max_length=42, save_figure=True,
+    # #                       figure_name="Exploration-dqn_scaffold_14-1")
+    #
+    # # Exploration DQN 19
+    # exploration_sequences_19 = get_exploration_sequences(f"dqn_scaffold_19-1", "Behavioural-Data-Free", "Naturalistic", 20)
+    # exploration_sequences_19 = remove_sCS_heavy(exploration_sequences_19, max_sCS=6)
+    # # display_all_sequences(exploration_sequences, min_length=15, max_length=42, save_figure=True,
+    # #                       figure_name="Exploration-dqn_scaffold_19-1")
+    #
+    # # Exploration DQN 18
+    # exploration_sequences_18 = get_exploration_sequences(f"dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic", 20)
+    # # display_all_sequences(exploration_sequences, min_length=23, max_length=42, save_figure=True,
+    # #                       figure_name="Exploration-dqn_scaffold_18-1")
+    #
+    # # Exploration DQN_nl 19
+    # exploration_sequences_nl = get_exploration_sequences(f"dqn_scaffold_nl_19-1", "Behavioural-Data-Free", "Naturalistic", 20)
+    # exploration_sequences_nl = remove_sCS_heavy(exploration_sequences_nl, max_sCS=6)
+    # # display_all_sequences(exploration_sequences, min_length=23, max_length=42, save_figure=True,
+    # #                       figure_name="Exploration-dqn_scaffold_nl_19-1")
 
 
 
