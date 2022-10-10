@@ -77,7 +77,7 @@ class DrawingBoard:
         self.db[rr, cc, :] = colour
 
     def show_consumption(self, fish_angle, x_position, y_position, colour):
-        rr, cc = draw.ellipse(int(y_position), int(x_position), 5, 3, rotation=-fish_angle)
+        rr, cc = draw.ellipse(int(y_position), int(x_position), 10, 6, rotation=-fish_angle)
         self.db[rr, cc, :] = colour
 
     def get_action_colour(self, action):
@@ -170,7 +170,7 @@ def draw_previous_actions(board, past_actions, past_positions, fish_angles, cont
         if consumption_buffer is not None:
             if consumption_buffer[i] == 1:
                 board.show_consumption(fish_angles[i], past_positions[i][0],
-                                       past_positions[i][1], (1, 1, 1))
+                                       past_positions[i][1], (1, 0, 0))
     return board, past_actions, past_positions, fish_angles
 
 
