@@ -148,8 +148,8 @@ class DrawingBoard:
                 self.db[:, dark_col:] *= light_gain
 
 
-def draw_previous_actions(board, past_actions, past_positions, fish_angles, continuous_actions=True,
-                          n_actions_to_show=500, consumption_buffer=None):
+def draw_previous_actions(board, past_actions, past_positions, fish_angles, adjusted_colour_index,
+                          continuous_actions, n_actions_to_show, bkg_scatter, consumption_buffer=None):
     while len(past_actions) > n_actions_to_show:
         past_actions.pop(0)
     while len(past_positions) > n_actions_to_show:
@@ -161,7 +161,12 @@ def draw_previous_actions(board, past_actions, past_positions, fish_angles, cont
 
     for i, a in enumerate(past_actions):
         if continuous_actions:
-            action_colour = (1 * ((i + 1) / len(past_actions)), 0, 0)
+            if a[1] < 0:
+                action_colour = (
+                adjusted_colour_index, bkg_scatter, bkg_scatter)
+            else:
+                action_colour = (bkg_scatter, adjusted_colour_index, adjusted_colour_index)
+
             board.show_action_continuous(a[0], a[1], fish_angles[i], past_positions[i][0],
                                               past_positions[i][1], action_colour)
         else:
@@ -242,7 +247,7 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 
 def draw_episode(data, config_name, model_name, continuous_actions, draw_past_actions=True, show_energy_state=True,
-                 scale=0.6, draw_action_space_usage=True, trim_to_fish=False, showed_region_quad=500, n_actions_to_show=50,
+                 scale=0.6, draw_action_space_usage=True, trim_to_fish=False, showed_region_quad=500, n_actions_to_show=500,
                  save_id="placeholder"):
     try:
         with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
@@ -257,6 +262,8 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
         energy_levels = data["internal_state"][:, 0]
     fish_positions = data["fish_position"]
     num_steps = fish_positions.shape[0]
+    num_steps = 10
+
 
     frames = []
     action_buffer = []
@@ -283,9 +290,14 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
         consumption_buffer.append(data["consumed"][step])
 
         if draw_past_actions:
+            adjusted_colour_index = ((1 - env_variables["bkg_scatter"]) * (step + 1) / n_actions_to_show) + \
+                                    env_variables["bkg_scatter"]
             board, action_buffer, position_buffer, orientation_buffer = draw_previous_actions(board, action_buffer,
                                                                                               position_buffer, orientation_buffer,
+                                                                                              adjusted_colour_index=adjusted_colour_index,
                                                                                               continuous_actions=continuous_actions,
+                                                                                              n_actions_to_show=n_actions_to_show,
+                                                                                              bkg_scatter=env_variables["bkg_scatter"],
                                                                                               consumption_buffer=consumption_buffer)
 
 
