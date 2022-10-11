@@ -53,10 +53,16 @@ elif run_config == "draw_ep":
     base_network_layers["rnn_state_actor"] = base_network_layers["rnn"]
     del base_network_layers["rnn"]
     network_data = {key: data[key] for key in list(base_network_layers.keys())}
+    network_data["rnn"] = data["rnn_state_actor"][:, 0, 0, :]
+    base_network_layers["rnn"] = base_network_layers["rnn_state_actor"]
+    del base_network_layers["rnn_state_actor"]
+    del network_data["rnn_state_actor"]
+
     network_data["left_eye"] = data["observation"][:, :, :, 0]
     network_data["right_eye"] = data["observation"][:, :, :, 1]
     network_data["internal_state"] = np.concatenate((np.expand_dims(data["energy_state"], 1),
                                                      np.expand_dims(data["salt"], 1)), axis=1)
+
     ops = convert_ops_to_graph(ops)
     create_network_video(network_data, connectivity + ops, model_name, save_id="CONV", s_per_frame=0.06, scale=1)
 
