@@ -257,6 +257,7 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
         energy_levels = data["internal_state"][:, 0]
     fish_positions = data["fish_position"]
     num_steps = fish_positions.shape[0]
+
     frames = []
     action_buffer = []
     position_buffer = []
@@ -352,9 +353,14 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
 
 
 if __name__ == "__main__":
-    model_name = "dqn_scaffold_26-2"
-    data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-1")
-    assay_config_name = "dqn_26_2_videos"
-    draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
-                 trim_to_fish=True, showed_region_quad=750)
+    # model_name = "dqn_scaffold_26-2"
+    # data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-1")
+    # assay_config_name = "dqn_26_2_videos"
+    # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
+    #              trim_to_fish=True, showed_region_quad=750)
+    model_name = "ppo_scaffold_21-2"
+    data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-5")
+    assay_config_name = "ppo_21_2_videos"
+    draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
+                 trim_to_fish=True, showed_region_quad=750, save_id="A15")
 
