@@ -256,13 +256,11 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
         with open(f"Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
             env_variables = json.load(f)
 
-
     board = DrawingBoard(env_variables["width"], env_variables["height"])
     if show_energy_state:
         energy_levels = data["internal_state"][:, 0]
     fish_positions = data["fish_position"]
     num_steps = fish_positions.shape[0]
-
 
     frames = []
     action_buffer = []
@@ -289,8 +287,10 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
         consumption_buffer.append(data["consumed"][step])
 
         if draw_past_actions:
-            adjusted_colour_index = ((1 - env_variables["bkg_scatter"]) * (step + 1) / n_actions_to_show) + \
-                                    env_variables["bkg_scatter"]
+            # adjusted_colour_index = ((1 - env_variables["bkg_scatter"]) * (step + 1) / n_actions_to_show) + \
+            #                         env_variables["bkg_scatter"]
+            # adjusted_colour_index = (1 - env_variables["bkg_scatter"]) + env_variables["bkg_scatter"]
+            adjusted_colour_index = 1
             board, action_buffer, position_buffer, orientation_buffer = draw_previous_actions(board, action_buffer,
                                                                                               position_buffer, orientation_buffer,
                                                                                               adjusted_colour_index=adjusted_colour_index,

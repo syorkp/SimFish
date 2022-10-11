@@ -287,14 +287,19 @@ def plot_binned_results(results, model_names, bin_size, initialisation_period, f
 def display_action_plots_discrete(model_name, assay_config, assay_id, n, figure_name, slice_size=200):
     actions_compiled = []
     for i in range(1, n+1):
+
         model_compiled = []
-        d = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        if i < 6:
+            d = load_data(model_name, "Interruptions-HA", f"{assay_id}-{i}")
+        else:
+            d = load_data(model_name, assay_config, f"{assay_id}-{i}")
         for i in range(0, d["action"].shape[0], slice_size):
             model_compiled.append(d["action"][i: i+slice_size])
         actions_compiled.append(model_compiled)
 
-    actions_compiled2 = [[actions_compiled[trial][slice] for trial in range(len(actions_compiled))] for slice in range(10)]
-    actions_compiled2 = [actions_compiled2[i] + [(np.ones(slice_size)*10).astype(int) for j in range(len(actions_compiled2[i]))] for i in range(len(actions_compiled2))]
+    # actions_compiled2 = [[actions_compiled[trial][slice] for trial in range(len(actions_compiled))] for slice in range(10)]
+    # actions_compiled2 = [actions_compiled2[i] + [(np.ones(slice_size)*10).astype(int) for j in range(len(actions_compiled2[i]))] for i in range(len(actions_compiled2))]
+    actions_compiled2 = actions_compiled
     actions_compiled2 = np.concatenate((actions_compiled2))
 
     color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'gold', "c", "m", "m", "black", "white"]
@@ -441,37 +446,37 @@ if __name__ == "__main__":
 
 
     # DQN
-    # display_action_plots_discrete("dqn_scaffold_14-1", "Interruptions-H", "Naturalistic", 5,
-    #                               figure_name="dqn_14_1_H_actions", slice_size=100)
+    display_action_plots_discrete("dqn_scaffold_14-1", "Interruptions-H", "Naturalistic", 35,
+                                  figure_name="dqn_14_1_H_actions", slice_size=2000)
     # display_action_plots_discrete("dqn_scaffold_30-2", "Interruptions-H", "Naturalistic", 5,
     #                               figure_name="dqn_30_2_H_actions", slice_size=100)
     # display_action_plots_discrete("dqn_scaffold_18-2", "Interruptions-H", "Naturalistic", 5,
     #                               figure_name="dqn_18_2_H_actions", slice_size=100)
 
-    results1 = assess_all_dqn_binned("dqn_scaffold_18-1", 5, 101)
-    results2 = assess_all_dqn_binned("dqn_scaffold_18-2", 5, 101)
-    results3 = assess_all_dqn_binned("dqn_scaffold_14-1", 5, 101)
-    results4 = assess_all_dqn_binned("dqn_scaffold_14-2", 5, 101)
-    results5 = assess_all_dqn_binned("dqn_scaffold_26-1", 5, 101)
-    results6 = assess_all_dqn_binned("dqn_scaffold_26-2", 5, 101)
-    results7 = assess_all_dqn_binned("dqn_scaffold_30-1", 5, 101)
-    results8 = assess_all_dqn_binned("dqn_scaffold_30-2", 5, 101)
-
-    control1 = assess_dqn_binned("dqn_scaffold_18-1", "Behavioural-Data-Free", 10, 101)
-    control2 = assess_dqn_binned("dqn_scaffold_18-2", "Behavioural-Data-Free", 10, 101)
-    control3 = assess_dqn_binned("dqn_scaffold_14-1", "Behavioural-Data-Free", 10, 101)
-    control4 = assess_dqn_binned("dqn_scaffold_14-2", "Behavioural-Data-Free", 10, 101)
-    control5 = assess_dqn_binned("dqn_scaffold_18-1", "Behavioural-Data-Free", 10, 101)
-    control6 = assess_dqn_binned("dqn_scaffold_18-2", "Behavioural-Data-Free", 10, 101)
-    control7 = assess_dqn_binned("dqn_scaffold_14-1", "Behavioural-Data-Free", 10, 101)
-    control8 = assess_dqn_binned("dqn_scaffold_14-2", "Behavioural-Data-Free", 10, 101)
-
-    model_names = ["dqn_scaffold_18-1", "dqn_scaffold_18-2", "dqn_scaffold_14-1", "dqn_scaffold_14-2",
-                   "dqn_scaffold_26-1", "dqn_scaffold_26-2", "dqn_scaffold_30-1", "dqn_scaffold_30-2"]
-
-    plot_binned_results([results1, results2, results3, results4, results5, results6, results7, results8],
-                        model_names, bin_size=101, initialisation_period=200, figure_name="all_dqn_heterogeneity",
-                        control_results=[control1, control2, control3, control4, control5, control6, control7, control8])
+    # results1 = assess_all_dqn_binned("dqn_scaffold_18-1", 5, 101)
+    # results2 = assess_all_dqn_binned("dqn_scaffold_18-2", 5, 101)
+    # results3 = assess_all_dqn_binned("dqn_scaffold_14-1", 5, 101)
+    # results4 = assess_all_dqn_binned("dqn_scaffold_14-2", 5, 101)
+    # results5 = assess_all_dqn_binned("dqn_scaffold_26-1", 5, 101)
+    # results6 = assess_all_dqn_binned("dqn_scaffold_26-2", 5, 101)
+    # results7 = assess_all_dqn_binned("dqn_scaffold_30-1", 5, 101)
+    # results8 = assess_all_dqn_binned("dqn_scaffold_30-2", 5, 101)
+    #
+    # control1 = assess_dqn_binned("dqn_scaffold_18-1", "Behavioural-Data-Free", 10, 101)
+    # control2 = assess_dqn_binned("dqn_scaffold_18-2", "Behavioural-Data-Free", 10, 101)
+    # control3 = assess_dqn_binned("dqn_scaffold_14-1", "Behavioural-Data-Free", 10, 101)
+    # control4 = assess_dqn_binned("dqn_scaffold_14-2", "Behavioural-Data-Free", 10, 101)
+    # control5 = assess_dqn_binned("dqn_scaffold_18-1", "Behavioural-Data-Free", 10, 101)
+    # control6 = assess_dqn_binned("dqn_scaffold_18-2", "Behavioural-Data-Free", 10, 101)
+    # control7 = assess_dqn_binned("dqn_scaffold_14-1", "Behavioural-Data-Free", 10, 101)
+    # control8 = assess_dqn_binned("dqn_scaffold_14-2", "Behavioural-Data-Free", 10, 101)
+    #
+    # model_names = ["dqn_scaffold_18-1", "dqn_scaffold_18-2", "dqn_scaffold_14-1", "dqn_scaffold_14-2",
+    #                "dqn_scaffold_26-1", "dqn_scaffold_26-2", "dqn_scaffold_30-1", "dqn_scaffold_30-2"]
+    #
+    # plot_binned_results([results1, results2, results3, results4, results5, results6, results7, results8],
+    #                     model_names, bin_size=101, initialisation_period=200, figure_name="all_dqn_heterogeneity",
+    #                     control_results=[control1, control2, control3, control4, control5, control6, control7, control8])
 
 
     # Example for nearly fully heterogenous actions
