@@ -236,7 +236,7 @@ def produce_meis_extended(model_name, layer_name, full_reafference, iterations=1
         target_layer = getattr(network, layer_name)
         n_units = target_layer.shape[-1]
         if n_units > 64:
-            n_units = 50
+            n_units = 100
         n_applications = target_layer.shape[-2]
         all_images = np.zeros((n_units, n_applications, 100, 3, 2))
 
