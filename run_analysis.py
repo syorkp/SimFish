@@ -29,24 +29,24 @@ elif run_config == "4l":
 elif run_config == "dense":
     produce_meis("dqn_scaffold_26-2", "rnn_in", full_reafference=True, iterations=100, conv=False)
 elif run_config == "draw_ep":
-    # model_name = "dqn_scaffold_26-2"
-    # assay_config_name = "dqn_26_2_videos"
-    #
-    # data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-5")
-    # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
-    #              trim_to_fish=True, showed_region_quad=750, save_id="A15")
+    model_name = "dqn_scaffold_26-2"
+    assay_config_name = "dqn_26_2_videos"
+
+    data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-1")
+    draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
+                 trim_to_fish=True, showed_region_quad=750, save_id="A11")
     # data = load_data(model_name, "Behavioural-Data-Videos-C1", "Naturalistic-1")
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="C11")
-    model_name = "ppo_scaffold_21-2"
-    assay_config_name = "ppo_21_2_videos"
-
-    data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-5")
-    draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
-                 trim_to_fish=True, showed_region_quad=750, save_id="A15")
-    data = load_data(model_name, "Behavioural-Data-Videos-B1", "Naturalistic-3")
-    draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
-                 trim_to_fish=True, showed_region_quad=750, save_id="C11")
+    # model_name = "ppo_scaffold_21-2"
+    # assay_config_name = "ppo_21_2_videos"
+    #
+    # data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-5")
+    # draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
+    #              trim_to_fish=True, showed_region_quad=750, save_id="A15")
+    # data = load_data(model_name, "Behavioural-Data-Videos-B1", "Naturalistic-3")
+    # draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
+    #              trim_to_fish=True, showed_region_quad=750, save_id="C11")
 else:
     produce_meis_extended("dqn_scaffold_26-2", "conv1l", True, 1000)
 
