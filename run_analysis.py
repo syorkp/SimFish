@@ -64,10 +64,10 @@ elif run_config == "draw_ep":
                                                      np.expand_dims(data["salt"], 1)), axis=1)
 
     ops = convert_ops_to_graph(ops)
-    create_network_video(network_data, connectivity + ops, model_name, save_id="CONV", s_per_frame=0.06, scale=1)
+    create_network_video(network_data, connectivity + ops, model_name, save_id="CONV", s_per_frame=0.04, scale=1)
 
     draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
-                 draw_past_actions=False,
+                 draw_past_actions=True,
                  trim_to_fish=True, showed_region_quad=750, save_id="CONV", s_per_frame=0.04)
 
     # model_name = "ppo_scaffold_21-2"
