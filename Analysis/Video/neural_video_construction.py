@@ -176,10 +176,17 @@ if __name__ == "__main__":
     model_name = "dqn_scaffold_26-2"
     learning_params, environment_params, base_network_layers, ops, connectivity = load_configuration_files(model_name)
 
-    data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-1")
-    network_data = {key: data[key] for key in list(base_network_layers.keys()) + ["left_eye", "right_eye"] + ["internal_state"]}
+    data = load_data(model_name, "Behavioural-Data-Videos-CONV", "Naturalistic-2")
+    base_network_layers["rnn_state_actor"] = base_network_layers["rnn"]
+    del base_network_layers["rnn"]
+    network_data = {key: data[key] for key in list(base_network_layers.keys())}
+    network_data["left_eye"] = data["observation"][:, :, :, 0]
+    network_data["right_eye"] = data["observation"][:, :, :, 1]
+    network_data["internal_state"] = np.concatenate((np.expand_dims(data["energy_state"], 1),
+                                                     np.expand_dims(data["salt"], 1)), axis=1)
+
     ops = convert_ops_to_graph(ops)
-    create_network_gif(network_data, connectivity + ops, model_name)
+    create_network_video(network_data, connectivity + ops, model_name)
 
     # plt.plot(range(500), data["internal_state"][:, 0])
     # plt.xlabel("Step")

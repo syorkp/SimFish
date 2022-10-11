@@ -1,5 +1,8 @@
 import sys
 import os
+
+import numpy as np
+
 from Analysis.Neural.MEI.estimate_mei_direct import produce_meis, produce_meis_extended
 from Analysis.Video.behaviour_video_construction import draw_episode
 from Analysis.Video.neural_video_construction import create_network_video, convert_ops_to_graph
@@ -46,10 +49,17 @@ elif run_config == "draw_ep":
 
     data = load_data(model_name, "Behavioural-Data-Videos-CONV", "Naturalistic-2")
     draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
-                 trim_to_fish=True, showed_region_quad=750, save_id="CONV", s_per_frame=0.06)
+                 draw_past_actions=False,
+                 trim_to_fish=True, showed_region_quad=750, save_id="CONV", s_per_frame=0.04)
 
     learning_params, environment_params, base_network_layers, ops, connectivity = load_configuration_files(model_name)
-    network_data = {key: data[key] for key in list(base_network_layers.keys()) + ["left_eye", "right_eye"] + ["internal_state"]}
+    base_network_layers["rnn_state_actor"] = base_network_layers["rnn"]
+    del base_network_layers["rnn"]
+    network_data = {key: data[key] for key in list(base_network_layers.keys())}
+    network_data["left_eye"] = data["observation"][:, :, :, 0]
+    network_data["right_eye"] = data["observation"][:, :, :, 1]
+    network_data["internal_state"] = np.concatenate((np.expand_dims(data["energy_state"], 1),
+                                                     np.expand_dims(data["salt"], 1)), axis=1)
     ops = convert_ops_to_graph(ops)
     create_network_video(network_data, connectivity + ops, model_name, save_id="CONV", s_per_frame=0.06)
 
