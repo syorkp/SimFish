@@ -224,7 +224,7 @@ def produce_meis_extended(model_name, layer_name, full_reafference, iterations=1
         simulation = DiscreteNaturalisticEnvironment(environment_params, True, True, False)
 
         # Creating graph
-        network = create_network(simulation, environment_params, params, full_reafference)
+        network, n_is = create_network(simulation, environment_params, params, full_reafference)
 
         saver = tf.train.Saver(max_to_keep=5)
         model_location = f"../../../Training-Output/{model_name}"
@@ -326,8 +326,8 @@ def produce_meis_extended(model_name, layer_name, full_reafference, iterations=1
 
 if __name__ == "__main__":
     # produce_meis("dqn_scaffold_26-2", "conv4l", full_reafference=True, iterations=100)
-
-    produce_meis("dqn_scaffold_26-2", "rnn_in", full_reafference=True, iterations=2, conv=False)
+    # produce_meis("dqn_scaffold_26-2", "rnn_in", full_reafference=True, iterations=2, conv=False)
+    produce_meis_extended("dqn_scaffold_26-2", "conv4l", full_reafference=True, iterations=10)
 
 
 

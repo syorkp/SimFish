@@ -138,11 +138,12 @@ def plot_action_scatter(impulses, angles, model_name, special_impulses=None, spe
 
 
 def plot_action_scatter_with_mask_and_bouts(impulses, angles, model_name, special_impulses=None, special_angles=None,
-                                            special_names=None):
-    plot_name = f"action_scatter-with-bouts-and-mask"
+                                            special_names=None, show_action_mask=False):
+    plot_name = f"action_scatter-with-bouts-and-mask-{special_names}"
 
-    available_actions = get_action_mask()
-    plt.scatter(available_actions[:, 0], available_actions[:, 1], c="grey", alpha=1)
+    if show_action_mask:
+        available_actions = get_action_mask()
+        plt.scatter(available_actions[:, 0], available_actions[:, 1], c="grey", alpha=1)
 
     plt.scatter(impulses, angles, alpha=.1)
 
@@ -266,12 +267,12 @@ def plot_actions_under_all_contexts(model_name, assay_config, assay_id, n, impul
 
 
 if __name__ == "__main__":
-    model_name = "ppo_scaffold_21-2"
+    model_name = "ppo_scaffold_21-1"
 
     max_impulse = 16
     angle_scaling = 1
 
-    plot_action_space_usage(model_name, "Behavioural-Data-Free", "Naturalistic", 20, max_impulse, angle_scaling,
+    plot_action_space_usage(model_name, "Behavioural-Data-NaturalisticA", "Naturalistic", 20, max_impulse, angle_scaling,
                             show_action_mask=True)
     # plot_actions_under_all_contexts(model_name, "Behavioural-Data-Free", "Naturalistic", 20, max_impulse, angle_scaling)
 

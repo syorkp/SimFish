@@ -30,10 +30,10 @@ elif run_config == "dense":
     produce_meis("dqn_scaffold_26-2", "rnn_in", full_reafference=True, iterations=100, conv=False)
 elif run_config == "draw_ep":
     model_name = "dqn_scaffold_26-2"
-    data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-3")
+    data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-5")
     assay_config_name = "dqn_26_2_videos"
     draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
-                 trim_to_fish=True, showed_region_quad=750)
+                 trim_to_fish=True, showed_region_quad=750, save_id=5)
 else:
     produce_meis_extended("dqn_scaffold_26-2", "conv1l", True, 1000)
 

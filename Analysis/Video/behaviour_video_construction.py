@@ -148,7 +148,8 @@ class DrawingBoard:
                 self.db[:, dark_col:] *= light_gain
 
 
-def draw_previous_actions(board, past_actions, past_positions, fish_angles, continuous_actions=True, n_actions_to_show=50, consumption_buffer=None):
+def draw_previous_actions(board, past_actions, past_positions, fish_angles, continuous_actions=True,
+                          n_actions_to_show=500, consumption_buffer=None):
     while len(past_actions) > n_actions_to_show:
         past_actions.pop(0)
     while len(past_positions) > n_actions_to_show:
@@ -241,7 +242,8 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 
 def draw_episode(data, config_name, model_name, continuous_actions, draw_past_actions=True, show_energy_state=True,
-                 scale=0.15, draw_action_space_usage=True, trim_to_fish=False, showed_region_quad=500):
+                 scale=0.6, draw_action_space_usage=True, trim_to_fish=False, showed_region_quad=500, n_actions_to_show=50,
+                 save_id="placeholder"):
     try:
         with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
             env_variables = json.load(f)
@@ -249,7 +251,7 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
         with open(f"Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
             env_variables = json.load(f)
 
-    n_actions_to_show = 50
+
     board = DrawingBoard(env_variables["width"], env_variables["height"])
     if show_energy_state:
         energy_levels = data["internal_state"][:, 0]
@@ -260,7 +262,6 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
     position_buffer = []
     orientation_buffer = []
     consumption_buffer = []
-    # num_steps = 200
     if trim_to_fish:
         frames = np.zeros((num_steps, np.int(scale * showed_region_quad*2), np.int(scale * showed_region_quad*2), 3))
     else:
@@ -345,18 +346,14 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
 
         board.db = board.get_base_arena(0.3)
 
-    fig, ax = plt.subplots(figsize=(18, 18))
-    ax.imshow(frame)
-    plt.show()
-
     frames *= 255
 
-    make_video(frames, f"{model_name}-4-behaviour.mp4", duration=len(frames) * 0.03, true_image=True)
+    make_video(frames, f"{model_name}-{save_id}-behaviour.mp4", duration=len(frames) * 0.03, true_image=True)
 
 
 if __name__ == "__main__":
     model_name = "dqn_scaffold_26-2"
-    data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-3")
+    data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-1")
     assay_config_name = "dqn_26_2_videos"
     draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
                  trim_to_fish=True, showed_region_quad=750)
