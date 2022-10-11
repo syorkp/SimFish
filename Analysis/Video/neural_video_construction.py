@@ -6,6 +6,7 @@ from skimage.transform import resize, rescale
 from Analysis.load_data import load_data
 from Analysis.load_model_config import load_configuration_files
 from Tools.make_gif import make_gif
+from Configurations.Networks.original_network import base_network_layers, ops, connectivity
 
 
 def get_num_layers_upstream(layer, connectivity_graph):
@@ -119,7 +120,6 @@ def create_network_gif(neural_data, connectivity_graph, model_name, scale=0.25):
 
         num_repeats = available_width // num_units
 
-
         if len(layer_neural_data.shape) == 3:
             layer_neural_data = self_normalise_network_activity(layer_neural_data)
             thickness_per_unit = np.clip((layer_space / 2), 1, 1000).astype(int)
@@ -170,21 +170,21 @@ def create_network_gif(neural_data, connectivity_graph, model_name, scale=0.25):
              true_image=True)
 
 
-# model_name = "parameterised_speed_test_fast-1"
-# model_name = "scaffold_version_4-4"
-model_name = "dqn_scaffold_version_5-1"
-learning_params, environment_params = load_configuration_files(model_name)
+if __name__ == "__main__":
 
+    # model_name = "parameterised_speed_test_fast-1"
+    # model_name = "scaffold_version_4-4"
+    model_name = "dqn_scaffold_26-2"
+    learning_params, environment_params, base_network_layers, ops, connectivity = load_configuration_files(model_name)
 
+    data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-1")
+    network_data = {key: data[key] for key in list(base_network_layers.keys()) + ["left_eye", "right_eye"] + ["internal_state"]}
+    ops = convert_ops_to_graph(ops)
+    create_network_gif(network_data, connectivity + ops, model_name)
 
-data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-3")
-network_data = {key: data[key] for key in list(base_network_layers.keys()) + ["left_eye", "right_eye"] + ["internal_state"]}
-ops = convert_ops_to_graph(ops)
-create_network_gif(network_data, connectivity + ops, model_name)
-
-# plt.plot(range(500), data["internal_state"][:, 0])
-# plt.xlabel("Step")
-# plt.ylabel("Energy Level")
-# plt.show()
+    # plt.plot(range(500), data["internal_state"][:, 0])
+    # plt.xlabel("Step")
+    # plt.ylabel("Energy Level")
+    # plt.show()
 
 

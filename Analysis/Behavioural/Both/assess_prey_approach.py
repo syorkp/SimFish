@@ -60,21 +60,29 @@ if __name__ == "__main__":
             angs.append(ang)
 
     dist = np.concatenate((dist))
-    angs = np.concatenate((angs))
+    dist_sem = np.std(dist, axis=0)/(dist.shape[1] ** 0.5)
+    angs = np.concatenate((np.absolute(angs)))
+    angs_sem = np.std(angs, axis=0)/(angs.shape[1] ** 0.5)
 
     mean_dist = np.mean(dist, axis=0)
     mean_ang = np.mean(np.absolute(angs), axis=0)
 
-    plt.plot(np.swapaxes(angs, 0, 1), color="grey", alpha=0.5)
+    # plt.plot(np.swapaxes(angs, 0, 1), color="grey", alpha=0.5)
     plt.plot(mean_ang, color="r")
+    upper, lower = mean_ang + angs_sem, mean_ang - angs_sem
+    steps = [i for i in range(len(mean_ang))]
+    plt.fill_between(steps, upper, lower)
     plt.xlabel("Bouts before consumption")
     plt.ylabel("Angle to prey (pi radians)")
     plt.savefig(f"{model_name}-fish_prey_angle.jpg")
     plt.clf()
     plt.close()
 
-    plt.plot(np.swapaxes(dist, 0, 1)/10, color="grey", alpha=0.5)
+    # plt.plot(np.swapaxes(dist, 0, 1)/10, color="grey", alpha=0.5)
     plt.plot(mean_dist/10, color="r")
+    upper, lower = mean_dist+dist_sem, mean_dist-dist_sem
+    steps = [i for i in range(len(mean_dist))]
+    plt.fill_between(steps, upper/10, lower/10)
     plt.xlabel("Bouts before consumption")
     plt.ylabel("Distance from Prey (mm)")
     plt.ylim(0, 10)
