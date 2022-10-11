@@ -61,9 +61,9 @@ def cluster_bouts(impulses, angles, cluster_type, cluster_num, model_name, impul
             else:
                 plt.text(i+0.1, a + 0.03, bout_names[index])
 
-    plt.legend([str(a) for a in range(cluster_num)])
-    plt.xlabel("Impulse")
-    plt.ylabel("Angle")
+    # plt.legend([str(a) for a in range(cluster_num)])
+    plt.xlabel("Impulse", fontsize=15)
+    plt.ylabel("Angle (pi radians)", fontsize=15)
     plt.savefig(f"All-Plots/{model_name}/{cluster_type}-{cluster_num}-clustered.jpg")
     plt.clf()
     plt.close()
@@ -163,7 +163,7 @@ if __name__ == "__main__":
     mu_angle = np.concatenate((mu_angle, mu_angle_empty))
 
     p, associated_bouts = cluster_bouts(mu_impulse, mu_angle, "KNN", n_clusters, model_name, 16, 1, return_actions=True,
-                                        overlay_bouts=True)
+                                        overlay_bouts=False)
 
     # get_all_density_plots_all_subsets_continuous(model_name, assay_config, assay_id, n,  predictor=p, mu_impulse=mu_impulse,
     #                                              mu_angle=mu_angle,

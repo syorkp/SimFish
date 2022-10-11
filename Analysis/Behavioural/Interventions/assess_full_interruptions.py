@@ -286,8 +286,8 @@ def plot_binned_results(results, model_names, bin_size, initialisation_period, f
 
 def display_action_plots_discrete(model_name, assay_config, assay_id, n, figure_name, slice_size=200):
     actions_compiled = []
-    for i in range(1, n+1):
-
+    plots = [3, 5, 1, 2, 4] + [i for i in range(6, n+1)]  # To place similar ones together.
+    for i in plots:
         model_compiled = []
         if i < 6:
             d = load_data(model_name, "Interruptions-HA", f"{assay_id}-{i}")
@@ -297,16 +297,19 @@ def display_action_plots_discrete(model_name, assay_config, assay_id, n, figure_
             model_compiled.append(d["action"][i: i+slice_size])
         actions_compiled.append(model_compiled)
 
+    # If splitting into bins
     # actions_compiled2 = [[actions_compiled[trial][slice] for trial in range(len(actions_compiled))] for slice in range(10)]
     # actions_compiled2 = [actions_compiled2[i] + [(np.ones(slice_size)*10).astype(int) for j in range(len(actions_compiled2[i]))] for i in range(len(actions_compiled2))]
     actions_compiled2 = actions_compiled
     actions_compiled2 = np.concatenate((actions_compiled2))
 
     color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'gold', "c", "m", "m", "black", "white"]
-    fig, ax = plt.subplots(figsize=(14, 10))
+    color_set = ['b', 'y', 'gold', 'r', 'g', 'lightgreen',  "c", "m", "m", "black", "white"]
+    fig, ax = plt.subplots(figsize=(20, 5))
     for i, seq in enumerate(actions_compiled2):
         for j, a in enumerate(seq):
             ax.fill_between((j, j + 1), -i, -i - 1, color=color_set[a])
+    plt.vlines(200, 2, -n-2, color="black")
 
     seen = set()
     seen_add = seen.add
@@ -318,9 +321,14 @@ def display_action_plots_discrete(model_name, assay_config, assay_id, n, figure_
 
     legend_elements = [Patch(facecolor=color_set[a], label=associated_actions[i]) for i, a in enumerate(ordered_actions_present)]# [0], [0], marker="o", color=color_set[i], label=associated_actions[i]) for i in actions_present]
 
-
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
     plt.legend(legend_elements, associated_actions, bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
     # plt.axis("scaled")
+    plt.ylabel("Trial", fontsize=30)
+    plt.xlabel("Step", fontsize=30)
     plt.savefig(f"{figure_name}.png")
     plt.close(fig)
     plt.clf()

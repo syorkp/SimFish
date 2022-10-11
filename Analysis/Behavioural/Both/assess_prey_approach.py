@@ -49,7 +49,7 @@ def get_fish_prey_relationships(data, sequences):
 if __name__ == "__main__":
     dist = []
     angs = []
-    model_name, assay_config, assay_id, n = "ppo_scaffold_21-1", "Behavioural-Data-Free", f"Naturalistic", 10
+    model_name, assay_config, assay_id, n = "dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", f"Naturalistic", 40
     for i in range(1, n+1):
         d = load_data(model_name, assay_config, f"{assay_id}-{i}")
         ts = get_prey_capture_timestamps(d)
@@ -68,24 +68,29 @@ if __name__ == "__main__":
     mean_ang = np.mean(np.absolute(angs), axis=0)
 
     # plt.plot(np.swapaxes(angs, 0, 1), color="grey", alpha=0.5)
-    plt.plot(mean_ang, color="r")
+
     upper, lower = mean_ang + angs_sem, mean_ang - angs_sem
-    steps = [i for i in range(len(mean_ang))]
-    plt.fill_between(steps, upper, lower)
-    plt.xlabel("Bouts before consumption")
-    plt.ylabel("Angle to prey (pi radians)")
+    steps = [i-9 for i in range(len(mean_ang))]
+
+    plt.plot(steps, mean_ang, color="r")
+    plt.fill_between(steps, upper, lower, alpha=0.5)
+    plt.xlabel("Steps from Consumption", fontsize=15)
+    plt.ylabel("Fish-Prey Angle (pi radians)", fontsize=15)
+    plt.ylim(0, 0.9)
     plt.savefig(f"{model_name}-fish_prey_angle.jpg")
     plt.clf()
     plt.close()
 
     # plt.plot(np.swapaxes(dist, 0, 1)/10, color="grey", alpha=0.5)
-    plt.plot(mean_dist/10, color="r")
     upper, lower = mean_dist+dist_sem, mean_dist-dist_sem
-    steps = [i for i in range(len(mean_dist))]
-    plt.fill_between(steps, upper/10, lower/10)
-    plt.xlabel("Bouts before consumption")
-    plt.ylabel("Distance from Prey (mm)")
-    plt.ylim(0, 10)
+    steps = [i-9 for i in range(len(mean_dist))]
+
+    plt.plot(steps, mean_dist/10, color="r")
+    plt.fill_between(steps, upper/10, lower/10, alpha=0.5)
+    plt.xlabel("Steps from Consumption", fontsize=15)
+    plt.ylabel("Fish-Prey Distance (mm)", fontsize=15)
+    plt.ylim(0, 7)
+    plt.legend(["Mean", "SEM"])
     plt.savefig(f"{model_name}-fish_prey_distance.jpg")
     plt.clf()
     plt.close()

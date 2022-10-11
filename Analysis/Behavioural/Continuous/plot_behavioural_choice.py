@@ -118,7 +118,7 @@ def extract_consumption_action_sequences(data, n=20):
     return prey_c_t
 
 
-def plot_action_scatter(impulses, angles, model_name, special_impulses=None, special_angles=None, special_names=None):
+def plot_action_scatter(impulses, angles, model_name, special_impulses=None, special_angles=None, special_names=None, color=None):
     plot_name = f"{model_name}-action_scatter"
 
     plt.scatter(impulses, angles, alpha=.1)
@@ -127,7 +127,10 @@ def plot_action_scatter(impulses, angles, model_name, special_impulses=None, spe
     i = 0
     if special_names is not None:
         for impulses_s, angles_s in zip(special_impulses, special_angles):
-            plt.scatter(impulses_s, angles_s, color=special_colours[i], alpha=0.2)
+            if color is not None:
+                plt.scatter(impulses_s, angles_s, color=color, alpha=0.2)
+            else:
+                plt.scatter(impulses_s, angles_s, color=special_colours[i], alpha=0.2)
             i += 1
         plot_name = "-".join(special_names) + "-" + plot_name
 
@@ -254,6 +257,7 @@ def plot_actions_under_all_contexts(model_name, assay_config, assay_id, n, impul
     mu_angle *= angle_scaling
 
     all_contexts = np.concatenate((context_labels), axis=0)
+    context_colours = ['b', 'b', 'b', 'g',  'g', 'r',  'r',  'r', 'r', 'y', "black", "black", "black", "black"]
 
     for context in range(all_contexts.shape[1]):
         important_points = [i for i, v in enumerate(all_contexts[:, context]) if v == 1]
@@ -261,20 +265,20 @@ def plot_actions_under_all_contexts(model_name, assay_config, assay_id, n, impul
         mu_angle_s = mu_angle[important_points]
 
         plot_action_scatter(mu_impulse, mu_angle, model_name, [mu_impulse_s], [mu_angle_s],
-                            [get_behavioural_context_name_by_index(context)])
+                            [get_behavioural_context_name_by_index(context)], color=context_colours[context])
 
 
 
 
 if __name__ == "__main__":
-    model_name = "ppo_scaffold_21-1"
+    model_name = "ppo_scaffold_21-2"
 
     max_impulse = 16
     angle_scaling = 1
 
-    plot_action_space_usage(model_name, "Behavioural-Data-NaturalisticA", "Naturalistic", 20, max_impulse, angle_scaling,
-                            show_action_mask=True)
-    # plot_actions_under_all_contexts(model_name, "Behavioural-Data-Free", "Naturalistic", 20, max_impulse, angle_scaling)
+    # plot_action_space_usage(model_name, "Behavioural-Data-NaturalisticA", "Naturalistic", 20, max_impulse, angle_scaling,
+    #                         show_action_mask=True)
+    plot_actions_under_all_contexts(model_name, "Behavioural-Data-Free", "Naturalistic", 20, max_impulse, angle_scaling)
 
 
 

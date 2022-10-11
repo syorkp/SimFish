@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import signal
+
 
 from Analysis.load_data import load_data
 from Analysis.Neural.Tools.normalise_activity import normalise_within_neuron_multiple_traces
@@ -7,20 +9,39 @@ from Analysis.Behavioural.Tools.BehavLabels.label_behavioural_context import lab
 
 
 def display_activity_heat_map(rnn_activity, event_timestamps, name, min_t=0, max_t=-1, normalise_main_activity=True,
-                              normalise_cell_activity=True):
+                              normalise_cell_activity=True, remove_undeviating=False):
     main_activity = np.swapaxes(rnn_activity[min_t:max_t, 0, 0, :], 0, 1)
     cell_state_activity = np.swapaxes(rnn_activity[min_t:max_t, 1, 0, :], 0, 1)
+
+    main_activity = signal.detrend(main_activity)
+    cell_state_activity = signal.detrend(cell_state_activity)
 
     if normalise_main_activity:
         main_activity = normalise_within_neuron_multiple_traces(main_activity)
     if normalise_cell_activity:
         cell_state_activity = normalise_within_neuron_multiple_traces(cell_state_activity)
 
+    if remove_undeviating:
+        thresh_1 = 0.20
+        # thresh_1 = 0.05
+        # thresh_1 = 0.07
+        std_main = np.std(main_activity[:, 200:], axis=1)
+        varying_main = (std_main > thresh_1)
+        main_activity = main_activity[varying_main]
 
-    plt.figure(figsize=(20, 20))
+        thresh_2 = 0.20
+        # thresh_2 = 0.15
+        # thresh_2 = 0.17
+        std_cell = np.std(cell_state_activity[:, 200:], axis=1)
+        varying_cell = (std_cell > thresh_2)
+        cell_state_activity = cell_state_activity[varying_cell]
+
+    plt.figure(figsize=(20, 5))
     plt.pcolormesh(main_activity, cmap="bwr")
     for event in event_timestamps:
-        plt.vlines(event, 0, main_activity.shape[0], color="yellow")
+        plt.vlines(event, 0, main_activity.shape[0], color="black")
+    plt.ylabel("Neurons", fontsize=25)
+    plt.xlabel("Step", fontsize=25)
     plt.savefig(f"{name}-heat_map.jpg", dpi=100)
     plt.clf()
     plt.close()
@@ -54,6 +75,10 @@ def display_activity_heat_map_capture_sequences_average(model_name, assay_config
     # RNN normalisation
     main_activity = np.swapaxes(all_rnn_activity[:, 0, 0, :], 0, 1)
     cell_state_activity = np.swapaxes(all_rnn_activity[:, 1, 0, :], 0, 1)
+
+    main_activity = signal.detrend(main_activity)
+    cell_state_activity = signal.detrend(cell_state_activity)
+
     if normalise_main_activity:
         main_activity = normalise_within_neuron_multiple_traces(main_activity, zero_score_start=False)
     if normalise_cell_activity:
@@ -143,12 +168,17 @@ if __name__ == "__main__":
                                                         normalise_main_activity=True, normalise_cell_activity=True,
                                                         sequence_steps=50, post_steps=50)
     # Interrupted trials
-    # data = load_data("dqn_scaffold_14-1", "Interruptions-H", "Naturalistic-3")
-    # data2 = load_data("dqn_scaffold_14-1", "Interruptions-H", "Naturalistic-5")
-    # display_activity_heat_map(data2["rnn_state_actor"], [200], "Interruptions", max_t=1000)
+    # data = load_data("dqn_scaffold_14-1", "Interruptions-HA", "Naturalistic-3")
+    # data2 = load_data("dqn_scaffold_14-1", "Interruptions-HA", "Naturalistic-5")
+    # display_activity_heat_map(data2["rnn_state_actor"], [200], "dqn_14-1-Interruptions", max_t=2000, remove_undeviating=True)
     #
     # # Normal trials
-    # data = load_data("ppo_scaffold_21-1", "Behavioural-Data-Free", "Naturalistic-5")
+    # data = load_data("ppo_scaffold_21-2", "Behavioural-Data-Videos-A1", "Naturalistic-5")
     # consumption_events = [i for i, c in enumerate(data["consumed"]) if c == 1]
-    # display_activity_heat_map(data["rnn_state_actor"], consumption_events, "Normal Behaviour")
+    # display_activity_heat_map(data["rnn_state_actor"], consumption_events, "ppo_scaffold_21-2-Normal Behaviour")
+    #
+    # data = load_data("dqn_scaffold_26-2", "Behavioural-Data-Videos-A1", "Naturalistic-1")
+    # consumption_events = [i for i, c in enumerate(data["consumed"]) if c == 1]
+    # display_activity_heat_map(data["rnn_state_actor"], consumption_events, "dqn_scaffold_26-2-Normal Behaviour")
+
 

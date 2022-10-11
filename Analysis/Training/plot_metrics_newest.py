@@ -77,7 +77,8 @@ def get_metric_name(metric_label):
     return metric_name
 
 
-def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpolate_scaffold_points, figure_name):
+def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpolate_scaffold_points, figure_name,
+                                          key_scaffold_points=None):
     """Different to previous versions in that it uses data directly from log files, and scales points between scaffold
     switching points to allow plotting between models. The resulting graph is x: config change point, y: metric.
 
@@ -117,9 +118,17 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
                 model[metric][to_switch, 1] -= 0.5
                 model[metric][to_switch, 1] *= 2
             axs[i].plot(model[metric][:, 0], model[metric][:, 1])
+            if min(model[metric][:, 1]) <= 0:
+                plt.hlines(0, 0, 35, color="black", linestyles="dashed")
 
-            axs[i].set_ylabel(metric_name)
             axs[i].grid(True, axis="x")
+
+            if key_scaffold_points is not None:
+                ylim = axs[i].get_ylim()
+                for p in key_scaffold_points:
+                    axs[i].vlines(p, ylim[0], ylim[1], color="r")
+                axs[i].set_ylim(ylim[0], ylim[1])
+            # axs[i].set_ylabel(metric_name)
 
     axs[-1].set_xlabel("Scaffold Point")
     sc = np.concatenate(([np.array(s) for s in scaffold_switching_points]))
@@ -193,7 +202,7 @@ if __name__ == "__main__":
                           # "Phototaxis Index"
                           ]
     plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=40, interpolate_scaffold_points=True,
-                                          figure_name="dqn_30")
-    plot_multiple_metrics_multiple_models(ppo_models, chosen_metrics_ppo, window=40, interpolate_scaffold_points=True,
-                                          figure_name="ppo_21")
+                                          figure_name="dqn_30", key_scaffold_points=[10, 16, 31])
+    # plot_multiple_metrics_multiple_models(ppo_models, chosen_metrics_ppo, window=40, interpolate_scaffold_points=True,
+    #                                       figure_name="ppo_21")
     # plot_scaffold_durations(models[0])

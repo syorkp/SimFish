@@ -235,6 +235,8 @@ def produce_meis_extended(model_name, layer_name, full_reafference, iterations=1
         # readout_blocks = {f"Unit {unit}": getattr(network, layer_name)[:, :, unit] for unit in range(n_units)}
         target_layer = getattr(network, layer_name)
         n_units = target_layer.shape[-1]
+        if n_units > 64:
+            n_units = 50
         n_applications = target_layer.shape[-2]
         all_images = np.zeros((n_units, n_applications, 100, 3, 2))
 
@@ -325,7 +327,8 @@ def produce_meis_extended(model_name, layer_name, full_reafference, iterations=1
 
 
 if __name__ == "__main__":
-    produce_meis("dqn_scaffold_26-2", "conv4l", full_reafference=True, iterations=100)
+    produce_meis("dqn_scaffold_26-2", "Q_out", full_reafference=True, iterations=100, conv=False)
+    # produce_meis("dqn_scaffold_26-2", "conv4l", full_reafference=True, iterations=100)
     # produce_meis("dqn_scaffold_26-2", "rnn_in", full_reafference=True, iterations=2, conv=False)
     # produce_meis_extended("dqn_scaffold_26-2", "conv4l", full_reafference=True, iterations=10)
 
