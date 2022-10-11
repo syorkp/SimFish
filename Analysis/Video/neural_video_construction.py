@@ -7,6 +7,7 @@ from Analysis.load_data import load_data
 from Analysis.load_model_config import load_configuration_files
 from Tools.make_gif import make_gif
 from Configurations.Networks.original_network import base_network_layers, ops, connectivity
+from Tools.make_video import make_video
 
 
 def get_num_layers_upstream(layer, connectivity_graph):
@@ -60,7 +61,7 @@ def tidy_layers_upstream(layers_upstream):
     return rejig_layers_upstream(layers_upstream)
 
 
-def create_network_gif(neural_data, connectivity_graph, model_name, scale=0.25):
+def create_network_video(neural_data, connectivity_graph, model_name, scale=0.25, save_id="placeholder", s_per_frame=0.03):
     layer_space = 100
 
     layers = neural_data.keys()
@@ -165,9 +166,7 @@ def create_network_gif(neural_data, connectivity_graph, model_name, scale=0.25):
     for i in range(base_display.shape[0]):
         frames.append(rescale(base_display[i], scale, multichannel=True, anti_aliasing=True))
 
-    make_gif(base_display, f"{model_name}-3-neural_activity.gif",
-             duration=t * 0.03,
-             true_image=True)
+    make_video(frames, f"{model_name}-{save_id}-neural_activity.mp4", duration=len(frames) * s_per_frame, true_image=True)
 
 
 if __name__ == "__main__":

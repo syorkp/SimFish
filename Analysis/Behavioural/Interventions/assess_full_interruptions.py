@@ -305,7 +305,7 @@ def display_action_plots_discrete(model_name, assay_config, assay_id, n, figure_
     color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'gold', "c", "m", "m", "black", "white"]
     fig, ax = plt.subplots(figsize=(14, 10))
     for i, seq in enumerate(actions_compiled2):
-        for j, a in enumerate(reversed(seq)):
+        for j, a in enumerate(seq):
             ax.fill_between((j, j + 1), -i, -i - 1, color=color_set[a])
 
     seen = set()
@@ -320,7 +320,7 @@ def display_action_plots_discrete(model_name, assay_config, assay_id, n, figure_
 
 
     plt.legend(legend_elements, associated_actions, bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
-    plt.axis("scaled")
+    # plt.axis("scaled")
     plt.savefig(f"{figure_name}.png")
     plt.close(fig)
     plt.clf()

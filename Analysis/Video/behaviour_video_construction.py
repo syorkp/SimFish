@@ -248,7 +248,7 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 def draw_episode(data, config_name, model_name, continuous_actions, draw_past_actions=True, show_energy_state=True,
                  scale=0.6, draw_action_space_usage=True, trim_to_fish=False, showed_region_quad=500, n_actions_to_show=500,
-                 save_id="placeholder"):
+                 save_id="placeholder", s_per_frame=0.03):
     try:
         with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
             env_variables = json.load(f)
@@ -360,7 +360,7 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
 
     frames *= 255
 
-    make_video(frames, f"{model_name}-{save_id}-behaviour.mp4", duration=len(frames) * 0.03, true_image=True)
+    make_video(frames, f"{model_name}-{save_id}-behaviour.mp4", duration=len(frames) * s_per_frame, true_image=True)
 
 
 if __name__ == "__main__":
