@@ -262,7 +262,6 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
         energy_levels = data["internal_state"][:, 0]
     fish_positions = data["fish_position"]
     num_steps = fish_positions.shape[0]
-    num_steps = 10
 
 
     frames = []
