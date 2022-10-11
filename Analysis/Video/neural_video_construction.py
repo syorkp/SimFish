@@ -35,12 +35,16 @@ def convert_ops_to_graph(operations):
 
 
 def self_normalise_network_activity(neural_activity):
+    neural_activity = neural_activity.astype(float)
     for unit in range(neural_activity.shape[1]):
         activity_points = neural_activity[:, unit]
         max_activity = np.max(activity_points)
         min_activity = np.min(activity_points)
         difference = max_activity - min_activity
-        neural_activity[:, unit] *= 255 / difference
+        try:
+            neural_activity[:, unit] *= 255 / difference
+        except:
+            x = True
     return neural_activity
 
 
@@ -136,7 +140,10 @@ def create_network_video(neural_data, connectivity_graph, model_name, scale=0.25
             start_index_w = w_index
             end_index_w = int(w_index + num_repeats * num_units)
 
-            base_display[:, start_index_h: end_index_h, start_index_w: end_index_w, :] = layer_neural_data
+            try:
+                base_display[:, start_index_h: end_index_h, start_index_w: end_index_w, :] = layer_neural_data
+            except:
+                x = True
 
         else:
             in_layers = neural_data[layer].shape[-1]
@@ -180,6 +187,11 @@ if __name__ == "__main__":
     base_network_layers["rnn_state_actor"] = base_network_layers["rnn"]
     del base_network_layers["rnn"]
     network_data = {key: data[key] for key in list(base_network_layers.keys())}
+    network_data["rnn"] = data["rnn_state_actor"][:, 0, 0, :]
+    base_network_layers["rnn"] = base_network_layers["rnn_state_actor"]
+    del base_network_layers["rnn_state_actor"]
+    del network_data["rnn_state_actor"]
+
     network_data["left_eye"] = data["observation"][:, :, :, 0]
     network_data["right_eye"] = data["observation"][:, :, :, 1]
     network_data["internal_state"] = np.concatenate((np.expand_dims(data["energy_state"], 1),
