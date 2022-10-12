@@ -134,8 +134,8 @@ def plot_action_scatter(impulses, angles, model_name, special_impulses=None, spe
             i += 1
         plot_name = "-".join(special_names) + "-" + plot_name
 
-    plt.xlabel("Impulse")
-    plt.ylabel("Angle (pi radians)")
+    plt.xlabel("Impulse", fontsize=15)
+    plt.ylabel("Angle (pi radians)", fontsize=15)
     plt.savefig(f"All-Plots/{model_name}/{plot_name}.jpg")
     plt.clf()
 
@@ -265,7 +265,7 @@ def plot_actions_under_all_contexts(model_name, assay_config, assay_id, n, impul
         mu_angle_s = mu_angle[important_points]
 
         plot_action_scatter(mu_impulse, mu_angle, model_name, [mu_impulse_s], [mu_angle_s],
-                            [get_behavioural_context_name_by_index(context)], color=context_colours[context])
+                            [get_behavioural_context_name_by_index(context)], color=None)
 
 
 

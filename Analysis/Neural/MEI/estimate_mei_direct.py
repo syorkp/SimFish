@@ -103,6 +103,8 @@ def produce_meis(model_name, layer_name, full_reafference, iterations=1000, conv
         # readout_blocks = {f"Unit {unit}": getattr(network, layer_name)[:, :, unit] for unit in range(n_units)}
         target_layer = getattr(network, layer_name)
         n_units = target_layer.shape[-1]
+        if n_units > 64:
+            n_units = 30
         all_images = np.zeros((n_units, 100, 3, 2))
 
         # Constants
