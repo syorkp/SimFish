@@ -10,6 +10,7 @@ from Environment.Action_Space.draw_angle_dist import get_modal_impulse_and_angle
 from Services.assay_service import AssayService
 from Services.DQN.base_dqn import BaseDQN
 from Tools.make_gif import make_gif
+from Tools.make_video import make_video
 
 tf.logging.set_verbosity(tf.logging.ERROR)
 
@@ -162,7 +163,10 @@ class DQNAssayService(AssayService, BaseDQN):
                                     self.internal_state_order, salt_location=salt_location)
         self.log_stimuli()
         if assay["save frames"]:
-            make_gif(self.frame_buffer,
+            # make_gif(self.frame_buffer,
+            #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
+            #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+            make_video(self.frame_buffer,
                      f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
         self.frame_buffer = []
@@ -175,7 +179,10 @@ class DQNAssayService(AssayService, BaseDQN):
 
     def save_hdf5_data(self, assay):
         if assay["save frames"]:
-            make_gif(self.frame_buffer,
+            # make_gif(self.frame_buffer,
+            #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
+            #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+            make_video(self.frame_buffer,
                      f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
         self.frame_buffer = []
@@ -303,10 +310,12 @@ class DQNAssayService(AssayService, BaseDQN):
         """No longer used - saves data in JSON"""
         # Saves all the information from the assays in JSON format.
         if assay["save frames"]:
-            make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
+            # make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
+            #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
+            #          true_image=True)
+            make_video(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
                      true_image=True)
-
         self.frame_buffer = []
         with open(f"{self.data_save_location}/{assay['assay id']}.json", "w") as output_file:
             json.dump(self.assay_output_data, output_file)

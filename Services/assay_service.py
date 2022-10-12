@@ -10,6 +10,7 @@ from Environment.controlled_stimulus_environment_continuous import ControlledSti
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Services.base_service import BaseService
 from Tools.make_gif import make_gif
+from Tools.make_video import make_video
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -153,7 +154,10 @@ class AssayService(BaseService):
         self.log_stimuli()
 
         if assay["save frames"]:
-            make_gif(self.frame_buffer,
+            # make_gif(self.frame_buffer,
+            #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
+            #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+            make_video(self.frame_buffer,
                      f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
         self.frame_buffer = []
@@ -297,9 +301,12 @@ class AssayService(BaseService):
         """No longer used - saves data in JSON"""
         # Saves all the information from the assays in JSON format.
         if assay["save frames"]:
-            make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
+            make_video(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
                      true_image=True)
+            # make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
+            #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
+            #          true_image=True)
 
         self.frame_buffer = []
         with open(f"{self.data_save_location}/{assay['assay id']}.json", "w") as output_file:

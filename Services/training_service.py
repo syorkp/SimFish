@@ -12,6 +12,7 @@ from Environment.continuous_naturalistic_environment import ContinuousNaturalist
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Services.base_service import BaseService
 from Tools.make_gif import make_gif
+from Tools.make_video import make_video
 from Tools.graph_functions import update_target_graph, update_target
 from Analysis.Behavioural.TurnChains.turn_chain_metric import get_normalised_turn_chain_metric_continuous
 
@@ -473,13 +474,20 @@ class TrainingService(BaseService):
             if self.learning_params["save_gifs"]:
                 # Create the GIF
                 if len(self.frame_buffer) > 0:
-                    make_gif(self.frame_buffer, f"{self.model_location}/episodes/episode-{str(self.episode_number)}.gif",
+                    make_video(self.frame_buffer, f"{self.model_location}/episodes/episode-{str(self.episode_number)}.gif",
                              duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
                     if self.visualise_mask:
-                        make_gif(self.simulation.mask_buffer,
+                        make_video(self.simulation.mask_buffer,
                                  f"{self.model_location}/episodes/mask-buffer-episode-{str(self.episode_number)}.gif",
                                  duration=len(self.simulation.mask_buffer) * self.learning_params['time_per_step'],
                                  true_image=True)
+                    # make_gif(self.frame_buffer, f"{self.model_location}/episodes/episode-{str(self.episode_number)}.gif",
+                    #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+                    # if self.visualise_mask:
+                    #     make_gif(self.simulation.mask_buffer,
+                    #              f"{self.model_location}/episodes/mask-buffer-episode-{str(self.episode_number)}.gif",
+                    #              duration=len(self.simulation.mask_buffer) * self.learning_params['time_per_step'],
+                    #              true_image=True)
                 self.frame_buffer = []
                 self.save_frames = False
             else:
