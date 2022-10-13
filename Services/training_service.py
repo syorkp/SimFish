@@ -353,7 +353,10 @@ class TrainingService(BaseService):
             prey_capture_index = prey_caught / self.environment_params["prey_num"]
             sand_grain_capture_index = sand_grains_bumped / self.environment_params["sand_grain_num"]
             # Note, generally would expect to prefer sand grains as each bump counts as a capture.
-            prey_preference = prey_capture_index / sand_grain_capture_index
+            if sand_grain_capture_index == 0:
+                prey_preference = 1
+            else:
+                prey_preference = prey_capture_index / (sand_grain_capture_index + prey_capture_index)
             prey_preference_summary = tf.Summary(
                 value=[tf.Summary.Value(tag="Prey-Sand-Grain-Preference", simple_value=prey_preference)])
             self.writer.add_summary(prey_preference_summary, self.episode_number)
