@@ -318,7 +318,7 @@ class TrainingService(BaseService):
         death = self.simulation.recent_cause_of_death
         if death is None:
             death_int = 0
-        elif death == "Predation":
+        elif death == "Predator":
             death_int = 1
         elif death == "Prey-All-Eaten":
             death_int = 2
