@@ -45,5 +45,9 @@
         "43": 0.15
     },
     "PAI": {},
-    "SGB": {}
-}
+    "SGB": {},
+    "Finished Condition": {
+        "PCI": 0.3,
+        "PAI": 300.0
+    }
+ }

@@ -138,7 +138,10 @@ class TrainingService(BaseService):
             elif self.configuration_index == self.total_configurations:
                 print("Reached final config...")
                 if len(self.last_episodes_prey_caught) >= 20:
-                    if np.mean(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"] > self.finished_conditions["PAI"] and np.mean(self.last_episodes_prey_caught)/self.environment_params["prey_num"] > self.finished_conditions["PCI"]:
+                    if np.mean(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"] \
+                            > self.finished_conditions["PAI"] \
+                            and np.mean(self.last_episodes_prey_caught)/self.environment_params["prey_num"] \
+                            > self.finished_conditions["PCI"]:
                         print("Final condition surpassed, exiting training...")
                         break
 

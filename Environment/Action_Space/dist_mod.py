@@ -1,21 +1,119 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.optimize import leastsq
+from sklearn.mixture import GaussianMixture
+
+from Environment.Action_Space.draw_angle_dist import get_pdf_for_bout
 
 
-def narrow_dist():
-    ...
+def narrow_dist(action, factor=3):
+    normal_dist, normal_angle = get_pdf_for_bout(action)
+    normal_dist[1] = normal_dist[1] ** factor
+    normal_angle[1] = normal_angle[1] ** factor
+    return normal_dist, normal_angle
 
 
-def separate_dist():
-    ...
+def separate_dist2(action, dist=False):
+    normal_dist, normal_angle = get_pdf_for_bout(action)
+    if dist:
+        target = normal_dist
+    else:
+        target = normal_angle
+        target[0] *= (np.pi/180)
+
+    # Convert to events
+    events = []
+    frequency = target[1] / np.min(target[1])
+    frequency = frequency.astype(int)
+    for i, point in enumerate(target[0]):
+        for j in range(frequency[i]):
+            events.append(point)
+    events = np.array(events)
+
+    mixture = GaussianMixture(n_components=2).fit(events.reshape(-1, 1))
+    means_hat = mixture.means_.flatten()
+    weights_hat = mixture.weights_.flatten()
+    sds_hat = np.sqrt(mixture.covariances_).flatten()
+
+    print(mixture.converged_)
+    print(means_hat)
+    print(sds_hat)
+    print(weights_hat)
+    weights_hat *= 100000
+    weights_hat = weights_hat.astype(int)
+
+    first = np.random.normal(means_hat[0], sds_hat[0],  weights_hat[0])
+    second = np.random.normal(means_hat[1], sds_hat[1],  weights_hat[1])
+    together = np.concatenate((first, second))
+
+    plt.hist(together, bins=1000)
+    plt.savefig("regenerated.jpg")
+    plt.show()
+
+    plt.hist(first, bins=1000)
+    plt.savefig("regenerated-1.jpg")
+    plt.show()
+
+    plt.hist(second, bins=1000)
+    plt.savefig("regenerated-2.jpg")
+    plt.show()
+
+def separate_dist(action, dist=False):
+    normal_dist, normal_angle = get_pdf_for_bout(action)
+    if dist:
+        target = normal_dist
+    else:
+        target = normal_angle
+        target[0] *= (np.pi/180)
+
+    # Convert to events
+    events = []
+    frequency = target[1] / np.min(target[1])
+    frequency = frequency.astype(int)
+    for i, point in enumerate(target[0]):
+        for j in range(frequency[i]):
+            events.append(point)
+
+    fitfunc = lambda p, x: p[0] * np.exp(-0.5 * ((x - p[1]) / p[2]) ** 2) + \
+                               p[3] * np.exp(-0.5 * ((x - p[4]) / p[5]) ** 2)
+    errfunc = lambda p, x, y: (y - fitfunc(p, x))
+    init = [1000, 0.28, 0.1, 1000, 0.5, 0.1]
+
+    out = leastsq(errfunc, init, args=(target[0], frequency))
+
+
+
+    # plt.hist(events, bins=100)
+    # plt.show()
+    x = True
 
 
 if __name__ == "__main__":
-    ...
-
-
-
-
-
+    separate_dist2(4)
+    # j_turn_normal_dist, j_turn_normal_angle = get_pdf_for_bout(4)
+    # j_turn_narrow_dist, j_turn_narrow_angle = narrow_dist(4)
+    #
+    # plt.plot(j_turn_normal_dist[0], j_turn_normal_dist[1] / np.sum(j_turn_normal_dist[1]))
+    # plt.savefig("Normal dist")
+    # plt.show()
+    # plt.clf()
+    #
+    # plt.plot(j_turn_normal_angle[0]*(np.pi/180), j_turn_normal_angle[1] / np.sum(j_turn_normal_angle[1]))
+    # plt.savefig("Normal ang")
+    # plt.show()
+    # plt.clf()
+    #
+    # plt.plot(j_turn_narrow_dist[0], j_turn_narrow_dist[1] / np.sum(j_turn_narrow_dist[1]))
+    # plt.savefig("Narrow dist")
+    # plt.show()
+    # plt.clf()
+    #
+    # plt.plot(j_turn_narrow_angle[0]*(np.pi/180), j_turn_narrow_angle[1] / np.sum(j_turn_narrow_angle[1]))
+    # plt.savefig("Narrow ang")
+    # plt.show()
+    # plt.clf()
+    #
+    #
+    #
 
 

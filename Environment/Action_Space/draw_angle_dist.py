@@ -4,6 +4,16 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
+def get_pdf_for_bout(bout_id):
+    data_id = convert_action_to_bout_id(bout_id)
+    with h5py.File('./bout_distributions.mat', 'r') as fl:
+        p_angle = np.array(fl['p_angle']).T
+        angles = np.array(fl['angles']).T
+        p_dist = np.array(fl['p_dist']).T
+        dists = np.array(fl['dists']).T
+    return [dists[data_id], p_dist[data_id]], [angles[data_id], p_angle[data_id]]
+
+
 def plot_full_scatter_of_poss_actions():
     with h5py.File('./bout_distributions.mat', 'r') as fl:
         p_angle = np.array(fl['p_angle']).T
@@ -36,16 +46,13 @@ def display_pdf_and_cdf(bout_id):
         plt.plot(angles[bout_id, :], angle_cdf)
         plt.ylabel('CDF')
         plt.title(label=bout_id+1)
-
         plt.subplot(212)
-        plt.plot(angles[bout_id, :]*np.pi/180, p_angle[bout_id, :] / np.sum(p_angle[bout_id, :]))
-
-        # plt.xlabel('Angle (degrees)')
+        plt.plot(angles[bout_id, :]*(np.pi/180), p_angle[bout_id, :] / np.sum(p_angle[bout_id, :]))
         plt.xlabel('Angle (pi radians)')
         plt.ylabel('Probability Density')
         plt.savefig(f"Angle draw-{bout_id}")
-
-        plt.show()
+        plt.clf()
+        plt.close()
 
         plt.figure(figsize=(6, 6))
         plt.subplot(211)
@@ -53,14 +60,13 @@ def display_pdf_and_cdf(bout_id):
         # plt.xlabel('distance (mm)')
         plt.ylabel('CDF')
         plt.title(label=bout_id+1)
-
         plt.subplot(212)
         plt.plot(dists[bout_id, :], p_dist[bout_id, :] / np.sum(p_dist[bout_id, :]))
         plt.xlabel('Distance (mm)')
         plt.ylabel('Probability Density')
         plt.savefig(f"Distance draw-{bout_id}")
-
-        plt.show()
+        plt.clf()
+        plt.close()
 
 
 def convert_action_to_bout_id(action):
