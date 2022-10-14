@@ -164,13 +164,13 @@ def display_activity_heat_map_capture_sequences_average(model_name, assay_config
 
 
 if __name__ == "__main__":
-    display_activity_heat_map_capture_sequences_average("dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 20,
-                                                        normalise_main_activity=True, normalise_cell_activity=True,
-                                                        sequence_steps=50, post_steps=50)
+    # display_activity_heat_map_capture_sequences_average("dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 20,
+    #                                                     normalise_main_activity=True, normalise_cell_activity=True,
+    #                                                     sequence_steps=50, post_steps=50)
     # Interrupted trials
     # data = load_data("dqn_scaffold_14-1", "Interruptions-HA", "Naturalistic-3")
-    # data2 = load_data("dqn_scaffold_14-1", "Interruptions-HA", "Naturalistic-5")
-    # display_activity_heat_map(data2["rnn_state_actor"], [200], "dqn_14-1-Interruptions", max_t=2000, remove_undeviating=True)
+    data2 = load_data("dqn_scaffold_14-1", "Interruptions-HA", "Naturalistic-3")
+    display_activity_heat_map(data2["rnn_state_actor"], [200], "dqn_14-1-Interruptions3", max_t=2000, remove_undeviating=True)
     #
     # # Normal trials
     # data = load_data("ppo_scaffold_21-2", "Behavioural-Data-Videos-A1", "Naturalistic-5")

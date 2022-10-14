@@ -360,6 +360,8 @@ class TrainingService(BaseService):
                 prey_preference = 1
             else:
                 prey_preference = prey_capture_index / (sand_grain_capture_index + prey_capture_index)
+                prey_preference -= 0.5
+                prey_preference *= 2
             prey_preference_summary = tf.Summary(
                 value=[tf.Summary.Value(tag="Prey-Sand-Grain-Preference", simple_value=prey_preference)])
             self.writer.add_summary(prey_preference_summary, self.episode_number)
@@ -480,11 +482,11 @@ class TrainingService(BaseService):
             if self.learning_params["save_gifs"]:
                 # Create the GIF
                 if len(self.frame_buffer) > 0:
-                    make_video(self.frame_buffer, f"{self.model_location}/episodes/episode-{str(self.episode_number)}.gif",
+                    make_video(self.frame_buffer, f"{self.model_location}/episodes/episode-{str(self.episode_number)}.mp4",
                              duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
                     if self.visualise_mask:
                         make_video(self.simulation.mask_buffer,
-                                 f"{self.model_location}/episodes/mask-buffer-episode-{str(self.episode_number)}.gif",
+                                 f"{self.model_location}/episodes/mask-buffer-episode-{str(self.episode_number)}.mp4",
                                  duration=len(self.simulation.mask_buffer) * self.learning_params['time_per_step'],
                                  true_image=True)
                     # make_gif(self.frame_buffer, f"{self.model_location}/episodes/episode-{str(self.episode_number)}.gif",

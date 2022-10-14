@@ -5,6 +5,7 @@ from matplotlib.patches import Patch
 
 from Analysis.load_data import load_data
 from Analysis.Behavioural.VisTools.get_action_name import get_action_name
+from Analysis.Behavioural.Continuous.show_spatial_density_continuous import get_nearby_features
 
 
 def get_provided_efference(letter):
@@ -284,6 +285,31 @@ def plot_binned_results(results, model_names, bin_size, initialisation_period, f
     plt.clf()
 
 
+def get_prey_caught_all_trials(model_name, assay_config, assay_id, n, ):
+    for i in range(1, n+1):
+        if i < 6:
+            d = load_data(model_name, "Interruptions-HA", f"{assay_id}-{i}")
+        else:
+            d = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        print(f"Trial {i} - {np.sum(d['consumed'])}")
+
+
+
+def get_prey_seen_all_trials(model_name, assay_config, assay_id, n, ):
+    for i in range(1, n+1):
+        if i < 6:
+            d = load_data(model_name, "Interruptions-HA", f"{assay_id}-{i}")
+        else:
+            d = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        prey_near = False
+        for step in range(200):
+            nearby_prey = get_nearby_features(d, step, proximity=10)[0]
+            if len(nearby_prey) > 0:
+                prey_near = True
+        if not prey_near:
+            print(f"Trial {i}")
+
+
 def display_action_plots_discrete(model_name, assay_config, assay_id, n, figure_name, slice_size=200):
     actions_compiled = []
     plots = [3, 5, 1, 2, 4] + [i for i in range(6, n+1)]  # To place similar ones together.
@@ -454,8 +480,11 @@ if __name__ == "__main__":
 
 
     # DQN
-    display_action_plots_discrete("dqn_scaffold_14-1", "Interruptions-H", "Naturalistic", 35,
-                                  figure_name="dqn_14_1_H_actions", slice_size=2000)
+    # get_prey_caught_all_trials("dqn_scaffold_14-1", "Interruptions-H", "Naturalistic", 35,)
+    get_prey_seen_all_trials("dqn_scaffold_14-1", "Interruptions-H", "Naturalistic", 35,)
+
+    # display_action_plots_discrete("dqn_scaffold_14-1", "Interruptions-H", "Naturalistic", 35,
+    #                               figure_name="dqn_14_1_H_actions", slice_size=2000)
     # display_action_plots_discrete("dqn_scaffold_30-2", "Interruptions-H", "Naturalistic", 5,
     #                               figure_name="dqn_30_2_H_actions", slice_size=100)
     # display_action_plots_discrete("dqn_scaffold_18-2", "Interruptions-H", "Naturalistic", 5,

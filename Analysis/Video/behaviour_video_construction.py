@@ -247,7 +247,7 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 
 def draw_episode(data, config_name, model_name, continuous_actions, draw_past_actions=True, show_energy_state=True,
-                 scale=0.6, draw_action_space_usage=True, trim_to_fish=False, showed_region_quad=500, n_actions_to_show=500,
+                 scale=0.2, draw_action_space_usage=True, trim_to_fish=False, showed_region_quad=500, n_actions_to_show=500,
                  save_id="placeholder", s_per_frame=0.03):
     try:
         with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
@@ -261,6 +261,7 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
         energy_levels = data["internal_state"][:, 0]
     fish_positions = data["fish_position"]
     num_steps = fish_positions.shape[0]
+    num_steps = 200
 
     frames = []
     action_buffer = []
@@ -369,9 +370,22 @@ if __name__ == "__main__":
     # assay_config_name = "dqn_26_2_videos"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750)
-    model_name = "ppo_scaffold_21-2"
-    data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-5")
-    assay_config_name = "ppo_21_2_videos"
-    draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
-                 trim_to_fish=True, showed_region_quad=750, save_id="A15")
+    # model_name = "ppo_scaffold_21-2"
+    # data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-5")
+    # assay_config_name = "ppo_21_2_videos"
+    # draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
+    #              trim_to_fish=True, showed_region_quad=750, save_id="A15")
+    # model_name = "dqn_scaffold_14-1"
+    # data = load_data(model_name, "Interruptions-HA", "Naturalistic-3")
+    # assay_config_name = "dqn_14_1"
+    # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
+    #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-3")
+
+    model_name = "dqn_scaffold_14-1"
+    data = load_data(model_name, "Interruptions-HA", "Naturalistic-5")
+    assay_config_name = "dqn_14_1"
+    draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
+                 trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-5")
+
+
 

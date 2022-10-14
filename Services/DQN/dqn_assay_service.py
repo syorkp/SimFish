@@ -167,8 +167,9 @@ class DQNAssayService(AssayService, BaseDQN):
             #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
             #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
             make_video(self.frame_buffer,
-                     f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
+                     f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+
         self.frame_buffer = []
 
         self.buffer.reset()
@@ -183,7 +184,7 @@ class DQNAssayService(AssayService, BaseDQN):
             #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
             #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
             make_video(self.frame_buffer,
-                     f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
+                     f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
         self.frame_buffer = []
 
@@ -313,7 +314,7 @@ class DQNAssayService(AssayService, BaseDQN):
             # make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
             #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
             #          true_image=True)
-            make_video(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
+            make_video(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.mp4",
                      duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
                      true_image=True)
         self.frame_buffer = []
