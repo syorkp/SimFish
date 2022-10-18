@@ -15,6 +15,18 @@ def delete_nv_folder():
     print(os.getcwd())
     location = "./../../../.nv"
     if os.path.isdir(location):
+        print(f"Correct dir, removing {location}")
+        shutil.rmtree(location)
+        if os.path.isdir(location):
+            print("Failed...")
+    location = "./../../.nv"
+    if os.path.isdir(location):
+        print(f"Correct dir, removing {location}")
+        shutil.rmtree(location)
+        if os.path.isdir(location):
+            print("Failed...")
+    location = "./../.nv"
+    if os.path.isdir(location):
         print("Correct dir, removing")
         shutil.rmtree(location)
         if os.path.isdir(location):
