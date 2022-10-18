@@ -17,7 +17,7 @@ def plot_bout_data(bout_id):
         try:
             mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
         except FileNotFoundError:
-            mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
+            mat = scipy.io.loadmat("Bout_classification/bouts.mat")
 
     bout_id = convert_action_to_bout_id(bout_id)
     bout_id = 5
@@ -57,10 +57,9 @@ def separate_dist_naive_bayes(action):
         try:
             mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
         except FileNotFoundError:
-            mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
+            mat = scipy.io.loadmat("Bout_classification/bouts.mat")
 
-    # bout_id = convert_action_to_bout_id(bout_id)
-    bout_id = 5
+    bout_id = convert_action_to_bout_id(action)
 
     bout_kinematic_parameters_final_array = mat["BoutKinematicParametersFinalArray"]
     bout_inferred_final_array = mat["BoutInfFinalArray"]

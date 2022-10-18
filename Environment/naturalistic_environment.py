@@ -129,6 +129,15 @@ class NaturalisticEnvironment(BaseEnvironment):
             plt.gca().add_patch(patch)
         plt.show()
 
+    def bring_fish_in_bounds(self):
+        # Resolve if fish falls out of bounds.
+        if self.fish.body.position[0] < 4 or self.fish.body.position[1] < 4 or \
+                self.fish.body.position[0] > self.env_variables["width"] - 4 or \
+                self.fish.body.position[1] > self.env_variables["height"] - 4:
+            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 6, self.env_variables["width"] - 7),
+                                        np.clip(self.fish.body.position[1], 6, self.env_variables["height"] - 7))
+            self.fish.body.position = new_position
+
     def simulation_step(self, action, save_frames, frame_buffer, activations, impulse):
         self.prey_consumed_this_step = False
         self.last_action = action
@@ -168,6 +177,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             if self.new_simulation:
                 if self.env_variables["current_setting"]:
                     self.resolve_currents()
+                    self.bring_fish_in_bounds()
                 if self.fish.making_capture and self.capture_start < micro_step < self.capture_end:
                     self.fish.capture_possible = True
                 else:
@@ -206,13 +216,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             if self.relocate_fish[self.num_steps]:
                 self.transport_fish(self.relocate_fish[self.num_steps])
 
-        # Resolve if fish falls out of bounds.
-        if self.fish.body.position[0] < 4 or self.fish.body.position[1] < 4 or \
-                self.fish.body.position[0] > self.env_variables["width"] - 4 or \
-                self.fish.body.position[1] > self.env_variables["height"] - 4:
-            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 6, self.env_variables["width"] - 7),
-                                        np.clip(self.fish.body.position[1], 6, self.env_variables["height"] - 7))
-            self.fish.body.position = new_position
+        self.bring_fish_in_bounds()
 
         if self.new_simulation:
             # Energy level
