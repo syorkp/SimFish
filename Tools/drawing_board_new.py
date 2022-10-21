@@ -807,7 +807,7 @@ class NewDrawingBoard:
         self.db_visualisation = db
 
         if self.show_background:
-            self.db_visualisation += np.concatenate((self.background_grating/10, self.background_grating/10, np.zeros(self.background_grating.shape)), axis=2)
+            self.db_visualisation += self.chosen_math_library.concatenate((self.background_grating/10, self.background_grating/10, np.zeros(self.background_grating.shape)), axis=2)
 
     def get_base_arena(self, bkg=0.0):
         if bkg == 0:
