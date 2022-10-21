@@ -171,7 +171,7 @@ class AssayService(BaseService):
             salt_location = None
 
         self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id,
-                                    self.get_internal_state_order(), self.simulation.board.background_grating.get(),
+                                    self.get_internal_state_order(), self.simulation.board.background_grating.get()[:, :, 0],
                                     salt_location=salt_location)
         self.buffer.reset()
         print(f"Assay: {assay['assay id']} Completed")

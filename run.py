@@ -27420,7 +27420,7 @@ dqn_data_test = [
                 "stimulus paradigm": "Naturalistic",
                 "duration": 1000,
                 "Tethered": False,
-                "save frames": False,
+                "save frames": True,
                 "use_mu": True,
                 "save stimuli": False,
                 "random positions": False,

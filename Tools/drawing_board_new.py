@@ -13,7 +13,7 @@ class NewDrawingBoard:
     def __init__(self, width, height, decay_rate, photoreceptor_rf_size, using_gpu, visualise_mask, prey_size=4,
                  predator_size=100, visible_scatter=0.3, background_grating_frequency=50, dark_light_ratio=0.0,
                  dark_gain=0.01, light_gain=1.0, red_occlusion_gain=1.0, uv_occlusion_gain=1.0,
-                 red2_occlusion_gain=1.0, light_gradient=0, max_visual_distance=1500):
+                 red2_occlusion_gain=1.0, light_gradient=0, max_visual_distance=1500, show_background=True):
 
         self.using_gpu = using_gpu
 
@@ -72,6 +72,8 @@ class NewDrawingBoard:
 
         # For obstruction mask (reset each time is called).
         self.empty_mask = self.chosen_math_library.ones((self.width, self.height, 1), dtype=np.float64)
+
+        self.show_background = show_background
 
     def get_background_grating(self, frequency, linear=False):
         if linear:
@@ -803,6 +805,9 @@ class NewDrawingBoard:
         db[:, 1:2] = self.chosen_math_library.array([1, 0, 0])
         db[:, self.height - 2:self.height - 1] = self.chosen_math_library.array([1, 0, 0])
         self.db_visualisation = db
+
+        if self.show_background:
+            self.db_visualisation += np.concatenate((self.background_grating/10, self.background_grating/10, np.zeros(self.background_grating.shape)), axis=2)
 
     def get_base_arena(self, bkg=0.0):
         if bkg == 0:

@@ -15,10 +15,19 @@ from skimage.transform import resize, rescale
 
 class DrawingBoard:
 
-    def __init__(self, width, height):
+    def __init__(self, width, height, data, include_background):
         self.width = width
         self.height = height
+        self.include_background = include_background
+        if include_background:
+            self.background = data["background"][:, :, 0]
+            self.background = np.expand_dims(self.background/10, 2)
+            self.background = np.concatenate((self.background,
+                                              self.background,
+                                              np.zeros(self.background.shape)), axis=2)
+
         self.db = self.get_base_arena(0.3)
+
 
     def get_base_arena(self, bkg=0.3):
         db = (np.ones((self.height, self.width, 3), dtype=np.double) * bkg)
@@ -26,6 +35,8 @@ class DrawingBoard:
         db[self.width - 2:self.width - 1, :] = np.array([1, 0, 0])
         db[:, 1:2] = np.array([1, 0, 0])
         db[:, self.height - 2:self.height - 1] = np.array([1, 0, 0])
+        if self.include_background:
+            db += self.background
         return db
 
     def circle(self, center, rad, color):
@@ -248,7 +259,7 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 def draw_episode(data, config_name, model_name, continuous_actions, draw_past_actions=True, show_energy_state=True,
                  scale=0.2, draw_action_space_usage=True, trim_to_fish=False, showed_region_quad=500, n_actions_to_show=500,
-                 save_id="placeholder", s_per_frame=0.03):
+                 save_id="placeholder", s_per_frame=0.03, include_background=False):
     try:
         with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
             env_variables = json.load(f)
@@ -256,7 +267,7 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
         with open(f"Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
             env_variables = json.load(f)
 
-    board = DrawingBoard(env_variables["width"], env_variables["height"])
+    board = DrawingBoard(env_variables["width"], env_variables["height"], data, include_background)
     if show_energy_state:
         energy_levels = data["internal_state"][:, 0]
     fish_positions = data["fish_position"]
@@ -381,11 +392,17 @@ if __name__ == "__main__":
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-3")
 
-    model_name = "dqn_scaffold_14-1"
-    data = load_data(model_name, "Interruptions-HA", "Naturalistic-5")
-    assay_config_name = "dqn_14_1"
+    # model_name = "dqn_scaffold_14-1"
+    # data = load_data(model_name, "Interruptions-HA", "Naturalistic-5")
+    # assay_config_name = "dqn_14_1"
+    # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
+    #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-5")
+    model_name = "dqn_scaffold_26-2"
+    data = load_data(model_name, "Behavioural-Data-Background", "Naturalistic-1")
+    assay_config_name = "dqn_26_2a"
     draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
-                 trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-5")
+                 trim_to_fish=True, showed_region_quad=750, save_id="background", include_background=True)
+
 
 
 
