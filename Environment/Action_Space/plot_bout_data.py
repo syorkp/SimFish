@@ -10,6 +10,41 @@ from Environment.Action_Space.draw_angle_dist import get_pdf_for_bout
 from Environment.Action_Space.draw_angle_dist import convert_action_to_bout_id
 
 
+def get_bout_data(bout_id):
+    try:
+        mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
+    except FileNotFoundError:
+        try:
+            mat = scipy.io.loadmat("../Environment/Action_Space/Bout_classification/bouts.mat")
+        except FileNotFoundError:
+            try:
+                mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
+            except:
+                mat = scipy.io.loadmat("Bout_classification/bouts.mat")
+
+    bout_id = convert_action_to_bout_id(bout_id)
+    bout_id += 1
+
+    bout_kinematic_parameters_final_array = mat["BoutKinematicParametersFinalArray"]
+    bout_inferred_final_array = mat["BoutInfFinalArray"]
+
+    dist_angles = bout_kinematic_parameters_final_array[:, 10]  # Angles including glide
+    distance_x_inc_glide = bout_kinematic_parameters_final_array[:, 18]  # In mm
+    distance_y_inc_glide = bout_kinematic_parameters_final_array[:, 19]  # In mm
+
+    distance = (distance_x_inc_glide ** 2 + distance_y_inc_glide ** 2) ** 0.5
+
+    bouts = bout_inferred_final_array[:, 133].astype(int)
+
+    relevant_bouts = (bouts == bout_id)
+    dist_angles = np.absolute(dist_angles[relevant_bouts])
+    distance = distance[relevant_bouts]
+
+    dist_angles *= (np.pi/180)
+
+    return distance, dist_angles
+
+
 def plot_bout_data(bout_id):
     try:
         mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")

@@ -52,7 +52,8 @@ class DQNAssayService(AssayService, BaseDQN):
                          monitor_gpu=monitor_gpu, using_gpu=using_gpu,
                          memory_fraction=memory_fraction, config_name=config_name,
                          realistic_bouts=realistic_bouts,
-                         continuous_environment=continuous_actions, new_simulation=new_simulation, assays=assays, set_random_seed=set_random_seed,
+                         continuous_environment=continuous_actions, new_simulation=new_simulation, assays=assays,
+                         set_random_seed=set_random_seed,
                          assay_config_name=assay_config_name,
                          checkpoint=checkpoint)
 
@@ -78,8 +79,10 @@ class DQNAssayService(AssayService, BaseDQN):
         self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
 
         if self.environment_params["use_dynamic_network"]:
-            rnn_layer_shapes = [self.learning_params["base_network_layers"][layer][1] for layer in self.learning_params["base_network_layers"].keys()
-                                if self.learning_params["base_network_layers"][layer][0] == "dynamic_rnn"]  # TODO: make work for modular network layers.
+            rnn_layer_shapes = [self.learning_params["base_network_layers"][layer][1] for layer in
+                                self.learning_params["base_network_layers"].keys()
+                                if self.learning_params["base_network_layers"][layer][
+                                    0] == "dynamic_rnn"]  # TODO: make work for modular network layers.
             rnn_state = tuple(
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_layer_shapes)
         else:
@@ -106,7 +109,7 @@ class DQNAssayService(AssayService, BaseDQN):
         while self.step_number < assay["duration"]:
             if assay["reset"] and self.step_number % assay["reset interval"] == 0:
                 rnn_state = (
-                np.zeros([1, self.main_QN.rnn_dim]), np.zeros([1, self.main_QN.rnn_dim]))  # Reset RNN hidden state
+                    np.zeros([1, self.main_QN.rnn_dim]), np.zeros([1, self.main_QN.rnn_dim]))  # Reset RNN hidden state
             self.step_number += 1
 
             # Deal with interventions
@@ -160,15 +163,16 @@ class DQNAssayService(AssayService, BaseDQN):
             salt_location = None
 
         self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id,
-                                    self.internal_state_order, salt_location=salt_location)
+                                    self.internal_state_order, self.simulation.board.background_grating,
+                                    salt_location=salt_location)
         self.log_stimuli()
         if assay["save frames"]:
             # make_gif(self.frame_buffer,
             #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
             #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
             make_video(self.frame_buffer,
-                     f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
-                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+                       f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
+                       duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
 
         self.frame_buffer = []
 
@@ -184,8 +188,8 @@ class DQNAssayService(AssayService, BaseDQN):
             #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
             #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
             make_video(self.frame_buffer,
-                     f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
-                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+                       f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
+                       duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
         self.frame_buffer = []
 
         # absolute_path = '/home/sam/PycharmProjects/SimFish/Assay-Output/new_differential_prey_ref-3' + f'/{self.assay_configuration_id}.h5'
@@ -315,8 +319,8 @@ class DQNAssayService(AssayService, BaseDQN):
             #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
             #          true_image=True)
             make_video(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.mp4",
-                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
-                     true_image=True)
+                       duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
+                       true_image=True)
         self.frame_buffer = []
         with open(f"{self.data_save_location}/{assay['assay id']}.json", "w") as output_file:
             json.dump(self.assay_output_data, output_file)

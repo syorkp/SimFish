@@ -27395,8 +27395,54 @@ dqn_data_full = [
     },
 ]
 
+dqn_data_test = [
+    {
+        "Model Name": "dqn_scaffold_26",
+        "Environment Name": "dqn_26_2a",
+        "Assay Configuration Name": "Behavioural-Data-Background",
+        "Trial Number": 2,
+        "Checkpoint": 49600,
+        "Run Mode": "Assay",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 2,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "set random seed": False,
+        "New Simulation": True,
+        "Assays": [
+            {
+                "assay id": "Naturalistic-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 1000,
+                "Tethered": False,
+                "save frames": False,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+                "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
+                "behavioural recordings": ["environmental positions", "observation"],
+                "network recordings": ["rnn state", "internal state"],
+                "energy_state_control": False,
+                "salt_control": False,
+                "interventions": None
+            },
+        ],
+        "Full Reafference": True,
+    },
+]
+
+
 if run_config is None:
-    run_config = complete_interruptions_dqn
+    run_config = dqn_data_test
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]

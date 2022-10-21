@@ -245,7 +245,7 @@ class BasePPOBuffer:
         for l in self.unit_recordings.keys():
             self.unit_recordings[l].append(network_layers[l][0])
 
-    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order=None,
+    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, background, internal_state_order=None,
                         salt_location=None):
         hdf5_file = h5py.File(f"{data_save_location}/{assay_configuration_id}.h5", "a")
 
@@ -292,6 +292,7 @@ class BasePPOBuffer:
             self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)
             self.create_data_group("sand_grain_positions", np.array(self.sand_grain_position_buffer), assay_group)
             self.create_data_group("vegetation_positions", np.array(self.vegetation_position_buffer), assay_group)
+            self.create_data_group("background", np.array(background), assay_group)
 
         if "convolutional layers" in self.unit_recordings:
             self.create_data_group("actor_conv1l", np.array(self.actor_conv1l_buffer), assay_group)

@@ -6,6 +6,7 @@ from sklearn.mixture import GaussianMixture
 from sklearn.naive_bayes import GaussianNB
 
 from Environment.Action_Space.draw_angle_dist import convert_action_to_bout_id, get_pdf_for_bout
+from Analysis.Behavioural.VisTools.get_action_name import get_action_name_unlateralised
 
 
 def narrow_dist(action, factor=3):
@@ -42,6 +43,7 @@ def separate_dist_naive_bayes(action):
             mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
 
     bout_id = convert_action_to_bout_id(action)
+    bout_id += 1
 
     bout_kinematic_parameters_final_array = mat["BoutKinematicParametersFinalArray"]
     bout_inferred_final_array = mat["BoutInfFinalArray"]
@@ -145,9 +147,39 @@ def separate_dist2(action, dist=False):
         target = normal_angle
         target[0] *= (np.pi/180)
 
+    # LOAD ACTUAL DATA...
+    try:
+        mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
+    except FileNotFoundError:
+        try:
+            mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
+        except FileNotFoundError:
+            mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
+
+    bout_id = convert_action_to_bout_id(action)
+    bout_id += 1
+
+    bout_kinematic_parameters_final_array = mat["BoutKinematicParametersFinalArray"]
+    bout_inferred_final_array = mat["BoutInfFinalArray"]
+
+    dist_angles = bout_kinematic_parameters_final_array[:, 10]  # Angles including glide
+    distance_x_inc_glide = bout_kinematic_parameters_final_array[:, 18]  # In mm
+    distance_y_inc_glide = bout_kinematic_parameters_final_array[:, 19]  # In mm
+
+    distance = (distance_x_inc_glide ** 2 + distance_y_inc_glide ** 2) ** 0.5
+
+    bouts = bout_inferred_final_array[:, 133].astype(int)
+
+    relevant_bouts = (bouts == bout_id)
+    dist_angles = np.absolute(dist_angles[relevant_bouts])
+    distance = distance[relevant_bouts]
+
+    dist_angles *= (np.pi/180)
+    dist_angles = dist_angles[dist_angles < 4]
+
     # Convert to events
     events = []
-    frequency = target[1] / np.min(target[1])
+    frequency = target[1] / 0.00001#np.min(target[1])
     frequency = frequency.astype(int)
     for i, point in enumerate(target[0]):
         for j in range(frequency[i]):
@@ -166,21 +198,33 @@ def separate_dist2(action, dist=False):
     weights_hat *= 100000
     weights_hat = weights_hat.astype(int)
 
-    first = np.random.normal(means_hat[0], sds_hat[0],  weights_hat[0])
-    second = np.random.normal(means_hat[1], sds_hat[1],  weights_hat[1])
-    together = np.concatenate((first, second))
+    first = np.random.normal(means_hat[0], sds_hat[0]/2,  weights_hat[0])
+    second = np.random.normal(means_hat[1], sds_hat[1]/2,  weights_hat[1])
+    # third = np.random.normal(means_hat[2], sds_hat[2],  weights_hat[2])
 
-    plt.hist(together, bins=1000)
-    plt.savefig("regenerated.jpg")
+    plt.hist(events, bins=1000)
+    plt.savefig(f"{get_action_name_unlateralised(action)}-original.jpg")
     plt.show()
+    plt.clf()
+    plt.close()
+
+    plt.hist([first, second], bins=1000, stacked=True)
+    plt.savefig(f"{get_action_name_unlateralised(action)}-regenerated-narrowed.jpg")
+    plt.show()
+    plt.clf()
+    plt.close()
 
     plt.hist(first, bins=1000)
-    plt.savefig("regenerated-1.jpg")
+    plt.savefig(f"{get_action_name_unlateralised(action)}-regenerated-1-narrowed.jpg")
     plt.show()
+    plt.clf()
+    plt.close()
 
     plt.hist(second, bins=1000)
-    plt.savefig("regenerated-2.jpg")
+    plt.savefig(f"{get_action_name_unlateralised(action)}-regenerated-2-narrowed.jpg")
     plt.show()
+    plt.clf()
+    plt.close()
 
 
 def separate_dist(action, dist=False):
@@ -213,8 +257,62 @@ def separate_dist(action, dist=False):
     x = True
 
 
+def remove_outliers(distance, angle):
+    x = True
+    dists, p_dist = distance[0], distance[1]
+    angles, p_angle = angle[0], angle[1]
+
+    p_dist_max = np.argmax(p_dist)
+    endpoint = p_dist.shape[0]
+    for index in range(p_dist_max, p_dist.shape[0]):
+        if p_dist[index] == 0:
+            endpoint = index
+            break
+    p_dist[endpoint:] = 0
+
+    p_ang_max = np.argmax(p_dist)
+    endpoint = p_angle.shape[0]
+    for index in range(p_ang_max, p_angle.shape[0]):
+        if p_angle[index] == 0:
+            endpoint = index
+            break
+    p_angle[endpoint:] = 0
+
+    return [dists, p_dist], [angles, p_angle]
+
+
+def plot_narrowed_dist(action, factor, outlier_removal=True):
+    distance, angle = narrow_dist(action, factor)
+    if outlier_removal:
+        distance, angle = remove_outliers(distance, angle)
+    dists, p_dist = distance[0], distance[1]
+    angles, p_angle = angle[0], angle[1]
+
+    # Convert angles to radians
+    angles *= (np.pi/180)
+
+    bout_name = get_action_name_unlateralised(action)
+
+    fig, axs = plt.subplots(1, 2, sharey=True, figsize=(10, 6))
+    axs[0].plot(dists, p_dist/np.sum(p_dist))
+    axs[0].set_xlabel("Distance (mm)")
+    axs[0].set_ylabel("PDF")
+
+    axs[1].plot(angles, p_angle/np.sum(p_angle))
+    axs[1].set_xlabel("Angle (radians)")
+    plt.title(bout_name)
+    plt.savefig("All-Dists/" + bout_name + "-narrowed-" + str(factor))
+    plt.clf()
+    plt.close()
+
+
+
 if __name__ == "__main__":
-    separate_dist_naive_bayes(4)
+    # separate_dist2(0, dist=False)
+    # separate_dist_naive_bayes(4)
+    plot_narrowed_dist(0, 3, outlier_removal=True)
+
+
     # j_turn_normal_dist, j_turn_normal_angle = get_pdf_for_bout(4)
     # j_turn_narrow_dist, j_turn_narrow_angle = narrow_dist(4)
     #

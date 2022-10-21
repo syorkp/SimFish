@@ -236,7 +236,8 @@ class Fish:
         :param distance:
         :return:
         """
-        return (distance * 10 - (0.004644 * self.env_variables['fish_mass'] + 0.081417)) / 1.771548
+        # return (distance * 10 - (0.004644 * self.env_variables['fish_mass'] + 0.081417)) / 1.771548
+        return (distance * 10) * 0.360574383  # From mm
 
     def calculate_action_cost(self, angle, distance):
         """

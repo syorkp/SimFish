@@ -167,9 +167,10 @@ class PPOBufferContinuous(BasePPOBuffer):
 
         # TODO: Add methods for detecting values outside of range.
 
-    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order=None,
+    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, background, internal_state_order=None,
                         salt_location=None):
-        hdf5_file, assay_group = BasePPOBuffer.save_assay_data(self, assay_id, data_save_location, assay_configuration_id)
+        hdf5_file, assay_group = BasePPOBuffer.save_assay_data(self, assay_id, data_save_location,
+                                                               assay_configuration_id, background)
 
         if "environmental positions" in self.recordings:
             self.create_data_group("mu_impulse", np.array(self.mu_i_buffer)[:, 0], assay_group)

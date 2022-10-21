@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
+
 def get_pdf_for_bout(bout_id):
     data_id = convert_action_to_bout_id(bout_id)
     with h5py.File('./bout_distributions.mat', 'r') as fl:
@@ -85,6 +86,7 @@ def convert_action_to_bout_id(action):
 
 
 def get_modal_impulse_and_angle(action):
+    """Returns the modal impulse and angle values for a specified bout, where angle is given in radians."""
     if action == 6:
         return 0.0, 0.0
     bout_id = convert_action_to_bout_id(action)
@@ -96,25 +98,35 @@ def get_modal_impulse_and_angle(action):
             p_dist = np.array(fl['p_dist']).T[bout_id, :]
             dists = np.array(fl['dists']).T[bout_id, :]
 
-            # Get modal of both
-            angle = angles[np.argmax(p_angle)]
-            dist = dists[np.argmax(p_dist)]
-
-            # Convert dist to impulse
-            impulse = (dist * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
     except OSError:
-        with h5py.File('./Environment/Action_Space/bout_distributions.mat', 'r') as fl:
-            p_angle = np.array(fl['p_angle']).T[bout_id, :]
-            angles = np.array(fl['angles']).T[bout_id, :]
-            p_dist = np.array(fl['p_dist']).T[bout_id, :]
-            dists = np.array(fl['dists']).T[bout_id, :]
+        try:
+            with h5py.File('../../Environment/Action_Space/bout_distributions.mat', 'r') as fl:
+                p_angle = np.array(fl['p_angle']).T[bout_id, :]
+                angles = np.array(fl['angles']).T[bout_id, :]
+                p_dist = np.array(fl['p_dist']).T[bout_id, :]
+                dists = np.array(fl['dists']).T[bout_id, :]
+        except OSError:
+            try:
+                with h5py.File('../Environment/Action_Space/bout_distributions.mat', 'r') as fl:
+                    p_angle = np.array(fl['p_angle']).T[bout_id, :]
+                    angles = np.array(fl['angles']).T[bout_id, :]
+                    p_dist = np.array(fl['p_dist']).T[bout_id, :]
+                    dists = np.array(fl['dists']).T[bout_id, :]
+            except OSError:
+                with h5py.File('./Environment/Action_Space/bout_distributions.mat', 'r') as fl:
+                    p_angle = np.array(fl['p_angle']).T[bout_id, :]
+                    angles = np.array(fl['angles']).T[bout_id, :]
+                    p_dist = np.array(fl['p_dist']).T[bout_id, :]
+                    dists = np.array(fl['dists']).T[bout_id, :]
 
-            # Get modal of both
-            angle = angles[np.argmax(p_angle)]
-            dist = dists[np.argmax(p_dist)]
+    # Get modal of both
+    angle = angles[np.argmax(p_angle)]
+    dist = dists[np.argmax(p_dist)]
 
-            # Convert dist to impulse
-            impulse = (dist * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
+    # Convert dist to impulse
+    # impulse = (dist * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
+    impulse = (dist * 10) * 0.360574383
+    angle *= (np.pi/180)
 
     return impulse, angle
 
@@ -146,36 +158,108 @@ def draw_angle_dist(bout_id):
             return chosen_angle, chosen_dist
 
     except OSError:
-        with h5py.File('../../../Environment/Action_Space/bout_distributions.mat', 'r') as fl:
-            # with h5py.File('./bout_distributions.mat', 'r') as fl:
+        try:
+            with h5py.File('../../Environment/Action_Space/bout_distributions.mat', 'r') as fl:
+                # with h5py.File('./bout_distributions.mat', 'r') as fl:
+
+                p_angle = np.array(fl['p_angle']).T
+                angles = np.array(fl['angles']).T
+                p_dist = np.array(fl['p_dist']).T
+                dists = np.array(fl['dists']).T
+
+                angle_cdf = np.cumsum(p_angle[bout_id, :] / np.sum(p_angle[bout_id, :]))
+                dist_cdf = np.cumsum(p_dist[bout_id, :] / np.sum(p_dist[bout_id, :]))
+
+                r_angle = np.random.rand()
+                r_dist = np.random.rand()
+
+                angle_idx = np.argmin((angle_cdf - r_angle) ** 2)
+                dist_idx = np.argmin((dist_cdf - r_dist) ** 2)
+
+                chosen_angle = angles[bout_id, angle_idx]
+                chosen_dist = dists[bout_id, dist_idx]
+                chosen_angle = np.radians(chosen_angle)
+
+                return chosen_angle, chosen_dist
+        except OSError:
+            with h5py.File('../../../Environment/Action_Space/bout_distributions.mat', 'r') as fl:
+                # with h5py.File('./bout_distributions.mat', 'r') as fl:
+
+                p_angle = np.array(fl['p_angle']).T
+                angles = np.array(fl['angles']).T
+                p_dist = np.array(fl['p_dist']).T
+                dists = np.array(fl['dists']).T
+
+                angle_cdf = np.cumsum(p_angle[bout_id, :] / np.sum(p_angle[bout_id, :]))
+                dist_cdf = np.cumsum(p_dist[bout_id, :] / np.sum(p_dist[bout_id, :]))
+
+                r_angle = np.random.rand()
+                r_dist = np.random.rand()
+
+                angle_idx = np.argmin((angle_cdf - r_angle) ** 2)
+                dist_idx = np.argmin((dist_cdf - r_dist) ** 2)
+
+                chosen_angle = angles[bout_id, angle_idx]
+                chosen_dist = dists[bout_id, dist_idx]
+                chosen_angle = np.radians(chosen_angle)
+
+                return chosen_angle, chosen_dist
+
+
+def draw_angle_dist_narrowed(bout_id, n=3):
+
+    try:
+        with h5py.File('./Environment/Action_Space/bout_distributions.mat', 'r') as fl:
+        # with h5py.File('./bout_distributions.mat', 'r') as fl:
 
             p_angle = np.array(fl['p_angle']).T
             angles = np.array(fl['angles']).T
             p_dist = np.array(fl['p_dist']).T
             dists = np.array(fl['dists']).T
+    except OSError:
+        try:
+            with h5py.File('../../Environment/Action_Space/bout_distributions.mat', 'r') as fl:
+                # with h5py.File('./bout_distributions.mat', 'r') as fl:
+                p_angle = np.array(fl['p_angle']).T
+                angles = np.array(fl['angles']).T
+                p_dist = np.array(fl['p_dist']).T
+                dists = np.array(fl['dists']).T
 
-            angle_cdf = np.cumsum(p_angle[bout_id, :] / np.sum(p_angle[bout_id, :]))
-            dist_cdf = np.cumsum(p_dist[bout_id, :] / np.sum(p_dist[bout_id, :]))
+        except OSError:
+            with h5py.File('../../../Environment/Action_Space/bout_distributions.mat', 'r') as fl:
+                # with h5py.File('./bout_distributions.mat', 'r') as fl:
 
-            r_angle = np.random.rand()
-            r_dist = np.random.rand()
+                p_angle = np.array(fl['p_angle']).T
+                angles = np.array(fl['angles']).T
+                p_dist = np.array(fl['p_dist']).T
+                dists = np.array(fl['dists']).T
 
-            angle_idx = np.argmin((angle_cdf - r_angle) ** 2)
-            dist_idx = np.argmin((dist_cdf - r_dist) ** 2)
+    p_angle = p_angle ** n
+    p_dist = p_dist ** n
 
-            chosen_angle = angles[bout_id, angle_idx]
-            chosen_dist = dists[bout_id, dist_idx]
-            chosen_angle = np.radians(chosen_angle)
+    angle_cdf = np.cumsum(p_angle[bout_id, :]/np.sum(p_angle[bout_id, :]))
+    dist_cdf = np.cumsum(p_dist[bout_id, :]/np.sum(p_dist[bout_id, :]))
 
-            return chosen_angle, chosen_dist
+    r_angle = np.random.rand()
+    r_dist = np.random.rand()
+
+    angle_idx = np.argmin((angle_cdf - r_angle)**2)
+    dist_idx = np.argmin((dist_cdf - r_dist)**2)
+
+    chosen_angle = angles[bout_id, angle_idx]
+    chosen_dist = dists[bout_id, dist_idx]
+    chosen_angle = np.radians(chosen_angle)
+
+    return chosen_angle, chosen_dist
 
 
 if __name__ == "__main__":
 # display_pdf_and_cdf(0)
+    i, a = get_modal_impulse_and_angle(3)
 
-    for i in range(0, 13):
-        display_pdf_and_cdf(i)
-        print(i)
+    # for i in range(0, 13):
+    #     display_pdf_and_cdf(i)
+    #     print(i)
         # angle, dist = draw_angle_dist(i)
         # print(angle, dist)
 
