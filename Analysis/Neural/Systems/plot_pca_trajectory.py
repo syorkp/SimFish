@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.decomposition import PCA
+from scipy import signal
 
 from Analysis.load_data import load_data
 
@@ -394,9 +395,10 @@ if __name__ == "__main__":
     datas = []
     choices = [3, 5]
     for i in choices:
-        data = load_data("dqn_scaffold_14-1", "Interruptions-H", f"Naturalistic-{i}")
+        data = load_data("dqn_scaffold_14-1", "Interruptions-HA", f"Naturalistic-{i}")
         # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic-1")
         rnn_data = data["rnn_state_actor"][:, 0, 0, :]
+        rnn_data = signal.detrend(rnn_data)
         rnn_data = np.swapaxes(rnn_data, 0, 1)
         consumption_points.append([i for i in range(len(data["consumed"][:])) if data["consumed"][i]])
         rnn_data_full.append(rnn_data)
