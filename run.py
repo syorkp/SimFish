@@ -27475,7 +27475,7 @@ dqn_data_sand_grain = [
                 "collisions": True,
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn state", "internal state"],
+                "network recordings": ["rnn_shared", "internal_state"],
                 "energy_state_control": False,
                 "salt_control": False,
                 "interventions": None
@@ -27495,7 +27495,7 @@ dqn_data_sand_grain = [
                 "collisions": True,
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn state", "internal state"],
+                "network recordings": ["rnn_shared", "internal_state"],
                 "energy_state_control": False,
                 "salt_control": False,
                 "interventions": None
@@ -27515,7 +27515,7 @@ dqn_data_sand_grain = [
                 "collisions": True,
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn state", "internal state"],
+                "network recordings": ["rnn_shared", "internal_state"],
                 "energy_state_control": False,
                 "salt_control": False,
                 "interventions": None
@@ -27535,7 +27535,7 @@ dqn_data_sand_grain = [
                 "collisions": True,
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn state", "internal state"],
+                "network recordings": ["rnn_shared", "internal_state"],
                 "energy_state_control": False,
                 "salt_control": False,
                 "interventions": None
@@ -27555,7 +27555,7 @@ dqn_data_sand_grain = [
                 "collisions": True,
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn state", "internal state"],
+                "network recordings": ["rnn_shared", "internal_state"],
                 "energy_state_control": False,
                 "salt_control": False,
                 "interventions": None
@@ -27575,7 +27575,7 @@ dqn_data_sand_grain = [
                 "collisions": True,
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn state", "internal state"],
+                "network recordings": ["rnn_shared", "internal_state"],
                 "energy_state_control": False,
                 "salt_control": False,
                 "interventions": None
@@ -27595,7 +27595,7 @@ dqn_data_sand_grain = [
                 "collisions": True,
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn state", "internal state"],
+                "network recordings": ["rnn_shared", "internal_state"],
                 "energy_state_control": False,
                 "salt_control": False,
                 "interventions": None
@@ -27615,7 +27615,7 @@ dqn_data_sand_grain = [
                 "collisions": True,
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn state", "internal state"],
+                "network recordings": ["rnn_shared", "internal_state"],
                 "energy_state_control": False,
                 "salt_control": False,
                 "interventions": None
@@ -27635,7 +27635,7 @@ dqn_data_sand_grain = [
                 "collisions": True,
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn state", "internal state"],
+                "network recordings": ["rnn_shared", "internal_state"],
                 "energy_state_control": False,
                 "salt_control": False,
                 "interventions": None
@@ -27655,7 +27655,7 @@ dqn_data_sand_grain = [
                 "collisions": True,
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn state", "internal state"],
+                "network recordings": ["rnn_shared", "internal_state"],
                 "energy_state_control": False,
                 "salt_control": False,
                 "interventions": None
