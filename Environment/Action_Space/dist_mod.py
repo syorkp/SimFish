@@ -63,33 +63,48 @@ def separate_dist_naive_bayes(action):
     dist_angles *= (np.pi/180)
 
 
+    plt.scatter(distance, dist_angles)
+    plt.xlabel("Distance (mm)")
+    plt.ylabel("Angle (radians)")
+    plt.savefig("J-turn original")
+
+    plt.show()
+    plt.clf()
+    plt.close()
+
     # normal_angle[0] *= (np.pi/180)
-    n_each = 2000
+    n_each = 200
 
     mu_dist_1 = 0.4
     mu_ang_1 = 0.3
-    sigma_dist_1 = 0.05
-    sigma_ang_1 = 0.05
+    sigma_dist_1 = 0.03
+    sigma_ang_1 = 0.03
 
     mu_dist_2 = 0.8
     mu_ang_2 = 0.7
-    sigma_dist_2 = 0.05
-    sigma_ang_2 = 0.05
+    sigma_dist_2 = 0.03
+    sigma_ang_2 = 0.03
 
     mu_dist_3 = 1.2
     mu_ang_3 = 0.8
-    sigma_dist_3 = 0.08
-    sigma_ang_3 = 0.05
+    sigma_dist_3 = 0.06
+    sigma_ang_3 = 0.03
 
     # Generate data
     samples_1 = generate_data_mul_norm(mu_dist_1, mu_ang_1, sigma_dist_1, sigma_ang_1, n_each, True)
     samples_2 = generate_data_mul_norm(mu_dist_2, mu_ang_2, sigma_dist_2, sigma_ang_2, n_each, True)
     samples_3 = generate_data_mul_norm(mu_dist_3, mu_ang_3, sigma_dist_3, sigma_ang_3, n_each, True)
 
-    # plt.scatter(samples_1[:, 0], samples_1[:, 1])
-    # plt.scatter(samples_2[:, 0], samples_2[:, 1])
-    # plt.scatter(samples_3[:, 0], samples_3[:, 1])
-    # plt.show()
+    plt.scatter(samples_1[:, 0], samples_1[:, 1])
+    plt.scatter(samples_2[:, 0], samples_2[:, 1])
+    plt.scatter(samples_3[:, 0], samples_3[:, 1])
+    plt.xlabel("Distance (mm)")
+    plt.ylabel("Angle (radians)")
+    plt.savefig("J-turn generated scatter")
+
+    plt.show()
+    plt.clf()
+    plt.close()
 
     samples = np.concatenate((samples_1, samples_2, samples_3), axis=0)
     values = np.concatenate((np.ones((n_each)), np.ones((n_each))*2, np.ones((n_each))*3)).astype(int)
@@ -139,7 +154,7 @@ def separate_dist_naive_bayes(action):
     # plt.show()
 
 
-def separate_dist2(action, dist=False):
+def separate_dist2(action, dist=False, n_components=2):
     normal_dist, normal_angle = get_pdf_for_bout(action)
     if dist:
         target = normal_dist
@@ -186,7 +201,7 @@ def separate_dist2(action, dist=False):
             events.append(point)
     events = np.array(events)
 
-    mixture = GaussianMixture(n_components=2).fit(events.reshape(-1, 1))
+    mixture = GaussianMixture(n_components=n_components).fit(events.reshape(-1, 1))
     means_hat = mixture.means_.flatten()
     weights_hat = mixture.weights_.flatten()
     sds_hat = np.sqrt(mixture.covariances_).flatten()
@@ -200,27 +215,48 @@ def separate_dist2(action, dist=False):
 
     first = np.random.normal(means_hat[0], sds_hat[0]/2,  weights_hat[0])
     second = np.random.normal(means_hat[1], sds_hat[1]/2,  weights_hat[1])
-    # third = np.random.normal(means_hat[2], sds_hat[2],  weights_hat[2])
+    if n_components > 2:
+        third = np.random.normal(means_hat[2], sds_hat[2],  weights_hat[2])
 
     plt.hist(events, bins=1000)
+    plt.ylabel("Frequency")
+    if dist:
+        plt.xlabel("Distance (mm)")
+    else:
+        plt.xlabel("Angle (radians)")
     plt.savefig(f"{get_action_name_unlateralised(action)}-original.jpg")
     plt.show()
     plt.clf()
     plt.close()
 
     plt.hist([first, second], bins=1000, stacked=True)
+    plt.ylabel("Frequency")
+    if dist:
+        plt.xlabel("Distance (mm)")
+    else:
+        plt.xlabel("Angle (radians)")
     plt.savefig(f"{get_action_name_unlateralised(action)}-regenerated-narrowed.jpg")
     plt.show()
     plt.clf()
     plt.close()
 
     plt.hist(first, bins=1000)
+    plt.ylabel("Frequency")
+    if dist:
+        plt.xlabel("Distance (mm)")
+    else:
+        plt.xlabel("Angle (radians)")
     plt.savefig(f"{get_action_name_unlateralised(action)}-regenerated-1-narrowed.jpg")
     plt.show()
     plt.clf()
     plt.close()
 
     plt.hist(second, bins=1000)
+    plt.xlabel("Frequency")
+    if dist:
+        plt.ylabel("Distance (mm)")
+    else:
+        plt.ylabel("Angle (radians)")
     plt.savefig(f"{get_action_name_unlateralised(action)}-regenerated-2-narrowed.jpg")
     plt.show()
     plt.clf()
@@ -228,6 +264,7 @@ def separate_dist2(action, dist=False):
 
 
 def separate_dist(action, dist=False):
+    """DOESNT WORK"""
     normal_dist, normal_angle = get_pdf_for_bout(action)
     if dist:
         target = normal_dist
@@ -308,9 +345,9 @@ def plot_narrowed_dist(action, factor, outlier_removal=True):
 
 
 if __name__ == "__main__":
-    # separate_dist2(0, dist=False)
-    # separate_dist_naive_bayes(4)
-    plot_narrowed_dist(0, 3, outlier_removal=True)
+    # separate_dist2(7, dist=False, n_components=2)
+    separate_dist_naive_bayes(4)
+    # plot_narrowed_dist(0, 3, outlier_removal=True)
 
 
     # j_turn_normal_dist, j_turn_normal_angle = get_pdf_for_bout(4)

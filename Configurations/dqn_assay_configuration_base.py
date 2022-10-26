@@ -137,7 +137,7 @@ env = {
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
        'prey_max_turning_angle': 0.04,
-       # This is the turn (pi radians) that happens every step, designed to replicate linear wavy movement.
+       # This is the turn (radians) that happens every step, designed to replicate linear wavy movement.
        'prey_fluid_displacement': False,
        'prey_jump': False,
        'differential_prey': True,
@@ -256,7 +256,7 @@ env = {
        # Arbitrary fish parameters
 
        # Fish Visual System
-       'uv_photoreceptor_rf_size': 0.0133 * 3,  # Pi Radians (0.76 degrees) - Yoshimatsu et al. (2019)
+       'uv_photoreceptor_rf_size': 0.0133 * 3,  # Radians (0.76 degrees) - Yoshimatsu et al. (2019)
        'red_photoreceptor_rf_size': 0.0133 * 3,  # Kept same
        'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
        'red_photoreceptor_num': 63,

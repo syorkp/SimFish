@@ -87,8 +87,8 @@ def create_rnn_figure_overlaid(neuron_data1, neuron_data2, plot_number, n_subplo
          axs[i, 1].tick_params(labelsize=15)
     axs[0, 1].legend(bbox_to_anchor=(1, 2), loc='upper right', prop={'size': 24})
 
-    axs[int(n_subplots/2-1), 0].set_xlabel("Stimulus Angle (pi radians)", fontsize=25)
-    axs[int(n_subplots/2-1), 1].set_xlabel("Stimulus Angle (pi radians)", fontsize=25)
+    axs[int(n_subplots/2-1), 0].set_xlabel("Stimulus Angle (radians)", fontsize=25)
+    axs[int(n_subplots/2-1), 1].set_xlabel("Stimulus Angle (radians)", fontsize=25)
     fig.set_size_inches(18.5, 20)
     plt.show()
 
@@ -132,7 +132,7 @@ def display_rfs(stimulus_vector, response_v_1, response_v_2, labels, neurons):
         # axs[n].set_ylabel("Normalised Response", fontsize=20)
     axs[0].legend(bbox_to_anchor=(1, 2), loc='upper right', prop={'size': 24})
 
-    axs[len(neurons)-1].set_xlabel("Stimulus Angle (pi radians)", fontsize=20)
+    axs[len(neurons)-1].set_xlabel("Stimulus Angle (radians)", fontsize=20)
     fig.set_size_inches(8, 12)
     plt.plot()
 

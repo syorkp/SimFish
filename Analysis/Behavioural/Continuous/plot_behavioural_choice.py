@@ -135,7 +135,7 @@ def plot_action_scatter(impulses, angles, model_name, special_impulses=None, spe
         plot_name = "-".join(special_names) + "-" + plot_name
 
     plt.xlabel("Impulse", fontsize=15)
-    plt.ylabel("Angle (pi radians)", fontsize=15)
+    plt.ylabel("Angle (radians)", fontsize=15)
     plt.savefig(f"All-Plots/{model_name}/{plot_name}.jpg")
     plt.clf()
 
@@ -167,7 +167,7 @@ def plot_action_scatter_with_mask_and_bouts(impulses, angles, model_name, specia
         plt.text(i+0.1, a+0.03, bout_names[index])
 
     plt.xlabel("Impulse")
-    plt.ylabel("Angle (pi radians)")
+    plt.ylabel("Angle (radians)")
     plt.savefig(f"All-Plots/{model_name}/{plot_name}.jpg")
     plt.clf()
     plt.close()
@@ -182,7 +182,7 @@ def plot_action_use_density(mu_impulse, mu_angle, model_name, n_bins=100):
     fig = plt.figure(figsize=(6, 6))
     plt.imshow(hmp, extent=extent, origin='lower', aspect=8)
     plt.xlabel("Impulse")
-    plt.ylabel("Angle (pi radians)")
+    plt.ylabel("Angle (radians)")
     plt.savefig(f"All-Plots/{model_name}/heatmap.jpg")
     plt.clf()
     plt.close()
@@ -193,7 +193,7 @@ def plot_action_use_density(mu_impulse, mu_angle, model_name, n_bins=100):
     ax = plt.axes(projection='3d')
     ax.contour3D(X, Y, hmp, 100, color='binary')
     ax.set_xlabel("Impulse")
-    ax.set_ylabel("Angle (pi radians)")
+    ax.set_ylabel("Angle (radians)")
     ax.set_zlabel("Density")
     plt.savefig(f"All-Plots/{model_name}/contour.jpg")
     plt.clf()

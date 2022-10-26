@@ -36,7 +36,7 @@ env = {'width': 1500,  # arena size
        'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 30,
-       'prey_max_turning_angle': 0.1,  # Max angle change every 2ms in pi radians
+       'prey_max_turning_angle': 0.1,  # Max angle change every 2ms in radians
        'prey_jump': False,
        'differential_prey': False,
        'prey_cloud_num': 2,
@@ -114,7 +114,7 @@ env = {'width': 1500,  # arena size
 
        # New simulation variables
        'decay_rate': 0.0006,  # For scatter mask (eyeballed it for practical reasons) # NO DATA YET
-       'uv_photoreceptor_rf_size': 0.014,  # Pi Radians (0.8 degrees) - Yoshimatsu et al. (2019)
+       'uv_photoreceptor_rf_size': 0.014,  # Radians (0.8 degrees) - Yoshimatsu et al. (2019)
        'red_photoreceptor_rf_size': 0.014,  # Kept same
        'uv_photoreceptor_num': 56,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
        'red_photoreceptor_num': 64,  # NO DATA YET

@@ -29,7 +29,7 @@ def prey_position():
         if i == len(angles) - 1:
             continue
         plt.plot(step, interpolated_angles[i])
-    plt.ylabel("Stimulus Angle (pi radians)")
+    plt.ylabel("Stimulus Angle (radians)")
     plt.xlabel("Time (steps)")
     plt.show()
 

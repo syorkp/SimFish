@@ -75,7 +75,7 @@ if __name__ == "__main__":
     plt.plot(steps, mean_ang, color="r")
     plt.fill_between(steps, upper, lower, alpha=0.5)
     plt.xlabel("Steps from Consumption", fontsize=15)
-    plt.ylabel("Fish-Prey Angle (pi radians)", fontsize=15)
+    plt.ylabel("Fish-Prey Angle (radians)", fontsize=15)
     plt.ylim(0, 0.9)
     plt.savefig(f"{model_name}-fish_prey_angle.jpg")
     plt.clf()

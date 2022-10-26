@@ -456,7 +456,7 @@ def display_ppo_action_choice(model_name, assay_config, assay_config_control, as
                  np.max(np.concatenate((np.concatenate((angles_compiled)), np.concatenate((angles_compiled_control)))))
     plt.vlines(200, mina, maxa,  color="r")
     plt.xlabel("Step")
-    plt.ylabel("Angle (pi radians)")
+    plt.ylabel("Angle (radians)")
     plt.savefig("PPO angles.png")
     plt.clf()
 

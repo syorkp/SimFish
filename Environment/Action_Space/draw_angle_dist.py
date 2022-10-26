@@ -49,7 +49,7 @@ def display_pdf_and_cdf(bout_id):
         plt.title(label=bout_id+1)
         plt.subplot(212)
         plt.plot(angles[bout_id, :]*(np.pi/180), p_angle[bout_id, :] / np.sum(p_angle[bout_id, :]))
-        plt.xlabel('Angle (pi radians)')
+        plt.xlabel('Angle (radians)')
         plt.ylabel('Probability Density')
         plt.savefig(f"Angle draw-{bout_id}")
         plt.clf()
@@ -255,7 +255,7 @@ def draw_angle_dist_narrowed(bout_id, n=3):
 
 if __name__ == "__main__":
 # display_pdf_and_cdf(0)
-    i, a = get_modal_impulse_and_angle(3)
+    i, a = get_modal_impulse_and_angle(7)
 
     # for i in range(0, 13):
     #     display_pdf_and_cdf(i)

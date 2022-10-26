@@ -179,13 +179,13 @@ def plot_turning_sequences(fish_angle, save_figure=True):
     angle_changes = [fish_angle[i]-fish_angle[i-1] for i, angle in enumerate(fish_angle) if i!=0][-100:]
     # plt.bar(range(len(angle_changes)), angle_changes, color="blue")
     # plt.xlabel("Time (Step)")
-    # plt.ylabel("Turn Amplitude (pi radians)")
+    # plt.ylabel("Turn Amplitude (radians)")
     angles = {}
     angles["Time (Step)"] = [i for i in range(len(angle_changes))]
-    angles["Turn Amplitude (pi radians)"] = angle_changes
+    angles["Turn Amplitude (radians)"] = angle_changes
     angles["Color"] = ["r" if angle < 0 else "b" for angle in angle_changes]
     fig = plt.figure()
-    ax = sns.barplot(x="Time (Step)", y="Turn Amplitude (pi radians)", hue="Color", data=angles)
+    ax = sns.barplot(x="Time (Step)", y="Turn Amplitude (radians)", hue="Color", data=angles)
     ax.tick_params(axis="x", labelsize=20)
     ax.tick_params(axis="y", labelsize=20)
     ax.get_legend().remove()
@@ -195,7 +195,7 @@ def plot_turning_sequences(fish_angle, save_figure=True):
         else:
             label.set_visible(False)
     plt.xlabel("Time (Step)", fontsize=18)
-    plt.ylabel("Turn Amplitude (pi radians)", fontsize=18)
+    plt.ylabel("Turn Amplitude (radians)", fontsize=18)
     fig.tight_layout()
     if save_figure:
         plt.savefig(f"../../Figures/Panels/Panel-4/Orientation-Plot")

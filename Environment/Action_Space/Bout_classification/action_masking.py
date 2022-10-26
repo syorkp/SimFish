@@ -134,7 +134,7 @@ if __name__ == "__main__":
     impulse = (distance * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
     dist_angles_radians = (np.absolute(dist_angles)/180) * np.pi
     plt.scatter(dist_angles_radians, impulse, alpha=0.2)
-    plt.xlabel("Angle (pi radians)")
+    plt.xlabel("Angle (radians)")
     plt.ylabel("Impulse")
     plt.show()
 
@@ -188,7 +188,7 @@ if __name__ == "__main__":
     #
     plt.scatter(actions[:, 1], actions[:, 0], alpha=0.3)
     plt.scatter(moutliers[:, 1], moutliers[:, 0], color="r", alpha=0.3)
-    plt.xlabel("Angle (pi radians)")
+    plt.xlabel("Angle (radians)")
     plt.ylabel("Impulse")
     plt.show()
     #
@@ -250,7 +250,7 @@ if __name__ == "__main__":
     ax = fig.add_subplot(projection='3d')
     ax.scatter(dist_angles_radians[:, 0], impulse[:, 0], probs)
     ax.set_ylabel("Impulse")
-    ax.set_xlabel("Angle (pi radians)")
+    ax.set_xlabel("Angle (radians)")
     ax.set_zlabel("Probability density")
     plt.show()
 
@@ -311,7 +311,7 @@ if __name__ == "__main__":
         # ax = fig.add_subplot(projection='3d')
         # ax.scatter(dist_angles_radians[:, 0], impulse[:, 0], probs2)
         # ax.set_ylabel("Impulse")
-        # ax.set_xlabel("Angle (pi radians)")
+        # ax.set_xlabel("Angle (radians)")
         # ax.set_zlabel("Probability density")
         # plt.title(str(threshold))
         # plt.show()

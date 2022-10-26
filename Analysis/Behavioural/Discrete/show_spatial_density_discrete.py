@@ -335,7 +335,9 @@ def create_overlap_plot(cloud_left, cloud_right, stimulus_name, action, model_na
     except ValueError:
         return
     zi2 = k(np.vstack([xi.flatten(), yi.flatten()]))
-    zi = zi - zi2
+    zi = zi2 - zi
+
+    # LEFT IS BLUE, RIGHT IS RED
 
     # Make the plot
     fig, ax = plt.subplots(figsize=(10, 10))

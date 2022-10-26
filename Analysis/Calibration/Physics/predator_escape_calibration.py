@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import kde
+import random
 
 import pymunk
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
@@ -11,7 +12,9 @@ from Environment.Action_Space.plot_bout_data import get_bout_data
 
 class TestEnvironment:
 
-    def __init__(self, fraction_capture_possible, permitted_angular_deviation):
+    def __init__(self, predator_impulse):
+        self.touched_predator = False
+
         self.env_variables = {
             'phys_dt': 0.1,  # physics time step
             'drag': 0.7,  # water drag
@@ -37,10 +40,19 @@ class TestEnvironment:
             'jump_speed_paramecia': 0.074,  # Impulse to generate 10.0mms-1 for given prey mass
             'prey_fluid_displacement': True,
 
-            'predator_mass': 10.,
+            'predator_mass': 200.,
             'predator_inertia': 40.,
-            'predator_size': 87.,  # To be 8.7mm in diameter, formerly 100
-            'predator_impulse': 1.0,
+            'predator_size': 32, #87.,  # To be 8.7mm in diameter, formerly 100
+            'predator_impulse': predator_impulse,
+
+            "max_predator_attacks": 5,
+            "further_attack_probability": 0.4,
+            "max_predator_attack_range": 2000,
+            "max_predator_reorient_distance": 400,
+            "predator_presence_duration_steps": 100,
+            "predator_first_attack_loom": False,
+            "initial_predator_size": 20,
+            "final_predator_size": 200,
         }
 
         # Fish params
@@ -89,14 +101,25 @@ class TestEnvironment:
         self.col = self.space.add_collision_handler(2, 3)
         self.col.begin = self.touch_prey
 
-        self.fraction_capture_possible, self.permitted_angular_deviation = fraction_capture_possible, permitted_angular_deviation
-
-        self.capture_fraction = int(
-            100 * fraction_capture_possible)
-        self.capture_start = 0 #int((100 - self.capture_fraction) / 2)
-        self.capture_end = self.capture_start + self.capture_fraction
 
         self.prey_consumed_this_step = False
+
+        self.predator_body = None
+        self.predator_shape = None
+        self.predator_target = None
+
+        # New complex predators
+        self.predator_location = None
+        self.remaining_predator_attacks = None
+        self.total_predator_steps = None
+        self.new_attack_due = False
+
+        self.pred_col = self.space.add_collision_handler(5, 3)
+        self.pred_col.begin = self.touch_predator
+
+        self.pred_col2 = self.space.add_collision_handler(5, 6)
+        self.pred_col2.begin = self.touch_predator
+        self.micro_step = 0
 
     def touch_prey(self, arbiter, space, data):
         # print(f"Touched: {self.body.position} - {self.prey_bodies[0].position}")
@@ -135,8 +158,10 @@ class TestEnvironment:
                     if deviation > np.pi:
                         # Need to account for cases where one angle is very high, while other is very low, as these
                         # angles can be close together. Can do this by summing angles and subtracting from 2 pi.
-                        deviation = abs((2 * np.pi) - (fish_orientation + angle))
+                        deviation -= (2 * np.pi)
+                        deviation = abs(deviation)
                     if deviation < self.permitted_angular_deviation:
+                        self.latest_incidence = deviation
                         # print("Successful capture \n")
                         valid_capture = True
                         space.remove(shp, shp.body)
@@ -234,96 +259,180 @@ class TestEnvironment:
         # return (distance * 10 - (0.004644 * self.env_variables['fish_mass'] + 0.081417)) / 1.771548
         return (distance * 10) * 0.360574383  # From mm
 
+    def check_fish_proximity_to_walls(self):
+        fish_position = self.body.position
 
-    def run(self, prey_position_relative, fixed_capture, continuous, num_sim_steps=100):
+        # Check proximity to left wall
+        if 0 < fish_position[0] < self.env_variables["distance_from_fish"]:
+            left = True
+        else:
+            left = False
+
+        # Check proximity to right wall
+        if self.env_variables["width"] - self.env_variables["distance_from_fish"] < fish_position[0] < \
+                self.env_variables["width"]:
+            right = True
+        else:
+            right = False
+
+        # Check proximity to bottom wall
+        if self.env_variables["height"] - self.env_variables["distance_from_fish"] < fish_position[1] < \
+                self.env_variables["height"]:
+            bottom = True
+        else:
+            bottom = False
+
+        # Check proximity to top wall
+        if 0 < fish_position[0] < self.env_variables["distance_from_fish"]:
+            top = True
+        else:
+            top = False
+
+        return left, bottom, right, top
+
+    def create_realistic_predator(self, position):
+        self.predator_body = pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia'])
+        self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_size']/2)
+        self.predator_shape.elasticity = 1.0
+
+        fish_position = self.body.position
+
+        x_position = position[0]
+        y_position = position[1]
+
+        self.predator_body.position = (x_position, y_position)
+        self.predator_target = fish_position
+        self.total_predator_steps = 0
+
+        self.predator_shape.color = (0, 1, 0)
+        self.predator_location = (x_position, y_position)
+        self.remaining_predator_attacks = 1 + np.sum(
+            np.random.choice([0, 1], self.env_variables["max_predator_attacks"] - 1,
+                             p=[1.0 - self.env_variables["further_attack_probability"],
+                                self.env_variables["further_attack_probability"]]))
+
+        self.predator_shape.collision_type = 5
+        self.predator_shape.filter = pymunk.ShapeFilter(
+            mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # Category 2 objects cant collide with predator
+
+        self.space.add(self.predator_body, self.predator_shape)
+
+    def move_realistic_predator(self, micro_step):
+        # Update predator target
+        self.predator_target = [500, 500] #np.array(self.body.position)
+
+        self.predator_body.angle = np.pi / 2 - np.arctan2(
+            self.predator_target[0] - self.predator_body.position[0],
+            self.predator_target[1] - self.predator_body.position[1])
+        self.predator_body.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
+
+    def touch_predator(self, arbiter, space, data):
+        self.touched_predator = True
+        # print(self.micro_step)
+        self.body.position = (700, 700)
+
+        return False
+
+    def run(self, predator_position_relative, fixed_action, continuous, set_impulse, set_angle, num_sim_steps=100, specified_action=5):
         # Reset
         self.prey_consumed_this_step = False
         self.prey_bodies = []
         self.prey_shapes = []
 
-        position = []
         self.body.position = (500, 500)
         self.body.angle = 2 * np.pi
         self.body.velocity = (0, 0)
 
-        self.create_prey([500 + prey_position_relative[0], 500 + prey_position_relative[1]])
+        self.create_realistic_predator([500 + predator_position_relative[0], 500 + predator_position_relative[1]])
 
         # Take fish action
         if continuous:
-            impulse = 3
-            angle = 0
-            self.move_fish(impulse, angle)
+            self.move_fish(set_impulse, set_angle)
         else:
-            if fixed_capture:
-                # self.move_fish(2.97, 0)
-                self.move_fish(2.1468332, 0)
+            if fixed_action:
+                self.move_fish(22.66, 0.33)
             else:
-                angle_change, distance = draw_angle_dist_narrowed(0, n= 10)  # draw_angle_dist(0)
+                angle_change, distance = draw_angle_dist_narrowed(specified_action)  # draw_angle_dist(0)
 
                 action_impulse = self.calculate_impulse(distance)
-                action_angle = np.random.choice([-angle_change, angle_change])
-                self.move_fish(action_impulse, action_angle)
+                # action_angle = np.random.choice([-angle_change, angle_change])
+                self.move_fish(action_impulse, angle_change)
 
+        fish_position = []
         for micro_step in range(num_sim_steps):
-            if self.capture_start <= micro_step <= self.capture_end:
-                self.capture_possible = True
-            else:
-                self.capture_possible = False
-            position.append(np.array(self.body.position))
+            fish_position.append(np.array(self.body.position))
+            # print(self.body.position)
             self.space.step(self.env_variables['phys_dt'])
+            self.micro_step = micro_step
+            self.move_realistic_predator(micro_step)
 
-        if self.prey_consumed_this_step:
-            return True
+        pred_final_pos = np.array(self.predator_body.position)
+        self.space.remove(self.predator_shape, self.predator_shape.body)
+        self.predator_shape = None
+        self.predator_body = None
+
+        if self.touched_predator:
+            # print(np.array(pred_final_pos))
+            self.touched_predator = False
+            return False, np.array(fish_position), pred_final_pos
         else:
-            self.space.remove(self.prey_shapes[-1], self.prey_shapes[-1].body)
-            self.prey_bodies.remove(self.prey_shapes[-1].body)
-            self.prey_shapes.remove(self.prey_shapes[-1])
-            return False
-
-        # position = np.array(position)
-        # distance = position - np.array([100, 100])
-        # distance = (distance[:, 0] ** 2 + distance[:, 1] ** 2) ** 0.5
-        # distance = distance/10
-        # plt.plot([i for i in range(200)], distance)
-        # plt.xlabel("Time (ms)")
-        # plt.ylabel("Distance (mm)")
-        # plt.vlines(75, ymin=min(distance), ymax=max(distance), color="r")
-        # plt.vlines(125, ymin=min(distance), ymax=max(distance), color="r")
-        # plt.show()
-        # return np.array(self.prey_bodies[0].position)
+            return True, np.array(fish_position), pred_final_pos
 
 
-def plot_strike_zone(fraction_capture_permitted, angle_deviation_allowed, n_repeats=1, use_action_means=True,
-                     continuous=False, overlay_all_sCS_data=False):
-    env = TestEnvironment(fraction_capture_permitted, angle_deviation_allowed)
-
-    xp, yp = np.arange(-5, 30, 0.5), np.arange(-8, 8, 0.5)
-    resolution = 20
+def plot_escape_success(n_repeats=1, use_action_means=True,
+                        continuous=False, set_impulse=2., set_angle=0., impulse_effect_noise=0.,
+                        angular_effect_noise=0., predator_impulse=2., specified_action=7):
+    env = TestEnvironment(predator_impulse)
+    xp, yp = np.arange(-100, 100, 10), np.arange(-100, 100, 10)
+    resolution = 1
 
     xpe, ype = np.meshgrid(xp, yp)
     vectors1 = np.concatenate((np.expand_dims(xpe, 2), np.expand_dims(ype, 2)), axis=2)
     vectors = np.reshape(vectors1, (-1, 2))
-    successful_capture_count = np.zeros((vectors.shape[0]))
-    n_test = vectors.shape[0]
+    successful_escape_count = np.zeros((vectors.shape[0]))
+    pred_final_positions = []
 
     for j in range(n_repeats):
         print(f"{j} / {n_repeats}")
         for i, vector in enumerate(vectors):
             # print(f"{i} / {n_test}")
-            s = env.run(vector, fixed_capture=use_action_means, continuous=continuous)
-            if s:
-                successful_capture_count[i] += 1
+            # Apply motor effect noise
+            if continuous:
+                if impulse_effect_noise > 0:
+                    impulse = set_impulse + (np.random.normal(0, impulse_effect_noise) * abs(set_impulse))
+                else:
+                    impulse = set_impulse
+                if angular_effect_noise > 0:
+                    angle = set_angle + (np.random.normal(0, angular_effect_noise) * abs(set_angle))
+                else:
+                    angle = set_angle
+            else:
+                impulse = set_impulse
+                angle = set_angle
 
-    successful_capture_count = np.reshape(successful_capture_count, (vectors1.shape[0], vectors1.shape[1]))
-    successful_capture_count /= n_repeats
+            s, fish_pos, pred_pos = env.run(vector, fixed_action=use_action_means, continuous=continuous, set_impulse=impulse,
+                        set_angle=angle, specified_action=specified_action)
+            pred_final_positions.append(pred_pos)
+
+            if s:
+                successful_escape_count[i] += 1
+
+    successful_escape_count = np.reshape(successful_escape_count, (vectors1.shape[0], vectors1.shape[1]))
+    successful_escape_count /= n_repeats
+
+    pred_final_positions = np.array(pred_final_positions)
 
     fig, ax = plt.subplots(figsize=(10, 10))
-    im = ax.imshow(successful_capture_count)
+    im = ax.imshow(successful_escape_count)
 
     # Display fish.
-    x, y = 10, 16
+    x, y = 10, 10
     mouth_size, head_size, tail_length = env.env_variables['fish_mouth_size'], env.env_variables['fish_head_size'], \
                                          env.env_variables['fish_tail_length']
+    mouth_size *= resolution/10
+    head_size *= resolution/10
+    tail_length *= resolution/10
+
     mouth_centre = (x, y)
     mouth = plt.Circle(mouth_centre, mouth_size, fc="green")
     ax.add_patch(mouth)
@@ -345,6 +454,14 @@ def plot_strike_zone(fraction_capture_permitted, angle_deviation_allowed, n_repe
     tail = plt.Polygon(np.array([left_flank, right_flank, tip]), fc="green")
     ax.add_patch(tail)
 
+    # Predator
+    predator_size = 32 * resolution/10
+    dx1, dy1 = head_size * np.sin(angle), head_size * np.cos(angle)
+    predator_centre = (5 + dx1,
+                       5 + dy1)
+    predator = plt.Circle(predator_centre, predator_size/2, fc="red")
+    ax.add_patch(predator)
+
     scale_bar = AnchoredSizeBar(ax.transData,
                                 resolution, '1mm', 'lower right',
                                 pad=1,
@@ -354,53 +471,38 @@ def plot_strike_zone(fraction_capture_permitted, angle_deviation_allowed, n_repe
                                 fontproperties={"size": 16}
                                 )
     ax.add_artist(scale_bar)
-
-    if overlay_all_sCS_data:
-        distances, angles = get_bout_data(3)
-        x_diff = distances * np.sin(angles)
-        y_diff = distances * np.cos(angles)
-
-        x_loc = x + (y_diff * resolution)
-        y_loc = y + (x_diff * resolution)
-
-        # Mirror yloc
-        y_loc2 = y - (x_diff * resolution)
-        x_loc = np.concatenate((x_loc, x_loc))
-        y_loc = np.concatenate((y_loc, y_loc2))
-        density_list = np.concatenate((np.expand_dims(x_loc, 1), np.expand_dims(y_loc, 1)), axis=1)
-
-        plt.scatter(x_loc, y_loc, alpha=0.3)
-
-        # Show density
-        x = np.array([i[0] for i in density_list])
-        y = np.array([i[1] for i in density_list])
-        y = np.negative(y)
-        # Evaluate a gaussian kde on a regular grid of nbins x nbins over data extents
-        nbins = 300
-        k = kde.gaussian_kde([y, x])
-        yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
-
-        zi = k(np.vstack([xi.flatten(), yi.flatten()]))
-        # plt.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap="Reds", )  # cmap='gist_gray')#  cmap='PuBu_r')
-        plt.contour(yi, -xi, zi.reshape(xi.shape), 3)
-
-        plt.xlim(0, successful_capture_count.shape[1]-1)
-        plt.ylim(0, successful_capture_count.shape[0]-1)
-
-
     fig.colorbar(im, ax=ax, label="Prop Success")
+    fish_pos /= 10/resolution
+    fish_pos -= 50
+    fish_pos += 10
+    #
+    # pred_final_positions /= 10/resolution
+    # pred_final_positions -= 50
+    # pred_final_positions += 40
 
+    plt.scatter(fish_pos[:, 0], fish_pos[:, 1])
+    # plt.scatter(pred_final_positions[:, 0], pred_final_positions[:, 1], alpha=0.1)
     plt.show()
-    # Run for many different drawn parameters, plotting scatter of whether was successful capture.
-    # Run the same but in the reverse - not var
 
 
 if __name__ == "__main__":
-    # plot_strike_zone(fraction_capture_permitted=0.5, angle_deviation_allowed=0.5934119456780723, n_repeats=1,
-    #                  use_action_means=False, continuous=False)
-    # plot_strike_zone(fraction_capture_permitted=1, angle_deviation_allowed=np.pi / 8, n_repeats=100,
-    #                  use_action_means=False, continuous=False, overlay_all_sCS_data=True)
-    plot_strike_zone(fraction_capture_permitted=0.7, angle_deviation_allowed=np.pi / 8, n_repeats=1,
-                     use_action_means=False, continuous=True, overlay_all_sCS_data=True)
-    # plot_strike_zone(fraction_capture_permitted=0.7, angle_deviation_allowed=np.pi/8, n_repeats=1,
-    #                  use_action_means=True, continuous=False, overlay_all_sCS_data=True)
+    # plot_escape_success(n_repeats=10,
+    #                     use_action_means=False, continuous=True, set_impulse=2.1,
+    #                     set_angle=0.4,
+    #                     impulse_effect_noise=0.14, angular_effect_noise=0.5)
+    plot_escape_success(n_repeats=10,
+                        use_action_means=False, continuous=False, set_impulse=0,
+                        set_angle=0.0,
+                        impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=35., specified_action=0)
+    plot_escape_success(n_repeats=10,
+                        use_action_means=False, continuous=False, set_impulse=0,
+                        set_angle=0.0,
+                        impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=35., specified_action=5)
+    plot_escape_success(n_repeats=10,
+                        use_action_means=False, continuous=False, set_impulse=0,
+                        set_angle=0.0,
+                        impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=35., specified_action=7)
+    plot_escape_success(n_repeats=1,
+                        use_action_means=False, continuous=True, set_impulse=0,
+                        set_angle=0.,
+                        impulse_effect_noise=0.0, angular_effect_noise=0.0, predator_impulse=35)
