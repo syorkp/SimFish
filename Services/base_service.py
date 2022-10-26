@@ -152,10 +152,11 @@ class BaseService:
 
     def get_positions(self):
         """Should be here as is used in both training and assay services."""
-        if not self.simulation.sand_grain_bodies:
+        if len(self.simulation.sand_grain_bodies) > 0:
             sand_grain_positions = [self.simulation.sand_grain_bodies[i].position for i, b in
                                     enumerate(self.simulation.sand_grain_bodies)]
             sand_grain_positions = [[i[0], i[1]] for i in sand_grain_positions]
+            print(sand_grain_positions)
         else:
             sand_grain_positions = [[10000, 10000]]
 
