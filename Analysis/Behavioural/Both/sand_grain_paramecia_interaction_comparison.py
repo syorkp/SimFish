@@ -1,3 +1,5 @@
+import numpy as np
+
 from Analysis.load_data import load_data
 
 
@@ -19,18 +21,51 @@ def get_num_engagement_sg_p(data, range_for_engagement_poss, range_for_engagemen
 
         fp_distances = (fp_vectors[:, 0] ** 2 + fp_vectors[:, 1] ** 2) ** 0.5
         fsg_distances = (fsg_vectors[:, 0] ** 2 + fsg_vectors[:, 1] ** 2) ** 0.5
-        x = True
+
+        fp_within_poss_range = (fp_distances < range_for_engagement_poss) * 1
+        fp_within_int_range = (fp_distances < range_for_engagement_def) * 1
+
+        fsg_within_poss_range = (fsg_distances < range_for_engagement_poss) * 1
+        fsg_within_int_range = (fsg_distances < range_for_engagement_def) * 1
+
+        num_prey_interactions += np.sum(fp_within_int_range)
+        num_prey_poss_interactions += np.sum(fp_within_poss_range)
+        num_sg_interactions += np.sum(fsg_within_int_range)
+        num_sg_poss_interactions += np.sum(fsg_within_poss_range)
+
+    return num_prey_interactions, num_prey_poss_interactions, num_sg_interactions, num_sg_poss_interactions
 
 
 def compute_approach_probability_sg_p(model_name, assay_config, assay_id, n):
+    """Computes the probability of approach for SGs and P - NOTE! This metric will be biased when fish rest near a
+    feature - will show up as high probability."""
+
+    num_prey_interactions_compiled = 0
+    num_prey_poss_interactions_compiled = 0
+    num_sg_interactions_compiled = 0
+    num_sg_poss_interactions_compiled = 0
     for i in range(1, n+1):
         d = load_data(model_name, assay_config, f"{assay_id}-{i}")
-        get_num_engagement_sg_p(d, range_for_engagement_poss=100, range_for_engagement_def=5)
-        x = True
+        num_prey_interactions, num_prey_poss_interactions, num_sg_interactions, num_sg_poss_interactions = \
+            get_num_engagement_sg_p(d, range_for_engagement_poss=50, range_for_engagement_def=10)
+        num_prey_interactions_compiled += num_prey_interactions
+        num_prey_poss_interactions_compiled += num_prey_poss_interactions
+        num_sg_interactions_compiled += num_sg_interactions
+        num_sg_poss_interactions_compiled += num_sg_poss_interactions
 
+    if num_prey_poss_interactions_compiled == 0:
+        prey_approach_probability = 0
+    else:
+        prey_approach_probability = num_prey_interactions_compiled / num_prey_poss_interactions_compiled
 
+    if num_sg_poss_interactions_compiled == 0:
+        sand_grain_approach_probability = 0
+    else:
+        sand_grain_approach_probability = num_prey_interactions_compiled / num_sg_poss_interactions_compiled
+
+    return prey_approach_probability, sand_grain_approach_probability
 
 
 if __name__ == "__main__":
-    compute_approach_probability_sg_p("dqn_scaffold_33-1", "Behavioural-Data-Free", "Naturalistic", 10)
+    prey_approach_probability, sand_grain_approach_probability = compute_approach_probability_sg_p("dqn_scaffold_33-1", "Behavioural-Data-Free", "Naturalistic", 10)
 

@@ -19,7 +19,7 @@ def display_sequences(sequences):
 
 
 def display_all_sequences(sequences, min_length=None, max_length=None, indicate_consumption=False, save_figure=False,
-                          figure_save_location=None, alternate_action_names=None):
+                          figure_save_location=None, alternate_action_names=None, indicate_event_point=False):
     if len(sequences) == 0:
         return
     sns.set()
@@ -75,6 +75,9 @@ def display_all_sequences(sequences, min_length=None, max_length=None, indicate_
     #     plt.arrow(plot_dim, 0, 0, 1, width=4, color="r")
 
     # plt.legend(legend_elements, associated_actions, bbox_to_anchor=(1.5, 1), borderaxespad=0)#loc='upper right')
+    if indicate_event_point is not False:
+        ax.vlines(indicate_event_point, -1, len(sequences)+1, linewidth=5, color="black")
+
     plt.legend(legend_elements, associated_actions, bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
     plt.axis("scaled")
     if save_figure:
