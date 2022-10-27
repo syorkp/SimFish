@@ -20,7 +20,7 @@ class TestEnvironment:
             'fish_tail_length': 41.5,  # Old: 70
             'eyes_verg_angle': 77.,  # in deg
 
-            'prey_mass': 140.,
+            'prey_mass': 1.,
             'prey_inertia': 40.,
             'prey_size': 2.5,  # FINAL VALUE - 0.2mm diameter, so 1.
             'prey_max_turning_angle': 0.04,
@@ -161,7 +161,7 @@ class TestEnvironment:
     def move_predator(self):
         self.predator_bodies[0].apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
 
-    def run(self, num_sim_steps=200):
+    def run(self, num_sim_steps=100):
         position = []
         self.move_fish(2.97)  # S-capture swim impulse for 0.6mm average.
         for micro_step in range(num_sim_steps):
@@ -171,22 +171,16 @@ class TestEnvironment:
         distance = position - np.array([100, 100])
         distance = (distance[:, 0] ** 2 + distance[:, 1] ** 2) ** 0.5
         distance = distance/10
-        plt.plot([i for i in range(200)], distance)
+        plt.plot([i for i in range(num_sim_steps)], distance)
         plt.xlabel("Time (ms)")
         plt.ylabel("Distance (mm)")
-        plt.vlines(75, ymin=min(distance), ymax=max(distance), color="r")
-        plt.vlines(125, ymin=min(distance), ymax=max(distance), color="r")
+        # plt.vlines(75, ymin=min(distance), ymax=max(distance), color="r")
+        # plt.vlines(125, ymin=min(distance), ymax=max(distance), color="r")
         plt.show()
-        return np.array(self.prey_bodies[0].position)
+        # return np.array(self.prey_bodies[0].position)
 
-env = TestEnvironment()
+if __name__ == "__main__":
+    env = TestEnvironment()
 
-positions = []
-for i in range(100):
-    pos = env.run()
-    positions.append(pos)
-
-
-positions = np.array(positions)
-plt.scatter(positions[:, 0], positions[:, 1])
-plt.show()
+    positions = []
+    env.run()
