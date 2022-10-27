@@ -4,6 +4,7 @@ from scipy.optimize import leastsq
 import scipy.io
 from sklearn.mixture import GaussianMixture
 from sklearn.naive_bayes import GaussianNB
+import scipy.stats as stats
 
 from Environment.Action_Space.draw_angle_dist import convert_action_to_bout_id, get_pdf_for_bout
 from Analysis.Behavioural.VisTools.get_action_name import get_action_name_unlateralised
@@ -33,7 +34,7 @@ def generate_data_mul_norm(mu_i, mu_a, sigma_i, sigma_a, n, only_positive=True):
     return samples
 
 
-def separate_dist_naive_bayes(action):
+def separate_dist_naive_bayes_j_turns(action):
     try:
         mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
     except FileNotFoundError:
@@ -77,18 +78,18 @@ def separate_dist_naive_bayes(action):
 
     mu_dist_1 = 0.4
     mu_ang_1 = 0.3
-    sigma_dist_1 = 0.03
-    sigma_ang_1 = 0.03
+    sigma_dist_1 = 0.025
+    sigma_ang_1 = 0.025
 
     mu_dist_2 = 0.8
     mu_ang_2 = 0.7
-    sigma_dist_2 = 0.03
-    sigma_ang_2 = 0.03
+    sigma_dist_2 = 0.025
+    sigma_ang_2 = 0.025
 
     mu_dist_3 = 1.2
     mu_ang_3 = 0.8
-    sigma_dist_3 = 0.06
-    sigma_ang_3 = 0.03
+    sigma_dist_3 = 0.055
+    sigma_ang_3 = 0.025
 
     # Generate data
     samples_1 = generate_data_mul_norm(mu_dist_1, mu_ang_1, sigma_dist_1, sigma_ang_1, n_each, True)
@@ -115,6 +116,52 @@ def separate_dist_naive_bayes(action):
                                               np.expand_dims(dist_angles, 1)), axis=1))
     plt.scatter(distance, dist_angles, c=pred)
     plt.show()
+    plt.clf()
+    plt.close()
+
+    j_turn_1_pdf_distance_x = np.linspace(mu_dist_1 - 3*sigma_dist_1, mu_dist_1 + 3*sigma_dist_1, 100)
+    j_turn_1_pdf_angle_x = np.linspace(mu_ang_1 - 3*sigma_ang_1, mu_ang_1 + 3*sigma_ang_1, 100)
+
+    j_turn_2_pdf_distance_x = np.linspace(mu_dist_2 - 3*sigma_dist_2, mu_dist_2 + 3*sigma_dist_2, 100)
+    j_turn_2_pdf_angle_x = np.linspace(mu_ang_2 - 3*sigma_ang_2, mu_ang_2 + 3*sigma_ang_2, 100)
+
+    j_turn_3_pdf_distance_x = np.linspace(mu_dist_3 - 3*sigma_dist_3, mu_dist_3 + 3*sigma_dist_3, 100)
+    j_turn_3_pdf_angle_x = np.linspace(mu_ang_3 - 3*sigma_ang_3, mu_ang_3 + 3*sigma_ang_3, 100)
+
+    fig, axs = plt.subplots(1, 2,  sharey=True)
+    fig.suptitle("J-Turn 1", fontsize=14)
+    axs[0].plot(j_turn_1_pdf_distance_x, stats.norm.pdf(j_turn_1_pdf_distance_x, mu_dist_1, sigma_dist_1))
+    axs[1].plot(j_turn_1_pdf_angle_x, stats.norm.pdf(j_turn_1_pdf_angle_x, mu_ang_1, sigma_ang_1))
+    axs[0].set_xlim(0, 2)
+    axs[1].set_xlim(0, 1)
+    axs[0].set_xlabel("Distance (mm)")
+    axs[0].set_ylabel("Density")
+    axs[1].set_xlabel("Angle (radians)")
+    plt.show()
+
+    fig, axs = plt.subplots(1, 2, sharey=True)
+    fig.suptitle("J-Turn 2", fontsize=14)
+    axs[0].plot(j_turn_2_pdf_distance_x, stats.norm.pdf(j_turn_2_pdf_distance_x, mu_dist_2, sigma_dist_2))
+    axs[1].plot(j_turn_2_pdf_angle_x, stats.norm.pdf(j_turn_2_pdf_angle_x, mu_ang_2, sigma_ang_2))
+    axs[0].set_xlim(0, 2)
+    axs[1].set_xlim(0, 1)
+    axs[0].set_xlabel("Distance (mm)")
+    axs[0].set_ylabel("Density")
+    axs[1].set_xlabel("Angle (radians)")
+    plt.show()
+
+    fig, axs = plt.subplots(1, 2, sharey=True)
+    fig.suptitle("J-Turn 3", fontsize=14)
+    axs[0].plot(j_turn_3_pdf_distance_x, stats.norm.pdf(j_turn_3_pdf_distance_x, mu_dist_3, sigma_dist_3))
+    axs[1].plot(j_turn_3_pdf_angle_x, stats.norm.pdf(j_turn_3_pdf_angle_x, mu_ang_3, sigma_ang_3))
+    axs[0].set_xlim(0, 2)
+    axs[1].set_xlim(0, 1)
+    axs[0].set_xlabel("Distance (mm)")
+    axs[0].set_ylabel("Density")
+    axs[1].set_xlabel("Angle (radians)")
+    plt.show()
+
+    # Return PDFs
 
     # Convert to events
     # events = []
@@ -262,6 +309,19 @@ def separate_dist2(action, dist=False, n_components=2):
     plt.clf()
     plt.close()
 
+    c_start_pdf_angle_x = np.linspace(means_hat[0] - 3*sds_hat[0]/2, means_hat[0] + 3*sds_hat[0]/2, 100)
+    c_start_pdf_distance_x = normal_dist[0]
+    c_start_pdf_distance_y = normal_dist[1]
+    c_start_pdf_distance_y[c_start_pdf_distance_x > 15] = 0
+
+    fig, axs = plt.subplots(1, 2, sharey=True)
+    fig.suptitle(get_action_name_unlateralised(action), fontsize=14)
+    axs[0].plot(normal_dist[0], normal_dist[1])
+    axs[1].plot(c_start_pdf_angle_x, stats.norm.pdf(c_start_pdf_angle_x, means_hat[0], sds_hat[0]/2))
+    axs[0].set_xlabel("Distance (mm)")
+    axs[0].set_ylabel("Density")
+    axs[1].set_xlabel("Angle (radians)")
+    plt.show()
 
 def separate_dist(action, dist=False):
     """DOESNT WORK"""
@@ -331,13 +391,13 @@ def plot_narrowed_dist(action, factor, outlier_removal=True):
     bout_name = get_action_name_unlateralised(action)
 
     fig, axs = plt.subplots(1, 2, sharey=True, figsize=(10, 6))
+    fig.suptitle(bout_name)
     axs[0].plot(dists, p_dist/np.sum(p_dist))
     axs[0].set_xlabel("Distance (mm)")
     axs[0].set_ylabel("PDF")
 
     axs[1].plot(angles, p_angle/np.sum(p_angle))
     axs[1].set_xlabel("Angle (radians)")
-    plt.title(bout_name)
     plt.savefig("All-Dists/" + bout_name + "-narrowed-" + str(factor))
     plt.clf()
     plt.close()
@@ -345,10 +405,26 @@ def plot_narrowed_dist(action, factor, outlier_removal=True):
 
 
 if __name__ == "__main__":
-    # separate_dist2(7, dist=False, n_components=2)
-    separate_dist_naive_bayes(4)
-    # plot_narrowed_dist(0, 3, outlier_removal=True)
+    #               Produce all modified distributions here.
+    # J-turn split into three, further narrowed.
+    # separate_dist_naive_bayes_j_turns(4)
 
+    # C-start, split into two, with the hgiher angle one discarded, and SD halved.
+    # separate_dist2(7, dist=False, n_components=2)
+
+    # RT - Narrow factor 3, plus outlier flattening.
+    # plot_narrowed_dist(1, 3, outlier_removal=True)
+
+    # sCS - Narrow to extent that best fits strike zone.
+    # plot_narrowed_dist(3, 10, outlier_removal=False)
+
+    # Slow2 - Split, remove higher angle distribution, and narrow.
+    # separate_dist2(0, dist=False, n_components=2)
+
+    # AS - Narrowed factor 3
+    plot_narrowed_dist(9, 3, outlier_removal=False)
+
+    #
 
     # j_turn_normal_dist, j_turn_normal_angle = get_pdf_for_bout(4)
     # j_turn_narrow_dist, j_turn_narrow_angle = narrow_dist(4)

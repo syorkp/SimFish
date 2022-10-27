@@ -57,28 +57,28 @@ if __name__ == "__main__":
     seq = get_sand_grain_engagement_sequences_multiple_trials("dqn_scaffold_33-1", "Behavioural-Data-Free", "Naturalistic",
                                                               30, range_for_engagement=30, preceding_steps=20, proceeding_steps=10)
     seq = [s[:50] for s in seq]
-    display_all_sequences(seq, min_length=20, max_length=60, save_figure=True, indicate_event_point=20,
+    display_all_sequences(seq, min_length=50, max_length=60, save_figure=True, indicate_event_point=20,
                           figure_save_location="Sand-Grain-Interaction-dqn_scaffold_33-1",)
-
-    #                            SAND GRAIN INTERACTION SEQUENCES (END)
-    seq = get_sand_grain_engagement_sequences_multiple_trials("dqn_scaffold_33-1", "Behavioural-Data-Free", "Naturalistic",
-                                                              30, range_for_engagement=30, preceding_steps=20, proceeding_steps=20)
-    seq = [s[-50:] for s in seq]
-    display_all_sequences(seq, min_length=20, max_length=60, save_figure=True, indicate_event_point=20,
-                          figure_save_location="Sand-Grain-Interaction-END-dqn_scaffold_33-1",)
+    #
+    # #                            SAND GRAIN INTERACTION SEQUENCES (END)
+    # seq = get_sand_grain_engagement_sequences_multiple_trials("dqn_scaffold_33-1", "Behavioural-Data-Free", "Naturalistic",
+    #                                                           30, range_for_engagement=30, preceding_steps=20, proceeding_steps=20)
+    # seq = [s[-50:] for s in seq]
+    # display_all_sequences(seq, min_length=20, max_length=60, save_figure=True, indicate_event_point=20,
+    #                       figure_save_location="Sand-Grain-Interaction-END-dqn_scaffold_33-1",)
 
     #                            PREY INTERACTION SEQUENCES
     seq = get_paramecia_engagement_sequences_multiple_trials("dqn_scaffold_33-1", "Behavioural-Data-Free", "Naturalistic",
                                                               30, range_for_engagement=20, preceding_steps=20, proceeding_steps=10)
     seq = [s for s in seq if len(s) < 50]
 
-    display_all_sequences(seq, min_length=20, max_length=60, save_figure=True, indicate_event_point=20,
+    display_all_sequences(seq, min_length=30, max_length=60, save_figure=True, indicate_event_point=20,
                           figure_save_location="Paramecia-Interaction-dqn_scaffold_33-1",)
 
     #                            PREY CAPTURE SEQUENCES
 
-    capture_sequences = get_capture_sequences(f"dqn_scaffold_33-1", "Behavioural-Data-Free", "Naturalistic", 30)
-    display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=True, figure_save_location="Captures-dqn_scaffold_33-1")
+    # capture_sequences = get_capture_sequences(f"dqn_scaffold_33-1", "Behavioural-Data-Free", "Naturalistic", 30)
+    # display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=True, figure_save_location="Captures-dqn_scaffold_33-1")
 
     #                            EXPLORATION SEQUENCES
     # capture_sequences_26 = get_capture_sequences(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic",

@@ -20,7 +20,7 @@ class DrawingBoard:
         self.height = height
         self.include_background = include_background
         if include_background:
-            self.background = data["background"][:, :, 0]
+            self.background = data["background"][:, :,]
             self.background = np.expand_dims(self.background/10, 2)
             self.background = np.concatenate((self.background,
                                               self.background,
@@ -272,7 +272,6 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
         energy_levels = data["internal_state"][:, 0]
     fish_positions = data["fish_position"]
     num_steps = fish_positions.shape[0]
-    num_steps = 200
 
     frames = []
     action_buffer = []
@@ -289,7 +288,7 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
                 
         frames = np.zeros((num_steps, np.int(env_variables["height"]*scale), np.int((env_variables["width"]+addon)*scale), 3))
     for step in range(num_steps):
-        print(step)
+        print(f"{step}/{num_steps}")
         if continuous_actions:
             action_buffer.append([data["impulse"][step], data["angle"][step]])
         else:
@@ -397,9 +396,9 @@ if __name__ == "__main__":
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-5")
-    model_name = "dqn_scaffold_26-2"
-    data = load_data(model_name, "Behavioural-Data-Background", "Naturalistic-1")
-    assay_config_name = "dqn_26_2a"
+    model_name = "dqn_scaffold_33-1"
+    data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
+    assay_config_name = "dqn_33_1"
     draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
                  trim_to_fish=True, showed_region_quad=750, save_id="background", include_background=True)
 

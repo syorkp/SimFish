@@ -358,13 +358,23 @@ class TestEnvironment:
                 # action_angle = np.random.choice([-angle_change, angle_change])
                 self.move_fish(action_impulse, angle_change)
 
+        pred_position = []
         fish_position = []
         for micro_step in range(num_sim_steps):
             fish_position.append(np.array(self.body.position))
+            pred_position.append(np.array(self.predator_body.position))
             # print(self.body.position)
             self.space.step(self.env_variables['phys_dt'])
             self.micro_step = micro_step
             self.move_realistic_predator(micro_step)
+
+        # pred_position = np.array(pred_position)
+        # pred_vectors = pred_position - pred_position[0]
+        # pred_distance = (pred_vectors[:, 0] ** 2 + pred_vectors[:, 1] ** 2) ** 0.5
+        # plt.plot([i*2 for i in range(100)], pred_distance/10)
+        # plt.xlabel("Time (ms)")
+        # plt.ylabel("Distance (mm)")
+        # plt.show()
 
         pred_final_pos = np.array(self.predator_body.position)
         self.space.remove(self.predator_shape, self.predator_shape.body)
@@ -419,8 +429,6 @@ def plot_escape_success(n_repeats=1, use_action_means=True,
 
     successful_escape_count = np.reshape(successful_escape_count, (vectors1.shape[0], vectors1.shape[1]))
     successful_escape_count /= n_repeats
-
-    pred_final_positions = np.array(pred_final_positions)
 
     fig, ax = plt.subplots(figsize=(10, 10))
     im = ax.imshow(successful_escape_count)
@@ -494,15 +502,15 @@ if __name__ == "__main__":
                         use_action_means=False, continuous=False, set_impulse=0,
                         set_angle=0.0,
                         impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=35., specified_action=0)
-    plot_escape_success(n_repeats=10,
-                        use_action_means=False, continuous=False, set_impulse=0,
-                        set_angle=0.0,
-                        impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=35., specified_action=5)
-    plot_escape_success(n_repeats=10,
-                        use_action_means=False, continuous=False, set_impulse=0,
-                        set_angle=0.0,
-                        impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=35., specified_action=7)
-    plot_escape_success(n_repeats=1,
-                        use_action_means=False, continuous=True, set_impulse=0,
-                        set_angle=0.,
-                        impulse_effect_noise=0.0, angular_effect_noise=0.0, predator_impulse=35)
+    # plot_escape_success(n_repeats=10,
+    #                     use_action_means=False, continuous=False, set_impulse=0,
+    #                     set_angle=0.0,
+    #                     impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=35., specified_action=5)
+    # plot_escape_success(n_repeats=10,
+    #                     use_action_means=False, continuous=False, set_impulse=0,
+    #                     set_angle=0.0,
+    #                     impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=35., specified_action=7)
+    # plot_escape_success(n_repeats=1,
+    #                     use_action_means=False, continuous=True, set_impulse=0,
+    #                     set_angle=0.,
+    #                     impulse_effect_noise=0.0, angular_effect_noise=0.0, predator_impulse=35)

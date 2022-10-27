@@ -17,7 +17,7 @@ class TestEnvironment:
             'drag': 0.7,  # water drag
 
             'fish_mass': 140.,
-            'fish_mouth_size': 1.,  # FINAL VALUE - 0.2mm diameter, so 1.
+            'fish_mouth_size': 4.,  # FINAL VALUE - 0.2mm diameter, so 1.
             'fish_head_size': 2.5,  # Old - 10
             'fish_tail_length': 41.5,  # Old: 70
             'eyes_verg_angle': 77.,  # in deg
@@ -93,7 +93,7 @@ class TestEnvironment:
 
         self.capture_fraction = int(
             100 * fraction_capture_possible)
-        self.capture_start = 0 #int((100 - self.capture_fraction) / 2)
+        self.capture_start = int((100 - self.capture_fraction) / 2)
         self.capture_end = self.capture_start + self.capture_fraction
 
         self.prey_consumed_this_step = False
@@ -270,7 +270,7 @@ class TestEnvironment:
             else:
                 self.capture_possible = False
             position.append(np.array(self.body.position))
-            self.space.step(self.env_variables['phys_dt'])
+            self.space.step(self.env_variables['phys_dt']*2)
 
         position = np.array(position)
         position -= np.array([[500, 500]])
@@ -433,6 +433,6 @@ if __name__ == "__main__":
     #                         use_action_means=False, continuous=True, overlay_all_sCS_data=True,# set_impulse=2.1,
     #                         set_angle=0.4,
     #                         impulse_effect_noise=0.14, angular_effect_noise=0.5)
-    plot_strike_zone(fraction_capture_permitted=0.7, angle_deviation_allowed=np.pi/8, n_repeats=1,
-                     use_action_means=True, continuous=False, overlay_all_sCS_data=True)
+    plot_strike_zone(fraction_capture_permitted=0.98, angle_deviation_allowed=np.pi/8, n_repeats=50,
+                     use_action_means=False, continuous=False, overlay_all_sCS_data=False)
 

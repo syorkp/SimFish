@@ -11,7 +11,7 @@ class TestEnvironment:
 
     def __init__(self):
         self.env_variables = {
-            'phys_dt': 0.1,  # physics time step
+            'phys_dt': 0.2,  # physics time step
             'drag': 0.7,  # water drag
 
             'fish_mass': 140.,
@@ -163,7 +163,7 @@ class TestEnvironment:
 
     def run(self, num_sim_steps=100):
         position = []
-        self.move_fish(2.97)  # S-capture swim impulse for 0.6mm average.
+        self.move_fish(2.2)  # S-capture swim impulse for 0.6mm average.
         for micro_step in range(num_sim_steps):
             position.append(np.array(self.body.position))
             self.space.step(self.env_variables['phys_dt'])
@@ -171,9 +171,10 @@ class TestEnvironment:
         distance = position - np.array([100, 100])
         distance = (distance[:, 0] ** 2 + distance[:, 1] ** 2) ** 0.5
         distance = distance/10
-        plt.plot([i for i in range(num_sim_steps)], distance)
+        plt.plot([i for i in range(0, int(num_sim_steps * 10 * self.env_variables["phys_dt"]), int(10 * self.env_variables["phys_dt"]))], distance)
         plt.xlabel("Time (ms)")
         plt.ylabel("Distance (mm)")
+        plt.hlines(max(distance), 0, num_sim_steps * 10 * self.env_variables["phys_dt"])
         # plt.vlines(75, ymin=min(distance), ymax=max(distance), color="r")
         # plt.vlines(125, ymin=min(distance), ymax=max(distance), color="r")
         plt.show()

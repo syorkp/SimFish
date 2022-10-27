@@ -12,7 +12,7 @@ from Analysis.load_model_config import load_configuration_files
 try:
     run_config = sys.argv[1]
 except IndexError:
-    run_config = "1l"
+    run_config = "draw_ep"
 
 
 if run_config == "extended_1l":
@@ -34,15 +34,39 @@ elif run_config == "4l":
 elif run_config == "dense":
     produce_meis("dqn_scaffold_26-2", "rnn_in", full_reafference=True, iterations=100, conv=False)
 elif run_config == "draw_ep":
-    model_name = "xdqn_scaffold_14-2"
-    assay_config_name = "dqn_26_2_videos"
+    model_name = "dqn_scaffold_33-1"
+    data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
+    assay_config_name = "dqn_33_1"
+    draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
+                 trim_to_fish=True, showed_region_quad=750, save_id="background", include_background=True)
 
-    data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-1")
+    model_name = "dqn_scaffold_33-1"
+    data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-2")
+    assay_config_name = "dqn_33_1"
     draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
-                 trim_to_fish=True, showed_region_quad=750, save_id="A11")
-    data = load_data(model_name, "Behavioural-Data-Videos-C1", "Naturalistic-1")
+                 trim_to_fish=True, showed_region_quad=750, save_id="background", include_background=True)
+
+    model_name = "dqn_scaffold_33-1"
+    data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-3")
+    assay_config_name = "dqn_33_1"
     draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
-                 trim_to_fish=True, showed_region_quad=750, save_id="C11")
+                 trim_to_fish=True, showed_region_quad=750, save_id="background", include_background=True)
+
+    model_name = "dqn_scaffold_33-1"
+    data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-4")
+    assay_config_name = "dqn_33_1"
+    draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
+                 trim_to_fish=True, showed_region_quad=750, save_id="background", include_background=True)
+
+    # model_name = "xdqn_scaffold_14-2"
+    # assay_config_name = "dqn_26_2_videos"
+    #
+    # data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-1")
+    # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
+    #              trim_to_fish=True, showed_region_quad=750, save_id="A11")
+    # data = load_data(model_name, "Behavioural-Data-Videos-C1", "Naturalistic-1")
+    # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
+    #              trim_to_fish=True, showed_region_quad=750, save_id="C11")
 
     # model_name = "dqn_scaffold_26-2"
     # assay_config_name = "dqn_26_2_videos"
