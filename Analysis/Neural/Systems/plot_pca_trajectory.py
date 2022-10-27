@@ -35,10 +35,21 @@ def estimate_gaussian(dataset):
 
 def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None, display_numbers=True,
                                         context_name="No Label", self_normalise_activity_data=True, n_components=2,
-                                        exclude_outliers=True):
+                                        exclude_outliers=True, detrend=True,
+                                        include_only_active_neurons=True):
     flattened_activity_data = np.concatenate((activity_data), axis=1)
     if self_normalise_activity_data:
         flattened_activity_data = normalise_within_neuron_multiple_traces(flattened_activity_data)
+
+    if include_only_active_neurons:
+        std_main = np.std(flattened_activity_data, axis=1)
+        varying_main = (std_main > 0.4)
+        n_neurons = np.sum(varying_main * 1)
+        flattened_activity_data = flattened_activity_data[varying_main]
+    else:
+        n_neurons = flattened_activity_data.shape[0]
+    if detrend:
+        flattened_activity_data = signal.detrend(flattened_activity_data)
 
     pca = PCA(n_components=n_components)
     pca.fit(flattened_activity_data)
@@ -83,7 +94,7 @@ def plot_pca_trajectory_multiple_trials(activity_data, timepoints_to_label=None,
     if n_components == 2:
         plt.colorbar()
 
-    plt.title("PCA Phase Space: " + context_name)
+    plt.title(f"PCA Phase Space: {context_name}  Neurons included: {n_neurons}")
     plt.show()
 
     # Trajectory space
@@ -398,7 +409,6 @@ if __name__ == "__main__":
         data = load_data("dqn_scaffold_14-1", "Interruptions-HA", f"Naturalistic-{i}")
         # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic-1")
         rnn_data = data["rnn_state_actor"][:, 0, 0, :]
-        rnn_data = signal.detrend(rnn_data)
         rnn_data = np.swapaxes(rnn_data, 0, 1)
         consumption_points.append([i for i in range(len(data["consumed"][:])) if data["consumed"][i]])
         rnn_data_full.append(rnn_data)
@@ -411,7 +421,8 @@ if __name__ == "__main__":
     # consumption_points = [[i for i, b in enumerate(be[:, 6]) if b == 1] for be in behavioural_labels]
     # consumption_points = []
     # plot_pca_trajectory(rnn_data_full, timepoints_to_label=consumption_points)
-    plot_pca_trajectory_multiple_trials(rnn_data_full, consumption_points, display_numbers=False)
+    plot_pca_trajectory_multiple_trials(rnn_data_full, consumption_points, display_numbers=False, detrend=True,
+                                        include_only_active_neurons=True)
     # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-1")
     # rnn_data = np.swapaxes(data["rnn_state_actor"][:, 0, 0, :], 0, 1)
     # # reduced_rnn_data = remove_those_with_no_output(rnn_data, "dqn_scaffold_18-2", "dqn_18_2", proportion_to_remove=0.2)

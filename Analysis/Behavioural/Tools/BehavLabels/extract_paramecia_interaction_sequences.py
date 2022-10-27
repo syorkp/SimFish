@@ -4,18 +4,18 @@ from Analysis.load_data import load_data
 
 
 def get_paramecia_engagement_sequences_multiple_trials(model_name, assay_config, assay_id, n, range_for_engagement,
-                                                        preceding_steps):
+                                                        preceding_steps, proceeding_steps):
     """Returns the numbers of possible and actual engagements with each feature - multiple trials"""
 
     actions_compiled = []
     for i in range(1, n+1):
         d = load_data(model_name, assay_config, f"{assay_id}-{i}")
-        action_sequences = get_paramecia_engagement_sequences(d, range_for_engagement, preceding_steps)
+        action_sequences = get_paramecia_engagement_sequences(d, range_for_engagement, preceding_steps, proceeding_steps)
         actions_compiled += action_sequences
     return actions_compiled
 
 
-def get_paramecia_engagement_sequences(data, range_for_engagement=50, preceding_steps=20):
+def get_paramecia_engagement_sequences(data, range_for_engagement=50, preceding_steps=20, proceeding_steps=10):
     """Returns the numbers of possible and actual engagements with each feature"""
 
     fish_position = np.expand_dims(data["fish_position"], 1)
@@ -41,8 +41,10 @@ def get_paramecia_engagement_sequences(data, range_for_engagement=50, preceding_
             actions.append(data["action"][t])
         else:
             if t-1 != interaction_timestamps[i-1] and len(current_sequence) > 0:
-                actions = [data["action"][i] for i in range(current_sequence[0]-preceding_steps, current_sequence[0])] + actions
-                current_sequence = [i for i in range(current_sequence[0]-preceding_steps, current_sequence[0])] + current_sequence
+                actions = [data["action"][i] for i in range(current_sequence[0]-preceding_steps, current_sequence[0])] + actions + \
+                          [data["action"][i] for i in range(current_sequence[-1] + 1, current_sequence[0] + proceeding_steps + 1)]
+                current_sequence = [i for i in range(current_sequence[0]-preceding_steps, current_sequence[0])] + current_sequence + \
+                                   [i for i in range(current_sequence[-1]+1, current_sequence[0] + 1 + proceeding_steps)]
 
                 interaction_timestamps_sequences.append(np.array(current_sequence))
                 actions_compiled.append(actions)

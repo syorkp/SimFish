@@ -13,24 +13,24 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 def delete_nv_folder():
     print(os.getcwd())
-    location = "./../../../.nv"
+    location = "./../../../../home/zcbtspi/.nv"
     if os.path.isdir(location):
         print(f"Correct dir, removing {location}")
         shutil.rmtree(location)
         if os.path.isdir(location):
             print("Failed...")
-    location = "./../../.nv"
-    if os.path.isdir(location):
-        print(f"Correct dir, removing {location}")
-        shutil.rmtree(location)
-        if os.path.isdir(location):
-            print("Failed...")
-    location = "./../.nv"
-    if os.path.isdir(location):
-        print("Correct dir, removing")
-        shutil.rmtree(location)
-        if os.path.isdir(location):
-            print("Failed...")
+    # location = "./../../.nv"
+    # if os.path.isdir(location):
+    #     print(f"Correct dir, removing {location}")
+    #     shutil.rmtree(location)
+    #     if os.path.isdir(location):
+    #         print("Failed...")
+    # location = "./../.nv"
+    # if os.path.isdir(location):
+    #     print("Correct dir, removing")
+    #     shutil.rmtree(location)
+    #     if os.path.isdir(location):
+    #         print("Failed...")
 
 
 class BaseService:
@@ -117,7 +117,7 @@ class BaseService:
             # options = tf.GPUOptions(per_process_gpu_memory_fraction=self.memory_fraction)
             # config = tf.ConfigProto(gpu_options=options)
             print("Using GPU")
-            # delete_nv_folder()
+            delete_nv_folder()
             config = tf.ConfigProto()
             config.gpu_options.allow_growth = True
         else:
