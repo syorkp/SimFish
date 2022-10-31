@@ -12,15 +12,18 @@ from Environment.Action_Space.draw_angle_dist import convert_action_to_bout_id
 
 def get_bout_data(bout_id):
     try:
-        mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
+        mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
     except FileNotFoundError:
         try:
-            mat = scipy.io.loadmat("../Environment/Action_Space/Bout_classification/bouts.mat")
+            mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
         except FileNotFoundError:
             try:
-                mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
-            except:
-                mat = scipy.io.loadmat("Bout_classification/bouts.mat")
+                mat = scipy.io.loadmat("../Environment/Action_Space/Bout_classification/bouts.mat")
+            except FileNotFoundError:
+                try:
+                    mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
+                except:
+                    mat = scipy.io.loadmat("Bout_classification/bouts.mat")
 
     bout_id = convert_action_to_bout_id(bout_id)
     bout_id += 1

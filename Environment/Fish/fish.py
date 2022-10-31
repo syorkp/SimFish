@@ -5,7 +5,8 @@ from skimage.transform import resize, rescale
 
 from Environment.Fish.vis_fan import VisFan
 from Environment.Fish.eye import Eye
-from Environment.Action_Space.draw_angle_dist import draw_angle_dist
+# from Environment.Action_Space.draw_angle_dist import draw_angle_dist
+from Environment.Action_Space.draw_angle_dist_new import draw_angle_dist_new as draw_angle_dist
 
 
 class Fish:
@@ -237,7 +238,8 @@ class Fish:
         :return:
         """
         # return (distance * 10 - (0.004644 * self.env_variables['fish_mass'] + 0.081417)) / 1.771548
-        return (distance * 10) * 0.360574383  # From mm
+        # return (distance * 10) * 0.360574383  # From mm
+        return (distance * 10) * 0.34452532909386484  # From mm
 
     def calculate_action_cost(self, angle, distance):
         """

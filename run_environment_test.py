@@ -54,9 +54,18 @@ else:
     with open(file_path, 'r') as f:
         env = json.load(f)
     # env["prey_num"] = 0
+    env["probability_of_predator"] = 1
+    env["immunity_steps"] = 0
+    env["distance_from_fish"] = 181.71216752587327
+    env["phys_dt"] = 0.2
+    env["predator_mass"] = 200
+    env["predator_inertia"] = 0.0001
+    env["predator_size"] = 32
+    env["predator_impulse"] = 25
 
     sim_state = DiscreteNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=True,
                                                 using_gpu=False)
+
 
 q = False
 d = False

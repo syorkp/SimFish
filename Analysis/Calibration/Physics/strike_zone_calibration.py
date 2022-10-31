@@ -310,6 +310,8 @@ def plot_strike_zone(fraction_capture_permitted, angle_deviation_allowed, n_repe
     angs = np.zeros((vectors.shape[0]))
     n_test = vectors.shape[0]
 
+    fish_positions = []
+
     for j in range(n_repeats):
         print(f"{j} / {n_repeats}")
         for i, vector in enumerate(vectors):
@@ -326,10 +328,32 @@ def plot_strike_zone(fraction_capture_permitted, angle_deviation_allowed, n_repe
 
             s = env.run(vector, fixed_capture=use_action_means, continuous=continuous, set_impulse=impulse,
                         set_angle=angle)
+
             if s:
+                # fish_positions.append(np.array(env.body.position))
                 successful_capture_count[i] += 1
                 angs[i] = env.latest_incidence
 
+    for j in range(n_repeats):
+        print(f"{j} / {n_repeats}")
+        for i, vector in enumerate(vectors):
+            # print(f"{i} / {n_test}")
+            # Apply motor effect noise
+            if impulse_effect_noise > 0:
+                impulse = set_impulse + (np.random.normal(0, impulse_effect_noise) * abs(set_impulse))
+            else:
+                impulse = set_impulse
+            if angular_effect_noise > 0:
+                angle = set_angle + (np.random.normal(0, angular_effect_noise) * abs(set_angle))
+            else:
+                angle = set_angle
+
+            s = env.run([0, 0], fixed_capture=use_action_means, continuous=continuous, set_impulse=impulse,
+                        set_angle=angle)
+
+            fish_positions.append(np.array(env.body.position))
+
+    fish_positions = np.array(fish_positions)
     successful_capture_count = np.reshape(successful_capture_count, (vectors1.shape[0], vectors1.shape[1]))
     angs = np.reshape(angs, (vectors1.shape[0], vectors1.shape[1]))
     successful_capture_count /= n_repeats
@@ -376,6 +400,14 @@ def plot_strike_zone(fraction_capture_permitted, angle_deviation_allowed, n_repe
                                 )
     ax.add_artist(scale_bar)
 
+    fish_positions -= 500
+    fish_positions[:, 0] = np.absolute(fish_positions[:, 0])
+    fish_positions *= resolution/10
+    fish_positions[:, 0] += x
+    fish_positions[:, 1] += y
+
+    # plt.scatter(fish_positions[:, 0], fish_positions[:, 1], alpha=0.3)
+
     if overlay_all_sCS_data:
         distances, angles = get_bout_data(3)
         x_diff = distances * np.sin(angles)
@@ -401,12 +433,12 @@ def plot_strike_zone(fraction_capture_permitted, angle_deviation_allowed, n_repe
         k = kde.gaussian_kde([y, x])
         yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
 
-        zi = k(np.vstack([xi.flatten(), yi.flatten()]))
-        # plt.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap="Reds", )  # cmap='gist_gray')#  cmap='PuBu_r')
-        plt.contour(yi, -xi, zi.reshape(xi.shape), 3)
-
-        plt.xlim(0, successful_capture_count.shape[1]-1)
-        plt.ylim(0, successful_capture_count.shape[0]-1)
+        # zi = k(np.vstack([xi.flatten(), yi.flatten()]))
+        # # plt.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap="Reds", )  # cmap='gist_gray')#  cmap='PuBu_r')
+        # plt.contour(yi, -xi, zi.reshape(xi.shape), 3)
+        #
+        # plt.xlim(0, successful_capture_count.shape[1]-1)
+        # plt.ylim(0, successful_capture_count.shape[0]-1)
 
 
     fig.colorbar(im, ax=ax, label="Prop Success")
@@ -433,6 +465,7 @@ if __name__ == "__main__":
     #                         use_action_means=False, continuous=True, overlay_all_sCS_data=True,# set_impulse=2.1,
     #                         set_angle=0.4,
     #                         impulse_effect_noise=0.14, angular_effect_noise=0.5)
-    plot_strike_zone(fraction_capture_permitted=0.98, angle_deviation_allowed=np.pi/8, n_repeats=50,
-                     use_action_means=False, continuous=False, overlay_all_sCS_data=False)
+    plot_strike_zone(fraction_capture_permitted=0.98, angle_deviation_allowed=np.pi,#,/8,
+                     n_repeats=1,
+                     use_action_means=True, continuous=False, overlay_all_sCS_data=True)
 

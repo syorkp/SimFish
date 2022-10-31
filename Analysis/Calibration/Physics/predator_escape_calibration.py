@@ -6,8 +6,10 @@ import random
 import pymunk
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
-from Environment.Action_Space.draw_angle_dist import draw_angle_dist, draw_angle_dist_narrowed
+from Environment.Action_Space.draw_angle_dist_new import draw_angle_dist_new as draw_angle_dist_narrowed
 from Environment.Action_Space.plot_bout_data import get_bout_data
+from Environment.Action_Space.draw_angle_dist import convert_action_to_bout_id
+from Analysis.Behavioural.VisTools.get_action_name import get_action_name_unlateralised
 
 
 class TestEnvironment:
@@ -16,7 +18,7 @@ class TestEnvironment:
         self.touched_predator = False
 
         self.env_variables = {
-            'phys_dt': 0.1,  # physics time step
+            'phys_dt': 0.2,  # physics time step
             'drag': 0.7,  # water drag
 
             'fish_mass': 140.,
@@ -41,7 +43,7 @@ class TestEnvironment:
             'prey_fluid_displacement': True,
 
             'predator_mass': 200.,
-            'predator_inertia': 40.,
+            'predator_inertia': 0.0001,
             'predator_size': 32, #87.,  # To be 8.7mm in diameter, formerly 100
             'predator_impulse': predator_impulse,
 
@@ -257,7 +259,8 @@ class TestEnvironment:
         :return:
         """
         # return (distance * 10 - (0.004644 * self.env_variables['fish_mass'] + 0.081417)) / 1.771548
-        return (distance * 10) * 0.360574383  # From mm
+        # return (distance * 10) * 0.360574383  # From mm
+        return (distance * 10) * 0.34452532909386484  # From mm
 
     def check_fish_proximity_to_walls(self):
         fish_position = self.body.position
@@ -303,6 +306,7 @@ class TestEnvironment:
         self.predator_body.position = (x_position, y_position)
         self.predator_target = fish_position
         self.total_predator_steps = 0
+        self.predator_body.velocity = (self.predator_target[0]/200, self.predator_target[1]/200)
 
         self.predator_shape.color = (0, 1, 0)
         self.predator_location = (x_position, y_position)
@@ -352,9 +356,11 @@ class TestEnvironment:
             if fixed_action:
                 self.move_fish(22.66, 0.33)
             else:
-                angle_change, distance = draw_angle_dist_narrowed(specified_action)  # draw_angle_dist(0)
+                bout_id = convert_action_to_bout_id(specified_action)
+                distance, angle_change = draw_angle_dist_narrowed(bout_id)  # draw_angle_dist(0)
 
                 action_impulse = self.calculate_impulse(distance)
+                # print(f"Distance: {distance} Impulse; {action_impulse}")
                 # action_angle = np.random.choice([-angle_change, angle_change])
                 self.move_fish(action_impulse, angle_change)
 
@@ -368,13 +374,16 @@ class TestEnvironment:
             self.micro_step = micro_step
             self.move_realistic_predator(micro_step)
 
-        # pred_position = np.array(pred_position)
-        # pred_vectors = pred_position - pred_position[0]
-        # pred_distance = (pred_vectors[:, 0] ** 2 + pred_vectors[:, 1] ** 2) ** 0.5
-        # plt.plot([i*2 for i in range(100)], pred_distance/10)
-        # plt.xlabel("Time (ms)")
-        # plt.ylabel("Distance (mm)")
-        # plt.show()
+        pred_position = np.array(pred_position)
+        pred_vectors = pred_position - pred_position[0]
+        pred_distance = (pred_vectors[:, 0] ** 2 + pred_vectors[:, 1] ** 2) ** 0.5
+        pred_distance = pred_distance[1:] - pred_distance[:-1]
+        pred_distance *= 500
+
+        plt.plot([i*2 for i in range(99)], pred_distance/10)
+        plt.xlabel("Time (ms)")
+        plt.ylabel("Velocity (mms-1)")
+        plt.show()
 
         pred_final_pos = np.array(self.predator_body.position)
         self.space.remove(self.predator_shape, self.predator_shape.body)
@@ -390,7 +399,7 @@ class TestEnvironment:
 
 
 def plot_escape_success(n_repeats=1, use_action_means=True,
-                        continuous=False, set_impulse=2., set_angle=0., impulse_effect_noise=0.,
+                        continuous=False, set_impulse=2., set_angle=0., set_action=True, impulse_effect_noise=0.,
                         angular_effect_noise=0., predator_impulse=2., specified_action=7):
     env = TestEnvironment(predator_impulse)
     xp, yp = np.arange(-100, 100, 10), np.arange(-100, 100, 10)
@@ -417,8 +426,12 @@ def plot_escape_success(n_repeats=1, use_action_means=True,
                 else:
                     angle = set_angle
             else:
-                impulse = set_impulse
-                angle = set_angle
+                if set_action:
+                    impulse = set_impulse
+                    angle = set_angle
+                else:
+                    impulse = None
+                    angle = None
 
             s, fish_pos, pred_pos = env.run(vector, fixed_action=use_action_means, continuous=continuous, set_impulse=impulse,
                         set_angle=angle, specified_action=specified_action)
@@ -489,27 +502,32 @@ def plot_escape_success(n_repeats=1, use_action_means=True,
     # pred_final_positions += 40
 
     plt.scatter(fish_pos[:, 0], fish_pos[:, 1])
+    plt.title(f"Bout: {get_action_name_unlateralised(specified_action)} ")
     # plt.scatter(pred_final_positions[:, 0], pred_final_positions[:, 1], alpha=0.1)
     plt.show()
 
 
 if __name__ == "__main__":
-    # plot_escape_success(n_repeats=10,
-    #                     use_action_means=False, continuous=True, set_impulse=2.1,
-    #                     set_angle=0.4,
-    #                     impulse_effect_noise=0.14, angular_effect_noise=0.5)
-    plot_escape_success(n_repeats=10,
+    # plot_escape_success(n_repeats=1,
+    #                     use_action_means=False, continuous=True, set_impulse=0,
+    #                     set_angle=0.,
+    #                     impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=25)
+    # plot_escape_success(n_repeats=1,
+    #                     use_action_means=True, continuous=False, set_impulse=0,
+    #                     set_angle=0.0,
+    #                     impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=15., specified_action=6)
+    # plot_escape_success(n_repeats=1,
+    #                     use_action_means=False, continuous=False, set_impulse=0,
+    #                     set_angle=0.0,
+    #                     impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=25., specified_action=1)
+    plot_escape_success(n_repeats=1,
                         use_action_means=False, continuous=False, set_impulse=0,
                         set_angle=0.0,
-                        impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=35., specified_action=0)
-    # plot_escape_success(n_repeats=10,
+                        impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=25., specified_action=7)
+    # plot_escape_success(n_repeats=20,
     #                     use_action_means=False, continuous=False, set_impulse=0,
     #                     set_angle=0.0,
-    #                     impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=35., specified_action=5)
-    # plot_escape_success(n_repeats=10,
-    #                     use_action_means=False, continuous=False, set_impulse=0,
-    #                     set_angle=0.0,
-    #                     impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=35., specified_action=7)
+    #                     impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=25., specified_action=1)
     # plot_escape_success(n_repeats=1,
     #                     use_action_means=False, continuous=True, set_impulse=0,
     #                     set_angle=0.,

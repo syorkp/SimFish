@@ -255,7 +255,8 @@ def draw_angle_dist_narrowed(bout_id, n=3):
 
 if __name__ == "__main__":
 # display_pdf_and_cdf(0)
-    i, a = get_modal_impulse_and_angle(7)
+    x, i=   draw_angle_dist(0)
+    # i, a = get_modal_impulse_and_angle(7)
 
     # for i in range(0, 13):
     #     display_pdf_and_cdf(i)

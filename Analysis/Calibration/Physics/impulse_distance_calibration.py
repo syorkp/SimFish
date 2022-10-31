@@ -14,7 +14,7 @@ class TestEnvironment:
 
     def __init__(self, fraction_capture_possible, permitted_angular_deviation):
         self.env_variables = {
-            'phys_dt': 0.1,  # physics time step
+            'phys_dt': 0.2,  # physics time step
             'drag': 0.7,  # water drag
 
             'fish_mass': 140.,
@@ -174,9 +174,10 @@ class TestEnvironment:
         :return:
         """
         old = (distance * 10 - (0.004644 * self.env_variables['fish_mass'] + 0.081417)) / 1.771548
-        new = (distance * 10) * 0.360574383 # From mm
+        new = (distance * 10) * 0.360574383  # From mm
+        newest = (distance * 10) * 0.34452532909386484  # From mm
 
-        print(f"OLD: {old}  NEW: {new}")
+        print(f"OLD: {old}  NEW: {new}   NEWEST: {newest}")
 
     def run(self, impulse, num_sim_steps=100):
         self.body.position = (500, 500)

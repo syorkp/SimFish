@@ -323,6 +323,7 @@ def separate_dist2(action, dist=False, n_components=2):
     axs[1].set_xlabel("Angle (radians)")
     plt.show()
 
+
 def separate_dist(action, dist=False):
     """DOESNT WORK"""
     normal_dist, normal_angle = get_pdf_for_bout(action)
