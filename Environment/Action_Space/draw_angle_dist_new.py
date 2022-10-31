@@ -27,7 +27,7 @@ def draw_angle_dist_new(bout_id):
         cov = [[1.35791922, 0.10690938],
                [0.10690938, 0.10053853]]
     elif bout_id == 10:  # AS
-        mean = [0.64204809, 0.07020727],
+        mean = [0.64204809, 0.07020727]
         cov = [[0.04002195, -0.00028982],
                [-0.00028982, 0.00160061]]
     else:
@@ -41,6 +41,7 @@ def draw_angle_dist_new(bout_id):
 
 
 if __name__ == "__main__":
+    x  = draw_angle_dist_new(10)
     x  = draw_angle_dist_new(5)
 
 
