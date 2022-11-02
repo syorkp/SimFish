@@ -28012,6 +28012,27 @@ dqn_data_predator = [
     },
 ]
 
+# New generation of models
+
+dqn_new_scaffold_test = [
+    {
+        "Model Name": "dqn_scaffold_beta_test",
+        "Environment Name": "dqn_scaffold_beta_test",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
 
 if run_config is None:
     run_config = dqn_data_predator
