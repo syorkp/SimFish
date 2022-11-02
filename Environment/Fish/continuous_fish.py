@@ -12,7 +12,8 @@ class ContinuousFish(Fish):
         self.new_simulation = new_simulation
 
     def calculate_distance(self, impulse):
-        return (1.771548 * impulse + self.env_variables['fish_mass'] * 0.004644 + 0.081417) / 10
+        # return (1.771548 * impulse + self.env_variables['fish_mass'] * 0.004644 + 0.081417) / 10
+        return impulse/(10 * 0.34452532909386484)  # To mm
 
     def take_action(self, action):
         """Overrides method for discrete fish"""
@@ -38,16 +39,27 @@ class ContinuousFish(Fish):
         impulse = action[0]
         angle = action[1]
 
+        # ORIGINAL
         # Noise from uniform.
-        impulse_deviation = np.absolute(np.random.normal(0, self.env_variables["impulse_effect_noise_sd_x"])) * abs(impulse) + \
-                            self.env_variables["impulse_effect_noise_sd_c"]
-        impulse_deviation = impulse_deviation.item()
-        impulse = impulse + impulse_deviation
+        # impulse_deviation = np.absolute(np.random.normal(0, self.env_variables["impulse_effect_noise_sd_x"])) * abs(impulse) + \
+        #                     self.env_variables["impulse_effect_noise_sd_c"]
+        # impulse_deviation = impulse_deviation.item()
+        # impulse = impulse + impulse_deviation
+        #
+        # angle_deviation = np.absolute(np.random.normal(0, self.env_variables["angle_effect_noise_sd_x"])) * abs(angle) + \
+        #                     self.env_variables["angle_effect_noise_sd_c"]
+        # angle_deviation = angle_deviation.item()
+        # angle = angle + float(angle_deviation)
 
-        angle_deviation = np.absolute(np.random.normal(0, self.env_variables["angle_effect_noise_sd_x"])) * abs(angle) + \
-                            self.env_variables["angle_effect_noise_sd_c"]
-        angle_deviation = angle_deviation.item()
-        angle = angle + float(angle_deviation)
+        # NEW (02.11.22 onwards)
+        impulse_deviation = (np.random.normal(0, self.env_variables["impulse_effect_noise_sd_x"]) * abs(impulse)) + \
+                            (np.random.normal(0, self.env_variables["impulse_effect_noise_sd_c"]) * abs(angle))
+
+        angle_deviation = (np.random.normal(0, self.env_variables["angle_effect_noise_sd_x"]) * abs(angle)) + \
+                          (np.random.normal(0, self.env_variables["angle_effect_noise_sd_c"]) * abs(impulse))
+
+        impulse = impulse + impulse_deviation
+        angle = angle + angle_deviation
 
         self.prev_action_impulse = impulse
         self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))

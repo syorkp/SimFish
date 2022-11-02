@@ -254,7 +254,8 @@ class Fish:
         if action == 0:  # Slow2
             angle_change, distance = draw_angle_dist(8)
             reward = -self.calculate_action_cost(angle_change, distance)
-            self.prev_action_angle = np.random.choice([-angle_change, angle_change])
+            self.prev_action_angle = angle_change
+            # self.prev_action_angle = np.random.choice([-angle_change, angle_change])
             self.body.angle += self.prev_action_angle
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -281,7 +282,8 @@ class Fish:
         elif action == 3:  # Short capture swim
             angle_change, distance = draw_angle_dist(0)
             reward = -self.calculate_action_cost(angle_change, distance) - self.env_variables['capture_swim_extra_cost']
-            self.prev_action_angle = np.random.choice([-angle_change, angle_change])
+            self.prev_action_angle = angle_change
+            # self.prev_action_angle = np.random.choice([-angle_change, angle_change])
             self.body.angle += self.prev_action_angle
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -332,11 +334,30 @@ class Fish:
         elif action == 9:  # Approach swim.
             angle_change, distance = draw_angle_dist(10)
             reward = -self.calculate_action_cost(angle_change, distance)
-            self.prev_action_angle = np.random.choice([-angle_change, angle_change])
+            self.prev_action_angle = angle_change
+            # self.prev_action_angle = np.random.choice([-angle_change, angle_change])
             self.body.angle += self.prev_action_angle
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
             self.head.color = (0, 1, 0)
+
+        elif action == 10:  # j turn 1 right
+            angle_change, distance = draw_angle_dist(44)
+            reward = -self.calculate_action_cost(angle_change, distance)
+            self.prev_action_angle = angle_change
+            self.body.angle += angle_change
+            self.prev_action_impulse = self.calculate_impulse(distance)
+            self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
+            self.head.color = [1, 1, 1]
+
+        elif action == 11:  # j turn 2 left
+            angle_change, distance = draw_angle_dist(44)
+            reward = -self.calculate_action_cost(angle_change, distance)
+            self.prev_action_angle = -angle_change
+            self.body.angle -= angle_change
+            self.prev_action_impulse = self.calculate_impulse(distance)
+            self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
+            self.head.color = [1, 1, 1]
 
         else:
             reward = None

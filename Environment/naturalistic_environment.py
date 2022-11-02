@@ -31,7 +31,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.create_current()
             self.capture_fraction = int(
                 self.env_variables["phys_steps_per_sim_step"] * self.env_variables['fraction_capture_permitted'])
-            self.capture_start = int((self.env_variables['phys_steps_per_sim_step'] - self.capture_fraction) / 2)
+            self.capture_start = 1 #int((self.env_variables['phys_steps_per_sim_step'] - self.capture_fraction) / 2)
             self.capture_end = self.capture_start + self.capture_fraction
 
         self.paramecia_distances = []
@@ -178,7 +178,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                 if self.env_variables["current_setting"]:
                     self.resolve_currents()
                     self.bring_fish_in_bounds()
-                if self.fish.making_capture and self.capture_start < micro_step < self.capture_end:
+                if self.fish.making_capture and self.capture_start <= micro_step <= self.capture_end:
                     self.fish.capture_possible = True
                 else:
                     self.fish.capture_possible = False
@@ -448,8 +448,10 @@ class NaturalisticEnvironment(BaseEnvironment):
         - Diagonal (could be with or without dispersal)
         """
         if self.env_variables["current_setting"] == "Circular":
+            print("Creating circular current")
             self.create_circular_current()
         elif self.env_variables["current_setting"] == "Linear":
+            print("Creating linear current")
             self.create_linear_current()
         # elif self.env_variables["current_setting"] == "Diagonal":
         #     self.create_diagonal_current()

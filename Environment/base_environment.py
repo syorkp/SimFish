@@ -242,8 +242,9 @@ class BaseEnvironment:
 
     def reproduce_prey(self):
         num_prey = len(self.prey_bodies)
-        p_prey_birth = self.env_variables["birth_rate"] / (
-                num_prey * self.env_variables["birth_rate_current_pop_scaling"])
+        # p_prey_birth = self.env_variables["birth_rate"] / (
+        #         num_prey * self.env_variables["birth_rate_current_pop_scaling"])
+        p_prey_birth = self.env_variables["birth_rate"] * (self.env_variables["prey_num"] - num_prey)
         for cloud in self.prey_cloud_locations:
             if np.random.rand(1) < p_prey_birth:
                 new_location = (
@@ -651,6 +652,7 @@ class BaseEnvironment:
         self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
         self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_size']))
         self.prey_shapes[-1].elasticity = 1.0
+        self.prey_bodies[-1].angle = np.random.uniform(0, np.pi*2)
         if prey_position is None:
             if not self.env_variables["differential_prey"]:
                 self.prey_bodies[-1].position = (
@@ -833,7 +835,9 @@ class BaseEnvironment:
                         # Need to account for cases where one angle is very high, while other is very low, as these
                         # angles can be close together. Can do this by summing angles and subtracting from 2 pi.
 
-                        deviation = abs((2*np.pi)-(fish_orientation+angle))
+                        # deviation = abs((2*np.pi)-(fish_orientation+angle))
+                        deviation -= (2 * np.pi)
+                        deviation = abs(deviation)
                     if deviation < self.env_variables["capture_angle_deviation_allowance"]:
                         # print("Successful capture \n")
                         valid_capture = True
@@ -1097,7 +1101,7 @@ class BaseEnvironment:
 
     def _move_realistic_predator_new(self, micro_step):
         if self.first_attack:
-            # If the first attack is to be a loom attack.
+            # If the first attack is to be a loom attack (specified by selecting loom stimulus in env config)
             if self.loom_predator_current_size < self.env_variables["final_predator_size"]:
                 if micro_step == 0:
                     self.grow_loom_predator()

@@ -130,7 +130,7 @@ env = {
 
        'prey_mass': 1.,
        'prey_inertia': 40.,
-       'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
+       'prey_size': 1.,  # 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
        'prey_num': 30,
        'prey_impulse': 0.0,  # impulse each prey receives per step

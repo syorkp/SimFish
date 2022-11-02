@@ -81,6 +81,10 @@ def create_new_bout_slow2(narrowing_coefficient):
     plt.clf()
     plt.close()
 
+    # As is a forward bout, mirror the sign of the angles for better estimation of mean.
+    negative_angle_bouts = np.concatenate((all_bouts[:, 0:1], all_bouts[:, 1:2]*-1), axis=1)
+    all_bouts = np.concatenate((all_bouts, negative_angle_bouts), axis=0)
+
     generate_multivariates_from_bouts(all_bouts, narrowing_coefficient, "Slow2")
 
 
@@ -173,7 +177,7 @@ def generate_multivariates_from_bouts(bouts, narrowing_coefficient, bout_name):
 
 
 def create_new_dist_gaussian(action_num, narrowing_coefficient, distance_flattening_threshold=None,
-                             angle_flattening_threshold=None):
+                             angle_flattening_threshold=None, forward_swim=False):
 
     bout_name = get_action_name_unlateralised(action_num)
 
@@ -187,6 +191,11 @@ def create_new_dist_gaussian(action_num, narrowing_coefficient, distance_flatten
     if angle_flattening_threshold is not None:
         valid_bouts = (bouts[:, 1] < angle_flattening_threshold)
         bouts = bouts[valid_bouts]
+
+    if forward_swim:
+        # As is a forward bout, mirror the sign of the angles for better estimation of mean.
+        negative_angle_bouts = np.concatenate((bouts[:, 0:1], bouts[:, 1:2] * -1), axis=1)
+        bouts = np.concatenate((bouts, negative_angle_bouts), axis=0)
 
     generate_multivariates_from_bouts(bouts, narrowing_coefficient, bout_name)
 
@@ -241,10 +250,10 @@ def create_new_dist_gaussian(action_num, narrowing_coefficient, distance_flatten
 
 if __name__ == "__main__":
     # sCS
-    create_new_dist_gaussian(3, 3, angle_flattening_threshold=2)
+    create_new_dist_gaussian(3, 10, angle_flattening_threshold=2, forward_swim=True)
 
     # AS
-    create_new_dist_gaussian(9, 3)
+    create_new_dist_gaussian(9, 3, forward_swim=True)
 
     # RT
     create_new_dist_gaussian(1, 3, distance_flattening_threshold=10)

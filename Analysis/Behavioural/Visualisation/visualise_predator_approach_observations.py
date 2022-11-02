@@ -5,7 +5,7 @@ from Analysis.load_data import load_data
 from Analysis.Behavioural.VisTools.show_observation_sequences import display_obs_sequence
 
 
-def get_all_pred_observation_sequences(model_name, assay_config, assay_id, n, terminal):
+def get_all_pred_observation_sequences(model_name, assay_config, assay_id, n, terminal, inc_prev_steps=False):
     obs_sequences_compiled = []
     fish_predator_angles_compiled = []
 
@@ -28,6 +28,11 @@ def get_all_pred_observation_sequences(model_name, assay_config, assay_id, n, te
                     current_seq = []
         if len(current_seq) > 0:
             pred_sequence_timestamps.append(current_seq)
+
+        if inc_prev_steps:
+            for i, seq in enumerate(pred_sequence_timestamps):
+                pred_sequence_timestamps[i] = [j for j in range(min(seq)-10, min(seq))] + seq
+
 
         if terminal and len(pred_sequence_timestamps) > 0:
             obs_sequences_compiled.append([d["observation"][s] for s in pred_sequence_timestamps[-1]])
@@ -80,11 +85,13 @@ def get_all_pred_observation_sequences(model_name, assay_config, assay_id, n, te
 
 
 if __name__ == "__main__":
-    obs_seq, angles_seq = get_all_pred_observation_sequences("dqn_scaffold_26-1", "Behavioural-Data-Videos-C1", "Naturalistic", 5,
-                                                             terminal=True)
+    obs_seq, angles_seq = get_all_pred_observation_sequences("dqn_scaffold_26-1", "Behavioural-Data-Predator", "Naturalistic", 6,
+                                                             terminal=True, inc_prev_steps=10)
     for i, seq in enumerate(obs_seq):
-        display_obs_sequence(seq)
+        display_obs_sequence(seq, angles_seq[i])
         # plt.clf()
         # #
         # plt.plot(angles_seq[i])
         # plt.show()
+
+        x = True

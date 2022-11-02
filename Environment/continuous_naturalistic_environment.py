@@ -26,12 +26,23 @@ class ContinuousNaturalisticEnvironment(NaturalisticEnvironment):
         self.create_walls()
         self.reset()
 
+        # Collision Types:
+        # 1: Edge
+        # 2: Prey
+        # 3: Fish mouth
+        # 4: Sand grains
+        # 5: Predator
+        # 6: Fish body
+        # 7: Prey cloud wall
+
         self.col = self.space.add_collision_handler(2, 3)
         self.col.begin = self.touch_prey
 
         if collisions:
             self.pred_col = self.space.add_collision_handler(5, 3)
             self.pred_col.begin = self.touch_predator
+            self.pred_col2 = self.space.add_collision_handler(5, 6)
+            self.pred_col2.begin = self.touch_predator
 
         self.edge_col = self.space.add_collision_handler(1, 3)
         self.edge_col.begin = self.touch_wall
