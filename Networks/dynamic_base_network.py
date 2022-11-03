@@ -32,7 +32,7 @@ class DynamicBaseNetwork:
             self.prev_chosen_actions = tf.cast(self.prev_chosen_actions, dtype=tf.int32)
             self.prev_actions_one_hot = tf.one_hot(self.prev_chosen_actions, num_actions, dtype=tf.float32)
         else:
-            self.prev_actions = tf.placeholder(shape=[None, action_dim], dtype=tf.float32, name='prev_actions')
+            self.prev_actions = tf.placeholder(shape=[None, action_dim*2], dtype=tf.float32, name='prev_actions')
 
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
         self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='observation')
