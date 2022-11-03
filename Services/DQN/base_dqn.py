@@ -1,5 +1,7 @@
 import numpy as np
 import copy
+import os
+import json
 
 import tensorflow.compat.v1 as tf
 
@@ -72,6 +74,16 @@ class BaseDQN:
 
     def init_states(self):
         # Init states for RNN
+        if self.learning_params["maintain_state"]:
+            # IF SAVE PRESENT
+            if os.path.isfile(f"{self.model_location}/latest_rnn_state.json"):
+                with open(f"{self.model_location}/latest_rnn_state.json", 'r') as f:
+                    data = json.load(f)
+                    self.init_rnn_state = data["rnn_state"]
+                    self.init_rnn_state_ref = data["rnn_state_ref"]
+
+                return
+
         if self.environment_params["use_dynamic_network"]:
             rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
             self.init_rnn_state = tuple(
@@ -211,6 +223,9 @@ class BaseDQN:
                 if self.total_steps % (self.learning_params['update_freq']) == 0:
                     self.train_networks()
             if d:
+                if self.learning_params["maintain_state"]:
+                    self.init_rnn_state = rnn_state
+                    self. init_rnn_state_ref = rnn_state_ref
                 break
         # Add the episode to the experience buffer
         return all_actions, total_episode_reward, episode_buffer

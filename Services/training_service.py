@@ -95,9 +95,9 @@ class TrainingService(BaseService):
             print("To remove:")
             print(self.additional_layers)
             variables_to_keep = self.remove_new_variables(variables_to_keep, self.additional_layers)
-            self.saver = tf.train.Saver(max_to_keep=5, var_list=variables_to_keep)
+            self.saver = tf.train.Saver(max_to_keep=None, var_list=variables_to_keep)
         else:
-            self.saver = tf.train.Saver(max_to_keep=5)
+            self.saver = tf.train.Saver(max_to_keep=None)
 
         self.init = tf.global_variables_initializer()
         self.trainables = tf.trainable_variables()
@@ -124,7 +124,7 @@ class TrainingService(BaseService):
             self.sess.run(self.init)
 
             # Save values, to prevent an error.
-            self.saver = tf.train.Saver(max_to_keep=5)
+            self.saver = tf.train.Saver(max_to_keep=None)
             self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
             self.switch_network_configuration = False
 
@@ -286,6 +286,16 @@ class TrainingService(BaseService):
         configurations = list(self.episode_transitions.keys()) + list(self.pci_transitions.keys()) + \
                          list(self.pai_transitions.keys()) + list(self.sgb_transitions.keys())
         self.total_configurations = len(configurations) + 1
+
+    def save_rnn_state(self):
+        data = {
+            "rnn_state": self.init_rnn_state,
+            "rnn_state_ref": self.init_rnn_state_ref,
+        }
+
+        with open(f"{self.model_location}/latest_rnn_state.json", 'w') as f:
+            json.dump(data, f, indent=4)
+
 
     def _save_episode(self, episode_start_t, total_episode_reward, prey_caught, predators_avoided, sand_grains_bumped,
                       steps_near_vegetation):
@@ -472,13 +482,15 @@ class TrainingService(BaseService):
             self.writer.add_summary(episode_duration_summary, self.episode_number)
 
         # Periodically save the model.
-        if self.episode_number % self.learning_params['summaryLength'] == 0 and self.episode_number != 0:
+        if self.episode_number % self.learning_params['network_saving_frequency'] == 0:
             # print(f"mean time: {np.mean(self.training_times)}")
-
+            if self.learning_params["maintain_state"]:
+                self.save_rnn_state()
             # Save the model
             self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
             print("Saved Model")
 
+        if self.episode_number % self.learning_params['summaryLength'] == 0 and self.episode_number != 0:
             if self.learning_params["save_gifs"]:
                 # Create the GIF
                 if len(self.frame_buffer) > 0:

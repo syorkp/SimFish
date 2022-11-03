@@ -21,7 +21,7 @@ params = {
        'batch_size': 16,  # How many experience traces to use for each training step.
        'trace_length': 64,  # How long each experience trace will be when training
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
-       'max_epLength': 1000,  # The max allowed length of our episode.
+       'max_epLength': 10000,  # The max allowed length of our episode.
        'epsilon_greedy': True,
        'epsilon_greedy_scaffolding': True,
        'startE': 0.2,  # Starting chance of random action
@@ -50,7 +50,7 @@ params = {
        'sigma_scaffolding': False,  # Reset sigma progression if move along configuration scaffold.
 
        # Discrete Action Space
-       'num_actions': 10,  # size of action space
+       'num_actions': 12,  # size of action space
 
        # Saving and video parameters
        'time_per_step': 0.03,  # Length of each step used in gif creation
@@ -68,7 +68,13 @@ params = {
 
        # For RND
        'use_rnd': False,  # Whether to use RND.
-       'reuse_eyes': False,
+       'reuse_eyes': True,
+
+       # Use the RNN state from the end of one trial in the next - also saves this periodically when reloading the network.
+       'maintain_state': True,
+
+       # Specify how often to save network parameters
+       'network_saving_frequency': 20,
 }
 
 
@@ -111,10 +117,10 @@ env = {
 
        #                                     Shared
 
-       'width': 1500,  # arena size
-       'height': 1500,
+       'width': 3000,  # arena size
+       'height': 3000,
        'drag': 0.7,  # water drag
-       'phys_dt': 0.1,  # physics time step
+       'phys_dt': 0.2,  # physics time step
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
 
        'fish_mass': 140.,
@@ -129,23 +135,23 @@ env = {
        'prey_inertia': 40.,
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-       'prey_num': 25,
+       'prey_num': 100,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
-       'prey_max_turning_angle': 0.04,
+       'prey_max_turning_angle': 0.25,
         # This is the turn (radians) that happens every step, designed to replicate linear wavy movement.
        'prey_fluid_displacement': False,
        'prey_jump': False,
        'differential_prey': True,
-       'prey_cloud_num': 4,
+       'prey_cloud_num': 16,
 
-       'predator_mass': 10.,
-       'predator_inertia': 40.,
-       'predator_size': 43.5,  # To be 8.7mm in diameter, formerly 100
-       'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
+       'predator_mass': 200.,
+       'predator_inertia': 0.0001,
+       'predator_size': 32,  # Radius
+       'predator_impulse': 25,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
-       'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 498
+       'distance_from_fish': 181.71216,  # Distance from the fish at which the predator appears. Formerly 498
        'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
        'sand_grain_mass': 1.,
@@ -225,17 +231,17 @@ env = {
        'p_escape': 0.5,
        'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
        'p_reorient': 0.04,
-       'slow_speed_paramecia': 0.0037,  # Impulse to generate 0.5mms-1 for given prey mass
-       'fast_speed_paramecia': 0.0074,  # Impulse to generate 1.0mms-1 for given prey mass
-       'jump_speed_paramecia': 0.074,  # Impulse to generate 10.0mms-1 for given prey mass
+       'slow_speed_paramecia': 0.035,  # Impulse to generate 0.5mms-1 for given prey mass
+       'fast_speed_paramecia': 0.07,  # Impulse to generate 1.0mms-1 for given prey mass
+       'jump_speed_paramecia': 0.7,  # Impulse to generate 10.0mms-1 for given prey mass
 
        # Prey reproduction
-       'prey_reproduction_mode': False,
-       'birth_rate': 0.1,  # Probability per step of new prey appearing at each source.
+       'prey_reproduction_mode': True,
+       'birth_rate': 0.01,  # Probability per step of new prey appearing at each source.
        'birth_rate_current_pop_scaling': 1,  # Sets scaling of birth rate according to number of prey currently present
        'birth_rate_region_size': 240,  # Same square as before for simplicity
        'prey_safe_duration': 100,
-       'p_prey_death': 0.1,
+       'p_prey_death': 0.003,
 
        # Predators - Repeated attacks in localised region. Note, can make some of these arbitrarily high so predator keeps attacking when fish enters a certain region for whole episode.
        'max_predator_attacks': 5,
@@ -244,7 +250,7 @@ env = {
        'max_predator_reorient_distance': 400,
        'predator_presence_duration_steps': 100,
 
-       # Predator - Expanding disc
+       # Predator - Expanding disc and repeated attacks
        'predator_first_attack_loom': False,
        'initial_predator_size': 20,  # Size in degrees
        'final_predator_size': 200,  # "
@@ -283,7 +289,7 @@ env = {
        # Energy state and hunger-based rewards
        'ci': 0.0000008,  # Final for sublinear PPO: 0.0003
        'ca': 0.0000008,  # Final for sublinear PPO: 0.0003
-       'baseline_decrease': 0.0015,  # Final for sublinear PPO: 0.0015
+       'baseline_decrease': 0.00075,  # Final for sublinear PPO: 0.0015
        'trajectory_A': False, # Normally 5.0,
        'trajectory_B': 2.5,
        'consumption_energy_gain': 1.0,
@@ -320,9 +326,10 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_30_fixed_p"
+scaffold_name = "dqn_scaffold_beta_test"
 
 
+#                     Network scaffolding example
 # base_network_layers_updated = copy.copy(base_network_layers)
 # base_network_layers_updated["new_dense"] = ["dense", 300]
 # new_connectivity = copy.copy(connectivity)
@@ -331,13 +338,7 @@ scaffold_name = "dqn_scaffold_30_fixed_p"
 # changes = [["PCI", 0.35, "base_network_layers", base_network_layers_updated,
 #             "connectivity", new_connectivity, "do_to_params"]]
 
-# When starting with larger environment:
-params["max_epLength"] = 3000
-env["baseline_decrease"] = 0.00075
-env["prey_num"] = int(env["prey_num"] * 4)
-env["prey_cloud_num"] = int(env["prey_cloud_num"] * 4)
-env["width"] = 3000
-env["height"] = 3000
+
 # env["fixed_prey_distribution"] = True
 
 # For Sand Grains
@@ -375,46 +376,46 @@ changes += [
        ["PCI", low_pci, "bkg_scatter", 0.1],
 ]
 
-
-
 # 11-14
 changes += build_changes_list_gradual("PCI", high_pci, "light_gain", env["light_gain"], 125.7, 4, discrete=False)
-
-
 
 # 2) Exploration 15-18
 # changes += [["PCI", 0.35, "max_epLength", 3000, "baseline_decrease", 0.00075, "prey_num", env["prey_num"]*4,
 #              "prey_cloud_num", env["prey_cloud_num"]*4, "width", 3000, "height", 3000, "complex"]]
 original_prey_num = env["prey_num"]
+original_prey_cloud_num = env["prey_num"]
 changes += [["PCI", high_pci, "prey_num", original_prey_num * 7/8],
+            ["PCI", high_pci, "prey_cloud_num", original_prey_cloud_num * 7/8],
             ["PCI", high_pci * 10/8, "prey_num", original_prey_num * 6/8],
+            ["PCI", high_pci * 10/8, "prey_cloud_num", original_prey_cloud_num * 6/8],
             ["PCI", high_pci * 12/8, "prey_num", original_prey_num * 5/8],
+            ["PCI", high_pci * 12/8, "prey_cloud_num", original_prey_cloud_num * 5/8],
             ["PCI", high_pci * 14/8, "prey_num", original_prey_num * 4/8],
+            ["PCI", high_pci * 14/8, "prey_cloud_num", original_prey_cloud_num * 4/8],
             ["PCI", high_pci * 16/8, "prey_num", original_prey_num * 3/8],
+            ["PCI", high_pci * 16/8, "prey_cloud_num", original_prey_cloud_num * 3/8],
             ["PCI", high_pci * 18/8, "prey_num", original_prey_num * 2/8],
+            ["PCI", high_pci * 18/8, "prey_cloud_num", original_prey_cloud_num * 2/8],
+            ["PCI", high_pci * 20/8, "prey_num", original_prey_num * 1/8],
+            ["PCI", high_pci * 20/8, "prey_cloud_num", original_prey_cloud_num * 1/8],
             ]
 
-low_pci *= 18/8
-high_pci *= 18/8
-
-# changes += build_changes_list_gradual("PCI", high_pci, "prey_num", env["prey_num"], env["prey_num"]/2, 4, discrete=True)
-changes += build_changes_list_gradual("PCI", high_pci, "prey_cloud_num", env["prey_cloud_num"], env["prey_cloud_num"]/4,
-                                      4, discrete=True)
+low_pci *= 20/8
+high_pci *= 20/8
 
 # 3) Fine Prey Capture 19-34
 changes += [["PCI", high_pci, "prey_fluid_displacement", True]]
 changes += [["PCI", high_pci, "prey_jump", True]]
 changes += build_changes_list_gradual("PCI", high_pci, "fish_mouth_size", env["fish_mouth_size"], 4, 4, discrete=True)
 changes += build_changes_list_gradual("PCI", high_pci, "fraction_capture_permitted", env["fraction_capture_permitted"],
-                                      0.5, 4, discrete=False)
+                                      0.2, 4, discrete=False)
 changes += build_changes_list_gradual("PCI", high_pci, "capture_angle_deviation_allowance",
-                                      env["capture_angle_deviation_allowance"], (34*np.pi)/180, 4, discrete=False)
+                                      env["capture_angle_deviation_allowance"], np.pi/6, 4, discrete=False)
 changes += [["PCI", high_pci, "capture_swim_extra_cost", 100]]
 changes += [["PCI", high_pci, "anneling_steps", 1000000]]
 
 # 4) Predator avoidance 35
 changes += [["PCI", high_pci, "probability_of_predator", 0.01]]
-# TODO: Complex predator
 
 # 5) Other Behaviours 36-37
 changes += [["PCI", high_pci, "max_salt_damage", 0.02]]

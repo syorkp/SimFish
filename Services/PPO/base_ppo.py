@@ -1,5 +1,7 @@
 import copy
 import numpy as np
+import os
+import json
 
 import tensorflow.compat.v1 as tf
 
@@ -76,6 +78,17 @@ class BasePPO:
             self.preset_energy_state = None
 
     def init_states(self):
+        # Init states for RNN
+        if self.learning_params["maintain_state"]:
+            # IF SAVE PRESENT
+            if os.path.isfile(f"{self.model_location}/latest_rnn_state.json"):
+                with open(f"{self.model_location}/latest_rnn_state.json", 'r') as f:
+                    data = json.load(f)
+                    self.init_rnn_state = data["rnn_state"]
+                    self.init_rnn_state_ref = data["rnn_state_ref"]
+
+                return
+
         # Init states for RNN - For steps, not training.
         if self.environment_params["use_dynamic_network"]:
             rnn_state_shapes = self.actor_network.get_rnn_state_shapes()
@@ -198,6 +211,9 @@ class BasePPO:
 
             self.total_episode_reward += r
             if d:
+                if self.learning_params["maintain_state"]:
+                    self.init_rnn_state = rnn_state_actor
+                    self. init_rnn_state_ref = rnn_state_actor_ref
                 break
 
     def compute_rnn_states(self, rnn_key_points, observation_buffer, internal_state_buffer, previous_action_buffer):
