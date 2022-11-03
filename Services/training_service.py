@@ -138,9 +138,13 @@ class TrainingService(BaseService):
             elif self.configuration_index == self.total_configurations:
                 print("Reached final config...")
                 if len(self.last_episodes_prey_caught) >= 20:
+                    # if np.mean(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"] \
+                    #         > self.finished_conditions["PAI"] \
+                    #         and np.mean(self.last_episodes_prey_caught)/self.environment_params["prey_num"] \
+                    #         > self.finished_conditions["PCI"]:
                     if np.mean(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"] \
                             > self.finished_conditions["PAI"] \
-                            and np.mean(self.last_episodes_prey_caught)/self.environment_params["prey_num"] \
+                            and np.mean(self.last_episodes_prey_caught)/self.simulation.available_prey \
                             > self.finished_conditions["PCI"]:
                         print("Final condition surpassed, exiting training...")
                         break
@@ -195,8 +199,10 @@ class TrainingService(BaseService):
                     np.mean(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"] > self.pai_transitions[next_point]:
                 switch_criteria_met = True
 
+            # elif next_point in prey_conditional_transition_points and \
+            #         np.mean(self.last_episodes_prey_caught)/self.environment_params["prey_num"] > self.pci_transitions[next_point]:
             elif next_point in prey_conditional_transition_points and \
-                    np.mean(self.last_episodes_prey_caught)/self.environment_params["prey_num"] > self.pci_transitions[next_point]:
+                    np.mean(self.last_episodes_prey_caught) / self.simulation.available_prey > self.pci_transitions[next_point]:
                 switch_criteria_met = True
 
             elif next_point in grains_bumped_conditional_transfer_points and \
@@ -289,10 +295,10 @@ class TrainingService(BaseService):
 
     def save_rnn_state(self):
         data = {
-            "rnn_state_1": self.init_rnn_state[0].tolist(),
-            "rnn_state_2": self.init_rnn_state[1].tolist(),
-            "rnn_state_ref_1": self.init_rnn_state_ref[0].tolist(),
-            "rnn_state_ref_2": self.init_rnn_state_ref[1].tolist(),
+            "rnn_state_1": self.init_rnn_state[0][0].tolist(),
+            "rnn_state_2": self.init_rnn_state[0][1].tolist(),
+            "rnn_state_ref_1": self.init_rnn_state_ref[0][0].tolist(),
+            "rnn_state_ref_2": self.init_rnn_state_ref[0][1].tolist(),
         }
 
         with open(f"{self.model_location}/latest_rnn_state.json", 'w') as f:
@@ -365,7 +371,8 @@ class TrainingService(BaseService):
 
         # Normalised Logs
         if self.environment_params["prey_num"] != 0 and self.environment_params["sand_grain_num"] != 0:
-            prey_capture_index = prey_caught / self.environment_params["prey_num"]
+            # prey_capture_index = prey_caught / self.environment_params["prey_num"]
+            prey_capture_index = prey_caught / self.simulation.available_prey
             sand_grain_capture_index = sand_grains_bumped / self.environment_params["sand_grain_num"]
             # Note, generally would expect to prefer sand grains as each bump counts as a capture.
             if sand_grain_capture_index == 0:
@@ -379,7 +386,8 @@ class TrainingService(BaseService):
             self.writer.add_summary(prey_preference_summary, self.episode_number)
 
         if self.environment_params["prey_num"] != 0:
-            fraction_prey_caught = prey_caught / self.environment_params["prey_num"]
+            # fraction_prey_caught = prey_caught / self.environment_params["prey_num"]
+            fraction_prey_caught = prey_caught / self.simulation.available_prey
             prey_caught_summary = tf.Summary(
                 value=[tf.Summary.Value(tag="prey capture index (fraction caught)", simple_value=fraction_prey_caught)])
             self.writer.add_summary(prey_caught_summary, self.episode_number)

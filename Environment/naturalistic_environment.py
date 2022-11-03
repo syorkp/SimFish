@@ -40,6 +40,9 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         self.recent_cause_of_death = None
 
+        # For producing a useful PCI
+        self.available_prey = self.env_variables["prey_num"]
+
     def reset(self):
         # print(f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
         # print(f"Mean UV: {sum([i[1] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -106,6 +109,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         self.impulse_against_fish_previous_step = None
         self.recent_cause_of_death = None
+        self.available_prey = self.env_variables["prey_num"]
 
     def show_new_channel_sectors(self, left_eye_pos, right_eye_pos):
         left_sectors, right_sectors = self.fish.get_all_sectors([left_eye_pos[0], left_eye_pos[1]],
@@ -260,6 +264,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                         "p_prey_death"]:
                         # print("Removed prey")
                         self.remove_prey(i)
+                        self.available_prey -= 1
 
         # Log whether or not fish in light
         self.in_light_history.append(self.fish.body.position[0] > self.dark_col)

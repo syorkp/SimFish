@@ -254,6 +254,7 @@ class BaseEnvironment:
                                       high=cloud[1] + (self.env_variables["birth_rate_region_size"] / 2))
                 )
                 self.create_prey(new_location)
+                self.available_prey += 1
 
     def reset_salt_gradient(self):
         salt_source_x = np.random.randint(0, self.env_variables['width'] - 1)

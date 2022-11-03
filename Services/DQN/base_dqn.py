@@ -81,7 +81,7 @@ class BaseDQN:
                     data = json.load(f)
                     self.init_rnn_state = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
                     self.init_rnn_state_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
-
+                    # TODO: Build for the cases where are multiple RNNs.
                 return
 
         if self.environment_params["use_dynamic_network"]:
