@@ -80,6 +80,7 @@ class BasePPO:
     def init_states(self):
         # Init states for RNN
         if self.learning_params["maintain_state"]:
+            self.episode_number = self.episode_number - (self.episode_number % self.environment_params["network_saving_frequency"])
             # IF SAVE PRESENT
             if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
                 with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:

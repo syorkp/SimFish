@@ -28045,7 +28045,7 @@ ppo_new_scaffold_test = [
         "Continuous Actions": True,
         "Learning Algorithm": "PPO",
         "Priority": 1,
-        "Using GPU": True,
+        "Using GPU": False,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
@@ -28056,7 +28056,7 @@ ppo_new_scaffold_test = [
 ]
 
 if run_config is None:
-    run_config = dqn_new_scaffold_test
+    run_config = ppo_new_scaffold_test
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]
