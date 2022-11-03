@@ -182,6 +182,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
             a_freq = tf.Summary(value=[tf.Summary.Value(tag="action " + str(act), simple_value=action_freq)])
             self.writer.add_summary(a_freq, self.episode_number)
             all_actions_frequency.append(action_freq)
+        all_actions_frequency = np.array(all_actions_frequency)
 
         # Normalise given current epsilon value (subtract expected random actions from each group, then clip to zero)
         expected_random_actions = (self.epsilon * self.total_steps)/self.learning_params['num_actions']
