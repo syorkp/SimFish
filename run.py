@@ -28034,8 +28034,29 @@ dqn_new_scaffold_test = [
     },
 ]
 
+ppo_new_scaffold_test = [
+    {
+        "Model Name": "ppo_scaffold_beta_test",
+        "Environment Name": "ppo_scaffold_beta_test",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+
+]
+
 if run_config is None:
-    run_config = dqn_new_scaffold_test
+    run_config = ppo_new_scaffold_test
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]

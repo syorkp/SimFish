@@ -19,8 +19,8 @@ params = {
        # Learning (Universal)
        'batch_size': 16,  # How many experience traces to use for each training step. Works okay with 1.
        'trace_length': 64,  # How long each experience trace will be when training. Works okay with 50
-       'num_episodes': 50000,  # How many episodes of game environment to train network with.
-       'max_epLength': 3000,  # The max allowed length of our episode.
+       'num_episodes': 100000,  # How many episodes of game environment to train network with.
+       'max_epLength': 10000,  # The max allowed length of our episode.
        'epsilon_greedy': True,
        'epsilon_greedy_scaffolding': True,
        'startE': 0.2,  # Starting chance of random action
@@ -55,7 +55,7 @@ params = {
 
        # Saving and video parameters
        'time_per_step': 0.03,  # Length of each step used in gif creation
-       'summaryLength': 200,  # Number of episodes to periodically save for analysis
+       'summaryLength': 10,  # Number of episodes to periodically save for analysis
        'rnn_dim_shared': 512,  # number of rnn cells
        'extra_rnn': False,
        'save_gifs': True,
@@ -69,7 +69,13 @@ params = {
 
        # For RND
        'use_rnd': False,  # Whether to use RND.
-       'reuse_eyes': False,
+       'reuse_eyes': True,
+
+       # Use the RNN state from the end of one trial in the next - saves this periodically when reloading the network.
+       'maintain_state': True,
+
+       # Specify how often to save network parameters
+       'network_saving_frequency': 20,
 }
 
 env = {
@@ -121,7 +127,7 @@ env = {
        'width': 1500,  # arena size
        'height': 1500,
        'drag': 0.7,  # water drag
-       'phys_dt': 0.1,  # physics time step
+       'phys_dt': 0.2,  # physics time step
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
 
        'fish_mass': 140.,
@@ -140,19 +146,19 @@ env = {
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
-       'prey_max_turning_angle': 0.04,
+       'prey_max_turning_angle': 0.25,
        # This is the turn (radians) that happens every step, designed to replicate linear wavy movement.
        'prey_fluid_displacement': False,
        'prey_jump': False,
        'differential_prey': True,
        'prey_cloud_num': 7,
 
-       'predator_mass': 10.,
-       'predator_inertia': 40.,
-       'predator_size': 43.5,  # To be 8.7mm in diameter, formerly 100
-       'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
+       'predator_mass': 200.,
+       'predator_inertia': 0.0001,
+       'predator_size': 32,  # Radius
+       'predator_impulse': 25,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
-       'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
+       'distance_from_fish': 181.71216,  # Distance from the fish at which the predator appears. Formerly 498
        'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
@@ -198,12 +204,12 @@ env = {
        # Sensory inputs
        'energy_state': True,
        'in_light': False,
-       'salt': False,  # Inclusion of olfactory salt input and salt death.
+       'salt': True,  # Inclusion of olfactory salt input and salt death.
        'salt_reward_penalty': 0,  # Scales with salt concentration.
        "use_dynamic_network": False,
        'salt_concentration_decay': 0.002,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
-       'max_salt_damage': 0.02,  # Salt damage at centre of source.
+       'max_salt_damage': 0.0,  # Salt damage at centre of source.
 
        # GIFs and debugging
        'visualise_mask': False,  # For debugging purposes.
@@ -226,17 +232,17 @@ env = {
        'p_escape': 0.5,
        'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
        'p_reorient': 0.04,
-       'slow_speed_paramecia': 0.0037,  # Impulse to generate 0.5mms-1 for given prey mass
-       'fast_speed_paramecia': 0.0074,  # Impulse to generate 1.0mms-1 for given prey mass
-       'jump_speed_paramecia': 0.074,  # Impulse to generate 10.0mms-1 for given prey mass
+       'slow_speed_paramecia': 0.035,  # Impulse to generate 0.5mms-1 for given prey mass
+       'fast_speed_paramecia': 0.07,  # Impulse to generate 1.0mms-1 for given prey mass
+       'jump_speed_paramecia': 0.7,  # Impulse to generate 10.0mms-1 for given prey mass
 
        # Prey reproduction
-       'prey_reproduction_mode': False,
-       'birth_rate': 0.1,  # Probability per step of new prey appearing at each source.
+       'prey_reproduction_mode': True,
+       'birth_rate': 0.01,  # Probability per step of new prey appearing at each source.
        'birth_rate_current_pop_scaling': 1,  # Sets scaling of birth rate according to number of prey currently present
        'birth_rate_region_size': 240,  # Same square as before for simplicity
        'prey_safe_duration': 100,
-       'p_prey_death': 0.1,
+       'p_prey_death': 0.003,
 
        # Predators - Repeated attacks in localised region. Note, can make some of these arbitrarily high so predator keeps attacking when fish enters a certain region for whole episode.
        'max_predator_attacks': 5,
@@ -304,10 +310,10 @@ env = {
        'unit_circle_diameter': 0.7,  # Circular current options
 
        # Motor effect noise (for continuous)
-       'impulse_effect_noise_sd_x': 0,  # 0.98512558,
-       'impulse_effect_noise_sd_c': 0,  # 0.06,
-       'angle_effect_noise_sd_x': 0,  # 0.86155083,
-       'angle_effect_noise_sd_c': 0,  # 0.0010472,
+       'impulse_effect_noise_sd_x': 0.1,  # 0.98512558,
+       'impulse_effect_noise_sd_c': 0.5,  # 0.06,
+       'angle_effect_noise_sd_x': 0.6,  # 0.86155083,
+       'angle_effect_noise_sd_c': 0.02,  # 0.0010472,
 
        # Complex capture swim dynamics
        'fraction_capture_permitted': 1.0,  # Should be 1.0 if no temporal restriction imposed.
@@ -320,7 +326,7 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_23"
+scaffold_name = "ppo_scaffold_beta_test"
 
 
 # 2-3
@@ -332,7 +338,7 @@ changes = [
 ]
 
 # 4-11
-changes += build_changes_list_gradual("PCI", 0.3, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25,
+changes += build_changes_list_gradual("PCI", 0.2, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25,
                                       8, discrete=False)
 
 # 12-27
@@ -353,30 +359,28 @@ changes += [
 
 
 changes += build_changes_list_gradual("PCI", 0.4, "light_gain", env["light_gain"], 125.7, 4, discrete=False)
-changes += [["PCI", 0.4, "max_epLength", 5000, "do_to_params"]]
 
 
 # 4) Prey Capture
 changes += [["PCI", 0.4, "prey_fluid_displacement", True]]
 changes += build_changes_list_gradual("PCI", 0.4, "fish_mouth_size", env["fish_mouth_size"], 4, 4, discrete=False)
 changes += build_changes_list_gradual("PCI", 0.4, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"],
-                                      (17*np.pi)/180, 8, discrete=False)
+                                      np.pi/6, 8, discrete=False)
 changes += [["PCI", 0.4, "anneling_steps", 1000000]]
 
 # 5) Predator avoidance
 changes += [["PCI", 0.4, "probability_of_predator", 0.01]]
-# TODO: Complex predator
 changes += [["PCI", 0.4, "anneling_steps", 500000]]
 
 # 6) Other Behaviours
-changes += [["PAI", 500.0, "salt", True]]
+changes += [["PCI", 0.4, "max_salt_damage", 0.02]]
 changes += [["PCI", 0.5, "current_setting", "Circular"]]
 
 # 7) Final Features
-changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_x", env["impulse_effect_noise_sd_x"], 0.98512558, 8, discrete=False)
-changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_c", env["impulse_effect_noise_sd_c"], 0.06, 8, discrete=False)
-changes += build_changes_list_gradual("PCI", 0.4, "angle_effect_noise_sd_x", env["angle_effect_noise_sd_x"], 0.86155083, 8, discrete=False)
-changes += build_changes_list_gradual("PCI", 0.4, "angle_effect_noise_sd_c", env["angle_effect_noise_sd_c"], 0.0010472, 8, discrete=False)
+# changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_x", env["impulse_effect_noise_sd_x"], 0.98512558, 8, discrete=False)
+# changes += build_changes_list_gradual("PCI", 0.4, "impulse_effect_noise_sd_c", env["impulse_effect_noise_sd_c"], 0.06, 8, discrete=False)
+# changes += build_changes_list_gradual("PCI", 0.4, "angle_effect_noise_sd_x", env["angle_effect_noise_sd_x"], 0.86155083, 8, discrete=False)
+# changes += build_changes_list_gradual("PCI", 0.4, "angle_effect_noise_sd_c", env["angle_effect_noise_sd_c"], 0.0010472, 8, discrete=False)
 
 finished_condition = {"PCI": 0.3,
                       "PAI": 300.0}

@@ -20,7 +20,7 @@ params = {
        # Learning (Universal)
        'batch_size': 16,  # How many experience traces to use for each training step.
        'trace_length': 64,  # How long each experience trace will be when training
-       'num_episodes': 50000,  # How many episodes of game environment to train network with.
+       'num_episodes': 100000,  # How many episodes of game environment to train network with.
        'max_epLength': 10000,  # The max allowed length of our episode.
        'epsilon_greedy': True,
        'epsilon_greedy_scaffolding': True,
@@ -70,7 +70,7 @@ params = {
        'use_rnd': False,  # Whether to use RND.
        'reuse_eyes': True,
 
-       # Use the RNN state from the end of one trial in the next - also saves this periodically when reloading the network.
+       # Use the RNN state from the end of one trial in the next - saves this periodically when reloading the network.
        'maintain_state': True,
 
        # Specify how often to save network parameters
