@@ -81,10 +81,10 @@ class BaseDQN:
                 if self.environment_params["use_dynamic_network"]:
                     with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
                         print("Successfully loaded previous state.")
-                        rnn_state_shapes = self.actor_network.get_rnn_state_shapes()
                         data = json.load(f)
-                        self.init_rnn_state_actor = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in rnn_state_shapes)
-                        self.init_rnn_state_actor_ref = tuple((np.array(data[f"rnn_state_ref_{shape}_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in rnn_state_shapes)
+                        num_rnns = len(data.keys())/4
+                        self.init_rnn_state_actor = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
+                        self.init_rnn_state_actor_ref = tuple((np.array(data[f"rnn_state_ref_{shape}_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
 
                     return
                 else:
