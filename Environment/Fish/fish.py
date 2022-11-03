@@ -158,6 +158,12 @@ class Fish:
         elif action == 9:  # Approach swim.
             action_colour = (base_light, magnitude, base_light)
 
+        elif action == 10:
+            action_colour = (magnitude, magnitude, magnitude)
+
+        elif action == 11:
+            action_colour = (magnitude, magnitude, magnitude)
+
         else:
             action_colour = (0, 0, 0)
             print("Invalid action given")
