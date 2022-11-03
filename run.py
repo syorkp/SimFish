@@ -28035,7 +28035,7 @@ dqn_new_scaffold_test = [
 ]
 
 if run_config is None:
-    run_config = dqn_data_predator
+    run_config = dqn_new_scaffold_test
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]
