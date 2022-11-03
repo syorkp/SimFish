@@ -78,15 +78,23 @@ class BaseDQN:
             self.episode_number = self.episode_number - (self.episode_number % self.learning_params["network_saving_frequency"])
             # IF SAVE PRESENT
             if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
-                self.episode_number = self.episode_number - (
-                            self.episode_number % self.environment_params["network_saving_frequency"])
-                with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
-                    print("Successfully loaded previous state.")
-                    data = json.load(f)
-                    self.init_rnn_state = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
-                    self.init_rnn_state_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
-                    # TODO: Build for the cases where are multiple RNNs.
-                return
+                if self.environment_params["use_dynamic_network"]:
+                    with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
+                        print("Successfully loaded previous state.")
+                        rnn_state_shapes = self.actor_network.get_rnn_state_shapes()
+                        data = json.load(f)
+                        self.init_rnn_state_actor = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in rnn_state_shapes)
+                        self.init_rnn_state_actor_ref = tuple((np.array(data[f"rnn_state_ref_{shape}_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in rnn_state_shapes)
+
+                    return
+                else:
+                    with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
+                        print("Successfully loaded previous state.")
+                        data = json.load(f)
+                        self.init_rnn_state_actor = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
+                        self.init_rnn_state_actor_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
+
+                    return
 
         if self.environment_params["use_dynamic_network"]:
             rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
