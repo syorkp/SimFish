@@ -42,6 +42,7 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         # For producing a useful PCI
         self.available_prey = self.env_variables["prey_num"]
+        self.vector_agreement = []
 
     def reset(self):
         # print(f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -110,6 +111,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.impulse_against_fish_previous_step = None
         self.recent_cause_of_death = None
         self.available_prey = self.env_variables["prey_num"]
+        self.vector_agreement = []
 
     def show_new_channel_sectors(self, left_eye_pos, right_eye_pos):
         left_sectors, right_sectors = self.fish.get_all_sectors([left_eye_pos[0], left_eye_pos[1]],
@@ -581,6 +583,11 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.fish.body.angle = np.pi
         self.fish.body.apply_impulse_at_local_point(
             (associated_impulse_vectors[0, 1], associated_impulse_vectors[0, 0]))
+
+        # Log fish-current vector agreement
+        self.vector_agreement.append((self.fish.impulse_vector_x * associated_impulse_vectors[0, 1]) + \
+                                     (self.fish.impulse_vector_y * associated_impulse_vectors[0, 0]))
+
         for i, vector in enumerate(associated_impulse_vectors[1:]):
             self.prey_bodies[i].angle = np.pi
             self.prey_bodies[i].apply_impulse_at_local_point((vector[1], vector[0]))

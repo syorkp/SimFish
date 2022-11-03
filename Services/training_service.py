@@ -465,6 +465,15 @@ class TrainingService(BaseService):
                                         simple_value=phototaxis_index)])
             self.writer.add_summary(phototaxis_summary, self.episode_number)
 
+        # Current opposition log
+        if self.environment_params["current_setting"] is not False:
+            current_opposition_metric = np.sum(self.simulation.vector_agreement)
+            # Should be positive when fish swims with current, negative when swims against, and zero if has no preference.
+            current_opposition_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="Current Opposition",
+                                        simple_value=current_opposition_metric)])
+            self.writer.add_summary(current_opposition_summary, self.episode_number)
+
         # Energy efficiency index - Just the average energy used per step.
         if self.environment_params["energy_state"]:
             energy_used = 0
