@@ -530,7 +530,6 @@ changes += [["PCI", 0.4, "anneling_steps", 1000000]]
 
 # 5) Predator avoidance
 changes += [["PCI", 0.4, "probability_of_predator", 0.01]]
-# TODO: Complex predator
 changes += [["PCI", 0.4, "anneling_steps", 500000]]
 
 # 6) Other Behaviours

@@ -300,12 +300,24 @@ class TrainingService(BaseService):
         self.total_configurations = len(configurations) + 1
 
     def save_rnn_state(self):
-        data = {
-            "rnn_state_1": self.init_rnn_state[0][0].tolist(),
-            "rnn_state_2": self.init_rnn_state[0][1].tolist(),
-            "rnn_state_ref_1": self.init_rnn_state_ref[0][0].tolist(),
-            "rnn_state_ref_2": self.init_rnn_state_ref[0][1].tolist(),
-        }
+        if self.environment_params["use_dynamic_network"]:
+            data = {}
+            num_rnns = len(self.init_rnn_state)
+            for rnn in range(num_rnns):
+                data_1 = {
+                    f"rnn_state_{rnn}_1": self.init_rnn_state[rnn][0].tolist(),
+                    f"rnn_state_{rnn}_2": self.init_rnn_state[rnn][1].tolist(),
+                    f"rnn_state_{rnn}_ref_1": self.init_rnn_state_ref[rnn][0].tolist(),
+                    f"rnn_state_{rnn}_ref_2": self.init_rnn_state_ref[rnn][1].tolist(),
+                }
+                data = {**data, **data_1}
+        else:
+            data = {
+                f"rnn_state_1": self.init_rnn_state[0].tolist(),
+                f"rnn_state_2": self.init_rnn_state[1].tolist(),
+                f"rnn_state_ref_1": self.init_rnn_state_ref[0].tolist(),
+                f"rnn_state_ref_2": self.init_rnn_state_ref[1].tolist(),
+            }
 
         with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'w') as f:
             json.dump(data, f, indent=4)

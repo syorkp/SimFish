@@ -80,16 +80,25 @@ class BasePPO:
     def init_states(self):
         # Init states for RNN
         if self.learning_params["maintain_state"]:
-            self.episode_number = self.episode_number - (self.episode_number % self.environment_params["network_saving_frequency"])
+            self.episode_number = self.episode_number - (self.episode_number % self.learning_params["network_saving_frequency"])
             # IF SAVE PRESENT
             if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
-                with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
-                    print("Successfully loaded previous state.")
-                    data = json.load(f)
-                    self.init_rnn_state_actor = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
-                    self.init_rnn_state_actor_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
+                if self.environment_params["use_dynamic_network"]:
+                    with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
+                        print("Successfully loaded previous state.")
+                        data = json.load(f)
+                        self.init_rnn_state_actor = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
+                        self.init_rnn_state_actor_ref = (
+                        np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
+                    return
+                else:
+                    with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
+                        print("Successfully loaded previous state.")
+                        data = json.load(f)
+                        self.init_rnn_state_actor = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
+                        self.init_rnn_state_actor_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
 
-                return
+                    return
 
         # Init states for RNN - For steps, not training.
         if self.environment_params["use_dynamic_network"]:
