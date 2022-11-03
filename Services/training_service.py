@@ -289,8 +289,10 @@ class TrainingService(BaseService):
 
     def save_rnn_state(self):
         data = {
-            "rnn_state": self.init_rnn_state.tolist(),
-            "rnn_state_ref": self.init_rnn_state_ref.tolist(),
+            "rnn_state_1": self.init_rnn_state[0].tolist(),
+            "rnn_state_2": self.init_rnn_state[1].tolist(),
+            "rnn_state_ref_1": self.init_rnn_state_ref[0].tolist(),
+            "rnn_state_ref_2": self.init_rnn_state_ref[1].tolist(),
         }
 
         with open(f"{self.model_location}/latest_rnn_state.json", 'w') as f:

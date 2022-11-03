@@ -84,8 +84,8 @@ class BasePPO:
             if os.path.isfile(f"{self.model_location}/latest_rnn_state.json"):
                 with open(f"{self.model_location}/latest_rnn_state.json", 'r') as f:
                     data = json.load(f)
-                    self.init_rnn_state = data["rnn_state"]
-                    self.init_rnn_state_ref = data["rnn_state_ref"]
+                    self.init_rnn_state_actor = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
+                    self.init_rnn_state_actor_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
 
                 return
 
@@ -213,7 +213,7 @@ class BasePPO:
             if d:
                 if self.learning_params["maintain_state"]:
                     self.init_rnn_state = rnn_state_actor
-                    self. init_rnn_state_ref = rnn_state_actor_ref
+                    self.init_rnn_state_ref = rnn_state_actor_ref
                 break
 
     def compute_rnn_states(self, rnn_key_points, observation_buffer, internal_state_buffer, previous_action_buffer):

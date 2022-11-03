@@ -79,8 +79,8 @@ class BaseDQN:
             if os.path.isfile(f"{self.model_location}/latest_rnn_state.json"):
                 with open(f"{self.model_location}/latest_rnn_state.json", 'r') as f:
                     data = json.load(f)
-                    self.init_rnn_state = np.array(data["rnn_state"])
-                    self.init_rnn_state_ref = np.array(data["rnn_state_ref"])
+                    self.init_rnn_state = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
+                    self.init_rnn_state_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
 
                 return
 
