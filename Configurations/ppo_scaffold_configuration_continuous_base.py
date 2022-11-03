@@ -81,49 +81,6 @@ params = {
 }
 
 env = {
-       #                            Old Simulation (Parameters ignored in new simulation)
-       'num_photoreceptors': 120,  # number of visual 'rays' per eye
-       'min_vis_dist': 20,
-       'max_vis_dist': 180,
-
-       'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
-
-       'sand_grain_mass': 1.,
-       'sand_grain_inertia': 40.,
-       'sand_grain_size': 4.,
-       'sand_grain_num': 0,
-       'sand_grain_displacement_impulse_scaling_factor': 0.5,
-       'sand_grain_displacement_distance': 20,
-
-       'vegetation_size': 100.,
-       'vegetation_num': 0,
-       'vegetation_effect_distance': 150,
-
-       'photon_ratio': 100,  # expected number of photons for unit brightness
-
-       'forward_swim_cost': 3,
-       'forward_swim_impulse': 10,
-       'routine_turn_cost': 3,
-       'routine_turn_impulse': 5,
-       'routine_turn_dir_change': 0.6,
-       'capture_swim_cost': 5,
-       'capture_swim_impulse': 5,
-       'j_turn_cost': 2.5,
-       'j_turn_impulse': 0.1,
-       'j_turn_dir_change': 0.07,
-       'rest_cost': 2,
-
-       'capture_swim_extra_cost': 0,
-       'capture_basic_reward': 10000,  # Used only when not using energy state.
-
-       'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
-       'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
-
-       'distance_penalty_scaling_factor': 1.0,
-       # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
-       'angle_penalty_scaling_factor': 0.5,
-       # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
-
        #                                     Shared
 
        'width': 1500,  # arena size
@@ -155,6 +112,13 @@ env = {
        'differential_prey': True,
        'prey_cloud_num': 7,
 
+       'sand_grain_mass': 1.,
+       'sand_grain_inertia': 40.,
+       'sand_grain_size': 4.,
+       'sand_grain_num': 0,
+       'sand_grain_displacement_impulse_scaling_factor': 0.5,
+       'sand_grain_displacement_distance': 20,
+
        'predator_mass': 200.,
        'predator_inertia': 0.0001,
        'predator_size': 32,  # Radius
@@ -170,10 +134,14 @@ env = {
        'dark_gain': 60.0,  # gain of brightness in the dark side
        'light_gain': 200.0,  # gain of brightness in the bright side
 
+       'capture_swim_extra_cost': 0,
+       'capture_basic_reward': 10000,  # Used only when not using energy state.
        'predator_cost': 1000,
 
        # Old internal state variables
        'hunger': False,
+       'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
+       'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
        'reafference': True,
        'stress': False,
        'stress_compound': 0.9,
@@ -234,9 +202,9 @@ env = {
        'p_escape': 0.5,
        'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
        'p_reorient': 0.04,
-       'slow_speed_paramecia': 0.035,  # Impulse to generate 0.5mms-1 for given prey mass
-       'fast_speed_paramecia': 0.07,  # Impulse to generate 1.0mms-1 for given prey mass
-       'jump_speed_paramecia': 0.7,  # Impulse to generate 10.0mms-1 for given prey mass
+       'slow_speed_paramecia': 0.01,# Actual values should be 0.035,  # Impulse to generate 0.5mms-1 for given prey mass
+       'fast_speed_paramecia': 0.02,# Actual values should be 0.07,  # Impulse to generate 1.0mms-1 for given prey mass
+       'jump_speed_paramecia': 0.2,# Actual values should be 0.7,  # Impulse to generate 10.0mms-1 for given prey mass
 
        # Prey reproduction
        'prey_reproduction_mode': True,

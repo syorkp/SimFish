@@ -187,7 +187,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
         # Normalise given current epsilon value (subtract expected random actions from each group, then clip to zero)
         expected_random_actions = (self.epsilon * self.total_steps)/self.learning_params['num_actions']
         all_actions_frequency -= expected_random_actions
-        all_actions_frequency = np.clip(0, self.total_steps)
+        all_actions_frequency = np.clip(all_actions_frequency, 0, self.total_steps)
         action_choice_entropy = entropy(all_actions_frequency)
         a_freq = tf.Summary(value=[tf.Summary.Value(tag="Action Diversity (entropy)", simple_value=action_choice_entropy)])
         self.writer.add_summary(a_freq, self.episode_number)
