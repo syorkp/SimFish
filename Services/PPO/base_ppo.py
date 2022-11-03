@@ -81,8 +81,9 @@ class BasePPO:
         # Init states for RNN
         if self.learning_params["maintain_state"]:
             # IF SAVE PRESENT
-            if os.path.isfile(f"{self.model_location}/latest_rnn_state.json"):
-                with open(f"{self.model_location}/latest_rnn_state.json", 'r') as f:
+            if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
+                with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
+                    print("Successfully loaded previous state.")
                     data = json.load(f)
                     self.init_rnn_state_actor = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
                     self.init_rnn_state_actor_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))

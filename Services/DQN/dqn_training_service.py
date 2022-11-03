@@ -16,6 +16,7 @@ from Configurations.Utilities.turn_model_configs_into_assay_configs import trans
 from Services.training_service import TrainingService
 from Services.DQN.dqn_assay_service import assay_target
 from Services.DQN.base_dqn import BaseDQN
+from scipy.stats import entropy
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -173,10 +174,22 @@ class DQNTrainingService(TrainingService, BaseDQN):
         TrainingService._save_episode(self, episode_start_t, total_episode_reward, prey_caught,
                                       predators_avoided, sand_grains_bumped, steps_near_vegetation)
 
+        # Action Diversity
+        all_actions_frequency = []
+
         for act in range(self.learning_params['num_actions']):
             action_freq = np.sum(np.array(all_actions) == act) / len(all_actions)
             a_freq = tf.Summary(value=[tf.Summary.Value(tag="action " + str(act), simple_value=action_freq)])
             self.writer.add_summary(a_freq, self.episode_number)
+            all_actions_frequency.append(action_freq)
+
+        # Normalise given current epsilon value (subtract expected random actions from each group, then clip to zero)
+        expected_random_actions = (self.epsilon * self.total_steps)/self.learning_params['num_actions']
+        all_actions_frequency -= expected_random_actions
+        all_actions_frequency = np.clip(0, self.total_steps)
+        action_choice_entropy = entropy(all_actions_frequency)
+        a_freq = tf.Summary(value=[tf.Summary.Value(tag="Action Diversity (entropy)", simple_value=action_choice_entropy)])
+        self.writer.add_summary(a_freq, self.episode_number)
 
         # Turn chain metric
         turn_chain_summary = tf.Summary(value=[tf.Summary.Value(tag="turn chain preference",

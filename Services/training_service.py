@@ -110,13 +110,17 @@ class TrainingService(BaseService):
             if hasattr(checkpoint, "model_checkpoint_path"):
                 self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
                 print("Loading successful")
+                self.episode_number = self.saver.last_checkpoints[-1]
 
             else:
                 print("No saved checkpoints found, starting from scratch.")
                 self.sess.run(self.init)
+                self.episode_number = 0
         else:
             print("First attempt at running model. Starting from scratch.")
             self.sess.run(self.init)
+            self.episode_number = 0
+
         self.writer = tf.summary.FileWriter(f"{self.model_location}/logs/", tf.get_default_graph())
 
         if self.switch_network_configuration:
@@ -301,7 +305,7 @@ class TrainingService(BaseService):
             "rnn_state_ref_2": self.init_rnn_state_ref[0][1].tolist(),
         }
 
-        with open(f"{self.model_location}/latest_rnn_state.json", 'w') as f:
+        with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'w') as f:
             json.dump(data, f, indent=4)
 
 
@@ -550,6 +554,8 @@ class TrainingService(BaseService):
         value_summary = tf.Summary(value=[tf.Summary.Value(tag="min value", simple_value=min_value)])
         self.writer.add_summary(value_summary, self.episode_number)
 
+        # Action Diversity
+
 
         if self.full_logs:
             # Save Loss
@@ -612,6 +618,18 @@ class TrainingService(BaseService):
         turn_chain_preference = get_normalised_turn_chain_metric_continuous(angles)
         turn_chain_preference_summary = tf.Summary(value=[tf.Summary.Value(tag="turn chain preference", simple_value=turn_chain_preference)])
         self.writer.add_summary(turn_chain_preference_summary, self.episode_number)
+
+        # Action Diversity
+        impulse_choice_range = np.max(np.absolute(self.buffer.mu_i_buffer)) - np.min(np.absolute(self.buffer.mu_i_buffer))
+        angle_choice_range = np.max(np.absolute(self.buffer.mu_a_buffer)) - np.min(np.absolute(self.buffer.mu_a_buffer))
+        impulse_choice_range_prop = impulse_choice_range / self.environment_params["max_impulse"]
+        angle_choice_range_prop = angle_choice_range / self.environment_params["max_angle_change"]
+
+        impulse_action_diversity = tf.Summary(value=[tf.Summary.Value(tag="Impulse Choice Diversity", simple_value=impulse_choice_range_prop)])
+        self.writer.add_summary(impulse_action_diversity, self.episode_number)
+
+        angle_action_diversity = tf.Summary(value=[tf.Summary.Value(tag="Angle Choice Diversity", simple_value=angle_choice_range_prop)])
+        self.writer.add_summary(angle_action_diversity, self.episode_number)
 
         if self.full_logs:
             # Save Loss
