@@ -110,7 +110,9 @@ class TrainingService(BaseService):
             if hasattr(checkpoint, "model_checkpoint_path"):
                 self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
                 print("Loading successful")
-                self.episode_number = self.saver.last_checkpoints[-1]
+                checkpoint_path = checkpoint.model_checkpoint_path
+                checkpoint_num = int(checkpoint_path.split("/model-")[-1][:-5])
+                self.episode_number = checkpoint_num
 
             else:
                 print("No saved checkpoints found, starting from scratch.")
