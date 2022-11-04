@@ -111,6 +111,26 @@ env = {
        'differential_prey': True,
        'prey_cloud_num': 16,
 
+       # Prey movement
+       'p_slow': 1.0,
+       'p_fast': 0.0,
+       'p_escape': 0.5,
+       'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
+       'p_reorient': 0.04,
+       'slow_speed_paramecia': 0.005,
+       # Actual values should be 0.035,  # Impulse to generate 0.5mms-1 for given prey mass
+       'fast_speed_paramecia': 0.01,
+       # Actual values should be 0.07,  # Impulse to generate 1.0mms-1 for given prey mass
+       'jump_speed_paramecia': 0.1,  # Actual values should be 0.7,  # Impulse to generate 10.0mms-1 for given prey mass
+
+       # Prey reproduction
+       'prey_reproduction_mode': True,
+       'birth_rate': 0.01,  # Probability per step of new prey appearing at each source.
+       'birth_rate_current_pop_scaling': 1,  # Sets scaling of birth rate according to number of prey currently present
+       'birth_rate_region_size': 240,  # Same square as before for simplicity
+       'prey_safe_duration': 100,
+       'p_prey_death': 0.003,
+
        'predator_mass': 200.,
        'predator_inertia': 0.0001,
        'predator_size': 32,  # Radius
@@ -197,24 +217,6 @@ env = {
        'displacement_scaling_factor': 0.018,
        # Multiplied by previous impulse size to cause displacement of nearby features.
        'known_max_fish_i': 100,
-
-       # Prey movement
-       'p_slow': 1.0,
-       'p_fast': 0.0,
-       'p_escape': 0.5,
-       'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
-       'p_reorient': 0.04,
-       'slow_speed_paramecia': 0.035,  # Impulse to generate 0.5mms-1 for given prey mass
-       'fast_speed_paramecia': 0.07,  # Impulse to generate 1.0mms-1 for given prey mass
-       'jump_speed_paramecia': 0.7,  # Impulse to generate 10.0mms-1 for given prey mass
-
-       # Prey reproduction
-       'prey_reproduction_mode': True,
-       'birth_rate': 0.01,  # Probability per step of new prey appearing at each source.
-       'birth_rate_current_pop_scaling': 1,  # Sets scaling of birth rate according to number of prey currently present
-       'birth_rate_region_size': 240,  # Same square as before for simplicity
-       'prey_safe_duration': 100,
-       'p_prey_death': 0.003,
 
        # Predators - Repeated attacks in localised region. Note, can make some of these arbitrarily high so predator keeps attacking when fish enters a certain region for whole episode.
        'max_predator_attacks': 5,

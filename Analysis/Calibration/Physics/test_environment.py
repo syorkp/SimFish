@@ -28,16 +28,28 @@ class TestEnvironment:
             'prey_inertia': 40.,
             'prey_size': 1,  # FINAL VALUE - 0.2mm diameter, so 1.
             'prey_max_turning_angle': 0.25,
+            'prey_escape_impulse': 2,
+            'prey_sensing_distance': 20,
+            'prey_jump': True,
+            'prey_fluid_displacement': True,
+            'prey_cloud_num': 16,
 
+            # Prey movement
             'p_slow': 1.0,
             'p_fast': 0.0,
             'p_escape': 0.5,
             'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
             'p_reorient': 0.04,
-            'slow_speed_paramecia': 0.035,  # Impulse to generate 0.5mms-1 for given prey mass
-            'fast_speed_paramecia': 0.07,  # Impulse to generate 1.0mms-1 for given prey mass
-            'jump_speed_paramecia': 0.7,  # Impulse to generate 10.0mms-1 for given prey mass
-            'prey_fluid_displacement': True,
+            'slow_speed_paramecia': 0.005,
+            # Actual values should be 0.035,  # Impulse to generate 0.5mms-1 for given prey mass
+            'fast_speed_paramecia': 0.01,
+            # Actual values should be 0.07,  # Impulse to generate 1.0mms-1 for given prey mass
+            'jump_speed_paramecia': 0.1,
+            # Actual values should be 0.7,  # Impulse to generate 10.0mms-1 for given prey mass
+
+            'displacement_scaling_factor': 0.018,
+            # Multiplied by previous impulse size to cause displacement of nearby features.
+            'known_max_fish_i': 100,
 
             'predator_mass': 200.,
             'predator_inertia': 0.0001,
@@ -99,6 +111,8 @@ class TestEnvironment:
 
         self.col = self.space.add_collision_handler(2, 3)
         self.col.begin = self.touch_prey
+
+        self.prev_action_impulse = 0
 
         # Capture dynamics
         self.fraction_capture_possible, self.permitted_angular_deviation = fraction_capture_possible, permitted_angular_deviation
@@ -206,7 +220,24 @@ class TestEnvironment:
         #     np.random.choice([0, 1, 2], 1, p=[1 - (self.env_variables["p_fast"] + self.env_variables["p_slow"]),
         #                                       self.env_variables["p_slow"],
         #                                       self.env_variables["p_fast"]])[0])
-        self.paramecia_gaits.append(1)
+        # New prey motion
+        self.paramecia_gaits.append(
+            np.random.choice([0, 1, 2], 1, p=[1 - (self.env_variables["p_fast"] + self.env_variables["p_slow"]),
+                                              self.env_variables["p_slow"],
+                                              self.env_variables["p_fast"]])[0])
+
+
+    def check_proximity_all_prey(self, sensing_distance):
+        all_prey_positions = np.array([pr.position for pr in self.prey_bodies])
+        fish_position = self.body.position
+        within_x = (all_prey_positions[:, 0] > fish_position[0] - sensing_distance) * (all_prey_positions[:, 0] < fish_position[0] + sensing_distance)
+        within_y = (all_prey_positions[:, 1] > fish_position[1] - sensing_distance) * (all_prey_positions[:, 1] < fish_position[1] + sensing_distance)
+        within_range = within_x * within_y
+        return within_range
+
+    def get_last_action_magnitude(self):
+        return self.prev_action_impulse * self.env_variables[
+            'displacement_scaling_factor']  # Scaled down both for mass effects and to make it possible for the prey to be caught.
 
     def _move_prey_new(self, micro_step):
         if len(self.prey_bodies) == 0:
@@ -237,18 +268,18 @@ class TestEnvironment:
                                                                                    self.env_variables["p_reorient"]])
             angle_changes = angle_changes + (large_turns * turns_implemented)
 
-            self.prey_within_range = [False for i in range(len(self.prey_bodies))]
+            self.prey_within_range = self.check_proximity_all_prey(self.env_variables["prey_sensing_distance"])
 
         for i, prey_body in enumerate(self.prey_bodies):
-            if self.prey_within_range[i]:
+            if self.prey_within_range[i]:  # self.check_proximity(prey_body.position, self.env_variables['prey_sensing_distance']):
                 # Motion from fluid dynamics
                 if self.env_variables["prey_fluid_displacement"]:
-                    distance_vector = prey_body.position - self.fish.body.position
+                    distance_vector = prey_body.position - self.body.position
                     distance = (distance_vector[0] ** 2 + distance_vector[1] ** 2) ** 0.5
                     distance_scaling = np.exp(-distance)
 
                     original_angle = copy.copy(prey_body.angle)
-                    prey_body.angle = self.fish.body.angle + np.random.uniform(-1, 1)
+                    prey_body.angle = self.body.angle + np.random.uniform(-1, 1)
                     impulse_for_prey = (self.get_last_action_magnitude()/self.env_variables["known_max_fish_i"]) * \
                                         self.env_variables["displacement_scaling_factor"] * distance_scaling
 
@@ -373,16 +404,19 @@ class TestEnvironment:
         # Take fish action
         if continuous:
             self.move_fish(set_impulse, set_angle)
+            self.prev_action_impulse = set_impulse
         else:
             if fixed_capture:
                 # self.move_fish(2.97, 0)
                 self.move_fish(2.1468332, 0)
+                self.prev_action_impulse = 2.1468332
             else:
                 action_angle, distance = draw_angle_dist_narrowed(0)#, n= 10)  # draw_angle_dist(0)
 
                 action_impulse = self.calculate_impulse(distance)
                 # action_angle = np.random.choice([-angle_change, angle_change])
                 self.move_fish(action_impulse, action_angle)
+                self.prev_action_impulse = action_impulse
 
         for micro_step in range(num_sim_steps):
             if self.capture_start <= micro_step <= self.capture_end:
@@ -390,6 +424,7 @@ class TestEnvironment:
             else:
                 self.capture_possible = False
             position.append(np.array(self.body.position))
+            self._move_prey_new(micro_step)
             self.space.step(self.env_variables['phys_dt'])
 
         position = np.array(position)
@@ -400,6 +435,7 @@ class TestEnvironment:
             self.space.remove(self.prey_shapes[-1], self.prey_shapes[-1].body)
             self.prey_bodies.remove(self.prey_shapes[-1].body)
             self.prey_shapes.remove(self.prey_shapes[-1])
+            self.paramecia_gaits = []
             return False
 
         # position = np.array(position)
