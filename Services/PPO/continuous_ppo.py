@@ -337,6 +337,8 @@ class ContinuousPPO(BasePPO):
                                                      sand_grain_positions,
                                                      vegetation_positions,
                                                      self.simulation.fish.body.angle,
+                                                     self.simulation.fish.salt_health,
+                                                     efference_copy=a,
                                                      )
 
         self.buffer.make_desired_recordings(network_layers)
