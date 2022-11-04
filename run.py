@@ -28014,7 +28014,27 @@ dqn_data_predator = [
 
 # New generation of models
 
-dqn_new_scaffold_test = [
+dqn_new_scaffold_test_1 = [
+    {
+        "Model Name": "dqn_scaffold_beta_test",
+        "Environment Name": "dqn_scaffold_beta_test",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+dqn_new_scaffold_test_2 = [
     {
         "Model Name": "dqn_scaffold_beta_test",
         "Environment Name": "dqn_scaffold_beta_test",
@@ -28034,7 +28054,48 @@ dqn_new_scaffold_test = [
     },
 ]
 
-ppo_new_scaffold_test = [
+dqn_new_scaffold_test_3 = [
+    {
+        "Model Name": "dqn_scaffold_beta_test",
+        "Environment Name": "dqn_scaffold_beta_test",
+        "Trial Number": 3,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+dqn_new_scaffold_test_4 = [
+    {
+        "Model Name": "dqn_scaffold_beta_test",
+        "Environment Name": "dqn_scaffold_beta_test",
+        "Trial Number": 4,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+
+ppo_new_scaffold_test_1 = [
     {
         "Model Name": "ppo_scaffold_beta_test",
         "Environment Name": "ppo_scaffold_beta_test",
@@ -28053,6 +28114,67 @@ ppo_new_scaffold_test = [
         "Profile Speed": False,
     },
 ]
+
+ppo_new_scaffold_test_2 = [
+    {
+        "Model Name": "ppo_scaffold_beta_test",
+        "Environment Name": "ppo_scaffold_beta_test",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+ppo_new_scaffold_test_3 = [
+    {
+        "Model Name": "ppo_scaffold_beta_test",
+        "Environment Name": "ppo_scaffold_beta_test",
+        "Trial Number": 3,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+ppo_new_scaffold_test_4 = [
+    {
+        "Model Name": "ppo_scaffold_beta_test",
+        "Environment Name": "ppo_scaffold_beta_test",
+        "Trial Number": 4,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
 
 new_wall_thickness_test = [
     {
