@@ -12,6 +12,8 @@
     "eyes_verg_angle": 77.0,
     "visual_field": 163.0,
     "eyes_biasx": 2.5,
+    "distance_penalty_scaling_factor": 1.0,
+    "angle_penalty_scaling_factor": 0.5,
     "prey_mass": 1.0,
     "prey_inertia": 40.0,
     "prey_size": 1.0,

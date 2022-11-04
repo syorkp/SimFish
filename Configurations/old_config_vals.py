@@ -21,10 +21,6 @@ env = {
     'j_turn_dir_change': 0.07,
     'rest_cost': 2,
 
-    'distance_penalty_scaling_factor': 1.0,
-    # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
-    'angle_penalty_scaling_factor': 0.5,
-    # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
 
 }
 

@@ -98,6 +98,11 @@ env = {
        'visual_field': 163.,  # single eye angular visual field
        'eyes_biasx': 2.5,  # distance of eyes from midline - interretinal distance of 0.5mm
 
+       'distance_penalty_scaling_factor': 1.0,
+       # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
+       'angle_penalty_scaling_factor': 0.5,
+       # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
+
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.

@@ -1,5 +1,6 @@
 import numpy as np
 from Analysis.load_data import load_data
+from Analysis.Behavioural.VisTools.show_observation_sequences import display_obs_sequence
 
 
 def show_wall_interaction_sequence(model_name, assay_config, assay_id, n, env_w=3000, env_h=3000, buffer=100):
@@ -26,13 +27,16 @@ def show_wall_interaction_sequence(model_name, assay_config, assay_id, n, env_w=
                     current_seq = []
         if len(current_seq) > 0:
             sequence_timestamps.append(current_seq)
+        sequence_timestamps = [[i for i in range(len(d["observation"]))]]
 
         for seq in sequence_timestamps:
+            obs_sequences.append([d["observation"][s] for s in seq])
 
-        x = True
+    for seq in obs_sequences:
+        display_obs_sequence(seq)
 
 
 if __name__ == "__main__":
-    show_wall_interaction_sequence("dqn_scaffold_26-1", "Behavioural-Data-Free", "Naturalistic", 5)
+    show_wall_interaction_sequence("dqn_scaffold_26-1", "Behavioural-Data-Free", "Naturalistic", 1)
 
 

@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 
 
 def display_obs_sequence(obs_sequence, angles_seq=None, upscale=True):
-    obs_sequence_left = np.array([o[:, 2, 0] for o in obs_sequence])
-    obs_sequence_right = np.array([o[:, 2, 1] for o in obs_sequence])
+    obs_sequence_left = np.array([o[:, 0, 0] for o in obs_sequence])
+    obs_sequence_right = np.array([o[:, 0, 1] for o in obs_sequence])
 
     if upscale:
         max_photons = max([np.max(obs_sequence_left), np.max(obs_sequence_right)])
