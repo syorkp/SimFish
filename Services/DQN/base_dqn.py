@@ -74,9 +74,11 @@ class BaseDQN:
 
     def init_states(self):
         # Init states for RNN
+        print("Loading states")
         if self.learning_params["maintain_state"]:
             self.episode_number = self.episode_number - (self.episode_number % self.learning_params["network_saving_frequency"])
             # IF SAVE PRESENT
+            print(self.episode_number)
             if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
                 if self.environment_params["use_dynamic_network"]:
                     with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
