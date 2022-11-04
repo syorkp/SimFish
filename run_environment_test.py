@@ -53,7 +53,7 @@ else:
     file_path = os.path.join(dirname, f"Configurations/Assay-Configs/{arg}_env.json")
     with open(file_path, 'r') as f:
         env = json.load(f)
-    env["prey_num"] = 13
+    env["prey_num"] = 1
     env["probability_of_predator"] = 1
     env["immunity_steps"] = 0
     env["distance_from_fish"] = 181.71216752587327
@@ -82,6 +82,7 @@ else:
     env['birth_rate_current_pop_scaling'] = 1
     env['p_prey_death']= 0.003
     env['prey_safe_duration'] = 100
+    env['current_setting'] = "Circular"
 
     sim_state = DiscreteNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=True,
                                                 using_gpu=False)
