@@ -28175,7 +28175,6 @@ ppo_new_scaffold_test_4 = [
     },
 ]
 
-
 new_wall_thickness_test = [
     {
         "Model Name": "ppo_scaffold_beta_test",

@@ -263,8 +263,11 @@ class ContinuousPPO(BasePPO):
                                            rnn_state_critic,
                                            rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
-        a = [a[0] / self.environment_params['max_impulse'],
-             a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
+        a = [a[0],
+             a[1],
+             self.simulation.fish.prev_action_impulse,
+             self.simulation.fish.prev_action_angle,
+             ]# Set impulse to scale to be inputted to network
 
         impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, network_layers, \
         mu_i, mu_a, mu1, mu1_ref, mu_a1, mu_a_ref, si_i, si_a = self.sess.run(
