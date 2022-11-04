@@ -10,10 +10,6 @@ env = {
 
     'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
 
-    'vegetation_size': 100.,
-    'vegetation_num': 0,
-    'vegetation_effect_distance': 150,
-
     'forward_swim_cost': 3,
     'forward_swim_impulse': 10,
     'routine_turn_cost': 3,

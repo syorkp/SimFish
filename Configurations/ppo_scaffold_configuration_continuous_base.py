@@ -139,6 +139,10 @@ env = {
        'sand_grain_displacement_impulse_scaling_factor': 0.5,
        'sand_grain_displacement_distance': 20,
 
+       'vegetation_size': 100.,
+       'vegetation_num': 0,
+       'vegetation_effect_distance': 150,
+
        'predator_mass': 200.,
        'predator_inertia': 0.0001,
        'predator_size': 32,  # Radius
