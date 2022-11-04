@@ -186,7 +186,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             reward += self.displace_sand_grains()
             if self.new_simulation:
                 if self.env_variables["current_setting"]:
-                    self.resolve_currents()
+                    self.resolve_currents(micro_step)
                     self.bring_fish_in_bounds()
                 if self.fish.making_capture and self.capture_start <= micro_step <= self.capture_end:
                     self.fish.capture_possible = True
@@ -529,8 +529,8 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         self.impulse_vector_field = vector_field
 
-        # plt.streamplot(xy[:, :, 0], yp[:, :, 0], vector_field[:, :, 0], vector_field[:, :, 1])
-        # plt.show()
+        plt.streamplot(xy[:, :, 0], yp[:, :, 0], vector_field[:, :, 0], vector_field[:, :, 1])
+        plt.show()
 
     def create_diagonal_current(self):
         ...
@@ -567,10 +567,12 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.impulse_vector_field = vector_field
 
         # plt.streamplot(xy[:, :], yp[:, :], vector_field[:, :, 0], vector_field[:, :, 1])
-        # plt.ylim(0, 1500)
+        # plt.ylim(0, 3000)
+        # plt.xlim(0, 3000)
         # plt.show()
 
-    def resolve_currents(self):
+
+    def resolve_currents(self, micro_step):
         """Currents act on prey and fish."""
         all_feature_coordinates = np.array(
             [self.fish.body.position] + [body.position for body in self.prey_bodies]).astype(int)
@@ -588,10 +590,6 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.fish.body.apply_impulse_at_local_point(
             (associated_impulse_vectors[0, 1], associated_impulse_vectors[0, 0]))
 
-        # Log fish-current vector agreement
-        self.vector_agreement.append((self.fish.impulse_vector_x * associated_impulse_vectors[0, 1]) + \
-                                     (self.fish.impulse_vector_y * associated_impulse_vectors[0, 0]))
-
         for i, vector in enumerate(associated_impulse_vectors[1:]):
             self.prey_bodies[i].angle = np.pi
             self.prey_bodies[i].apply_impulse_at_local_point((vector[1], vector[0]))
@@ -600,6 +598,13 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         # Add to log about swimming against currents...
         self.impulse_against_fish_previous_step = [associated_impulse_vectors[0, 1], associated_impulse_vectors[0, 0]]
+
+        if micro_step == 0:
+            # Log fish-current vector agreement
+            self.vector_agreement.append((self.fish.impulse_vector_x * associated_impulse_vectors[0, 1]) + \
+                                         (self.fish.impulse_vector_y * associated_impulse_vectors[0, 0]) * 5)
+            print(self.vector_agreement[-1])
+
 
     def transport_fish(self, target_feature):
         """In assay mode only, relocates fish to a target feature from the following options:

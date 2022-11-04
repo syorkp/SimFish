@@ -54,14 +54,14 @@ else:
     with open(file_path, 'r') as f:
         env = json.load(f)
     env["prey_num"] = 1
-    env["probability_of_predator"] = 1
-    env["immunity_steps"] = 0
-    env["distance_from_fish"] = 181.71216752587327
-    env["phys_dt"] = 0.2
-    env["predator_mass"] = 200
-    env["predator_inertia"] = 0.0001
-    env["predator_size"] = 32
-    env["predator_impulse"] = 25
+    # env["probability_of_predator"] = 1
+    # env["immunity_steps"] = 0
+    # env["distance_from_fish"] = 181.71216752587327
+    # env["phys_dt"] = 0.2
+    # env["predator_mass"] = 200
+    # env["predator_inertia"] = 0.0001
+    # env["predator_size"] = 32
+    # env["predator_impulse"] = 25
 
     env['prey_mass'] = 1.
     env['prey_inertia'] = 40.
@@ -132,18 +132,21 @@ if continuous:
 
         # print(f"Distance moved: {np.sqrt((sim_state.fish.body.position[0]-previous_position[0])**2 + np.sqrt((sim_state.fish.body.position[1]-previous_position[1])**2))}")
 else:
+    import matplotlib.pyplot as plt
     step = 0
     while not q:
         # action = None
+
         print(f"{step}: Prey num = {len(sim_state.prey_bodies)}")
         step += 1
-        key = 7 # input()
+        key = input()
         action_input = int(key)
         s, r, internal, d, fb = sim_state.simulation_step(action_input)
 
         # if angle > 1.0:
         #     sim_state.reset()
         position = sim_state.fish.body.position
+        # print(sim_state.vector_agreement)
         # distance = ((position[0] - sim_state.prey_bodies[-1].position[0]) ** 2 +
         #             (position[1] - sim_state.prey_bodies[-1].position[1]) ** 2) ** 0.5
         # print(f"Distance: {distance}")
