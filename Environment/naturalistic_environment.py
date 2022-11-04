@@ -162,6 +162,10 @@ class NaturalisticEnvironment(BaseEnvironment):
         else:
             reward = self.fish.take_action(action)
 
+        # For impulse direction logging (current opposition metric)
+        self.fish.impulse_vector_x = self.fish.prev_action_impulse * np.sin(self.fish.body.angle)
+        self.fish.impulse_vector_y = self.fish.prev_action_impulse * np.cos(self.fish.body.angle)
+
         # Add policy helper reward to encourage proximity to prey.
         for ii in range(len(self.prey_bodies)):
             if self.check_proximity(self.prey_bodies[ii].position, self.env_variables['reward_distance']):
