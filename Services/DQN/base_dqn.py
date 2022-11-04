@@ -84,16 +84,16 @@ class BaseDQN:
                         print("Successfully loaded previous state.")
                         data = json.load(f)
                         num_rnns = len(data.keys())/4
-                        self.init_rnn_state_actor = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
-                        self.init_rnn_state_actor_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
+                        self.init_rnn_state = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
+                        self.init_rnn_state_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
 
                     return
                 else:
                     with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
                         print("Successfully loaded previous state.")
                         data = json.load(f)
-                        self.init_rnn_state_actor = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
-                        self.init_rnn_state_actor_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
+                        self.init_rnn_state = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
+                        self.init_rnn_state_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
 
                     return
 

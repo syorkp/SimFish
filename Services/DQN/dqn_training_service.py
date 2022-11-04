@@ -198,9 +198,10 @@ class DQNTrainingService(TrainingService, BaseDQN):
         self.writer.add_summary(turn_chain_summary, self.episode_number)
 
         # Save the parameters to be carried over.
-        output_data = {"epsilon": self.epsilon, "episode_number": self.episode_number, "total_steps": self.total_steps, "configuration_index": self.configuration_index}
-        with open(f"{self.model_location}/saved_parameters.json", "w") as file:
-            json.dump(output_data, file)
+        if self.episode_number % self.learning_params['network_saving_frequency'] == 0:
+            output_data = {"epsilon": self.epsilon, "episode_number": self.episode_number, "total_steps": self.total_steps, "configuration_index": self.configuration_index}
+            with open(f"{self.model_location}/saved_parameters.json", "w") as file:
+                json.dump(output_data, file)
 
         buffer_array = np.array(episode_buffer)
         episode_buffer = list(zip(buffer_array))
