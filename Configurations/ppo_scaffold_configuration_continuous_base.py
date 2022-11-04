@@ -164,6 +164,7 @@ env = {
        'dark_gain': 60.0,  # gain of brightness in the dark side
        'light_gain': 200.0,  # gain of brightness in the bright side
 
+       'rest_cost': 2,
        'capture_swim_extra_cost': 0,
        'capture_basic_reward': 10000,  # Used only when not using energy state.
        'predator_cost': 1000,

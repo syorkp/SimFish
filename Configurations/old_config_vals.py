@@ -19,7 +19,6 @@ env = {
     'j_turn_cost': 2.5,
     'j_turn_impulse': 0.1,
     'j_turn_dir_change': 0.07,
-    'rest_cost': 2,
 
 
 }

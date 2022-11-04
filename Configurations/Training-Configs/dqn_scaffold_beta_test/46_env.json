@@ -69,6 +69,7 @@
     "bkg_scatter": 0.1,
     "dark_gain": 60.0,
     "light_gain": 125.70000000000003,
+    "rest_cost": 2,
     "capture_swim_extra_cost": 100,
     "capture_basic_reward": 10000,
     "predator_cost": 1000,
