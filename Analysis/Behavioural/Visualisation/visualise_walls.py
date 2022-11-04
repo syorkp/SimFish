@@ -37,6 +37,6 @@ def show_wall_interaction_sequence(model_name, assay_config, assay_id, n, env_w=
 
 
 if __name__ == "__main__":
-    show_wall_interaction_sequence("dqn_scaffold_26-1", "Behavioural-Data-Free", "Naturalistic", 1)
+    show_wall_interaction_sequence("dqn_scaffold_26-1", "Behavioural-Data-Videos-A2", "Naturalistic", 1)
 
 

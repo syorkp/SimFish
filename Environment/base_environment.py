@@ -553,7 +553,7 @@ class BaseEnvironment:
 
     def create_walls(self):
         # wall_width = 1
-        wall_width = self.env_variables['eyes_biasx']
+        wall_width = 5  # self.env_variables['eyes_biasx']
         static = [
             pymunk.Segment(
                 self.space.static_body,
