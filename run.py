@@ -28056,7 +28056,7 @@ ppo_new_scaffold_test = [
 
 new_wall_thickness_test = [
     {
-        "Model Name": "ppo_scaffold_beta_test-1",
+        "Model Name": "ppo_scaffold_beta_test",
         "Environment Name": "ppo_21_1_videos",
         "Assay Configuration Name": "Behavioural-Data-Videos-A1",
         "Trial Number": 1,
@@ -28067,7 +28067,7 @@ new_wall_thickness_test = [
         "Continuous Actions": True,
         "Learning Algorithm": "PPO",
         "Priority": 2,
-        "Using GPU": False,
+        "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
