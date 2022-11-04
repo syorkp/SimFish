@@ -276,7 +276,7 @@ env = {
 
        # Currents
        'current_setting': False,  # Current setting. If none, should be False. Current options: Circular, Linear
-       'max_current_strength': 0.01,  # Arbitrary impulse variable to be calibrated
+       'max_current_strength': 0.04,  # Arbitrary impulse variable to be calibrated
        'current_width': 0.2,
        'current_strength_variance': 1,
        'unit_circle_diameter': 0.7,  # Circular current options

@@ -375,7 +375,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                 frame_buffer.append(frame)
             if self.draw_screen:
                 frame = self.output_frame(activations, internal_state, scale=0.5) / 255.
-                self.board_image.set_data(frame)
+                self.board_image.set_data(frame/np.max(frame))
                 plt.pause(0.000001)
 
         # observation = self.chosen_math_library.dstack((self.fish.left_eye.readings,

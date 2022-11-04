@@ -53,7 +53,9 @@ else:
     file_path = os.path.join(dirname, f"Configurations/Assay-Configs/{arg}_env.json")
     with open(file_path, 'r') as f:
         env = json.load(f)
-    env["prey_num"] = 1
+    env["prey_num"] = 30
+    env["prey_cloud_num"] = 5
+    env["max_current_strength"] = 0.04
     # env["probability_of_predator"] = 1
     # env["immunity_steps"] = 0
     # env["distance_from_fish"] = 181.71216752587327
@@ -72,7 +74,7 @@ else:
     env['p_escape'] = 0.5
     env['p_switch'] = 0.01  # Corresponds to 1/average duration of movement type.
     env['p_reorient'] = 0.04
-    env['slow_speed_paramecia'] = 0.035  # Impulse to generate 0.5mms-1 for given prey mass
+    env['slow_speed_paramecia'] = 0.0  # Impulse to generate 0.5mms-1 for given prey mass
     env['fast_speed_paramecia'] = 0.07  # Impulse to generate 1.0mms-1 for given prey mass
     env['jump_speed_paramecia'] = 0.7  # Impulse to generate 10.0mms-1 for given prey mass
     env['prey_fluid_displacement'] = True
@@ -80,7 +82,7 @@ else:
 
     env['birth_rate'] = 0.1
     env['birth_rate_current_pop_scaling'] = 1
-    env['p_prey_death']= 0.003
+    env['p_prey_death'] = 0.003
     env['prey_safe_duration'] = 100
     env['current_setting'] = "Circular"
 
@@ -132,14 +134,14 @@ if continuous:
 
         # print(f"Distance moved: {np.sqrt((sim_state.fish.body.position[0]-previous_position[0])**2 + np.sqrt((sim_state.fish.body.position[1]-previous_position[1])**2))}")
 else:
-    import matplotlib.pyplot as plt
     step = 0
+    sim_state.fish.body.position = np.array([2025, 1100])
     while not q:
         # action = None
 
         print(f"{step}: Prey num = {len(sim_state.prey_bodies)}")
         step += 1
-        key = input()
+        key = 6 #input()
         action_input = int(key)
         s, r, internal, d, fb = sim_state.simulation_step(action_input)
 

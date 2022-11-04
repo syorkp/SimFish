@@ -119,11 +119,11 @@ env = {
        'p_escape': 0.5,
        'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
        'p_reorient': 0.04,
-       'slow_speed_paramecia': 0.01,
+       'slow_speed_paramecia': 0.005,
        # Actual values should be 0.035,  # Impulse to generate 0.5mms-1 for given prey mass
-       'fast_speed_paramecia': 0.02,
+       'fast_speed_paramecia': 0.01,
        # Actual values should be 0.07,  # Impulse to generate 1.0mms-1 for given prey mass
-       'jump_speed_paramecia': 0.2,  # Actual values should be 0.7,  # Impulse to generate 10.0mms-1 for given prey mass
+       'jump_speed_paramecia': 0.1,  # Actual values should be 0.7,  # Impulse to generate 10.0mms-1 for given prey mass
 
        # Prey reproduction
        'prey_reproduction_mode': True,
@@ -281,7 +281,7 @@ env = {
 
        # Currents
        'current_setting': False,  # Current setting. If none, should be False. Current options: Circular, Linear
-       'max_current_strength': 0.01,  # Arbitrary impulse variable to be calibrated
+       'max_current_strength': 0.04,  # Arbitrary impulse variable to be calibrated
        'current_width': 0.2,
        'current_strength_variance': 1,
        'unit_circle_diameter': 0.7,  # Circular current options
