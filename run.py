@@ -28057,7 +28057,7 @@ ppo_new_scaffold_test = [
 new_wall_thickness_test = [
     {
         "Model Name": "ppo_scaffold_beta_test",
-        "Environment Name": "ppo_21_1_videos",
+        "Environment Name": "ppo_wall_test",
         "Assay Configuration Name": "Behavioural-Data-Videos-A1",
         "Trial Number": 1,
         "Checkpoint": None,
