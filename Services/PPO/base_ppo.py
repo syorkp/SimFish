@@ -87,8 +87,6 @@ class BasePPO:
                     with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
                         print("Successfully loaded previous state.")
                         data = json.load(f)
-                        print(self.episode_number)
-                        print(data.keys())
                         num_rnns = len(data.keys())/4
                         self.init_rnn_state_actor = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
                         self.init_rnn_state_actor_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))

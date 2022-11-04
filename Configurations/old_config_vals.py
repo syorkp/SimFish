@@ -6,7 +6,6 @@ env = {
     'num_photoreceptors': 120,  # number of visual 'rays' per eye
     'min_vis_dist': 20,
     'max_vis_dist': 180,
-    'photon_ratio': 100,  # expected number of photons for unit brightness
 
     'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
 

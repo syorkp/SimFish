@@ -78,7 +78,6 @@ class BaseDQN:
         if self.learning_params["maintain_state"]:
             self.episode_number = self.episode_number - (self.episode_number % self.learning_params["network_saving_frequency"])
             # IF SAVE PRESENT
-            print(self.episode_number)
             if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
                 if self.environment_params["use_dynamic_network"]:
                     with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
@@ -86,7 +85,7 @@ class BaseDQN:
                         data = json.load(f)
                         num_rnns = len(data.keys())/4
                         self.init_rnn_state_actor = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
-                        self.init_rnn_state_actor_ref = tuple((np.array(data[f"rnn_state_ref_{shape}_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
+                        self.init_rnn_state_actor_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
 
                     return
                 else:

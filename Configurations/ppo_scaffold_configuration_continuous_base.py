@@ -88,6 +88,7 @@ env = {
        'drag': 0.7,  # water drag
        'phys_dt': 0.2,  # physics time step
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
+       'photon_ratio': 100,  # expected number of photons for unit brightness - used when saving frames.
 
        'fish_mass': 140.,
        'fish_mouth_size': 8.,  # FINAL VALUE - 0.2mm diameter, so 1.

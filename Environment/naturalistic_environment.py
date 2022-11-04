@@ -529,8 +529,8 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         self.impulse_vector_field = vector_field
 
-        plt.streamplot(xy[:, :, 0], yp[:, :, 0], vector_field[:, :, 0], vector_field[:, :, 1])
-        plt.show()
+        # plt.streamplot(xy[:, :, 0], yp[:, :, 0], vector_field[:, :, 0], vector_field[:, :, 1])
+        # plt.show()
 
     def create_diagonal_current(self):
         ...
@@ -603,7 +603,6 @@ class NaturalisticEnvironment(BaseEnvironment):
             # Log fish-current vector agreement
             self.vector_agreement.append((self.fish.impulse_vector_x * associated_impulse_vectors[0, 1]) + \
                                          (self.fish.impulse_vector_y * associated_impulse_vectors[0, 0]) * 5)
-            print(self.vector_agreement[-1])
 
 
     def transport_fish(self, target_feature):
