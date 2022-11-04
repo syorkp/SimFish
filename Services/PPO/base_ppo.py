@@ -91,7 +91,7 @@ class BasePPO:
                         print(data.keys())
                         num_rnns = len(data.keys())/4
                         self.init_rnn_state_actor = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
-                        self.init_rnn_state_actor_ref = tuple((np.array(data[f"rnn_state_ref_{shape}_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
+                        self.init_rnn_state_actor_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
 
                     return
                 else:

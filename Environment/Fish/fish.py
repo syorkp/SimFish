@@ -114,6 +114,9 @@ class Fish:
         # Touch edge - for penalty
         self.touched_edge_this_step = False
 
+        self.impulse_vector_x = 0
+        self.impulse_vector_y = 0
+
         if using_gpu:
             self.chosen_math_library = cp
         else:

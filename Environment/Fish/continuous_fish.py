@@ -11,8 +11,7 @@ class ContinuousFish(Fish):
         self.making_capture = True
         self.new_simulation = new_simulation
 
-        self.impulse_vector_x = 0
-        self.impulse_vector_y = 0
+
 
     def calculate_distance(self, impulse):
         # return (1.771548 * impulse + self.env_variables['fish_mass'] * 0.004644 + 0.081417) / 10
@@ -68,8 +67,8 @@ class ContinuousFish(Fish):
         self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
 
         # For logging opposition to current.
-        self.impulse_vector_x = impulse * np.sin(angle)
-        self.impulse_vector_y = impulse * np.cos(angle)
+        self.impulse_vector_x = self.prev_action_impulse * np.sin(self.body.angle)
+        self.impulse_vector_y = self.prev_action_impulse * np.cos(self.body.angle)
 
         self.body.angle += angle
         return 0.0
