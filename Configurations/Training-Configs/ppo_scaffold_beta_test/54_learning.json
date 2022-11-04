@@ -27,7 +27,7 @@
     "input_sigmas": true,
     "num_actions": 10,
     "time_per_step": 0.03,
-    "summaryLength": 10,
+    "summaryLength": 200,
     "rnn_dim_shared": 512,
     "extra_rnn": false,
     "save_gifs": true,
