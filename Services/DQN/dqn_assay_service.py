@@ -166,7 +166,7 @@ class DQNAssayService(AssayService, BaseDQN):
                                     self.internal_state_order, self.simulation.board.background_grating.get()[:, :, 0],
                                     salt_location=salt_location)
         self.log_stimuli()
-        if assay["save frames"]:
+        if assay["save frames"] and len(self.frame_buffer) > 5:
             # make_gif(self.frame_buffer,
             #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
             #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
