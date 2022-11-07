@@ -66,9 +66,10 @@ class QNetworkDynamic(DynamicBaseNetwork):
                                             self.Advantage_ref[0:, :][:, 8:9],
                                             self.Advantage_ref[0:, :][:, 7:8],
                                             self.Advantage_ref[0:, :][:, 9:10],
-                                            self.Advantage_ref[0:, :][:, 12:13],
-                                            self.Advantage_ref[0:, :][:, 11:12]
+                                            self.Advantage_ref[0:, :][:, 11:],
+                                            self.Advantage_ref[0:, :][:, 10:11],
                                             ], axis=1)
+            x = True
         else:
             print(f"Q-Network not set up for {num_actions} actions")
             self.Advantage_ref = tf.concat([self.Advantage_ref[0:, :][:, :1],
