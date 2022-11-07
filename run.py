@@ -28301,7 +28301,7 @@ new_wall_thickness_test = [
 ]
 
 if run_config is None:
-    run_config = dqn_new_scaffold_test_4
+    run_config = new_wall_thickness_test
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]
