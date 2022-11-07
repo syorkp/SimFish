@@ -44,7 +44,7 @@ def plot_prey_num_reproduction(birth_rate, num_steps, starting_prey, num_clouds,
 
 
 if __name__ == "__main__":
-    plot_prey_num_reproduction(birth_rate=0.001, num_steps=10000, starting_prey=13,
+    plot_prey_num_reproduction(birth_rate=0.001, num_steps=1000, starting_prey=13,
                                num_clouds=16, prey_safe_duration=100, p_prey_death=0.003)
 
 
