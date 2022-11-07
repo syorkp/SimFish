@@ -16,7 +16,6 @@ from Configurations.Utilities.turn_model_configs_into_assay_configs import trans
 from Services.training_service import TrainingService
 from Services.DQN.dqn_assay_service import assay_target
 from Services.DQN.base_dqn import BaseDQN
-from scipy.stats import entropy
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -185,11 +184,12 @@ class DQNTrainingService(TrainingService, BaseDQN):
         all_actions_frequency = np.array(all_actions_frequency)
 
         # Normalise given current epsilon value (subtract expected random actions from each group, then clip to zero)
-        expected_random_actions = (self.epsilon * self.total_steps)/self.learning_params['num_actions']
+        expected_random_actions = (self.epsilon * self.simulation.num_steps)/self.learning_params['num_actions']
         all_actions_frequency -= expected_random_actions
         all_actions_frequency = np.clip(all_actions_frequency, 0, self.total_steps)
-        action_choice_entropy = entropy(all_actions_frequency)
-        a_freq = tf.Summary(value=[tf.Summary.Value(tag="Action Diversity (entropy)", simple_value=action_choice_entropy)])
+        max_freq_diffs = [np.max([f - f2 for f2 in all_actions_frequency]) for f in all_actions_frequency]
+        heterogeneity_score = self.learning_params["num_actions"]/np.sum(max_freq_diffs) - 1/self.learning_params["num_actions"]
+        a_freq = tf.Summary(value=[tf.Summary.Value(tag="Action Heterogeneity Score", simple_value=heterogeneity_score)])
         self.writer.add_summary(a_freq, self.episode_number)
 
         # Turn chain metric
