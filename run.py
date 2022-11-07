@@ -28178,7 +28178,7 @@ ppo_new_scaffold_test_4 = [
 new_wall_thickness_test = [
     {
         "Model Name": "dqn_scaffold_beta_test",
-        "Environment Name": "ppo_wall_test",
+        "Environment Name": "dqn_wall_test",
         "Assay Configuration Name": "Behavioural-Data-Videos-A1",
         "Trial Number": 1,
         "Checkpoint": None,
@@ -28188,7 +28188,7 @@ new_wall_thickness_test = [
         "Continuous Actions": False,
         "Learning Algorithm": "DQN",
         "Priority": 2,
-        "Using GPU": True,
+        "Using GPU": False,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": True,
