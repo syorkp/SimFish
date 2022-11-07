@@ -79,7 +79,7 @@ class DQNAssayService(AssayService, BaseDQN):
         self.assay_output_data_format = {key: None for key in assay["recordings"]}
         self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
 
-        if self.environment_params["maintain_state"]:
+        if self.learning_params["maintain_state"]:
             rnn_state = copy.copy(self.init_rnn_state)
             rnn_state_ref = copy.copy(self.init_rnn_state_ref)
         else:
