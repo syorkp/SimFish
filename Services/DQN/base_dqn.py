@@ -337,7 +337,7 @@ class BaseDQN:
                            self.main_QN.internal_state: internal_state,
                            self.main_QN.prev_actions: [a],
                            self.main_QN.train_length: 1,
-                           self.main_QN.rnn_state_in: rnn_state,
+                           self.main_QN.rnn_state_in: rnn_state ,
                            # self.main_QN.rnn_state_in_ref: rnn_state_ref,
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0,
