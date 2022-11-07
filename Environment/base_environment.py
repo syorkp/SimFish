@@ -14,8 +14,9 @@ class BaseEnvironment:
     """A base class to represent environments, for extension to ProjectionEnvironment, VVR and Naturalistic
     environment classes."""
 
-    def __init__(self, env_variables, draw_screen, new_simulation, using_gpu):
+    def __init__(self, env_variables, draw_screen, new_simulation, using_gpu, num_actions):
         self.new_simulation = new_simulation
+        self.num_actions = num_actions
 
         self.env_variables = env_variables
         if self.new_simulation:
@@ -319,7 +320,7 @@ class BaseEnvironment:
         difference = current_height - current_width
         extra_area = np.zeros((current_height, difference - 20, 3))
 
-        action_bins = [i for i in range(10)]
+        action_bins = [i for i in range(self.num_actions)]
         # binned_actions = np.digitize(np.array(self.action_buffer), action_bins)
         action_bin_counts = np.array([np.count_nonzero(np.array(self.action_buffer) == i) for i in action_bins]).astype(float)
 
@@ -390,7 +391,7 @@ class BaseEnvironment:
 
                 frame = np.vstack((frame, np.zeros((20, self.env_variables['width'], 3)), this_ac))
 
-        if self.env_variables["show_action_space_usage"]:  # TODO: Test
+        if self.env_variables["show_action_space_usage"]:
             action_display = self.get_action_space_usage_display(frame.shape)
             frame = np.hstack((frame, np.zeros((frame.shape[0], 20, 3)), action_display))
 

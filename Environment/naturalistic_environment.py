@@ -12,8 +12,8 @@ from Environment.Fish.fish import Fish
 class NaturalisticEnvironment(BaseEnvironment):
 
     def __init__(self, env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen=False, fish_mass=None,
-                 collisions=True, relocate_fish=None):
-        super().__init__(env_variables, draw_screen, new_simulation, using_gpu)
+                 collisions=True, relocate_fish=None, num_actions=10):
+        super().__init__(env_variables, draw_screen, new_simulation, using_gpu, num_actions)
 
         if using_gpu:
             self.chosen_math_library = cp

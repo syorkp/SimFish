@@ -183,9 +183,13 @@ class TrainingService(BaseService):
 
     def create_environment(self):
         if self.continuous_actions:
-            self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts, self.new_simulation, self.using_gpu)
+            self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
+                                                                self.new_simulation, self.using_gpu,
+                                                                num_actions=self.learning_params["num_actions"])
         else:
-            self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts, self.new_simulation, self.using_gpu)
+            self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
+                                                              self.new_simulation, self.using_gpu,
+                                                              num_actions=self.learning_params["num_actions"])
 
     def check_update_configuration(self):
         next_point = str(self.configuration_index + 1)
