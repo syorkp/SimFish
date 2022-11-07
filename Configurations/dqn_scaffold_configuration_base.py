@@ -364,7 +364,7 @@ changes += build_changes_list_gradual("PCI", high_pci, "light_gain", env["light_
 # changes += [["PCI", 0.35, "max_epLength", 3000, "baseline_decrease", 0.00075, "prey_num", env["prey_num"]*4,
 #              "prey_cloud_num", env["prey_cloud_num"]*4, "width", 3000, "height", 3000, "complex"]]
 original_prey_num = env["prey_num"]
-original_prey_cloud_num = env["prey_num"]
+original_prey_cloud_num = env["prey_cloud_num"]
 changes += [["PCI", high_pci, "prey_num", original_prey_num * 7/8],
             ["PCI", high_pci, "prey_cloud_num", original_prey_cloud_num * 7/8],
             ["PCI", high_pci * 10/8, "prey_num", original_prey_num * 6/8],
