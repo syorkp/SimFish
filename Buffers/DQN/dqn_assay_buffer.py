@@ -73,8 +73,6 @@ class DQNAssayBuffer:
         self.internal_state_buffer.append(internal_state)
         self.reward_buffer.append(reward)
 
-        print(rnn_state)
-        x = an_error
         self.rnn_state_buffer.append(rnn_state)
         self.rnn_state_ref_buffer.append(rnn_state_ref)
 
