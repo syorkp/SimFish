@@ -1,5 +1,4 @@
 import numpy as np
-import cupy as cp
 import math
 import matplotlib.pyplot as plt
 from time import time
@@ -18,6 +17,7 @@ class NewDrawingBoard:
         self.using_gpu = using_gpu
 
         if using_gpu:
+            import cupy as cp
             self.chosen_math_library = cp
         else:
             self.chosen_math_library = np

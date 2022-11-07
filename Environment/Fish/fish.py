@@ -1,5 +1,4 @@
 import numpy as np
-import cupy as cp
 import pymunk
 from skimage.transform import resize, rescale
 
@@ -118,6 +117,8 @@ class Fish:
         self.impulse_vector_y = 0
 
         if using_gpu:
+            import cupy as cp
+
             self.chosen_math_library = cp
         else:
             self.chosen_math_library = np

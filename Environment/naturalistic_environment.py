@@ -1,7 +1,6 @@
 import math
 
 import numpy as np
-import cupy as cp
 import matplotlib.pyplot as plt
 import pymunk
 
@@ -16,6 +15,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         super().__init__(env_variables, draw_screen, new_simulation, using_gpu, num_actions)
 
         if using_gpu:
+            import cupy as cp
             self.chosen_math_library = cp
         else:
             self.chosen_math_library = np

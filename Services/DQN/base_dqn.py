@@ -86,7 +86,8 @@ class BaseDQN:
                         num_rnns = len(data.keys())/4
                         self.init_rnn_state = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
                         self.init_rnn_state_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
-
+                        print(np.max(self.init_rnn_state_ref))
+                        print(np.min(self.init_rnn_state_ref))
                     return
                 else:
                     with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
