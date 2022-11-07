@@ -454,8 +454,7 @@ class BaseDQN:
 
     def _assay_step_loop_new_dynamic(self, o, internal_state, a, rnn_state):
 
-        print(rnn_state)
-        x = broken
+
         chosen_a, updated_rnn_state, rnn2_state, network_layers, sa, sv = \
             self.sess.run(
                 [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
@@ -473,7 +472,8 @@ class BaseDQN:
                            self.main_QN.exp_keep: 1.0,
                            # self.main_QN.learning_rate: self.learning_params["learning_rate"],
                            })
-
+        print(updated_rnn_state)
+        x = broken
         chosen_a = chosen_a[0]
         o1, given_reward, internal_state1, d, self.frame_buffer = self.simulation.simulation_step(action=chosen_a,
                                                                                                  activations=(sa,))
