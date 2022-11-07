@@ -150,7 +150,8 @@ class DQNAssayService(AssayService, BaseDQN):
             self.previous_action = a
 
             o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
-                                                                       a=action_reafference, rnn_state=rnn_state)
+                                                                       a=action_reafference, rnn_state=rnn_state,
+                                                                       rnn_state_ref=rnn_state_ref)
             o = o1
 
             if d:
@@ -183,8 +184,8 @@ class DQNAssayService(AssayService, BaseDQN):
         self.buffer.reset()
         print(f"Assay: {assay['assay id']} Completed")
 
-    def step_loop(self, o, internal_state, a, rnn_state):
-        return BaseDQN.assay_step_loop(self, o, internal_state, a, rnn_state)
+    def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
+        return BaseDQN.assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref)
 
     def save_hdf5_data(self, assay):
         if assay["save frames"]:

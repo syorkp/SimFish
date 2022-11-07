@@ -101,6 +101,8 @@ class DQNAssayBuffer:
         try:
             assay_group.create_dataset(key, data=data)
         except (RuntimeError, OSError) as exception:
+            print(f"Failed saving {key}")
+            print(exception)
             del assay_group[key]
             assay_group.create_dataset(key, data=data)
 
