@@ -28211,7 +28211,7 @@ new_wall_thickness_test = [
                 "collisions": True,
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn", "internal_state"],
+                "network recordings": ["rnn_shared", "internal_state"],
                 "energy_state_control": False,
                 "salt_control": False,
                 "interventions": None
@@ -28231,7 +28231,7 @@ new_wall_thickness_test = [
                 "collisions": True,
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn", "internal_state"],
+                "network recordings": ["rnn_shared", "internal_state"],
                 "energy_state_control": False,
                 "salt_control": False,
                 "interventions": None
@@ -28251,7 +28251,7 @@ new_wall_thickness_test = [
                 "collisions": True,
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn", "internal_state"],
+                "network recordings": ["rnn_shared", "internal_state"],
                 "energy_state_control": False,
                 "salt_control": False,
                 "interventions": None
@@ -28271,7 +28271,7 @@ new_wall_thickness_test = [
                 "collisions": True,
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn", "internal_state"],
+                "network recordings": ["rnn_shared", "internal_state"],
                 "energy_state_control": False,
                 "salt_control": False,
                 "interventions": None
@@ -28291,7 +28291,7 @@ new_wall_thickness_test = [
                 "collisions": True,
                 "recordings": ["rnn state", "environmental positions", "observation", "internal state"],
                 "behavioural recordings": ["environmental positions", "observation"],
-                "network recordings": ["rnn", "internal_state"],
+                "network recordings": ["rnn_shared", "internal_state"],
                 "energy_state_control": False,
                 "salt_control": False,
                 "interventions": None
