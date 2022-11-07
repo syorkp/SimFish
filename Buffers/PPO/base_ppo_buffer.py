@@ -279,6 +279,7 @@ class BasePPOBuffer:
         if self.use_dynamic_network:
             for layer in self.unit_recordings.keys():
                 self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
+            self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
 
         if "environmental positions" in self.recordings:
             self.create_data_group("impulse", np.array(self.action_buffer)[:, 0], assay_group)
