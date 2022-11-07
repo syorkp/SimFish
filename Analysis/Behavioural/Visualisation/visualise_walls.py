@@ -27,7 +27,7 @@ def show_wall_interaction_sequence(model_name, assay_config, assay_id, n, env_w=
                     current_seq = []
         if len(current_seq) > 0:
             sequence_timestamps.append(current_seq)
-        sequence_timestamps = [[i for i in range(len(d["observation"]))]]
+        # sequence_timestamps = [[i for i in range(len(d["observation"]))]]
 
         for seq in sequence_timestamps:
             obs_sequences.append([d["observation"][s] for s in seq])
@@ -37,6 +37,6 @@ def show_wall_interaction_sequence(model_name, assay_config, assay_id, n, env_w=
 
 
 if __name__ == "__main__":
-    show_wall_interaction_sequence("dqn_scaffold_26-1", "Behavioural-Data-Videos-A2", "Naturalistic", 1)
+    show_wall_interaction_sequence("dqn_scaffold_beta_test-1", "Behavioural-Data-Videos-A1", "Naturalistic", 5)
 
 

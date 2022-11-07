@@ -9,12 +9,13 @@ from Analysis.Behavioural.Tools.BehavLabels.label_behavioural_context import lab
 
 
 def display_activity_heat_map(rnn_activity, event_timestamps, name, min_t=0, max_t=-1, normalise_main_activity=True,
-                              normalise_cell_activity=True, remove_undeviating=False):
+                              normalise_cell_activity=True, remove_undeviating=False, detrend=True):
     main_activity = np.swapaxes(rnn_activity[min_t:max_t, 0, 0, :], 0, 1)
     cell_state_activity = np.swapaxes(rnn_activity[min_t:max_t, 1, 0, :], 0, 1)
 
-    main_activity = signal.detrend(main_activity)
-    cell_state_activity = signal.detrend(cell_state_activity)
+    if detrend:
+        main_activity = signal.detrend(main_activity)
+        cell_state_activity = signal.detrend(cell_state_activity)
 
     if normalise_main_activity:
         main_activity = normalise_within_neuron_multiple_traces(main_activity)
@@ -172,7 +173,7 @@ if __name__ == "__main__":
     data2 = load_data("dqn_scaffold_beta_test-1", "Behavioural-Data-Videos-A1", "Naturalistic-1")
     rnn_data = np.expand_dims(data2["rnn_shared"], 1)
     rnn_data = np.concatenate((rnn_data, rnn_data), axis=1)
-    display_activity_heat_map(rnn_data, [200], "dqn_14-1-Interruptions3", max_t=2000, remove_undeviating=True)
+    display_activity_heat_map(rnn_data, [200], "dqn_14-1-Interruptions3", max_t=2000, remove_undeviating=False, detrend=False)
     #
     # # Normal trials
     # data = load_data("ppo_scaffold_21-2", "Behavioural-Data-Videos-A1", "Naturalistic-5")
