@@ -73,6 +73,8 @@ class DQNAssayBuffer:
         self.internal_state_buffer.append(internal_state)
         self.reward_buffer.append(reward)
 
+        print(rnn_state)
+        x = an_error
         self.rnn_state_buffer.append(rnn_state)
         self.rnn_state_ref_buffer.append(rnn_state_ref)
 
@@ -158,7 +160,6 @@ class DQNAssayBuffer:
         if self.use_dynamic_network:
             for layer in self.unit_recordings.keys():
                 self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
-            print(self.rnn_state_buffer)
             self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer), assay_group)
         else:
             if "rnn state" in self.unit_recordings:
