@@ -472,8 +472,7 @@ class BaseDQN:
                            self.main_QN.exp_keep: 1.0,
                            # self.main_QN.learning_rate: self.learning_params["learning_rate"],
                            })
-        print(updated_rnn_state)
-        x = broken
+
         chosen_a = chosen_a[0]
         o1, given_reward, internal_state1, d, self.frame_buffer = self.simulation.simulation_step(action=chosen_a,
                                                                                                  activations=(sa,))
