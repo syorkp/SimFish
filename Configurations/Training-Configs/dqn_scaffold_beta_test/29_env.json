@@ -36,7 +36,7 @@
     "fast_speed_paramecia": 0.01,
     "jump_speed_paramecia": 0.1,
     "prey_reproduction_mode": true,
-    "birth_rate": 0.01,
+    "birth_rate": 0.001,
     "birth_rate_current_pop_scaling": 1,
     "birth_rate_region_size": 240,
     "prey_safe_duration": 100,
