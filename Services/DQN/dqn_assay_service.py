@@ -142,7 +142,7 @@ class DQNAssayService(AssayService, BaseDQN):
                         internal_state_order = self.get_internal_state_order()
                         index = internal_state_order.index("salt")
                         internal_state[0, index] = self.salt_interruptions[self.step_number]
-
+                print(self.step_number)
             self.previous_action = a
 
             o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
@@ -162,8 +162,12 @@ class DQNAssayService(AssayService, BaseDQN):
         else:
             salt_location = None
 
+        if self.using_gpu:
+            background = self.simulation.board.background_grating.get()[:, :, 0]
+        else:
+            background = self.simulation.board.background_grating[:, :, 0]
         self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id,
-                                    self.internal_state_order, self.simulation.board.background_grating.get()[:, :, 0],
+                                    self.internal_state_order, background=background,
                                     salt_location=salt_location)
         self.log_stimuli()
         if assay["save frames"] and len(self.frame_buffer) > 5:
