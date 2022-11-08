@@ -86,7 +86,8 @@ class BaseDQN:
                         num_rnns = len(data.keys())/4
                         self.init_rnn_state = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
                         self.init_rnn_state_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
-
+                        print(np.max(self.init_rnn_state_ref))
+                        print(np.min(self.init_rnn_state_ref))
                     return
                 else:
                     with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
@@ -269,13 +270,13 @@ class BaseDQN:
         else:
             return self._step_loop_old(o, internal_state, a, rnn_state)
 
-    def assay_step_loop(self, o, internal_state, a, rnn_state):
+    def assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         if self.new_simulation:# and self.environment_params["use_dynamic_network"]:
-            return self._assay_step_loop_new(o, internal_state, a, rnn_state)
+            return self._assay_step_loop_new(o, internal_state, a, rnn_state, rnn_state_ref)
         else:
-            return self._assay_step_loop_old(o, internal_state, a, rnn_state)
+            return self._assay_step_loop_old(o, internal_state, a, rnn_state, rnn_state_ref)
 
-    def _step_loop_old(self, o, internal_state, a, rnn_state):
+    def _step_loop_old(self, o, internal_state, a, rnn_state, rnn_state_ref):
         # Generate actions and corresponding steps.
         if np.random.rand(1) < self.epsilon or self.total_steps < self.initial_exploration_steps:
             [updated_rnn_state, sa, sv] = self.sess.run(
@@ -336,7 +337,7 @@ class BaseDQN:
                            self.main_QN.internal_state: internal_state,
                            self.main_QN.prev_actions: [a],
                            self.main_QN.train_length: 1,
-                           self.main_QN.rnn_state_in: rnn_state,
+                           self.main_QN.rnn_state_in: rnn_state ,
                            # self.main_QN.rnn_state_in_ref: rnn_state_ref,
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0,
@@ -445,13 +446,13 @@ class BaseDQN:
 
         return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
 
-    def _assay_step_loop_new(self, o, internal_state, a, rnn_state):
+    def _assay_step_loop_new(self, o, internal_state, a, rnn_state, rnn_state_ref):
         if self.environment_params["use_dynamic_network"]:
-            return self._assay_step_loop_new_dynamic(o, internal_state, a, rnn_state)
+            return self._assay_step_loop_new_dynamic(o, internal_state, a, rnn_state, rnn_state_ref)
         else:
-            return self._assay_step_loop_new_static(o, internal_state, a, rnn_state)
+            return self._assay_step_loop_new_static(o, internal_state, a, rnn_state, rnn_state_ref)
 
-    def _assay_step_loop_new_dynamic(self, o, internal_state, a, rnn_state):
+    def _assay_step_loop_new_dynamic(self, o, internal_state, a, rnn_state, rnn_state_ref):
         chosen_a, updated_rnn_state, rnn2_state, network_layers, sa, sv = \
             self.sess.run(
                 [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
@@ -465,6 +466,7 @@ class BaseDQN:
                            self.main_QN.prev_actions: a,
                            self.main_QN.train_length: 1,
                            self.main_QN.rnn_state_in: rnn_state,
+
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0,
                            # self.main_QN.learning_rate: self.learning_params["learning_rate"],

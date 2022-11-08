@@ -1,5 +1,4 @@
 import numpy as np
-import cupy as cp
 import math
 from skimage.draw import line
 from skimage.transform import resize
@@ -14,6 +13,8 @@ class Eye:
         # Use CUPY if using GPU.
         self.using_gpu = using_gpu
         if using_gpu:
+            import cupy as cp
+
             self.chosen_math_library = cp
         else:
             self.chosen_math_library = np

@@ -101,6 +101,8 @@ class DQNAssayBuffer:
         try:
             assay_group.create_dataset(key, data=data)
         except (RuntimeError, OSError) as exception:
+            print(f"Failed saving {key}")
+            print(exception)
             del assay_group[key]
             assay_group.create_dataset(key, data=data)
 
@@ -158,6 +160,7 @@ class DQNAssayBuffer:
         if self.use_dynamic_network:
             for layer in self.unit_recordings.keys():
                 self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
+            self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer), assay_group)
         else:
             if "rnn state" in self.unit_recordings:
                 self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer), assay_group)

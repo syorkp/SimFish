@@ -1,6 +1,7 @@
 import json
 import h5py
 from datetime import datetime
+import copy
 
 import numpy as np
 import tensorflow.compat.v1 as tf
@@ -78,17 +79,20 @@ class DQNAssayService(AssayService, BaseDQN):
         self.assay_output_data_format = {key: None for key in assay["recordings"]}
         self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
 
-        if self.environment_params["use_dynamic_network"]:
-            rnn_layer_shapes = [self.learning_params["base_network_layers"][layer][1] for layer in
-                                self.learning_params["base_network_layers"].keys()
-                                if self.learning_params["base_network_layers"][layer][
-                                    0] == "dynamic_rnn"]  # TODO: make work for modular network layers.
-            rnn_state = tuple(
-                (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_layer_shapes)
-        else:
-            rnn_state = (
-                np.zeros([1, self.main_QN.rnn_dim]),
-                np.zeros([1, self.main_QN.rnn_dim]))
+        rnn_state = copy.copy(self.init_rnn_state)
+        rnn_state_ref = copy.copy(self.init_rnn_state_ref)
+        # if self.environment_params["use_dynamic_network"]:
+        #     rnn_layer_shapes = [self.learning_params["base_network_layers"][layer][1] for layer in
+        #                         self.learning_params["base_network_layers"].keys()
+        #                         if self.learning_params["base_network_layers"][layer][
+        #                             0] == "dynamic_rnn"]  # TODO: make work for modular network layers.
+        #     rnn_state = tuple(
+        #         (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_layer_shapes)
+        # else:
+        #     rnn_state = (
+        #         np.zeros([1, self.main_QN.rnn_dim]),
+        #         np.zeros([1, self.main_QN.rnn_dim]))
+
         self.assay_output_data_format = {key: None for key in assay["recordings"]}
 
         self.simulation.reset()
@@ -107,9 +111,9 @@ class DQNAssayService(AssayService, BaseDQN):
 
         self.step_number = 0
         while self.step_number < assay["duration"]:
-            if assay["reset"] and self.step_number % assay["reset interval"] == 0:
-                rnn_state = (
-                    np.zeros([1, self.main_QN.rnn_dim]), np.zeros([1, self.main_QN.rnn_dim]))  # Reset RNN hidden state
+            # if assay["reset"] and self.step_number % assay["reset interval"] == 0:
+            #     rnn_state = (
+            #         np.zeros([1, self.main_QN.rnn_dim]), np.zeros([1, self.main_QN.rnn_dim]))  # Reset RNN hidden state
             self.step_number += 1
 
             # Deal with interventions
@@ -146,7 +150,8 @@ class DQNAssayService(AssayService, BaseDQN):
             self.previous_action = a
 
             o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
-                                                                       a=action_reafference, rnn_state=rnn_state)
+                                                                       a=action_reafference, rnn_state=rnn_state,
+                                                                       rnn_state_ref=rnn_state_ref)
             o = o1
 
             if d:
@@ -183,8 +188,8 @@ class DQNAssayService(AssayService, BaseDQN):
         self.buffer.reset()
         print(f"Assay: {assay['assay id']} Completed")
 
-    def step_loop(self, o, internal_state, a, rnn_state):
-        return BaseDQN.assay_step_loop(self, o, internal_state, a, rnn_state)
+    def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
+        return BaseDQN.assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref)
 
     def save_hdf5_data(self, assay):
         if assay["save frames"]:
