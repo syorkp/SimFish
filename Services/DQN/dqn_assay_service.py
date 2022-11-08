@@ -146,7 +146,6 @@ class DQNAssayService(AssayService, BaseDQN):
                         internal_state_order = self.get_internal_state_order()
                         index = internal_state_order.index("salt")
                         internal_state[0, index] = self.salt_interruptions[self.step_number]
-                print(self.step_number)
             self.previous_action = a
 
             o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
