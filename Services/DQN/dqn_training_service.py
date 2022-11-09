@@ -185,6 +185,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
 
         # Normalise given current epsilon value (subtract expected random actions from each group, then clip to zero)
         expected_random_actions = (self.epsilon * self.simulation.num_steps)/self.learning_params['num_actions']
+        all_actions_frequency = all_actions_frequency.astype(float) * self.simulation.num_steps
         all_actions_frequency -= expected_random_actions
         all_actions_frequency = np.clip(all_actions_frequency, 0, self.total_steps)
         max_freq_diffs = [np.max([f - f2 for f2 in all_actions_frequency]) for f in all_actions_frequency]

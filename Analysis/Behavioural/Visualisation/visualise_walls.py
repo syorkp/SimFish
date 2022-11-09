@@ -32,8 +32,10 @@ def show_wall_interaction_sequence(model_name, assay_config, assay_id, n, env_w=
         for seq in sequence_timestamps:
             obs_sequences.append([d["observation"][s] for s in seq])
 
-    for seq in obs_sequences:
-        display_obs_sequence(seq)
+    display_obs_sequence(obs_sequences[1])
+
+    # for seq in obs_sequences:
+    #     display_obs_sequence(seq)
 
 
 if __name__ == "__main__":

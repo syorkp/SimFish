@@ -1,5 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import random
+
+from Analysis.load_data import load_data
 
 
 def reproduce_prey(num_prey, prey_ages, num_clouds, birth_rate, max_prey):
@@ -24,19 +27,25 @@ def age_prey(num_prey, prey_ages, prey_safe_duration, p_prey_death):
     return num_prey, prey_ages
 
 
+def fish_caught_prey(num_prey, prey_ages):
+    prey_to_die = random.randint(0, num_prey-1)
+    num_prey -= 1
+    del prey_ages[prey_to_die]
+    return num_prey, prey_ages
+
 def plot_prey_num_reproduction(birth_rate, num_steps, starting_prey, num_clouds,
-                               prey_safe_duration, p_prey_death):
+                               prey_safe_duration, p_prey_death, consumption_events=None):
     n_prey_log = []
     n_prey_log.append(starting_prey)
     prey_ages = [0 for i in range(starting_prey)]
     num_prey = starting_prey
 
     for s in range(num_steps):
-        if s == 200:
-            num_prey = 5
-            prey_ages = prey_ages[:5]
         num_prey, prey_ages = reproduce_prey(num_prey, prey_ages, num_clouds, birth_rate, starting_prey)
         num_prey, prey_ages = age_prey(num_prey, prey_ages, prey_safe_duration, p_prey_death)
+        if consumption_events is not None:
+            if consumption_events[s]:
+                num_prey, prey_ages = fish_caught_prey(num_prey, prey_ages)
         n_prey_log.append(num_prey)
 
     plt.plot(n_prey_log)
@@ -44,8 +53,13 @@ def plot_prey_num_reproduction(birth_rate, num_steps, starting_prey, num_clouds,
 
 
 if __name__ == "__main__":
-    plot_prey_num_reproduction(birth_rate=0.001, num_steps=1000, starting_prey=13,
-                               num_clouds=16, prey_safe_duration=100, p_prey_death=0.003)
+    consumption_events = load_data("dqn_scaffold_26-2", "Behavioural-Data-Free", "Naturalistic-1")["consumed"]
+    # consumption_events[:] = False
+    consumption_events = np.concatenate((consumption_events, consumption_events))
+
+    plot_prey_num_reproduction(birth_rate=0.002, num_steps=consumption_events.shape[0], starting_prey=100,
+                               num_clouds=16, prey_safe_duration=100, p_prey_death=0.001,
+                               consumption_events=consumption_events)
 
 
 

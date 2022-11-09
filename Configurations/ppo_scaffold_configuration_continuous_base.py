@@ -132,11 +132,11 @@ env = {
 
        # Prey reproduction
        'prey_reproduction_mode': True,
-       'birth_rate': 0.001,  # Probability per step of new prey appearing at each source.
+       'birth_rate': 0.002,  # Probability per step of new prey appearing at each source.
        'birth_rate_current_pop_scaling': 1,  # Sets scaling of birth rate according to number of prey currently present
        'birth_rate_region_size': 240,  # Same square as before for simplicity
        'prey_safe_duration': 100,
-       'p_prey_death': 0.003,
+       'p_prey_death': 0.001,
 
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,

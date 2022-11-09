@@ -268,9 +268,10 @@ class NaturalisticEnvironment(BaseEnvironment):
                 for i, age in enumerate(self.prey_ages):
                     if age > self.env_variables["prey_safe_duration"] and np.random.rand(1) < self.env_variables[
                         "p_prey_death"]:
-                        # print("Removed prey")
-                        self.remove_prey(i)
-                        self.available_prey -= 1
+                        if not self.check_proximity(self.prey_bodies[i].position, 200):
+                            # print("Removed prey")
+                            self.remove_prey(i)
+                            self.available_prey -= 1
 
         # Log whether or not fish in light
         self.in_light_history.append(self.fish.body.position[0] > self.dark_col)
