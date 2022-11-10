@@ -323,7 +323,7 @@ class BaseDQN:
                            self.main_QN.prev_actions: [a],
                            self.main_QN.train_length: 1,
                            self.main_QN.rnn_state_in: rnn_state,
-                           # self.main_QN.rnn_state_in_ref: rnn_state_ref,
+                           self.main_QN.rnn_state_in_ref: rnn_state_ref,  # TODO: TEST CHANGE HERE:
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0,
                            self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -338,7 +338,7 @@ class BaseDQN:
                            self.main_QN.prev_actions: [a],
                            self.main_QN.train_length: 1,
                            self.main_QN.rnn_state_in: rnn_state ,
-                           # self.main_QN.rnn_state_in_ref: rnn_state_ref,
+                           self.main_QN.rnn_state_in_ref: rnn_state_ref, # TODO: TEST CHANGE HERE:
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0,
                            self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -589,11 +589,18 @@ class BaseDQN:
 
             # Load the latest saved states... Note is technically incorrect.
             state_train = copy.copy(self.init_rnn_state)
-
             state_train = tuple(
                 (np.tile(state_train[i][0], (self.learning_params['batch_size'], 1)),
                  np.tile(state_train[i][1], (self.learning_params['batch_size'], 1)))
                 for i, shape in enumerate(rnn_state_shapes))
+
+            # TODO: TEST CHANGE HERE:
+            state_train_ref = copy.copy(self.init_rnn_state_ref)
+            state_train_ref = tuple(
+                (np.tile(state_train_ref[i][0], (self.learning_params['batch_size'], 1)),
+                 np.tile(state_train_ref[i][1], (self.learning_params['batch_size'], 1)))
+                for i, shape in enumerate(rnn_state_shapes))
+            # TODO: END
 
         else:
 
@@ -634,6 +641,7 @@ class BaseDQN:
             self.main_QN.train_length: self.learning_params['trace_length'],
             self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
             self.main_QN.rnn_state_in: state_train,
+            self.main_QN.rnn_state_in_ref: state_train_ref, # TODO: TEST CHANGE HERE:
             self.main_QN.batch_size: self.learning_params['batch_size'],
             self.main_QN.exp_keep: 1.0,
             self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -645,7 +653,7 @@ class BaseDQN:
             self.target_QN.train_length: self.learning_params['trace_length'],
             self.target_QN.internal_state: np.vstack(train_batch[:, 3]),
             self.target_QN.rnn_state_in: state_train,
-            # self.target_QN.rnn_state_in_ref: state_train_ref,
+            self.target_QN.rnn_state_in_ref: state_train_ref, # TODO: TEST CHANGE HERE:
             self.target_QN.batch_size: self.learning_params['batch_size'],
             self.target_QN.exp_keep: 1.0,
             self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -666,7 +674,7 @@ class BaseDQN:
                                      (np.array([[6, 0, 0]]), np.vstack(train_batch[:-1, 1]))),
                                  self.main_QN.train_length: self.learning_params['trace_length'],
                                  self.main_QN.rnn_state_in: state_train,
-                                 # self.main_QN.rnn_state_in_ref: state_train_ref,
+                                 self.main_QN.rnn_state_in_ref: state_train_ref,  # TODO: TEST CHANGE HERE:
                                  self.main_QN.batch_size: self.learning_params['batch_size'],
                                  self.main_QN.exp_keep: 1.0,
                                  self.main_QN.learning_rate: self.learning_params["learning_rate"],

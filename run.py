@@ -28034,26 +28034,6 @@ dqn_new_scaffold_test_1 = [
     },
 ]
 
-dqn_new_scaffold_test_x = [
-    {
-        "Model Name": "dqn_scaffold_beta_test",
-        "Environment Name": "dqn_scaffold_beta_test (copy)",
-        "Trial Number": 7,
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": False,
-        "Learning Algorithm": "DQN",
-        "Priority": 1,
-        "Using GPU": False,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": False,
-        "New Simulation": True,
-        "Profile Speed": False,
-    },
-]
-
 dqn_new_scaffold_test_2 = [
     {
         "Model Name": "dqn_scaffold_beta_test",
@@ -28119,6 +28099,46 @@ dqn_new_scaffold_test_5 = [
         "Model Name": "dqn_scaffold_beta_test",
         "Environment Name": "dqn_scaffold_beta_test",
         "Trial Number": 5,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+dqn_new_scaffold_test_1_2 = [
+    {
+        "Model Name": "dqn_scaffold_beta_test_2",
+        "Environment Name": "dqn_scaffold_beta_test",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+dqn_new_scaffold_test_2_2 = [
+    {
+        "Model Name": "dqn_scaffold_beta_test_2",
+        "Environment Name": "dqn_scaffold_beta_test",
+        "Trial Number": 2,
         "Run Mode": "Training",
         "Tethered": False,
         "Realistic Bouts": True,
