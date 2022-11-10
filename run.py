@@ -28125,7 +28125,7 @@ dqn_new_scaffold_test_5 = [
         "Continuous Actions": False,
         "Learning Algorithm": "DQN",
         "Priority": 1,
-        "Using GPU": False,
+        "Using GPU": True,
         "monitor gpu": False,
         "Full Logs": True,
         "SB Emulator": False,
