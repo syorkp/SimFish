@@ -95,16 +95,16 @@ class DQNAssayBuffer:
 
         self.efference_copy_buffer.append(efference_copy)
 
-    @staticmethod
-    def create_data_group(key, data, assay_group):
+    def create_data_group(self, key, data, assay_group):
         # TODO: Compress data.
         try:
             assay_group.create_dataset(key, data=data)
         except (RuntimeError, OSError) as exception:
-            print(f"Failed saving {key}")
+            print(f"Failed saving {key}. Attempting to delete existing data.")
             print(exception)
             del assay_group[key]
-            assay_group.create_dataset(key, data=data)
+            self.create_data_group(key, data, assay_group)
+            # assay_group.create_dataset(key, data=data)
 
     def init_assay_recordings(self, recordings, network_recordings):
         self.recordings = recordings
