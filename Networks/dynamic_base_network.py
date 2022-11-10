@@ -115,9 +115,13 @@ class DynamicBaseNetwork:
         self.rnn_state_shared = tuple(self.network_graph[layer + "_shared"] for layer in rnn_layers)
         self.rnn_state_in = tuple(self.rnn_cell_states[layer] for layer in rnn_layers)
 
+
+
         if reflected:
             self.rnn_state_ref = tuple(self.reflected_network_graph[layer + "_shared"] for layer in rnn_layers)
-            # self.rnn_state_in_ref = tuple(self.rnn_cell_states[layer + "_ref"] for layer in rnn_layers)
+            #  TODO: TEST CHANGE HERE
+            self.rnn_state_in_ref = tuple(self.rnn_cell_states[layer + "_ref"] for layer in rnn_layers)
+            # TODO: END
 
     def perform_op(self, op, network_graph, reflected):
         if op[0] == "eye_split":
