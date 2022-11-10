@@ -5,13 +5,20 @@ from pathlib import Path
 import pickle
 
 
-
 class ExperienceBuffer:
 
     def __init__(self, output_location, buffer_size=4000):
         self.buffer = []
         self.buffer_size = buffer_size
         self.output_location = output_location
+
+        # Buffer has structure (episodes, 6):
+        # 0 - Observation
+        # 1 - Previous Actions
+        # 2 - Reward
+        # 3 - Internal state
+        # 4 - Observation (t+1)
+        # 5 - End multiplier (death)
 
     def add(self, experience):
         if len(self.buffer) + 1 >= self.buffer_size:

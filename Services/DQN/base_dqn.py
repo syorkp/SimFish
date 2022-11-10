@@ -234,7 +234,8 @@ class BaseDQN:
             if self.total_steps > self.pre_train_steps:
                 if self.epsilon > self.learning_params['endE']:
                     self.epsilon -= self.step_drop
-                if self.total_steps % (self.learning_params['update_freq']) == 0:
+                if self.total_steps % (self.learning_params['update_freq']) == 0 and \
+                        len(self.experience_buffer.buffer) > self.batch_size:
                     self.train_networks()
             if d:
                 if self.learning_params["maintain_state"]:
@@ -584,20 +585,24 @@ class BaseDQN:
         """
         update_target(self.target_ops, self.sess)
         # Reset the recurrent layer's hidden state
-
-        if self.environment_params["use_dynamic_network"]:
-            rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
-            state_train = tuple(
-                (np.zeros([self.learning_params['batch_size'], shape]),
-                 np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
-            # state_train_ref = tuple(
-            #     (np.zeros([self.learning_params['batch_size'], shape]),
-            #      np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
+        if self.learning_params["maintain_state"]:
+            # Load the latest saved states... Note is technically incorrect.
+            state_train = copy.copy(self.init_rnn_state)
         else:
-            state_train = (np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]),
-                           np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
-            # state_train_ref = (np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]),
-            #                np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
+
+            if self.environment_params["use_dynamic_network"]:
+                rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
+                state_train = tuple(
+                    (np.zeros([self.learning_params['batch_size'], shape]),
+                     np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
+                # state_train_ref = tuple(
+                #     (np.zeros([self.learning_params['batch_size'], shape]),
+                #      np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
+            else:
+                state_train = (np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]),
+                               np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
+                # state_train_ref = (np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]),
+                #                np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
         # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
         train_batch = self.experience_buffer.sample(self.learning_params['batch_size'],
                                                     self.learning_params['trace_length'])

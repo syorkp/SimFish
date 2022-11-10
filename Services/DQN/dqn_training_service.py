@@ -180,15 +180,15 @@ class DQNTrainingService(TrainingService, BaseDQN):
             action_freq = np.sum(np.array(all_actions) == act) / len(all_actions)
             a_freq = tf.Summary(value=[tf.Summary.Value(tag="action " + str(act), simple_value=action_freq)])
             self.writer.add_summary(a_freq, self.episode_number)
-            all_actions_frequency.append(action_freq)
+            all_actions_frequency.append(np.sum(np.array(all_actions) == act) )
         all_actions_frequency = np.array(all_actions_frequency)
 
         # Normalise given current epsilon value (subtract expected random actions from each group, then clip to zero)
         expected_random_actions = (self.epsilon * self.simulation.num_steps)/self.learning_params['num_actions']
-        all_actions_frequency = all_actions_frequency.astype(float) * self.simulation.num_steps
+        all_actions_frequency = all_actions_frequency.astype(float)
         all_actions_frequency -= expected_random_actions
         all_actions_frequency = np.clip(all_actions_frequency, 0, self.total_steps)
-        max_freq_diffs = [np.max([f - f2 for f2 in all_actions_frequency]) for f in all_actions_frequency]
+        max_freq_diffs = [np.max(np.absolute([f - f2 for f2 in all_actions_frequency])) for f in all_actions_frequency]
         heterogeneity_score = self.learning_params["num_actions"]/np.sum(max_freq_diffs) - 1/self.learning_params["num_actions"]
         a_freq = tf.Summary(value=[tf.Summary.Value(tag="Action Heterogeneity Score", simple_value=heterogeneity_score)])
         self.writer.add_summary(a_freq, self.episode_number)
