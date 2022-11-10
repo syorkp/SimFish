@@ -86,8 +86,7 @@ class BaseDQN:
                         num_rnns = len(data.keys())/4
                         self.init_rnn_state = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
                         self.init_rnn_state_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
-                        print(np.max(self.init_rnn_state_ref))
-                        print(np.min(self.init_rnn_state_ref))
+
                     return
                 else:
                     with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
@@ -586,8 +585,16 @@ class BaseDQN:
         update_target(self.target_ops, self.sess)
         # Reset the recurrent layer's hidden state
         if self.learning_params["maintain_state"]:
+            rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
+
             # Load the latest saved states... Note is technically incorrect.
             state_train = copy.copy(self.init_rnn_state)
+
+            state_train = tuple(
+                (np.tile(state_train[i][0], (self.learning_params['batch_size'], 1)),
+                 np.tile(state_train[i][1], (self.learning_params['batch_size'], 1)))
+                for i, shape in enumerate(rnn_state_shapes))
+
         else:
 
             if self.environment_params["use_dynamic_network"]:

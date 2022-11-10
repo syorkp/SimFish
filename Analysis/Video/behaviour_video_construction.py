@@ -321,6 +321,7 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
                               env_variables['fish_head_size'], env_variables['fish_tail_length'],
                          (0, 1, 0), fish_body_colour, data["fish_angle"][step])
 
+        # Draw prey
         px = np.round(np.array([pr[0] for pr in data["prey_positions"][step]])).astype(int)
         py = np.round(np.array([pr[1] for pr in data["prey_positions"][step]])).astype(int)
         rrs, ccs = board.multi_circles(px, py, env_variables["prey_size_visualisation"])
@@ -329,6 +330,18 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
         ccs = np.clip(ccs, 0, env_variables["height"]-1)
 
         board.db[rrs, ccs] = (0, 0, 1)
+
+        # Draw sand grains
+        if len(env_variables["sand_grain_num"]) > 0:
+            px = np.round(np.array([pr.position[0] for pr in data["sand_grain_positions"]])).astype(int)
+            py = np.round(np.array([pr.position[1] for pr in data["sand_grain_positions"]])).astype(int)
+            rrs, ccs = board.multi_circles(px, py, env_variables["prey_size_visualisation"])
+
+            rrs = np.clip(rrs, 0, env_variables["width"] - 1)
+            ccs = np.clip(ccs, 0, env_variables["height"] - 1)
+
+            board.db_visualisation[rrs, ccs] = (0, 0, 1)
+
 
         if data["predator_presence"][step]:
             board.circle(data["predator_positions"][step], env_variables['predator_size'], (0, 1, 0))
