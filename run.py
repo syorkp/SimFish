@@ -28114,6 +28114,27 @@ dqn_new_scaffold_test_5 = [
     },
 ]
 
+dqn_new_scaffold_test_55 = [
+    {
+        "Model Name": "dqn_scaffold_beta_test",
+        "Environment Name": "dqn_scaffold_beta_test (copy)",
+        "Trial Number": 55,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+
 dqn_new_scaffold_test_1_2 = [
     {
         "Model Name": "dqn_scaffold_beta_test_2",
@@ -28281,7 +28302,7 @@ new_wall_thickness_test = [
 ]
 
 if run_config is None:
-    run_config = new_wall_thickness_test
+    run_config = dqn_new_scaffold_test_55
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]
