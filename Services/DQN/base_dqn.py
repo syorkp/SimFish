@@ -453,8 +453,8 @@ class BaseDQN:
             return self._assay_step_loop_new_static(o, internal_state, a, rnn_state, rnn_state_ref)
 
     def _assay_step_loop_new_dynamic(self, o, internal_state, a, rnn_state, rnn_state_ref):
-        if self.step_number == 0:
-            print(rnn_state)
+        print(rnn_state)
+        return
         chosen_a, updated_rnn_state, rnn2_state, network_layers, sa, sv = \
             self.sess.run(
                 [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
