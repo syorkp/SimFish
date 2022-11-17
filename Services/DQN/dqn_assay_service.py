@@ -79,19 +79,12 @@ class DQNAssayService(AssayService, BaseDQN):
         self.assay_output_data_format = {key: None for key in assay["recordings"]}
         self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
 
-        rnn_state = copy.copy(self.init_rnn_state)
-        rnn_state_ref = copy.copy(self.init_rnn_state_ref)
-        # if self.environment_params["use_dynamic_network"]:
-        #     rnn_layer_shapes = [self.learning_params["base_network_layers"][layer][1] for layer in
-        #                         self.learning_params["base_network_layers"].keys()
-        #                         if self.learning_params["base_network_layers"][layer][
-        #                             0] == "dynamic_rnn"]  # TODO: make work for modular network layers.
-        #     rnn_state = tuple(
-        #         (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_layer_shapes)
-        # else:
-        #     rnn_state = (
-        #         np.zeros([1, self.main_QN.rnn_dim]),
-        #         np.zeros([1, self.main_QN.rnn_dim]))
+        if self.rnn_input is not None:
+            rnn_state = copy.copy(self.rnn_input[0])
+            rnn_state_ref = copy.copy(self.rnn_input[1])
+        else:
+            rnn_state = copy.copy(self.init_rnn_state)
+            rnn_state_ref = copy.copy(self.init_rnn_state_ref)
 
         self.assay_output_data_format = {key: None for key in assay["recordings"]}
 

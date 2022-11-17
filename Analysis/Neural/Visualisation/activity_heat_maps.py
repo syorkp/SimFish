@@ -170,10 +170,10 @@ if __name__ == "__main__":
     #                                                     sequence_steps=50, post_steps=50)
     # Interrupted trials
     # data = load_data("dqn_scaffold_14-1", "Interruptions-HA", "Naturalistic-3")
-    data2 = load_data("dqn_scaffold_beta_test-1", "Behavioural-Data-Videos-A1", "Naturalistic-4")
+    data2 = load_data("dqn_new-2", "Behavioural-Data-Free", "Naturalistic-1")
     rnn_data = np.expand_dims(data2["rnn_shared"], 1)
     rnn_data = np.concatenate((rnn_data, rnn_data), axis=1)
-    display_activity_heat_map(rnn_data, [200], "dqn_14-1-Interruptions3", max_t=2000, remove_undeviating=False, detrend=False)
+    display_activity_heat_map(rnn_data, [200], "dqn_new-1", max_t=2000, remove_undeviating=False, detrend=False)
     #
     # # Normal trials
     # data = load_data("ppo_scaffold_21-2", "Behavioural-Data-Videos-A1", "Naturalistic-5")

@@ -78,6 +78,7 @@ class AssayService(BaseService):
         self.salt_interruptions = None
         self.in_light_interruptions = None
         self.interruptions = False
+        self.rnn_input = None
 
     def _run(self):
         self.saver = tf.train.Saver(max_to_keep=5)
@@ -89,7 +90,17 @@ class AssayService(BaseService):
         self.saver.restore(self.sess, checkpoint_path)
         print("Model loaded")
         for assay in self.assays:
-            print(self.get_internal_state_order())
+            # Reset all interventions to None so doesnt carry between assays
+            self.preset_energy_state = None
+            self.reafference_interruptions = None
+            self.visual_interruptions = None
+            self.previous_action = None
+            self.relocate_fish = None
+            self.salt_interruptions = None
+            self.in_light_interruptions = None
+            self.interruptions = False
+            self.rnn_input = None
+
             if assay["interventions"]:
                 if "visual_interruptions" in assay["interventions"].keys():
                     self.visual_interruptions = assay["interventions"]["visual_interruptions"]
@@ -105,6 +116,8 @@ class AssayService(BaseService):
                     self.salt_interruptions = assay["interventions"]["salt_interruptions"]
                 if "ablations" in assay["interventions"].keys():
                     self.ablate_units(assay["interventions"]["ablations"])
+                if "rnn_input" in assay["interventions"].keys():
+                    self.rnn_input = assay["interventions"]["rnn_input"]
                 self.interruptions = True
             else:
                 self.interruptions = False
