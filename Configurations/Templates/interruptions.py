@@ -1,3 +1,4 @@
+import numpy as np
 
 # Repeating points is removed for one step.
 brief_interruption_profile = [1 if i > 100 and i % 10 == 0 else 0 for i in range(10000)]
@@ -34,4 +35,8 @@ efference_Z = [False for i in range(200)] + [[5, 0.3] for i in range(2000)]
 # Relocating fish
 fish_relocation_to_nowhere = [0 for i in range(200)] + ["E"] + [0 for i in range(10000)]
 
+#              RNN STATES
 
+# Zeros
+rnn_zeros = [((np.zeros((1, 512)), np.zeros((1, 512)))),
+             ((np.zeros((1, 512)), np.zeros((1, 512))))]
