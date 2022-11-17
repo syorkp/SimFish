@@ -332,7 +332,7 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
         board.db[rrs, ccs] = (0, 0, 1)
 
         # Draw sand grains
-        if len(env_variables["sand_grain_num"]) > 0:
+        if env_variables["sand_grain_num"] > 0:
             px = np.round(np.array([pr.position[0] for pr in data["sand_grain_positions"]])).astype(int)
             py = np.round(np.array([pr.position[1] for pr in data["sand_grain_positions"]])).astype(int)
             rrs, ccs = board.multi_circles(px, py, env_variables["prey_size_visualisation"])
