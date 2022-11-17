@@ -159,8 +159,8 @@ class DQNAssayBuffer:
 
         if self.use_dynamic_network:
             for layer in self.unit_recordings.keys():
-                self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
-            self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer), assay_group)
+                self.create_data_group(layer, np.array(self.unit_recordings[layer]).squeeze(), assay_group)
+            self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer).squeeze(), assay_group)
 
             self.internal_state_buffer = np.array(self.internal_state_buffer)
             self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
@@ -178,7 +178,7 @@ class DQNAssayBuffer:
 
         else:
             if "rnn state" in self.unit_recordings:
-                self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer), assay_group)
+                self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer).squeeze(), assay_group)
 
             if "internal state" in self.unit_recordings:
                 self.internal_state_buffer = np.array(self.internal_state_buffer)
@@ -197,14 +197,14 @@ class DQNAssayBuffer:
 
             if "convolutional layers" in self.unit_recordings:
                 self.organise_conv_recordings()
-                self.create_data_group("conv1l", np.array(self.conv_layer_buffer[0]), assay_group)
-                self.create_data_group("conv2l", np.array(self.conv_layer_buffer[1]), assay_group)
-                self.create_data_group("conv3l", np.array(self.conv_layer_buffer[2]), assay_group)
-                self.create_data_group("conv4l", np.array(self.conv_layer_buffer[3]), assay_group)
-                self.create_data_group("conv1r", np.array(self.conv_layer_buffer[4]), assay_group)
-                self.create_data_group("conv2r", np.array(self.conv_layer_buffer[5]), assay_group)
-                self.create_data_group("conv3r", np.array(self.conv_layer_buffer[6]), assay_group)
-                self.create_data_group("conv4r", np.array(self.conv_layer_buffer[7]), assay_group)
+                self.create_data_group("conv1l", np.array(self.conv_layer_buffer[0]).squeeze(), assay_group)
+                self.create_data_group("conv2l", np.array(self.conv_layer_buffer[1]).squeeze(), assay_group)
+                self.create_data_group("conv3l", np.array(self.conv_layer_buffer[2]).squeeze(), assay_group)
+                self.create_data_group("conv4l", np.array(self.conv_layer_buffer[3]).squeeze(), assay_group)
+                self.create_data_group("conv1r", np.array(self.conv_layer_buffer[4]).squeeze(), assay_group)
+                self.create_data_group("conv2r", np.array(self.conv_layer_buffer[5]).squeeze(), assay_group)
+                self.create_data_group("conv3r", np.array(self.conv_layer_buffer[6]).squeeze(), assay_group)
+                self.create_data_group("conv4r", np.array(self.conv_layer_buffer[7]).squeeze(), assay_group)
 
         if "environmental positions" in self.recordings:
             self.create_data_group("action", np.array(self.action_buffer), assay_group)

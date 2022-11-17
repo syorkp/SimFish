@@ -29,7 +29,7 @@ def display_rnn_traces_many_trials(model_name, assay_config, assay_id, n):
     for i in range(n):
         for neur in range(n_neurons):
             plt.plot(neuron_traces[neur][i], alpha=0.1)
-        plt.xlim(0, min_trial_length)
+        # plt.xlim(0, min_trial_length)
         plt.xlabel("Step")
         plt.ylabel("Raw Unit Activity")
 

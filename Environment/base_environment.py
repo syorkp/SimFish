@@ -627,15 +627,15 @@ class BaseEnvironment:
         position_x = self.fish.body.position[0]
         position_y = self.fish.body.position[1]
 
-        if position_x < 1:
-            new_position_x = 4
-        elif position_x > self.env_variables["width"] - 3:
-            new_position_x = self.env_variables["width"] - 7
+        if position_x < 8:
+            new_position_x = 10
+        elif position_x > self.env_variables["width"] - 7:
+            new_position_x = self.env_variables["width"] - 9
 
-        if position_y < 1:
-            new_position_y = 4
-        elif position_y > self.env_variables["height"] - 3:
-            new_position_y = self.env_variables["height"] - 7
+        if position_y < 8:
+            new_position_y = 10
+        elif position_y > self.env_variables["height"] - 7:
+            new_position_y = self.env_variables["height"] - 9
 
         if "new_position_x" in locals():
             new_position = pymunk.Vec2d(new_position_x, self.fish.body.position[1])
