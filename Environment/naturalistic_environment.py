@@ -45,7 +45,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.vector_agreement = []
 
     def reset(self):
-        # print(f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
+        # print (f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
         # print(f"Mean UV: {sum([i[1] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
         # print(f"Mean R2: {sum([i[2] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
         #

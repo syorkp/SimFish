@@ -401,6 +401,12 @@ class TestEnvironment:
 
         self.create_prey([500 + prey_position_relative[0], 500 + prey_position_relative[1]])
 
+        # Pre-Movement Resolution (allows effects of prey jumping to be computed...)
+        for micro_step in range(num_sim_steps):
+            self._move_prey_new(micro_step)
+            self.space.step(self.env_variables['phys_dt'])
+
+
         # Take fish action
         if continuous:
             self.move_fish(set_impulse, set_angle)

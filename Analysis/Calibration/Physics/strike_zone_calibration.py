@@ -151,32 +151,32 @@ def plot_strike_zone(fraction_capture_permitted, angle_deviation_allowed, n_repe
 if __name__ == "__main__":
     # For PPO
     # Best Strike zone fit
-    angs = plot_strike_zone(fraction_capture_permitted=0.2, angle_deviation_allowed=np.pi / 5, n_repeats=10,
-                            use_action_means=False, continuous=True, overlay_all_sCS_data=False, set_impulse=3.295740136878764,
-                            set_angle=0.,
-                            impulse_effect_noise=0.1,
-                            angular_effect_noise=0.6)
+    # angs = plot_strike_zone(fraction_capture_permitted=0.2, angle_deviation_allowed=np.pi / 5, n_repeats=10,
+    #                         use_action_means=False, continuous=True, overlay_all_sCS_data=False, set_impulse=3.295740136878764,
+    #                         set_angle=0.,
+    #                         impulse_effect_noise=0.1,
+    #                         angular_effect_noise=0.6)
+    # #
+    # # # For Allowing low angle captures
+    # angs = plot_strike_zone(fraction_capture_permitted=0.2, angle_deviation_allowed=np.pi / 5, n_repeats=10,
+    #                         use_action_means=False, continuous=True, overlay_all_sCS_data=False, set_impulse=3.295740136878764,
+    #                         set_angle=0.1,
+    #                         impulse_effect_noise=0.1,
+    #                         angular_effect_noise=0.6)
+    # #
+    # # # For Forbidding high angle captures
+    # angs = plot_strike_zone(fraction_capture_permitted=0.2, angle_deviation_allowed=np.pi / 5, n_repeats=10,
+    #                         use_action_means=False, continuous=True, overlay_all_sCS_data=False, set_impulse=3.295740136878764,
+    #                         set_angle=0.4,
+    #                         impulse_effect_noise=0.1,
+    #                         angular_effect_noise=0.6)
     #
-    # # For Allowing low angle captures
-    angs = plot_strike_zone(fraction_capture_permitted=0.2, angle_deviation_allowed=np.pi / 5, n_repeats=10,
-                            use_action_means=False, continuous=True, overlay_all_sCS_data=False, set_impulse=3.295740136878764,
-                            set_angle=0.1,
-                            impulse_effect_noise=0.1,
-                            angular_effect_noise=0.6)
-    #
-    # # For Forbidding high angle captures
-    angs = plot_strike_zone(fraction_capture_permitted=0.2, angle_deviation_allowed=np.pi / 5, n_repeats=10,
-                            use_action_means=False, continuous=True, overlay_all_sCS_data=False, set_impulse=3.295740136878764,
-                            set_angle=0.4,
-                            impulse_effect_noise=0.1,
-                            angular_effect_noise=0.6)
-
-    # For Forbidding high impulse captures
-    angs = plot_strike_zone(fraction_capture_permitted=0.2, angle_deviation_allowed=np.pi / 5, n_repeats=10,
-                            use_action_means=False, continuous=True, overlay_all_sCS_data=False, set_impulse=10,
-                            set_angle=0.0,
-                            impulse_effect_noise=0.1,
-                            angular_effect_noise=0.6)
+    # # For Forbidding high impulse captures
+    # angs = plot_strike_zone(fraction_capture_permitted=0.2, angle_deviation_allowed=np.pi / 5, n_repeats=10,
+    #                         use_action_means=False, continuous=True, overlay_all_sCS_data=False, set_impulse=10,
+    #                         set_angle=0.0,
+    #                         impulse_effect_noise=0.1,
+    #                         angular_effect_noise=0.6)
 
     # For DQN
     plot_strike_zone(fraction_capture_permitted=0.2, angle_deviation_allowed=np.pi/5,

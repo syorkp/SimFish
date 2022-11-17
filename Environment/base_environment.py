@@ -786,10 +786,10 @@ class BaseEnvironment:
                     prey_body.angle = original_angle
 
                 # Motion from prey escape
-                if self.env_variables["prey_jump"] and np.random.choice([0, 1], size=1,
-                                                                        p=[1 - self.env_variables["p_escape"],
-                                                                           self.env_variables["p_escape"]])[0] == 1:
-                    prey_body.apply_impulse_at_local_point((self.env_variables["jump_speed_paramecia"], 0))
+                # if self.env_variables["prey_jump"] and np.random.choice([0, 1], size=1,
+                #                                                         p=[1 - self.env_variables["p_escape"]/self.env_variables["phys_steps_per_sim_step"],
+                #                                                            self.env_variables["p_escape"]/self.env_variables["phys_steps_per_sim_step"]])[0] == 1:
+                #     prey_body.apply_impulse_at_local_point((self.env_variables["jump_speed_paramecia"], 0))
 
             else:
                 if micro_step == 0:

@@ -116,7 +116,6 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
     # plt.show()
 
     if interpolate_scaffold_points:
-        # TODO: Problem below here
         scaffold_switching_points = [model["Configuration change"] for model in model_data]
         scaffold_switching_points = remove_repeated_switching_points(scaffold_switching_points)
 
@@ -139,8 +138,8 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
             #     model[metric][to_switch, 1] -= 0.5
             #     model[metric][to_switch, 1] *= 2
             axs[i].plot(model[metric][:, 0], model[metric][:, 1], alpha=0.5)
-            if min(model[metric][:, 1]) <= 0:
-                plt.hlines(0, 0, max(model[metric][:, 0]), color="black", linestyles="dashed")
+            if min(model[metric][:, 1]) < 0:
+                axs[i].hlines(0, 0, max(model[metric][:, 0]), color="black", linestyles="dashed")
 
             axs[i].grid(True, axis="x")
 
@@ -202,9 +201,11 @@ if __name__ == "__main__":
     chosen_metrics_dqn = ["prey capture index (fraction caught)",
                           "capture success rate",
                           # "episode reward",
-                          # "Energy Efficiency Index",
+                          "Energy Efficiency Index",
                           "Episode Duration",
                           "Exploration Quotient",
+                          "Action Heterogeneity Score",
+
                           "turn chain preference",
                           # "Cause of Death",
                           # Sand grain attempted captures.
