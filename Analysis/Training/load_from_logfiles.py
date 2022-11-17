@@ -44,7 +44,7 @@ def load_all_log_data(model_name):
                     else:
                         available_tags[tag] = [[step, simple_value]]
         except tensorflow.python.framework.errors_impl.DataLossError:
-            print("Data loss")
+            print(f"{model_name} - Data loss")
     return available_tags
 
 

@@ -43,7 +43,7 @@ def display_activity_heat_map(rnn_activity, event_timestamps, name, min_t=0, max
         plt.vlines(event, 0, main_activity.shape[0], color="black")
     plt.ylabel("Neurons", fontsize=25)
     plt.xlabel("Step", fontsize=25)
-    plt.savefig(f"{name}-heat_map.jpg", dpi=100)
+    plt.savefig(f"Plots/{name}-heat_map.jpg", dpi=100)
     plt.clf()
     plt.close()
 
@@ -51,7 +51,7 @@ def display_activity_heat_map(rnn_activity, event_timestamps, name, min_t=0, max
     plt.pcolormesh(cell_state_activity, cmap="bwr")
     for event in event_timestamps:
         plt.vlines(event, 0, cell_state_activity.shape[0], color="yellow")
-    plt.savefig(f"{name}-heat_map_cell.jpg", dpi=100)
+    plt.savefig(f"Plots/{name}-heat_map_cell.jpg", dpi=100)
     plt.clf()
     plt.close()
 
@@ -149,7 +149,7 @@ def display_activity_heat_map_capture_sequences_average(model_name, assay_config
     plt.xticks(range(0, len(time_ticks), 5), [time_ticks[i] for i in range(0, len(time_ticks), 5)], fontsize=15)
     plt.ylabel("Neurons", fontsize=25)
     plt.xlabel("Steps from Consumption", fontsize=25)
-    plt.savefig(f"{model_name}-prey_capture-heat_map_main.jpg", dpi=100)
+    plt.savefig(f"Plots/{model_name}-prey_capture-heat_map_main.jpg", dpi=100)
     plt.clf()
     plt.close()
 
@@ -159,7 +159,7 @@ def display_activity_heat_map_capture_sequences_average(model_name, assay_config
     plt.xticks(range(0, len(time_ticks), 5), [time_ticks[i] for i in range(0, len(time_ticks), 5)], fontsize=15)
     plt.ylabel("Neurons", fontsize=25)
     plt.xlabel("Steps from Consumption", fontsize=25)
-    plt.savefig(f"{model_name}-prey_capture-heat_map_cell.jpg", dpi=100)
+    plt.savefig(f"Plots/{model_name}-prey_capture-heat_map_cell.jpg", dpi=100)
     plt.clf()
     plt.close()
 

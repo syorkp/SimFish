@@ -50,6 +50,9 @@ def get_metric_name(metric_label):
     elif metric_label == "prey capture rate (fraction caught per step)":
         metric_name = "Prey Capture Rate (fraction caught per step)"
 
+    elif metric_label == "prey capture index (fraction caught)":
+        metric_name = "Prey Capture Index (fraction caught)"
+
     elif metric_label == "Energy Efficiency Index":
         metric_name = "Energy Efficiency Index"
 
@@ -77,6 +80,22 @@ def get_metric_name(metric_label):
     return metric_name
 
 
+def remove_repeated_switching_points(scaffold_switching_points):
+    cleaned_scaffold_switching_points = []
+    for model_switching_points in scaffold_switching_points:
+        config_nums = [m[1] for m in model_switching_points]
+        to_delete = []
+        for i, c in enumerate(config_nums):
+            if i > 0:
+                if c == model_switching_points[i-1][1]:
+                    to_delete.append(i-1)
+                    print("Removing repeated")
+        for d in reversed(to_delete):
+            del model_switching_points[d]
+        cleaned_scaffold_switching_points.append(model_switching_points)
+    return cleaned_scaffold_switching_points
+
+
 def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpolate_scaffold_points, figure_name,
                                           key_scaffold_points=None):
     """Different to previous versions in that it uses data directly from log files, and scales points between scaffold
@@ -99,6 +118,8 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
     if interpolate_scaffold_points:
         # TODO: Problem below here
         scaffold_switching_points = [model["Configuration change"] for model in model_data]
+        scaffold_switching_points = remove_repeated_switching_points(scaffold_switching_points)
+
         new_orders = [np.argsort(np.array(model)[:, 1]) for model in scaffold_switching_points]
         scaffold_switching_points = [np.array(model)[new_orders[i]] for i, model in
                                      enumerate(scaffold_switching_points)]
@@ -117,7 +138,7 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
             #     to_switch = (model[metric][:, 0] < 31)
             #     model[metric][to_switch, 1] -= 0.5
             #     model[metric][to_switch, 1] *= 2
-            axs[i].plot(model[metric][:, 0], model[metric][:, 1])
+            axs[i].plot(model[metric][:, 0], model[metric][:, 1], alpha=0.5)
             if min(model[metric][:, 1]) <= 0:
                 plt.hlines(0, 0, max(model[metric][:, 0]), color="black", linestyles="dashed")
 
@@ -204,8 +225,7 @@ if __name__ == "__main__":
                           # "predator avoidance index (avoided/p_pred)",
                           # "Phototaxis Index"
                           ]
-    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=40, interpolate_scaffold_points=True,
-                                          figure_name="dqn_beta_test")#, key_scaffold_points=[10, 16, 31])
+    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=40, interpolate_scaffold_points=True, figure_name="dqn_beta_test")#, key_scaffold_points=[10, 16, 31])
     # plot_multiple_metrics_multiple_models(ppo_models, chosen_metrics_ppo, window=40, interpolate_scaffold_points=True,
     #                                       figure_name="ppo_21")
-    # plot_scaffold_durations(models[0])
+    # plot_scaffold_durations(dqn_models[0])
