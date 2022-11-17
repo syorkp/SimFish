@@ -123,6 +123,12 @@ class DrawingBoard:
         elif action == 9:  # Approach swim.
             action_colour = (0, 1, 0)
 
+        elif action == 10:  # j turn right (large)
+            action_colour = (1, 1, 1)
+
+        elif action == 11:  # j turn left (large)
+            action_colour = (1, 1, 1)
+
         else:
             action_colour = (0, 0, 0)
             print("Invalid action given")
