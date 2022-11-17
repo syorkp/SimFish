@@ -248,14 +248,15 @@ class BaseEnvironment:
         p_prey_birth = self.env_variables["birth_rate"] * (self.env_variables["prey_num"] - num_prey)
         for cloud in self.prey_cloud_locations:
             if np.random.rand(1) < p_prey_birth:
-                new_location = (
-                    np.random.randint(low=cloud[0] - (self.env_variables["birth_rate_region_size"] / 2),
-                                      high=cloud[0] + (self.env_variables["birth_rate_region_size"] / 2)),
-                    np.random.randint(low=cloud[1] - (self.env_variables["birth_rate_region_size"] / 2),
-                                      high=cloud[1] + (self.env_variables["birth_rate_region_size"] / 2))
-                )
-                self.create_prey(new_location)
-                self.available_prey += 1
+                if not self.check_proximity(cloud, self.env_variables["birth_rate_region_size"]/2):
+                    new_location = (
+                        np.random.randint(low=cloud[0] - (self.env_variables["birth_rate_region_size"] / 2),
+                                          high=cloud[0] + (self.env_variables["birth_rate_region_size"] / 2)),
+                        np.random.randint(low=cloud[1] - (self.env_variables["birth_rate_region_size"] / 2),
+                                          high=cloud[1] + (self.env_variables["birth_rate_region_size"] / 2))
+                    )
+                    self.create_prey(new_location)
+                    self.available_prey += 1
 
     def reset_salt_gradient(self):
         salt_source_x = np.random.randint(0, self.env_variables['width'] - 1)

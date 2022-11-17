@@ -119,7 +119,7 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
             #     model[metric][to_switch, 1] *= 2
             axs[i].plot(model[metric][:, 0], model[metric][:, 1])
             if min(model[metric][:, 1]) <= 0:
-                plt.hlines(0, 0, 35, color="black", linestyles="dashed")
+                plt.hlines(0, 0, max(model[metric][:, 0]), color="black", linestyles="dashed")
 
             axs[i].grid(True, axis="x")
 
@@ -158,7 +158,7 @@ if __name__ == "__main__":
     # models = ["dqn_scaffold_27-1", "dqn_scaffold_27-2"]
     # dqn_models = ["dqn_scaffold_30-1", "dqn_scaffold_30-2"]
     dqn_models = ["dqn_scaffold_beta_test-1", "dqn_scaffold_beta_test-2", "dqn_scaffold_beta_test-3",
-                  "dqn_scaffold_beta_test-4"]
+                  "dqn_scaffold_beta_test-4", "dqn_scaffold_beta_test-5", "dqn_scaffold_beta_test_2-1", "dqn_scaffold_beta_test_2-2"]
     ppo_models = ["ppo_scaffold_21-1", "ppo_scaffold_21-2"]
 
     """Possible metrics:
@@ -176,14 +176,15 @@ if __name__ == "__main__":
        - "Exploration Quotient"
        - "turn chain preference"                      
        - "Cause of Death"
+       - Action Heterogeneity Score
     """
     chosen_metrics_dqn = ["prey capture index (fraction caught)",
                           "capture success rate",
                           # "episode reward",
                           # "Energy Efficiency Index",
                           "Episode Duration",
-                          # "Exploration Quotient",
-                          # "turn chain preference",
+                          "Exploration Quotient",
+                          "turn chain preference",
                           # "Cause of Death",
                           # Sand grain attempted captures.
                           # DQN only
