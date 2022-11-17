@@ -3,6 +3,7 @@ import numpy as np
 
 def normalise_within_neuron_multiple_traces(neuron_traces, zero_score_start=False):
     normalised_neuron_traces = []
+    neuron_traces = neuron_traces[0]  # TODO: Get RID
     for n in range(len(neuron_traces)):
         if zero_score_start:
             neuron_traces[n] -= neuron_traces[n][0]

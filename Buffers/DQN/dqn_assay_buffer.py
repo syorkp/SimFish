@@ -161,6 +161,21 @@ class DQNAssayBuffer:
             for layer in self.unit_recordings.keys():
                 self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
             self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer), assay_group)
+
+            self.internal_state_buffer = np.array(self.internal_state_buffer)
+            self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
+            # Get internal state names and save each.
+            for i, state in enumerate(internal_state_order):
+                self.create_data_group(state, np.array(self.internal_state_buffer[:, i]), assay_group)
+                if state == "salt":
+                    if salt_location is None:
+                        salt_location = [150000, 150000]
+                    self.create_data_group("salt_location", np.array(salt_location), assay_group)
+                    self.create_data_group("salt_health", np.array(self.salt_health_buffer), assay_group)
+
+            self.efference_copy_buffer = np.array(self.efference_copy_buffer)
+            self.create_data_group("efference_copy", self.efference_copy_buffer, assay_group)
+
         else:
             if "rnn state" in self.unit_recordings:
                 self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer), assay_group)
