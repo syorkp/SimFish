@@ -27,6 +27,7 @@ def display_all_sequences(sequences, min_length=None, max_length=None, indicate_
     plot_dim = max([len(seq) for seq in sequences])
     if alternate_action_names is None:
         color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'gold', "c", "m", "m", "black"]
+        color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'y', "c", "m", "m", "black", "gold", "gold"]
     else:
         color_set = ["b", "g", "r", "y", "c", "m", "black"]
 
