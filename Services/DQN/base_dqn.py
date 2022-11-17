@@ -216,6 +216,7 @@ class BaseDQN:
 
         while step_number < self.learning_params["max_epLength"]:
             step_number += 1
+            print(step_number)
             o, a, r, i_s, o1, d, rnn_state, rnn_state_ref = self.step_loop(o=o,
                                                                            internal_state=internal_state,
                                                                            a=action_reafference,
