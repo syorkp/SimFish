@@ -397,7 +397,7 @@ changes += [["PCI", high_pci, "capture_swim_extra_cost", 100]]
 changes += [["PCI", high_pci, "anneling_steps", 1000000]]
 
 # 4) Predator avoidance 35
-changes += [["PCI", high_pci, "probability_of_predator", 0.01]]
+# changes += [["PCI", high_pci, "probability_of_predator", 0.01]]
 
 # 5) Other Behaviours 36-37
 changes += [["PCI", high_pci, "max_salt_damage", 0.02]]
