@@ -118,26 +118,39 @@ def display_labelled_marques_bouts_with_dists():
     new_action_nums = [0, 1, 3, 4, 7, 9, 10]
 
     fig, axs = plt.subplots(figsize=(10, 10))
-    for i, l in enumerate(set(labels)):
-        axs.scatter(distances[labels == l], angles[labels == l])
+
+    x = np.linspace(0, 12, num=200)
+    y = np.linspace(-5, 5, num=200)
+    X, Y = np.meshgrid(x, y)
+    pdf = np.zeros(X.shape)
 
     for a in new_action_nums:
+        pdf_sub = np.zeros(X.shape)
         mean, cov = get_new_bout_params(a)
 
-        mean_1, mean_2 = mean[0], mean[1]
-        sigma_1, sigma_2 = cov[0][0], cov[1][1]
+        distr = multivariate_normal(cov=cov, mean=mean)
+        # Generating the density function
+        # for each point in the meshgrid
+        for i in range(X.shape[0]):
+            for j in range(X.shape[1]):
+                pdf_sub[i, j] += distr.pdf([X[i, j], Y[i, j]])
 
-        x, y = np.mgrid[-3 * sigma_1:3 * sigma_1:.1, -3 * sigma_2:3 * sigma_2:.1]
-        rv = multivariate_normal(mean, cov)
-        data = np.dstack((x, y))
-        z = rv.pdf(data)
-        axs.contourf(x[:, 0], y[:, 0], z, cmap='coolwarm')
+        pdf_sub /= np.sum(pdf_sub)
+        print(np.sum(pdf_sub))
+        pdf += pdf_sub
+        axs.scatter(mean[0], mean[1], marker="x", s=500)
+    print(np.sum(pdf))
+    axs.contourf(x, y, pdf, cmap='OrRd',)
+
+    for i, l in enumerate(set(labels)):
+        axs.scatter(distances[labels == l], angles[labels == l], alpha=0.1)
+        axs.scatter(distances[labels == l], -angles[labels == l], alpha=0.1)
 
     axs.legend(actions)
     axs.set_xlabel("Distance (mm)")
     axs.set_ylabel("Angle (radians)")
     axs.set_xlim(0, 12)
-    axs.set_ylim(0, 5)
+    axs.set_ylim(-5, 5)
     plt.show()
 
 
