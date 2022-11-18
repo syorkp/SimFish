@@ -83,6 +83,8 @@ def convert_action_to_bout_id(action):
         return 5
     elif action == 9:
         return 10
+    elif action == 10 or action == 11:
+        return 44
 
 
 def get_modal_impulse_and_angle(action):

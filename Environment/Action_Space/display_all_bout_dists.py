@@ -28,7 +28,7 @@ def display_bout_dist(bout_name):
     axs[1].plot(angles, p_angle/np.sum(p_angle))
     axs[1].set_xlabel("Angle (radians)")
     plt.title(bout_name)
-    plt.savefig("All-Dists/" + bout_name)
+    plt.savefig("Plots/" + bout_name)
     plt.clf()
     plt.close()
 

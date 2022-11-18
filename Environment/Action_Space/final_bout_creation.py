@@ -215,7 +215,7 @@ def create_new_dist_gaussian(action_num, narrowing_coefficient, distance_flatten
     # plt.scatter(new_data[:, 0], new_data[:, 1])
     # plt.xlabel("Distance (mm)")
     # plt.ylabel("Angle (radians)")
-    # plt.savefig(f"All-Dists/Final-Bouts/{bout_name}-Real-Vs-Generated-Data.jpg")
+    # plt.savefig(f"Plots/Final-Bouts/{bout_name}-Real-Vs-Generated-Data.jpg")
     # plt.clf()
     # plt.close()
     #
@@ -225,7 +225,7 @@ def create_new_dist_gaussian(action_num, narrowing_coefficient, distance_flatten
     # plt.hist2d(new_data[:, 0], new_data[:, 1], bins=100)
     # plt.xlabel("Distance (mm)")
     # plt.ylabel("Angle (radians)")
-    # plt.savefig(f"All-Dists/Final-Bouts/{bout_name}-Dense-Generated-Data.jpg")
+    # plt.savefig(f"Plots/Final-Bouts/{bout_name}-Dense-Generated-Data.jpg")
     # plt.clf()
     # plt.close()
 
