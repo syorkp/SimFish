@@ -74,6 +74,9 @@ def get_metric_name(metric_label):
     elif metric_label == "predators avoided":
         metric_name = "Predators Avoided"
 
+    elif metric_label == "turn chain preference":
+        metric_name = "Turn Chain Preference"
+
     else:
         metric_name = metric_label
 
@@ -200,11 +203,11 @@ if __name__ == "__main__":
     """
     chosen_metrics_dqn = ["prey capture index (fraction caught)",
                           "capture success rate",
-                          # "episode reward",
+                          "episode reward",
                           "Energy Efficiency Index",
                           "Episode Duration",
                           "Exploration Quotient",
-                          "Action Heterogeneity Score",
+                          #"Action Heterogeneity Score",
 
                           "turn chain preference",
                           # "Cause of Death",
