@@ -348,7 +348,7 @@ changes += build_changes_list_gradual("PCI", 0.4, "light_gain", env["light_gain"
 changes += [["PCI", 0.4, "prey_fluid_displacement", True]]
 changes += build_changes_list_gradual("PCI", 0.4, "fish_mouth_size", env["fish_mouth_size"], 4, 4, discrete=False)
 changes += build_changes_list_gradual("PCI", 0.4, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"],
-                                      np.pi/6, 8, discrete=False)
+                                      np.pi/5, 8, discrete=False)
 changes += [["PCI", 0.4, "anneling_steps", 1000000]]
 
 # 5) Predator avoidance

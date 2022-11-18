@@ -307,8 +307,9 @@ env = {
 }
 
 
-scaffold_name = "dqn_scaffold_beta_test"
+scaffold_name = "dqn_beta_mod"
 
+env["probability_of_predator"] = 0.005
 
 #                     Network scaffolding example
 # base_network_layers_updated = copy.copy(base_network_layers)
@@ -391,7 +392,7 @@ changes += build_changes_list_gradual("PCI", high_pci, "fish_mouth_size", env["f
 changes += build_changes_list_gradual("PCI", high_pci, "fraction_capture_permitted", env["fraction_capture_permitted"],
                                       0.2, 4, discrete=False)
 changes += build_changes_list_gradual("PCI", high_pci, "capture_angle_deviation_allowance",
-                                      env["capture_angle_deviation_allowance"], np.pi/6, 4, discrete=False)
+                                      env["capture_angle_deviation_allowance"], np.pi/5, 4, discrete=False)
 changes += [["PCI", high_pci, "capture_swim_extra_cost", 100]]
 changes += [["PCI", high_pci, "anneling_steps", 1000000]]
 
