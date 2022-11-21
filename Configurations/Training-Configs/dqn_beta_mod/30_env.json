@@ -24,7 +24,7 @@
     "prey_sensing_distance": 20,
     "prey_max_turning_angle": 0.25,
     "prey_fluid_displacement": true,
-    "prey_jump": true,
+    "prey_jump": false,
     "differential_prey": true,
     "prey_cloud_num": 2.0,
     "p_slow": 1.0,

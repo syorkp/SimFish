@@ -307,9 +307,11 @@ env = {
 }
 
 
-scaffold_name = "dqn_beta_mod"
+scaffold_name = "dqn_beta"
 
-env["probability_of_predator"] = 0.005
+# For predator scaffolding
+env["distance_from_fish"] *= 2
+# env["probability_of_predator"] = 0.005
 
 #                     Network scaffolding example
 # base_network_layers_updated = copy.copy(base_network_layers)
@@ -341,6 +343,8 @@ high_pci = 0.3 / 3
 # ]
 #
 # low_pci = 1.0
+
+# Predator changes
 
 # 2-10
 changes += [
@@ -397,7 +401,8 @@ changes += [["PCI", high_pci, "capture_swim_extra_cost", 100]]
 changes += [["PCI", high_pci, "anneling_steps", 1000000]]
 
 # 4) Predator avoidance 35
-# changes += [["PCI", high_pci, "probability_of_predator", 0.01]]
+changes += [["PCI", high_pci, "probability_of_predator", 0.005]]
+changes += [["PCI", low_pci, "distance_from_fish", env["distance_from_fish"] / 2]]
 
 # 5) Other Behaviours 36-37
 changes += [["PCI", high_pci, "max_salt_damage", 0.02]]

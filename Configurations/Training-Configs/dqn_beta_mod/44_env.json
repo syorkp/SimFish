@@ -162,5 +162,5 @@
     "action_energy_use_scaling": "Sublinear",
     "max_visual_range": 1500,
     "fixed_prey_distribution": false,
-    "anneling_steps": 1000000
+    "anneling_steps": 500000
 }

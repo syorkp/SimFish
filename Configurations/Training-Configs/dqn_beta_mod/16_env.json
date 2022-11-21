@@ -26,7 +26,7 @@
     "prey_fluid_displacement": false,
     "prey_jump": false,
     "differential_prey": true,
-    "prey_cloud_num": 14.0,
+    "prey_cloud_num": 16,
     "p_slow": 1.0,
     "p_fast": 0.0,
     "p_escape": 0.5,

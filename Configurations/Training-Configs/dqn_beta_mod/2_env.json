@@ -161,6 +161,5 @@
     "capture_angle_deviation_allowance": 3.141592653589793,
     "action_energy_use_scaling": "Sublinear",
     "max_visual_range": 1500,
-    "fixed_prey_distribution": false,
-    "anneling_steps": 500000
+    "fixed_prey_distribution": false
 }

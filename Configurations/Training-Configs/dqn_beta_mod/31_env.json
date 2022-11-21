@@ -6,7 +6,7 @@
     "phys_steps_per_sim_step": 100,
     "photon_ratio": 100,
     "fish_mass": 140.0,
-    "fish_mouth_size": 7,
+    "fish_mouth_size": 8.0,
     "fish_head_size": 2.5,
     "fish_tail_length": 41.5,
     "eyes_verg_angle": 77.0,

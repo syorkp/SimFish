@@ -70,7 +70,7 @@
     "dark_gain": 60.0,
     "light_gain": 200.0,
     "rest_cost": 2,
-    "capture_swim_extra_cost": 50,
+    "capture_swim_extra_cost": 5,
     "capture_basic_reward": 10000,
     "predator_cost": 1000,
     "hunger": false,
