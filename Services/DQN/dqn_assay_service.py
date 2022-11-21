@@ -93,8 +93,6 @@ class DQNAssayService(AssayService, BaseDQN):
             rnn_state = copy.copy(self.init_rnn_state)
             rnn_state_ref = copy.copy(self.init_rnn_state_ref)
 
-        self.assay_output_data_format = {key: None for key in assay["recordings"]}
-
         self.simulation.reset()
 
         sa = np.zeros((1, 128))
