@@ -144,7 +144,7 @@ dqn_new_data = [
         "Full Reafference": True,
         "behavioural recordings": ["environmental positions", "observation"],
         "network recordings": ["rnn_shared", "internal_state"],
-        "interventions": {"rnn_input": rnn_zeros}
+        "interventions": {"rnn_input": rnn_zeros},
         "Assays": [
             {
                 "assay id": "Naturalistic-1",
