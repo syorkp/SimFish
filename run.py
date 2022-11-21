@@ -2073,11 +2073,45 @@ ppo_beta_1 = [
         "New Simulation": True,
         "Profile Speed": False,
     },
+    {
+        "Model Name": "ppo_beta_mod",
+        "Environment Name": "ppo_beta_mod",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
 ]
 ppo_beta_2 = [
     {
         "Model Name": "ppo_beta",
         "Environment Name": "ppo_beta",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "ppo_beta_mod",
+        "Environment Name": "ppo_beta_mod",
         "Trial Number": 2,
         "Run Mode": "Training",
         "Tethered": False,
@@ -2111,11 +2145,45 @@ ppo_beta_3 = [
         "New Simulation": True,
         "Profile Speed": False,
     },
+    {
+        "Model Name": "ppo_beta_mod",
+        "Environment Name": "ppo_beta_mod",
+        "Trial Number": 3,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
 ]
 ppo_beta_4 = [
     {
         "Model Name": "ppo_beta",
         "Environment Name": "ppo_beta",
+        "Trial Number": 4,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+    {
+        "Model Name": "ppo_beta_mod",
+        "Environment Name": "ppo_beta_mod",
         "Trial Number": 4,
         "Run Mode": "Training",
         "Tethered": False,
@@ -2150,89 +2218,6 @@ ppo_beta_5 = [
         "New Simulation": True,
         "Profile Speed": False,
     },
-
-]
-ppo_beta_mod_1 = [
-    {
-        "Model Name": "ppo_beta_mod",
-        "Environment Name": "ppo_beta_mod",
-        "Trial Number": 1,
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": True,
-        "New Simulation": True,
-        "Profile Speed": False,
-    },
-
-]
-ppo_beta_mod_2 = [
-    {
-        "Model Name": "ppo_beta_mod",
-        "Environment Name": "ppo_beta_mod",
-        "Trial Number": 2,
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": True,
-        "New Simulation": True,
-        "Profile Speed": False,
-    },
-
-]
-ppo_beta_mod_3 = [
-    {
-        "Model Name": "ppo_beta_mod",
-        "Environment Name": "ppo_beta_mod",
-        "Trial Number": 3,
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": True,
-        "New Simulation": True,
-        "Profile Speed": False,
-    },
-
-]
-ppo_beta_mod_4 = [
-    {
-        "Model Name": "ppo_beta_mod",
-        "Environment Name": "ppo_beta_mod",
-        "Trial Number": 4,
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": True,
-        "Learning Algorithm": "PPO",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": True,
-        "New Simulation": True,
-        "Profile Speed": False,
-    },
-
-]
-ppo_beta_mod_5 = [
     {
         "Model Name": "ppo_beta_mod",
         "Environment Name": "ppo_beta_mod",
@@ -2253,7 +2238,6 @@ ppo_beta_mod_5 = [
 
 ]
 
-
 if run_config is None:
     run_config = dqn_new_data_rnn_manipulations
 else:
@@ -2261,5 +2245,5 @@ else:
     run_config = globals()[run_config]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(run_config, parallel_jobs=1)   # TODO: ALWAYS CHECK THIS RIGHT
+manager = TrialManager(run_config, parallel_jobs=3)   # TODO: ALWAYS CHECK THIS RIGHT
 manager.run_priority_loop()
