@@ -117,10 +117,10 @@ class BaseService:
             # options = tf.GPUOptions(per_process_gpu_memory_fraction=self.memory_fraction)
             # config = tf.ConfigProto(gpu_options=options)
             print("Using GPU")
-            try:
-                delete_nv_folder()
-            except FileNotFoundError:
-                pass
+            # try:
+            #     delete_nv_folder()
+            # except FileNotFoundError:
+            #     pass
             config = tf.ConfigProto()
             config.gpu_options.allow_growth = True
         else:

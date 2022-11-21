@@ -115,16 +115,20 @@ def display_labelled_marques_bouts():
 def display_labelled_marques_bouts_with_dists():
     distances, angles, labels = get_all_bouts()
     actions = ["Slow2", "RT", "sCS", "J-Turn", "C-Start", "AS"]
+    action_colours = ["Blue", "Green", "Red", "Yellow", "Purple", "White"]
+    action_colours = [(0, 0, 1), (0, 1, 0), (1, 0, 0), (0.5, 0.25, 0), (1, 0, 0.5), (1, 1, 1)]
+
     new_action_nums = [0, 1, 3, 4, 7, 9, 10]
+    new_action_colours = [(0, 0, 1), (0, 1, 0), (1, 0, 0), (0.5, 0.25, 0), (1, 0, 0.5), (1, 1, 1), (0.5, 0.25, 0)]
 
     fig, axs = plt.subplots(figsize=(10, 10))
 
-    x = np.linspace(0, 12, num=200)
-    y = np.linspace(-5, 5, num=200)
+    x = np.linspace(0, 12, num=400)
+    y = np.linspace(-1, 5, num=400)
     X, Y = np.meshgrid(x, y)
-    pdf = np.zeros(X.shape)
+    pdf = np.zeros((X.shape[0], X.shape[1], 3))
 
-    for a in new_action_nums:
+    for a_n, a in enumerate(new_action_nums):
         pdf_sub = np.zeros(X.shape)
         mean, cov = get_new_bout_params(a)
 
@@ -136,21 +140,30 @@ def display_labelled_marques_bouts_with_dists():
                 pdf_sub[i, j] += distr.pdf([X[i, j], Y[i, j]])
 
         pdf_sub /= np.sum(pdf_sub)
-        print(np.sum(pdf_sub))
-        pdf += pdf_sub
-        axs.scatter(mean[0], mean[1], marker="x", s=500)
-    print(np.sum(pdf))
-    axs.contourf(x, y, pdf, cmap='OrRd',)
+        # TODO: Scale by how distributed the values are
+        pdf_sub *= np.sum(pdf_sub > 0) ** 2
+
+        coloured_dist = np.repeat(np.expand_dims(pdf_sub, 2), 3, 2)
+        coloured_dist *= new_action_colours[a_n]
+        pdf += coloured_dist
+
+        axs.scatter(mean[0], mean[1], marker="x", s=100, color=[new_action_colours[a_n]])
+
+    pdf = np.flip(pdf, 0)
+    # axs.contourf(x, y, pdf, cmap='OrRd',)
+    pdf /= np.max(pdf)
+    # pdf *= 10
+    axs.imshow(pdf, extent=[0, 12, -1, 5])
 
     for i, l in enumerate(set(labels)):
-        axs.scatter(distances[labels == l], angles[labels == l], alpha=0.1)
-        axs.scatter(distances[labels == l], -angles[labels == l], alpha=0.1)
+        axs.scatter(distances[labels == l], angles[labels == l], alpha=0.05, color=action_colours[i])
+        axs.scatter(distances[labels == l], -angles[labels == l], alpha=0.05, color=action_colours[i])
 
     axs.legend(actions)
     axs.set_xlabel("Distance (mm)")
     axs.set_ylabel("Angle (radians)")
-    axs.set_xlim(0, 12)
-    axs.set_ylim(-5, 5)
+    axs.set_xlim(0, 10)
+    axs.set_ylim(-0.5, 2)
     plt.show()
 
 
