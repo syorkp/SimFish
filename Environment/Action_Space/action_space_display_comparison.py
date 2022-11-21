@@ -115,11 +115,10 @@ def display_labelled_marques_bouts():
 def display_labelled_marques_bouts_with_dists():
     distances, angles, labels = get_all_bouts()
     actions = ["Slow2", "RT", "sCS", "J-Turn", "C-Start", "AS"]
-    action_colours = ["Blue", "Green", "Red", "Yellow", "Purple", "White"]
-    action_colours = [(0, 0, 1), (0, 1, 0), (1, 0, 0), (0.5, 0.25, 0), (1, 0, 0.5), (1, 1, 1)]
+    action_colours = [(0, 0, 1), (0, 1, 0), (1, 0, 0), (1, 1, 0), (1, 0, 0.5), (1, 1, 1)]
 
     new_action_nums = [0, 1, 3, 4, 7, 9, 10]
-    new_action_colours = [(0, 0, 1), (0, 1, 0), (1, 0, 0), (0.5, 0.25, 0), (1, 0, 0.5), (1, 1, 1), (0.5, 0.25, 0)]
+    new_action_colours = [(0, 0, 1), (0, 1, 0), (1, 0, 0), (1, 1, 0), (1, 0, 0.5), (1, 1, 1), (1, 1, 0)]
 
     fig, axs = plt.subplots(figsize=(10, 10))
 
@@ -139,9 +138,10 @@ def display_labelled_marques_bouts_with_dists():
             for j in range(X.shape[1]):
                 pdf_sub[i, j] += distr.pdf([X[i, j], Y[i, j]])
 
-        pdf_sub /= np.sum(pdf_sub)
-        # TODO: Scale by how distributed the values are
-        pdf_sub *= np.sum(pdf_sub > 0) ** 2.5
+        # pdf_sub /= np.sum(pdf_sub)
+        pdf_sub /= np.max(pdf_sub)
+        # Divide by max instead, then below, sqr it as required.
+        #pdf_sub *= np.sum(pdf_sub > 0) ** 2.5
 
         coloured_dist = np.repeat(np.expand_dims(pdf_sub, 2), 3, 2)
         coloured_dist *= new_action_colours[a_n]
@@ -151,6 +151,7 @@ def display_labelled_marques_bouts_with_dists():
 
     pdf = np.flip(pdf, 0)
     # axs.contourf(x, y, pdf, cmap='OrRd',)
+    pdf = pdf ** 2
     pdf /= np.max(pdf)
     # pdf *= 10
     axs.imshow(pdf, extent=[0, 12, -1, 5], aspect="auto")

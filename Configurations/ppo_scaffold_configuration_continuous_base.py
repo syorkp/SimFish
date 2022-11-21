@@ -19,8 +19,8 @@ ops["join_eyes"][1].remove("prev_action_angle")
 
 params = {
        # Learning (Universal)
-       'batch_size': 16,  # How many experience traces to use for each training step. Works okay with 1.
-       'trace_length': 64,  # How long each experience trace will be when training. Works okay with 50
+       'batch_size': 1,  # How many experience traces to use for each training step. Works okay with 1.
+       'trace_length': 50,  # How long each experience trace will be when training. Works okay with 50
        'num_episodes': 100000,  # How many episodes of game environment to train network with.
        'max_epLength': 10000,  # The max allowed length of our episode.
        'epsilon_greedy': True,
@@ -309,8 +309,9 @@ env = {
 
 }
 
-scaffold_name = "ppo_scaffold_beta_test"
+scaffold_name = "ppo_beta_mod"
 
+env["distance_from_fish"] *= 2
 
 # 2-3
 changes = [
@@ -319,6 +320,8 @@ changes = [
        # 1) Rewards and Penalties
        ["PCI", 0.3, "wall_reflection", False],
 ]
+
+changes += [["PCI", 0.3, "distance_from_fish", env["distance_from_fish"] / 2]]
 
 # 4-11
 changes += build_changes_list_gradual("PCI", 0.2, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25,
