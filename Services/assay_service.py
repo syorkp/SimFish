@@ -20,7 +20,7 @@ class AssayService(BaseService):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_environment, new_simulation, assays, set_random_seed,
-                 assay_config_name, checkpoint):
+                 assay_config_name, checkpoint, behavioural_recordings, network_recordings, interventions):
 
         # Set random seed
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
@@ -80,6 +80,10 @@ class AssayService(BaseService):
         self.interruptions = False
         self.rnn_input = None
 
+        self.behavioural_recordings = behavioural_recordings
+        self.network_recordings = network_recordings
+        self.interventions = interventions
+
     def _run(self):
         self.saver = tf.train.Saver(max_to_keep=5)
         self.init = tf.global_variables_initializer()
@@ -89,46 +93,50 @@ class AssayService(BaseService):
             checkpoint_path = self.model_location + f"/model-{self.checkpoint}.cptk"
         self.saver.restore(self.sess, checkpoint_path)
         print("Model loaded")
-        for assay in self.assays:
-            # Reset all interventions to None so doesnt carry between assays
-            self.preset_energy_state = None
-            self.reafference_interruptions = None
-            self.visual_interruptions = None
-            self.previous_action = None
-            self.relocate_fish = None
-            self.salt_interruptions = None
-            self.in_light_interruptions = None
-            self.interruptions = False
-            self.rnn_input = None
 
-            if assay["interventions"]:
-                if "visual_interruptions" in assay["interventions"].keys():
-                    self.visual_interruptions = assay["interventions"]["visual_interruptions"]
-                if "reafference_interruptions" in assay["interventions"].keys():
-                    self.reafference_interruptions = assay["interventions"]["reafference_interruptions"]
-                if "preset_energy_state" in assay["interventions"].keys():
-                    self.preset_energy_state = assay["interventions"]["preset_energy_state"]
-                if "relocate_fish" in assay["interventions"].keys():
-                    self.relocate_fish = assay["interventions"]["relocate_fish"]
-                if "in_light_interruptions" in assay["interventions"].keys():
-                    self.in_light_interruptions = assay["interventions"]["in_light_interruptions"]
-                if "salt_interruptions" in assay["interventions"].keys():
-                    self.salt_interruptions = assay["interventions"]["salt_interruptions"]
-                if "ablations" in assay["interventions"].keys():
-                    self.ablate_units(assay["interventions"]["ablations"])
-                if "rnn_input" in assay["interventions"].keys():
-                    self.rnn_input = assay["interventions"]["rnn_input"]
-                self.interruptions = True
+        if self.interventions is not None:
+            if "visual_interruptions" in self.interventions.keys():
+                self.visual_interruptions = self.interventions["visual_interruptions"]
+            if "reafference_interruptions" in self.interventions.keys():
+                self.reafference_interruptions = self.interventions["reafference_interruptions"]
+            if "preset_energy_state" in self.interventions.keys():
+                self.preset_energy_state = self.interventions["preset_energy_state"]
+            if "relocate_fish" in self.interventions.keys():
+                self.relocate_fish = self.interventions["relocate_fish"]
+            if "in_light_interruptions" in self.interventions.keys():
+                self.in_light_interruptions = self.interventions["in_light_interruptions"]
+            if "salt_interruptions" in self.interventions.keys():
+                self.salt_interruptions = self.interventions["salt_interruptions"]
+            if "ablations" in self.interventions.keys():
+                self.ablate_units(self.interventions["ablations"])
+            if "rnn_input" in self.interventions.keys():
+                self.rnn_input = self.interventions["rnn_input"]
+            self.interruptions = True
+        else:
+            self.interruptions = False
+        if self.environment_params["use_dynamic_network"]:
+            if self.ppo_version is not None:
+                self.buffer.rnn_layer_names = self.actor_network.rnn_layer_names
             else:
-                self.interruptions = False
-            if self.environment_params["use_dynamic_network"]:
-                if self.ppo_version is not None:
-                    self.buffer.rnn_layer_names = self.actor_network.rnn_layer_names
-                else:
-                    self.buffer.rnn_layer_names = self.main_QN.rnn_layer_names
+                self.buffer.rnn_layer_names = self.main_QN.rnn_layer_names
+
+        for assay in self.assays:
+
+            # Init recordings
+            self.create_output_data_storage(self.behavioural_recordings, self.network_recordings)
+
+            # Reset all interventions to None so doesnt carry between assays
+            # self.preset_energy_state = None
+            # self.reafference_interruptions = None
+            # self.visual_interruptions = None
+            # self.previous_action = None
+            # self.relocate_fish = None
+            # self.salt_interruptions = None
+            # self.in_light_interruptions = None
+            # self.interruptions = False
+            # self.rnn_input = None
 
             self.save_frames = assay["save frames"]
-            self.create_output_data_storage(assay)
             self.create_testing_environment(assay)
 
             self.perform_assay(assay)
@@ -271,8 +279,9 @@ class AssayService(BaseService):
         #         new_tensor[unit - 256] = np.array([0])
         #         self.sess.run(tf.assign(output, new_tensor))
 
-    def create_output_data_storage(self, assay):
-        self.output_data = {key: [] for key in assay["behavioural recordings"] + assay["network recordings"]}
+    def create_output_data_storage(self, behavioural_recordings, network_recordings):
+        # self.output_data = {key: [] for key in assay["behavioural recordings"] + assay["network recordings"]}
+        self.output_data = {key: [] for key in behavioural_recordings + network_recordings}
         self.output_data["step"] = []
 
     def save_episode_data(self):
