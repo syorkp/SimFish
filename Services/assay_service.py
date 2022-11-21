@@ -153,9 +153,9 @@ class AssayService(BaseService):
         self.save_episode_data()
 
     def perform_assay(self, assay):
-        self.assay_output_data_format = {key: None for key in
-                                         assay["behavioural recordings"] + assay["network recordings"]}
-        self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
+        # self.assay_output_data_format = {key: None for key in
+        #                                  assay["behavioural recordings"] + assay["network recordings"]}
+        # self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
 
         self.current_episode_max_duration = assay["duration"]
         if assay["use_mu"]:

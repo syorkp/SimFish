@@ -83,8 +83,8 @@ class DQNAssayService(AssayService, BaseDQN):
             AssayService._run(self)
 
     def perform_assay(self, assay):
-        self.assay_output_data_format = {key: None for key in assay["recordings"]}
-        self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
+        # self.assay_output_data_format = {key: None for key in assay["recordings"]}
+        # self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
 
         if self.rnn_input is not None:
             rnn_state = copy.copy(self.rnn_input[0])
