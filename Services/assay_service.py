@@ -124,6 +124,7 @@ class AssayService(BaseService):
 
             # Init recordings
             self.create_output_data_storage(self.behavioural_recordings, self.network_recordings)
+            self.buffer.init_assay_recordings(self.behavioural_recordings, self.network_recordings)
 
             # Reset all interventions to None so doesnt carry between assays
             # self.preset_energy_state = None
