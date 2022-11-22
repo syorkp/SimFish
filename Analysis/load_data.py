@@ -24,3 +24,7 @@ def load_data(model_name, assay_configuration, assay_id):
     data = {key: np.array(g.get(key)) for key in g.keys()}
     file.close()
     return data
+
+
+if __name__ == "__main__":
+    d = load_data("dqn_new-1", "TEST", "Naturalistic-1")

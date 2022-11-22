@@ -311,6 +311,7 @@ env = {
 
 scaffold_name = "ppo_beta_mod"
 
+env["probability_of_predator"] = 0.05
 env["distance_from_fish"] *= 2
 
 # 2-3
