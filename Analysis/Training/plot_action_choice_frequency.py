@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 import pandas as pd
 
-from Analysis.Behavioural.Discrete.show_spatial_density_discrete import get_action_name
+from Analysis.Behavioural.Discrete.SpatialDensity.show_spatial_density_discrete import get_action_name
 
 
 def clean_action_choice_data(reader, file_name, model):

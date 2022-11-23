@@ -45,7 +45,7 @@
     "predator_inertia": 0.0001,
     "predator_size": 32,
     "predator_impulse": 25,
-    "immunity_steps": 65,
+    "immunity_steps": 200,
     "distance_from_fish": 363.42432,
     "probability_of_predator": 0.0,
     "sand_grain_mass": 1.0,

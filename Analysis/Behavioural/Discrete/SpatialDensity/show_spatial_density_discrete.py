@@ -67,35 +67,37 @@ def get_nearby_features(data, step, proximity=500):
 def get_nearby_features_predictive(data, step, proximity=300, steps_used_in_prediction=10):
     """For a single step, returns the positions of nearby prey and predators."""
     if step < steps_used_in_prediction:
-        return [], [], [], []
+        return [], []
+
+    # Define nearby area
     nearby_area = [[data["fish_position"][step][0] - proximity,
                     data["fish_position"][step][0] + proximity],
                    [data["fish_position"][step][1] - proximity,
                     data["fish_position"][step][1] + proximity]
                    ]
 
+    # Whether prey are in area
     prey_in_area = (data["prey_positions"][step, :, 0] >= nearby_area[0][0] * 1) * \
                     (data["prey_positions"][step, :, 0] <= nearby_area[0][1] * 1) * \
                      (data["prey_positions"][step, :, 1] >= nearby_area[1][0] * 1) * \
                       (data["prey_positions"][step, :, 1] <= nearby_area[1][1] * 1)
-    nearby_prey_coordinates = data["prey_positions"][step][prey_in_area]
-    previous_prey_coordinates = data["prey_positions"][step-steps_used_in_prediction:step, :, prey_in_area]
-    predicted_prey_coordinates = []
-    # TODO: Change. should build linear model on all prey data, with X being the previous positions (t-10) and Y being [x, y]
-    # TODO: Should be loaded here.
-    X = range(steps_used_in_prediction)
-    for p in range(previous_prey_coordinates.shape[2]):
-        regr = linear_model.LinearRegression(fit_intercept=False)
-        regr.fit(X, previous_prey_coordinates[:, p])
 
-    # TODO: Using that data, extrapolate to predict next position
+    previous_prey_coordinates = data["prey_positions"][step-steps_used_in_prediction:step+1, prey_in_area]
+    # Build linear model on all prey data, with X being the previous positions (t-10) and Y being [x, y]
+    predicted_prey_coordinates = []
+    for p in range(previous_prey_coordinates.shape[1]):
+        regr = linear_model.LinearRegression(fit_intercept=False)
+        regr.fit(previous_prey_coordinates[:-1, p], previous_prey_coordinates[1:, p])
+        next = regr.predict(previous_prey_coordinates[-1:, p])
+        predicted_prey_coordinates.append(next[0])
+    predicted_prey_coordinates = np.array(predicted_prey_coordinates)
 
     predator_in_area = nearby_area[0][0] <= data["predator_positions"][step][0] <= nearby_area[0][1] and \
                        nearby_area[1][0] <= data["predator_positions"][step][1] <= nearby_area[1][1]
     nearby_predator_coordinates = data["predator_positions"][step][predator_in_area]
     previous_predator_coordinates = data["predator_positions"][step-steps_used_in_prediction:step][predator_in_area]
 
-    return nearby_prey_coordinates, nearby_predator_coordinates
+    return np.clip(predicted_prey_coordinates, 0, 1000), np.clip(nearby_predator_coordinates, 0, 1000)
 
 
 def transform_to_egocentric(feature_positions, fish_position, fish_orientation):
@@ -120,7 +122,11 @@ def get_clouds_with_action(data, action=0, steps_prior=0, predictive=False):
         if i - steps_prior >= 0:
             if data["action"][i] == action:
                 if predictive:
-                    allocentric_prey, allocentric_predators = get_nearby_features_predictive(data, i - steps_prior)
+                    try:
+                        allocentric_prey, allocentric_predators = get_nearby_features_predictive(data, i - steps_prior)
+                    except ValueError:
+                        allocentric_prey, allocentric_predators = get_nearby_features_predictive(data, i - steps_prior)
+
                 else:
                     allocentric_prey, allocentric_predators = get_nearby_features(data, i - steps_prior)
 
@@ -183,7 +189,7 @@ def create_density_cloud(density_list, action_num, stimulus_name, return_objects
     ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Feature: {stimulus_name}, Action: {get_action_name(action_num)}, N-Samples: {n_samples}")
     plt.savefig(
-        f"{save_location}/{assay_config}-{stimulus_name}-{get_action_name(action_num)}-steps_prior: {steps_prior}.jpg")
+        f"{save_location}{assay_config}-{stimulus_name}-{get_action_name(action_num)}-steps_prior: {steps_prior}.jpg")
 
     if return_objects:
         plt.clf()
@@ -251,7 +257,7 @@ def create_density_cloud_compared(density_list1, density_list2, action_num, stim
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Feature: {stimulus_name}, Action: {get_action_name(action_num)}, N-Samples: {n_samples1}, {n_samples2}")
-    plt.savefig(f"{save_location}/{assay_config}-{stimulus_name}-{get_action_name(action_num)}.jpg")
+    plt.savefig(f"{save_location}{assay_config}-{stimulus_name}-{get_action_name(action_num)}.jpg")
 
     if return_objects:
         plt.clf()
@@ -274,8 +280,11 @@ def get_all_density_plots(data, save_location):
 
 
 def get_all_density_plots_all_subsets(p1, p2, p3, n, return_objects, steps_prior=0, position_predictive=False):
-    if not os.path.exists(f"{p1}/"):
-        os.makedirs(f"{p1}/")
+    if not os.path.exists(f"../Plots/{p1}/"):
+        os.makedirs(f"../Plots/{p1}/")
+    save_location = f"../Plots/{p1}/"
+    if position_predictive:
+        save_location += "Predictive-"
 
     axes_objects = []
     for action_num in range(0, 10):
@@ -291,26 +300,29 @@ def get_all_density_plots_all_subsets(p1, p2, p3, n, return_objects, steps_prior
             prey_cloud = prey_cloud + prey_1
             pred_cloud = pred_cloud + pred_1
 
+        if action_num == 4:
+            x = True
+
         if len(prey_cloud) > 2:
-            ax = create_density_cloud(prey_cloud, action_num, "Prey", return_objects, save_location=p1, assay_config=p2,
+            ax = create_density_cloud(prey_cloud, action_num, "Prey", return_objects, save_location=save_location, assay_config=p2,
                                       steps_prior=steps_prior)
             axes_objects.append(ax)
 
         if len(pred_cloud) > 2:
-            ax = create_density_cloud(pred_cloud, action_num, "Predator", return_objects, save_location=p1,
+            ax = create_density_cloud(pred_cloud, action_num, "Predator", return_objects, save_location=save_location,
                                       assay_config=p2, steps_prior=steps_prior)
             axes_objects.append(ax)
 
-    ax = create_j_turn_overlap_plot(p1, p2, p3, n, return_objects)
+    ax = create_j_turn_overlap_plot(p1, p2, p3, n, return_objects, save_location=save_location)
     axes_objects.append(ax)
-    ax = create_routine_turn_overlap_plot(p1, p2, p3, n, return_objects)
+    ax = create_routine_turn_overlap_plot(p1, p2, p3, n, return_objects, save_location=save_location)
     axes_objects.append(ax)
-    ax = create_cstart_overlap_plot(p1, p2, p3, n, return_objects)
+    ax = create_cstart_overlap_plot(p1, p2, p3, n, return_objects, save_location=save_location)
     axes_objects.append(ax)
     return axes_objects
 
 
-def create_overlap_plot(cloud_left, cloud_right, stimulus_name, action, model_name, assay_config):
+def create_overlap_plot(cloud_left, cloud_right, stimulus_name, action, model_name, assay_config, save_location):
     n_samples = len(cloud_left) + len(cloud_right)
     # For left
     x = np.array([i[0] for i in cloud_left])
@@ -367,12 +379,12 @@ def create_overlap_plot(cloud_left, cloud_right, stimulus_name, action, model_na
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Feature: {stimulus_name}, Action: {action}, N-Samples: {n_samples}")
-    plt.savefig(f"{model_name}/{assay_config}-{stimulus_name}-{action}.jpg")
+    plt.savefig(f"{save_location}{stimulus_name}-{action}.jpg")
     plt.clf()
     plt.close()
 
 
-def create_j_turn_overlap_plot(p1, p2, p3, n, return_objects):
+def create_j_turn_overlap_plot(p1, p2, p3, n, return_objects, save_location):
     prey_cloud_left = []
     pred_cloud_left = []
     for i in range(1, n + 1):
@@ -388,8 +400,8 @@ def create_j_turn_overlap_plot(p1, p2, p3, n, return_objects):
         prey_cloud_right = prey_cloud_right + prey_1
         pred_cloud_right = pred_cloud_right + pred_1
 
-    create_overlap_plot(prey_cloud_left, prey_cloud_right, "Prey", "J-turn", p1, assay_config=p2)
-    create_overlap_plot(pred_cloud_left, pred_cloud_right, "Predators", "J-turn", p1, assay_config=p2)
+    create_overlap_plot(prey_cloud_left, prey_cloud_right, "Prey", "J-turn", p1, assay_config=p2, save_location=save_location)
+    create_overlap_plot(pred_cloud_left, pred_cloud_right, "Predators", "J-turn", p1, assay_config=p2, save_location=save_location)
 
     if return_objects:
         plt.clf()
@@ -398,7 +410,7 @@ def create_j_turn_overlap_plot(p1, p2, p3, n, return_objects):
         return
 
 
-def create_routine_turn_overlap_plot(p1, p2, p3, n, return_objects):
+def create_routine_turn_overlap_plot(p1, p2, p3, n, return_objects, save_location):
     prey_cloud_left = []
     pred_cloud_left = []
     for i in range(1, n + 1):
@@ -414,8 +426,8 @@ def create_routine_turn_overlap_plot(p1, p2, p3, n, return_objects):
         prey_cloud_right = prey_cloud_right + prey_1
         pred_cloud_right = pred_cloud_right + pred_1
 
-    create_overlap_plot(prey_cloud_left, prey_cloud_right, "Prey", "RT", p1, assay_config=p2)
-    create_overlap_plot(pred_cloud_left, pred_cloud_right, "Predators", "RT", p1, assay_config=p2)
+    create_overlap_plot(prey_cloud_left, prey_cloud_right, "Prey", "RT", p1, assay_config=p2, save_location=save_location)
+    create_overlap_plot(pred_cloud_left, pred_cloud_right, "Predators", "RT", p1, assay_config=p2, save_location=save_location)
 
     if return_objects:
         plt.clf()
@@ -489,7 +501,7 @@ def create_routine_turn_overlap_plot(p1, p2, p3, n, return_objects):
     #     plt.show()
 
 
-def create_cstart_overlap_plot(p1, p2, p3, n, return_objects):
+def create_cstart_overlap_plot(p1, p2, p3, n, return_objects, save_location):
     prey_cloud_left = []
     pred_cloud_left = []
     for i in range(1, n + 1):
@@ -505,8 +517,8 @@ def create_cstart_overlap_plot(p1, p2, p3, n, return_objects):
         prey_cloud_right = prey_cloud_right + prey_1
         pred_cloud_right = pred_cloud_right + pred_1
 
-    create_overlap_plot(prey_cloud_left, prey_cloud_right, "Prey", "C-Start", p1, assay_config=p2)
-    create_overlap_plot(pred_cloud_left, pred_cloud_right, "Predators", "C-Start", p1, assay_config=p2)
+    create_overlap_plot(prey_cloud_left, prey_cloud_right, "Prey", "C-Start", p1, assay_config=p2, save_location=save_location)
+    create_overlap_plot(pred_cloud_left, pred_cloud_right, "Predators", "C-Start", p1, assay_config=p2, save_location=save_location)
 
     if return_objects:
         plt.clf()
@@ -832,15 +844,9 @@ if __name__ == "__main__":
     #                                        "Naturalistic", 40)
 
     # Getting for individual models
-    x = True
     create_cstart_overlap_plot(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 40, return_objects=False)
-    # get_all_density_plots_all_subsets(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 40,
-    #                                   return_objects=False, steps_prior=0, position_predictive=False)
-    # get_all_density_plots_all_subsets(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False, steps_prior=9)
-    # get_all_density_plots_all_subsets(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False, steps_prior=10)
-    # get_all_density_plots_all_subsets(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False, steps_prior=11)
-    # get_all_density_plots_all_subsets(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False, steps_prior=12)
-    # get_all_density_plots_all_subsets(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False, steps_prior=13)
+
+
 
     # get_all_density_plots_all_subsets(f"dqn_scaffold_26-1", "Behavioural-Data-Free-B", "Naturalistic", 20, return_objects=False)
     # get_all_density_plots_all_subsets(f"dqn_scaffold_26-1", "Behavioural-Data-Free-C", "Naturalistic", 20, return_objects=False)

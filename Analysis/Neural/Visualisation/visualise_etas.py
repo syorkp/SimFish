@@ -6,10 +6,9 @@ import seaborn as sns
 import json
 import scipy.stats as stats
 
-from Analysis.Neural.ETA.event_triggered_averages import get_full_eta_timeseries, get_for_specific_neurons, get_full_eta, get_average_timeseries, get_full_action_triggered_average
+from Analysis.Neural.ETA.event_triggered_averages import get_full_action_triggered_average
 from Analysis.Neural.VRV.calculate_vrv import normalise_vrvs
-from Analysis.Behavioural.Discrete.show_spatial_density_discrete import get_action_name
-from Analysis.load_data import load_data
+from Analysis.Behavioural.Discrete.SpatialDensity.show_spatial_density_discrete import get_action_name
 
 
 def display_all_atas(atas, groups=None):

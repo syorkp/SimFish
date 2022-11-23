@@ -9,7 +9,7 @@ from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import
 from Analysis.Behavioural.Tools.BehavLabels.extract_escape_sequences import extract_escape_action_sequences_with_positions
 
 from Analysis.Behavioural.VisTools.show_action_sequence_block import display_all_sequences
-from Analysis.Behavioural.Discrete.show_spatial_density_discrete import get_all_density_plots
+from Analysis.Behavioural.Discrete.SpatialDensity.show_spatial_density_discrete import get_all_density_plots
 from Analysis.Behavioural.TurnChains.turning_analysis_discrete import get_cumulative_switching_probability_plot
 from Analysis.Behavioural.Both.phototaxis import plot_light_dark_occupancy_kdf, plot_luminance_driven_choice
 

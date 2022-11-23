@@ -41,7 +41,11 @@
 41) Metric-PCI: 0.24999999999999997, Variable-capture_angle_deviation_allowance: 0.6283185307179586
 42) Metric-PCI: 0.24999999999999997, Variable-capture_swim_extra_cost: 100
 43) Metric-PCI: 0.24999999999999997, Variable-anneling_steps: 1000000
-44) Metric-PCI: 0.24999999999999997, Variable-probability_of_predator: 0.005
-45) Metric-PCI: 0.20833333333333331, Variable-distance_from_fish: 181.71216
-46) Metric-PCI: 0.24999999999999997, Variable-max_salt_damage: 0.02
-47) Metric-PCI: 0.24999999999999997, Variable-current_setting: Circular
+44) Metric-PCI: 0.24999999999999997, Variable-probability_of_predator: 0.003
+45) Metric-PCI: 0.20833333333333331, Variable-distance_from_fish: 327.08188800000005
+46) Metric-PCI: 0.20833333333333331, Variable-distance_from_fish: 290.739456
+47) Metric-PCI: 0.20833333333333331, Variable-distance_from_fish: 254.39702400000002
+48) Metric-PCI: 0.20833333333333331, Variable-distance_from_fish: 218.054592
+49) Metric-PCI: 0.20833333333333331, Variable-distance_from_fish: 181.71216
+50) Metric-PCI: 0.24999999999999997, Variable-max_salt_damage: 0.02
+51) Metric-PCI: 0.24999999999999997, Variable-current_setting: Circular

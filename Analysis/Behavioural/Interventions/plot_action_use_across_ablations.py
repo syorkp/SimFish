@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-from Analysis.Behavioural.Discrete.show_spatial_density_discrete import get_action_name
+from Analysis.Behavioural.Discrete.SpatialDensity.show_spatial_density_discrete import get_action_name
 from Analysis.load_data import load_data
 import numpy as np
 
