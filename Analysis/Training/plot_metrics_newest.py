@@ -42,25 +42,30 @@ def compute_rolling_averages_over_data(data, window):
 
 def get_metric_name(metric_label):
     if metric_label == "prey caught":
-        metric_name = "Prey Caught (per episode)"
+        metric_name = "Prey Caught"
 
     elif metric_label == "capture success rate":
-        metric_name = "Capture Success Rate"
+        # metric_name = "Capture Success Rate"
+        metric_name = "CSR"
 
     elif metric_label == "prey capture rate (fraction caught per step)":
-        metric_name = "Prey Capture Rate (fraction caught per step)"
+        # metric_name = "Prey Capture Rate (fraction caught per step)"
+        metric_name = "PCR"
 
     elif metric_label == "prey capture index (fraction caught)":
-        metric_name = "Prey Capture Index (fraction caught)"
+        # metric_name = "Prey Capture Index (fraction caught)"
+        metric_name = "PCI"
 
     elif metric_label == "Energy Efficiency Index":
-        metric_name = "Energy Efficiency Index"
+        # metric_name = "Energy Efficiency Index"
+        metric_name = "EEI"
 
     elif metric_label == "Episode Duration":
         metric_name = "Episode Duration"
 
     elif metric_label == "Mean salt damage taken per step":
-        metric_name = "Salt Damage (mean per step)"
+        # metric_name = "Salt Damage (mean per step)"
+        metric_name = "Salt Damage"
 
     elif metric_label == "Phototaxis Index":
         metric_name = "Phototaxis Index"
@@ -69,13 +74,21 @@ def get_metric_name(metric_label):
         metric_name = "Episode Reward"
 
     elif metric_label == "predator avoidance index (avoided":
-        metric_name = "Predator Avoidance Index"
+        # metric_name = "Predator Avoidance Index"
+        metric_name = "PAI"
 
     elif metric_label == "predators avoided":
         metric_name = "Predators Avoided"
 
+    elif metric_label == "Exploration Quotient":
+        metric_name = "EQ"
+
     elif metric_label == "turn chain preference":
-        metric_name = "Turn Chain Preference"
+        # metric_name = "Turn Chain Preference"
+        metric_name = "TCP"
+
+    elif metric_label == "Action Heterogeneity Score":
+        metric_name = "AHI"
 
     else:
         metric_name = metric_label
@@ -136,6 +149,10 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
         for i, metric in enumerate(metrics):
             metric_name = get_metric_name(metric)
 
+            if metric_name == "AHI":
+                to_zero = (model[metric][:, 0] < 2)
+                model[metric][to_zero, 1] = 0
+
             # if metric_name == "Phototaxis Index":
             #     to_switch = (model[metric][:, 0] < 31)
             #     model[metric][to_switch, 1] -= 0.5
@@ -152,6 +169,7 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
                     axs[i].vlines(p, ylim[0], ylim[1], color="r")
                 axs[i].set_ylim(ylim[0], ylim[1])
             axs[i].set_ylabel(metric_name)
+            # plt.setp(axs[i].get_yticklabels(), rotation=30, horizontalalignment='right')
 
     axs[-1].set_xlabel("Scaffold Point")
     sc = np.concatenate(([np.array(s) for s in scaffold_switching_points]))
@@ -183,7 +201,7 @@ if __name__ == "__main__":
     dqn_models = ["dqn_scaffold_beta_test-1", "dqn_scaffold_beta_test-2", "dqn_scaffold_beta_test-3",
                   "dqn_scaffold_beta_test-4", "dqn_scaffold_beta_test-5", "dqn_scaffold_beta_test_2-1", "dqn_scaffold_beta_test_2-2"]
     ppo_models = ["ppo_scaffold_21-1", "ppo_scaffold_21-2"]
-
+    dqn_models = ["dqn_beta-1", "dqn_beta-2", "dqn_beta-3", "dqn_beta-4", "dqn_beta-5"]
     """Possible metrics:
        - "prey capture index (fraction caught)"
        - "prey capture rate (fraction caught per step)"
@@ -207,7 +225,7 @@ if __name__ == "__main__":
                           "Energy Efficiency Index",
                           "Episode Duration",
                           "Exploration Quotient",
-                          #"Action Heterogeneity Score",
+                          "Action Heterogeneity Score",
 
                           "turn chain preference",
                           # "Cause of Death",
@@ -229,7 +247,7 @@ if __name__ == "__main__":
                           # "predator avoidance index (avoided/p_pred)",
                           # "Phototaxis Index"
                           ]
-    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=40, interpolate_scaffold_points=True, figure_name="dqn_beta_test")#, key_scaffold_points=[10, 16, 31])
+    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=40, interpolate_scaffold_points=True, figure_name="dqn_beta")#, key_scaffold_points=[10, 16, 31])
     # plot_multiple_metrics_multiple_models(ppo_models, chosen_metrics_ppo, window=40, interpolate_scaffold_points=True,
     #                                       figure_name="ppo_21")
     # plot_scaffold_durations(dqn_models[0])

@@ -311,8 +311,9 @@ env = {
 
 scaffold_name = "ppo_beta_mod"
 
-env["probability_of_predator"] = 0.05
-env["distance_from_fish"] *= 2
+env["probability_of_predator"] = 0.003
+env["immunity_steps"] = 200
+env["distance_from_fish"] *= 4
 
 # 2-3
 changes = [
@@ -321,8 +322,6 @@ changes = [
        # 1) Rewards and Penalties
        ["PCI", 0.3, "wall_reflection", False],
 ]
-
-changes += [["PCI", 0.3, "distance_from_fish", env["distance_from_fish"] / 2]]
 
 # 4-11
 changes += build_changes_list_gradual("PCI", 0.2, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25,
@@ -356,7 +355,9 @@ changes += build_changes_list_gradual("PCI", 0.4, "capture_angle_deviation_allow
 changes += [["PCI", 0.4, "anneling_steps", 1000000]]
 
 # 5) Predator avoidance
-changes += [["PCI", 0.4, "probability_of_predator", 0.01]]
+# changes += [["PCI", 0.4, "probability_of_predator", 0.003]]
+changes += build_changes_list_gradual("PCI", 0.3, "distance_from_fish", env["distance_from_fish"], env["distance_from_fish"] / 4, 5, discrete=False)
+
 changes += [["PCI", 0.4, "anneling_steps", 500000]]
 
 # 6) Other Behaviours

@@ -54,9 +54,9 @@
     "predator_inertia": 0.0001,
     "predator_size": 32,
     "predator_impulse": 25,
-    "immunity_steps": 65,
-    "distance_from_fish": 181.71216,
-    "probability_of_predator": 0.01,
+    "immunity_steps": 200,
+    "distance_from_fish": 399.7667520000001,
+    "probability_of_predator": 0.003,
     "dark_light_ratio": 0.0,
     "light_gradient": 0,
     "read_noise_sigma": 0.0,
@@ -157,5 +157,5 @@
     "action_energy_use_scaling": "Sublinear",
     "max_visual_range": false,
     "fixed_prey_distribution": false,
-    "anneling_steps": 500000
+    "anneling_steps": 1000000
 }
