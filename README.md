@@ -13,7 +13,7 @@ To view graphs, install tensorboard and run 'tensorboard --logdir="./Output/{tri
 
 Uses the following packages:
 * Tensorflow==2.3.1/1.15.0
-* numpy==1.19.2
+* numpy==1.19.2 (depending on version of python, might need to be 1.18.5 for TF compatability)
 * h5py==2.10.0
 * matplotlib==3.3.2
 * pymunk==5.7 - MUST be version 5.7
@@ -25,6 +25,7 @@ Uses the following packages:
 * tensorflow-probability==0.11.0 (0.8 on myriad due to TF compatability)
 * sklearn
 * statsmodels
+* seaborn
 
 Changes for local gpu compatability:
 * tensorflow-probability==0.10.1 (not 0.10.0 due to cloudpickle importerror)

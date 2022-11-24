@@ -1879,7 +1879,7 @@ dqn_beta_mod_pred_test = [
         "Full Reafference": True,
         "behavioural recordings": ["environmental positions", "observation"],
         "network recordings": ["rnn_shared", "internal_state"],
-        "interventions": {"rnn_input": rnn_zeros},
+        "interventions": None,
         "Assays": [
             {
                 "assay id": "Naturalistic-1",
@@ -2298,7 +2298,7 @@ dqn_beta_mod_pred_test = [
         "Full Reafference": True,
         "behavioural recordings": ["environmental positions", "observation"],
         "network recordings": ["rnn_shared", "internal_state"],
-        "interventions": {"rnn_input": rnn_zeros},
+        "interventions": None,
         "Assays": [
             {
                 "assay id": "Naturalistic-1",
