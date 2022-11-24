@@ -97,7 +97,19 @@ def get_nearby_features_predictive(data, step, proximity=300, steps_used_in_pred
     nearby_predator_coordinates = data["predator_positions"][step][predator_in_area]
     previous_predator_coordinates = data["predator_positions"][step-steps_used_in_prediction:step][predator_in_area]
 
-    return np.clip(predicted_prey_coordinates, 0, 1000), np.clip(nearby_predator_coordinates, 0, 1000)
+    # Extra step for weird predictions which result in very high or low values. TODO: Instead clip based on available range (slightly extended)
+    if len(predicted_prey_coordinates) > 0:
+        to_remove_prey = (predicted_prey_coordinates < 0) + (predicted_prey_coordinates > 3000)
+        to_remove_prey = to_remove_prey[:, 0] + to_remove_prey[:, 1]
+        if len(predicted_prey_coordinates) > 0:
+            x = True
+        predicted_prey_coordinates = predicted_prey_coordinates[~to_remove_prey]
+
+    # TODO: DO same for Pred
+    to_remove_predators = (nearby_predator_coordinates < 0) + (nearby_predator_coordinates > 1000)
+    nearby_predator_coordinates = nearby_predator_coordinates[~to_remove_predators]
+
+    return list(predicted_prey_coordinates), list(nearby_predator_coordinates)
 
 
 def transform_to_egocentric(feature_positions, fish_position, fish_orientation):
@@ -122,10 +134,7 @@ def get_clouds_with_action(data, action=0, steps_prior=0, predictive=False):
         if i - steps_prior >= 0:
             if data["action"][i] == action:
                 if predictive:
-                    try:
-                        allocentric_prey, allocentric_predators = get_nearby_features_predictive(data, i - steps_prior)
-                    except ValueError:
-                        allocentric_prey, allocentric_predators = get_nearby_features_predictive(data, i - steps_prior)
+                    allocentric_prey, allocentric_predators = get_nearby_features_predictive(data, i - steps_prior)
 
                 else:
                     allocentric_prey, allocentric_predators = get_nearby_features(data, i - steps_prior)
@@ -288,6 +297,7 @@ def get_all_density_plots_all_subsets(p1, p2, p3, n, return_objects, steps_prior
 
     axes_objects = []
     for action_num in range(0, 12):
+
         prey_cloud = []
         pred_cloud = []
         for i in range(1, n + 1):
@@ -871,9 +881,7 @@ if __name__ == "__main__":
     # Getting for individual models
     # create_cstart_overlap_plot(f"dqn_new-1", "Behavioural-Data-Naturalistic", "Naturalistic", 20, return_objects=False)
 
-    get_all_density_plots_all_subsets(f"dqn_beta-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
-    get_all_density_plots_all_subsets(f"dqn_beta-2", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
-    get_all_density_plots_all_subsets(f"dqn_beta-3", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+    get_all_density_plots_all_subsets(f"dqn_beta_mod-3", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
 
     # get_all_density_plots_all_subsets(f"dqn_scaffold_26-1", "Behavioural-Data-Free-B", "Naturalistic", 20, return_objects=False)
     # get_all_density_plots_all_subsets(f"dqn_scaffold_26-1", "Behavioural-Data-Free-C", "Naturalistic", 20, return_objects=False)
