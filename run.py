@@ -1857,7 +1857,6 @@ dqn_new_data_rnn_manipulations = [
 
 ]
 
-
 dqn_beta_mod_pred_test = [
     {
         "Model Name": "dqn_beta_mod",
