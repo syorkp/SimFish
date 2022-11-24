@@ -53,8 +53,8 @@ def display_average_sequence(sequences):
 
 # VERSION 2
 if __name__ == "__main__":
-    capture_sequences = get_capture_sequences(f"dqn_new-1", "Behavioural-Data-Free", "Naturalistic", 20)
-    display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=True, figure_save_location="Captures-dqn_new-1")
+    capture_sequences = get_capture_sequences(f"dqn_beta-1", "Behavioural-Data-Free", "Naturalistic", 20)
+    display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=True, figure_name="Captures-dqn_beta-1")
 
     #                            SAND GRAIN INTERACTION SEQUENCES
     # seq = get_sand_grain_engagement_sequences_multiple_trials("dqn_scaffold_33-1", "Behavioural-Data-Free", "Naturalistic",

@@ -5,6 +5,7 @@ from Analysis.Behavioural.TurnChains.turning_analysis_discrete import model_of_a
 from Analysis.Behavioural.TurnChains.turning_analysis_continuous import convert_continuous_angles_to_turn_directions
 
 from Analysis.load_data import load_data
+import math
 
 
 def get_normalised_turn_chain_metric_discrete(actions):
@@ -27,7 +28,10 @@ def get_normalised_turn_chain_metric_discrete(actions):
 
     turn_chain_score = (mean_real - mean_random)/mean_random
 
-    return turn_chain_score
+    if math.isnan(turn_chain_score):
+        return 0
+    else:
+        return turn_chain_score
 
 
 def get_normalised_turn_chain_metric_continuous(angles, threshold_for_angle=0.05):

@@ -34,11 +34,11 @@ elif run_config == "4l":
 elif run_config == "dense":
     produce_meis("dqn_scaffold_26-2", "rnn_in", full_reafference=True, iterations=100, conv=False)
 elif run_config == "draw_ep":
-    model_name = "dqn_new-2"
-    data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-11")
-    assay_config_name = "dqn_new_2"
+    model_name = "dqn_beta-1"
+    data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-14")
+    assay_config_name = "dqn_beta_1"
     draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
-                 trim_to_fish=True, showed_region_quad=750, save_id="dqn_new_diverging_rnn", include_background=True)
+                 trim_to_fish=True, showed_region_quad=750, save_id="dqn_beta", include_background=True)
 
     # model_name = "dqn_scaffold_33-1"
     # data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")

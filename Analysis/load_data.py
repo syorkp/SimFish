@@ -27,4 +27,9 @@ def load_data(model_name, assay_configuration, assay_id):
 
 
 if __name__ == "__main__":
-    d = load_data("dqn_new-1", "TEST", "Naturalistic-1")
+    datas = []
+    for i in range(1, 21):
+        d = load_data("dqn_beta-1", "Behavioural-Data-Free", f"Naturalistic-{i}")
+        print(f"{i}-{np.sum(d['consumed'] * 1)}")
+        datas.append(d)
+    x = True

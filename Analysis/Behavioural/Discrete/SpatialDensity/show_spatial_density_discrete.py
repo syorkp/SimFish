@@ -287,7 +287,7 @@ def get_all_density_plots_all_subsets(p1, p2, p3, n, return_objects, steps_prior
         save_location += "Predictive-"
 
     axes_objects = []
-    for action_num in range(0, 10):
+    for action_num in range(0, 12):
         prey_cloud = []
         pred_cloud = []
         for i in range(1, n + 1):
@@ -300,9 +300,6 @@ def get_all_density_plots_all_subsets(p1, p2, p3, n, return_objects, steps_prior
             prey_cloud = prey_cloud + prey_1
             pred_cloud = pred_cloud + pred_1
 
-        if action_num == 4:
-            x = True
-
         if len(prey_cloud) > 2:
             ax = create_density_cloud(prey_cloud, action_num, "Prey", return_objects, save_location=save_location, assay_config=p2,
                                       steps_prior=steps_prior)
@@ -314,6 +311,8 @@ def get_all_density_plots_all_subsets(p1, p2, p3, n, return_objects, steps_prior
             axes_objects.append(ax)
 
     ax = create_j_turn_overlap_plot(p1, p2, p3, n, return_objects, save_location=save_location)
+    axes_objects.append(ax)
+    ax = create_j_turn_2_overlap_plot(p1, p2, p3, n, return_objects, save_location=save_location)
     axes_objects.append(ax)
     ax = create_routine_turn_overlap_plot(p1, p2, p3, n, return_objects, save_location=save_location)
     axes_objects.append(ax)
@@ -402,6 +401,32 @@ def create_j_turn_overlap_plot(p1, p2, p3, n, return_objects, save_location):
 
     create_overlap_plot(prey_cloud_left, prey_cloud_right, "Prey", "J-turn", p1, assay_config=p2, save_location=save_location)
     create_overlap_plot(pred_cloud_left, pred_cloud_right, "Predators", "J-turn", p1, assay_config=p2, save_location=save_location)
+
+    if return_objects:
+        plt.clf()
+        return None
+    else:
+        return
+
+
+def create_j_turn_2_overlap_plot(p1, p2, p3, n, return_objects, save_location):
+    prey_cloud_left = []
+    pred_cloud_left = []
+    for i in range(1, n + 1):
+        data = load_data(p1, p2, f"{p3}-{i}")
+        prey_1, pred_1 = get_clouds_with_action(data, 10)
+        prey_cloud_left = prey_cloud_left + prey_1
+        pred_cloud_left = pred_cloud_left + pred_1
+    prey_cloud_right = []
+    pred_cloud_right = []
+    for i in range(1, n + 1):
+        data = load_data(p1, p2, f"{p3}-{i}")
+        prey_1, pred_1 = get_clouds_with_action(data, 11)
+        prey_cloud_right = prey_cloud_right + prey_1
+        pred_cloud_right = pred_cloud_right + pred_1
+
+    create_overlap_plot(prey_cloud_left, prey_cloud_right, "Prey", "J-turn 2", p1, assay_config=p2, save_location=save_location)
+    create_overlap_plot(pred_cloud_left, pred_cloud_right, "Predators", "J-turn 2", p1, assay_config=p2, save_location=save_location)
 
     if return_objects:
         plt.clf()
@@ -844,9 +869,11 @@ if __name__ == "__main__":
     #                                        "Naturalistic", 40)
 
     # Getting for individual models
-    create_cstart_overlap_plot(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 40, return_objects=False)
+    # create_cstart_overlap_plot(f"dqn_new-1", "Behavioural-Data-Naturalistic", "Naturalistic", 20, return_objects=False)
 
-
+    get_all_density_plots_all_subsets(f"dqn_beta-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+    get_all_density_plots_all_subsets(f"dqn_beta-2", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+    get_all_density_plots_all_subsets(f"dqn_beta-3", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
 
     # get_all_density_plots_all_subsets(f"dqn_scaffold_26-1", "Behavioural-Data-Free-B", "Naturalistic", 20, return_objects=False)
     # get_all_density_plots_all_subsets(f"dqn_scaffold_26-1", "Behavioural-Data-Free-C", "Naturalistic", 20, return_objects=False)

@@ -184,14 +184,15 @@ class DQNTrainingService(TrainingService, BaseDQN):
         all_actions_frequency = np.array(all_actions_frequency)
 
         # Normalise given current epsilon value (subtract expected random actions from each group, then clip to zero)
-        expected_random_actions = (self.epsilon * self.simulation.num_steps)/self.learning_params['num_actions']
-        all_actions_frequency = all_actions_frequency.astype(float)
-        all_actions_frequency -= expected_random_actions
-        all_actions_frequency = np.clip(all_actions_frequency, 0, self.total_steps)
-        max_freq_diffs = [np.max(np.absolute([f - f2 for f2 in all_actions_frequency])) for f in all_actions_frequency]
-        heterogeneity_score = self.learning_params["num_actions"]/np.sum(max_freq_diffs) - 1/np.sum(all_actions_frequency)
-        a_freq = tf.Summary(value=[tf.Summary.Value(tag="Action Heterogeneity Score", simple_value=heterogeneity_score)])
-        self.writer.add_summary(a_freq, self.episode_number)
+        if self.total_steps > self.pre_train_steps:
+            expected_random_actions = (self.epsilon * self.simulation.num_steps)/self.learning_params['num_actions']
+            all_actions_frequency = all_actions_frequency.astype(float)
+            all_actions_frequency -= expected_random_actions
+            all_actions_frequency = np.clip(all_actions_frequency, 0, self.total_steps)
+            max_freq_diffs = [np.max(np.absolute([f - f2 for f2 in all_actions_frequency])) for f in all_actions_frequency]
+            heterogeneity_score = self.learning_params["num_actions"]/np.sum(max_freq_diffs) - 1/np.sum(all_actions_frequency)
+            a_freq = tf.Summary(value=[tf.Summary.Value(tag="Action Heterogeneity Score", simple_value=heterogeneity_score)])
+            self.writer.add_summary(a_freq, self.episode_number)
 
         # Turn chain metric
         turn_chain_summary = tf.Summary(value=[tf.Summary.Value(tag="turn chain preference",

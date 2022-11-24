@@ -19,7 +19,8 @@ def display_sequences(sequences):
 
 
 def display_all_sequences(sequences, min_length=None, max_length=None, indicate_consumption=False, save_figure=False,
-                          figure_save_location=None, alternate_action_names=None, indicate_event_point=False):
+                          figure_name=None, alternate_action_names=None, indicate_event_point=False):
+    figure_save_location = f"Plots/{figure_name}"
     if len(sequences) == 0:
         return
     sns.set()
