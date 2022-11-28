@@ -4,7 +4,7 @@ import numpy as np
 from Analysis.Training.load_from_logfiles import load_all_log_data, order_metric_data
 
 
-def interpolate_metric_data(data, scaffold_points):
+def interpolate_metric_data(data, scaffold_points, window=None, scaled_window=False):
     scaffold_points = np.array(scaffold_points)
     scaffold_points = scaffold_points[scaffold_points[:, 1].argsort()]
     previous_switch_ep = 0
@@ -52,6 +52,7 @@ def get_metric_name(metric_label):
         # metric_name = "Prey Capture Rate (fraction caught per step)"
         metric_name = "PCR"
 
+
     elif metric_label == "prey capture index (fraction caught)":
         # metric_name = "Prey Capture Index (fraction caught)"
         metric_name = "PCI"
@@ -73,7 +74,7 @@ def get_metric_name(metric_label):
     elif metric_label == "episode reward":
         metric_name = "Episode Reward"
 
-    elif metric_label == "predator avoidance index (avoided":
+    elif metric_label == "predator avoidance index (avoided/p_pred)":
         # metric_name = "Predator Avoidance Index"
         metric_name = "PAI"
 
@@ -113,7 +114,7 @@ def remove_repeated_switching_points(scaffold_switching_points):
 
 
 def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpolate_scaffold_points, figure_name,
-                                          key_scaffold_points=None):
+                                          key_scaffold_points=None, scaled_window=False):
     """Different to previous versions in that it uses data directly from log files, and scales points between scaffold
     switching points to allow plotting between models. The resulting graph is x: config change point, y: metric.
 
@@ -121,12 +122,39 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
     """
 
     model_data = [load_all_log_data(model) for model in model_list]
+    # Parsimonious way:
     ordered_chosen_model_data = [{metric: order_metric_data(model[metric]) for metric in metrics} for model in
                                  model_data]
+    # With error handling:
+    # ordered_chosen_model_data = []
+    # for model in model_data:
+    #     metric_data = {}
+    #     for metric in metrics:
+    #         try:
+    #             metric_data[metric] = order_metric_data(model[metric])
+    #         except KeyError:
+    #             print(f"{metric} data unavailable")
+    #     ordered_chosen_model_data.append(metric_data)
 
-    ordered_chosen_model_data_rolling_averages = [
-        {metric: compute_rolling_averages_over_data(model[metric], window) for metric
-         in metrics} for model in ordered_chosen_model_data]
+    # Parsimonious way:
+    if scaled_window:
+        ordered_chosen_model_data_rolling_averages = [
+            {metric: model[metric] for metric in metrics} for model in ordered_chosen_model_data]
+    else:
+        ordered_chosen_model_data_rolling_averages = [
+            {metric: compute_rolling_averages_over_data(model[metric], window) for metric
+             in metrics} for model in ordered_chosen_model_data]
+    # With error handling:
+    # ordered_chosen_model_data_rolling_averages = []
+    # for model in ordered_chosen_model_data:
+    #     metric_data = {}
+    #     for metric in metrics:
+    #         try:
+    #             metric_data[metric] = compute_rolling_averages_over_data(model[metric], window)
+    #         except KeyError:
+    #             print(f"{metric} data unavailable")
+    #         ordered_chosen_model_data_rolling_averages.append(metric_data)
+
     # episodes = np.array(ordered_chosen_model_data_rolling_averages[0]["prey caught"])[:, 0]
     # plt.plot(sorted(episodes))
     # plt.show()
@@ -139,12 +167,14 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
         scaffold_switching_points = [np.array(model)[new_orders[i]] for i, model in
                                      enumerate(scaffold_switching_points)]
         ordered_chosen_model_data_rolling_averages = [{metric: interpolate_metric_data(model[metric],
-                                                                                       scaffold_switching_points[i])
+                                                                                       scaffold_switching_points[i],
+                                                                                       window=window,
+                                                                                       scaled_window=scaled_window)
                                                        for metric in metrics} for i, model in
                                                       enumerate(ordered_chosen_model_data_rolling_averages)]
 
     num_metrics = len(metrics)
-    fig, axs = plt.subplots(num_metrics, 1, figsize=(15, int(4 * num_metrics)), sharex=True)
+    fig, axs = plt.subplots(num_metrics, 1, figsize=(30, int(12 * num_metrics)), sharex=True)
     for model in ordered_chosen_model_data_rolling_averages:
         for i, metric in enumerate(metrics):
             metric_name = get_metric_name(metric)
@@ -202,6 +232,7 @@ if __name__ == "__main__":
                   "dqn_scaffold_beta_test-4", "dqn_scaffold_beta_test-5", "dqn_scaffold_beta_test_2-1", "dqn_scaffold_beta_test_2-2"]
     ppo_models = ["ppo_scaffold_21-1", "ppo_scaffold_21-2"]
     dqn_models = ["dqn_beta-1", "dqn_beta-2", "dqn_beta-3", "dqn_beta-4", "dqn_beta-5"]
+    dqn_models_mod = ["dqn_beta_mod-1", "dqn_beta_mod-2", "dqn_beta_mod-3", "dqn_beta_mod-4", "dqn_beta_mod-5"]
     """Possible metrics:
        - "prey capture index (fraction caught)"
        - "prey capture rate (fraction caught per step)"
@@ -234,6 +265,21 @@ if __name__ == "__main__":
                           # "predator avoidance index (avoided/p_pred)",
                           "Phototaxis Index"
                           ]
+    chosen_metrics_dqn_mod = ["prey capture index (fraction caught)",
+                          "capture success rate",
+                          "episode reward",
+                          "Energy Efficiency Index",
+                          "Episode Duration",
+                          "Exploration Quotient",
+                          "Action Heterogeneity Score",
+
+                          "turn chain preference",
+                          # "Cause of Death",
+                          # Sand grain attempted captures.
+
+                          "predator avoidance index (avoided/p_pred)",
+                          "Phototaxis Index"
+                          ]
     chosen_metrics_ppo = ["prey capture index (fraction caught)",
                           "capture success rate",
                           # "episode reward",
@@ -247,7 +293,9 @@ if __name__ == "__main__":
                           # "predator avoidance index (avoided/p_pred)",
                           # "Phototaxis Index"
                           ]
-    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=40, interpolate_scaffold_points=True, figure_name="dqn_beta")#, key_scaffold_points=[10, 16, 31])
+    # plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=40, interpolate_scaffold_points=True, figure_name="dqn_beta_mod")#, key_scaffold_points=[10, 16, 31])
+    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=1, interpolate_scaffold_points=True,
+                                          figure_name="dqn_beta", scaled_window=False)#, key_scaffold_points=[10, 16, 31])
     # plot_multiple_metrics_multiple_models(ppo_models, chosen_metrics_ppo, window=40, interpolate_scaffold_points=True,
     #                                       figure_name="ppo_21")
     # plot_scaffold_durations(dqn_models[0])
