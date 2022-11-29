@@ -89,6 +89,11 @@ class TrainingService(BaseService):
         # For regular saving
         self.save_environmental_data = False
 
+        if "min_scaffold_interval" in self.learning_params:
+            self.min_scaffold_interval = self.learning_params["min_scaffold_interval"]
+        else:
+            self.min_scaffold_interval = 20
+
     def _run(self):
         if self.switch_network_configuration:
             variables_to_keep = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
@@ -143,7 +148,7 @@ class TrainingService(BaseService):
                 self.check_update_configuration()
             elif self.configuration_index == self.total_configurations:
                 print("Reached final config...")
-                if len(self.last_episodes_prey_caught) >= 20:
+                if len(self.last_episodes_prey_caught) >= self.min_scaffold_interval:
                     # if np.mean(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"] \
                     #         > self.finished_conditions["PAI"] \
                     #         and np.mean(self.last_episodes_prey_caught)/self.environment_params["prey_num"] \
@@ -199,7 +204,7 @@ class TrainingService(BaseService):
         # Switch config by episode
         if next_point in episode_transition_points and self.episode_number > self.episode_transitions[next_point]:
             switch_criteria_met = True
-        elif len(self.last_episodes_prey_caught) >= 20:  # Switch config by behavioural conditionals
+        elif len(self.last_episodes_prey_caught) >= self.min_scaffold_interval:  # Switch config by behavioural conditionals
 
             prey_conditional_transition_points = self.pci_transitions.keys()
             predators_conditional_transition_points = self.pai_transitions.keys()
@@ -235,6 +240,8 @@ class TrainingService(BaseService):
             self.learning_params, self.environment_params = self.load_configuration_files()
             self.previous_config_switch = self.episode_number
             self.create_environment()
+
+            self.last_episodes_prey_caught = []
 
 
             new_base_network_layers = copy.copy(

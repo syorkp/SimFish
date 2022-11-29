@@ -75,6 +75,9 @@ params = {
 
        # Specify how often to save network parameters
        'network_saving_frequency': 20,
+
+       # Specify how many episodes required before another scaffold switch can occur.
+       'min_scaffold_interval': 50,
 }
 
 
