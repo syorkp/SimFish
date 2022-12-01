@@ -75,27 +75,28 @@ class BaseDQN:
     def init_states(self):
         # Init states for RNN
         print("Loading states")
-        if self.learning_params["maintain_state"]:
-            self.episode_number = self.episode_number - (self.episode_number % self.learning_params["network_saving_frequency"])
-            # IF SAVE PRESENT
-            if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
-                if self.environment_params["use_dynamic_network"]:
-                    with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
-                        print("Successfully loaded previous state.")
-                        data = json.load(f)
-                        num_rnns = len(data.keys())/4
-                        self.init_rnn_state = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
-                        self.init_rnn_state_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
+        if "maintain_state" in self.learning_params:
+            if self.learning_params["maintain_state"]:
+                self.episode_number = self.episode_number - (self.episode_number % self.learning_params["network_saving_frequency"])
+                # IF SAVE PRESENT
+                if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
+                    if self.environment_params["use_dynamic_network"]:
+                        with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
+                            print("Successfully loaded previous state.")
+                            data = json.load(f)
+                            num_rnns = len(data.keys())/4
+                            self.init_rnn_state = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
+                            self.init_rnn_state_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
 
-                    return
-                else:
-                    with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
-                        print("Successfully loaded previous state.")
-                        data = json.load(f)
-                        self.init_rnn_state = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
-                        self.init_rnn_state_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
+                        return
+                    else:
+                        with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
+                            print("Successfully loaded previous state.")
+                            data = json.load(f)
+                            self.init_rnn_state = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
+                            self.init_rnn_state_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
 
-                    return
+                        return
 
         if self.environment_params["use_dynamic_network"]:
             rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
