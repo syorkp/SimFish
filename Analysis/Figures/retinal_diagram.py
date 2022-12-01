@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.eye import Eye
 
 # from Analysis.Video.behaviour_video_construction import DrawingBoard
@@ -10,7 +10,7 @@ from Analysis.load_data import load_data
 
 
 
-learning_params, env_variables, n, b, c = load_configuration_files(model_name="dqn_scaffold_18-1")
+learning_params, env_variables, n, b, c = load_assay_configuration_files(model_name="dqn_scaffold_18-1")
 
 fish_body_colour = (0, 1, 0)
 board = NewDrawingBoard(env_variables["width"], env_variables["height"], env_variables["decay_rate"],

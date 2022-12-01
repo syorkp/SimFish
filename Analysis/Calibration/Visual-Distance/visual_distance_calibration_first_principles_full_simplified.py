@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import poisson
 
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 
 
 get_max_bkg_scatter = importlib.import_module("Analysis.Calibration.Visual-Distance.full_model_bkg_count").get_max_bkg_scatter
@@ -41,7 +41,7 @@ def plot_distinguishability_against_distance(max_distance, bkg_scatter, luminanc
     uv_prey_photons = []
     uv_scatter_photons = []
 
-    learning_params, env_variables, n, b, c = load_configuration_files("dqn_scaffold_11-1")
+    learning_params, env_variables, n, b, c = load_assay_configuration_files("dqn_scaffold_11-1")
     env_variables["light_gain"] = luminance
     env_variables["shot_noise"] = False
     env_variables["dark_light_ratio"] = 0.0
@@ -91,7 +91,7 @@ def plot_distinguishability_against_luminance(visual_distance, max_distance, bkg
 
     uv_stimulus_photons = []
     distinguishability_scores = []
-    learning_params, env_variables, n, b, c = load_configuration_files("dqn_scaffold_11-1")
+    learning_params, env_variables, n, b, c = load_assay_configuration_files("dqn_scaffold_11-1")
     env_variables["light_gain"] = luminance
     env_variables["shot_noise"] = False
     env_variables["dark_light_ratio"] = 0.0
@@ -128,7 +128,7 @@ def plot_distinguishability_against_luminance_two_distances(visual_distance_full
                                                             max_luminance, rf_size, decay_constant):
     luminance_vals = np.linspace(min_luminance, max_luminance, 1000)
 
-    learning_params, env_variables, n, b, c = load_configuration_files("dqn_scaffold_19-1")
+    learning_params, env_variables, n, b, c = load_assay_configuration_files("dqn_scaffold_19-1")
     env_variables["light_gain"] = luminance
     env_variables["shot_noise"] = False
     env_variables["dark_light_ratio"] = 0.0
@@ -195,7 +195,7 @@ def plot_distinguishability_against_luminance_two_distances(visual_distance_full
         np.save(f, np.array(uv_stimulus_photons_partial))
 
 
-learning_params, env_variables, n, b, c = load_configuration_files("dqn_scaffold_19-1")
+learning_params, env_variables, n, b, c = load_assay_configuration_files("dqn_scaffold_19-1")
 
 
 

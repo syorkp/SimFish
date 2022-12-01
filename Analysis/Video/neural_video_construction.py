@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from skimage.transform import resize, rescale
 
 from Analysis.load_data import load_data
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 from Tools.make_gif import make_gif
 from Configurations.Networks.original_network import base_network_layers, ops, connectivity
 from Tools.make_video import make_video
@@ -181,7 +181,7 @@ if __name__ == "__main__":
     # model_name = "parameterised_speed_test_fast-1"
     # model_name = "scaffold_version_4-4"
     model_name = "dqn_scaffold_26-2"
-    learning_params, environment_params, base_network_layers, ops, connectivity = load_configuration_files(model_name)
+    learning_params, environment_params, base_network_layers, ops, connectivity = load_assay_configuration_files(model_name)
 
     data = load_data(model_name, "Behavioural-Data-Videos-CONV", "Naturalistic-2")
     base_network_layers["rnn_state_actor"] = base_network_layers["rnn"]

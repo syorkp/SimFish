@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.eye import Eye
 
 # from Analysis.Video.behaviour_video_construction import DrawingBoard
@@ -13,7 +13,7 @@ from Analysis.Behavioural.Tools.anchored_scale_bar import AnchoredHScaleBar
 
 def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_draw, reduction=2.5):
     data = load_data(model_name, assay_config, assay_id)
-    learning_params, env_variables, n, b, c = load_configuration_files(model_name="dqn_scaffold_18-1")
+    learning_params, env_variables, n, b, c = load_assay_configuration_files(model_name="dqn_scaffold_18-1")
     env_variables["width"] = int(env_variables["width"]/reduction)
     env_variables["height"] = int(env_variables["height"]/reduction)
     env_variables["red_photoreceptor_num"] = int(env_variables["red_photoreceptor_num"]/reduction)

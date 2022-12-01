@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.fish import Fish
 from Environment.Fish.continuous_fish import ContinuousFish
 from Tools.drawing_board_new import NewDrawingBoard
@@ -40,7 +40,7 @@ def run_simulation(fish, actions, captures, duration=1000):
     print(np.sum(rewards))
 
 
-learning_params, env_variables, n, b, c = load_configuration_files("ppo_scaffold_15-1")
+learning_params, env_variables, n, b, c = load_assay_configuration_files("ppo_scaffold_15-1")
 env_variables["baseline_decrease"] = 0.0015
 env_variables["ci"] = 0.0000008
 env_variables["ca"] = 0.0000008

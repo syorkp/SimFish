@@ -6,7 +6,7 @@ For finding ballpark values... Gets the max scatter signal alongside max prey si
 import importlib
 import numpy as np
 import matplotlib.pyplot as plt
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 get_max_bkg_scatter = importlib.import_module("Analysis.Calibration.Visual-Distance.full_model_bkg_count").get_max_bkg_scatter
 
 
@@ -38,7 +38,7 @@ luminance = 200
 distance = 600
 bkg_scatter = 0.1
 rf_size = 0.0133 * 3
-learning_params, env_variables, n, b, c = load_configuration_files("dqn_scaffold_10-1")
+learning_params, env_variables, n, b, c = load_assay_configuration_files("dqn_scaffold_10-1")
 
 max_uv_scatter = get_max_bkg_scatter(bkg_scatter, decay, rf_size, 1500, 1500, luminance, env_variables)
 

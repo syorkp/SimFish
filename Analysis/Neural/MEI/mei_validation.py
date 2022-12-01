@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from Analysis.Model.build_network import build_network_dqn
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 from Analysis.Stimuli.observation_stimuli import get_prey_stimuli_across_visual_field
 from Analysis.Model.build_network import build_network_dqn
 from Analysis.load_data import load_data
@@ -38,7 +38,7 @@ def get_maximal_activation(model_name, assay_config, assay_id, n, target_layer):
 
 def get_activity_cnn(model_name, input_observation, target_layer):
     model_location = f"../../../Training-Output/{model_name}"
-    params, environment_params, _, _, _ = load_configuration_files(model_name)
+    params, environment_params, _, _, _ = load_assay_configuration_files(model_name)
     simulation = DiscreteNaturalisticEnvironment(environment_params, True, True, False)
     sess = tf.Session()
     conv_compiled = []

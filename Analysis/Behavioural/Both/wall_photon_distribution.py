@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.eye import Eye
 from Tools.drawing_board_new import NewDrawingBoard
 
@@ -65,7 +65,7 @@ def build_board_and_eye(env_variables):
     return eye, board
 
 
-learning_params, env_variables, n, b, c = load_configuration_files("dqn_scaffold_15-1")
+learning_params, env_variables, n, b, c = load_assay_configuration_files("dqn_scaffold_15-1")
 env_variables["bkg_scatter"] = 0
 eye, board = build_board_and_eye(env_variables)
 generate_wall_inputs_full_field(eye, board, 1500, 1500, env_variables)

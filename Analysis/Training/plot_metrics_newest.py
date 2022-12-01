@@ -2,9 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from Analysis.Training.load_from_logfiles import load_all_log_data, order_metric_data
+from Analysis.Training.tools import find_nearest
 
 
-def interpolate_metric_data(data, scaffold_points, window=None, scaled_window=False):
+def interpolate_metric_data(data, scaffold_points):
     scaffold_points = np.array(scaffold_points)
     scaffold_points = scaffold_points[scaffold_points[:, 1].argsort()]
     previous_switch_ep = 0
@@ -28,6 +29,45 @@ def interpolate_metric_data(data, scaffold_points, window=None, scaled_window=Fa
     data[data_before_switch, 0] += s[1]
 
     return data
+
+
+def compute_rolling_averages_over_data_scaled_window(data, max_window, scaffold_points, min_window=10):
+    # Compute episode length of each scaffold point...
+    scaffold_points = np.array(scaffold_points)
+
+    # Add final window for data since last scaffold point change
+    scaffold_points = np.concatenate((scaffold_points, np.array([[max(data[:, 0]), max(scaffold_points[:, 1]+1)]])))
+
+    scaffold_durations = scaffold_points[1:, 0] - scaffold_points[:-1, 0]
+    scaffold_durations = np.concatenate((scaffold_points[0:1, 0], scaffold_durations))
+    max_scaffold_duration = max(scaffold_durations)
+    window_scaling = max_scaffold_duration / max_window
+    window_sizes = scaffold_durations / window_scaling
+    window_sizes = np.ceil(window_sizes).astype(int)
+    window_sizes = np.clip(window_sizes, min_window, max_window)
+
+    window_start = 0
+    rolling_average_full = []
+    for w, window in enumerate(window_sizes):
+        window_end = int(scaffold_points[w, 0])
+        window_end_index = find_nearest(data[:, 0], window_end)
+
+        if w == len(window_sizes) - 1:
+            data_points = data.shape[0]
+            data_points_cut = data_points - window
+        else:
+            data_points_cut = len(data[:, 1])
+
+        rolling_average = np.array([[np.mean(data[i: i + window, 1])] for i in range(window_start, window_end_index) if i < data_points_cut])
+        rolling_average_full.append(rolling_average)
+        window_start = window_end_index
+
+    rolling_average = np.concatenate((rolling_average_full), axis=0)
+
+    steps_cut = data[:data_points_cut, 0:1]
+
+    rolling_average = np.concatenate((steps_cut, rolling_average), axis=1)
+    return rolling_average
 
 
 def compute_rolling_averages_over_data(data, window):
@@ -104,8 +144,8 @@ def remove_repeated_switching_points(scaffold_switching_points):
         to_delete = []
         for i, c in enumerate(config_nums):
             if i > 0:
-                if c == model_switching_points[i-1][1]:
-                    to_delete.append(i-1)
+                if c == model_switching_points[i - 1][1]:
+                    to_delete.append(i - 1)
                     print("Removing repeated")
         for d in reversed(to_delete):
             del model_switching_points[d]
@@ -114,7 +154,7 @@ def remove_repeated_switching_points(scaffold_switching_points):
 
 
 def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpolate_scaffold_points, figure_name,
-                                          key_scaffold_points=None, scaled_window=False):
+                                          key_scaffold_points=None, scaled_window=False, show_inset=None):
     """Different to previous versions in that it uses data directly from log files, and scales points between scaffold
     switching points to allow plotting between models. The resulting graph is x: config change point, y: metric.
 
@@ -136,10 +176,13 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
     #             print(f"{metric} data unavailable")
     #     ordered_chosen_model_data.append(metric_data)
 
+    #                Rolling Averages
     # Parsimonious way:
     if scaled_window:
         ordered_chosen_model_data_rolling_averages = [
-            {metric: model[metric] for metric in metrics} for model in ordered_chosen_model_data]
+            {metric: compute_rolling_averages_over_data_scaled_window(model[metric], window,
+                                                        model_data[m]["Configuration change"]) for metric in metrics}
+            for m, model in enumerate(ordered_chosen_model_data)]
     else:
         ordered_chosen_model_data_rolling_averages = [
             {metric: compute_rolling_averages_over_data(model[metric], window) for metric
@@ -166,14 +209,25 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
         new_orders = [np.argsort(np.array(model)[:, 1]) for model in scaffold_switching_points]
         scaffold_switching_points = [np.array(model)[new_orders[i]] for i, model in
                                      enumerate(scaffold_switching_points)]
+        # if scaled_window:
+        #     ordered_chosen_model_data_rolling_averages = [{metric: interpolate_metric_data_scaled_window(model[metric],
+        #                                                                                                  scaffold_switching_points[
+        #                                                                                                      i], window)
+        #                                                    for metric in metrics} for i, model in
+        #                                                   enumerate(ordered_chosen_model_data_rolling_averages)]
+        # else:
         ordered_chosen_model_data_rolling_averages = [{metric: interpolate_metric_data(model[metric],
-                                                                                       scaffold_switching_points[i],
-                                                                                       window=window,
-                                                                                       scaled_window=scaled_window)
-                                                       for metric in metrics} for i, model in
-                                                      enumerate(ordered_chosen_model_data_rolling_averages)]
+                                                                                           scaffold_switching_points[i],
+                                                                                           )
+                                                           for metric in metrics} for i, model in
+                                                          enumerate(ordered_chosen_model_data_rolling_averages)]
 
     num_metrics = len(metrics)
+
+    inset_scaffold_points = []
+    inset_metric_vals = []
+    metric_index = None
+
     fig, axs = plt.subplots(num_metrics, 1, figsize=(30, int(12 * num_metrics)), sharex=True)
     for model in ordered_chosen_model_data_rolling_averages:
         for i, metric in enumerate(metrics):
@@ -199,6 +253,15 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
                     axs[i].vlines(p, ylim[0], ylim[1], color="r")
                 axs[i].set_ylim(ylim[0], ylim[1])
             axs[i].set_ylabel(metric_name)
+
+            if show_inset is not None:
+                if show_inset[0] == metric:
+                    scaffold_point = show_inset[1]
+                    data_to_keep = (model[metric][:, 0] >= scaffold_point) * (model[metric][:, 0] < scaffold_point + 1)
+                    inset_scaffold_points.append(model[metric][data_to_keep, 0])
+                    inset_metric_vals.append(model[metric][data_to_keep, 1])
+                    metric_index = i
+
             # plt.setp(axs[i].get_yticklabels(), rotation=30, horizontalalignment='right')
 
     axs[-1].set_xlabel("Scaffold Point")
@@ -206,30 +269,36 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
     axs[-1].set_xticks([int(t) for t in np.linspace(0, np.max(sc[:, 1]))])
     axs[-1].set_xlim(1, np.max(sc[:, 1]) + 1)
 
+    if show_inset is not None:
+        inset_ylim = axs[metric_index].get_ylim()
+
     plt.savefig(f"Plots/{figure_name}.jpg")
     plt.clf()
     plt.close()
 
+    if show_inset is not None:
+        create_zoomed_inset(inset_scaffold_points, inset_metric_vals, get_metric_name(show_inset[0]), inset_ylim)
 
-def plot_scaffold_durations(model_name):
-    data = load_all_log_data(model_name)
-    scaffold_switching_points = np.array(data["Configuration change"])
-    scaffold_switching_points = scaffold_switching_points[scaffold_switching_points[:, 1].argsort()]
 
-    config = scaffold_switching_points[:, 1]
-    episode = scaffold_switching_points[:, 0]
-    duration = [d - episode[i - 1] if i > 0 else d for i, d in enumerate(episode)]
-    plt.plot(config, duration)
+def create_zoomed_inset(scaffold_points, metric_vals, metric_name, inset_ylim):
+    for model in range(len(scaffold_points)):
+        plt.plot(scaffold_points[model], metric_vals[model])
+
+    ax = plt.gca()
+    ax.set_ylim(inset_ylim)
+    plt.ylabel(metric_name)
+    plt.xlabel("Scaffold Point")
     plt.show()
 
 
 if __name__ == "__main__":
     # models = ["ppo_scaffold_22-1", "ppo_scaffold_22-2"]
-    dqn_models_old = ["dqn_scaffold_26-1", "dqn_scaffold_26-2"]  # , "dqn_scaffold_26-3", "dqn_scaffold_26-4"]
+    dqn_models_old = ["dqn_scaffold_30-1", "dqn_scaffold_30-2"]  # , "dqn_scaffold_26-3", "dqn_scaffold_26-4"]
     # models = ["dqn_scaffold_27-1", "dqn_scaffold_27-2"]
     # dqn_models = ["dqn_scaffold_30-1", "dqn_scaffold_30-2"]
     dqn_models = ["dqn_scaffold_beta_test-1", "dqn_scaffold_beta_test-2", "dqn_scaffold_beta_test-3",
-                  "dqn_scaffold_beta_test-4", "dqn_scaffold_beta_test-5", "dqn_scaffold_beta_test_2-1", "dqn_scaffold_beta_test_2-2"]
+                  "dqn_scaffold_beta_test-4", "dqn_scaffold_beta_test-5", "dqn_scaffold_beta_test_2-1",
+                  "dqn_scaffold_beta_test_2-2"]
     ppo_models = ["ppo_scaffold_21-1", "ppo_scaffold_21-2"]
     dqn_models = ["dqn_beta-1", "dqn_beta-2", "dqn_beta-3", "dqn_beta-4", "dqn_beta-5"]
     dqn_models_mod = ["dqn_beta_mod-1", "dqn_beta_mod-2", "dqn_beta_mod-3", "dqn_beta_mod-4", "dqn_beta_mod-5"]
@@ -250,6 +319,11 @@ if __name__ == "__main__":
        - "Cause of Death"
        - Action Heterogeneity Score
     """
+    limited_metrics_dqn = ["prey capture index (fraction caught)",
+                          "capture success rate",
+                          "episode reward",
+                          "Phototaxis Index"
+                          ]
     chosen_metrics_dqn = ["prey capture index (fraction caught)",
                           "capture success rate",
                           "episode reward",
@@ -266,20 +340,20 @@ if __name__ == "__main__":
                           "Phototaxis Index"
                           ]
     chosen_metrics_dqn_mod = ["prey capture index (fraction caught)",
-                          "capture success rate",
-                          "episode reward",
-                          "Energy Efficiency Index",
-                          "Episode Duration",
-                          "Exploration Quotient",
-                          "Action Heterogeneity Score",
+                              "capture success rate",
+                              "episode reward",
+                              "Energy Efficiency Index",
+                              "Episode Duration",
+                              "Exploration Quotient",
+                              "Action Heterogeneity Score",
 
-                          "turn chain preference",
-                          # "Cause of Death",
-                          # Sand grain attempted captures.
+                              "turn chain preference",
+                              # "Cause of Death",
+                              # Sand grain attempted captures.
 
-                          "predator avoidance index (avoided/p_pred)",
-                          "Phototaxis Index"
-                          ]
+                              "predator avoidance index (avoided/p_pred)",
+                              "Phototaxis Index"
+                              ]
     chosen_metrics_ppo = ["prey capture index (fraction caught)",
                           "capture success rate",
                           # "episode reward",
@@ -294,8 +368,9 @@ if __name__ == "__main__":
                           # "Phototaxis Index"
                           ]
     # plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=40, interpolate_scaffold_points=True, figure_name="dqn_beta_mod")#, key_scaffold_points=[10, 16, 31])
-    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=1, interpolate_scaffold_points=True,
-                                          figure_name="dqn_beta", scaled_window=False)#, key_scaffold_points=[10, 16, 31])
+    plot_multiple_metrics_multiple_models(dqn_models_old, limited_metrics_dqn, window=40, interpolate_scaffold_points=True,
+                                          figure_name="dqn_old", scaled_window=False,
+                                          show_inset=["capture success rate",
+                                                      10])  # , key_scaffold_points=[10, 16, 31])
     # plot_multiple_metrics_multiple_models(ppo_models, chosen_metrics_ppo, window=40, interpolate_scaffold_points=True,
     #                                       figure_name="ppo_21")
-    # plot_scaffold_durations(dqn_models[0])

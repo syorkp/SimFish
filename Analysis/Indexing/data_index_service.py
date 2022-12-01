@@ -2,7 +2,7 @@ import os
 import numpy as np
 
 from Analysis.load_data import load_data
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 
 from Analysis.Behavioural.Tools.BehavLabels.extract_capture_sequences import extract_consumption_action_sequences
 from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import extract_no_prey_stimuli_sequences, extract_exploration_action_sequences_with_positions
@@ -23,7 +23,7 @@ class DataIndexServiceDiscrete:
         naturalistic_suffix = "Naturalistic-"  # Try loading for all within large range.
 
         self.model_name = model_name
-        self.learning_config, self.environmental_config, _, _, _ = load_configuration_files(self.model_name)
+        self.learning_config, self.environmental_config, _, _, _ = load_assay_configuration_files(self.model_name)
 
         # Auto-load from all file presets.
         self.naturalistic_trial_data = self.load_all_data(naturalistic_preset, naturalistic_suffix)

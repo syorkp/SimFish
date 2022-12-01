@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 
@@ -71,7 +71,7 @@ def get_x_y_for_theta(theta):
 
 def get_prey_stimuli_across_visual_field(prey_distance, intervals, model_name):
     """Returns intervals x observation for prey stimulus appearing across the visual field at a specified distance."""
-    _, env, _, _, _ = load_configuration_files(model_name)
+    _, env, _, _, _ = load_assay_configuration_files(model_name)
     env["prey_num"] = 1
     sim_state = DiscreteNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=False, new_simulation=True,
                                                 using_gpu=False)

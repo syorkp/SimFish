@@ -15,7 +15,7 @@ import tensorflow.compat.v1 as tf
 
 from Analysis.load_data import load_data
 from Analysis.Model.build_network import build_network_dqn
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 from Analysis.Neural.Gradients.get_average_inputs import get_mean_inputs_for_context, get_all_inputs_for_context
 
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
@@ -132,7 +132,7 @@ def save_all_gradients(model_name, target_layer, context_name, dy_dobs, dy_deff,
 def compute_gradient_for_input(model_name, observation, energy_state, salt_input, action, in_light, rnn_state,
                                context_name, dqn=True, full_reafference=True, target_layer="rnn", save_gradients=True):
     model_location = f"../../../Training-Output/{model_name}"
-    params, environment_params, _, _, _ = load_configuration_files(model_name)
+    params, environment_params, _, _, _ = load_assay_configuration_files(model_name)
 
     if full_reafference:
         i, a = get_modal_impulse_and_angle(action)
@@ -277,7 +277,7 @@ def compute_average_gradient_many_inputs(model_name, observation, energy_state, 
                                          save_gradients=True):
     n_gradients_to_compute = observation.shape[0]
     model_location = f"../../../Training-Output/{model_name}"
-    params, environment_params, _, _, _ = load_configuration_files(model_name)
+    params, environment_params, _, _, _ = load_assay_configuration_files(model_name)
 
     dy_dobs_compiled, dy_deff_compiled, dy_deff2_compiled, dy_dlight_compiled, dy_denergy_compiled, dy_dsalt_compiled, \
     dy_drnns_compiled = [], [], [], [], [], [], []

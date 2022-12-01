@@ -4,7 +4,7 @@ import json
 from scipy.stats import kde
 
 from Analysis.load_data import load_data
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 from Analysis.Behavioural.Tools.get_repeated_data_parameter import get_parameter_across_trials
 from Analysis.Behavioural.Tools.remove_near_wall_data import remove_near_wall_data_from_position_data
 
@@ -152,7 +152,7 @@ if __name__ == "__main__":
 
     for i in range(1, 2):
         # Display occupancy scatter plot and KDF.
-        learning_params, env_variables, n, b, c = load_configuration_files(f"dqn_scaffold_14-{i}")
+        learning_params, env_variables, n, b, c = load_assay_configuration_files(f"dqn_scaffold_14-{i}")
         fish_position_data = get_parameter_across_trials(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 20, "fish_position")
         # plot_light_dark_occupancy(fish_position_data, env_variables)
         plot_light_dark_occupancy_kdf(fish_position_data, env_variables)

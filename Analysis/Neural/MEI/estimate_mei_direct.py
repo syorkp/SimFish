@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import tensorflow.compat.v1 as tf
 
 
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 
 from Networks.DQN.q_network import QNetwork
 from Networks.DQN.q_network_dynamic import QNetworkDynamic
@@ -72,7 +72,7 @@ def produce_meis(model_name, layer_name, full_reafference, iterations=1000, conv
 
     with tf.Session() as sess:
         # Build simulation
-        params, environment_params, _, _, _ = load_configuration_files(model_name)
+        params, environment_params, _, _, _ = load_assay_configuration_files(model_name)
         simulation = DiscreteNaturalisticEnvironment(environment_params, True, True, False)
 
         # Creating graph
@@ -222,7 +222,7 @@ def produce_meis_extended(model_name, layer_name, full_reafference, iterations=1
 
     with tf.Session() as sess:
         # Build simulation
-        params, environment_params, _, _, _ = load_configuration_files(model_name)
+        params, environment_params, _, _, _ = load_assay_configuration_files(model_name)
         simulation = DiscreteNaturalisticEnvironment(environment_params, True, True, False)
 
         # Creating graph

@@ -4,13 +4,13 @@ A way to display the PR coverage around the fish.
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.eye import Eye
 from Tools.drawing_board_new import NewDrawingBoard
 
 
 def display_pr_coverage(model_name):
-    learning_params, env_variables, n, b, c = load_configuration_files(model_name)
+    learning_params, env_variables, n, b, c = load_assay_configuration_files(model_name)
     max_photoreceptor_rf_size = max([env_variables['uv_photoreceptor_rf_size'],
                                      env_variables['red_photoreceptor_rf_size']])
 

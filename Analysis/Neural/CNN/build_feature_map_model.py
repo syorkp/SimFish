@@ -5,7 +5,7 @@ import copy
 import tensorflow.compat.v1 as tf
 
 from Analysis.load_data import load_data
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 from Analysis.Stimuli.observation_stimuli import get_prey_stimuli_across_visual_field
 from Analysis.Model.build_network import build_network_dqn
 
@@ -15,7 +15,7 @@ from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEn
 
 def get_feature_maps(model_name, observations):
     model_location = f"../../../Training-Output/{model_name}"
-    params, environment_params, _, _, _ = load_configuration_files(model_name)
+    params, environment_params, _, _, _ = load_assay_configuration_files(model_name)
     simulation = DiscreteNaturalisticEnvironment(environment_params, True, True, False)
     sess = tf.Session()
     conv = []

@@ -21,7 +21,7 @@ params = {
        'batch_size': 16,  # How many experience traces to use for each training step.
        'trace_length': 64,  # How long each experience trace will be when training
        'num_episodes': 100000,  # How many episodes of game environment to train network with.
-       'max_epLength': 10000,  # The max allowed length of our episode.
+       'max_epLength': 5000,  # The max allowed length of our episode.
        'epsilon_greedy': True,
        'epsilon_greedy_scaffolding': True,
        'startE': 0.2,  # Starting chance of random action
@@ -77,7 +77,7 @@ params = {
        'network_saving_frequency': 20,
 
        # Specify how many episodes required before another scaffold switch can occur.
-       'min_scaffold_interval': 50,
+       'min_scaffold_interval': 100,
 }
 
 

@@ -2,7 +2,7 @@ import numpy as np
 
 
 from Analysis.load_data import load_data
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 
 from Analysis.Behavioural.Tools.BehavLabels.extract_capture_sequences import label_capture_sequences
 from Analysis.Behavioural.Tools.BehavLabels.extract_escape_sequences import label_escape_sequences
@@ -56,7 +56,7 @@ def label_behavioural_context(data, model_name):
     """
     # TODO: load environment data and use below.
 
-    learning_params, env_variables, _, _, _ = load_configuration_files(model_name)
+    learning_params, env_variables, _, _, _ = load_assay_configuration_files(model_name)
 
     capture_ts = label_capture_sequences(data, n=20) * 1
     predator_avoidance_ts = label_escape_sequences(data) * 1

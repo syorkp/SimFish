@@ -7,7 +7,7 @@ from Analysis.Neural.MEI.estimate_mei_direct import produce_meis, produce_meis_e
 from Analysis.Video.behaviour_video_construction import draw_episode
 from Analysis.Video.neural_video_construction import create_network_video, convert_ops_to_graph
 from Analysis.load_data import load_data
-from Analysis.load_model_config import load_configuration_files
+from Analysis.load_model_config import load_assay_configuration_files
 
 try:
     run_config = sys.argv[1]
