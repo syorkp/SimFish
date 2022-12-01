@@ -13,7 +13,8 @@ class Fish:
     Created to simplify the SimState class, while making it easier to have environments with multiple agents in future.
     """
 
-    def __init__(self, board, env_variables, dark_col, realistic_bouts, new_simulation, using_gpu, fish_mass=None):
+    def __init__(self, board, env_variables, dark_col, realistic_bouts, new_simulation, using_gpu,
+                 fish_mass=None):
         self.new_simulation = new_simulation
 
         # For the purpose of producing a calibration curve.

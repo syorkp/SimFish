@@ -11,8 +11,6 @@ class ContinuousFish(Fish):
         self.making_capture = True
         self.new_simulation = new_simulation
 
-
-
     def calculate_distance(self, impulse):
         # return (1.771548 * impulse + self.env_variables['fish_mass'] * 0.004644 + 0.081417) / 10
         return impulse/(10 * 0.34452532909386484)  # To mm

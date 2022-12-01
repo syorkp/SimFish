@@ -173,7 +173,7 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
     #         try:
     #             metric_data[metric] = order_metric_data(model[metric])
     #         except KeyError:
-    #             print(f"{metric} data unavailable")
+    #             print(f"{model} - {metric} data unavailable")
     #     ordered_chosen_model_data.append(metric_data)
 
     #                Rolling Averages
@@ -291,34 +291,34 @@ def create_zoomed_inset(scaffold_points, metric_vals, metric_name, inset_ylim):
     plt.show()
 
 
+"""
+Possible metrics:
+   - "prey capture index (fraction caught)"
+   - "prey capture rate (fraction caught per step)"
+   - "Energy Efficiency Index
+   - "Episode Duration"
+   - "Mean salt damage taken per step"
+   - "Phototaxis Index"
+   - "capture success rate"
+   - "episode reward"
+   - "predator avoidance index (avoided/p_pred)"
+   - "predators avoided"
+   - "prey caught"
+   - "Exploration Quotient"
+   - "turn chain preference"                      
+   - "Cause of Death"
+   - Action Heterogeneity Score
+"""
+
 if __name__ == "__main__":
-    # models = ["ppo_scaffold_22-1", "ppo_scaffold_22-2"]
-    dqn_models_old = ["dqn_scaffold_30-1", "dqn_scaffold_30-2"]  # , "dqn_scaffold_26-3", "dqn_scaffold_26-4"]
-    # models = ["dqn_scaffold_27-1", "dqn_scaffold_27-2"]
-    # dqn_models = ["dqn_scaffold_30-1", "dqn_scaffold_30-2"]
-    dqn_models = ["dqn_scaffold_beta_test-1", "dqn_scaffold_beta_test-2", "dqn_scaffold_beta_test-3",
-                  "dqn_scaffold_beta_test-4", "dqn_scaffold_beta_test-5", "dqn_scaffold_beta_test_2-1",
-                  "dqn_scaffold_beta_test_2-2"]
-    ppo_models = ["ppo_scaffold_21-1", "ppo_scaffold_21-2"]
+    dqn_models_old = ["dqn_scaffold_30-1", "dqn_scaffold_30-2"]
+    ppo_models_old = ["ppo_scaffold_21-1", "ppo_scaffold_21-2"]
+
     dqn_models = ["dqn_beta-1", "dqn_beta-2", "dqn_beta-3", "dqn_beta-4", "dqn_beta-5"]
     dqn_models_mod = ["dqn_beta_mod-1", "dqn_beta_mod-2", "dqn_beta_mod-3", "dqn_beta_mod-4", "dqn_beta_mod-5"]
-    """Possible metrics:
-       - "prey capture index (fraction caught)"
-       - "prey capture rate (fraction caught per step)"
-       - "Energy Efficiency Index
-       - "Episode Duration"
-       - "Mean salt damage taken per step"
-       - "Phototaxis Index"
-       - "capture success rate"
-       - "episode reward"
-       - "predator avoidance index (avoided/p_pred)"
-       - "predators avoided"
-       - "prey caught"
-       - "Exploration Quotient"
-       - "turn chain preference"                      
-       - "Cause of Death"
-       - Action Heterogeneity Score
-    """
+    ppo_models = ["ppo_beta-1", "ppo_beta-2", "ppo_beta-3", "ppo_beta-4", "ppo_beta-5"]
+    ppo_models_mod = ["ppo_beta_mod-1", "ppo_beta_mod-2", "ppo_beta_mod-3", "ppo_beta_mod-4", "ppo_beta_mod-5"]
+
     limited_metrics_dqn = ["prey capture index (fraction caught)",
                           "capture success rate",
                           "episode reward",
@@ -367,10 +367,26 @@ if __name__ == "__main__":
                           # "predator avoidance index (avoided/p_pred)",
                           # "Phototaxis Index"
                           ]
-    # plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=40, interpolate_scaffold_points=True, figure_name="dqn_beta_mod")#, key_scaffold_points=[10, 16, 31])
-    plot_multiple_metrics_multiple_models(dqn_models_old, limited_metrics_dqn, window=40, interpolate_scaffold_points=True,
-                                          figure_name="dqn_old", scaled_window=False,
+    chosen_metrics_ppo_mod = ["prey capture index (fraction caught)",
+                          "capture success rate",
+                          # "episode reward",
+                          # "Energy Efficiency Index",
+                          "Episode Duration",
+                          # "Exploration Quotient",
+                          # "turn chain preference",
+                          # "Cause of Death",
+                          # Sand grain attempted captures.
+                          # DQN only
+                          "predator avoidance index (avoided/p_pred)",
+                          # "Phototaxis Index"
+                          ]
+    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=40, interpolate_scaffold_points=True,
+                                          figure_name="dqn_beta", scaled_window=False,
                                           show_inset=["capture success rate",
                                                       10])  # , key_scaffold_points=[10, 16, 31])
-    # plot_multiple_metrics_multiple_models(ppo_models, chosen_metrics_ppo, window=40, interpolate_scaffold_points=True,
-    #                                       figure_name="ppo_21")
+    plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=40, interpolate_scaffold_points=True,
+                                          figure_name="dqn_beta_mod")#, key_scaffold_points=[10, 16, 31])
+    plot_multiple_metrics_multiple_models(ppo_models, chosen_metrics_ppo, window=40, interpolate_scaffold_points=True,
+                                          figure_name="ppo_beta")
+    plot_multiple_metrics_multiple_models(ppo_models_mod, chosen_metrics_ppo_mod, window=40, interpolate_scaffold_points=True,
+                                          figure_name="ppo_beta_mod")

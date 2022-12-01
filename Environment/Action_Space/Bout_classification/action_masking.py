@@ -84,7 +84,7 @@ def get_action_mask():
 
     accepted_actions = (kde_impulse.pdf(sorted_actions[:, 0]) * kde_angle.pdf(np.absolute(sorted_actions[:, 1]))) >= 0.0000389489489
     valid_actions = sorted_actions[accepted_actions]
-    return valid_actions
+    return kde_impulse, kde_angle, valid_actions
 
 
 if __name__ == "__main__":
