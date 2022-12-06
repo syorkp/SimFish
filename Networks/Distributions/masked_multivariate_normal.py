@@ -61,14 +61,17 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
         print("Action mask created")
 
     def get_sample_masked_weights(self, actions, shape):
-        actions = np.swapaxes(actions, 1, 2)
-        print(actions.shape)
+        if actions.shape[1] > 1:
+            print("DIFFF")
+            print(actions.shape)
+
+        actions = actions[:, 0, :]
         #probs = self.kde_impulse.pdf(actions[:, :, 0]) * self.kde_angle.pdf(np.absolute(actions[:, :, 1]))
         probs = self.kde(actions)
 
         # Dis-allow negative impulses
         # positive_impulses = ((actions[:, :, 0] >= 0) * 1)[:, 0]
-        positive_impulses = ((actions[:, 0, :] >= 0) * 1)[0, :]
+        positive_impulses = ((actions[:, 0] >= 0) * 1)[0]
         probs = probs * positive_impulses
         probs = np.nan_to_num(probs)
 
@@ -82,8 +85,8 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
         probs = probs/integral
 
         indices_chosen = np.random.choice(actions.shape[0], size=shape, p=probs, replace=False)
-        actions_chosen = actions[indices_chosen, :, :]
-        actions_chosen = np.swapaxes(actions_chosen, 0, 1)
+        actions_chosen = actions[indices_chosen, :]
+        actions_chosen = np.expand_dims(actions_chosen, 1)
         # return actions_chosen, probs, positive_impulses
         return actions_chosen
 
