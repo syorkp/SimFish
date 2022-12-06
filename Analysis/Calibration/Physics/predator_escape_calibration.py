@@ -47,7 +47,7 @@ def plot_escape_success(n_repeats=1, use_action_means=True,
                     impulse = None
                     angle = None
 
-            s, fish_pos, pred_pos = env.run(vector, fixed_action=use_action_means, continuous=continuous, set_impulse=impulse,
+            s, fish_pos, pred_pos = env.run_predator_escape(vector, fixed_action=use_action_means, continuous=continuous, set_impulse=impulse,
                         set_angle=angle, specified_action=specified_action)
             pred_final_positions.append(pred_pos)
 
@@ -123,22 +123,26 @@ def plot_escape_success(n_repeats=1, use_action_means=True,
 
 if __name__ == "__main__":
     #           PPO
-    plot_escape_success(n_repeats=10,
-                        use_action_means=False, continuous=True, set_impulse=0,
-                        set_angle=0,
-                        impulse_effect_noise=0.1, angular_effect_noise=0.6, predator_impulse=25)
+    # Simulating rest
+    # plot_escape_success(n_repeats=10,
+    #                     use_action_means=False, continuous=True, set_impulse=0,
+    #                     set_angle=0,
+    #                     impulse_effect_noise=0.1, angular_effect_noise=0.6, predator_impulse=25)
+    # Simulating SLC
     plot_escape_success(n_repeats=10,
                         use_action_means=False, continuous=True, set_impulse=7.03322223 * 3.4452532909386484,
                         set_angle=0.67517832,
                         impulse_effect_noise=0.1, angular_effect_noise=0.6, predator_impulse=25)
-    plot_escape_success(n_repeats=10,
-                        use_action_means=False, continuous=True, set_impulse=2.74619216 * 3.4452532909386484,
-                        set_angle=0.82713249,
-                        impulse_effect_noise=0.1, angular_effect_noise=0.6, predator_impulse=25)
-    plot_escape_success(n_repeats=10,
-                        use_action_means=False, continuous=True, set_impulse=2.49320953e+00 * 3.4452532909386484,
-                        set_angle=2.36217665e-19,
-                        impulse_effect_noise=0.1, angular_effect_noise=0.6, predator_impulse=25)
+    # Simulating RT
+    # plot_escape_success(n_repeats=10,
+    #                     use_action_means=False, continuous=True, set_impulse=2.74619216 * 3.4452532909386484,
+    #                     set_angle=0.82713249,
+    #                     impulse_effect_noise=0.1, angular_effect_noise=0.6, predator_impulse=25)
+    # Simulating Scs
+    # plot_escape_success(n_repeats=10,
+    #                     use_action_means=False, continuous=True, set_impulse=2.49320953e+00 * 3.4452532909386484,
+    #                     set_angle=2.36217665e-19,
+    #                     impulse_effect_noise=0.1, angular_effect_noise=0.6, predator_impulse=25)
 
     #           DQN
     # plot_escape_success(n_repeats=10,
@@ -153,8 +157,8 @@ if __name__ == "__main__":
     #                     use_action_means=False, continuous=False, set_impulse=0,
     #                     set_angle=0.0,
     #                     impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=25., specified_action=0)
-    # plot_escape_success(n_repeats=10,
-    #                     use_action_means=False, continuous=False, set_impulse=0,
-    #                     set_angle=0.0,
-    #                     impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=25., specified_action=7)
+    plot_escape_success(n_repeats=10,
+                        use_action_means=False, continuous=False, set_impulse=0,
+                        set_angle=0.0,
+                        impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=25., specified_action=7)
 

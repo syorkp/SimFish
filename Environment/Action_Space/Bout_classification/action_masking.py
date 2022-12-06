@@ -12,7 +12,9 @@ import h5py
 from sklearn.cluster import DBSCAN
 import statsmodels.api as sm
 import seaborn as sns
+import scipy.stats as st
 
+from Analysis.Training.tools import find_nearest
 # tf.disable_v2_behavior()
 
 # f = h5py.File('BoutMapCenters_kNN4_74Kins4dims_1.75Smooth_slow_3000_auto_4roc_merged11.mat', 'r')
@@ -45,6 +47,57 @@ Important indices (subtract 1?):
 """
 
 
+def produce_action_mask():
+    res = 50   # Need to ensure resolution isn't too high as to drag the final mask down.
+    kde, valid_bouts = get_action_mask()
+
+    # Display KDE evaluation grid
+    impulse_range = np.linspace(0, 50, res)
+    angle_range = np.linspace(0, 5, res)
+    X, Y = np.meshgrid(impulse_range, angle_range)
+    X_, Y_ = np.expand_dims(X, 2), np.expand_dims(Y, 2)
+    full_grid = np.concatenate((X_, Y_), axis=2).reshape((-1, 2))
+    full_grid = np.swapaxes(full_grid, 0, 1)
+
+    # Evaluate KDE Over Grid
+    values = kde(full_grid)
+    pdf = np.reshape(values, (res, res))
+    pdf /= np.max(pdf)
+    pdf = np.flip(pdf, 0)
+
+    # Find which points in the grid should be considered true by found threshold
+    nearest_i = np.array([find_nearest(impulse_range, v[0]) for v in valid_bouts])
+    nearest_a = np.array([find_nearest(angle_range, v[1]) for v in valid_bouts])
+
+    impulses = impulse_range[nearest_i]
+    angles = angle_range[nearest_a]
+
+    correct_bout_pairs = copy.copy(X)
+    correct_bout_pairs[:, :] = False
+    correct_bout_pairs[nearest_i, nearest_a] = True
+
+    correct_bout_pairs[correct_bout_pairs == 0] = -1
+    correct_bout_pairs = np.flip(correct_bout_pairs, 0)
+
+    # Iterate over thresholds, determining how many points have successfully matched.
+    for thres in np.linspace(0, 1, 10000):
+        above_thresold = (pdf > thres)
+        correctly_identified = (above_thresold * correct_bout_pairs) * 1
+        print(f"Threshold: {thres}, Correct: {np.sum(correctly_identified)}")
+
+    plt.imshow(pdf, extent=[0, 50, 0, 5])
+    plt.scatter(impulses, angles, alpha=0.01)
+    plt.savefig("PDF vals 2.png")
+    plt.clf()
+    plt.close()
+
+    plt.imshow(pdf, extent=[0, 50, 0, 5])
+    plt.savefig("PDF vals.png")
+    plt.show()
+    # plt.clf()
+    # plt.close()
+    x = True
+
 def get_action_mask():
     try:
         mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
@@ -54,7 +107,6 @@ def get_action_mask():
         except FileNotFoundError:
             mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
 
-
     bout_kinematic_parameters_final_array = mat["BoutKinematicParametersFinalArray"]
     dist_angles = bout_kinematic_parameters_final_array[:, 10]  # Angles including glide
     distance_x_inc_glide = bout_kinematic_parameters_final_array[:, 18]  # In mm
@@ -62,7 +114,7 @@ def get_action_mask():
 
     distance = (distance_x_inc_glide ** 2 + distance_y_inc_glide ** 2) ** 0.5
 
-    impulse = (distance * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
+    impulse = distance * 10 * 0.34452532909386484
     dist_angles_radians = (np.absolute(dist_angles) / 180) * np.pi
 
     impulse = np.expand_dims(impulse, 1)
@@ -78,16 +130,16 @@ def get_action_mask():
     sorted_actions = sorted_actions[sorted_actions[:, 1] >= 0]
 
     print("Creating action mask...")
-    kde_impulse = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 0], var_type='c', bw='cv_ml')
-    kde_angle = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
+    sorted_actions = np.swapaxes(sorted_actions, 0, 1)
+    kernel = st.gaussian_kde(sorted_actions)
     print("Action mask created")
 
-    accepted_actions = (kde_impulse.pdf(sorted_actions[:, 0]) * kde_angle.pdf(np.absolute(sorted_actions[:, 1]))) >= 0.0000389489489
-    valid_actions = sorted_actions[accepted_actions]
-    return kde_impulse, kde_angle, valid_actions
+    sorted_actions = np.swapaxes(sorted_actions, 0, 1)
+
+    return kernel, sorted_actions
 
 
-if __name__ == "__main__":
+def create_action_mask_old():
     mat = scipy.io.loadmat("bouts.mat")
     bout_kinematic_parameters_final_array = mat["BoutKinematicParametersFinalArray"]
     angles = bout_kinematic_parameters_final_array[:, 9]
@@ -97,7 +149,6 @@ if __name__ == "__main__":
     distance_y = bout_kinematic_parameters_final_array[:, 15]
     distance_x_inc_glide = bout_kinematic_parameters_final_array[:, 18]
     distance_y_inc_glide = bout_kinematic_parameters_final_array[:, 19]
-
 
     # plt.hist(max_angles, bins=1000)
     # plt.show()
@@ -115,9 +166,8 @@ if __name__ == "__main__":
     # plt.scatter(distance_y, distance_y_inc_glide)
     # plt.show()
 
-
     # Want actual distance moved - combination of both.
-    distance = (distance_x_inc_glide**2 + distance_y_inc_glide**2)**0.5
+    distance = (distance_x_inc_glide ** 2 + distance_y_inc_glide ** 2) ** 0.5
 
     # Plot distance against angles in heatmap to get idea of distribution.
     # plt.scatter(np.absolute(angles), distance, alpha=0.2)
@@ -132,7 +182,7 @@ if __name__ == "__main__":
     #
     # # Convert impulse for specific mass
     impulse = (distance * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
-    dist_angles_radians = (np.absolute(dist_angles)/180) * np.pi
+    dist_angles_radians = (np.absolute(dist_angles) / 180) * np.pi
     plt.scatter(dist_angles_radians, impulse, alpha=0.2)
     plt.xlabel("Angle (radians)")
     plt.ylabel("Impulse")
@@ -163,7 +213,6 @@ if __name__ == "__main__":
     # # z = z[:, 0] + z[:, 1]
     # outliers = actions[z[:, 0]>1.5 or z[:, 1]>1.5]
 
-
     # for i, s in enumerate(range(1, 20)):
     #     figure, axs = plt.subplots(3, 3)
     #     figure.set_size_inches(18, 18)
@@ -176,7 +225,6 @@ if __name__ == "__main__":
     #         axs[j//3, j%3].set_ylabel("Full Angle (Radians)")
     #         axs[j//3, j%3].set_xlabel(f"Impulse,Samples: {s}, eps: {ep}")
     #     plt.show()
-
 
     # Best parameters; 1.0, 5    -    0.775, 4   -    5, 0.6625       -      5, 0.8125
     model = DBSCAN(eps=0.8125, min_samples=5).fit(actions)
@@ -224,7 +272,6 @@ if __name__ == "__main__":
     # ax.scatter(impulse[:, 0], dist_angles_radians[:, 0], np.exp(log_density_of_original))
     # plt.show()
 
-
     # Jointplot
 
     # action_data = {"x": actions[:, 0], "y": actions[:, 1]}
@@ -235,7 +282,6 @@ if __name__ == "__main__":
     #
     # plt.show()
 
-
     # KDF 2
     indices_of_valid = (model.labels_ != -1) * 1
     sorted_actions = np.array([sorted_actions])
@@ -245,7 +291,6 @@ if __name__ == "__main__":
     probs = bw_ml_x.pdf(actions[:, :, 0]) * bw_ml_y.pdf(actions[:, :, 1])
     probs2 = copy.copy(probs)
 
-
     fig = plt.figure(figsize=(12, 12))
     ax = fig.add_subplot(projection='3d')
     ax.scatter(dist_angles_radians[:, 0], impulse[:, 0], probs)
@@ -253,7 +298,6 @@ if __name__ == "__main__":
     ax.set_xlabel("Angle (radians)")
     ax.set_zlabel("Probability density")
     plt.show()
-
 
     # Thresholding                                       Best: [2.3733733733733735e-05, 8183]
     # print(f"Total inliers: {np.sum(indices_of_valid)}")
@@ -292,8 +336,8 @@ if __name__ == "__main__":
     #                     Integrating distribution
 
     # Number of should have samples = 12 x 350
-    possible_impulse = np.linspace(0, 350, 1000)   # Divide total by 100
-    possible_angle = np.linspace(0, 12, 1000)   # Divide total by 100
+    possible_impulse = np.linspace(0, 350, 1000)  # Divide total by 100
+    possible_angle = np.linspace(0, 12, 1000)  # Divide total by 100
     possible_impulse, possible_angle = np.meshgrid(possible_angle, possible_impulse)
     possible_impulse, possible_angle = possible_impulse.flatten(), possible_angle.flatten()
 
@@ -303,7 +347,6 @@ if __name__ == "__main__":
     t = 0.01587368
 
     for threshold in np.linspace(t, 0.1, 20):
-
         # probs2[probs < threshold] = 0
         # probs2[probs > threshold] = 1
         #
@@ -318,11 +361,6 @@ if __name__ == "__main__":
         # print(np.sum(probs2))
         plt.scatter(dist_angles_radians[probs > threshold][:, 0], impulse[probs > threshold][:, 0])
         plt.show()
-
-
-
-
-
 
     x = True
 
@@ -361,4 +399,8 @@ if __name__ == "__main__":
     # plt.pcolormesh(xi, yi, zi)
     # plt.show()
     #
+
+
+if __name__ == "__main__":
+    produce_action_mask()
 

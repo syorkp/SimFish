@@ -386,7 +386,7 @@ if __name__ == "__main__":
                                                       10])  # , key_scaffold_points=[10, 16, 31])
     plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=40, interpolate_scaffold_points=True,
                                           figure_name="dqn_beta_mod")#, key_scaffold_points=[10, 16, 31])
-    plot_multiple_metrics_multiple_models(ppo_models, chosen_metrics_ppo, window=40, interpolate_scaffold_points=True,
-                                          figure_name="ppo_beta")
-    plot_multiple_metrics_multiple_models(ppo_models_mod, chosen_metrics_ppo_mod, window=40, interpolate_scaffold_points=True,
-                                          figure_name="ppo_beta_mod")
+    # plot_multiple_metrics_multiple_models(ppo_models, chosen_metrics_ppo, window=40, interpolate_scaffold_points=True,
+    #                                       figure_name="ppo_beta")
+    # plot_multiple_metrics_multiple_models(ppo_models_mod, chosen_metrics_ppo_mod, window=40, interpolate_scaffold_points=True,
+    #                                       figure_name="ppo_beta_mod")

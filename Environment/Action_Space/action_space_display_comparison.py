@@ -184,10 +184,10 @@ def display_labelled_marques_bouts_with_dists(env_variables):
 
     # Add PPO action space outline
     kde_i, kde_a, ppo_action_space = get_action_mask()
-    tested_region = kde_i.pdf(X.flatten()).reshape((400, 400)) * kde_a.pdf(Y.flatten()).reshape((400, 400))
-    accepted_region = (tested_region > 0) * 0.2
+    tested_region = kde_i.pdf(X.flatten() * 3.4452532909386484).reshape((400, 400)) * kde_a.pdf(Y.flatten()).reshape((400, 400))
+    accepted_region = (tested_region >= 0.0000389489489) * 0.2
 
-    pdf -= accepted_region
+    pdf -= np.expand_dims(accepted_region, 2)
 
     axs.imshow(pdf, extent=[0, 12, -1, 5], aspect="auto")
 
