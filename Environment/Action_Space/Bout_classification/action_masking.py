@@ -79,11 +79,17 @@ def produce_action_mask():
     correct_bout_pairs[correct_bout_pairs == 0] = -1
     correct_bout_pairs = np.flip(correct_bout_pairs, 0)
 
+    best_threshold = [0, 0]
     # Iterate over thresholds, determining how many points have successfully matched.
-    for thres in np.linspace(0, 1, 10000):
+    for thres in np.linspace(0, 1, 100000):
         above_thresold = (pdf > thres)
         correctly_identified = (above_thresold * correct_bout_pairs) * 1
         print(f"Threshold: {thres}, Correct: {np.sum(correctly_identified)}")
+        if np.sum(correctly_identified) > best_threshold[1]:
+            best_threshold[0] = thres
+            best_threshold[1] = np.sum(correctly_identified)
+
+    print(best_threshold)
 
     plt.imshow(pdf, extent=[0, 50, 0, 5])
     plt.scatter(impulses, angles, alpha=0.01)
@@ -93,10 +99,15 @@ def produce_action_mask():
 
     plt.imshow(pdf, extent=[0, 50, 0, 5])
     plt.savefig("PDF vals.png")
-    plt.show()
-    # plt.clf()
-    # plt.close()
-    x = True
+    plt.clf()
+    plt.close()
+
+    pdf[pdf > best_threshold[0]] = 1
+    pdf[pdf < 1] = 0
+    plt.imshow(pdf,  extent=[0, 50, 0, 5])
+    plt.savefig("PDF vals 3.png")
+    plt.clf()
+    plt.close()
 
 def get_action_mask():
     try:

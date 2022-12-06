@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.io
 from sklearn.cluster import DBSCAN
+import scipy.stats as st
 import statsmodels.api as sm
 import tensorflow_probability as tfp
 import tensorflow.compat.v1 as tf
@@ -14,6 +15,7 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
         super().__init__(loc=loc, scale_diag=scale_diag, allow_nan_stats=False)
 
         self.mu_vals = loc
+        self.kdf_threshold = 0.01990019900199002  # As determined in Environment/Action_Space/Bout_classification/action_masking.py
 
         # Compute KDF here.
         try:
@@ -50,26 +52,38 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
         # self.kde_impulse = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 0], var_type='c', bw='cv_ml')
         # self.kde_angle = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
         print("Creating action mask...")
-        self.kde_impulse = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 0], var_type='c', bw='cv_ml')
-        self.kde_angle = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
+        # self.kde_impulse = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 0], var_type='c', bw='cv_ml')
+        # self.kde_angle = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
+
+        # New version requires swapping axes of inputs...
+        sorted_actions = np.swapaxes(sorted_actions, 0, 1)
+        self.kde = st.gaussian_kde(sorted_actions)
+        print("Action mask created")
 
     def get_sample_masked_weights(self, actions, shape):
-        probs = self.kde_impulse.pdf(actions[:, :, 0]) * self.kde_angle.pdf(np.absolute(actions[:, :, 1]))
+        actions = np.swapaxes(actions, 1, 2)
+        print(actions.shape)
+        #probs = self.kde_impulse.pdf(actions[:, :, 0]) * self.kde_angle.pdf(np.absolute(actions[:, :, 1]))
+        probs = self.kde(actions)
 
         # Dis-allow negative impulses
-        positive_impulses = ((actions[:, :, 0] >= 0) * 1)[:, 0]
+        # positive_impulses = ((actions[:, :, 0] >= 0) * 1)[:, 0]
+        positive_impulses = ((actions[:, 0, :] >= 0) * 1)[0, :]
         probs = probs * positive_impulses
         probs = np.nan_to_num(probs)
 
         # # Step function on probs
-        probs[probs < 0.0000389489489] = 0.000001
-        probs[probs >= 0.0000389489489] = 1
+        # probs[probs < 0.0000389489489] = 0.000001
+        # probs[probs >= 0.0000389489489] = 1
+        probs[probs < self.kdf_threshold] = 0.000001
+        probs[probs >= self.kdf_threshold] = 1
 
         integral = np.sum(probs)
         probs = probs/integral
 
         indices_chosen = np.random.choice(actions.shape[0], size=shape, p=probs, replace=False)
         actions_chosen = actions[indices_chosen, :, :]
+        actions_chosen = np.swapaxes(actions_chosen, 0, 1)
         # return actions_chosen, probs, positive_impulses
         return actions_chosen
 
