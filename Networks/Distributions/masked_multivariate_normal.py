@@ -62,7 +62,7 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
 
     def get_sample_masked_weights(self, actions, shape):
         if actions.shape[1] > 1:
-            print("DIFFF")
+            print("Action mask problem")
             print(actions.shape)
 
         actions = actions[:, 0, :]
