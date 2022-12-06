@@ -82,6 +82,7 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
         probs[probs >= self.kdf_threshold] = 1
 
         integral = np.sum(probs)
+
         probs = probs/integral
 
         indices_chosen = np.random.choice(actions.shape[0], size=shape, p=probs, replace=False)
