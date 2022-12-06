@@ -1,4 +1,4 @@
-"""Plots luminance-distinguishability scores for two distances from fish. These scores are generated from visual_distance_calibration_first_principles models."""
+"""Spatial-Density-Fish-Prey-Position-Metrics luminance-distinguishability scores for two distances from fish. These scores are generated from visual_distance_calibration_first_principles models."""
 
 import matplotlib.pyplot as plt
 import numpy as np

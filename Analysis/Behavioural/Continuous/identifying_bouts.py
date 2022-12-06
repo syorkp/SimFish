@@ -172,11 +172,11 @@ if __name__ == "__main__":
     #
     # seqs = get_ppo_prey_capture_seq(model_name, assay_config, assay_id, n, predictor=p, associated_actions=associated_bouts)
     # display_all_sequences(seqs, max_length=20, alternate_action_names=[str(i) for i in range(n_clusters)],
-    #                       figure_save_location=f"All-Plots/{model_name}/prey_capture_sequences.jpg", save_figure=True)
+    #                       figure_save_location=f"All-Spatial-Density-Fish-Prey-Position-Metrics/{model_name}/prey_capture_sequences.jpg", save_figure=True)
     #
     # seqs = get_ppo_exploration_seq(model_name, "Behavioural-Data-Empty", assay_id, n, predictor=p, associated_actions=associated_bouts)
     # display_all_sequences(seqs, max_length=100, alternate_action_names=[str(i) for i in range(n_clusters)],
-    #                       figure_save_location=f"All-Plots/{model_name}/exploration_sequences.jpg", save_figure=True)
+    #                       figure_save_location=f"All-Spatial-Density-Fish-Prey-Position-Metrics/{model_name}/exploration_sequences.jpg", save_figure=True)
 
     # sil = []
     # for i in range(2, 10):

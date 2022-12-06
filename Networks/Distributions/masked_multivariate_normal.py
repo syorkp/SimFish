@@ -15,7 +15,7 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
         super().__init__(loc=loc, scale_diag=scale_diag, allow_nan_stats=False)
 
         self.mu_vals = loc
-        self.kdf_threshold = 0.01990019900199002  # As determined in Environment/Action_Space/Bout_classification/action_masking.py
+        self.kdf_threshold = 0.0014800148001480014  # As determined in Environment/Action_Space/Bout_classification/action_masking.py
 
         # Compute KDF here.
         try:

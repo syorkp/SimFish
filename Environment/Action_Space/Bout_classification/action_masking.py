@@ -62,7 +62,6 @@ def produce_action_mask():
     # Evaluate KDE Over Grid
     values = kde(full_grid)
     pdf = np.reshape(values, (res, res))
-    pdf /= np.max(pdf)
     pdf = np.flip(pdf, 0)
 
     # Find which points in the grid should be considered true by found threshold
@@ -81,14 +80,15 @@ def produce_action_mask():
 
     best_threshold = [0, 0]
     # Iterate over thresholds, determining how many points have successfully matched.
-    for thres in np.linspace(0, 1, 100000):
-        above_thresold = (pdf > thres)
-        correctly_identified = (above_thresold * correct_bout_pairs) * 1
-        print(f"Threshold: {thres}, Correct: {np.sum(correctly_identified)}")
-        if np.sum(correctly_identified) > best_threshold[1]:
-            best_threshold[0] = thres
-            best_threshold[1] = np.sum(correctly_identified)
+    # for thres in np.linspace(0, 1, 100000):
+    #     above_thresold = (pdf > thres)
+    #     correctly_identified = (above_thresold * correct_bout_pairs) * 1
+    #     print(f"Threshold: {thres}, Correct: {np.sum(correctly_identified)}")
+    #     if np.sum(correctly_identified) > best_threshold[1]:
+    #         best_threshold[0] = thres
+    #         best_threshold[1] = np.sum(correctly_identified)
 
+    best_threshold = [0.0014800148001480014, 406.0]
     print(best_threshold)
 
     plt.imshow(pdf, extent=[0, 50, 0, 5])
@@ -104,10 +104,13 @@ def produce_action_mask():
 
     pdf[pdf > best_threshold[0]] = 1
     pdf[pdf < 1] = 0
-    plt.imshow(pdf,  extent=[0, 50, 0, 5])
+    plt.imshow(pdf,  extent=[0, 50, 0, 5], aspect="auto")
     plt.savefig("PDF vals 3.png")
     plt.clf()
     plt.close()
+
+    return kde, best_threshold[0]
+
 
 def get_action_mask():
     try:

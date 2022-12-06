@@ -399,7 +399,7 @@ def plot_narrowed_dist(action, factor, outlier_removal=True):
 
     axs[1].plot(angles, p_angle/np.sum(p_angle))
     axs[1].set_xlabel("Angle (radians)")
-    plt.savefig("Plots/" + bout_name + "-narrowed-" + str(factor))
+    plt.savefig("Spatial-Density-Fish-Prey-Position-Metrics/" + bout_name + "-narrowed-" + str(factor))
     plt.clf()
     plt.close()
 

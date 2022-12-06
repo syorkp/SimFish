@@ -37,7 +37,7 @@ class DataIndexServiceDiscrete:
 
         if not os.path.exists(self.figure_save_location):
             os.makedirs(f"{self.figure_save_location}")
-            os.makedirs(f"{self.figure_save_location}/Spatial-Density-Plots")
+            os.makedirs(f"{self.figure_save_location}/Spatial-Density-Spatial-Density-Fish-Prey-Position-Metrics")
             os.makedirs(f"{self.figure_save_location}/Behavioural-Metrics")
             os.makedirs(f"{self.figure_save_location}/Prey-Capture")
             os.makedirs(f"{self.figure_save_location}/Exploration")
@@ -122,7 +122,7 @@ class DataIndexServiceDiscrete:
         # plot_energy_state_grouped_action_usage_from_data()
 
         # Display all spatial density plots
-        get_all_density_plots(self.flattened_naturalistic_trial_data, self.figure_save_location + "/Spatial-Density-Plots")
+        get_all_density_plots(self.flattened_naturalistic_trial_data, self.figure_save_location + "/Spatial-Density-Spatial-Density-Fish-Prey-Position-Metrics")
 
         # Prey Capture
         display_all_sequences(self.capture_sequences[:100], save_figure=True,
