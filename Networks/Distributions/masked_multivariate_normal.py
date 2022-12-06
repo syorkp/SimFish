@@ -66,9 +66,10 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
             print(actions.shape)
 
         actions = actions[:, 0, :]
+        actions = np.swapaxes(actions, 0, 1)
         #probs = self.kde_impulse.pdf(actions[:, :, 0]) * self.kde_angle.pdf(np.absolute(actions[:, :, 1]))
         probs = self.kde(actions)
-
+        actions = np.swapaxes(actions, 0, 1)
         # Dis-allow negative impulses
         # positive_impulses = ((actions[:, :, 0] >= 0) * 1)[:, 0]
         positive_impulses = ((actions[:, 0] >= 0) * 1)[0]
