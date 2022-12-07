@@ -12,3 +12,4 @@ if __name__ == "__main__":
             for ts in timestamps:
                 observation = data["observation"][ts]
                 display_obs_sequence(observation)
+    print("test...")
