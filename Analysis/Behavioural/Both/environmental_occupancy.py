@@ -29,6 +29,7 @@ def plot_environmental_occupancy_multiple_trials(model_name, assay_config, assay
 
 
 if __name__ == "__main__":
-    plot_environmental_occupancy_multiple_trials("dqn_scaffold_30-1", "Behavioural-Data-Free", "Naturalistic", 20)
+    # plot_environmental_occupancy_multiple_trials("dqn_scaffold_30_fixed_p-1", "Behavioural-Data-Free", "Naturalistic", 20)
 
+    plot_environmental_occupancy_multiple_trials("dqn_scaffold_30-2", "Behavioural-Data-Free", "Naturalistic", 20)
 

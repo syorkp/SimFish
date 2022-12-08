@@ -6018,8 +6018,29 @@ ppo_beta_5 = [
 
 ]
 
+ppo_test_1 = [
+    {
+        "Model Name": "ppo_beta2",
+        "Environment Name": "ppo_beta2",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": True,
+        "Learning Algorithm": "PPO",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+
 if run_config is None:
-    run_config = dqn_30
+    run_config = ppo_test_1
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]
