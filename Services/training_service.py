@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+import re
 import time
 import numpy as np
 import pstats
@@ -112,6 +113,7 @@ class TrainingService(BaseService):
         if self.load_model:
             print(f"Attempting to load model at {self.model_location}")
             checkpoint = tf.train.get_checkpoint_state(self.model_location)
+
             if hasattr(checkpoint, "model_checkpoint_path"):
                 self.saver.restore(self.sess, checkpoint.model_checkpoint_path)
                 print("Loading successful")
@@ -532,12 +534,21 @@ class TrainingService(BaseService):
             self.writer.add_summary(episode_duration_summary, self.episode_number)
 
         # Periodically save the model.
-        if self.episode_number % self.learning_params['network_saving_frequency'] == 0:
+        # if self.episode_number % self.learning_params['network_saving_frequency'] == 0:
+        checkpoint = tf.train.get_checkpoint_state(self.model_location)
+        if hasattr(checkpoint, "model_checkpoint_path"):
+            checkpoint_path = checkpoint.model_checkpoint_path
+            checkpoint_steps = re.sub('\D', '', checkpoint_path)
+        else:
+            checkpoint_steps = self.learning_params['network_saving_frequency']
+
+        if self.total_steps - checkpoint_steps >= self.learning_params['network_saving_frequency']:
             # print(f"mean time: {np.mean(self.training_times)}")
             if self.learning_params["maintain_state"]:
                 self.save_rnn_state()
             # Save the model
-            self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
+            # self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
+            self.saver.save(self.sess, f"{self.model_location}/model-{str(self.total_steps)}.cptk")
             print("Saved Model")
 
         if self.episode_number % self.learning_params['summaryLength'] == 0 and self.episode_number != 0:

@@ -4801,8 +4801,8 @@ dqn_sand_grains = [
 
 dqn_30 = [
     {
-        "Model Name": "dqn_scaffold_30",
-        "Environment Name": "dqn_30_1",
+        "Model Name": "dqn_scaffold_30_fixed_p",
+        "Environment Name": "dqn_30_fp_1",
         "Assay Configuration Name": "Behavioural-Data-Free",
         "Trial Number": 1,
         "Checkpoint": None,
@@ -5220,8 +5220,8 @@ dqn_30 = [
         ],
     },
     {
-        "Model Name": "dqn_scaffold_30",
-        "Environment Name": "dqn_30_1",
+        "Model Name": "dqn_scaffold_fixed_p_30",
+        "Environment Name": "dqn_30_fp_2",
         "Assay Configuration Name": "Behavioural-Data-Free",
         "Trial Number": 2,
         "Checkpoint": None,

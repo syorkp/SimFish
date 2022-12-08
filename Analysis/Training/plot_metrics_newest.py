@@ -274,7 +274,7 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
             # plt.setp(axs[i].get_yticklabels(), rotation=30, horizontalalignment='right')
 
     if interpolate_scaffold_points:
-        axs[-1].set_xlabel("Scaffold Point")
+        axs[-1].set_xlabel("Curriculum Point")
         sc = np.concatenate(([np.array(s) for s in scaffold_switching_points]))
         scaffold_indices = [t for t in range(0, int(np.max(sc[:, 1])))]
         axs[-1].set_xticks(scaffold_indices)
