@@ -21,7 +21,6 @@ class BaseEnvironment:
         self.env_variables = env_variables
         if self.new_simulation:
             # Rescale bkg_scatter to avoid disruption for larger fields
-
             model = np.poly1d([1.32283913e-18, -4.10522256e-14, 4.92470049e-10, -2.86744090e-06, 8.22376164e-03,
                                4.07923942e-01])  # TODO: Keep parameters updated
             self.env_variables["bkg_scatter"] = self.env_variables["bkg_scatter"] / (

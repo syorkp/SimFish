@@ -136,6 +136,7 @@ class AssayService(BaseService):
             # self.in_light_interruptions = None
             # self.interruptions = False
             # self.rnn_input = None
+            self.learning_params, self.environment_params = self.load_configuration_files()
 
             self.save_frames = assay["save frames"]
             self.create_testing_environment(assay)
