@@ -92,7 +92,6 @@ def get_metric_name(metric_label):
         # metric_name = "Prey Capture Rate (fraction caught per step)"
         metric_name = "PCR"
 
-
     elif metric_label == "prey capture index (fraction caught)":
         # metric_name = "Prey Capture Index (fraction caught)"
         metric_name = "PCI"
@@ -138,18 +137,28 @@ def get_metric_name(metric_label):
 
 
 def remove_repeated_switching_points(scaffold_switching_points):
+    """Removes switching points - chooses to keep those of a later episode."""
+
     cleaned_scaffold_switching_points = []
     for model_switching_points in scaffold_switching_points:
+        new_model_switching_points = []
+
         config_nums = [m[1] for m in model_switching_points]
-        to_delete = []
-        for i, c in enumerate(config_nums):
-            if i > 0:
-                if c == model_switching_points[i - 1][1]:
-                    to_delete.append(i - 1)
-                    print("Removing repeated")
-        for d in reversed(to_delete):
-            del model_switching_points[d]
-        cleaned_scaffold_switching_points.append(model_switching_points)
+        reduced_config_nums = list(set(config_nums))
+
+        for c in reduced_config_nums:
+            switching_points = [s[0] for s in model_switching_points if s[1] == c]
+            new_model_switching_points.append([max(switching_points), c])
+
+        # to_delete = []
+        # for i, c in enumerate(config_nums):
+        #     if i > 0:
+        #         if c == model_switching_points[i - 1][1]:
+        #             to_delete.append(i - 1)
+        #             print("Removing repeated")
+        # for d in reversed(to_delete):
+        #     del model_switching_points[d]
+        cleaned_scaffold_switching_points.append(new_model_switching_points)
     return cleaned_scaffold_switching_points
 
 
@@ -228,7 +237,7 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
     inset_metric_vals = []
     metric_index = None
 
-    fig, axs = plt.subplots(num_metrics, 1, figsize=(30, int(12 * num_metrics)), sharex=True)
+    fig, axs = plt.subplots(num_metrics, 1, figsize=(50, int(12 * num_metrics)), sharex=True)
     for model in ordered_chosen_model_data_rolling_averages:
         for i, metric in enumerate(metrics):
             metric_name = get_metric_name(metric)
@@ -266,13 +275,14 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
 
     axs[-1].set_xlabel("Scaffold Point")
     sc = np.concatenate(([np.array(s) for s in scaffold_switching_points]))
-    axs[-1].set_xticks([int(t) for t in np.linspace(0, np.max(sc[:, 1]))])
+    scaffold_indices = [t for t in range(0, int(np.max(sc[:, 1])))]
+    axs[-1].set_xticks(scaffold_indices)
     axs[-1].set_xlim(1, np.max(sc[:, 1]) + 1)
 
     if show_inset is not None:
         inset_ylim = axs[metric_index].get_ylim()
 
-    plt.savefig(f"Plots/{figure_name}.jpg")
+    plt.savefig(f"../../Analysis-Output/Training/{figure_name}.jpg")
     plt.clf()
     plt.close()
 
@@ -382,10 +392,9 @@ if __name__ == "__main__":
                           ]
     plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=40, interpolate_scaffold_points=True,
                                           figure_name="dqn_beta", scaled_window=False,
-                                          show_inset=["capture success rate",
-                                                      10])  # , key_scaffold_points=[10, 16, 31])
-    plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=40, interpolate_scaffold_points=True,
-                                          figure_name="dqn_beta_mod")#, key_scaffold_points=[10, 16, 31])
+                                          show_inset=["capture success rate", 10])  # , key_scaffold_points=[10, 16, 31])
+    # plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=40, interpolate_scaffold_points=True,
+    #                                       figure_name="dqn_beta_mod")#, key_scaffold_points=[10, 16, 31])
     # plot_multiple_metrics_multiple_models(ppo_models, chosen_metrics_ppo, window=40, interpolate_scaffold_points=True,
     #                                       figure_name="ppo_beta")
     # plot_multiple_metrics_multiple_models(ppo_models_mod, chosen_metrics_ppo_mod, window=40, interpolate_scaffold_points=True,

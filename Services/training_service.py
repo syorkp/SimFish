@@ -147,12 +147,14 @@ class TrainingService(BaseService):
             if self.configuration_index < self.total_configurations:
                 self.check_update_configuration()
             elif self.configuration_index == self.total_configurations:
+                self.switched_configuration = False
                 print("Reached final config...")
                 if len(self.last_episodes_prey_caught) >= self.min_scaffold_interval:
                     # if np.mean(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"] \
                     #         > self.finished_conditions["PAI"] \
                     #         and np.mean(self.last_episodes_prey_caught)/self.environment_params["prey_num"] \
                     #         > self.finished_conditions["PCI"]:
+
                     if np.mean(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"] \
                             > self.finished_conditions["PAI"] \
                             and np.mean(self.last_episodes_prey_caught)/self.simulation.available_prey \

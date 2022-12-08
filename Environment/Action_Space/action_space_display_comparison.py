@@ -130,6 +130,10 @@ def display_labelled_marques_bouts():
 
 def display_labelled_marques_bouts_with_dists(env_variables):
     res = 400
+    dis_lim = [0, 15]
+    ang_lim = [-1, 4]
+
+
     distances, angles, labels = get_all_bouts()
     actions = ["Slow2", "RT", "sCS", "J-Turn", "C-Start", "AS"]
     # action_colours = [(0, 0, 1), (0, 1, 0), (1, 0, 0), (1, 1, 0), (1, 0, 0.5), (1, 1, 1)]
@@ -140,10 +144,10 @@ def display_labelled_marques_bouts_with_dists(env_variables):
     # Inverted, for inversion operation below
     new_action_colours = [(1, 1, 0), (1, 0, 1), (0, 1, 1), (0, 0, 1), (0, 1, 0.5), (0.8, 0.8, 0.8), (0, 0, 1)]
 
-    # fig, axs = plt.subplots(figsize=(10, 10))
+    fig, axs = plt.subplots(figsize=(10, 10))
 
-    impulse_range = np.linspace(0, 50/3.4452532909386484, res)
-    angle_range = np.linspace(0, 5, res)
+    impulse_range = np.linspace(dis_lim[0], dis_lim[1], res)
+    angle_range = np.linspace(ang_lim[0], ang_lim[1], res)
     X, Y = np.meshgrid(impulse_range, angle_range)
     X_, Y_ = np.expand_dims(X, 2), np.expand_dims(Y, 2)
     full_grid = np.concatenate((X_, Y_), axis=2).reshape((-1, 2))
@@ -175,7 +179,7 @@ def display_labelled_marques_bouts_with_dists(env_variables):
         energy_cost = calculate_energy_cost(env_variables, impulse, mean[1]) * 10e6
         # energy_cost = round(energy_cost, 2-int(floor(log10(abs(energy_cost))))-1)
         energy_cost = round(energy_cost,)
-        # axs.text(mean[0], mean[1], str(energy_cost), color="black", ha='center', fontsize=8)#new_action_colours[a_n])
+        axs.text(mean[0], mean[1], str(energy_cost), color="black", ha='center', fontsize=8)#new_action_colours[a_n])
         # axs.scatter(mean[0], mean[1], marker="x", s=100, color=[new_action_colours[a_n]])
 
     pdf = np.flip(pdf, 0)
@@ -188,38 +192,43 @@ def display_labelled_marques_bouts_with_dists(env_variables):
 
     # Add PPO action space outline
     kde, threshold = produce_action_mask()
-    full_grid[0] *= 3.4452532909386484
+    full_grid[0] *= 3.4452532909386484  # Convert to impulses.
     tested_region = kde(full_grid).reshape((res, res))
     accepted_region = (tested_region >= threshold) * 0.2
     accepted_region = np.flip(accepted_region, 0)
 
+    # If necessary, reflect accepted region
+    if ang_lim[0] < 0:
+        index_at_zero = int(res * abs(ang_lim[0])/(ang_lim[1] - ang_lim[0]))
+        upper_region = accepted_region[-index_at_zero*2:-index_at_zero, :]
+        accepted_region[-index_at_zero:, :] = np.flip(upper_region, 0)
+
     pdf -= np.expand_dims(accepted_region, 2)
     pdf = np.clip(pdf, 0, 1)
 
-    # axs.imshow(pdf, extent=[0, 12, -0.5, 2], aspect="auto")
-    plt.imshow(pdf, extent=[0, 50/3.4452532909386484, 0, 5], aspect="auto")
-    plt.show()
-    # for i, l in enumerate(set(labels)):
-    #     axs.scatter(distances[labels == l], angles[labels == l], alpha=0.1, color=action_colours[i], marker="x")
-    #     axs.scatter(distances[labels == l], -angles[labels == l], alpha=0.1, color=action_colours[i], marker="x")
+    axs.imshow(pdf, extent=[dis_lim[0], dis_lim[1], ang_lim[0], ang_lim[1]], aspect="auto")
+
+    for i, l in enumerate(set(labels)):
+        axs.scatter(distances[labels == l], angles[labels == l], alpha=0.1, color=action_colours[i], marker="x")
+        axs.scatter(distances[labels == l], -angles[labels == l], alpha=0.1, color=action_colours[i], marker="x")
 
     # Build legend
-    # slow2_legend = mpatches.Patch(color=action_colours[0], label='Slow2')
-    # rt_legend = mpatches.Patch(color=action_colours[1], label='RT')
-    # sCS_legend = mpatches.Patch(color=action_colours[2], label='sCS')
-    # j_turn_legend = mpatches.Patch(color=action_colours[3], label='J-turn')
-    # c_start_legend = mpatches.Patch(color=action_colours[4], label='C-Start')
-    # as_legend = mpatches.Patch(color=action_colours[5], label='AS')
-    #
-    # axs.legend(handles=[slow2_legend, rt_legend, sCS_legend, j_turn_legend, c_start_legend, as_legend,])
+    slow2_legend = mpatches.Patch(color=action_colours[0], label='Slow2')
+    rt_legend = mpatches.Patch(color=action_colours[1], label='RT')
+    sCS_legend = mpatches.Patch(color=action_colours[2], label='sCS')
+    j_turn_legend = mpatches.Patch(color=action_colours[3], label='J-turn')
+    c_start_legend = mpatches.Patch(color=action_colours[4], label='C-Start')
+    as_legend = mpatches.Patch(color=action_colours[5], label='AS')
 
-    # axs.set_xlabel("Distance (mm)")
-    # axs.set_ylabel("Angle (radians)")
-    # axs.set_xlim(0, 12)
-    # axs.set_ylim(-0.5, 2)
-    # plt.savefig("../../Analysis-Output/Action-Space/action_space_comparison.png")
-    # plt.clf()
-    # plt.close()
+    axs.legend(handles=[slow2_legend, rt_legend, sCS_legend, j_turn_legend, c_start_legend, as_legend,])
+
+    axs.set_xlabel("Distance (mm)")
+    axs.set_ylabel("Angle (radians)")
+    axs.set_xlim(dis_lim[0], dis_lim[1])
+    axs.set_ylim(ang_lim[0], ang_lim[1])
+    plt.savefig("../../Analysis-Output/Action-Space/action_space_comparison.png")
+    plt.clf()
+    plt.close()
 
 
 if __name__ == "__main__":

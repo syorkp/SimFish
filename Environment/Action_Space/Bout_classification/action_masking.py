@@ -91,23 +91,23 @@ def produce_action_mask():
     best_threshold = [0.0014800148001480014, 406.0]
     print(best_threshold)
 
-    plt.imshow(pdf, extent=[0, 50, 0, 5])
-    plt.scatter(impulses, angles, alpha=0.01)
-    plt.savefig("PDF vals 2.png")
-    plt.clf()
-    plt.close()
-
-    plt.imshow(pdf, extent=[0, 50, 0, 5])
-    plt.savefig("PDF vals.png")
-    plt.clf()
-    plt.close()
-
-    pdf[pdf > best_threshold[0]] = 1
-    pdf[pdf < 1] = 0
-    plt.imshow(pdf,  extent=[0, 50, 0, 5], aspect="auto")
-    plt.savefig("PDF vals 3.png")
-    plt.clf()
-    plt.close()
+    # plt.imshow(pdf, extent=[0, 50, 0, 5])
+    # plt.scatter(impulses, angles, alpha=0.01)
+    # plt.savefig("PDF vals 2.png")
+    # plt.clf()
+    # plt.close()
+    #
+    # plt.imshow(pdf, extent=[0, 50, 0, 5])
+    # plt.savefig("PDF vals.png")
+    # plt.clf()
+    # plt.close()
+    #
+    # pdf[pdf > best_threshold[0]] = 1
+    # pdf[pdf < 1] = 0
+    # plt.imshow(pdf,  extent=[0, 50, 0, 5], aspect="auto")
+    # plt.savefig("PDF vals 3.png")
+    # plt.clf()
+    # plt.close()
 
     return kde, best_threshold[0]
 

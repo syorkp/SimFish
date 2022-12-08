@@ -13,10 +13,6 @@
       <excludeFolder url="file://$MODULE_DIR$/Analysis/Calibration/Image" />
       <excludeFolder url="file://$MODULE_DIR$/Assay-Output" />
       <excludeFolder url="file://$MODULE_DIR$/Training-Output" />
-      <excludeFolder url="file://$MODULE_DIR$/Analysis/Data" />
-      <excludeFolder url="file://$MODULE_DIR$/Analysis/Data/Action-Choice-Data" />
-      <excludeFolder url="file://$MODULE_DIR$/Analysis/Data/Action-Use-Data" />
-      <excludeFolder url="file://$MODULE_DIR$/Analysis/Data/Metrics" />
       <excludeFolder url="file://$MODULE_DIR$/Analysis/Figures/Panels" />
       <excludeFolder url="file://$MODULE_DIR$/Analysis/Calibration/Visual-Distance/Full-Model-Distinguishability-Scores" />
       <excludeFolder url="file://$MODULE_DIR$/Analysis/Neural/Gradients/Gradients-Data" />
@@ -25,6 +21,10 @@
       <excludeFolder url="file://$MODULE_DIR$/Analysis/Video/Current-Videos" />
       <excludeFolder url="file://$MODULE_DIR$/Analysis/Behavioural/Continuous/All-Plots" />
       <excludeFolder url="file://$MODULE_DIR$/Analysis-Output/Neural/Generated-MEIs" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis-Output/Training/Data" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis-Output/Training/Data/Action-Choice-Data" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis-Output/Training/Data/Metrics" />
+      <excludeFolder url="file://$MODULE_DIR$/Analysis-Output/Training/Data/Action-Use-Data" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
