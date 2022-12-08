@@ -290,10 +290,10 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
     plt.close()
 
     if show_inset is not None:
-        create_zoomed_inset(inset_scaffold_points, inset_metric_vals, get_metric_name(show_inset[0]), inset_ylim)
+        create_zoomed_inset(inset_scaffold_points, inset_metric_vals, get_metric_name(show_inset[0]), inset_ylim, figure_name)
 
 
-def create_zoomed_inset(scaffold_points, metric_vals, metric_name, inset_ylim):
+def create_zoomed_inset(scaffold_points, metric_vals, metric_name, inset_ylim, figure_name):
     for model in range(len(scaffold_points)):
         plt.plot(scaffold_points[model], metric_vals[model])
 
@@ -301,8 +301,9 @@ def create_zoomed_inset(scaffold_points, metric_vals, metric_name, inset_ylim):
     ax.set_ylim(inset_ylim)
     plt.ylabel(metric_name)
     plt.xlabel("Scaffold Point")
-    plt.show()
-
+    plt.savefig(f"../../Analysis-Output/Training/{figure_name}_inset.jpg")
+    plt.clf()
+    plt.close()
 
 """
 Possible metrics:
@@ -395,9 +396,10 @@ if __name__ == "__main__":
                           ]
     plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=40, interpolate_scaffold_points=True,
                                           figure_name="dqn_beta", scaled_window=False,
-                                          show_inset=["capture success rate", 10])  # , key_scaffold_points=[10, 16, 31])
+                                          show_inset=["capture success rate", 10], key_scaffold_points=[14, 29, 42])
     plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=40, interpolate_scaffold_points=True,
-                                          figure_name="dqn_beta_mod")#, key_scaffold_points=[10, 16, 31])
+                                          figure_name="dqn_beta_mod", scaled_window=False,
+                                          show_inset=["capture success rate", 18])#, key_scaffold_points=[10, 16, 31])
     plot_multiple_metrics_multiple_models(ppo_models, chosen_metrics_ppo, window=40, interpolate_scaffold_points=False,
                                           figure_name="ppo_beta")
     plot_multiple_metrics_multiple_models(ppo_models_mod, chosen_metrics_ppo_mod, window=40, interpolate_scaffold_points=False,

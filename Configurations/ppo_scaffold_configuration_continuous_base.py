@@ -78,6 +78,7 @@ params = {
 
        # Specify how often to save network parameters
        'network_saving_frequency': 20,
+       'network_saving_frequency_steps': 2000,
 
        # Specify how many episodes required before another scaffold switch can occur.
        'min_scaffold_interval': 50,
@@ -312,7 +313,7 @@ env = {
 
 }
 
-scaffold_name = "ppo_beta_mod"
+scaffold_name = "ppo_beta_mod2"
 
 env["probability_of_predator"] = 0.003
 env["immunity_steps"] = 200

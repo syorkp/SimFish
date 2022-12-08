@@ -540,9 +540,9 @@ class TrainingService(BaseService):
             checkpoint_path = checkpoint.model_checkpoint_path
             checkpoint_steps = re.sub('\D', '', checkpoint_path)
         else:
-            checkpoint_steps = self.learning_params['network_saving_frequency']
+            checkpoint_steps = self.learning_params['network_saving_frequency_steps']
 
-        if self.total_steps - checkpoint_steps >= self.learning_params['network_saving_frequency']:
+        if self.total_steps - int(checkpoint_steps) >= self.learning_params['network_saving_frequency_steps']:
             # print(f"mean time: {np.mean(self.training_times)}")
             if self.learning_params["maintain_state"]:
                 self.save_rnn_state()

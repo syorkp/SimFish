@@ -6020,8 +6020,8 @@ ppo_beta_5 = [
 
 ppo_test_1 = [
     {
-        "Model Name": "ppo_beta2",
-        "Environment Name": "ppo_beta2",
+        "Model Name": "ppo_beta_mod2",
+        "Environment Name": "ppo_beta_mod2",
         "Trial Number": 1,
         "Run Mode": "Training",
         "Tethered": False,
