@@ -62,6 +62,7 @@ def compute_rolling_averages_over_data_scaled_window(data, max_window, scaffold_
         rolling_average_full.append(rolling_average)
         window_start = window_end_index
 
+    rolling_average_full = [r for r in rolling_average_full if len(r) > 0]
     rolling_average = np.concatenate((rolling_average_full), axis=0)
 
     steps_cut = data[:data_points_cut, 0:1]
@@ -259,7 +260,7 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
             if key_scaffold_points is not None:
                 ylim = axs[i].get_ylim()
                 for p in key_scaffold_points:
-                    axs[i].vlines(p, ylim[0], ylim[1], color="r")
+                    axs[i].vlines(p, ylim[0]-ylim[0], ylim[1]+ylim[1], color="r")
                 axs[i].set_ylim(ylim[0], ylim[1])
             axs[i].set_ylabel(metric_name)
 
@@ -298,7 +299,7 @@ def create_zoomed_inset(scaffold_points, metric_vals, metric_name, inset_ylim, f
         plt.plot(scaffold_points[model], metric_vals[model])
 
     ax = plt.gca()
-    ax.set_ylim(inset_ylim)
+    # ax.set_ylim(inset_ylim)
     plt.ylabel(metric_name)
     plt.xlabel("Scaffold Point")
     plt.savefig(f"../../Analysis-Output/Training/{figure_name}_inset.jpg")
@@ -382,25 +383,25 @@ if __name__ == "__main__":
                           # "Phototaxis Index"
                           ]
     chosen_metrics_ppo_mod = ["prey capture index (fraction caught)",
-                          "capture success rate",
-                          # "episode reward",
-                          # "Energy Efficiency Index",
-                          "Episode Duration",
-                          # "Exploration Quotient",
-                          # "turn chain preference",
-                          # "Cause of Death",
-                          # Sand grain attempted captures.
-                          # DQN only
-                          "predator avoidance index (avoided/p_pred)",
-                          # "Phototaxis Index"
-                          ]
+                              "capture success rate",
+                              # "episode reward",
+                              # "Energy Efficiency Index",
+                              "Episode Duration",
+                              # "Exploration Quotient",
+                              # "turn chain preference",
+                              # "Cause of Death",
+                              # Sand grain attempted captures.
+                              # DQN only
+                              "predator avoidance index (avoided/p_pred)",
+                              # "Phototaxis Index"
+                              ]
     plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=40, interpolate_scaffold_points=True,
                                           figure_name="dqn_beta", scaled_window=False,
-                                          show_inset=["capture success rate", 10], key_scaffold_points=[14, 29, 42])
-    plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=40, interpolate_scaffold_points=True,
+                                          show_inset=["capture success rate", 10])# key_scaffold_points=[14, 29, 42])
+    plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=100, interpolate_scaffold_points=True,
                                           figure_name="dqn_beta_mod", scaled_window=False,
-                                          show_inset=["capture success rate", 18])#, key_scaffold_points=[10, 16, 31])
-    plot_multiple_metrics_multiple_models(ppo_models, chosen_metrics_ppo, window=40, interpolate_scaffold_points=False,
-                                          figure_name="ppo_beta")
-    plot_multiple_metrics_multiple_models(ppo_models_mod, chosen_metrics_ppo_mod, window=40, interpolate_scaffold_points=False,
-                                          figure_name="ppo_beta_mod")
+                                          show_inset=["capture success rate", 23])#, key_scaffold_points=[10, 16, 31])
+    # plot_multiple_metrics_multiple_models(ppo_models, chosen_metrics_ppo, window=100, interpolate_scaffold_points=False,
+    #                                       figure_name="ppo_beta")
+    # plot_multiple_metrics_multiple_models(ppo_models_mod, chosen_metrics_ppo_mod, window=100, interpolate_scaffold_points=False,
+    #                                       figure_name="ppo_beta_mod")

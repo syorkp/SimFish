@@ -542,6 +542,9 @@ class TrainingService(BaseService):
         else:
             checkpoint_steps = self.learning_params['network_saving_frequency_steps']
 
+        print(f"CHK: {checkpoint_steps}")
+        print(f"Total steps: {self.total_steps}")
+
         if self.total_steps - int(checkpoint_steps) >= self.learning_params['network_saving_frequency_steps']:
             # print(f"mean time: {np.mean(self.training_times)}")
             if self.learning_params["maintain_state"]:
