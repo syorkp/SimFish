@@ -1218,7 +1218,6 @@ class BaseEnvironment:
             'displacement_scaling_factor']  # Scaled down both for mass effects and to make it possible for the prey to be caught.
 
     def displace_sand_grains(self):
-        penalty = 0
         for i, body in enumerate(self.sand_grain_bodies):
             if self.check_proximity(self.sand_grain_bodies[i].position,
                                     self.env_variables['sand_grain_displacement_distance']):
@@ -1230,9 +1229,8 @@ class BaseEnvironment:
                 self.sand_grain_bodies[i].apply_impulse_at_local_point(
                     (self.get_last_action_magnitude(), 0))
 
-                if "sand_grain_touch_penalty" in self.env_variables:
-                    penalty -= self.env_variables["sand_grain_touch_penalty"]
-        return penalty
+                # if "sand_grain_touch_penalty" in self.env_variables:
+                #     penalty -= self.env_variables["sand_grain_touch_penalty"]
 
     def create_vegetation(self):
         size = self.env_variables['vegetation_size']

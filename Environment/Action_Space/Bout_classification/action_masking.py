@@ -7,6 +7,8 @@ from sklearn.neighbors import KernelDensity
 from scipy.interpolate import griddata
 import matplotlib
 import h5py
+from scipy.stats import multivariate_normal
+
 # import tensorflow.compat.v1 as tf
 # import tensorflow_probability as tfp
 from sklearn.cluster import DBSCAN
@@ -15,6 +17,8 @@ import seaborn as sns
 import scipy.stats as st
 
 from Analysis.Training.tools import find_nearest
+from Environment.Action_Space.draw_angle_dist import convert_action_to_bout_id
+
 # tf.disable_v2_behavior()
 
 # f = h5py.File('BoutMapCenters_kNN4_74Kins4dims_1.75Smooth_slow_3000_auto_4roc_merged11.mat', 'r')
@@ -45,6 +49,44 @@ Important indices (subtract 1?):
   - distBoutDistanceX = 19 Distance advanced in the tail to head direction including glide (forward positive, mm)
   - distBoutDistanceY = 20 Distance moved in left right direction including glide (left positive, mm)
 """
+
+
+def get_new_bout_params(action_num):
+    bout_id = convert_action_to_bout_id(action_num)
+
+    if bout_id == 8:  # Slow2
+        mean = [2.49320953e+00, 2.36217665e-19]
+        cov = [[4.24434912e-01, 1.89175382e-18],
+                [1.89175382e-18, 4.22367139e-03]]
+    elif bout_id == 7:  # RT
+        mean = [2.74619216, 0.82713249]
+        cov = [[0.3839484,  0.02302918],
+               [0.02302918, 0.03937928]]
+    elif bout_id == 0:  # sCS
+        mean = [0.956603146, -6.86735892e-18]
+        cov = [[2.27928786e-02, 1.52739195e-19],
+               [1.52739195e-19, 3.09720798e-03]]
+    elif bout_id == 4:  # J-turn 1
+        mean = [0.49074911, 0.39750791]
+        cov = [[0.00679925, 0.00071446],
+               [0.00071446, 0.00626601]]
+    elif bout_id == 44:  # J-turn 2
+        mean = [1.0535197,  0.61945679]
+        # cov = [[ 0.0404599,  -0.00318193],
+        #        [-0.00318193,  0.01365224]]
+        cov = [[0.0404599,  0.0],
+               [0.0,  0.01365224]]
+    elif bout_id == 5:  # C-Start
+        mean = [7.03322223, 0.67517832]
+        cov = [[1.35791922, 0.10690938],
+               [0.10690938, 0.10053853]]
+    elif bout_id == 10:  # AS
+        mean = [6.42048088e-01, 1.66490488e-17]
+        cov = [[3.99909515e-02, 3.58321400e-19],
+               [3.58321400e-19, 3.24366068e-03]]
+    else:
+        print(f"Error: {action_num}")
+    return mean, cov
 
 
 def produce_action_mask():
@@ -111,6 +153,59 @@ def produce_action_mask():
 
     return kde, best_threshold[0]
 
+
+def produce_action_mask_version_2():
+    res = 400
+    dis_lim = [0, 15]
+    ang_lim = [-1, 4]
+
+    new_action_nums = [0, 1, 3, 4, 7, 9, 10]
+
+    # Create grid of y/n and fill in with covering actions probabilities being nonzero.
+    impulse_range = np.linspace(dis_lim[0], dis_lim[1], res)
+    angle_range = np.linspace(ang_lim[0], ang_lim[1], res)
+    X, Y = np.meshgrid(impulse_range, angle_range)
+    X_, Y_ = np.expand_dims(X, 2), np.expand_dims(Y, 2)
+    full_grid = np.concatenate((X_, Y_), axis=2).reshape((-1, 2))
+    full_grid = np.swapaxes(full_grid, 0, 1)
+
+    correct_bout_pairs = np.zeros(X.shape)
+    accepted_bout_pairs = np.zeros(X.shape)
+    for a_n, a in enumerate(new_action_nums):
+        mean, cov = get_new_bout_params(a)
+        distr = multivariate_normal(cov=cov, mean=mean)
+        # Generating the density function
+        # for each point in the meshgrid
+        for i in range(X.shape[0]):
+            for j in range(X.shape[1]):
+
+                correct_bout_pairs[i, j] += distr.pdf([X[i, j], Y[i, j]])
+
+    plt.imshow(correct_bout_pairs ** 0.1)
+    plt.show()
+
+    kde, valid_bouts = get_action_mask()
+    values = kde(full_grid)
+    pdf = np.reshape(values, (res, res))
+
+    previous_best_threshold = [0.0014800148001480014, 406.0]
+
+    accepted_bout_pairs[correct_bout_pairs > 0.001] = 1
+
+
+    best_threshold = [0, 0]
+
+    # Iterate over thresholds, determining how many points have successfully matched.
+    # for thres in np.linspace(0, 1, 100000):
+    #     above_thresold = (pdf > thres)
+    #     correctly_identified = (above_thresold * correct_bout_pairs) * 1
+    #     print(f"Threshold: {thres}, Correct: {np.sum(correctly_identified)}")
+    #     if np.sum(correctly_identified) > best_threshold[1]:
+    #         best_threshold[0] = thres
+    #         best_threshold[1] = np.sum(correctly_identified)
+    # print(best_threshold)
+
+    return kde, best_threshold[0]
 
 def get_action_mask():
     try:
@@ -416,5 +511,6 @@ def create_action_mask_old():
 
 
 if __name__ == "__main__":
-    produce_action_mask()
+    # produce_action_mask()
 
+    produce_action_mask_version_2()

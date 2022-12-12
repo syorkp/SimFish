@@ -183,7 +183,9 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.move_prey(micro_step)
-            reward += self.displace_sand_grains()
+            self.displace_sand_grains()
+            if "sand_grain_touch_penalty" in self.env_variables:
+                reward -= self.env_variables["sand_grain_touch_penalty"]
             if self.new_simulation:
                 if self.env_variables["current_setting"]:
                     self.resolve_currents(micro_step)
