@@ -213,8 +213,8 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
                           sand_grains_bumped=self.simulation.sand_grains_bumped,
                           steps_near_vegetation=self.simulation.steps_near_vegetation,
                           )
-
-        print(f"""Mean Impulse: {np.mean([i[0] for i in self.buffer.action_buffer])}
+        print(f"""{self.model_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}
+Mean Impulse: {np.mean([i[0] for i in self.buffer.action_buffer])}
 Mean Angle {np.mean([i[1] for i in self.buffer.action_buffer])}
 Total episode reward: {self.total_episode_reward}\n""")
 

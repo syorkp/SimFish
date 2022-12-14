@@ -152,7 +152,8 @@ class DQNTrainingService(TrainingService, BaseDQN):
                           sand_grains_bumped=self.simulation.sand_grains_bumped,
                           steps_near_vegetation=self.simulation.steps_near_vegetation
                           )
-        print(f"""Total episode reward: {total_episode_reward}\n""")
+        print(f"""{self.model_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}
+Total episode reward: {self.total_episode_reward}\n""")
 
     def save_episode(self, episode_start_t, all_actions, total_episode_reward, episode_buffer, prey_caught,
                      predators_avoided, sand_grains_bumped, steps_near_vegetation):
