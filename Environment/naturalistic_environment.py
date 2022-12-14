@@ -79,6 +79,19 @@ class NaturalisticEnvironment(BaseEnvironment):
                                        'fish_mouth_size']) - 120)]
                 for cloud in range(int(self.env_variables["prey_cloud_num"]))]
 
+            self.sand_grain_cloud_locations = [
+                [np.random.randint(
+                    low=120 + self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
+                    high=self.env_variables['width'] - (
+                            self.env_variables['sand_grain_size'] + self.env_variables[
+                        'fish_mouth_size']) - 120),
+                    np.random.randint(
+                        low=120 + self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
+                        high=self.env_variables['height'] - (
+                                self.env_variables['sand_grain_size'] + self.env_variables[
+                            'fish_mouth_size']) - 120)]
+                for cloud in range(int(self.env_variables["sand_grain_num"]))]
+
             if "fixed_prey_distribution" in self.env_variables:
                 if self.env_variables["fixed_prey_distribution"]:
                     x_locations = np.linspace(
@@ -95,6 +108,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                     self.prey_cloud_locations = np.concatenate((np.expand_dims(x_locations, 1),
                                                                 np.expand_dims(y_locations, 1)), axis=1)
                     self.prey_cloud_locations = self.prey_cloud_locations[:self.env_variables["prey_cloud_num"]]
+
+
 
             if not self.env_variables["prey_reproduction_mode"]:
                 self.build_prey_cloud_walls()

@@ -80,7 +80,6 @@ class BasePPO:
     def init_states(self):
         # Init states for RNN
         if self.learning_params["maintain_state"]:
-            self.episode_number = self.episode_number - (self.episode_number % self.learning_params["network_saving_frequency"])
             # IF SAVE PRESENT
             if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
                 if self.environment_params["use_dynamic_network"]:

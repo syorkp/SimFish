@@ -334,7 +334,7 @@ class TrainingService(BaseService):
                 f"rnn_state_ref_2": self.init_rnn_state_ref[1].tolist(),
             }
 
-        with open(f"{self.model_location}/rnn_state-{self.total_steps}.json", 'w') as f:
+        with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'w') as f:
             json.dump(data, f, indent=4)
 
 

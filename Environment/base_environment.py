@@ -100,6 +100,20 @@ class BaseEnvironment:
                                                                          'fish_mouth_size']) + (self.env_variables[
                                                                                                     'birth_rate_region_size'] / 2)))]
                 for cloud in range(int(self.env_variables["prey_cloud_num"]))]
+
+            self.sand_grain_cloud_locations = [
+                [np.random.randint(
+                    low=120 + self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
+                    high=self.env_variables['width'] - (
+                            self.env_variables['sand_grain_size'] + self.env_variables[
+                        'fish_mouth_size']) - 120),
+                    np.random.randint(
+                        low=120 + self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
+                        high=self.env_variables['height'] - (
+                                self.env_variables['sand_grain_size'] + self.env_variables[
+                            'fish_mouth_size']) - 120)]
+                for cloud in range(int(self.env_variables["sand_grain_num"]))]
+
         self.predator_bodies = []
         self.predator_shapes = []
 
@@ -1190,13 +1204,25 @@ class BaseEnvironment:
             pymunk.Body(self.env_variables['sand_grain_mass'], self.env_variables['sand_grain_inertia']))
         self.sand_grain_shapes.append(pymunk.Circle(self.sand_grain_bodies[-1], self.env_variables['sand_grain_size']))
         self.sand_grain_shapes[-1].elasticity = 1.0
-        self.sand_grain_bodies[-1].position = (
-            np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
-                              self.env_variables['width'] - (
-                                      self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'])),
-            np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
-                              self.env_variables['height'] - (
-                                      self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'])))
+
+        if not self.env_variables["differential_prey"]:
+            self.sand_grain_bodies[-1].position = (
+                np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
+                                  self.env_variables['width'] - (
+                                          self.env_variables['sand_grain_size'] + self.env_variables[
+                                      'fish_mouth_size'])),
+                np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
+                                  self.env_variables['height'] - (
+                                          self.env_variables['sand_grain_size'] + self.env_variables[
+                                      'fish_mouth_size'])))
+        else:
+            cloud = random.choice(self.sand_grain_cloud_locations)
+            self.sand_grain_bodies[-1].position = (
+                np.random.randint(low=cloud[0] - (self.env_variables["birth_rate_region_size"] / 2),
+                                  high=cloud[0] + (self.env_variables["birth_rate_region_size"] / 2)),
+                np.random.randint(low=cloud[1] - (self.env_variables["birth_rate_region_size"] / 2),
+                                  high=cloud[1] + (self.env_variables["birth_rate_region_size"] / 2))
+            )
 
         if "sand_grain_colour" in self.env_variables:
             self.sand_grain_shapes[-1].color = self.env_variables["sand_grain_colour"]
