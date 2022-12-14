@@ -120,11 +120,13 @@ class TrainingService(BaseService):
                 checkpoint_path = checkpoint.model_checkpoint_path
                 checkpoint_num = int(checkpoint_path.split("/model-")[-1][:-5])
                 self.episode_number = checkpoint_num
+                self.checkpoint_steps = self.total_steps
 
             else:
                 print("No saved checkpoints found, starting from scratch.")
                 self.sess.run(self.init)
                 self.episode_number = 0
+                self.checkpoint_steps = 0
         else:
             print("First attempt at running model. Starting from scratch.")
             self.sess.run(self.init)
@@ -535,17 +537,17 @@ class TrainingService(BaseService):
 
         # Periodically save the model.
         # if self.episode_number % self.learning_params['network_saving_frequency'] == 0:
-        checkpoint = tf.train.get_checkpoint_state(self.model_location)
-        if hasattr(checkpoint, "model_checkpoint_path"):
-            checkpoint_path = checkpoint.model_checkpoint_path
-            checkpoint_steps = re.sub('\D', '', checkpoint_path)
-        else:
-            checkpoint_steps = self.learning_params['network_saving_frequency_steps']
+        # checkpoint = tf.train.get_checkpoint_state(self.model_location)
+        # if hasattr(checkpoint, "model_checkpoint_path"):
+        #     checkpoint_path = checkpoint.model_checkpoint_path
+        #     checkpoint_steps = re.sub('\D', '', checkpoint_path)
+        # else:
+        #     checkpoint_steps = self.learning_params['network_saving_frequency_steps']
 
         # print(f"CHK: {checkpoint_steps}")
         # print(f"Total steps: {self.total_steps}")
 
-        if self.total_steps - int(checkpoint_steps) >= self.learning_params['network_saving_frequency_steps']:
+        if self.total_steps - int(self.checkpoint_steps) >= self.learning_params['network_saving_frequency_steps']:
             # IF the steps interval is sufficient, will save the network according to episode number, so matches rnn
             # state and episode number initialisation
             # print(f"mean time: {np.mean(self.training_times)}")
