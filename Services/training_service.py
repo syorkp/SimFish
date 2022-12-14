@@ -334,7 +334,7 @@ class TrainingService(BaseService):
                 f"rnn_state_ref_2": self.init_rnn_state_ref[1].tolist(),
             }
 
-        with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'w') as f:
+        with open(f"{self.model_location}/rnn_state-{self.total_steps}.json", 'w') as f:
             json.dump(data, f, indent=4)
 
 
@@ -542,16 +542,17 @@ class TrainingService(BaseService):
         else:
             checkpoint_steps = self.learning_params['network_saving_frequency_steps']
 
-        print(f"CHK: {checkpoint_steps}")
-        print(f"Total steps: {self.total_steps}")
+        # print(f"CHK: {checkpoint_steps}")
+        # print(f"Total steps: {self.total_steps}")
 
         if self.total_steps - int(checkpoint_steps) >= self.learning_params['network_saving_frequency_steps']:
+            # IF the steps interval is sufficient, will save the network according to episode number, so matches rnn
+            # state and episode number initialisation
             # print(f"mean time: {np.mean(self.training_times)}")
             if self.learning_params["maintain_state"]:
                 self.save_rnn_state()
             # Save the model
-            # self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
-            self.saver.save(self.sess, f"{self.model_location}/model-{str(self.total_steps)}.cptk")
+            self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
             print("Saved Model")
 
         if self.episode_number % self.learning_params['summaryLength'] == 0 and self.episode_number != 0:
