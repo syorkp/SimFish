@@ -591,10 +591,12 @@ class NaturalisticEnvironment(BaseEnvironment):
 
 
     def resolve_currents(self, micro_step):
-        """Currents act on prey and fish."""
-        all_feature_coordinates = np.array(
-            [self.fish.body.position] + [body.position for body in self.prey_bodies]).astype(int)
-        original_orientations = np.array([self.fish.body.angle] + [body.angle for body in self.prey_bodies])
+        """Currents act on fish only."""
+        all_feature_coordinates = np.array([self.fish.body.position]).astype(int)
+        # all_feature_coordinates = np.array(
+        #     [self.fish.body.position] + [body.position for body in self.prey_bodies]).astype(int)
+        original_orientations = np.array([self.fish.body.angle])
+        # original_orientations = np.array([self.fish.body.angle] + [body.angle for body in self.prey_bodies])
 
         try:
             associated_impulse_vectors = self.impulse_vector_field[
@@ -608,10 +610,11 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.fish.body.apply_impulse_at_local_point(
             (associated_impulse_vectors[0, 1], associated_impulse_vectors[0, 0]))
 
-        for i, vector in enumerate(associated_impulse_vectors[1:]):
-            self.prey_bodies[i].angle = np.pi
-            self.prey_bodies[i].apply_impulse_at_local_point((vector[1], vector[0]))
-            self.prey_bodies[i].angle = original_orientations[i + 1]
+        # for i, vector in enumerate(associated_impulse_vectors[1:]):
+        #     self.prey_bodies[i].angle = np.pi
+        #     self.prey_bodies[i].apply_impulse_at_local_point((vector[1], vector[0]))
+        #     self.prey_bodies[i].angle = original_orientations[i + 1]
+
         self.fish.body.angle = original_orientations[0]
 
         # Add to log about swimming against currents...
