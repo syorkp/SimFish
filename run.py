@@ -6062,7 +6062,7 @@ dqn_just_predator_2 = [
     {
         "Model Name": "dqn_predator",
         "Environment Name": "dqn_predator",
-        "Trial Number": 2
+        "Trial Number": 2,
         "Run Mode": "Training",
         "Tethered": False,
         "Realistic Bouts": True,

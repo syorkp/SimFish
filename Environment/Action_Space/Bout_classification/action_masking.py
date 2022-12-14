@@ -170,7 +170,7 @@ def produce_action_mask_version_2():
     full_grid = np.swapaxes(full_grid, 0, 1)
 
     correct_bout_pairs = np.zeros(X.shape)
-    accepted_bout_pairs = np.zeros(X.shape)
+    accepted_bout_pairs = np.full(X.shape, False)
     for a_n, a in enumerate(new_action_nums):
         mean, cov = get_new_bout_params(a)
         distr = multivariate_normal(cov=cov, mean=mean)
@@ -181,34 +181,36 @@ def produce_action_mask_version_2():
 
                 correct_bout_pairs[i, j] += distr.pdf([X[i, j], Y[i, j]])
 
-    accepted_bout_pairs[correct_bout_pairs > 0.005] = 1
+    accepted_bout_pairs[correct_bout_pairs >= 0.005] = True
 
-
-    fig, axs = plt.subplots(2)
-    # axs[0].imshow(correct_bout_pairs/np.max(correct_bout_pairs))# ** 0.1)
-    axs[0].imshow(accepted_bout_pairs)
     kde, valid_bouts = get_action_mask()
     values = kde(full_grid)
     pdf = np.reshape(values, (res, res))
-    axs[1].imshow(pdf/np.max(pdf))
-    plt.show()
-    # Normalise both...
+
+    # fig, axs = plt.subplots(2)
+    # axs[0].imshow(correct_bout_pairs/np.max(correct_bout_pairs))# ** 0.1)
+    # axs[0].imshow(accepted_bout_pairs)
+    # axs[1].imshow(pdf/np.max(pdf))
+    # plt.show()
 
     previous_best_threshold = [0.0014800148001480014, 406.0]
-
-
 
     best_threshold = [0, 0]
 
     # Iterate over thresholds, determining how many points have successfully matched.
-    # for thres in np.linspace(0, 1, 100000):
-    #     above_thresold = (pdf > thres)
-    #     correctly_identified = (above_thresold * correct_bout_pairs) * 1
-    #     print(f"Threshold: {thres}, Correct: {np.sum(correctly_identified)}")
-    #     if np.sum(correctly_identified) > best_threshold[1]:
-    #         best_threshold[0] = thres
-    #         best_threshold[1] = np.sum(correctly_identified)
-    # print(best_threshold)
+    for thres in np.linspace(0, 0.1, 10000):
+        above_threshold = (pdf >= thres)
+
+        correctly_identified = (above_threshold * accepted_bout_pairs) * 1
+        incorrectly_identified = (above_threshold * ~accepted_bout_pairs) * 1
+        print(f"Threshold: {thres}, Correct: {np.sum(correctly_identified)-np.sum(incorrectly_identified)}")
+        if np.sum(correctly_identified) - np.sum(incorrectly_identified) > best_threshold[1]:
+            best_threshold[0] = thres
+            best_threshold[1] = np.sum(correctly_identified) - np.sum(incorrectly_identified)
+    print(best_threshold)
+
+    plt.imshow(pdf > best_threshold[0])
+    plt.show()
 
     return kde, best_threshold[0]
 
