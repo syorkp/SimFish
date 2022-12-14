@@ -1,0 +1,10 @@
+{
+    "Episode": {},
+    "PCI": {},
+    "PAI": {},
+    "SGB": {},
+    "Finished Condition": {
+        "PCI": 0.3,
+        "PAI": 300.0
+    }
+}

@@ -344,8 +344,8 @@ class TrainingService(BaseService):
     def _save_episode(self, episode_start_t, total_episode_reward, prey_caught, predators_avoided, sand_grains_bumped,
                       steps_near_vegetation):
         """Saves episode data common to all models"""
-        print(f"{self.model_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}",
-              flush=True)
+        # print(f"{self.model_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}",
+        #       flush=True)
 
         # # Log the average training time for episodes (when not saved)
         # if not self.save_frames:
