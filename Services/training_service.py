@@ -131,6 +131,7 @@ class TrainingService(BaseService):
             print("First attempt at running model. Starting from scratch.")
             self.sess.run(self.init)
             self.episode_number = 0
+            self.checkpoint_steps = 0
 
         self.writer = tf.summary.FileWriter(f"{self.model_location}/logs/", tf.get_default_graph())
 
