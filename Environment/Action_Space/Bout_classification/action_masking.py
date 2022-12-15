@@ -181,7 +181,8 @@ def produce_action_mask_version_2():
 
                 correct_bout_pairs[i, j] += distr.pdf([X[i, j], Y[i, j]])
 
-    accepted_bout_pairs[correct_bout_pairs >= 0.005] = True
+    accepted_bout_pairs[correct_bout_pairs >= 0.000001422] = True
+    # Between 0.00000142 and 0.000001422
 
     kde, valid_bouts = get_action_mask()
     values = kde(full_grid)

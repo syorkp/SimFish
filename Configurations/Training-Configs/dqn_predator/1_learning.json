@@ -197,5 +197,6 @@
     "use_rnd": false,
     "reuse_eyes": true,
     "maintain_state": true,
-    "network_saving_frequency": 20
+    "network_saving_frequency": 20,
+    "network_saving_frequency_steps": 100000, 
 }
