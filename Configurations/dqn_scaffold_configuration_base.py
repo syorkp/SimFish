@@ -272,10 +272,10 @@ env = {
        'max_isomerization_size': 0.0,
 
        # Energy state and hunger-based rewards
-       'ci': 0.0000008,  # Final for sublinear PPO: 0.0003
-       'ca': 0.0000008,  # Final for sublinear PPO: 0.0003
-       'baseline_decrease': 0.00075,  # Final for sublinear PPO: 0.0015
-       'trajectory_A': False, # Normally 5.0,
+       'ci': 1.5e-04,  # Final for sublinear PPO: 0.0003
+       'ca': 1.5e-04,  # Final for sublinear PPO: 0.0003
+       'baseline_decrease': 0.0002,  # Final for sublinear PPO: 0.0015
+       'trajectory_A': False,  # Normally 5.0,
        'trajectory_B': 2.5,
        'consumption_energy_gain': 1.0,
 
@@ -311,7 +311,7 @@ env = {
 }
 
 
-scaffold_name = "dqn_beta"
+scaffold_name = "dqn_gamma"
 
 # For predator scaffolding
 env["distance_from_fish"] *= 2

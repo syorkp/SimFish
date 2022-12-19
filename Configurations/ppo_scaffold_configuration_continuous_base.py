@@ -275,9 +275,9 @@ env = {
        'max_isomerization_size': 0.0,
 
        # Energy state and hunger-based rewards
-       'ci': 0.0004,  # 0.0004 in previous best.
-       'ca': 0.0004,  # 0.0004 in previous best.
-       'baseline_decrease': 0.0015,
+       'ci': 1.5e-04,  # 0.0004 in previous best.
+       'ca': 1.5e-04,  # 0.0004 in previous best.
+       'baseline_decrease': 0.0002,
        'trajectory_A': 5.0,
        'trajectory_B': 2.5,
        'consumption_energy_gain': 1.0,
@@ -313,9 +313,9 @@ env = {
 
 }
 
-scaffold_name = "ppo_beta_mod2"
+scaffold_name = "ppo_gamma"
 
-env["probability_of_predator"] = 0.003
+# env["probability_of_predator"] = 0.003
 env["immunity_steps"] = 200
 env["distance_from_fish"] *= 4
 
@@ -359,7 +359,7 @@ changes += build_changes_list_gradual("PCI", 0.4, "capture_angle_deviation_allow
 changes += [["PCI", 0.4, "anneling_steps", 1000000]]
 
 # 5) Predator avoidance
-# changes += [["PCI", 0.4, "probability_of_predator", 0.003]]
+changes += [["PCI", 0.4, "probability_of_predator", 0.003]]
 changes += build_changes_list_gradual("PCI", 0.3, "distance_from_fish", env["distance_from_fish"], env["distance_from_fish"] / 4, 5, discrete=False)
 
 changes += [["PCI", 0.4, "anneling_steps", 500000]]
