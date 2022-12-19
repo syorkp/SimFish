@@ -231,8 +231,28 @@ class TrainingService(BaseService):
                     np.mean(self.last_episodes_sand_grains_bumped) > self.sgb_transitions[next_point]:
                 switch_criteria_met = True
 
-            if self.episode_number - self.previous_config_switch < 20:
+            if self.episode_number - self.previous_config_switch < self.min_scaffold_interval:
                 switch_criteria_met = False
+
+            # Also check whether no improvement in selected metric is present
+            if "scaffold_stasis_requirement" in self.learning_params:
+                if self.learning_params["scaffold_stasis_requirement"]:
+                    if next_point in predators_conditional_transition_points:
+                        important_values = np.array(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"]
+                    elif next_point in prey_conditional_transition_points:
+                        important_values = np.array(self.last_episodes_prey_caught) / self.simulation.available_prey
+                    elif next_point in grains_bumped_conditional_transfer_points:
+                        important_values = np.array(self.last_episodes_sand_grains_bumped)
+                    else:
+                        important_values = np.array(self.last_episodes_prey_caught) / self.simulation.available_prey
+
+                    pre_values = np.mean(important_values[:int(self.min_scaffold_interval)])
+                    post_values = np.mean(important_values[int(self.min_scaffold_interval):])
+                    overall_std = np.std(important_values)
+
+                    if post_values - pre_values > overall_std / 2:
+                        switch_criteria_met = False
+
 
         if switch_criteria_met:
             self.configuration_index = int(next_point)

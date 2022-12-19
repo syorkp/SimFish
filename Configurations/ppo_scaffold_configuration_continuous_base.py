@@ -82,6 +82,7 @@ params = {
 
        # Specify how many episodes required before another scaffold switch can occur.
        'min_scaffold_interval': 50,
+       'scaffold_stasis_requirement': True,
 }
 
 env = {
@@ -128,11 +129,9 @@ env = {
        'p_escape': 0.5,
        'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
        'p_reorient': 0.04,
-       'slow_speed_paramecia': 0.005,
-       # Actual values should be 0.035,  # Impulse to generate 0.5mms-1 for given prey mass
-       'fast_speed_paramecia': 0.01,
-       # Actual values should be 0.07,  # Impulse to generate 1.0mms-1 for given prey mass
-       'jump_speed_paramecia': 0.1,  # Actual values should be 0.7,  # Impulse to generate 10.0mms-1 for given prey mass
+       'slow_speed_paramecia': 0.0035,  # Impulse to generate 0.5mms-1 for given prey mass
+       'fast_speed_paramecia': 0.007,  # Impulse to generate 1.0mms-1 for given prey mass
+       'jump_speed_paramecia': 0.07,  # Impulse to generate 10.0mms-1 for given prey mass
 
        # Prey reproduction
        'prey_reproduction_mode': True,
@@ -213,7 +212,7 @@ env = {
        'salt_reward_penalty': 0,  # Scales with salt concentration.
        "use_dynamic_network": True,
        'salt_concentration_decay': 0.002,  # Scale for exponential salt concentration decay from source.
-       'salt_recovery': 0.01,  # Amount by which salt health recovers per step
+       'salt_recovery': 0.005,  # Amount by which salt health recovers per step
        'max_salt_damage': 0.0,  # Salt damage at centre of source.
 
        # GIFs and debugging
