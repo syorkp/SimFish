@@ -40,9 +40,9 @@ class TestEnvironment:
             'p_escape': 0.5,
             'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
             'p_reorient': 0.04,
-            'slow_speed_paramecia': 0.005,
-            # Actual values should be 0.035,  # Impulse to generate 0.5mms-1 for given prey mass
-            'fast_speed_paramecia': 0.01,
+            'slow_speed_paramecia': 0.0035,
+            # Actual values should be 0.0035,  # Impulse to generate 0.5mms-1 for given prey mass
+            'fast_speed_paramecia': 0.007,
             # Actual values should be 0.07,  # Impulse to generate 1.0mms-1 for given prey mass
             'jump_speed_paramecia': 0.1,
             # Actual values should be 0.7,  # Impulse to generate 10.0mms-1 for given prey mass
@@ -552,12 +552,14 @@ class TestEnvironment:
         fig, axs = plt.subplots(3)
         axs[0].plot(prey_position[:, 0], prey_position[:, 1])
         axs[0].set_ylabel("Prey Position (mm from starting point")
-        axs[1].plot([i for i in range(prey_distance.shape[0])], prey_distance)
+        axs[0].set_xlabel("Prey Position (mm from starting point")
+        axs[1].plot([i *(2/1000) for i in range(prey_distance.shape[0])], prey_distance)
         axs[1].set_ylabel("Prey Distance (mm)")
-        axs[2].plot([i for i in range(prey_velocity.shape[0])], prey_velocity)
+        axs[1].set_xlabel("Time (s)")
+        axs[2].plot([i*(2/1000) for i in range(prey_velocity.shape[0])], prey_velocity)
         axs[2].set_ylabel("Prey Velocity (mms-1)")
+        axs[2].set_xlabel("Time (s)")
         plt.show()
-
 
         self.space.remove(self.prey_shapes[-1], self.prey_shapes[-1].body)
         self.prey_bodies.remove(self.prey_shapes[-1].body)
