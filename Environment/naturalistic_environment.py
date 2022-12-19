@@ -155,8 +155,8 @@ class NaturalisticEnvironment(BaseEnvironment):
         if self.fish.body.position[0] < 4 or self.fish.body.position[1] < 4 or \
                 self.fish.body.position[0] > self.env_variables["width"] - 4 or \
                 self.fish.body.position[1] > self.env_variables["height"] - 4:
-            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 6, self.env_variables["width"] - 7),
-                                        np.clip(self.fish.body.position[1], 6, self.env_variables["height"] - 7))
+            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 6, self.env_variables["width"] - 30),
+                                        np.clip(self.fish.body.position[1], 6, self.env_variables["height"] - 30))
             self.fish.body.position = new_position
 
     def simulation_step(self, action, save_frames, frame_buffer, activations, impulse):
@@ -588,7 +588,6 @@ class NaturalisticEnvironment(BaseEnvironment):
         # plt.ylim(0, 3000)
         # plt.xlim(0, 3000)
         # plt.show()
-
 
     def resolve_currents(self, micro_step):
         """Currents act on fish only."""

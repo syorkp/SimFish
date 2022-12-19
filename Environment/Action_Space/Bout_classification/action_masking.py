@@ -52,6 +52,7 @@ Important indices (subtract 1?):
 
 
 def get_new_bout_params(action_num):
+    """Returns mean and cov in (mm, radians)"""
     bout_id = convert_action_to_bout_id(action_num)
 
     if bout_id == 8:  # Slow2
@@ -155,14 +156,14 @@ def produce_action_mask():
 
 
 def produce_action_mask_version_2():
-    res = 400
-    dis_lim = [0, 15]
+    res = 50 # Formerly 400
+    dis_lim = [0, 15]  # In mm
     ang_lim = [-1, 4]
 
     new_action_nums = [0, 1, 3, 4, 7, 9, 10]
 
     # Create grid of y/n and fill in with covering actions probabilities being nonzero.
-    impulse_range = np.linspace(dis_lim[0], dis_lim[1], res)
+    impulse_range = np.linspace(dis_lim[0], dis_lim[1], res) * 3.4452532909386484
     angle_range = np.linspace(ang_lim[0], ang_lim[1], res)
     X, Y = np.meshgrid(impulse_range, angle_range)
     X_, Y_ = np.expand_dims(X, 2), np.expand_dims(Y, 2)
@@ -173,6 +174,8 @@ def produce_action_mask_version_2():
     accepted_bout_pairs = np.full(X.shape, False)
     for a_n, a in enumerate(new_action_nums):
         mean, cov = get_new_bout_params(a)
+        # Convert mean to distance
+        mean[0] *= 3.4452532909386484
         distr = multivariate_normal(cov=cov, mean=mean)
         # Generating the density function
         # for each point in the meshgrid
@@ -181,7 +184,7 @@ def produce_action_mask_version_2():
 
                 correct_bout_pairs[i, j] += distr.pdf([X[i, j], Y[i, j]])
 
-    accepted_bout_pairs[correct_bout_pairs >= 0.000001422] = True
+    accepted_bout_pairs[correct_bout_pairs >= 0.0000000000001] = True
     # Between 0.00000142 and 0.000001422
 
     kde, valid_bouts = get_action_mask()
@@ -210,8 +213,8 @@ def produce_action_mask_version_2():
             best_threshold[1] = np.sum(correctly_identified) - np.sum(incorrectly_identified)
     print(best_threshold)
 
-    plt.imshow(pdf > best_threshold[0])
-    plt.show()
+    # plt.imshow(pdf > best_threshold[0])
+    # plt.show()
 
     return kde, best_threshold[0]
 

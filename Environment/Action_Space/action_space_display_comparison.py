@@ -96,7 +96,6 @@ def display_labelled_marques_bouts_with_dists(env_variables):
     dis_lim = [0, 15]
     ang_lim = [-1, 4]
 
-
     distances, angles, labels = get_all_bouts()
     actions = ["Slow2", "RT", "sCS", "J-Turn", "C-Start", "AS"]
     # action_colours = [(0, 0, 1), (0, 1, 0), (1, 0, 0), (1, 1, 0), (1, 0, 0.5), (1, 1, 1)]
