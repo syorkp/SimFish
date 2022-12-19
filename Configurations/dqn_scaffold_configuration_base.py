@@ -171,6 +171,7 @@ env = {
        'capture_swim_extra_cost': 5,
        'capture_basic_reward': 10000,  # Used only when not using energy state.
        'predator_cost': 1000,
+       'predator_avoidance_reward': 0,
 
        'hunger': False,
        'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey

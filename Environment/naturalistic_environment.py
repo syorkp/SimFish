@@ -162,6 +162,7 @@ class NaturalisticEnvironment(BaseEnvironment):
     def simulation_step(self, action, save_frames, frame_buffer, activations, impulse):
         self.prey_consumed_this_step = False
         self.last_action = action
+        self.survived_attack = False
 
         # Visualisation
         if frame_buffer is None:
@@ -227,6 +228,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.fish.touched_edge = False
             if self.fish.touched_predator:
                 reward -= self.env_variables['predator_cost']
+                if 'predator_avoidance_reward' in self.env_variables:
+                    reward += self.env_variables["predator_avoidance_reward"]
                 done = True
                 self.fish.touched_predator = False
                 self.recent_cause_of_death = "Predator"

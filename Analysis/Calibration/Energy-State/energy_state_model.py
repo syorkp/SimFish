@@ -22,7 +22,7 @@ def build_fish_model(env_variables, continuous):
     return fish
 
 
-def run_simulation(fish, actions, captures, duration=1000):
+def run_simulation(fish, actions, captures, duration=2000):
     energy_levels = []
     rewards = []
     for i in range(duration):
@@ -33,26 +33,29 @@ def run_simulation(fish, actions, captures, duration=1000):
         if fish.energy_level < 0:
             break
 
-    plt.plot(energy_levels)
+    fix, axs = plt.subplots()
+    axs.plot(energy_levels)
     plt.show()
-    plt.plot(rewards)
-    plt.show()
+    # plt.plot(rewards)
+    # plt.show()
     print(np.sum(rewards))
 
 
-learning_params, env_variables, n, b, c = load_assay_configuration_files("ppo_scaffold_15-1")
-env_variables["baseline_decrease"] = 0.0015
-env_variables["ci"] = 0.0000008
-env_variables["ca"] = 0.0000008
-env_variables["action_energy_use_scaling"] = "Nonlinear"
-# Modify env variables here.
-model = build_fish_model(env_variables, continuous=False)
-captures = np.random.choice([0, 1], size=1000, p=[1-0.001, 0.001]).astype(float)
-no_captures = np.zeros((1000))
-actions = np.random.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], size=1000)
-# i = np.expand_dims((np.random.random_sample(1000) * 5), 1)
-# a = np.expand_dims((np.random.random_sample(1000)-0.5), axis=1)
-# actions = np.concatenate((i, a), axis=1)
-#actions[:, :] = 0
-# actions[:] = 6
-run_simulation(model, actions, no_captures)
+if __name__ == "__main__":
+    learning_params, env_variables, n, b, c = load_assay_configuration_files("dqn_predator-1")
+    env_variables["baseline_decrease"] = 0.0002
+    env_variables["ca"] = 1.5e-04
+    env_variables["ci"] = 1.5e-04
+    # env_variables["action_energy_use_scaling"] = "Nonlinear"
+    # Modify env variables here.
+    model = build_fish_model(env_variables, continuous=False)
+    captures = np.random.choice([0, 1], size=1000, p=[1-0.00001, 0.00001]).astype(float)
+    no_captures = np.zeros((2000))
+    actions = np.random.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], size=2000)
+    actions = [4 for i in range(2000)]
+    # i = np.expand_dims((np.random.random_sample(1000) * 5), 1)
+    # a = np.expand_dims((np.random.random_sample(1000)-0.5), axis=1)
+    # actions = np.concatenate((i, a), axis=1)
+    #actions[:, :] = 0
+    # actions[:] = 6
+    run_simulation(model, actions, no_captures)

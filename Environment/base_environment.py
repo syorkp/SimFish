@@ -178,6 +178,7 @@ class BaseEnvironment:
         # For logging
         self.failed_capture_attempts = 0
         self.in_light_history = []
+        self.survived_attack = False
 
     def reset(self):
         self.num_steps = 0
@@ -1188,6 +1189,7 @@ class BaseEnvironment:
             self.predator_target = None
             self.remaining_predator_attacks = None
             self.total_predator_steps = None
+            self.surivived_attack = True
         else:
             pass
 

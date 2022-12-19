@@ -172,45 +172,45 @@ def rewards_vs_energy_state(trajectory_A, trajectory_B,):
     plt.show()
 
 
-# Chosen parameters
-
-ci = 0.00002
-ca = 0.00002
-baseline_decrease = 0.003
-trajectory_A = 5.0
-trajectory_B = 2.5
-consumption_energy_gain = 1.0
-action_reward_scaling = 10000
-consumption_reward_scaling = 1000000
-
-
-# Computing return from investment
-steps = 500
-impulses = np.random.uniform(0, 20, steps)
-angles = np.random.uniform(-1, 1, steps)
-get_returns_from_investment(ci, ca, baseline_decrease, trajectory_A, trajectory_B, consumption_energy_gain,
-                                action_reward_scaling, consumption_reward_scaling, impulses, angles)
+if __name__ == "__main__":
+    # Chosen parameters
+    ci = 8e-07
+    ca = 8e-07
+    baseline_decrease = 0.00075
+    trajectory_A = 5.0
+    trajectory_B = 2.5
+    consumption_energy_gain = 1.0
+    action_reward_scaling = 10000
+    consumption_reward_scaling = 1000000
 
 
-# Modelling an episode
+    # Computing return from investment
+    steps = 500
+    impulses = np.random.uniform(0, 20, steps)
+    angles = np.random.uniform(-1, 1, steps)
+    get_returns_from_investment(ci, ca, baseline_decrease, trajectory_A, trajectory_B, consumption_energy_gain,
+                                    action_reward_scaling, consumption_reward_scaling, impulses, angles)
 
-steps = 1000
-consumptions = np.random.choice([0, 1], steps, p=[1-0.005, 0.005])
-# consumptions = np.random.choice([0, 1], steps, p=[1-0.0, 0.0])
-impulses = np.random.uniform(0, 20, steps)
-angles = np.random.uniform(-1, 1, steps)
 
-get_trajectory(consumptions, impulses, angles, ci, ca, consumption_energy_gain, baseline_decrease, trajectory_A,
-                   trajectory_B, action_reward_scaling, consumption_reward_scaling,  num_steps=steps)
+    # Modelling an episode
 
-rewards_vs_energy_state(trajectory_A, trajectory_B)
+    steps = 1000
+    consumptions = np.random.choice([0, 1], steps, p=[1-0.005, 0.005])
+    # consumptions = np.random.choice([0, 1], steps, p=[1-0.0, 0.0])
+    impulses = np.random.uniform(0, 20, steps)
+    angles = np.random.uniform(-1, 1, steps)
 
-# results = np.array([[calculate_reward_and_cost(i)] for i in np.linspace(0, 1.0, 1000)])
-#
-#
-# plt.plot(np.linspace(0, 1.0, 1000), results[:, 0, 0])
-# plt.show()
-#
-# plt.plot(np.linspace(0, 1.0, 1000), results[:, 0, 1])
-# plt.show()
+    get_trajectory(consumptions, impulses, angles, ci, ca, consumption_energy_gain, baseline_decrease, trajectory_A,
+                       trajectory_B, action_reward_scaling, consumption_reward_scaling,  num_steps=steps)
+
+    rewards_vs_energy_state(trajectory_A, trajectory_B)
+
+    # results = np.array([[calculate_reward_and_cost(i)] for i in np.linspace(0, 1.0, 1000)])
+    #
+    #
+    # plt.plot(np.linspace(0, 1.0, 1000), results[:, 0, 0])
+    # plt.show()
+    #
+    # plt.plot(np.linspace(0, 1.0, 1000), results[:, 0, 1])
+    # plt.show()
 
