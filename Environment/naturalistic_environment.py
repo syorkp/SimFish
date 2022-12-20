@@ -255,7 +255,6 @@ class NaturalisticEnvironment(BaseEnvironment):
                     print("Fish ran out of energy")
                     done = True
                     self.recent_cause_of_death = "Starvation"
-            print(reward)
 
             # Salt health
             if self.env_variables["salt"]:
@@ -273,6 +272,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                     if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables[
                         "salt_recovery"]:
                         reward -= self.env_variables["salt_reward_penalty"] * salt_damage
+
+            print(reward)
 
             if self.predator_body is not None:
                 self.total_predator_steps += 1
