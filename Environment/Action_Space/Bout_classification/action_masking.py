@@ -18,6 +18,7 @@ import scipy.stats as st
 
 from Analysis.Training.tools import find_nearest
 from Environment.Action_Space.draw_angle_dist import convert_action_to_bout_id
+from Environment.Action_Space.final_bout_creation import get_bout_data
 
 # tf.disable_v2_behavior()
 
@@ -217,6 +218,85 @@ def produce_action_mask_version_2():
     # plt.show()
 
     return kde, best_threshold[0]
+
+
+def produce_action_mask_version_3():
+    """Works by dicounting the points not used in defining the bouts in the newest bout distributions. Values for
+    discard thresholds etc taken from final_bout_creation.py file."""
+
+    # Parameters for testing and finding thresholds
+    res = 50  # Formerly 400
+    dis_lim = [0, 15]  # In mm
+    ang_lim = [-1, 4]
+
+    # Create grid of y/n and fill in with covering actions probabilities being nonzero.
+    impulse_range = np.linspace(dis_lim[0], dis_lim[1], res) * 3.4452532909386484
+    angle_range = np.linspace(ang_lim[0], ang_lim[1], res)
+    X, Y = np.meshgrid(impulse_range, angle_range)
+    X_, Y_ = np.expand_dims(X, 2), np.expand_dims(Y, 2)
+    full_grid = np.concatenate((X_, Y_), axis=2).reshape((-1, 2))
+    full_grid = np.swapaxes(full_grid, 0, 1)
+
+    constituent_bouts = [0, 1, 3, 4, 7, 9]
+    corresponding_distance_removal_thresholds = [15, 10, 999, 999, 15, 999]
+    corresponding_angle_removal_thresholds = [0.25, 999, 2, 999, 2, 999]
+
+    all_used_points = []
+
+    for i, bout in enumerate(constituent_bouts):
+        distances, angles = get_bout_data(bout)
+        all_bouts = np.concatenate((np.expand_dims(distances, 1),
+                                    np.expand_dims(angles, 1)), axis=1)
+        to_keep = (all_bouts[:, 0] < corresponding_distance_removal_thresholds[i]) * \
+                  (all_bouts[:, 1] < corresponding_angle_removal_thresholds[i])
+        all_used_points.append(all_bouts[to_keep])
+
+    all_used_points = np.concatenate(all_used_points, axis=0)
+
+    # all_used_points[:, 0] *= 10 * 0.34452532909386484
+
+    all_used_points = all_used_points[(all_used_points[:, 0] > 0) * (all_used_points[:, 1] > 0)]
+
+    sorted_actions = np.swapaxes(all_used_points, 0, 1)
+    kde = st.gaussian_kde(sorted_actions, bw_method=1.9 / 5.0)
+
+    # values = kde(full_grid)
+    # pdf = np.reshape(values, (res, res))
+    # pdf = np.flip(pdf, 0)
+
+    # Scatter to show all used points in action distribution
+    # plt.scatter(all_used_points[:, 0], all_used_points[:, 1])
+    # plt.show()
+
+    # # Find which points in the grid should be considered true by found threshold
+    # nearest_i = np.array([find_nearest(impulse_range, v[0]) for v in all_used_points])
+    # nearest_a = np.array([find_nearest(angle_range, v[1]) for v in all_used_points])
+    #
+    # correct_bout_pairs = np.full(X.shape, False)
+    # correct_bout_pairs[nearest_i, nearest_a] = True
+    #
+    # best_threshold = [0, -1000000]
+    #
+    # # Iterate over thresholds, determining how many points have successfully matched.
+    # for thres in np.linspace(0, 0.01, 10000):
+    #     above_threshold = (pdf >= thres)
+    #
+    #     correctly_identified = (above_threshold * correct_bout_pairs) * 1
+    #     incorrectly_identified = (above_threshold * ~correct_bout_pairs) * 1 + \
+    #                              (~above_threshold * correct_bout_pairs) * 1
+    #
+    #
+    #     print(f"Threshold: {thres}, Correct: {np.sum(correctly_identified)-np.sum(incorrectly_identified)}")
+    #     if np.sum(correctly_identified) - np.sum(incorrectly_identified) > best_threshold[1]:
+    #         best_threshold[0] = thres
+    #         best_threshold[1] = np.sum(correctly_identified) - np.sum(incorrectly_identified)
+    # print(best_threshold)
+
+    return kde, 0.006
+    # pdf[pdf > 0.0005] = 1
+    # # Show KDE
+    # plt.imshow(pdf, extent=[dis_lim[0], dis_lim[1], ang_lim[0], ang_lim[1]], aspect="auto")
+    # plt.show()
 
 def get_action_mask():
     try:
@@ -524,4 +604,4 @@ def create_action_mask_old():
 if __name__ == "__main__":
     # produce_action_mask()
 
-    produce_action_mask_version_2()
+    produce_action_mask_version_3()

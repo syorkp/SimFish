@@ -8,7 +8,8 @@ import matplotlib.patches as mpatches
 from Analysis.load_model_config import load_configuration_files_by_scaffold_point
 from Environment.Action_Space.draw_angle_dist import convert_action_to_bout_id
 from Environment.Action_Space.draw_angle_dist_new import draw_angle_dist_new
-from Environment.Action_Space.Bout_classification.action_masking import produce_action_mask, get_new_bout_params, produce_action_mask_version_2
+from Environment.Action_Space.Bout_classification.action_masking import produce_action_mask, get_new_bout_params, \
+    produce_action_mask_version_3
 
 
 def calculate_energy_cost(env_variables, impulse, angle):
@@ -153,8 +154,8 @@ def display_labelled_marques_bouts_with_dists(env_variables):
     pdf = np.absolute(pdf)
 
     # Add PPO action space outline
-    kde, threshold = produce_action_mask_version_2()
-    full_grid[0] *= 3.4452532909386484  # Convert to impulses.
+    kde, threshold = produce_action_mask_version_3()
+    # full_grid[0] *= 3.4452532909386484  # Convert to impulses.
     tested_region = kde(full_grid).reshape((res, res))
     accepted_region = (tested_region >= threshold) * 0.2
     accepted_region = np.flip(accepted_region, 0)

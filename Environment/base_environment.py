@@ -1117,6 +1117,7 @@ class BaseEnvironment:
         self.predator_body.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
 
     def _move_realistic_predator_new(self, micro_step):
+        print("Correct function")
         if self.first_attack:
             # If the first attack is to be a loom attack (specified by selecting loom stimulus in env config)
             if self.loom_predator_current_size < self.env_variables["final_predator_size"]:
@@ -1190,6 +1191,7 @@ class BaseEnvironment:
             self.remaining_predator_attacks = None
             self.total_predator_steps = None
             self.surivived_attack = True
+            print("Survived attack")
         else:
             pass
 

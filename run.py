@@ -6174,7 +6174,7 @@ dqn_gamma_5 = [
 ]
 
 if run_config is None:
-    run_config = dqn_gamma_1
+    run_config = dqn_just_predator_1
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]
