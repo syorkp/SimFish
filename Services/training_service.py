@@ -568,17 +568,24 @@ class TrainingService(BaseService):
         # print(f"CHK: {checkpoint_steps}")
         # print(f"Total steps: {self.total_steps}")
 
-        if self.total_steps - int(self.checkpoint_steps) >= self.learning_params['network_saving_frequency_steps']:
+        if "network_saving_frequency_steps" in self.learning_params:
+            if self.total_steps - int(self.checkpoint_steps) >= self.learning_params['network_saving_frequency_steps']:
 
-            # IF the steps interval is sufficient, will save the network according to episode number, so matches rnn
-            # state and episode number initialisation
-            # print(f"mean time: {np.mean(self.training_times)}")
-            if self.learning_params["maintain_state"]:
-                self.save_rnn_state()
-            # Save the model
-            self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
-            self.checkpoint_steps = self.total_steps
-            print("Saved Model")
+                # IF the steps interval is sufficient, will save the network according to episode number, so matches rnn
+                # state and episode number initialisation
+                # print(f"mean time: {np.mean(self.training_times)}")
+                if self.learning_params["maintain_state"]:
+                    self.save_rnn_state()
+                # Save the model
+                self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
+                self.checkpoint_steps = self.total_steps
+                print("Saved Model")
+        else:
+            if self.episode_number % self.learning_params["network_saving_frequency"] == 0:
+                if self.learning_params["maintain_state"]:
+                    self.save_rnn_state()
+                # Save the model
+                self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
 
         if self.episode_number % self.learning_params['summaryLength'] == 0 and self.episode_number != 0:
             if self.learning_params["save_gifs"]:
