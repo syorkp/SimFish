@@ -582,8 +582,8 @@ class TrainingService(BaseService):
                 print("Saved Model")
         else:
             if self.episode_number % self.learning_params["summaryLength"] == 0:
-                if self.learning_params["maintain_state"]:
-                    self.save_rnn_state()
+                # if self.learning_params["maintain_state"]:
+                #     self.save_rnn_state()
                 # Save the model
                 self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
 
