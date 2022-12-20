@@ -170,8 +170,8 @@ env = {
        'rest_cost': 2,
        'capture_swim_extra_cost': 0,
        'capture_basic_reward': 10000,  # Used only when not using energy state.
-       'predator_cost': 1000,
-       'predator_avoidance_reward': 0,
+       'predator_cost': 50000,
+       'predator_avoidance_reward': 20000,
 
        # Old internal state variables
        'hunger': False,
