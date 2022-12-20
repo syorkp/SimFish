@@ -581,7 +581,7 @@ class TrainingService(BaseService):
                 self.checkpoint_steps = self.total_steps
                 print("Saved Model")
         else:
-            if self.episode_number % self.learning_params["network_saving_frequency"] == 0:
+            if self.episode_number % self.learning_params["summaryLength"] == 0:
                 if self.learning_params["maintain_state"]:
                     self.save_rnn_state()
                 # Save the model
