@@ -273,8 +273,6 @@ class NaturalisticEnvironment(BaseEnvironment):
                         "salt_recovery"]:
                         reward -= self.env_variables["salt_reward_penalty"] * salt_damage
 
-            print(reward)
-
             if self.predator_body is not None:
                 self.total_predator_steps += 1
 
@@ -344,6 +342,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         # comb_obs = np.concatenate((observation[:, :, 0], observation[:, :, 1]), axis=0)
         # self.mean_observation_vals += [np.sum(comb_obs, axis=0)/len(comb_obs)]
         # self.max_observation_vals += [np.max(comb_obs, axis=0)]
+        print(reward)
 
         return observation, reward, internal_state, done, frame_buffer
 
