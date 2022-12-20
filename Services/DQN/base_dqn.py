@@ -242,7 +242,6 @@ class BaseDQN:
                     self.init_rnn_state = rnn_state
                     self.init_rnn_state_ref = rnn_state_ref
                 break
-            print(total_episode_reward)
         # Add the episode to the experience buffer
         return all_actions, total_episode_reward, episode_buffer
 
