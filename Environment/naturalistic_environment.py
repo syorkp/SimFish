@@ -31,7 +31,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.create_current()
             self.capture_fraction = int(
                 self.env_variables["phys_steps_per_sim_step"] * self.env_variables['fraction_capture_permitted'])
-            self.capture_start = 1 #int((self.env_variables['phys_steps_per_sim_step'] - self.capture_fraction) / 2)
+            self.capture_start = 1  # int((self.env_variables['phys_steps_per_sim_step'] - self.capture_fraction) / 2)
             self.capture_end = self.capture_start + self.capture_fraction
 
         self.paramecia_distances = []
@@ -108,8 +108,6 @@ class NaturalisticEnvironment(BaseEnvironment):
                     self.prey_cloud_locations = np.concatenate((np.expand_dims(x_locations, 1),
                                                                 np.expand_dims(y_locations, 1)), axis=1)
                     self.prey_cloud_locations = self.prey_cloud_locations[:self.env_variables["prey_cloud_num"]]
-
-
 
             if not self.env_variables["prey_reproduction_mode"]:
                 self.build_prey_cloud_walls()
@@ -248,6 +246,8 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         self.bring_fish_in_bounds()
 
+
+        print(reward)
         if self.new_simulation:
             # Energy level
             if self.env_variables["energy_state"]:
@@ -396,7 +396,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                 frame_buffer.append(frame)
             if self.draw_screen:
                 frame = self.output_frame(activations, internal_state, scale=0.5) / 255.
-                self.board_image.set_data(frame/np.max(frame))
+                self.board_image.set_data(frame / np.max(frame))
                 plt.pause(0.000001)
 
         # observation = self.chosen_math_library.dstack((self.fish.left_eye.readings,
@@ -626,7 +626,6 @@ class NaturalisticEnvironment(BaseEnvironment):
             # Log fish-current vector agreement
             self.vector_agreement.append((self.fish.impulse_vector_x * associated_impulse_vectors[0, 1]) + \
                                          (self.fish.impulse_vector_y * associated_impulse_vectors[0, 0]) * 5)
-
 
     def transport_fish(self, target_feature):
         """In assay mode only, relocates fish to a target feature from the following options:
