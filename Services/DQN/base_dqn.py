@@ -365,6 +365,7 @@ class BaseDQN:
                                                              self.simulation.fish.body.angle,
                                                              )
         self.total_steps += 1
+        print(given_reward)
         return o, action_reafference, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref
 
     def _assay_step_loop_old(self, o, internal_state, a, rnn_state):
