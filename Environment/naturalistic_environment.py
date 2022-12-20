@@ -246,8 +246,6 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         self.bring_fish_in_bounds()
 
-
-        print(reward)
         if self.new_simulation:
             # Energy level
             if self.env_variables["energy_state"]:
@@ -257,6 +255,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                     print("Fish ran out of energy")
                     done = True
                     self.recent_cause_of_death = "Starvation"
+            print(reward)
 
             # Salt health
             if self.env_variables["salt"]:
