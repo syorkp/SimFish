@@ -242,6 +242,7 @@ class BaseDQN:
                     self.init_rnn_state = rnn_state
                     self.init_rnn_state_ref = rnn_state_ref
                 break
+            print(total_episode_reward)
         # Add the episode to the experience buffer
         return all_actions, total_episode_reward, episode_buffer
 
@@ -365,7 +366,6 @@ class BaseDQN:
                                                              self.simulation.fish.body.angle,
                                                              )
         self.total_steps += 1
-        print(given_reward)
         return o, action_reafference, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref
 
     def _assay_step_loop_old(self, o, internal_state, a, rnn_state):
