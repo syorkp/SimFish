@@ -79,26 +79,27 @@ class BasePPO:
 
     def init_states(self):
         # Init states for RNN
-        if self.learning_params["maintain_state"]:
-            # IF SAVE PRESENT
-            if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
-                if self.environment_params["use_dynamic_network"]:
-                    with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
-                        print("Successfully loaded previous state.")
-                        data = json.load(f)
-                        num_rnns = len(data.keys())/4
-                        self.init_rnn_state_actor = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
-                        self.init_rnn_state_actor_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
+        if "maintain_state" in self.learning_params:
+            if self.learning_params["maintain_state"]:
+                # IF SAVE PRESENT
+                if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
+                    if self.environment_params["use_dynamic_network"]:
+                        with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
+                            print("Successfully loaded previous state.")
+                            data = json.load(f)
+                            num_rnns = len(data.keys())/4
+                            self.init_rnn_state_actor = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
+                            self.init_rnn_state_actor_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
 
-                    return
-                else:
-                    with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
-                        print("Successfully loaded previous state.")
-                        data = json.load(f)
-                        self.init_rnn_state_actor = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
-                        self.init_rnn_state_actor_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
+                        return
+                    else:
+                        with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
+                            print("Successfully loaded previous state.")
+                            data = json.load(f)
+                            self.init_rnn_state_actor = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
+                            self.init_rnn_state_actor_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
 
-                    return
+                        return
 
         # Init states for RNN - For steps, not training.
         if self.environment_params["use_dynamic_network"]:
