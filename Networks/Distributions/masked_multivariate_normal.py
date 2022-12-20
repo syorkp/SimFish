@@ -6,6 +6,8 @@ import statsmodels.api as sm
 import tensorflow_probability as tfp
 import tensorflow.compat.v1 as tf
 
+
+from Environment.Action_Space.Bout_classification.action_masking import produce_action_mask_version_3
 # tf.disable_v2_behavior()
 
 
@@ -15,39 +17,39 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
         super().__init__(loc=loc, scale_diag=scale_diag, allow_nan_stats=False)
 
         self.mu_vals = loc
-        self.kdf_threshold = 0.0014800148001480014  # As determined in Environment/Action_Space/Bout_classification/action_masking.py
-
-        # Compute KDF here.
-        try:
-            mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
-        except FileNotFoundError:
-            mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
-
-        bout_kinematic_parameters_final_array = mat["BoutKinematicParametersFinalArray"]
-        dist_angles = bout_kinematic_parameters_final_array[:, 10]  # Angles including glide
-        distance_x_inc_glide = bout_kinematic_parameters_final_array[:, 18]  # In mm
-        distance_y_inc_glide = bout_kinematic_parameters_final_array[:, 19]  # In mm
-
-        distance = (distance_x_inc_glide ** 2 + distance_y_inc_glide ** 2) ** 0.5
-
-        impulse = distance * 10 * 0.34452532909386484
-        # impulse = (distance * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
-        dist_angles_radians = (np.absolute(dist_angles) / 180) * np.pi
-
-        impulse = impulse / impulse_scaling
-
-        dist_angles_radians = dist_angles_radians / angle_scaling
-
-        impulse = np.expand_dims(impulse, 1)
-        dist_angles_radians = np.expand_dims(dist_angles_radians, 1)
-        actions = np.concatenate((impulse, dist_angles_radians), axis=1)
-
-        model = DBSCAN(eps=0.8125, min_samples=5).fit(actions)
-        sorted_actions = actions[model.labels_ != -1]
-
-        # Extra step - cut off negative impulse values
-        sorted_actions = sorted_actions[sorted_actions[:, 0] >= 0]
-        sorted_actions = sorted_actions[sorted_actions[:, 1] >= 0]
+        # self.kdf_threshold = 0.0014800148001480014  # As determined in Environment/Action_Space/Bout_classification/action_masking.py
+        #
+        # # Compute KDF here.
+        # try:
+        #     mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
+        # except FileNotFoundError:
+        #     mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
+        #
+        # bout_kinematic_parameters_final_array = mat["BoutKinematicParametersFinalArray"]
+        # dist_angles = bout_kinematic_parameters_final_array[:, 10]  # Angles including glide
+        # distance_x_inc_glide = bout_kinematic_parameters_final_array[:, 18]  # In mm
+        # distance_y_inc_glide = bout_kinematic_parameters_final_array[:, 19]  # In mm
+        #
+        # distance = (distance_x_inc_glide ** 2 + distance_y_inc_glide ** 2) ** 0.5
+        #
+        # impulse = distance * 10 * 0.34452532909386484
+        # # impulse = (distance * 10 - (0.004644 * 140.0 + 0.081417)) / 1.771548
+        # dist_angles_radians = (np.absolute(dist_angles) / 180) * np.pi
+        #
+        # impulse = impulse / impulse_scaling
+        #
+        # dist_angles_radians = dist_angles_radians / angle_scaling
+        #
+        # impulse = np.expand_dims(impulse, 1)
+        # dist_angles_radians = np.expand_dims(dist_angles_radians, 1)
+        # actions = np.concatenate((impulse, dist_angles_radians), axis=1)
+        #
+        # model = DBSCAN(eps=0.8125, min_samples=5).fit(actions)
+        # sorted_actions = actions[model.labels_ != -1]
+        #
+        # # Extra step - cut off negative impulse values
+        # sorted_actions = sorted_actions[sorted_actions[:, 0] >= 0]
+        # sorted_actions = sorted_actions[sorted_actions[:, 1] >= 0]
 
         # self.kde_impulse = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 0], var_type='c', bw='cv_ml')
         # self.kde_angle = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
@@ -56,8 +58,9 @@ class MaskedMultivariateNormal(tfp.distributions.MultivariateNormalDiag):
         # self.kde_angle = sm.nonparametric.KDEMultivariate(data=sorted_actions[:, 1], var_type='c', bw='cv_ml')
 
         # New version requires swapping axes of inputs...
-        sorted_actions = np.swapaxes(sorted_actions, 0, 1)
-        self.kde = st.gaussian_kde(sorted_actions)
+        # sorted_actions = np.swapaxes(sorted_actions, 0, 1)
+        # self.kde = st.gaussian_kde(sorted_actions)
+        self.kde, self.kdf_threshold = produce_action_mask_version_3()
         print("Action mask created")
 
     def get_sample_masked_weights(self, actions, shape):
