@@ -223,9 +223,10 @@ class BasePPO:
 
             self.total_episode_reward += r
             if d:
-                if self.learning_params["maintain_state"]:
-                    self.init_rnn_state = rnn_state_actor
-                    self.init_rnn_state_ref = rnn_state_actor_ref
+                if "maintain_state" in self.learning_params:
+                    if self.learning_params["maintain_state"]:
+                        self.init_rnn_state = rnn_state_actor
+                        self.init_rnn_state_ref = rnn_state_actor_ref
                 break
 
     def compute_rnn_states(self, rnn_key_points, observation_buffer, internal_state_buffer, previous_action_buffer):
