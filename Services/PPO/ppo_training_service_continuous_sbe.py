@@ -38,6 +38,7 @@ def ppo_training_target_continuous_sbe(trial, total_steps, episode_number, memor
                                                full_logs=trial["Full Logs"],
                                                profile_speed=trial["Profile Speed"],
                                                )
+    print("Created service...")
     services.run()
 
 
@@ -129,6 +130,7 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
 
     def run(self):
         sess = self.create_session()
+        print("Creating session...")
         with sess as self.sess:
             self.create_network()
             self.init_states()

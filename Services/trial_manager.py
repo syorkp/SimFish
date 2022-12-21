@@ -123,6 +123,7 @@ class TrialManager:
         return epsilon, total_steps, episode_number, configuration_index
 
     def get_new_job(self, trial, total_steps, episode_number, memory_fraction, epsilon, configuration_index):
+        print("Creating thread")
         if trial["Run Mode"] == "Training":
 
             if trial["Continuous Actions"]:
@@ -193,6 +194,7 @@ class TrialManager:
         else:
             print('Invalid "Run Mode" selected')
             new_job = None
+
         return new_job
 
     def run_priority_loop(self):

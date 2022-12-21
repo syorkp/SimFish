@@ -163,6 +163,86 @@ def remove_repeated_switching_points(scaffold_switching_points):
     return cleaned_scaffold_switching_points
 
 
+def order_chosen_model_data(metrics, model_data):
+    # Parsimonious way:
+    try:
+        ordered_chosen_model_data = [{metric: order_metric_data(model[metric]) for metric in metrics} for model in
+                                     model_data]
+    except KeyError:
+        ordered_chosen_model_data = []
+        for model in model_data:
+            metric_data = {}
+            for metric in metrics:
+                try:
+                    metric_data[metric] = order_metric_data(model[metric])
+                except KeyError:
+                    print(f"{metric} data unavailable")
+            ordered_chosen_model_data.append(metric_data)
+
+    return ordered_chosen_model_data
+
+
+def compute_rolling_averages(ordered_chosen_model_data, model_data, metrics, window, scaled_window):
+    try:
+        if scaled_window:
+            ordered_chosen_model_data_rolling_averages = [
+                {metric: compute_rolling_averages_over_data_scaled_window(model[metric], window,
+                                                            model_data[m]["Configuration change"]) for metric in metrics}
+                for m, model in enumerate(ordered_chosen_model_data)]
+        else:
+            ordered_chosen_model_data_rolling_averages = [
+                {metric: compute_rolling_averages_over_data(model[metric], window) for metric
+                 in metrics} for model in ordered_chosen_model_data]
+    except KeyError:
+        # With error handling:
+        ordered_chosen_model_data_rolling_averages = []
+        for model in ordered_chosen_model_data:
+            metric_data = {}
+            for metric in metrics:
+                try:
+                    metric_data[metric] = compute_rolling_averages_over_data(model[metric], window)
+                except KeyError:
+                    print(f"{metric} data unavailable")
+            ordered_chosen_model_data_rolling_averages.append(metric_data)
+    return ordered_chosen_model_data_rolling_averages
+
+
+def interpolate_scaffold_points_transitions(ordered_chosen_model_data_rolling_averages, model_data, metrics):
+    scaffold_switching_points = [model["Configuration change"] for model in model_data]
+    scaffold_switching_points = remove_repeated_switching_points(scaffold_switching_points)
+
+    new_orders = [np.argsort(np.array(model)[:, 1]) for model in scaffold_switching_points]
+    scaffold_switching_points = [np.array(model)[new_orders[i]] for i, model in
+                                 enumerate(scaffold_switching_points)]
+
+    # try:
+    #     # if scaled_window:
+    #     #     ordered_chosen_model_data_rolling_averages = [{metric: interpolate_metric_data_scaled_window(model[metric],
+    #     #                                                                                                  scaffold_switching_points[
+    #     #                                                                                                      i], window)
+    #     #                                                    for metric in metrics} for i, model in
+    #     #                                                   enumerate(ordered_chosen_model_data_rolling_averages)]
+    #     # else:
+    #     new_ordered_chosen_model_data_rolling_averages = [{metric: interpolate_metric_data(model[metric],
+    #                                                                                    scaffold_switching_points[i],
+    #                                                                                    )
+    #                                                    for metric in metrics} for i, model in
+    #                                                   enumerate(ordered_chosen_model_data_rolling_averages)]
+    # except KeyError:
+    new_ordered_chosen_model_data_rolling_averages = []
+    for i, model in enumerate(ordered_chosen_model_data_rolling_averages):
+        metric_data = {}
+        for metric in metrics:
+            try:
+                interpolated_data = interpolate_metric_data(model[metric], scaffold_switching_points[i])
+                metric_data[metric] = interpolated_data
+            except KeyError:
+                print(f"{metric} data unavailable")
+        new_ordered_chosen_model_data_rolling_averages.append(metric_data)
+
+    return new_ordered_chosen_model_data_rolling_averages, scaffold_switching_points
+
+
 def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpolate_scaffold_points, figure_name,
                                           key_scaffold_points=None, scaled_window=False, show_inset=None):
     """Different to previous versions in that it uses data directly from log files, and scales points between scaffold
@@ -171,89 +251,56 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
     window is the window for computing the rolling averages for each metric.
     """
 
+    # Load raw data
     model_data = [load_all_log_data(model) for model in model_list]
-    # Parsimonious way:
-    ordered_chosen_model_data = [{metric: order_metric_data(model[metric]) for metric in metrics} for model in
-                                 model_data]
-    # With error handling:
-    # ordered_chosen_model_data = []
-    # for model in model_data:
-    #     metric_data = {}
-    #     for metric in metrics:
-    #         try:
-    #             metric_data[metric] = order_metric_data(model[metric])
-    #         except KeyError:
-    #             print(f"{model} - {metric} data unavailable")
-    #     ordered_chosen_model_data.append(metric_data)
 
-    #                Rolling Averages
-    # Parsimonious way:
-    if scaled_window:
-        ordered_chosen_model_data_rolling_averages = [
-            {metric: compute_rolling_averages_over_data_scaled_window(model[metric], window,
-                                                        model_data[m]["Configuration change"]) for metric in metrics}
-            for m, model in enumerate(ordered_chosen_model_data)]
-    else:
-        ordered_chosen_model_data_rolling_averages = [
-            {metric: compute_rolling_averages_over_data(model[metric], window) for metric
-             in metrics} for model in ordered_chosen_model_data]
-    # With error handling:
-    # ordered_chosen_model_data_rolling_averages = []
-    # for model in ordered_chosen_model_data:
-    #     metric_data = {}
-    #     for metric in metrics:
-    #         try:
-    #             metric_data[metric] = compute_rolling_averages_over_data(model[metric], window)
-    #         except KeyError:
-    #             print(f"{metric} data unavailable")
-    #         ordered_chosen_model_data_rolling_averages.append(metric_data)
+    # Select only the data from selected metrics
+    ordered_chosen_model_data = order_chosen_model_data(metrics, model_data)
 
-    # episodes = np.array(ordered_chosen_model_data_rolling_averages[0]["prey caught"])[:, 0]
-    # plt.plot(sorted(episodes))
-    # plt.show()
+    # Compute rolling averages
+    ordered_chosen_model_data_rolling_averages = compute_rolling_averages(ordered_chosen_model_data, model_data, metrics,
+                                                                          window, scaled_window)
 
+    # If specified, normalise x-axis variable so scaffold points have equal representation - allows model comparison.
     if interpolate_scaffold_points:
-        scaffold_switching_points = [model["Configuration change"] for model in model_data]
-        scaffold_switching_points = remove_repeated_switching_points(scaffold_switching_points)
-
-        new_orders = [np.argsort(np.array(model)[:, 1]) for model in scaffold_switching_points]
-        scaffold_switching_points = [np.array(model)[new_orders[i]] for i, model in
-                                     enumerate(scaffold_switching_points)]
-        # if scaled_window:
-        #     ordered_chosen_model_data_rolling_averages = [{metric: interpolate_metric_data_scaled_window(model[metric],
-        #                                                                                                  scaffold_switching_points[
-        #                                                                                                      i], window)
-        #                                                    for metric in metrics} for i, model in
-        #                                                   enumerate(ordered_chosen_model_data_rolling_averages)]
-        # else:
-        ordered_chosen_model_data_rolling_averages = [{metric: interpolate_metric_data(model[metric],
-                                                                                           scaffold_switching_points[i],
-                                                                                           )
-                                                           for metric in metrics} for i, model in
-                                                          enumerate(ordered_chosen_model_data_rolling_averages)]
-
-    num_metrics = len(metrics)
+        ordered_chosen_model_data_rolling_averages, scaffold_switching_points = interpolate_scaffold_points_transitions(ordered_chosen_model_data_rolling_averages, model_data, metrics)
 
     inset_scaffold_points = []
     inset_metric_vals = []
     metric_index = None
 
+    # Create plot
+    num_metrics = len(metrics)
     fig, axs = plt.subplots(num_metrics, 1, figsize=(50, int(12 * num_metrics)), sharex=True)
+
     for model in ordered_chosen_model_data_rolling_averages:
         for i, metric in enumerate(metrics):
             metric_name = get_metric_name(metric)
 
-            if metric_name == "AHI":
-                to_zero = (model[metric][:, 0] < 2)
-                model[metric][to_zero, 1] = 0
+            #           Special cases
 
+            # Remove AHI early phase
+            # if metric_name == "AHI":
+            #     to_zero = (model[metric][:, 0] < 2)
+            #     model[metric][to_zero, 1] = 0
+            # Adjust phototaxis index (earlier models had it computed wrong for part of training).
             # if metric_name == "Phototaxis Index":
             #     to_switch = (model[metric][:, 0] < 31)
             #     model[metric][to_switch, 1] -= 0.5
             #     model[metric][to_switch, 1] *= 2
-            axs[i].plot(model[metric][:, 0], model[metric][:, 1], alpha=0.5)
-            if min(model[metric][:, 1]) < 0:
-                axs[i].hlines(0, 0, max(model[metric][:, 0]), color="black", linestyles="dashed")
+
+            # Plot metric data
+            try:
+                axs[i].plot(model[metric][:, 0], model[metric][:, 1], alpha=0.5)
+            except KeyError:
+                ...
+
+            # Add 0 line for metrics that cross it.
+            try:
+                if min(model[metric][:, 1]) < 0:
+                    axs[i].hlines(0, 0, max(model[metric][:, 0]), color="black", linestyles="dashed")
+            except KeyError:
+                ...
 
             axs[i].grid(True, axis="x")
 
@@ -264,14 +311,16 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
                 axs[i].set_ylim(ylim[0], ylim[1])
             axs[i].set_ylabel(metric_name)
 
-            if show_inset is not None:
-                if show_inset[0] == metric:
-                    scaffold_point = show_inset[1]
-                    data_to_keep = (model[metric][:, 0] >= scaffold_point) * (model[metric][:, 0] < scaffold_point + 1)
-                    inset_scaffold_points.append(model[metric][data_to_keep, 0])
-                    inset_metric_vals.append(model[metric][data_to_keep, 1])
-                    metric_index = i
-
+            try:
+                if show_inset is not None:
+                    if show_inset[0] == metric:
+                        scaffold_point = show_inset[1]
+                        data_to_keep = (model[metric][:, 0] >= scaffold_point) * (model[metric][:, 0] < scaffold_point + 1)
+                        inset_scaffold_points.append(model[metric][data_to_keep, 0])
+                        inset_metric_vals.append(model[metric][data_to_keep, 1])
+                        metric_index = i
+            except KeyError:
+                ...
             # plt.setp(axs[i].get_yticklabels(), rotation=30, horizontalalignment='right')
 
     if interpolate_scaffold_points:
@@ -351,7 +400,7 @@ if __name__ == "__main__":
                           # "Cause of Death",
                           # Sand grain attempted captures.
                           # DQN only
-                          # "predator avoidance index (avoided/p_pred)",
+                          "predator avoidance index (avoided/p_pred)",
                           "Phototaxis Index"
                           ]
     chosen_metrics_dqn_mod = ["prey capture index (fraction caught)",
@@ -398,9 +447,9 @@ if __name__ == "__main__":
     plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=40, interpolate_scaffold_points=True,
                                           figure_name="dqn_beta", scaled_window=False,
                                           show_inset=["capture success rate", 10])# key_scaffold_points=[14, 29, 42])
-    plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=100, interpolate_scaffold_points=True,
-                                          figure_name="dqn_beta_mod", scaled_window=False,
-                                          show_inset=["capture success rate", 23])#, key_scaffold_points=[10, 16, 31])
+    # plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=100, interpolate_scaffold_points=True,
+    #                                       figure_name="dqn_beta_mod", scaled_window=False,
+    #                                       show_inset=["capture success rate", 23])#, key_scaffold_points=[10, 16, 31])
     # plot_multiple_metrics_multiple_models(ppo_models, chosen_metrics_ppo, window=100, interpolate_scaffold_points=False,
     #                                       figure_name="ppo_beta")
     # plot_multiple_metrics_multiple_models(ppo_models_mod, chosen_metrics_ppo_mod, window=100, interpolate_scaffold_points=False,
