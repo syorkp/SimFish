@@ -45,6 +45,9 @@ class BasePPO:
         self.init_rnn_state_critic = None
         self.init_rnn_state_critic_ref = None
 
+        self.init_rnn_state = self.init_rnn_state_actor  # Reset RNN hidden state
+        self.init_rnn_state_ref = self.init_rnn_state_actor_ref
+
         # Add attributes only if don't exist yet (prevents errors thrown).
         if not hasattr(self, "new_simulation"):
             self.new_simulation = None
