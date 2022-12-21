@@ -218,7 +218,7 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
         print(f"""{self.model_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}
 Mean Impulse: {np.mean([i[0] for i in self.buffer.action_buffer])}
 Mean Angle {np.mean([i[1] for i in self.buffer.action_buffer])}
-Total episode reward: {self.total_episode_reward}\n""")
+Total episode reward: {self.total_episode_reward}\n""", flush=True)
 
     def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                   rnn_state_critic_ref):
