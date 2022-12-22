@@ -6319,7 +6319,7 @@ ppo_gamma_test = [
         "Full Logs": True,
         "SB Emulator": True,
         "New Simulation": True,
-        "Profile Speed": False,
+        "Profile Speed": True,
     },
     {
         "Model Name": "ppo_test",
@@ -6336,7 +6336,7 @@ ppo_gamma_test = [
         "Full Logs": True,
         "SB Emulator": True,
         "New Simulation": True,
-        "Profile Speed": False,
+        "Profile Speed": True,
     },
 
 ]

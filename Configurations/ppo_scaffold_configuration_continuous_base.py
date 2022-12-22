@@ -22,7 +22,7 @@ params = {
        'batch_size': 1,  # How many experience traces to use for each training step. Works okay with 1.
        'trace_length': 50,  # How long each experience trace will be when training. Works okay with 50
        'num_episodes': 100000,  # How many episodes of game environment to train network with.
-       'max_epLength': 10000,  # The max allowed length of our episode.
+       'max_epLength': 5000,  # The max allowed length of our episode.
        'epsilon_greedy': True,
        'epsilon_greedy_scaffolding': True,
        'startE': 0.2,  # Starting chance of random action

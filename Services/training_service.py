@@ -176,7 +176,7 @@ class TrainingService(BaseService):
                 ps = pstats.Stats(self.profile)
                 ps.sort_stats("tottime")
                 ps.print_stats(20)
-                print(time.time())
+                print(time.time(), flush=True)
 
                 if self.monitor_performance:
                     self.profile = cProfile.Profile()
