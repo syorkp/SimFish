@@ -1,10 +1,19 @@
+from Analysis.load_data import load_data
+
 from Analysis.Behavioural.Discrete.ActionBlocks.display_action_sequences_block import display_all_sequences
 from Analysis.Behavioural.Tools.BehavLabels.extract_capture_sequences import get_capture_sequences
 from Analysis.Behavioural.Tools.filter_sequences import remove_sCS_heavy
+from Analysis.Behavioural.Tools.BehavLabels.extract_hunting_sequences import get_hunting_sequences_timestamps
 
 if __name__ == "__main__":
-    capture_sequences = get_capture_sequences(f"dqn_scaffold_33-1", "Behavioural-Data-Free", "Naturalistic", 30)
-    display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=True, figure_save_location="Captures-dqn_scaffold_33-1")
+
+
+    d = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-2")
+    seq = get_hunting_sequences_timestamps(d)
+    display_all_sequences(seq, indicate_consumption=True, save_figure=True, figure_name="Captures-pedro_method-1")
+
+    # capture_sequences = get_capture_sequences(f"dqn_beta-1", "Behavioural-Data-Free", "Naturalistic", 10)
+    # display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=True, figure_save_location="Captures-dqn_scaffold_33-1")
     #                                   CAPTURE SEQUENCES
     # compiled_capture_sequences = []
     # capture_sequences = get_capture_sequences(f"dqn_scaffold_18x-1", "Behavioural-Data-Free", "Naturalistic", 10)
