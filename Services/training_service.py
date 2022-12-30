@@ -236,7 +236,7 @@ class TrainingService(BaseService):
 
             # Also check whether no improvement in selected metric is present
             if "scaffold_stasis_requirement" in self.learning_params:
-                if self.learning_params["scaffold_stasis_requirement"]:
+                if switch_criteria_met and self.learning_params["scaffold_stasis_requirement"]:
                     if next_point in predators_conditional_transition_points:
                         important_values = np.array(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"]
                     elif next_point in prey_conditional_transition_points:
@@ -252,7 +252,9 @@ class TrainingService(BaseService):
 
                     if post_values - pre_values > overall_std / 2:
                         switch_criteria_met = False
-
+                        print(f"""Still improving: Pre: {pre_values} Post: {post_values} Std: {overall_std}""")
+                    else:
+                        print(f"""Stopped improving: Pre: {pre_values} Post: {post_values} Std: {overall_std}""")
 
         if switch_criteria_met:
             self.configuration_index = int(next_point)
