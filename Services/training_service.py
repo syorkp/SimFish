@@ -208,10 +208,16 @@ class TrainingService(BaseService):
         episode_transition_points = self.episode_transitions.keys()
         switch_criteria_met = False
 
+        self.last_episodes_prey_caught = [0.3 for i in range(self.min_scaffold_interval)]
+
+        print("Checking update configuration")
+
         # Switch config by episode
         if next_point in episode_transition_points and self.episode_number > self.episode_transitions[next_point]:
             switch_criteria_met = True
         elif len(self.last_episodes_prey_caught) >= self.min_scaffold_interval:  # Switch config by behavioural conditionals
+
+            print("Checking update configuration2")
 
             prey_conditional_transition_points = self.pci_transitions.keys()
             predators_conditional_transition_points = self.pai_transitions.keys()
@@ -231,8 +237,8 @@ class TrainingService(BaseService):
                     np.mean(self.last_episodes_sand_grains_bumped) > self.sgb_transitions[next_point]:
                 switch_criteria_met = True
 
-            if self.episode_number - self.previous_config_switch < self.min_scaffold_interval:
-                switch_criteria_met = False
+            # if self.episode_number - self.previous_config_switch < self.min_scaffold_interval:
+            #     switch_criteria_met = False
 
             # Also check whether no improvement in selected metric is present
             if "scaffold_stasis_requirement" in self.learning_params:
