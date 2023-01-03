@@ -14,7 +14,7 @@ def modify_training_configs(config_name, variable, new_value, num_configs, prefi
 
 
 if __name__ == "__main__":
-    modify_training_configs("ppo_gamma", "min_scaffold_interval", 50, 52, prefix="learning")
+    modify_training_configs("ppo_gamma", "min_scaffold_interval", 50, 60, prefix="learning")
     # modify_training_configs("dqn_scaffold_30", "num_episodes", 100000, 43, prefix="learning")
     # modify_training_configs("dqn_scaffold_30_even_p", "num_episodes", 100000, 43, prefix="learning")
     # modify_training_configs("dqn_scaffold_30_fixed_p", "num_episodes", 100000, 43, prefix="learning")
