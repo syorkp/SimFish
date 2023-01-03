@@ -386,7 +386,7 @@ class TrainingService(BaseService):
         self.last_episodes_prey_caught.append(prey_caught)
         self.last_episodes_predators_avoided.append(predators_avoided)
         self.last_episodes_sand_grains_bumped.append(sand_grains_bumped)
-        if len(self.last_episodes_predators_avoided) > 20:
+        if len(self.last_episodes_predators_avoided) > self.min_scaffold_interval:
             self.last_episodes_prey_caught.pop(0)
             self.last_episodes_predators_avoided.pop(0)
             self.last_episodes_sand_grains_bumped.pop(0)
