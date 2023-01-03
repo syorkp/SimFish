@@ -14,7 +14,8 @@ def modify_training_configs(config_name, variable, new_value, num_configs, prefi
 
 
 if __name__ == "__main__":
-    modify_training_configs("ppo_gamma", "max_epLength", 5000, 60, prefix="learning")
+    modify_training_configs("ppo_gamma", "predator_impulse", 5, 60, prefix="env")
+    modify_training_configs("dqn_gamma", "predator_impulse", 5, 52, prefix="env")
     # modify_training_configs("dqn_scaffold_30", "num_episodes", 100000, 43, prefix="learning")
     # modify_training_configs("dqn_scaffold_30_even_p", "num_episodes", 100000, 43, prefix="learning")
     # modify_training_configs("dqn_scaffold_30_fixed_p", "num_episodes", 100000, 43, prefix="learning")

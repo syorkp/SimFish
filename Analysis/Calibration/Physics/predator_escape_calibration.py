@@ -129,10 +129,10 @@ if __name__ == "__main__":
     #                     set_angle=0,
     #                     impulse_effect_noise=0.1, angular_effect_noise=0.6, predator_impulse=25)
     # Simulating SLC
-    plot_escape_success(n_repeats=10,
-                        use_action_means=False, continuous=True, set_impulse=7.03322223 * 3.4452532909386484,
-                        set_angle=0.67517832,
-                        impulse_effect_noise=0.1, angular_effect_noise=0.6, predator_impulse=25)
+    # plot_escape_success(n_repeats=10,
+    #                     use_action_means=False, continuous=True, set_impulse=7.03322223 * 3.4452532909386484,
+    #                     set_angle=0.67517832,
+    #                     impulse_effect_noise=0.1, angular_effect_noise=0.6, predator_impulse=25)
     # Simulating RT
     # plot_escape_success(n_repeats=10,
     #                     use_action_means=False, continuous=True, set_impulse=2.74619216 * 3.4452532909386484,
@@ -145,10 +145,10 @@ if __name__ == "__main__":
     #                     impulse_effect_noise=0.1, angular_effect_noise=0.6, predator_impulse=25)
 
     #           DQN
-    # plot_escape_success(n_repeats=10,
-    #                     use_action_means=False, continuous=False, set_impulse=0,
-    #                     set_angle=0.0,
-    #                     impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=25., specified_action=1)
+    plot_escape_success(n_repeats=10,
+                        use_action_means=False, continuous=False, set_impulse=0,
+                        set_angle=0.0,
+                        impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=6., specified_action=1)
     # plot_escape_success(n_repeats=10,
     #                     use_action_means=False, continuous=False, set_impulse=0,
     #                     set_angle=0.0,
@@ -160,5 +160,5 @@ if __name__ == "__main__":
     plot_escape_success(n_repeats=10,
                         use_action_means=False, continuous=False, set_impulse=0,
                         set_angle=0.0,
-                        impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=25., specified_action=7)
+                        impulse_effect_noise=0.14, angular_effect_noise=0.5, predator_impulse=6., specified_action=7)
 
