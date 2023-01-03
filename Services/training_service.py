@@ -208,7 +208,7 @@ class TrainingService(BaseService):
         episode_transition_points = self.episode_transitions.keys()
         switch_criteria_met = False
 
-        self.last_episodes_prey_caught = [0.3 for i in range(self.min_scaffold_interval)]
+        self.last_episodes_prey_caught = [100 for i in range(self.min_scaffold_interval)]
 
         print("Checking update configuration")
 
