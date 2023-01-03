@@ -11,8 +11,19 @@ Scripts to extract hunting sequences as defined by Henriques et al. (2019):
 """
 
 
-def get_hunting_sequences_timestamps(data):
-    prey_positions = data["prey_positions"]
+def get_hunting_sequences_timestamps(data, successful_captures, sand_grain_version=False):
+    """
+
+    :param data:
+    :param successful_captures: Boolean to discard identified sequences if they dont end in a successful capture.
+    :param sand_grain_version: Boolean to use on sand grain positions, rather than prey.
+    :return:
+    """
+
+    if sand_grain_version:
+        prey_positions = data["sand_grain_positions"]
+    else:
+        prey_positions = data["prey_positions"]
     fish_positions = data["fish_position"]
     fish_orientation = data["fish_angle"]
     fish_orientation %= 2 * np.pi
@@ -71,12 +82,22 @@ def get_hunting_sequences_timestamps(data):
     all_actions = []
 
     for seq in all_timestamps:
-        all_actions.append(data["action"][seq])
+        if successful_captures:
+            endings = [s + 1 for s in seq]
+            consumptions = data["consumed"][endings]
+            index = 0  # Variable to keep track of sequences if multiple ones are found within sequence
+            for i, c in enumerate(consumptions):
+                if c:
+                    all_actions.append(data["action"][seq[index:i+2]])
+                    index = i + 2
+        else:
+            all_actions.append(data["action"][seq])
     # TODO: If next step is consumption, add that to the sequence.
     return all_actions
 
 
 if __name__ == "__main__":
     d = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-2")
-    seq = get_hunting_sequences_timestamps(d)
+    seq = get_hunting_sequences_timestamps(d, True)
+    all_seq = get_hunting_sequences_timestamps(d, False)
     # Validate by labelling successful captures.

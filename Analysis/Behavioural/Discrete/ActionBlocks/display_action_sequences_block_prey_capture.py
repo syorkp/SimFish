@@ -9,8 +9,11 @@ if __name__ == "__main__":
 
 
     d = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-2")
-    seq = get_hunting_sequences_timestamps(d)
+    seq = get_hunting_sequences_timestamps(d, True)
     display_all_sequences(seq, indicate_consumption=True, save_figure=True, figure_name="Captures-pedro_method-1")
+
+    seq = get_hunting_sequences_timestamps(d, False)
+    display_all_sequences(seq, indicate_consumption=True, save_figure=True, figure_name="Hunts-pedro_method-1")
 
     # capture_sequences = get_capture_sequences(f"dqn_beta-1", "Behavioural-Data-Free", "Naturalistic", 10)
     # display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=True, figure_save_location="Captures-dqn_scaffold_33-1")
