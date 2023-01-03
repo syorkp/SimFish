@@ -6342,7 +6342,7 @@ ppo_gamma_test = [
 ]
 
 if run_config is None:
-    run_config = dqn_gamma_1
+    run_config = ppo_gamma_1
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]

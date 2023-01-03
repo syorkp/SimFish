@@ -1076,6 +1076,7 @@ class ContinuousPPO(BasePPO):
                        self.actor_network.entropy_coefficient: self.learning_params["lambda_entropy"],
                        }
         )
+        print(impulse)
 
         if self.epsilon_greedy:
             if np.random.rand(1) < self.e:
