@@ -240,6 +240,9 @@ class TrainingService(BaseService):
             # if self.episode_number - self.previous_config_switch < self.min_scaffold_interval:
             #     switch_criteria_met = False
 
+            if switch_criteria_met:
+                print("Switch criteria met...")
+
             # Also check whether no improvement in selected metric is present
             if "scaffold_stasis_requirement" in self.learning_params:
                 if switch_criteria_met and self.learning_params["scaffold_stasis_requirement"]:
