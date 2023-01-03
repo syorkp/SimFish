@@ -226,16 +226,16 @@ class TrainingService(BaseService):
             if next_point in predators_conditional_transition_points and \
                     np.mean(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"] > self.pai_transitions[next_point]:
                 switch_criteria_met = True
-
             # elif next_point in prey_conditional_transition_points and \
             #         np.mean(self.last_episodes_prey_caught)/self.environment_params["prey_num"] > self.pci_transitions[next_point]:
             elif next_point in prey_conditional_transition_points and \
                     np.mean(self.last_episodes_prey_caught) / self.simulation.available_prey > self.pci_transitions[next_point]:
                 switch_criteria_met = True
-
             elif next_point in grains_bumped_conditional_transfer_points and \
                     np.mean(self.last_episodes_sand_grains_bumped) > self.sgb_transitions[next_point]:
                 switch_criteria_met = True
+
+            print(f"{np.mean(self.last_episodes_prey_caught)}/{self.simulation.available_prey} > {self.pci_transitions[next_point]}")
 
             # if self.episode_number - self.previous_config_switch < self.min_scaffold_interval:
             #     switch_criteria_met = False
