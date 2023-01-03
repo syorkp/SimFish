@@ -14,15 +14,15 @@ def modify_training_configs(config_name, variable, new_value, num_configs, prefi
 
 
 if __name__ == "__main__":
-    modify_training_configs("dqn_scaffold_26", "num_episodes", 100000, 43, prefix="learning")
-    modify_training_configs("dqn_scaffold_30", "num_episodes", 100000, 43, prefix="learning")
-    modify_training_configs("dqn_scaffold_30_even_p", "num_episodes", 100000, 43, prefix="learning")
-    modify_training_configs("dqn_scaffold_30_fixed_p", "num_episodes", 100000, 43, prefix="learning")
-    modify_training_configs("dqn_scaffold_30_noiseless", "num_episodes", 100000, 42, prefix="learning")
-    modify_training_configs("dqn_scaffold_30_static_p", "num_episodes", 100000, 43, prefix="learning")
-    modify_training_configs("dqn_scaffold_33", "num_episodes", 100000, 47, prefix="learning")
-    modify_training_configs("dqn_scaffold_34", "num_episodes", 100000, 47, prefix="learning")
-    modify_training_configs("ppo_scaffold_21", "num_episodes", 100000, 96, prefix="learning")
+    modify_training_configs("dqn_gamma", "min_scaffold_interval", 50, 52, prefix="learning")
+    # modify_training_configs("dqn_scaffold_30", "num_episodes", 100000, 43, prefix="learning")
+    # modify_training_configs("dqn_scaffold_30_even_p", "num_episodes", 100000, 43, prefix="learning")
+    # modify_training_configs("dqn_scaffold_30_fixed_p", "num_episodes", 100000, 43, prefix="learning")
+    # modify_training_configs("dqn_scaffold_30_noiseless", "num_episodes", 100000, 42, prefix="learning")
+    # modify_training_configs("dqn_scaffold_30_static_p", "num_episodes", 100000, 43, prefix="learning")
+    # modify_training_configs("dqn_scaffold_33", "num_episodes", 100000, 47, prefix="learning")
+    # modify_training_configs("dqn_scaffold_34", "num_episodes", 100000, 47, prefix="learning")
+    # modify_training_configs("ppo_scaffold_21", "num_episodes", 100000, 96, prefix="learning")
 
     # modify_training_configs("dqn_scaffold_26", "ci", 4e-07, 43, prefix="env")
     # modify_training_configs("dqn_scaffold_30", "ci", 4e-07, 43, prefix="env")

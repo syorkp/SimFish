@@ -199,6 +199,6 @@
     "maintain_state": true,
     "network_saving_frequency": 20,
     "network_saving_frequency_steps": 100000,
-    "min_scaffold_interval": 100,
+    "min_scaffold_interval": 50,
     "scaffold_stasis_requirement": true
 }

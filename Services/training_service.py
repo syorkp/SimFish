@@ -208,8 +208,6 @@ class TrainingService(BaseService):
         episode_transition_points = self.episode_transitions.keys()
         switch_criteria_met = False
 
-        self.last_episodes_prey_caught = [100 for i in range(self.min_scaffold_interval)]
-
         print("Checking update configuration")
 
         # Switch config by episode
@@ -237,11 +235,12 @@ class TrainingService(BaseService):
 
             print(f"{np.mean(self.last_episodes_prey_caught)}/{self.simulation.available_prey} > {self.pci_transitions[next_point]}")
 
-            # if self.episode_number - self.previous_config_switch < self.min_scaffold_interval:
-            #     switch_criteria_met = False
-
             if switch_criteria_met:
                 print("Switch criteria met...")
+
+            if self.episode_number - self.previous_config_switch < self.min_scaffold_interval:
+                print(f"Switch min interval not reached: {self.episode_number} {self.previous_config_switch} {self.min_scaffold_interval}")
+                switch_criteria_met = False
 
             # Also check whether no improvement in selected metric is present
             if "scaffold_stasis_requirement" in self.learning_params:
