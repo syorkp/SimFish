@@ -6,7 +6,7 @@ from Analysis.load_data import load_data
 """
 Scripts to extract hunting sequences as defined by Henriques et al. (2019):
    - paramecium located within reactive perceptive field <6mm and within 120 degrees
-   - distance-gain and orientation-gain for the first two bouts of the unting sequence were positive with respect to 
+   - distance-gain and orientation-gain for the first two bouts of the hunting sequence were positive with respect to 
    that prey item.
 """
 
@@ -26,15 +26,19 @@ def get_hunting_sequences_timestamps(data, successful_captures, sand_grain_versi
         prey_positions = data["prey_positions"]
     fish_positions = data["fish_position"]
     fish_orientation = data["fish_angle"]
-    fish_orientation %= 2 * np.pi
+    fish_orientation_sign = ((fish_orientation >= 0) * 1) + ((fish_orientation < 0) * -1)
+    fish_orientation %= 2 * np.pi * fish_orientation_sign
 
     fish_prey_vectors = prey_positions - np.expand_dims(fish_positions, 1)
     fish_prey_distance = (fish_prey_vectors[:, :, 0] ** 2 + fish_prey_vectors[:, :, 1] ** 2) ** 0.5
     within_six_mm = (fish_prey_distance < 60)
 
     fish_prey_angles = np.arctan(fish_prey_vectors[:, :, 1] / fish_prey_vectors[:, :, 0]) - np.expand_dims(fish_orientation, 1)
+    fish_prey_angles_sign = ((fish_prey_angles >= 0) * 1) + ((fish_prey_angles < 0) * -1)
     fish_prey_angles %= np.pi
-    within_visual_field = np.absolute(fish_prey_angles) < (np.pi * (120/180))
+    fish_prey_angles *= fish_prey_angles_sign
+    within_visual_field = (fish_prey_angles < (np.pi * (120/180))) + (np.pi * 2 - fish_prey_angles < (np.pi * (120/180)))
+    within_visual_field[within_visual_field > 0] = 1  # To normalise
 
     paramecium_in_zone = within_six_mm * within_visual_field
 
@@ -80,6 +84,7 @@ def get_hunting_sequences_timestamps(data, successful_captures, sand_grain_versi
 
     all_timestamps = [seq for sequen in paramecia_timestamps_sequences for seq in sequen]
     all_actions = []
+    all_used_timestamps = []
 
     for seq in all_timestamps:
         if successful_captures:
@@ -89,15 +94,18 @@ def get_hunting_sequences_timestamps(data, successful_captures, sand_grain_versi
             for i, c in enumerate(consumptions):
                 if c:
                     all_actions.append(data["action"][seq[index:i+2]])
+                    all_used_timestamps.append(seq[index:i+2])
                     index = i + 2
         else:
             all_actions.append(data["action"][seq])
-    # TODO: If next step is consumption, add that to the sequence.
-    return all_actions
+            all_used_timestamps.append(seq)
+
+    return all_actions, all_used_timestamps
 
 
 if __name__ == "__main__":
     d = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-2")
-    seq = get_hunting_sequences_timestamps(d, True)
-    all_seq = get_hunting_sequences_timestamps(d, False)
+    seq, ts = get_hunting_sequences_timestamps(d, True)
+    all_seq, all_ts = get_hunting_sequences_timestamps(d, False)
+    hunt_endpoints = [i for i, c in enumerate(d["consumed"]) if c]
     # Validate by labelling successful captures.
