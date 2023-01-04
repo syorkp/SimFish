@@ -208,8 +208,8 @@ class DQNAssayBuffer:
 
         if "environmental positions" in self.recordings:
             self.create_data_group("action", np.array(self.action_buffer), assay_group)
-            self.create_data_group("impulse", np.array(self.efference_copy_buffer)[:, 0, 0], assay_group)
-            self.create_data_group("angle", np.array(self.efference_copy_buffer)[:, 0, 1], assay_group)
+            self.create_data_group("impulse", np.array(self.efference_copy_buffer)[:, 0, 1], assay_group)
+            self.create_data_group("angle", np.array(self.efference_copy_buffer)[:, 0, 2], assay_group)
             self.create_data_group("fish_position", np.array(self.fish_position_buffer), assay_group)
             self.create_data_group("fish_angle", np.array(self.fish_angle_buffer), assay_group)
             self.create_data_group("consumed", np.array(self.prey_consumed_buffer), assay_group)
