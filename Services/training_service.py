@@ -254,8 +254,8 @@ class TrainingService(BaseService):
                     else:
                         important_values = np.array(self.last_episodes_prey_caught) / self.simulation.available_prey
 
-                    pre_values = np.mean(important_values[:int(self.min_scaffold_interval)])
-                    post_values = np.mean(important_values[int(self.min_scaffold_interval):])
+                    pre_values = np.mean(important_values[:int(self.min_scaffold_interval/2)])
+                    post_values = np.mean(important_values[int(self.min_scaffold_interval/2):])
                     overall_std = np.std(important_values)
 
                     if post_values - pre_values > overall_std / 2:
