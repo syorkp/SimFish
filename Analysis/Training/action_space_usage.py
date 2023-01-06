@@ -13,8 +13,7 @@ For creation of displays of action space usage across training.
 """
 
 
-def display_impulse_angle_space_usage(impulses, angles, figure_name, dqn=False,
-                                      max_impulse=None, max_angle=None):
+def get_impulse_angle_space_usage(impulses, angles, dqn, max_impulse, max_angle):
     res = 100    # TODO: Determine bin width as function of sample number
     angles = np.absolute(angles)
 
@@ -83,6 +82,13 @@ def display_impulse_angle_space_usage(impulses, angles, figure_name, dqn=False,
     heatmap_array[nearest_a, nearest_i] = np.array([1, 0, 0])
     heatmap_array = np.flip(heatmap_array, axis=0)
 
+    return heatmap_array, impulse_lim, ang_lim
+
+
+def display_impulse_angle_space_usage(impulses, angles, figure_name, dqn=False,
+                                      max_impulse=None, max_angle=None):
+    heatmap_array, impulse_lim, ang_lim = get_impulse_angle_space_usage(impulses, angles, dqn, max_impulse, max_angle)
+
     fig, axs = plt.subplots(figsize=(10, 10))
     axs.imshow(heatmap_array, extent=[impulse_lim[0], impulse_lim[1], ang_lim[0], ang_lim[1]], aspect="auto")
     axs.set_xlabel("Impulse")
@@ -104,12 +110,65 @@ def display_binned_action_space_usage(actions, figure_name):
     plt.close()
 
 
+def display_impulse_angle_space_usage_comparison(impulses_1, angles_1, impulses_2, angles_2, figure_name, dqn=False,
+                                      max_impulse=None, max_angle=None):
+    heatmap_array_1, impulse_lim, ang_lim = get_impulse_angle_space_usage(impulses_1, angles_1, dqn, max_impulse, max_angle)
+    heatmap_array_2, impulse_lim, ang_lim = get_impulse_angle_space_usage(impulses_2, angles_2, dqn, max_impulse, max_angle)
+
+    # Get all pixels with colour - these are the possible actions
+    possible_combinations = ((np.sum(heatmap_array_1, axis=2) >= 1.) + (np.sum(heatmap_array_2, axis=2) >= 1.)) * 1.0
+
+    # Get all pixels that are only red - these are actions used in either case
+    used_actions_1 = (heatmap_array_1[:, :, 0] >= 1.) * (heatmap_array_1[:, :, 1] < 1.) * (heatmap_array_1[:, :, 2] < 1.) * 1
+    used_actions_2 = (heatmap_array_2[:, :, 0] >= 1.) * (heatmap_array_2[:, :, 1] < 1.) * (heatmap_array_2[:, :, 2] < 1.) * 1
+
+    used_actions_difference = used_actions_2 - used_actions_1
+
+    heatmap_array = np.repeat(np.expand_dims(possible_combinations, 2), 3, 2)
+    heatmap_array[used_actions_difference >= 1] = np.array([1., 0, 0])
+    heatmap_array[used_actions_difference <= -1] = np.array([0, 0, 1.])
+
+    fig, axs = plt.subplots(figsize=(10, 10))
+    axs.imshow(heatmap_array, extent=[impulse_lim[0], impulse_lim[1], ang_lim[0], ang_lim[1]], aspect="auto")
+    axs.set_xlabel("Impulse")
+    axs.set_ylabel("Angle (radians)")
+    plt.savefig(f"../../Analysis-Output/Action-Space/used_action_space-{figure_name}-comparison.png")
+    plt.clf()
+    plt.close()
+
+
+def display_binned_action_space_usage_comparison(actions_1, actions_2, figure_name):
+    action_nums_1, counts_1 = np.unique(actions_1, return_counts=True)
+    action_nums_2, counts_2 = np.unique(actions_2, return_counts=True)
+
+    fig, axs = plt.subplots(figsize=(15, 10))
+    axs.bar([i-0.2 for i in action_nums_1], counts_1, width=0.4)
+    axs.bar([i+0.2 for i in action_nums_2], counts_2, width=0.4)
+
+    labels = [get_action_name(a) for a in range(12)]
+    axs.set_xticks([i for i in range(len(labels))])
+    axs.set_xticklabels(labels)
+
+    axs.set_xlabel("Action")
+    axs.set_ylabel("Frequency")
+    plt.savefig(f"../../Analysis-Output/Action-Space/used_actions_bouts-{figure_name}-comparison.png")
+    plt.clf()
+    plt.close()
+
+
 if __name__ == "__main__":
-    d = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-1")
-    display_binned_action_space_usage(d["action"], "Test")
-    # display_impulse_angle_space_usage(impulses=d["efference_copy"][:, 0, 1],
-    #                                   angles=d["efference_copy"][:, 0, 2],
+    d1 = load_data("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic-1")
+    d2 = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-1")
+    # display_impulse_angle_space_usage_comparison(impulses_1=d1["impulse"],
+    #                                              angles_1=d1["angle"],
+    #                                              impulses_2=d2["efference_copy"][:, 0, 1],
+    #                                              angles_2=d2["efference_copy"][:, 0, 2],
+    #                                              figure_name="Test",
+    #                                              dqn=True)
+    display_binned_action_space_usage_comparison(d1["action"], d2["action"], "Test")
+
+    # display_binned_action_space_usage(d["action"], "Test")
+    # display_impulse_angle_space_usage(impulses=d["impulse"],
+    #                                   angles=d["angle"],
     #                                   figure_name="Test",
-    #                                   dqn=False,
-    #                                   max_impulse=20)
-    #
+    #                                   dqn=True)

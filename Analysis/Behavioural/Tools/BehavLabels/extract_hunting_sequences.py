@@ -122,7 +122,7 @@ def get_hunting_sequences_timestamps(data, successful_captures, sand_grain_versi
 
 
 if __name__ == "__main__":
-    d = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-2")
+    d = load_data("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic-1")
     seq, ts = get_hunting_sequences_timestamps(d, True)
     all_seq, all_ts = get_hunting_sequences_timestamps(d, False)
     hunt_endpoints = [i for i, c in enumerate(d["consumed"]) if c]
