@@ -267,6 +267,14 @@ class TrainingService(BaseService):
         if switch_criteria_met:
             self.configuration_index = int(next_point)
             self.switched_configuration = True
+
+            if self.learning_params["maintain_state"]:
+                self.save_rnn_state()
+            # Save the model
+            self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
+            self.checkpoint_steps = self.total_steps
+            print("Saved Model")
+
             print(f"{self.model_id}: Changing configuration to configuration {self.configuration_index}")
             self.current_configuration_location = f"./Configurations/Training-Configs/{self.config_name}/{str(self.configuration_index)}"
 
