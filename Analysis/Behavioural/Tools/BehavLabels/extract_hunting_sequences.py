@@ -33,11 +33,29 @@ def get_hunting_sequences_timestamps(data, successful_captures, sand_grain_versi
     fish_prey_distance = (fish_prey_vectors[:, :, 0] ** 2 + fish_prey_vectors[:, :, 1] ** 2) ** 0.5
     within_six_mm = (fish_prey_distance < 60)
 
-    fish_prey_angles = np.arctan(fish_prey_vectors[:, :, 1] / fish_prey_vectors[:, :, 0]) - np.expand_dims(fish_orientation, 1)
-    fish_prey_angles_sign = ((fish_prey_angles >= 0) * 1) + ((fish_prey_angles < 0) * -1)
-    fish_prey_angles %= np.pi
-    fish_prey_angles *= fish_prey_angles_sign
-    within_visual_field = (fish_prey_angles < (np.pi * (120/180))) + (np.pi * 2 - fish_prey_angles < (np.pi * (120/180)))
+    # fish_prey_angles = np.arctan(fish_prey_vectors[:, :, 1] / fish_prey_vectors[:, :, 0])# - np.expand_dims(fish_orientation, 1)
+
+    # Adjust according to quadrents.
+    fish_prey_angles = np.arctan(fish_prey_vectors[:, :, 1] / fish_prey_vectors[:, :, 0])
+
+    #   Generates positive angle from left x axis clockwise.
+    unchanged = np.ones(fish_prey_angles.shape).astype(int)
+    # UL quadrent
+    in_ul_quadrent = (fish_prey_vectors[:, :, 0] < 0) * (fish_prey_vectors[:, :, 1] > 0)
+    fish_prey_angles[in_ul_quadrent] += np.pi
+    # BR quadrent
+    in_br_quadrent = (fish_prey_vectors[:, :, 0] > 0) * (fish_prey_vectors[:, :, 1] < 0)
+    fish_prey_angles[in_br_quadrent] += (np.pi * 2)
+    # BL quadrent
+    in_bl_quadrent = (fish_prey_vectors[:, :, 0] < 0) * (fish_prey_vectors[:, :, 1] < 0)
+    fish_prey_angles[in_bl_quadrent] += np.pi
+    # Angle ends up being between 0 and 2pi as clockwise from right x axis. Same frame as fish angle:
+
+    fish_prey_incidence = np.absolute(np.expand_dims(fish_orientation, 1) - fish_prey_angles)
+    fish_prey_incidence[fish_prey_incidence > np.pi] -= 2 * np.pi
+    fish_prey_incidence = np.absolute(fish_prey_incidence)
+
+    within_visual_field = (fish_prey_incidence < (np.pi * (120/180))) + (np.pi * 2 - fish_prey_incidence < (np.pi * (120/180)))
     within_visual_field[within_visual_field > 0] = 1  # To normalise
 
     paramecium_in_zone = within_six_mm * within_visual_field
@@ -67,7 +85,7 @@ def get_hunting_sequences_timestamps(data, successful_captures, sand_grain_versi
                         distance_gain = distance_to_prey_sequence[1:] - distance_to_prey_sequence[:-1]
 
                         # if angle gain is positive
-                        fish_prey_angles_sequence = fish_prey_angles[current_sequence, p]
+                        fish_prey_angles_sequence = fish_prey_incidence[current_sequence, p]
                         angle_gain = fish_prey_angles_sequence[1:] - fish_prey_angles_sequence[:-1]
 
                         permitted_gain = (distance_gain < 0) * (angle_gain < 0)
