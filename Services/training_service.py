@@ -210,12 +210,14 @@ class TrainingService(BaseService):
 
         # print("Checking update configuration")
 
+        print(f"Loglen: {len(self.last_episodes_prey_caught)}")
+
         # Switch config by episode
         if next_point in episode_transition_points and self.episode_number > self.episode_transitions[next_point]:
             switch_criteria_met = True
         elif len(self.last_episodes_prey_caught) >= self.min_scaffold_interval:  # Switch config by behavioural conditionals
 
-            # print("Checking update configuration2")
+            print("Checking update configuration2")
 
             prey_conditional_transition_points = self.pci_transitions.keys()
             predators_conditional_transition_points = self.pai_transitions.keys()
@@ -224,8 +226,6 @@ class TrainingService(BaseService):
             if next_point in predators_conditional_transition_points and \
                     np.mean(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"] > self.pai_transitions[next_point]:
                 switch_criteria_met = True
-            # elif next_point in prey_conditional_transition_points and \
-            #         np.mean(self.last_episodes_prey_caught)/self.environment_params["prey_num"] > self.pci_transitions[next_point]:
             elif next_point in prey_conditional_transition_points and \
                     np.mean(self.last_episodes_prey_caught) / self.simulation.available_prey > self.pci_transitions[next_point]:
                 switch_criteria_met = True
@@ -233,7 +233,7 @@ class TrainingService(BaseService):
                     np.mean(self.last_episodes_sand_grains_bumped) > self.sgb_transitions[next_point]:
                 switch_criteria_met = True
 
-            # print(f"{np.mean(self.last_episodes_prey_caught)}/{self.simulation.available_prey} > {self.pci_transitions[next_point]}")
+            print(f"{np.mean(self.last_episodes_prey_caught)}/{self.simulation.available_prey} > {self.pci_transitions[next_point]}")
             #
             # if switch_criteria_met:
             #     print("Switch criteria met...")
