@@ -1,7 +1,7 @@
 import numpy as np
 
 from Analysis.load_data import load_data
-
+from Analysis.Behavioural.Tools.get_fish_prey_incidence import get_fish_prey_incidence_multiple_prey
 
 """
 Scripts to extract hunting sequences as defined by Henriques et al. (2019):
@@ -26,33 +26,37 @@ def get_hunting_sequences_timestamps(data, successful_captures, sand_grain_versi
         prey_positions = data["prey_positions"]
     fish_positions = data["fish_position"]
     fish_orientation = data["fish_angle"]
-    fish_orientation_sign = ((fish_orientation >= 0) * 1) + ((fish_orientation < 0) * -1)
-    fish_orientation %= 2 * np.pi * fish_orientation_sign
 
+    # Check within 6mm
     fish_prey_vectors = prey_positions - np.expand_dims(fish_positions, 1)
     fish_prey_distance = (fish_prey_vectors[:, :, 0] ** 2 + fish_prey_vectors[:, :, 1] ** 2) ** 0.5
     within_six_mm = (fish_prey_distance < 60)
 
+    # fish_orientation_sign = ((fish_orientation >= 0) * 1) + ((fish_orientation < 0) * -1)
+    # fish_orientation %= 2 * np.pi * fish_orientation_sign
+
     # fish_prey_angles = np.arctan(fish_prey_vectors[:, :, 1] / fish_prey_vectors[:, :, 0])# - np.expand_dims(fish_orientation, 1)
 
-    # Adjust according to quadrents.
-    fish_prey_angles = np.arctan(fish_prey_vectors[:, :, 1] / fish_prey_vectors[:, :, 0])
+    # # Adjust according to quadrents.
+    # fish_prey_angles = np.arctan(fish_prey_vectors[:, :, 1] / fish_prey_vectors[:, :, 0])
+    #
+    # #   Generates positive angle from left x axis clockwise.
+    # # UL quadrent
+    # in_ul_quadrent = (fish_prey_vectors[:, :, 0] < 0) * (fish_prey_vectors[:, :, 1] > 0)
+    # fish_prey_angles[in_ul_quadrent] += np.pi
+    # # BR quadrent
+    # in_br_quadrent = (fish_prey_vectors[:, :, 0] > 0) * (fish_prey_vectors[:, :, 1] < 0)
+    # fish_prey_angles[in_br_quadrent] += (np.pi * 2)
+    # # BL quadrent
+    # in_bl_quadrent = (fish_prey_vectors[:, :, 0] < 0) * (fish_prey_vectors[:, :, 1] < 0)
+    # fish_prey_angles[in_bl_quadrent] += np.pi
+    # # Angle ends up being between 0 and 2pi as clockwise from right x axis. Same frame as fish angle:
+    #
+    # fish_prey_incidence = np.absolute(np.expand_dims(fish_orientation, 1) - fish_prey_angles)
+    # fish_prey_incidence[fish_prey_incidence > np.pi] -= 2 * np.pi
 
-    #   Generates positive angle from left x axis clockwise.
-    unchanged = np.ones(fish_prey_angles.shape).astype(int)
-    # UL quadrent
-    in_ul_quadrent = (fish_prey_vectors[:, :, 0] < 0) * (fish_prey_vectors[:, :, 1] > 0)
-    fish_prey_angles[in_ul_quadrent] += np.pi
-    # BR quadrent
-    in_br_quadrent = (fish_prey_vectors[:, :, 0] > 0) * (fish_prey_vectors[:, :, 1] < 0)
-    fish_prey_angles[in_br_quadrent] += (np.pi * 2)
-    # BL quadrent
-    in_bl_quadrent = (fish_prey_vectors[:, :, 0] < 0) * (fish_prey_vectors[:, :, 1] < 0)
-    fish_prey_angles[in_bl_quadrent] += np.pi
-    # Angle ends up being between 0 and 2pi as clockwise from right x axis. Same frame as fish angle:
-
-    fish_prey_incidence = np.absolute(np.expand_dims(fish_orientation, 1) - fish_prey_angles)
-    fish_prey_incidence[fish_prey_incidence > np.pi] -= 2 * np.pi
+    # Check within 120 degrees in visual field.
+    fish_prey_incidence = get_fish_prey_incidence_multiple_prey(fish_positions, fish_orientation, prey_positions)
     fish_prey_incidence = np.absolute(fish_prey_incidence)
 
     within_visual_field = (fish_prey_incidence < (np.pi * (120/180))) + (np.pi * 2 - fish_prey_incidence < (np.pi * (120/180)))
@@ -122,7 +126,7 @@ def get_hunting_sequences_timestamps(data, successful_captures, sand_grain_versi
 
 
 if __name__ == "__main__":
-    d = load_data("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic-1")
+    d = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-2")
     seq, ts = get_hunting_sequences_timestamps(d, True)
     all_seq, all_ts = get_hunting_sequences_timestamps(d, False)
     hunt_endpoints = [i for i, c in enumerate(d["consumed"]) if c]
