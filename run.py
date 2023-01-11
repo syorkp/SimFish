@@ -7003,5 +7003,5 @@ else:
     run_config = globals()[run_config]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(run_config, parallel_jobs=1)   # TODO: ALWAYS CHECK THIS RIGHT
+manager = TrialManager(run_config, parallel_jobs=3)   # TODO: ALWAYS CHECK THIS RIGHT
 manager.run_priority_loop()

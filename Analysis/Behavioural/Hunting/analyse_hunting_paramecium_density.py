@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.BehavLabels.extract_hunting_sequences import get_hunting_sequences_timestamps
-from Analysis.Behavioural.Both.get_hunting_conditions import get_hunting_conditions
+from Analysis.Behavioural.Hunting.get_hunting_conditions import get_hunting_conditions
 
 """
 Aim should be to find the parameters that determine success of hunting, hunting sequence initiation, etc. 
@@ -29,12 +29,13 @@ def show_conditions_vs_prey_density(data, figure_name):
     paramecium_density = np.array([get_paramecium_density(data["fish_position"][i], data["prey_positions"][i])
                           for i in range(data["fish_position"].shape[0])])
 
-    all_steps, hunting_steps, initiation_steps, abort_steps = get_hunting_conditions(data, all_ts)
+    all_steps, hunting_steps, initiation_steps, abort_steps, pre_capture_steps = get_hunting_conditions(data, all_ts)
 
     color = np.zeros(all_steps.shape)
     color[hunting_steps] = 1
     color[initiation_steps] = 2
     color[abort_steps] = 3
+    color[pre_capture_steps] = 4
 
     # Time scatter plot
     plt.scatter([i for i in range(len(paramecium_density))], paramecium_density, c=color)
@@ -42,11 +43,13 @@ def show_conditions_vs_prey_density(data, figure_name):
     plt.clf()
     plt.close()
 
-    boxes = [paramecium_density[all_steps], paramecium_density[hunting_steps], paramecium_density[initiation_steps], paramecium_density[abort_steps]]
-    # Conditional histograms
+    boxes = [paramecium_density[all_steps], paramecium_density[hunting_steps], paramecium_density[initiation_steps],
+             paramecium_density[abort_steps], paramecium_density[pre_capture_steps]]
+
+    # Conditional Boxplots
     fig, ax = plt.subplots()
     ax.boxplot(boxes)
-    ax.set_xticklabels(["All Steps", "Hunting", "Initiation", "Aborts"])
+    ax.set_xticklabels(["All Steps", "Hunting", "Initiation", "Aborts", "Pre-Capture"])
 
     plt.savefig(f"../../../Analysis-Output/Behavioural/Prey_density-boxplot-{figure_name}.jpg")
     plt.clf()

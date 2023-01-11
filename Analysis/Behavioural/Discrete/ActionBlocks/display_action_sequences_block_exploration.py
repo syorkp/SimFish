@@ -5,10 +5,9 @@ from Analysis.Behavioural.Discrete.ActionBlocks.display_action_sequences_block i
 if __name__ == "__main__":
 
     #                            EXPLORATION SEQUENCES
-    #
-    exploration_sequences_26 = get_exploration_sequences(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 40)
-    display_all_sequences(exploration_sequences_26, min_length=20, max_length=200, save_figure=True,
-                          figure_save_location="Exploration-dqn_scaffold_26-2",)
+    exploration_sequences = get_exploration_sequences("dqn_predator-2", "Behavioural-Data-Free", "Naturalistic", 20)
+    display_all_sequences(exploration_sequences, min_length=20, max_length=200, save_figure=True,
+                          figure_name="Exploration-dqn_predator-1",)
     #
     # escape_sequences_26 = get_escape_sequences(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 40)
     # display_all_sequences(escape_sequences_26, min_length=20, max_length=200, save_figure=True,

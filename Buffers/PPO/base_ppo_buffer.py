@@ -245,6 +245,82 @@ class BasePPOBuffer:
         for l in self.unit_recordings.keys():
             self.unit_recordings[l].append(network_layers[l][0])
 
+    def fix_prey_position_buffer(self):
+        """Run in the event of prey reproduction to prevent dim errors."""
+        # OLD - Creates overlapping array. Complicates analysis too much.
+        # new_prey_buffer = []
+        # max_prey_num = 0
+        # for p in self.prey_positions_buffer:
+        #     if np.array(p).shape[0] > max_prey_num:
+        #         max_prey_num = np.array(p).shape[0]
+        #
+        # for i, p in enumerate(self.prey_positions_buffer):
+        #     missing_values = max_prey_num - np.array(p).shape[0]
+        #     if missing_values > 0:
+        #         new_entries = np.array([[15000, 15000] for i in range(missing_values)])
+        #         new_prey_buffer.append(np.concatenate((np.array(self.prey_positions_buffer[i]), new_entries), axis=0))
+        #     else:
+        #         new_prey_buffer.append(np.array(self.prey_positions_buffer[i]))
+        #
+        # new_prey_buffer = np.array(new_prey_buffer)
+        # self.prey_positions_buffer = new_prey_buffer
+
+        # NEW - Has an entire column for each prey that exists at any given time
+        # For each step, shift the array of positions across until aligned (should be the min difference with above
+        # values).
+        num_steps = len(self.prey_positions_buffer)
+        num_prey_init = len(self.prey_positions_buffer[0])
+        overly_large_position_array = np.ones((num_steps, num_prey_init * 100, 2)) * 10000
+        min_index = 0
+        total_prey_existing = num_prey_init
+
+        for i, prey_position_slice in enumerate(self.prey_positions_buffer):
+            # Ensure one of the arrays is available to accept a new prey.
+            overly_large_position_array[i:, total_prey_existing:total_prey_existing + 4] = 1000
+
+            if i == 0:
+                overly_large_position_array[i, :num_prey_init] = np.array(self.prey_positions_buffer[i])
+            else:
+                num_prey = len(self.prey_positions_buffer[i])
+                num_prey_previous = len(overly_large_position_array[i - 1])
+
+                prey_position_slice_expanded = np.repeat(np.expand_dims(prey_position_slice, 1), num_prey_previous, 1)
+                prey_position_slice_previous_expanded = np.repeat(np.expand_dims(overly_large_position_array[i - 1], 0),
+                                                                  num_prey, 0)
+
+                prey_positions_differences = prey_position_slice_expanded - prey_position_slice_previous_expanded
+                prey_positions_differences_total = (prey_positions_differences[:, :, 0] ** 2 +
+                                                    prey_positions_differences[:, :, 1] ** 2) ** 0.5
+
+                forbidden_index = 0
+
+                for prey in range(prey_positions_differences_total.shape[0]):
+                    differences_to_large_array = prey_positions_differences_total[prey]
+                    differences_to_large_array[:max([min_index, forbidden_index])] *= 1000
+                    order_of_size = np.argsort(differences_to_large_array)
+                    forbidden_index = order_of_size[0]
+                    if forbidden_index >= total_prey_existing - 1:
+                        total_prey_existing += 1
+                    overly_large_position_array[i, forbidden_index] = prey_position_slice[prey]
+                    forbidden_index += 1
+
+        # Remove columns with only [1000., 1000] or [10000, 10000] (or just both).
+        just_1000 = np.sum(
+            ((overly_large_position_array[:, :, 0] == 1000.) * (overly_large_position_array[:, :, 1] == 1000.)), axis=0)
+        just_10000 = np.sum(
+            ((overly_large_position_array[:, :, 0] == 10000.) * (overly_large_position_array[:, :, 1] == 10000.)),
+            axis=0)
+
+        whole_just_1000 = (just_1000 == num_steps) * 1
+        whole_just_10000 = (just_10000 == num_steps) * 1
+        only_both = (just_1000 + just_10000 == num_steps) * 1
+
+        to_delete = whole_just_1000 + whole_just_10000 + only_both
+        to_delete = [i for i, d in enumerate(to_delete) if d > 0]
+
+        new_prey_position_array = np.delete(overly_large_position_array, to_delete, axis=1)
+        self.prey_positions_buffer = new_prey_position_array
+
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, background, internal_state_order=None,
                         salt_location=None):
         hdf5_file = h5py.File(f"{data_save_location}/{assay_configuration_id}.h5", "a")
@@ -289,7 +365,13 @@ class BasePPOBuffer:
             self.create_data_group("consumed", np.array(self.prey_consumed_buffer), assay_group)
             self.predator_presence_buffer = [0 if i is None else 1 for i in self.predator_presence_buffer]
             self.create_data_group("predator_presence", np.array(self.predator_presence_buffer), assay_group)
-            self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
+
+            try:
+                self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
+            except:
+                self.fix_prey_position_buffer()
+                self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
+
             self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)
             self.create_data_group("sand_grain_positions", np.array(self.sand_grain_position_buffer), assay_group)
             self.create_data_group("vegetation_positions", np.array(self.vegetation_position_buffer), assay_group)

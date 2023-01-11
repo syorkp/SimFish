@@ -289,9 +289,9 @@ def get_all_density_plots(data, save_location):
 
 
 def get_all_density_plots_all_subsets(p1, p2, p3, n, return_objects, steps_prior=0, position_predictive=False):
-    if not os.path.exists(f"../Plots/{p1}/"):
-        os.makedirs(f"../Plots/{p1}/")
-    save_location = f"../Plots/{p1}/"
+    if not os.path.exists(f"../../../../Analysis-Output/Behavioural/Spatial-Density-Plots/{p1}/"):
+        os.makedirs(f"../../../../Analysis-Output/Behavioural/Spatial-Density-Plots/{p1}/")
+    save_location = f"../../../../Analysis-Output/Behavioural/Spatial-Density-Plots/{p1}/"
     if position_predictive:
         save_location += "Predictive-"
 
@@ -879,9 +879,9 @@ if __name__ == "__main__":
     #                                        "Naturalistic", 40)
 
     # Getting for individual models
-    # create_cstart_overlap_plot(f"dqn_new-1", "Behavioural-Data-Naturalistic", "Naturalistic", 20, return_objects=False)
+    # create_cstart_overlap_plot(f"dqn_predator-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
 
-    get_all_density_plots_all_subsets(f"dqn_beta_mod-3", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+    get_all_density_plots_all_subsets(f"dqn_predator-2", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
 
     # get_all_density_plots_all_subsets(f"dqn_scaffold_26-1", "Behavioural-Data-Free-B", "Naturalistic", 20, return_objects=False)
     # get_all_density_plots_all_subsets(f"dqn_scaffold_26-1", "Behavioural-Data-Free-C", "Naturalistic", 20, return_objects=False)

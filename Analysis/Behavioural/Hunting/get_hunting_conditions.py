@@ -14,8 +14,9 @@ def get_hunting_conditions(data, hunting_sequences):
     hunting_steps = np.array(list(set([a for at in hunting_sequences for a in at])))
     initiation_steps = np.array(list(set([a[0] for a in hunting_sequences])))
     abort_steps = np.array(list(set([a[-1] for a in hunting_sequences])))
+    pre_capture_steps = np.array([i-1 for i, c in enumerate(data["consumed"]) if c == 1])
 
-    return all_steps, hunting_steps, initiation_steps, abort_steps
+    return all_steps, hunting_steps, initiation_steps, abort_steps, pre_capture_steps
 
 
 
