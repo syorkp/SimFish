@@ -136,7 +136,7 @@
     "incorporate_uv_strike_zone": true,
     "strike_zone_sigma": 1.5,
     "shot_noise": true,
-    "predator_avoidance_reward": 50000,
+    "predator_avoidance_reward": 250000,
     "isomerization_frequency": 0.0,
     "max_isomerization_size": 0.0,
     "ci": 1.5e-04,
