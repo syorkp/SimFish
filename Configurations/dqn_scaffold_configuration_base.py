@@ -347,8 +347,6 @@ high_pci = 0.3 / 3
 #        ["PCI", high_pci, "sand_grain_colour", (0.25, 0, 1)],
 #        ["PCI", high_pci, "sand_grain_colour", (0, 0, 1)],
 # ]
-#
-# low_pci = 1.0
 
 # Predator changes
 
