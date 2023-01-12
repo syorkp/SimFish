@@ -311,42 +311,50 @@ env = {
 }
 
 
-scaffold_name = "dqn_gamma"
+scaffold_name = "dqn_gamma_sg"
 
 # For predator scaffolding
 env["distance_from_fish"] *= 2
 env["immunity_steps"] = 200
-# env["probability_of_predator"] = 0.003
 
 #                     Network scaffolding example
 # base_network_layers_updated = copy.copy(base_network_layers)
 # base_network_layers_updated["new_dense"] = ["dense", 300]
 # new_connectivity = copy.copy(connectivity)
 # new_connectivity.append(["full", ["rnn", "new_dense"]])
-#
 # changes = [["PCI", 0.35, "base_network_layers", base_network_layers_updated,
 #             "connectivity", new_connectivity, "do_to_params"]]
 
 
+#        Behavioural Variants Init
+
+# Fixed prey distribution
 # env["fixed_prey_distribution"] = True
 
-# For Sand Grains
-# env["sand_grain_num"] = env["prey_num"]
+# Init with predator
+# env["probability_of_predator"] = 0.003
 
+# For Sand Grains
+env["sand_grain_num"] = env["prey_num"]
+
+
+#     Scaffold Points
 
 changes = []
 
 low_pci = 0.25 / 3
 high_pci = 0.3 / 3
+
+# Initial predator scaffolding
 # changes += build_changes_list_gradual("PCI", low_pci, "distance_from_fish", env["distance_from_fish"],
 #                                       env["distance_from_fish"] / 2, 5, discrete=False)
 # For sand grain simplifying
-# changes += [
-#        ["PCI", high_pci, "sand_grain_colour", (0.75, 0, 1)],
-#        ["PCI", high_pci, "sand_grain_colour", (0.5, 0, 1)],
-#        ["PCI", high_pci, "sand_grain_colour", (0.25, 0, 1)],
-#        ["PCI", high_pci, "sand_grain_colour", (0, 0, 1)],
-# ]
+changes += [
+       ["PCI", high_pci, "sand_grain_colour", (0.75, 0, 1)],
+       ["PCI", high_pci, "sand_grain_colour", (0.5, 0, 1)],
+       ["PCI", high_pci, "sand_grain_colour", (0.25, 0, 1)],
+       ["PCI", high_pci, "sand_grain_colour", (0, 0, 1)],
+]
 
 # Predator changes
 
@@ -374,21 +382,53 @@ changes += build_changes_list_gradual("PCI", high_pci, "light_gain", env["light_
 #              "prey_cloud_num", env["prey_cloud_num"]*4, "width", 3000, "height", 3000, "complex"]]
 original_prey_num = env["prey_num"]
 original_prey_cloud_num = env["prey_cloud_num"]
+
+# Normal
+# changes += [["PCI", high_pci, "prey_num", original_prey_num * 7/8],
+#             ["PCI", high_pci, "prey_cloud_num", original_prey_cloud_num * 7/8],
+#             ["PCI", high_pci * 10/8, "prey_num", original_prey_num * 6/8],
+#             ["PCI", high_pci * 10/8, "prey_cloud_num", original_prey_cloud_num * 6/8],
+#             ["PCI", high_pci * 12/8, "prey_num", original_prey_num * 5/8],
+#             ["PCI", high_pci * 12/8, "prey_cloud_num", original_prey_cloud_num * 5/8],
+#             ["PCI", high_pci * 14/8, "prey_num", original_prey_num * 4/8],
+#             ["PCI", high_pci * 14/8, "prey_cloud_num", original_prey_cloud_num * 4/8],
+#             ["PCI", high_pci * 16/8, "prey_num", original_prey_num * 3/8],
+#             ["PCI", high_pci * 16/8, "prey_cloud_num", original_prey_cloud_num * 3/8],
+#             ["PCI", high_pci * 18/8, "prey_num", original_prey_num * 2/8],
+#             ["PCI", high_pci * 18/8, "prey_cloud_num", original_prey_cloud_num * 2/8],
+#             ["PCI", high_pci * 20/8, "prey_num", original_prey_num * 1/8],
+#             ["PCI", high_pci * 20/8, "prey_cloud_num", original_prey_cloud_num * 1/8],
+#             ]
+# Sand grains
 changes += [["PCI", high_pci, "prey_num", original_prey_num * 7/8],
             ["PCI", high_pci, "prey_cloud_num", original_prey_cloud_num * 7/8],
+            ["PCI", high_pci, "sand_grain_num", original_prey_num * 7/8],
+
             ["PCI", high_pci * 10/8, "prey_num", original_prey_num * 6/8],
             ["PCI", high_pci * 10/8, "prey_cloud_num", original_prey_cloud_num * 6/8],
+            ["PCI", high_pci * 10 / 8, "sand_grain_num", original_prey_num * 6 / 8],
+
             ["PCI", high_pci * 12/8, "prey_num", original_prey_num * 5/8],
             ["PCI", high_pci * 12/8, "prey_cloud_num", original_prey_cloud_num * 5/8],
+            ["PCI", high_pci * 12 / 8, "sand_grain_num", original_prey_num * 5 / 8],
+
             ["PCI", high_pci * 14/8, "prey_num", original_prey_num * 4/8],
             ["PCI", high_pci * 14/8, "prey_cloud_num", original_prey_cloud_num * 4/8],
+            ["PCI", high_pci * 14 / 8, "sand_grain_num", original_prey_num * 4 / 8],
+
             ["PCI", high_pci * 16/8, "prey_num", original_prey_num * 3/8],
             ["PCI", high_pci * 16/8, "prey_cloud_num", original_prey_cloud_num * 3/8],
+            ["PCI", high_pci * 16 / 8, "sand_grain_num", original_prey_num * 3 / 8],
+
             ["PCI", high_pci * 18/8, "prey_num", original_prey_num * 2/8],
             ["PCI", high_pci * 18/8, "prey_cloud_num", original_prey_cloud_num * 2/8],
+            ["PCI", high_pci * 18 / 8, "sand_grain_num", original_prey_num * 2 / 8],
+
             ["PCI", high_pci * 20/8, "prey_num", original_prey_num * 1/8],
             ["PCI", high_pci * 20/8, "prey_cloud_num", original_prey_cloud_num * 1/8],
+            ["PCI", high_pci * 20/8, "sand_grain_num", original_prey_num * 1/8],
             ]
+
 
 low_pci *= 20/8
 high_pci *= 20/8

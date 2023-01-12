@@ -17,7 +17,7 @@ def compute_prey_velocity(prey_positions, fish_positions=None, egocentric=False)
 
     # Remove those that are too large (due to prey death/reproduction)
     if egocentric:
-        to_zero = (prey_speed > 1000)
+        to_zero = (prey_speed > 100)
     else:
         to_zero = (prey_speed > 100)
 

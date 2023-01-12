@@ -100,12 +100,10 @@ def get_fish_prey_incidence(fish_positions, fish_orientation, paramecium_positio
 
 
 if __name__ == "__main__":
-    data = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-5")
+    data = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-3")
     prey_positions = data["prey_positions"]
     fish_positions = data["fish_position"]
     fish_orientation = data["fish_angle"]
 
     fpi = get_fish_prey_incidence_multiple_prey(fish_positions, fish_orientation, prey_positions)
-
-
 

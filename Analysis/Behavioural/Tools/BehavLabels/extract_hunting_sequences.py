@@ -11,6 +11,28 @@ Scripts to extract hunting sequences as defined by Henriques et al. (2019):
 """
 
 
+
+def get_prey_being_hunted(prey_positions, fish_positions, fish_orientation):
+    """Returns one hot encoded array of (time x prey_num) where 1 means that paramecium meets Henriques (2019) definition
+    of being hunted."""
+
+    # Check within 6mm
+    fish_prey_vectors = prey_positions - np.expand_dims(fish_positions, 1)
+    fish_prey_distance = (fish_prey_vectors[:, :, 0] ** 2 + fish_prey_vectors[:, :, 1] ** 2) ** 0.5
+    within_six_mm = (fish_prey_distance < 60)
+
+    fish_prey_incidence = get_fish_prey_incidence_multiple_prey(fish_positions, fish_orientation, prey_positions)
+    fish_prey_incidence = np.absolute(fish_prey_incidence)
+
+    within_visual_field = (fish_prey_incidence < (np.pi * (120/180))) + (np.pi * 2 - fish_prey_incidence < (np.pi * (120/180)))
+    within_visual_field[within_visual_field > 0] = 1  # To normalise
+
+    paramecium_in_zone = within_six_mm * within_visual_field
+
+    return paramecium_in_zone
+
+
+
 def get_hunting_sequences_timestamps(data, successful_captures, sand_grain_version=False):
     """
 
