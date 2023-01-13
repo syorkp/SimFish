@@ -331,11 +331,6 @@ changes = [
 changes += build_changes_list_gradual("PCI", 0.2, "fraction_capture_permitted", env["fraction_capture_permitted"], 0.25,
                                       8, discrete=False)
 
-# 12-27
-# 3) Available actions
-changes += build_changes_list_gradual("PCI", 0.3, "max_impulse", env["max_impulse"], 16, 16, discrete=False)
-# changes += build_changes_list_gradual("PCI", 0.3, "action_reward_scaling", env["action_reward_scaling"], 10000, 4,
-#                                       discrete=False)
 
 changes += [
        # 2) Visual System
@@ -348,15 +343,25 @@ changes += [
 ]
 
 
-changes += build_changes_list_gradual("PCI", 0.4, "light_gain", env["light_gain"], 125.7, 4, discrete=False)
+changes += build_changes_list_gradual("PCI", 0.3, "light_gain", env["light_gain"], 125.7, 4, discrete=False)
 
 
 # 4) Prey Capture
-changes += [["PCI", 0.4, "prey_fluid_displacement", True]]
-changes += build_changes_list_gradual("PCI", 0.4, "fish_mouth_size", env["fish_mouth_size"], 4, 4, discrete=False)
-changes += build_changes_list_gradual("PCI", 0.4, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"],
+changes += [["PCI", 0.3, "prey_fluid_displacement", True]]
+changes += build_changes_list_gradual("PCI", 0.3, "fish_mouth_size", env["fish_mouth_size"], 4, 4, discrete=False)
+changes += build_changes_list_gradual("PCI", 0.3, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"],
                                       np.pi/5, 8, discrete=False)
+
+# 12-27
+# 3) Available actions
+changes += build_changes_list_gradual("PCI", 0.3, "max_impulse", env["max_impulse"], 16, 16, discrete=False)
+# changes += build_changes_list_gradual("PCI", 0.3, "action_reward_scaling", env["action_reward_scaling"], 10000, 4,
+#                                       discrete=False)
+
+
 changes += [["PCI", 0.4, "anneling_steps", 1000000]]
+
+
 
 # 5) Predator avoidance
 changes += [["PCI", 0.4, "probability_of_predator", 0.003]]
