@@ -8,10 +8,10 @@ from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import
 from Analysis.Behavioural.Tools.BehavLabels.extract_turn_sequences import extract_turn_sequences, extract_purely_turn_sequences
 from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import extract_exploration_action_sequences_with_fish_angles
 from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import get_no_prey_stimuli_sequences, get_exploration_sequences
-from Analysis.Behavioural.TurnChains.turning_analysis_shared import model_of_action_switching, plot_turning_sequences, \
+from Analysis.Behavioural.Exploration.turning_analysis_shared import model_of_action_switching, plot_turning_sequences, \
     randomly_switching_fish, randomly_switching_fish_new, cumulative_switching_probability_plot, cumulative_turn_direction_plot_multiple_models, \
     cumulative_switching_probability_plot_multiple_models
-from Analysis.Behavioural.TurnChains.turning_analysis_shared import cumulative_turn_direction_plot
+from Analysis.Behavioural.Exploration.turning_analysis_shared import cumulative_turn_direction_plot
 
 
 def get_cumulative_switching_probability_plot(action_sequences, figure_save_location):

@@ -27,15 +27,17 @@ def show_mean_stimulus_level_across_arena(observations, fish_positions):
     plt.imshow(y)
     plt.show()
 
-fish_position_tally = []
-observation_tally = []
-for i in range(1, 5):
-    fish_position_data = get_parameter_across_trials(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 10, "fish_position")
-    observation_data = get_parameter_across_trials(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 10, "observation")
 
-    fish_position_tally += fish_position_data
-    observation_tally += observation_data
+if __name__ == "__main__":
+    fish_position_tally = []
+    observation_tally = []
+    for i in range(2, 3):
+        fish_position_data = get_parameter_across_trials(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 10, "fish_position")
+        observation_data = get_parameter_across_trials(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 10, "observation")
 
-show_mean_stimulus_level_across_arena(observation_tally, fish_position_tally)
+        fish_position_tally += fish_position_data
+        observation_tally += observation_data
+
+    show_mean_stimulus_level_across_arena(observation_tally, fish_position_tally)
 
 

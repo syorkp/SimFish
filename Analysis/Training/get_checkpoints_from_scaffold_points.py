@@ -30,9 +30,10 @@ def get_checkpoint(model_name, scaffold_point):
     best_checkpoint = None
 
     for ep in range(scaffold_start_eps + 1, scaffold_end_eps + 1):
+        print(ep)
         if ep in checkpoint_nums:
             best_checkpoint = ep
-            break
+
 
     # Alert if there is no checkpoint within the scaffold point...
     if best_checkpoint is None:
@@ -42,4 +43,4 @@ def get_checkpoint(model_name, scaffold_point):
 
 
 if __name__ == "__main__":
-    c = get_checkpoint("dqn_beta-1", 20)
+    c = get_checkpoint("dqn_gamma-1", 23)

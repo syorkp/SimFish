@@ -20,7 +20,6 @@ def display_sequences(sequences):
 
 def display_all_sequences(sequences, min_length=None, max_length=None, indicate_consumption=False, save_figure=False,
                           figure_name=None, alternate_action_names=None, indicate_event_point=False):
-    figure_save_location = f"../../../../Analysis-Output/Behavioural/Bout-Block-Plots/{figure_name}"
     if len(sequences) == 0:
         return
     sns.set()
@@ -83,7 +82,12 @@ def display_all_sequences(sequences, min_length=None, max_length=None, indicate_
     plt.legend(legend_elements, associated_actions, bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
     plt.axis("scaled")
     if save_figure:
-        plt.savefig(figure_save_location)
+        try:
+            figure_save_location = f"../../../../Analysis-Output/Behavioural/Bout-Block-Plots/{figure_name}"
+            plt.savefig(figure_save_location)
+        except FileNotFoundError:
+            figure_save_location = f"../../../../../Analysis-Output/Behavioural/Bout-Block-Plots/{figure_name}"
+            plt.savefig(figure_save_location)
         plt.clf()
         plt.close()
     else:

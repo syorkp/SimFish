@@ -97,13 +97,31 @@ def extract_exploration_action_sequences_with_positions(data, possible_visual_ra
     return exploration_timestamps_compiled, actions_compiled, fish_positions_compiled
 
 
-def get_exploration_sequences(model_name, assay_config, assay_id, n, data_cutoff=None):
+def get_exploration_timestamps(model_name, assay_config, assay_id, n, data_cutoff=None, flatten=False):
     all_exploration_sequences = []
     for i in range(1, n+1):
         data = load_data(model_name, assay_config, f"{assay_id}-{i}")
         if data_cutoff is not None:
             data = {key: data[key][:data_cutoff] for key in data.keys()}
-        all_exploration_sequences = all_exploration_sequences + extract_exploration_action_sequences_with_positions(data)[1]
+        if flatten:
+            all_exploration_sequences = all_exploration_sequences + \
+                                        extract_exploration_action_sequences_with_positions(data)[0]
+        else:
+            all_exploration_sequences.append(extract_exploration_action_sequences_with_positions(data)[0])
+    return all_exploration_sequences
+
+
+def get_exploration_sequences(model_name, assay_config, assay_id, n, data_cutoff=None, flatten=True):
+    all_exploration_sequences = []
+    for i in range(1, n+1):
+        data = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        if data_cutoff is not None:
+            data = {key: data[key][:data_cutoff] for key in data.keys()}
+        sequences = extract_exploration_action_sequences_with_positions(data)[1]
+        if flatten:
+            all_exploration_sequences = all_exploration_sequences + sequences
+        else:
+            all_exploration_sequences.append(sequences)
     return all_exploration_sequences
 
 

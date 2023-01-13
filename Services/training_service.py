@@ -15,7 +15,7 @@ from Services.base_service import BaseService
 from Tools.make_gif import make_gif
 from Tools.make_video import make_video
 from Tools.graph_functions import update_target_graph, update_target
-from Analysis.Behavioural.TurnChains.turn_chain_metric import get_normalised_turn_chain_metric_continuous
+from Analysis.Behavioural.Exploration.turn_chain_metric import get_normalised_turn_chain_metric_continuous
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)

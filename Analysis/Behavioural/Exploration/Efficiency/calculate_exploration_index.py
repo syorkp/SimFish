@@ -1,7 +1,8 @@
 import numpy as np
 
 from Analysis.load_data import load_data
-from Analysis.Behavioural.circle_maths import make_circle
+from Analysis.Behavioural.Exploration.Efficiency.circle_maths import make_circle
+
 
 def calculate_circle_diameter_for_points(data):
     x_values = [i[0] for i in data]
@@ -25,12 +26,12 @@ def calculate_exploration_index(data, window_size):
     return exploration_i
 
 
+if __name__ == "__main__":
+    data = load_data("large_all_features-1", "Naturalistic", "Naturalistic-1")
 
-data = load_data("large_all_features-1", "Naturalistic", "Naturalistic-1")
+    ex = calculate_exploration_index(data, 10)
 
-ex = calculate_exploration_index(data, 10)
-
-x = True
+    x = True
 
 
 

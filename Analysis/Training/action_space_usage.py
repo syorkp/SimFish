@@ -165,7 +165,7 @@ if __name__ == "__main__":
     #                                              angles_2=d2["efference_copy"][:, 0, 2],
     #                                              figure_name="Test",
     #                                              dqn=True)
-    display_binned_action_space_usage_comparison(d1["action"], d2["action"], "Test")
+    display_impulse_angle_space_usage([d1["impulse"]], [d1["angle"]], "Test")
 
     # display_binned_action_space_usage(d["action"], "Test")
     # display_impulse_angle_space_usage(impulses=d["impulse"],
