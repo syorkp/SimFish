@@ -224,6 +224,7 @@ class NaturalisticEnvironment(BaseEnvironment):
             if self.fish.touched_edge:
                 self.fish.touched_edge = False
             if self.fish.touched_predator:
+                print("Fish eaten by predator")
                 reward -= self.env_variables['predator_cost']
                 done = True
                 self.fish.touched_predator = False
@@ -237,6 +238,7 @@ class NaturalisticEnvironment(BaseEnvironment):
                     plt.pause(0.0001)
         if 'predator_avoidance_reward' in self.env_variables:
             if self.survived_attack:
+                print("Survived attack...")
                 reward += self.env_variables["predator_avoidance_reward"]
                 self.survived_attack = False
         # Relocate fish (Assay mode only)
