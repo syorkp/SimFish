@@ -201,8 +201,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                 reward -= self.env_variables["sand_grain_touch_penalty"]
             if self.new_simulation:
                 if self.env_variables["current_setting"]:
-                    self.resolve_currents(micro_step)
                     self.bring_fish_in_bounds()
+                    self.resolve_currents(micro_step)
                 if self.fish.making_capture and self.capture_start <= micro_step <= self.capture_end:
                     self.fish.capture_possible = True
                 else:

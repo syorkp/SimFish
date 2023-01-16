@@ -60,6 +60,8 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
                          profile_speed=profile_speed
                          )
 
+        self.algorithm = "PPO"
+
         self.batch_size = self.learning_params["batch_size"]
         self.trace_length = self.learning_params["trace_length"]
 
