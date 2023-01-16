@@ -1189,7 +1189,7 @@ class BaseEnvironment:
             self.predator_target = None
             self.remaining_predator_attacks = None
             self.total_predator_steps = None
-            self.surivived_attack = True
+            self.survived_attack = True
         else:
             pass
 

@@ -231,18 +231,21 @@ class NaturalisticEnvironment(BaseEnvironment):
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5) / 255.)
                     plt.pause(0.0001)
 
-        if 'predator_avoidance_reward' in self.env_variables:
-            if self.survived_attack:
-                print("Survived attack...")
-                reward += self.env_variables["predator_avoidance_reward"]
-                self.survived_attack = False
-
         if self.fish.touched_predator:
             print("Fish eaten by predator")
             reward -= self.env_variables['predator_cost']
             done = True
             self.fish.touched_predator = False
             self.recent_cause_of_death = "Predator"
+            self.survived_attack = False
+
+        if 'predator_avoidance_reward' in self.env_variables:
+            if self.survived_attack:
+                print("Survived attack...")
+                reward += self.env_variables["predator_avoidance_reward"]
+                self.survived_attack = False
+
+
 
         # Relocate fish (Assay mode only)
         if self.relocate_fish is not None:
