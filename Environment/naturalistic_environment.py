@@ -246,7 +246,6 @@ class NaturalisticEnvironment(BaseEnvironment):
                 self.survived_attack = False
 
 
-
         # Relocate fish (Assay mode only)
         if self.relocate_fish is not None:
             if self.relocate_fish[self.num_steps]:
