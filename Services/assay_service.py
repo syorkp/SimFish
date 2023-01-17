@@ -188,6 +188,7 @@ class AssayService(BaseService):
                                     salt_location=salt_location)
         self.buffer.reset()
         print(f"Assay: {assay['assay id']} Completed")
+        print("")
 
     def log_stimuli(self):
         stimuli = self.simulation.stimuli_information

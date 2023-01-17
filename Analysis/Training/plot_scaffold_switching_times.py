@@ -75,10 +75,9 @@ def plot_scaffold_durations_multiple_models(model_list, figure_name, steps=True)
 
 
 if __name__ == "__main__":
-    dqn_models_old = ["dqn_scaffold_30-1", "dqn_scaffold_30-2"]
-    dqn_models = ["dqn_beta-1", "dqn_beta-2", "dqn_beta-3", "dqn_beta-4", "dqn_beta-5"]
+    dqn_models = ["dqn_gamma-1", "dqn_gamma-2", "dqn_gamma-3", "dqn_gamma-4", "dqn_gamma-5"]
 
-    plot_scaffold_durations_multiple_models(dqn_models, figure_name="dqn_beta", steps=True)
+    plot_scaffold_durations_multiple_models(dqn_models, figure_name="dqn_gamma", steps=True)
 
 
 

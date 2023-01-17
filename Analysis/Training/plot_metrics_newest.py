@@ -444,9 +444,9 @@ if __name__ == "__main__":
                               "predator avoidance index (avoided/p_pred)",
                               # "Phototaxis Index"
                               ]
-    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=40, interpolate_scaffold_points=True,
-                                          figure_name="dqn_gamma", scaled_window=False,
-                                          show_inset=["capture success rate", 10])# key_scaffold_points=[14, 29, 42])
+    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=15, interpolate_scaffold_points=True,
+                                          figure_name="dqn_gamma", scaled_window=True,
+                                          show_inset=["capture success rate", 34])# key_scaffold_points=[14, 29, 42])
     # plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=100, interpolate_scaffold_points=True,
     #                                       figure_name="dqn_beta_mod", scaled_window=False,
     #                                       show_inset=["capture success rate", 23])#, key_scaffold_points=[10, 16, 31])

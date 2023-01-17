@@ -184,6 +184,7 @@ class DQNAssayService(AssayService, BaseDQN):
 
         self.buffer.reset()
         print(f"Assay: {assay['assay id']} Completed")
+        print("")
 
     def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         return BaseDQN.assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref)

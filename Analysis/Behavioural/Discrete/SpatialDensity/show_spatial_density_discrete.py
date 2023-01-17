@@ -198,7 +198,8 @@ def create_density_cloud(density_list, action_num, stimulus_name, return_objects
     ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Feature: {stimulus_name}, Action: {get_action_name(action_num)}, N-Samples: {n_samples}")
     plt.savefig(
-        f"{save_location}{assay_config}-{stimulus_name}-{get_action_name(action_num)}-steps_prior: {steps_prior}.jpg")
+        f"{save_location}{assay_config}-{stimulus_name}-{get_action_name(action_num)}-steps_prior: {steps_prior}.jpg",
+        bbox_inches='tight')
 
     if return_objects:
         plt.clf()
@@ -388,7 +389,7 @@ def create_overlap_plot(cloud_left, cloud_right, stimulus_name, action, model_na
     ax.axes.get_xaxis().set_visible(False)
     ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Feature: {stimulus_name}, Action: {action}, N-Samples: {n_samples}")
-    plt.savefig(f"{save_location}{stimulus_name}-{action}.jpg")
+    plt.savefig(f"{save_location}{stimulus_name}-{action}.jpg", bbox_inches='tight')
     plt.clf()
     plt.close()
 
@@ -862,6 +863,9 @@ def plot_all_density_plots_across_scaffold(model_name, assay_config_a, assay_con
 
 
 if __name__ == "__main__":
+    # VERSION 2, 2023
+    get_all_density_plots_all_subsets(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+
     # VERSION 2
 
     # Getting for combination of models
@@ -881,7 +885,7 @@ if __name__ == "__main__":
     # Getting for individual models
     # create_cstart_overlap_plot(f"dqn_predator-1", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
 
-    get_all_density_plots_all_subsets(f"dqn_predator-2", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_predator-2", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
 
     # get_all_density_plots_all_subsets(f"dqn_scaffold_26-1", "Behavioural-Data-Free-B", "Naturalistic", 20, return_objects=False)
     # get_all_density_plots_all_subsets(f"dqn_scaffold_26-1", "Behavioural-Data-Free-C", "Naturalistic", 20, return_objects=False)

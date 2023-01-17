@@ -6,14 +6,10 @@ from Analysis.Behavioural.Tools.filter_sequences import remove_sCS_heavy
 from Analysis.Behavioural.Tools.BehavLabels.extract_hunting_sequences import get_hunting_sequences_timestamps
 
 if __name__ == "__main__":
+    capture_sequences = get_capture_sequences(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20)
+    display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=True,
+                          figure_name="dqn_gamma_2-consumption_sequences")
 
-
-    d = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-2")
-    seq = get_hunting_sequences_timestamps(d, True)
-    display_all_sequences(seq, indicate_consumption=True, save_figure=True, figure_name="Captures-pedro_method-1")
-
-    seq = get_hunting_sequences_timestamps(d, False)
-    display_all_sequences(seq, indicate_consumption=True, save_figure=True, figure_name="Hunts-pedro_method-1")
 
     # capture_sequences = get_capture_sequences(f"dqn_beta-1", "Behavioural-Data-Free", "Naturalistic", 10)
     # display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=True, figure_save_location="Captures-dqn_scaffold_33-1")

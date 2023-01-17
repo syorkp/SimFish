@@ -49,13 +49,13 @@ def get_impulse_angle_space_usage(impulses, angles, dqn, max_impulse, max_angle)
                 for j in range(X.shape[1]):
                     pdf_sub[i, j] += distr.pdf([X[i, j], Y[i, j]])
 
-            pdf_sub /= np.max(pdf_sub)
+            # pdf_sub /= np.max(pdf_sub)
 
             coloured_dist = np.repeat(np.expand_dims(pdf_sub, 2), 3, 2)
 
             heatmap_array += coloured_dist
 
-        heatmap_array[heatmap_array[:, :, 0] > 0.0001] = 1
+        heatmap_array[heatmap_array[:, :, 0] > 0.000005] = 1
     else:
         # Add PPO action space outline
         kde, threshold = produce_action_mask_version_3()
@@ -79,7 +79,8 @@ def get_impulse_angle_space_usage(impulses, angles, dqn, max_impulse, max_angle)
     nearest_i = np.array([find_nearest(impulse_range, i) for i in impulses])
     nearest_a = np.array([find_nearest(angle_range, a) for a in angles])
 
-    heatmap_array[nearest_a, nearest_i] = np.array([1, 0, 0])
+    heatmap_array[nearest_a, nearest_i] = np.array([1.0, 0, 0])
+
     heatmap_array = np.flip(heatmap_array, axis=0)
 
     return heatmap_array, impulse_lim, ang_lim
@@ -155,19 +156,50 @@ def display_binned_action_space_usage_comparison(actions_1, actions_2, figure_na
     plt.clf()
     plt.close()
 
+def display_impulse_angle_space_usage_multiple_trials(model_name, assay_config, assay_id, n, figure_name, dqn):
+    impulses = []
+    angles = []
+
+    for i in range(1, n+1):
+        data = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        impulses.append(data["impulse"])
+        angles.append(data["angle"])
+
+    impulses = np.concatenate(impulses)
+    angles = np.concatenate(angles)
+
+    display_impulse_angle_space_usage(impulses, angles, figure_name, dqn=dqn)
+
+
+def display_binned_action_space_usage_multiple_trials(model_name, assay_config, assay_id, n, figure_name):
+    actions = []
+
+    for i in range(1, n+1):
+        data = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        actions.append(data["action"])
+
+    actions = np.concatenate(actions)
+
+    display_binned_action_space_usage(actions, figure_name)
+
 
 if __name__ == "__main__":
-    d1 = load_data("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic-1")
-    d2 = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-1")
+    display_impulse_angle_space_usage_multiple_trials("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20,
+                                                      "dqn_gamma_2", dqn=True)
+    display_binned_action_space_usage_multiple_trials("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20,
+                                                      "dqn_gamma_2")
+
+    # d1 = load_data("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic-1")
+    # d2 = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-1")
     # display_impulse_angle_space_usage_comparison(impulses_1=d1["impulse"],
     #                                              angles_1=d1["angle"],
     #                                              impulses_2=d2["efference_copy"][:, 0, 1],
     #                                              angles_2=d2["efference_copy"][:, 0, 2],
     #                                              figure_name="Test",
     #                                              dqn=True)
-    display_impulse_angle_space_usage([d1["impulse"]], [d1["angle"]], "Test")
 
-    # display_binned_action_space_usage(d["action"], "Test")
+    # display_impulse_angle_space_usage([d1["impulse"]], [d1["angle"]], "Test")
+
     # display_impulse_angle_space_usage(impulses=d["impulse"],
     #                                   angles=d["angle"],
     #                                   figure_name="Test",

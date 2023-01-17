@@ -5,9 +5,12 @@ import numpy as np
 def get_hunting_conditions(data, hunting_sequences, exclude_final_step=False):
     failed_sequences = []
     for ts in hunting_sequences:
-        if data["consumed"][ts[-1]+1]:
-            pass
-        else:
+        try:
+            if data["consumed"][ts[-1]+1]:
+                pass
+            else:
+                failed_sequences.append(ts)
+        except IndexError:  # For the case where the sequence continues until the end of the trial.
             failed_sequences.append(ts)
 
     all_steps = np.array([i for i in range(len(data["consumed"]))])

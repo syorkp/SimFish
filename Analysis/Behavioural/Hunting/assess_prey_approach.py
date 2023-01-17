@@ -46,9 +46,8 @@ def get_fish_prey_relationships(data, sequences):
     return fish_prey_distances_compiled, fish_prey_angles_compiled
 
 
-if __name__ == "__main__":
+def plot_prey_distance_leading_to_consumption(model_name, assay_config, assay_id, n):
     dist = []
-    angs = []
     model_name, assay_config, assay_id, n = "dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", f"Naturalistic", 40
     for i in range(1, n+1):
         d = load_data(model_name, assay_config, f"{assay_id}-{i}")
@@ -56,30 +55,11 @@ if __name__ == "__main__":
         dis, ang = get_fish_prey_relationships(d, ts)
         if dis.shape[0] > 0:
             dist.append(dis)
-        if ang.shape[0] > 0:
-            angs.append(ang)
 
     dist = np.concatenate((dist))
     dist_sem = np.std(dist, axis=0)/(dist.shape[1] ** 0.5)
-    angs = np.concatenate((np.absolute(angs)))
-    angs_sem = np.std(angs, axis=0)/(angs.shape[1] ** 0.5)
 
     mean_dist = np.mean(dist, axis=0)
-    mean_ang = np.mean(np.absolute(angs), axis=0)
-
-    # plt.plot(np.swapaxes(angs, 0, 1), color="grey", alpha=0.5)
-
-    upper, lower = mean_ang + angs_sem, mean_ang - angs_sem
-    steps = [i-9 for i in range(len(mean_ang))]
-
-    plt.plot(steps, mean_ang, color="r")
-    plt.fill_between(steps, upper, lower, alpha=0.5)
-    plt.xlabel("Steps from Consumption", fontsize=15)
-    plt.ylabel("Fish-Prey Angle (radians)", fontsize=15)
-    plt.ylim(0, 0.9)
-    plt.savefig(f"{model_name}-fish_prey_angle.jpg")
-    plt.clf()
-    plt.close()
 
     # plt.plot(np.swapaxes(dist, 0, 1)/10, color="grey", alpha=0.5)
     upper, lower = mean_dist+dist_sem, mean_dist-dist_sem
@@ -91,6 +71,42 @@ if __name__ == "__main__":
     plt.ylabel("Fish-Prey Distance (mm)", fontsize=15)
     plt.ylim(0, 7)
     plt.legend(["Mean", "SEM"])
-    plt.savefig(f"{model_name}-fish_prey_distance.jpg")
+    plt.savefig(f"../../../Analysis-Output/Behavioural/{model_name}-fish_prey_distance.jpg")
     plt.clf()
     plt.close()
+
+
+def plot_prey_incidence_leading_to_consumption(model_name, assay_config, assay_id, n):
+    dist = []
+    angs = []
+    for i in range(1, n+1):
+        d = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        ts = get_prey_capture_timestamps(d)
+        dis, ang = get_fish_prey_relationships(d, ts)
+        if dis.shape[0] > 0:
+            dist.append(dis)
+        if ang.shape[0] > 0:
+            angs.append(ang)
+
+    angs = np.concatenate((np.absolute(angs)))
+    angs_sem = np.std(angs, axis=0)/(angs.shape[1] ** 0.5)
+    mean_ang = np.mean(np.absolute(angs), axis=0)
+
+    upper, lower = mean_ang + angs_sem, mean_ang - angs_sem
+    steps = [i-9 for i in range(len(mean_ang))]
+
+    plt.plot(steps, mean_ang, color="r")
+    plt.fill_between(steps, upper, lower, alpha=0.5)
+    plt.xlabel("Steps from Consumption", fontsize=15)
+    plt.ylabel("Fish-Prey Angle (radians)", fontsize=15)
+    plt.ylim(0, 0.9)
+    plt.legend(["Mean", "SEM"])
+
+    plt.savefig(f"../../../Analysis-Output/Behavioural/{model_name}-fish_prey_angle.jpg")
+    plt.clf()
+    plt.close()
+
+
+if __name__ == "__main__":
+    plot_prey_distance_leading_to_consumption("dqn_gamma-2", "Behavioural-Data-Free", f"Naturalistic", 20)
+    plot_prey_incidence_leading_to_consumption("dqn_gamma-2", "Behavioural-Data-Free", f"Naturalistic", 20)

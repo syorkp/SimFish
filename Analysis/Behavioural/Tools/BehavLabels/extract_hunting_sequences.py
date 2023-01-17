@@ -133,7 +133,11 @@ def get_hunting_sequences_timestamps(data, successful_captures, sand_grain_versi
     for seq in all_timestamps:
         if successful_captures:
             endings = [s + 1 for s in seq]
-            consumptions = data["consumed"][endings]
+            try:
+                consumptions = data["consumed"][endings]
+            except IndexError:
+                # Occurs in the case where a hunting sequence continues until the last step (so consumption in the next step cant be verified)
+                consumptions = data["consumed"][endings[:-1]]
             index = 0  # Variable to keep track of sequences if multiple ones are found within sequence
             for i, c in enumerate(consumptions):
                 if c:
@@ -147,9 +151,45 @@ def get_hunting_sequences_timestamps(data, successful_captures, sand_grain_versi
     return all_actions, all_used_timestamps
 
 
+
+def get_hunting_sequences(model_name, assay_config, assay_id, n, successful_captures, include_subsequent_action):
+    all_hunting_sequences = []
+    for i in range(1, n+1):
+        data = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        if include_subsequent_action:  # In successful sequences, this will be the final consumption
+            seq, timestamps = get_hunting_sequences_timestamps(data, successful_captures)
+            for i, ts in enumerate(timestamps):
+                try:
+                    seq[i] = np.concatenate((seq[i], np.array([data["action"][ts[-1]+1]])))
+                except IndexError: # Occurs in the case where a hunting sequence continues until the last step (so consumption in the next step cant be verified)
+                    pass
+            all_hunting_sequences = all_hunting_sequences + seq
+        else:
+            all_hunting_sequences = all_hunting_sequences + get_hunting_sequences_timestamps(data, successful_captures)[0]
+    return all_hunting_sequences
+
+
+def check_hunting_identification_success_rate(model_name, assay_config, assay_id, n):
+    successful_hunting_sequences = get_hunting_sequences(model_name, assay_config, assay_id, n,
+                                              successful_captures=True, include_subsequent_action=True)
+    all_hunting_sequences = get_hunting_sequences(model_name, assay_config, assay_id, n,
+                                              successful_captures=False, include_subsequent_action=True)
+
+    consumptions = [np.sum(load_data(model_name, assay_config, f"{assay_id}-{i}")["consumed"]) for i in range(1, n+1)]
+    total_consumptions = np.sum(consumptions)
+
+    print(f"""Total consumptions: {total_consumptions}
+Total Identified: {len(successful_hunting_sequences)}
+Total Identified (inc successful): {len(all_hunting_sequences)}
+
+Success rate: {round(len(successful_hunting_sequences)/total_consumptions * 100)}%""")
+
+
+
 if __name__ == "__main__":
-    d = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-2")
-    seq, ts = get_hunting_sequences_timestamps(d, True)
-    all_seq, all_ts = get_hunting_sequences_timestamps(d, False)
-    hunt_endpoints = [i for i, c in enumerate(d["consumed"]) if c]
+    # d = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-2")
+    # seq, ts = get_hunting_sequences_timestamps(d, True)
+    # all_seq, all_ts = get_hunting_sequences_timestamps(d, False)
+    # hunt_endpoints = [i for i, c in enumerate(d["consumed"]) if c]
     # Validate by labelling successful captures.
+    check_hunting_identification_success_rate(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20)

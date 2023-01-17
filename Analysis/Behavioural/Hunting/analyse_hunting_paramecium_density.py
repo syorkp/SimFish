@@ -51,18 +51,32 @@ def get_prey_in_visual_field(fish_position, fish_orientation, prey_positions, vi
 
 # PLOTS
 
-def plot_hunting_initiation_vs_prey_in_field(data, figure_name):
+def plot_hunting_initiation_vs_prey_in_field(model_name, assay_config, assay_id, n, figure_name):
     """Plots the hunting initiation rate against the number of prey in the visual field and practical visual range."""
+    initiation_rate_compiled = []
+    prey_in_visual_field_compiled = []
 
-    all_seq, all_ts = get_hunting_sequences_timestamps(data, False)
-    all_steps, hunting_steps, initiation_steps, abort_steps, pre_capture_steps = get_hunting_conditions(data, all_ts)
+    for i in range(1, n+1):
+        data = load_data(model_name, assay_config, f"{assay_id}-{i}")
 
-    # Note can do the same for abort condition.
-    initiation_rate = compute_initiation_rate_all_steps(len(all_steps), initiation_steps, window_size=200)
+        all_seq, all_ts = get_hunting_sequences_timestamps(data, False)
+        all_steps, hunting_steps, initiation_steps, abort_steps, pre_capture_steps = get_hunting_conditions(data, all_ts)
 
-    prey_in_visual_field = get_prey_in_visual_field(data["fish_position"], data["fish_angle"], data["prey_positions"], 100)
+        # TODO: Note can do the same for abort condition.
+        try:
+            initiation_rate = compute_initiation_rate_all_steps(len(all_steps), initiation_steps, window_size=200)
+            prey_in_visual_field = get_prey_in_visual_field(data["fish_position"], data["fish_angle"], data["prey_positions"], 100)
 
-    plt.scatter(initiation_rate, prey_in_visual_field)
+            initiation_rate_compiled.append(initiation_rate)
+            prey_in_visual_field_compiled.append(prey_in_visual_field)
+        except IndexError:
+            pass
+
+
+    initiation_rate_compiled = np.concatenate(initiation_rate_compiled)
+    prey_in_visual_field_compiled = np.concatenate(prey_in_visual_field_compiled)
+
+    plt.scatter(initiation_rate_compiled, prey_in_visual_field_compiled)
     plt.ylabel("Prey in visual field")
     plt.xlabel("Hunting Initiation Rate")
     plt.savefig(f"../../../Analysis-Output/Behavioural/Prey-initiation-rate-num-in-field-{figure_name}.jpg")
@@ -70,15 +84,28 @@ def plot_hunting_initiation_vs_prey_in_field(data, figure_name):
     plt.close()
 
 
-def plot_initiation_rate_against_paramecium_density(data, figure_name):
-    all_seq, all_ts = get_hunting_sequences_timestamps(data, False)
-    paramecium_density = np.array([get_paramecium_density(data["fish_position"][i], data["prey_positions"][i])
-                          for i in range(data["fish_position"].shape[0])])
-    all_steps, hunting_steps, initiation_steps, abort_steps, pre_capture_steps = get_hunting_conditions(data, all_ts)
+def plot_initiation_rate_against_paramecium_density(model_name, assay_config, assay_id, n, figure_name):
+    initiation_rate_compiled = []
+    paramecium_density_compiled = []
 
-    initiation_rate = compute_initiation_rate_all_steps(len(all_steps), initiation_steps, window_size=200)
+    for i in range(1, n+1):
+        data = load_data(model_name, assay_config, f"{assay_id}-{i}")
+        all_seq, all_ts = get_hunting_sequences_timestamps(data, False)
+        paramecium_density = np.array([get_paramecium_density(data["fish_position"][i], data["prey_positions"][i])
+                              for i in range(data["fish_position"].shape[0])])
+        all_steps, hunting_steps, initiation_steps, abort_steps, pre_capture_steps = get_hunting_conditions(data, all_ts)
 
-    plt.scatter(initiation_rate, paramecium_density)
+        if len(initiation_steps) > 0:
+            initiation_rate = compute_initiation_rate_all_steps(len(all_steps), initiation_steps, window_size=200)
+
+            initiation_rate_compiled.append(initiation_rate)
+            paramecium_density_compiled.append(paramecium_density)
+
+    initiation_rate_compiled = np.concatenate(initiation_rate_compiled)
+    paramecium_density_compiled = np.concatenate(paramecium_density_compiled)
+
+
+    plt.scatter(initiation_rate_compiled, paramecium_density_compiled)
     plt.ylabel("Paramecium Density")
     plt.xlabel("Hunting Initiation Rate")
     plt.savefig(f"../../../Analysis-Output/Behavioural/Prey-initiation-rate-density-{figure_name}.jpg")
@@ -86,35 +113,100 @@ def plot_initiation_rate_against_paramecium_density(data, figure_name):
     plt.close()
 
 
-def show_conditions_vs_prey_density(data, figure_name):
+def show_conditions_vs_prey_density(model_name, assay_config, assay_id, n, figure_name):
     """Coloured scatter plot to indicate all prey density values and whether a hunt was initiated at the time"""
 
-    all_seq, all_ts = get_hunting_sequences_timestamps(data, False)
+    all_steps_compiled = []
+    hunting_steps_compiled = []
+    initiation_steps_compiled = []
+    abort_steps_compiled = []
+    pre_capture_steps_compiled = []
+    color_compiled = []
+    paramecium_density_compiled = []
 
-    paramecium_density = np.array([get_paramecium_density(data["fish_position"][i], data["prey_positions"][i])
-                          for i in range(data["fish_position"].shape[0])])
+    for i in range(1, n+1):
+        data = load_data(model_name, assay_config, f"{assay_id}-{i}")
 
-    all_steps, hunting_steps, initiation_steps, abort_steps, pre_capture_steps = get_hunting_conditions(data, all_ts)
+        all_seq, all_ts = get_hunting_sequences_timestamps(data, False)
 
-    color = np.zeros(all_steps.shape)
-    color[hunting_steps] = 1
-    color[initiation_steps] = 2
-    color[abort_steps] = 3
-    color[pre_capture_steps] = 4
+        paramecium_density = np.array([get_paramecium_density(data["fish_position"][i], data["prey_positions"][i])
+                              for i in range(data["fish_position"].shape[0])])
+
+        all_steps, hunting_steps, initiation_steps, abort_steps, pre_capture_steps = get_hunting_conditions(data, all_ts)
+
+        color = np.zeros(all_steps.shape)
+        if len(hunting_steps) > 0:
+            color[hunting_steps] = 1
+        if len(initiation_steps) > 0:
+            color[initiation_steps] = 2
+        if len(abort_steps) > 0:
+            color[abort_steps] = 3
+        if len(pre_capture_steps) > 0:
+            color[pre_capture_steps] = 4
+
+        all_steps_compiled.append(all_steps)
+        hunting_steps_compiled.append(hunting_steps)
+        initiation_steps_compiled.append(initiation_steps)
+        abort_steps_compiled.append(abort_steps)
+        pre_capture_steps_compiled.append(pre_capture_steps)
+        color_compiled.append(color)
+        paramecium_density_compiled.append(paramecium_density)
 
     # Time scatter plot
-    plt.scatter([i for i in range(len(paramecium_density))], paramecium_density, c=color)
+    for color, paramecium_density in zip(color_compiled, paramecium_density_compiled):
+        plt.scatter([i for i in range(len(paramecium_density))], paramecium_density, c=color)
+    plt.xlabel("Step")
+    plt.ylabel("Paramecium Density")
     plt.savefig(f"../../../Analysis-Output/Behavioural/Time_scatter_vs_prey_density-{figure_name}.jpg")
     plt.clf()
     plt.close()
 
-    boxes = [paramecium_density[all_steps], paramecium_density[hunting_steps], paramecium_density[initiation_steps],
-             paramecium_density[abort_steps], paramecium_density[pre_capture_steps]]
+    # Convert all trial specific indices to concatenated indices.
+    cumulative_length = 0
+    for t, trial in enumerate(all_steps_compiled):
+        all_steps_compiled[t] += cumulative_length
+        hunting_steps_compiled[t] += cumulative_length
+        initiation_steps_compiled[t] += cumulative_length
+        abort_steps_compiled[t] += cumulative_length
+        pre_capture_steps_compiled[t] += cumulative_length
+
+        cumulative_length += len(trial)
+
+    all_steps_compiled = np.concatenate(all_steps_compiled).astype(int)
+    hunting_steps_compiled = np.concatenate(hunting_steps_compiled).astype(int)
+    initiation_steps_compiled = np.concatenate(initiation_steps_compiled).astype(int)
+    abort_steps_compiled = np.concatenate(abort_steps_compiled).astype(int)
+    pre_capture_steps_compiled = np.concatenate(pre_capture_steps_compiled).astype(int)
+
+    paramecium_density_compiled = np.concatenate(paramecium_density_compiled)
+
+    boxes = []
+    box_labels = []
+
+    boxes.append(paramecium_density_compiled[all_steps_compiled])
+    box_labels.append("All Steps")
+
+    if len(hunting_steps_compiled) > 0:
+        boxes.append(paramecium_density_compiled[hunting_steps_compiled])
+        box_labels.append("Hunting")
+
+    if len(initiation_steps_compiled) > 0:
+        boxes.append(paramecium_density_compiled[initiation_steps_compiled])
+        box_labels.append("Initiation")
+
+    if len(abort_steps_compiled) > 0:
+        boxes.append(paramecium_density_compiled[abort_steps_compiled])
+        box_labels.append("Aborts")
+
+    if len(pre_capture_steps_compiled) > 0:
+        boxes.append(paramecium_density_compiled[pre_capture_steps_compiled])
+        box_labels.append("Pre-Capture")
 
     # Conditional Boxplots
     fig, ax = plt.subplots()
     ax.boxplot(boxes)
-    ax.set_xticklabels(["All Steps", "Hunting", "Initiation", "Aborts", "Pre-Capture"])
+    ax.set_xticklabels(box_labels)
+    ax.set_ylabel("Paramecium Density")
 
     plt.savefig(f"../../../Analysis-Output/Behavioural/Prey_density-boxplot-{figure_name}.jpg")
     plt.clf()
@@ -122,7 +214,6 @@ def show_conditions_vs_prey_density(data, figure_name):
 
 
 if __name__ == "__main__":
-    d1 = load_data("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic-1")
-    # plot_hunting_initiation_vs_prey_in_field(d1, "Test")
-    plot_initiation_rate_against_paramecium_density(d1, "Test2")
-    show_conditions_vs_prey_density(d1, "Test2")
+    # plot_hunting_initiation_vs_prey_in_field("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20, "dqn_gamma-2")
+    # plot_initiation_rate_against_paramecium_density("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20, "dqn_gamma-2")
+    show_conditions_vs_prey_density("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20, "dqn_gamma-2")
