@@ -18,8 +18,19 @@ def get_checkpoint(model_name, scaffold_point):
 
     scaffold_point_changes = load_all_log_data(model_name)["Configuration change"]
     scaffold_point_changes = np.array(scaffold_point_changes).astype(int)
-    scaffold_start_eps = scaffold_point_changes[(scaffold_point_changes[:, 1] == scaffold_point), 0][0]
-    scaffold_end_eps = scaffold_point_changes[(scaffold_point_changes[:, 1] == scaffold_point_transition), 0][0]
+    scaffold_start_eps = scaffold_point_changes[(scaffold_point_changes[:, 1] == scaffold_point), 0] # [0]
+    scaffold_end_eps = scaffold_point_changes[(scaffold_point_changes[:, 1] == scaffold_point_transition), 0] # [0]
+
+    if len(scaffold_start_eps) == 0:
+        print("Scaffold point not yet reached")
+        return
+
+    if len(scaffold_end_eps) == 0:
+        print("Scaffold point not finished yet")
+        return
+
+    scaffold_start_eps = scaffold_start_eps[0]
+    scaffold_end_eps = scaffold_end_eps[0]
 
     model_location = f"../../Training-Output/{model_name}"
 
@@ -30,7 +41,6 @@ def get_checkpoint(model_name, scaffold_point):
     best_checkpoint = None
 
     for ep in range(scaffold_start_eps + 1, scaffold_end_eps + 1):
-        print(ep)
         if ep in checkpoint_nums:
             best_checkpoint = ep
 
@@ -43,4 +53,6 @@ def get_checkpoint(model_name, scaffold_point):
 
 
 if __name__ == "__main__":
-    c = get_checkpoint("dqn_gamma-1", 23)
+    c1 = get_checkpoint("dqn_gamma-1", 44)
+    c2 = get_checkpoint("dqn_gamma-2", 44)
+    c3 = get_checkpoint("dqn_gamma-4", 44)
