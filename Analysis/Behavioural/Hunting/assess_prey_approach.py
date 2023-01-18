@@ -108,5 +108,5 @@ def plot_prey_incidence_leading_to_consumption(model_name, assay_config, assay_i
 
 
 if __name__ == "__main__":
-    plot_prey_distance_leading_to_consumption("dqn_gamma-2", "Behavioural-Data-Free", f"Naturalistic", 20)
-    plot_prey_incidence_leading_to_consumption("dqn_gamma-2", "Behavioural-Data-Free", f"Naturalistic", 20)
+    plot_prey_distance_leading_to_consumption("dqn_gamma-2", "Behavioural-Data-Free", f"Naturalistic", 100)
+    plot_prey_incidence_leading_to_consumption("dqn_gamma-2", "Behavioural-Data-Free", f"Naturalistic", 100)

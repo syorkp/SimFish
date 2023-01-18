@@ -864,7 +864,7 @@ def plot_all_density_plots_across_scaffold(model_name, assay_config_a, assay_con
 
 if __name__ == "__main__":
     # VERSION 2, 2023
-    get_all_density_plots_all_subsets(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+    get_all_density_plots_all_subsets(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
 
     # VERSION 2
 

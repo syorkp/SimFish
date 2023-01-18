@@ -184,9 +184,9 @@ def display_binned_action_space_usage_multiple_trials(model_name, assay_config, 
 
 
 if __name__ == "__main__":
-    display_impulse_angle_space_usage_multiple_trials("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20,
+    display_impulse_angle_space_usage_multiple_trials("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100,
                                                       "dqn_gamma_2", dqn=True)
-    display_binned_action_space_usage_multiple_trials("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20,
+    display_binned_action_space_usage_multiple_trials("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100,
                                                       "dqn_gamma_2")
 
     # d1 = load_data("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic-1")

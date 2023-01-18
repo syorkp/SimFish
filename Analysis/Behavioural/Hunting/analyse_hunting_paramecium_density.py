@@ -216,4 +216,4 @@ def show_conditions_vs_prey_density(model_name, assay_config, assay_id, n, figur
 if __name__ == "__main__":
     # plot_hunting_initiation_vs_prey_in_field("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20, "dqn_gamma-2")
     # plot_initiation_rate_against_paramecium_density("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20, "dqn_gamma-2")
-    show_conditions_vs_prey_density("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20, "dqn_gamma-2")
+    show_conditions_vs_prey_density("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100, "dqn_gamma-2")

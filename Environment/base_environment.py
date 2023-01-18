@@ -528,7 +528,7 @@ class BaseEnvironment:
 
         # For displaying location of salt source
         if visualisation:
-            if self.env_variables["salt"]:
+            if self.env_variables["salt"] and self.env_variables["max_salt_damage"] > 0:
                 self.board.show_salt_location(self.salt_location)
 
         # For creating a screen around prey to test.

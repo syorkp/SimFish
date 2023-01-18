@@ -5,13 +5,13 @@ from Analysis.Behavioural.Tools.BehavLabels.extract_hunting_sequences import get
 
 if __name__ == "__main__":
     # All sequences
-    hunting_sequences = get_hunting_sequences(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20,
+    hunting_sequences = get_hunting_sequences(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100,
                                               successful_captures=False, include_subsequent_action=True)
     display_all_sequences(hunting_sequences, indicate_consumption=True, save_figure=True,
                           figure_name="dqn_gamma_2-hunting_sequences_all")
 
     # Only successful sequences
-    hunting_sequences = get_hunting_sequences(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20,
+    hunting_sequences = get_hunting_sequences(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100,
                                               successful_captures=True, include_subsequent_action=True)
     display_all_sequences(hunting_sequences, indicate_consumption=True, save_figure=True,
                           figure_name="dqn_gamma_2-hunting_sequences_successful")

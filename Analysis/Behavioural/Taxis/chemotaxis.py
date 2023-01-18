@@ -15,6 +15,10 @@ def get_fish_salt_source_incidence(fish_positions, fish_orientation, salt_source
     fish_orientation = np.array(fish_orientation)
     salt_source_locations = np.array(salt_source_locations)
 
+    fish_positions = np.concatenate(fish_positions)
+    fish_orientation = np.concatenate(fish_orientation)
+    salt_source_locations = np.concatenate(salt_source_locations)
+
     fish_orientation_sign = ((fish_orientation >= 0) * 1) + ((fish_orientation < 0) * -1)
 
     # Remove full orientations (so is between -2pi and 2pi
@@ -26,17 +30,17 @@ def get_fish_salt_source_incidence(fish_positions, fish_orientation, salt_source
     fish_salt_vectors = salt_source_locations - fish_positions
 
     # Adjust according to quadrents.
-    fish_salt_angles = np.arctan(fish_salt_vectors[:, :, 1] / fish_salt_vectors[:, :, 0])
+    fish_salt_angles = np.arctan(fish_salt_vectors[:, 1] / fish_salt_vectors[:, 0])
 
     #   Generates positive angle from left x axis clockwise.
     # UL quadrent
-    in_ul_quadrent = (fish_salt_vectors[:, :, 0] < 0) * (fish_salt_vectors[:, :, 1] > 0)
+    in_ul_quadrent = (fish_salt_vectors[:, 0] < 0) * (fish_salt_vectors[:, 1] > 0)
     fish_salt_angles[in_ul_quadrent] += np.pi
     # BR quadrent
-    in_br_quadrent = (fish_salt_vectors[:, :, 0] > 0) * (fish_salt_vectors[:, :, 1] < 0)
+    in_br_quadrent = (fish_salt_vectors[:, 0] > 0) * (fish_salt_vectors[:, 1] < 0)
     fish_salt_angles[in_br_quadrent] += (np.pi * 2)
     # BL quadrent
-    in_bl_quadrent = (fish_salt_vectors[:, :, 0] < 0) * (fish_salt_vectors[:, :, 1] < 0)
+    in_bl_quadrent = (fish_salt_vectors[:, 0] < 0) * (fish_salt_vectors[:, 1] < 0)
     fish_salt_angles[in_bl_quadrent] += np.pi
 
     # Angle ends up being between 0 and 2pi as clockwise from right x-axis. Same frame as fish angle:
@@ -46,7 +50,6 @@ def get_fish_salt_source_incidence(fish_positions, fish_orientation, salt_source
     fish_salt_incidence[fish_salt_incidence < -np.pi] %= -np.pi
 
     return fish_salt_incidence
-
 
 
 #                PLOTS
@@ -106,79 +109,108 @@ def plot_fish_salt_distance_density(fish_positions, salt_locations, w=1500, h=15
     plt.close()
 
 
-def plot_salt_concentration_against_turn_size_scatter(fish_orientations, fish_positions, salt_locations, salt_concentrations):
+def plot_salt_concentration_against_turn_size_scatter(fish_orientations, fish_positions, salt_locations,
+                                                      salt_concentrations):
     fish_salt_incidence = get_fish_salt_source_incidence(fish_positions, fish_orientations, salt_locations)
     fish_salt_incidence = np.absolute(fish_salt_incidence)
-    fish_salt_incidence_change = fish_salt_incidence[:, 1:] - fish_salt_incidence[:, :-1]
+    fish_salt_incidence_change = fish_salt_incidence[1:] - fish_salt_incidence[:-1]
     turns_away = (fish_salt_incidence_change < 0)
     turns_towards = (fish_salt_incidence_change >= 0)
 
-    salt_concentrations = np.array(salt_concentrations)
-    relevant_salt_concentrations = salt_concentrations[:, :-1]
+    salt_concentrations = np.concatenate(salt_concentrations)
+    relevant_salt_concentrations = salt_concentrations[:-1]
 
-    fish_orientations = np.array(fish_orientations)
-    fish_turns = fish_orientations[:, 1:] - fish_orientations[:, :-1]
+    fish_orientations = np.concatenate(fish_orientations)
+    fish_turns = fish_orientations[1:] - fish_orientations[:-1]
 
-    plt.scatter(fish_turns[turns_away].flatten(), relevant_salt_concentrations[turns_away].flatten(), color="b")
-    plt.scatter(fish_turns[turns_towards].flatten(), relevant_salt_concentrations[turns_towards].flatten(), color="r")
+    plt.scatter(fish_turns[turns_away].flatten(), relevant_salt_concentrations[turns_away].flatten(), color="b", alpha=0.1)
+    plt.scatter(fish_turns[turns_towards].flatten(), relevant_salt_concentrations[turns_towards].flatten(), color="r", alpha=0.1)
+    plt.legend(["Turns away", "Turns towards"])
+    plt.xlim(-2, 2)
 
+    plt.xlabel("Turn size")
+    plt.ylabel("Salt Concentration")
     plt.savefig("../../../Analysis-Output/Behavioural/Salt/fish_turns_salt_gradient.jpg")
     plt.clf()
     plt.close()
 
+    plt.boxplot([relevant_salt_concentrations[turns_away].flatten(), relevant_salt_concentrations[turns_towards].flatten()])
+    plt.xlabel(["Turns away", "Turns towards"])
+    plt.ylabel("Salt Concentration")
+    plt.savefig("../../../Analysis-Output/Behavioural/Salt/fish_turns_salt_gradient_boxplot.jpg")
+    plt.clf()
+    plt.close()
 
-def plot_salt_concentration_against_turn_laterality_hist(fish_orientations, fish_positions, salt_locations, salt_concentrations):
+def plot_salt_concentration_against_turn_laterality_hist(fish_orientations, fish_positions, salt_locations,
+                                                         salt_concentrations):
     fish_salt_incidence = get_fish_salt_source_incidence(fish_positions, fish_orientations, salt_locations)
     fish_salt_incidence = np.absolute(fish_salt_incidence)
-    fish_salt_incidence_change = fish_salt_incidence[:, 1:] - fish_salt_incidence[:, :-1]
+    fish_salt_incidence_change = fish_salt_incidence[1:] - fish_salt_incidence[:-1]
     turns_away = (fish_salt_incidence_change < 0)
     turns_towards = (fish_salt_incidence_change >= 0)
 
     print(np.sum(turns_away * 1))
     print(np.sum(turns_towards * 1))
 
-    salt_concentrations = np.array(salt_concentrations)
-    relevant_salt_concentrations = salt_concentrations[:, :-1]
+    salt_concentrations = np.concatenate(salt_concentrations)
+    relevant_salt_concentrations = salt_concentrations[:-1]
 
-    fish_orientations = np.array(fish_orientations)
-    fish_turns = fish_orientations[:, 1:] - fish_orientations[:, :-1]
+    fish_orientations = np.concatenate(fish_orientations)
+    fish_turns = fish_orientations[1:] - fish_orientations[:-1]
 
     # plt.hist(fish_turns[turns_away].flatten(), relevant_salt_concentrations[turns_away].flatten(), color="b")
     # plt.hist(fish_turns[turns_towards].flatten(), relevant_salt_concentrations[turns_towards].flatten(), color="r")
-    plt.hist([relevant_salt_concentrations[turns_away].flatten(), relevant_salt_concentrations[turns_towards].flatten()], bins=20)#, color="b")
+    plt.hist(
+        [relevant_salt_concentrations[turns_away].flatten(), relevant_salt_concentrations[turns_towards].flatten()],
+        bins=20)  # , color="b")
+    plt.legend(["Turns away", "Turns towards"])
     # plt.hist(relevant_salt_concentrations[turns_towards].flatten(), bins=100, color="r")
-
+    plt.xlabel("Salt Concentration")
     plt.savefig("../../../Analysis-Output/Behavioural/Salt/fish_turns_salt_gradient_hist.jpg")
     plt.clf()
     plt.close()
 
 
+# Plot Compilations
 
-if __name__ == "__main__":
+def plot_salt_analysis_multiple_models(model_names, assay_config, assay_id, n):
     compiled_fish_positions = []
     compiled_fish_orientations = []
     compiled_salt_source_locations = []
     compiled_salt_concentrations = []
-    for i in range(2, 3):
-        fish_positions, fish_orientations, salt_source_locations, salt_concentrations = \
-            get_salt_data(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 10)
-        # display_2d_kdf_salt_fish_position(fish_positions, salt_source_locations)
-        # plot_fish_salt_distance_density(fish_positions, salt_source_locations)
-        plot_salt_concentration_against_turn_laterality_hist(fish_orientations, fish_positions, salt_source_locations, salt_concentrations)
-        # plot_salt_concentration_against_turn_direction(fish_orientations, fish_positions,
-        #                                                salt_source_locations, salt_concentrations)
+    for model in model_names:
+        fish_positions, fish_orientations, salt_source_locations, salt_concentrations = get_salt_data(model,
+                                                                                                      assay_config,
+                                                                                                      assay_id, n)
+
         compiled_fish_positions += fish_positions
         compiled_fish_orientations += fish_orientations
         compiled_salt_source_locations += salt_source_locations
         compiled_salt_concentrations += salt_concentrations
 
     # Salt kdf.
-    # display_2d_kdf_salt_fish_position(compiled_fish_positions, compiled_salt_source_locations)
-    # plot_fish_salt_distance_density(compiled_fish_positions, compiled_salt_source_locations)
+    display_2d_kdf_salt_fish_position(compiled_fish_positions, compiled_salt_source_locations)
+    plot_fish_salt_distance_density(compiled_fish_positions, compiled_salt_source_locations)
 
     # Salt-direction plot
-# /
-    # plot_salt_concentration_against_turn_laterality(compiled_fish_orientations, compiled_fish_positions,
-    #                                                 compiled_salt_source_locations, compiled_salt_concentrations)
+    plot_salt_concentration_against_turn_size_scatter(compiled_fish_orientations, compiled_fish_positions,
+                                                      compiled_salt_source_locations, compiled_salt_concentrations)
+    plot_salt_concentration_against_turn_laterality_hist(compiled_fish_orientations, compiled_fish_positions,
+                                                         compiled_salt_source_locations, compiled_salt_concentrations)
 
 
+def plot_salt_analysis(model_name, assay_config, assay_id, n):
+    fish_positions, fish_orientations, salt_source_locations, salt_concentrations = get_salt_data(model_name,
+                                                                                                  assay_config,
+                                                                                                  assay_id, n)
+
+    display_2d_kdf_salt_fish_position(fish_positions, salt_source_locations)
+    plot_fish_salt_distance_density(fish_positions, salt_source_locations)
+    plot_salt_concentration_against_turn_size_scatter(fish_orientations, fish_positions, salt_source_locations,
+                                                      salt_concentrations)
+    plot_salt_concentration_against_turn_laterality_hist(fish_orientations, fish_positions, salt_source_locations,
+                                                         salt_concentrations)
+
+
+if __name__ == "__main__":
+    plot_salt_analysis(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100)

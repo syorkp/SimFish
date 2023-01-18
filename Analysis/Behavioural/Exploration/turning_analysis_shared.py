@@ -73,8 +73,9 @@ def cumulative_turn_direction_plot(action_sequences, label):
     plt.ylabel("Cumulative Turn Direction", fontsize=20)
     plt.hlines(0, 0, 10, color="r")
     plt.title(label)
-    plt.savefig(label)
+    plt.savefig(f"../../../Analysis-Output/Behavioural/Exploration/{label}")
     plt.clf()
+    plt.close()
     # plt.fill_between(range(11), err_min, err_max)
     # plt.clf()
 
@@ -126,7 +127,7 @@ def cumulative_switching_probability_plot_multiple_models(left_durs_list, right_
     plt.title(label)
     ax.legend(prop={'size': 30}, loc="lower right")
     if save_figure:
-        plt.savefig(label)
+        plt.savefig(f"../../../Analysis-Output/Behavioural/Exploration/{label}")
     plt.clf()
 
 
@@ -198,7 +199,7 @@ def plot_turning_sequences(fish_angle, save_figure=True):
     plt.ylabel("Turn Amplitude (radians)", fontsize=18)
     fig.tight_layout()
     if save_figure:
-        plt.savefig(f"../../Figures/Panels/Panel-4/Orientation-Plot")
+        plt.savefig(f"../../../Analysis-Output/Behavioural/Exploration/Orientation-Plot")
     plt.show()
 
 
@@ -259,6 +260,6 @@ def cumulative_switching_probability_plot(left_durs, right_durs, left_durs2, rig
     plt.xlabel("Turn Streak Length", fontsize=30)
     plt.ylabel("Cumulative Probability", fontsize=30)
     plt.legend(["Models", "Random Switching"], fontsize=30)
-    plt.savefig(save_location)
-    plt.show()
-
+    plt.savefig(f"../../../Analysis-Output/Behavioural/Exploration/{save_location}")
+    plt.clf()
+    plt.close()

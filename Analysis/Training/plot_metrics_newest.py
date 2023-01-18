@@ -335,7 +335,7 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
     if show_inset is not None:
         inset_ylim = axs[metric_index].get_ylim()
 
-    plt.savefig(f"../../Analysis-Output/Training/{figure_name}.jpg")
+    plt.savefig(f"../../Analysis-Output/Training/Metric-Plots/{figure_name}.jpg")
     plt.clf()
     plt.close()
 
@@ -351,7 +351,7 @@ def create_zoomed_inset(scaffold_points, metric_vals, metric_name, inset_ylim, f
     # ax.set_ylim(inset_ylim)
     plt.ylabel(metric_name)
     plt.xlabel("Scaffold Point")
-    plt.savefig(f"../../Analysis-Output/Training/{figure_name}_inset.jpg")
+    plt.savefig(f"../../Analysis-Output/Training/Metric-Plots/{figure_name}_inset.jpg")
     plt.clf()
     plt.close()
 
@@ -445,7 +445,7 @@ if __name__ == "__main__":
                               # "Phototaxis Index"
                               ]
     plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=15, interpolate_scaffold_points=True,
-                                          figure_name="dqn_gamma", scaled_window=True,
+                                          figure_name="dqn_gamma", scaled_window=False,
                                           show_inset=["capture success rate", 34])# key_scaffold_points=[14, 29, 42])
     # plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=100, interpolate_scaffold_points=True,
     #                                       figure_name="dqn_beta_mod", scaled_window=False,

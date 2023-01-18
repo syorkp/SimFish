@@ -32,6 +32,42 @@ def get_prey_being_hunted(prey_positions, fish_positions, fish_orientation):
     return paramecium_in_zone
 
 
+def remove_overlapping_sequences(all_used_timestamps, all_actions):
+    # Remove direct repeats
+    indices_to_delete = []
+    for i, ts in enumerate(all_used_timestamps):
+        for ts_2 in all_used_timestamps[i+1:]:
+            if ts == ts_2:
+                indices_to_delete.append(i)
+
+    for i_d in reversed(indices_to_delete):
+        del all_used_timestamps[i_d]
+        del all_actions[i_d]
+
+    # Remove shorter sequences with the same terminus as a longer one
+    indices_to_delete = []
+    for i, ts in enumerate(all_used_timestamps):
+        for j, ts_2 in enumerate(all_used_timestamps):
+            if i == j:
+                pass
+            else:
+                if ts[-1] == ts_2[-1] and len(ts) <= len(ts_2):
+                    indices_to_delete.append(i)
+
+    try:
+        for i_d in reversed(indices_to_delete):
+            del all_used_timestamps[i_d]
+            del all_actions[i_d]
+    except IndexError:
+        x = True
+
+    # try:
+    #     all_actions = [x for _, x in sorted(zip(all_used_timestamps, all_actions))]
+    # except ValueError:
+    #     x = True
+    #
+    # x = True
+    return all_used_timestamps, all_actions
 
 def get_hunting_sequences_timestamps(data, successful_captures, sand_grain_version=False):
     """
@@ -139,28 +175,35 @@ def get_hunting_sequences_timestamps(data, successful_captures, sand_grain_versi
                 # Occurs in the case where a hunting sequence continues until the last step (so consumption in the next step cant be verified)
                 consumptions = data["consumed"][endings[:-1]]
             index = 0  # Variable to keep track of sequences if multiple ones are found within sequence
-            for i, c in enumerate(consumptions):
+            for i, c in enumerate(reversed(consumptions)):
+                revered_i = len(consumptions) - i
                 if c:
-                    all_actions.append(data["action"][seq[index:i+2]])
-                    all_used_timestamps.append(seq[index:i+2])
+                    all_actions.append(data["action"][seq[index:revered_i]])
+                    all_used_timestamps.append(seq[index:revered_i])
                     index = i + 2
+                    break
         else:
             all_actions.append(data["action"][seq])
             all_used_timestamps.append(seq)
 
-    return all_actions, all_used_timestamps
+    all_used_timestamps, all_actions = remove_overlapping_sequences(all_used_timestamps, all_actions)
 
+    return all_actions, all_used_timestamps
 
 
 def get_hunting_sequences(model_name, assay_config, assay_id, n, successful_captures, include_subsequent_action):
     all_hunting_sequences = []
-    for i in range(1, n+1):
-        data = load_data(model_name, assay_config, f"{assay_id}-{i}")
+    for i_trial in range(1, n+1):
+        data = load_data(model_name, assay_config, f"{assay_id}-{i_trial}")
+        successful_seq_end = [i for i, c in enumerate(data["consumed"]) if c]
         if include_subsequent_action:  # In successful sequences, this will be the final consumption
             seq, timestamps = get_hunting_sequences_timestamps(data, successful_captures)
-            for i, ts in enumerate(timestamps):
+            if successful_captures:
+                if len(successful_seq_end) < len(timestamps):
+                    print(f"Trial {i_trial} error in successful sequence isolation")
+            for i_t, ts in enumerate(timestamps):
                 try:
-                    seq[i] = np.concatenate((seq[i], np.array([data["action"][ts[-1]+1]])))
+                    seq[i_t] = np.concatenate((seq[i_t], np.array([data["action"][ts[-1]+1]])))
                 except IndexError: # Occurs in the case where a hunting sequence continues until the last step (so consumption in the next step cant be verified)
                     pass
             all_hunting_sequences = all_hunting_sequences + seq
@@ -192,4 +235,4 @@ if __name__ == "__main__":
     # all_seq, all_ts = get_hunting_sequences_timestamps(d, False)
     # hunt_endpoints = [i for i, c in enumerate(d["consumed"]) if c]
     # Validate by labelling successful captures.
-    check_hunting_identification_success_rate(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 20)
+    check_hunting_identification_success_rate(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100)

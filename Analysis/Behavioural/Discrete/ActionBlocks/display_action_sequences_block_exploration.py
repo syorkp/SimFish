@@ -4,14 +4,9 @@ from Analysis.Behavioural.Discrete.ActionBlocks.display_action_sequences_block i
 
 if __name__ == "__main__":
 
-    #                            EXPLORATION SEQUENCES
-    exploration_sequences = get_exploration_sequences("dqn_predator-2", "Behavioural-Data-Free", "Naturalistic", 20)
-    display_all_sequences(exploration_sequences, min_length=20, max_length=200, save_figure=True,
-                          figure_name="Exploration-dqn_predator-1",)
-    #
-    # escape_sequences_26 = get_escape_sequences(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 40)
-    # display_all_sequences(escape_sequences_26, min_length=20, max_length=200, save_figure=True,
-    #                       figure_save_location="Escape-dqn_scaffold_26-2",)
+    exploration_sequences = get_exploration_sequences("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100)
+    display_all_sequences(exploration_sequences, min_length=20, max_length=40, save_figure=True,
+                          figure_name="Exploration_2-dqn_gamma-2",)
 
     # Exploration DQN 14
     # exploration_sequences_14 = get_exploration_sequences(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20)
@@ -36,19 +31,11 @@ if __name__ == "__main__":
     # #                       figure_name="Exploration-dqn_scaffold_nl_19-1")
 
     #                            EXPLORATION SEQUENCES
-    # capture_sequences_26 = get_capture_sequences(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic",
-    #                                             40, dur=100)
-    # display_all_sequences(capture_sequences_26, min_length=20, max_length=200, save_figure=True,
-    #                       figure_save_location="Prey-Capture-dqn_scaffold_26-2",)
-    #
+
     # exploration_sequences_26 = get_exploration_sequences(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 40)
     # display_all_sequences(exploration_sequences_26, min_length=20, max_length=200, save_figure=True,
     #                       figure_save_location="Exploration-dqn_scaffold_26-2",)
     #
-    # escape_sequences_26 = get_escape_sequences(f"dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", "Naturalistic", 40)
-    # display_all_sequences(escape_sequences_26, min_length=20, max_length=200, save_figure=True,
-    #                       figure_save_location="Escape-dqn_scaffold_26-2",)
-
     # Exploration DQN 14
     # exploration_sequences_14 = get_exploration_sequences(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20)
     # # display_all_sequences(exploration_sequences, min_length=23, max_length=42, save_figure=True,

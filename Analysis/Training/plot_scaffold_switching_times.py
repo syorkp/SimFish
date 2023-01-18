@@ -39,7 +39,6 @@ def plot_scaffold_durations(model_name):
 
 
 def plot_scaffold_durations_multiple_models(model_list, figure_name, steps=True):
-    fig, ax = plt.subplots()
     config_compiled = []
     duration_compiled = []
     fig, axs = plt.subplots(figsize=(30, 20))
@@ -51,7 +50,7 @@ def plot_scaffold_durations_multiple_models(model_list, figure_name, steps=True)
         duration_compiled.append(duration)
 
     max_config = int(max([max(c) for c in config_compiled]))
-    switching_points = [i for i in range(max_config)]
+    switching_points = [i+1 for i in range(max_config)]
 
     for duration in duration_compiled:
         while len(duration) < max_config:
@@ -69,7 +68,7 @@ def plot_scaffold_durations_multiple_models(model_list, figure_name, steps=True)
     axs.set_xlabel("Curriculum Point")
     axs.set_ylabel("Total Steps")
     plt.legend(model_list)
-    plt.savefig(f"../../Analysis-Output/Training/{figure_name}_curriculum_steps.jpg")
+    plt.savefig(f"../../Analysis-Output/Training/Scaffold-Durations/{figure_name}_curriculum_steps.jpg")
     plt.clf()
     plt.close()
 

@@ -9,8 +9,13 @@ from Analysis.Behavioural.Tools.get_repeated_data_parameter import get_parameter
 from Analysis.Behavioural.Tools.remove_near_wall_data import remove_near_wall_data_from_position_data
 
 
+# Plots
+
 def plot_light_dark_occupancy(fish_positions, env_variables):
-    fish_positions_flattened = np.concatenate(fish_positions, axis=0)
+    if type(fish_positions) is list:
+        fish_positions_flattened = np.concatenate(fish_positions, axis=0)
+    else:
+        fish_positions_flattened = fish_positions
 
     x = fish_positions_flattened[:, 0]
     y = fish_positions_flattened[:, 1]
@@ -144,7 +149,45 @@ def plot_oriention_against_directional_brightness(fish_orientations, observation
     plt.show()
 
 
-if __name__ == "__main__":
+# Plot compilations
+
+def plot_all_phototaxis_analysis(model_name, assay_config, assay_id, n):
+    learning_params, env_variables, _, b, c = load_assay_configuration_files(model_name)
+    fish_position_data = get_parameter_across_trials(model_name, assay_config, assay_id, n, "fish_position")
+
+    fish_position_data = np.concatenate(fish_position_data)
+
+    # Light vs dark region occupancy
+    plot_light_dark_occupancy(fish_position_data, env_variables)
+    plot_light_dark_occupancy_kdf(fish_position_data, env_variables, model_name)
+
+    # Light gradient direction against turn laterality. NOTE: there are correlated factors such as presence of walls
+    # and bkg_scatter dropoff towards edges
+    action_data = get_parameter_across_trials(model_name, assay_config, assay_id, n, "action")
+    observation_data = get_parameter_across_trials(model_name, assay_config, assay_id, n, "observation")
+
+    action_data = np.concatenate(action_data)
+    observation_data = np.concatenate(observation_data, axis=0)
+
+
+    plot_luminance_driven_choice(observation_data, action_data, fish_position_data, env_variables, model_name)
+
+    # And without walls
+    reduced_fish_position, reduced_action_data, reduced_observation_data = remove_near_wall_data_from_position_data(
+        fish_position_data,
+        env_variables["width"],
+        env_variables["height"],
+        300,
+        action_data,
+        observation_data)
+    plot_luminance_driven_choice(reduced_observation_data, reduced_action_data, reduced_fish_position,
+                                 env_variables, model_name + "_without_walls")
+
+    orientation_data = get_parameter_across_trials(model_name, assay_config, assay_id, n, "fish_angle")
+    plot_oriention_against_directional_brightness(orientation_data, observation_data)
+
+
+def plot_all_phototaxis_analysis_multiple_models(model_names, assay_config, assay_id, n):
     compiled_fish_position_data = []
     compiled_action_data = []
     compiled_observation_data = []
@@ -153,26 +196,31 @@ if __name__ == "__main__":
     for i in range(1, 2):
         # Display occupancy scatter plot and KDF.
         learning_params, env_variables, n, b, c = load_assay_configuration_files(f"dqn_scaffold_14-{i}")
-        fish_position_data = get_parameter_across_trials(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 20, "fish_position")
+        fish_position_data = get_parameter_across_trials(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free",
+                                                         "Naturalistic", 20, "fish_position")
         # plot_light_dark_occupancy(fish_position_data, env_variables)
         plot_light_dark_occupancy_kdf(fish_position_data, env_variables)
 
         # Light gradient direction against turn laterality. NOTE: there are correlated factors such as presence of walls
         # and bkg_scatter dropoff towards edges
-        action_data = get_parameter_across_trials(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 20, "action")
-        observation_data = get_parameter_across_trials(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 20, "observation")
+        action_data = get_parameter_across_trials(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 20,
+                                                  "action")
+        observation_data = get_parameter_across_trials(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic",
+                                                       20, "observation")
         plot_luminance_driven_choice(observation_data, action_data, fish_position_data, env_variables)
-        reduced_fish_position, reduced_action_data, reduced_observation_data = remove_near_wall_data_from_position_data(fish_position_data,
-                                                                                                                        env_variables["width"],
-                                                                                                                        env_variables["height"],
-                                                                                                                        300,
-                                                                                                                        action_data,
-                                                                                                                        observation_data)
-        plot_luminance_driven_choice(reduced_observation_data, reduced_action_data, reduced_fish_position, env_variables)
+        reduced_fish_position, reduced_action_data, reduced_observation_data = remove_near_wall_data_from_position_data(
+            fish_position_data,
+            env_variables["width"],
+            env_variables["height"],
+            300,
+            action_data,
+            observation_data)
+        plot_luminance_driven_choice(reduced_observation_data, reduced_action_data, reduced_fish_position,
+                                     env_variables)
 
-        orientation_data = get_parameter_across_trials(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 10, "fish_angle")
+        orientation_data = get_parameter_across_trials(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic",
+                                                       10, "fish_angle")
         plot_oriention_against_directional_brightness(orientation_data, observation_data)
-
 
         compiled_fish_position_data += fish_position_data
         compiled_action_data += action_data
@@ -182,5 +230,13 @@ if __name__ == "__main__":
     # For all models
     # plot_light_dark_occupancy(compiled_fish_position_data, env_variables)
     # plot_light_dark_occupancy_kdf(compiled_fish_position_data, env_variables)
-    plot_luminance_driven_choice(compiled_observation_data, compiled_action_data, compiled_fish_position_data, env_variables)
+    plot_luminance_driven_choice(compiled_observation_data, compiled_action_data, compiled_fish_position_data,
+                                 env_variables)
     plot_oriention_against_directional_brightness(compiled_orientation_data, compiled_observation_data)
+
+
+if __name__ == "__main__":
+    # plot_all_phototaxis_analysis_multiple_models(["dqn_gamma-1", "dqn_gamma-2"], "Behavioural-Data-Free",
+    #                                              "Naturalistic", 100)
+
+    plot_all_phototaxis_analysis("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100)
