@@ -69,6 +69,7 @@ def remove_overlapping_sequences(all_used_timestamps, all_actions):
     # x = True
     return all_used_timestamps, all_actions
 
+
 def get_hunting_sequences_timestamps(data, successful_captures, sand_grain_version=False):
     """
 
@@ -235,4 +236,4 @@ if __name__ == "__main__":
     # all_seq, all_ts = get_hunting_sequences_timestamps(d, False)
     # hunt_endpoints = [i for i, c in enumerate(d["consumed"]) if c]
     # Validate by labelling successful captures.
-    check_hunting_identification_success_rate(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100)
+    check_hunting_identification_success_rate(f"dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 100)

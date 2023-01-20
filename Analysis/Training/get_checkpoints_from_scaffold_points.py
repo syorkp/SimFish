@@ -55,4 +55,6 @@ def get_checkpoint(model_name, scaffold_point):
 if __name__ == "__main__":
     c1 = get_checkpoint("dqn_gamma-1", 44)
     c2 = get_checkpoint("dqn_gamma-2", 44)
-    c3 = get_checkpoint("dqn_gamma-4", 44)
+    c3 = get_checkpoint("dqn_gamma-3", 44)
+    c4 = get_checkpoint("dqn_gamma-4", 44)
+    c5 = get_checkpoint("dqn_gamma-5", 44)

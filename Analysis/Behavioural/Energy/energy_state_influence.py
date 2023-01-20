@@ -15,10 +15,11 @@ def show_action_histograms(action_data, energy_state_data):
         plt.show()
 
 
-action_data = get_parameter_across_trials(f"dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic", 20, "action")
-energy_state_data = get_parameter_across_trials(f"dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic", 20, "energy_state")
+if __name__ == "__main__":
+    action_data = get_parameter_across_trials(f"dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 100, "action")
+    energy_state_data = get_parameter_across_trials(f"dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 100, "energy_state")
 
-
+    show_action_histograms(action_data, energy_state_data)
 
 
 # TODO: Make raster plot display.

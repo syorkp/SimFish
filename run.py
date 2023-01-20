@@ -20535,44 +20535,6 @@ dqn_free_config_large_gamma_5 = [
 
 
 #                   TRAINING - DQN
-dqn_just_predator_1 = [
-    {
-        "Model Name": "dqn_predator",
-        "Environment Name": "dqn_predator",
-        "Trial Number": 1,
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": False,
-        "Learning Algorithm": "DQN",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": False,
-        "New Simulation": True,
-        "Profile Speed": False,
-    },
-]
-dqn_just_predator_2 = [
-    {
-        "Model Name": "dqn_predator",
-        "Environment Name": "dqn_predator",
-        "Trial Number": 2,
-        "Run Mode": "Training",
-        "Tethered": False,
-        "Realistic Bouts": True,
-        "Continuous Actions": False,
-        "Learning Algorithm": "DQN",
-        "Priority": 1,
-        "Using GPU": True,
-        "monitor gpu": False,
-        "Full Logs": True,
-        "SB Emulator": False,
-        "New Simulation": True,
-        "Profile Speed": False,
-    },
-]
 
 dqn_gamma_1 = [
     {
@@ -20694,6 +20656,102 @@ dqn_gamma_sg_2 = [
         "Model Name": "dqn_gamma_sg",
         "Environment Name": "dqn_gamma_sg",
         "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
+dqn_gamma_pm_1 = [
+    {
+        "Model Name": "dqn_gamma_pm",
+        "Environment Name": "dqn_gamma_pm",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+dqn_gamma_pm_2 = [
+    {
+        "Model Name": "dqn_gamma_pm",
+        "Environment Name": "dqn_gamma_pm",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+dqn_gamma_pm_3 = [
+    {
+        "Model Name": "dqn_gamma_pm",
+        "Environment Name": "dqn_gamma_pm",
+        "Trial Number": 3,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+dqn_gamma_pm_4 = [
+    {
+        "Model Name": "dqn_gamma_pm",
+        "Environment Name": "dqn_gamma_pm",
+        "Trial Number": 4,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+dqn_gamma_pm_5 = [
+    {
+        "Model Name": "dqn_gamma_pm",
+        "Environment Name": "dqn_gamma_pm",
+        "Trial Number": 5,
         "Run Mode": "Training",
         "Tethered": False,
         "Realistic Bouts": True,

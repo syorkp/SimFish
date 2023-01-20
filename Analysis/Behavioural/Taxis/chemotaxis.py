@@ -54,7 +54,7 @@ def get_fish_salt_source_incidence(fish_positions, fish_orientation, salt_source
 
 #                PLOTS
 
-def display_2d_kdf_salt_fish_position(fish_positions, salt_locations):
+def display_2d_kdf_salt_fish_position(fish_positions, salt_locations, model_name):
     fish_positions_flattened = np.concatenate(fish_positions, axis=0)
     salt_locations_flattened = np.concatenate(salt_locations, axis=0)
 
@@ -80,12 +80,12 @@ def display_2d_kdf_salt_fish_position(fish_positions, salt_locations):
     # ax.axes.get_yaxis().set_visible(False)
     plt.title(f"Fish-Salt Relative Positions")
 
-    plt.savefig("../../../Analysis-Output/Behavioural/Salt/fish_salt_relative_positions.jpg")
+    plt.savefig(f"../../../Analysis-Output/Behavioural/Salt/{model_name}-fish_salt_relative_positions.jpg")
     plt.clf()
     plt.close()
 
 
-def plot_fish_salt_distance_density(fish_positions, salt_locations, w=1500, h=1500):
+def plot_fish_salt_distance_density(fish_positions, salt_locations, model_name, w=1500, h=1500):
     d_max = (w ** 2 + h ** 2) ** 0.5
     fish_positions_flattened = np.concatenate(fish_positions, axis=0)
     salt_locations_flattened = np.concatenate(salt_locations, axis=0)
@@ -93,7 +93,9 @@ def plot_fish_salt_distance_density(fish_positions, salt_locations, w=1500, h=15
     relative_positions = salt_locations_flattened - fish_positions_flattened
     distances = (relative_positions[:, 0] ** 2 + relative_positions[:, 1] ** 2) ** 0.5
 
-    random_fish_positions = generate_random_fish_position_data(n=fish_positions_flattened.shape[0], w=w, h=h)
+    # random_fish_positions = generate_random_fish_position_data(n=fish_positions_flattened.shape[0], w=w, h=h)
+    idx = np.random.rand(*fish_positions_flattened.shape).argsort(axis=0)
+    random_fish_positions = np.take_along_axis(fish_positions_flattened, idx, axis=0)
     relative_positions = salt_locations_flattened - random_fish_positions
     distances_simulated = (relative_positions[:, 0] ** 2 + relative_positions[:, 1] ** 2) ** 0.5
 
@@ -104,13 +106,13 @@ def plot_fish_salt_distance_density(fish_positions, salt_locations, w=1500, h=15
     plt.ylabel("Frequency")
     plt.legend()
 
-    plt.savefig("../../../Analysis-Output/Behavioural/Salt/histogram_of_salt_concentration_fish_density.jpg")
+    plt.savefig(f"../../../Analysis-Output/Behavioural/Salt/{model_name}-histogram_of_salt_concentration_fish_density.jpg")
     plt.clf()
     plt.close()
 
 
 def plot_salt_concentration_against_turn_size_scatter(fish_orientations, fish_positions, salt_locations,
-                                                      salt_concentrations):
+                                                      salt_concentrations, model_name):
     fish_salt_incidence = get_fish_salt_source_incidence(fish_positions, fish_orientations, salt_locations)
     fish_salt_incidence = np.absolute(fish_salt_incidence)
     fish_salt_incidence_change = fish_salt_incidence[1:] - fish_salt_incidence[:-1]
@@ -130,19 +132,19 @@ def plot_salt_concentration_against_turn_size_scatter(fish_orientations, fish_po
 
     plt.xlabel("Turn size")
     plt.ylabel("Salt Concentration")
-    plt.savefig("../../../Analysis-Output/Behavioural/Salt/fish_turns_salt_gradient.jpg")
+    plt.savefig(f"../../../Analysis-Output/Behavioural/Salt/{model_name}-fish_turns_salt_gradient.jpg")
     plt.clf()
     plt.close()
 
     plt.boxplot([relevant_salt_concentrations[turns_away].flatten(), relevant_salt_concentrations[turns_towards].flatten()])
     plt.xlabel(["Turns away", "Turns towards"])
     plt.ylabel("Salt Concentration")
-    plt.savefig("../../../Analysis-Output/Behavioural/Salt/fish_turns_salt_gradient_boxplot.jpg")
+    plt.savefig(f"../../../Analysis-Output/Behavioural/Salt/{model_name}-fish_turns_salt_gradient_boxplot.jpg")
     plt.clf()
     plt.close()
 
 def plot_salt_concentration_against_turn_laterality_hist(fish_orientations, fish_positions, salt_locations,
-                                                         salt_concentrations):
+                                                         salt_concentrations, model_name):
     fish_salt_incidence = get_fish_salt_source_incidence(fish_positions, fish_orientations, salt_locations)
     fish_salt_incidence = np.absolute(fish_salt_incidence)
     fish_salt_incidence_change = fish_salt_incidence[1:] - fish_salt_incidence[:-1]
@@ -166,7 +168,7 @@ def plot_salt_concentration_against_turn_laterality_hist(fish_orientations, fish
     plt.legend(["Turns away", "Turns towards"])
     # plt.hist(relevant_salt_concentrations[turns_towards].flatten(), bins=100, color="r")
     plt.xlabel("Salt Concentration")
-    plt.savefig("../../../Analysis-Output/Behavioural/Salt/fish_turns_salt_gradient_hist.jpg")
+    plt.savefig(f"../../../Analysis-Output/Behavioural/Salt/{model_name}-fish_turns_salt_gradient_hist.jpg")
     plt.clf()
     plt.close()
 
@@ -188,9 +190,11 @@ def plot_salt_analysis_multiple_models(model_names, assay_config, assay_id, n):
         compiled_salt_source_locations += salt_source_locations
         compiled_salt_concentrations += salt_concentrations
 
+    model_config = model_names[0].split("-")[0]
+
     # Salt kdf.
-    display_2d_kdf_salt_fish_position(compiled_fish_positions, compiled_salt_source_locations)
-    plot_fish_salt_distance_density(compiled_fish_positions, compiled_salt_source_locations)
+    display_2d_kdf_salt_fish_position(compiled_fish_positions, compiled_salt_source_locations, model_config)
+    plot_fish_salt_distance_density(compiled_fish_positions, compiled_salt_source_locations, model_config)
 
     # Salt-direction plot
     plot_salt_concentration_against_turn_size_scatter(compiled_fish_orientations, compiled_fish_positions,
@@ -204,13 +208,16 @@ def plot_salt_analysis(model_name, assay_config, assay_id, n):
                                                                                                   assay_config,
                                                                                                   assay_id, n)
 
-    display_2d_kdf_salt_fish_position(fish_positions, salt_source_locations)
-    plot_fish_salt_distance_density(fish_positions, salt_source_locations)
+    display_2d_kdf_salt_fish_position(fish_positions, salt_source_locations, model_name)
+    plot_fish_salt_distance_density(fish_positions, salt_source_locations, model_name)
     plot_salt_concentration_against_turn_size_scatter(fish_orientations, fish_positions, salt_source_locations,
-                                                      salt_concentrations)
+                                                      salt_concentrations, model_name)
     plot_salt_concentration_against_turn_laterality_hist(fish_orientations, fish_positions, salt_source_locations,
-                                                         salt_concentrations)
+                                                         salt_concentrations, model_name)
 
 
 if __name__ == "__main__":
+    plot_salt_analysis(f"dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 100)
     plot_salt_analysis(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100)
+    plot_salt_analysis(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100)
+    plot_salt_analysis(f"dqn_gamma-5", "Behavioural-Data-Free", "Naturalistic", 100)

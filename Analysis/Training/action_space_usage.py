@@ -4,9 +4,11 @@ from scipy.stats import multivariate_normal
 
 from Analysis.Training.tools import find_nearest
 from Analysis.load_data import load_data
+from Analysis.Behavioural.VisTools.get_action_name import get_action_name
+from Analysis.Behavioural.Tools.get_repeated_data_parameter import get_parameter_across_trials
 from Environment.Action_Space.Bout_classification.action_masking import produce_action_mask, get_new_bout_params,\
     produce_action_mask_version_3
-from Analysis.Behavioural.VisTools.get_action_name import get_action_name
+
 
 """
 For creation of displays of action space usage across training.
@@ -41,6 +43,7 @@ def get_impulse_angle_space_usage(impulses, angles, dqn, max_impulse, max_angle)
             mean[0] *= 3.4452532909386484
             cov[0][0] *= 3.4452532909386484
             cov[0][1] *= 3.4452532909386484
+            cov[1][0] *= 3.4452532909386484
 
             distr = multivariate_normal(cov=cov, mean=mean)
             # Generating the density function
@@ -138,23 +141,33 @@ def display_impulse_angle_space_usage_comparison(impulses_1, angles_1, impulses_
     plt.close()
 
 
-def display_binned_action_space_usage_comparison(actions_1, actions_2, figure_name):
-    action_nums_1, counts_1 = np.unique(actions_1, return_counts=True)
-    action_nums_2, counts_2 = np.unique(actions_2, return_counts=True)
+def display_binned_action_space_usage_comparison(model_names, assay_config, assay_id, n, figure_name):
+    num_models = len(model_names)
+    interval = 0.8/num_models
 
-    fig, axs = plt.subplots(figsize=(15, 10))
-    axs.bar([i-0.2 for i in action_nums_1], counts_1, width=0.4)
-    axs.bar([i+0.2 for i in action_nums_2], counts_2, width=0.4)
+    fig, axs = plt.subplots(figsize=(20, 10))
+
+    for i, model in enumerate(model_names):
+        actions = get_parameter_across_trials(model, assay_config, assay_id, n, "action")
+        actions = np.concatenate(actions)
+
+        action_nums, counts = np.unique(actions, return_counts=True)
+
+        counts = counts.astype(float)
+        counts /= np.sum(counts)
+
+        axs.bar([j-0.4+(i*interval) for j in action_nums], counts, width=interval)
 
     labels = [get_action_name(a) for a in range(12)]
     axs.set_xticks([i for i in range(len(labels))])
     axs.set_xticklabels(labels)
 
     axs.set_xlabel("Action")
-    axs.set_ylabel("Frequency")
+    axs.set_ylabel("Proportion of Bouts")
     plt.savefig(f"../../Analysis-Output/Action-Space/used_actions_bouts-{figure_name}-comparison.png")
     plt.clf()
     plt.close()
+
 
 def display_impulse_angle_space_usage_multiple_trials(model_name, assay_config, assay_id, n, figure_name, dqn):
     impulses = []
@@ -184,10 +197,17 @@ def display_binned_action_space_usage_multiple_trials(model_name, assay_config, 
 
 
 if __name__ == "__main__":
-    display_impulse_angle_space_usage_multiple_trials("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100,
-                                                      "dqn_gamma_2", dqn=True)
-    display_binned_action_space_usage_multiple_trials("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100,
-                                                      "dqn_gamma_2")
+    # Impulse angle space DQN
+    display_impulse_angle_space_usage_multiple_trials("dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100,
+                                                      "dqn_gamma_4", dqn=True)
+
+    # Bout usage single trial
+    # display_binned_action_space_usage_multiple_trials("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 100,
+    #                                                   "dqn_gamma_1")
+
+    # Bout usage multiple trials
+    # display_binned_action_space_usage_comparison(["dqn_gamma-1", "dqn_gamma-2", "dqn_gamma-4", "dqn_gamma-5"], "Behavioural-Data-Free",
+    #                                              "Naturalistic", 100, "dqn_gamma")
 
     # d1 = load_data("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic-1")
     # d2 = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-1")

@@ -346,10 +346,10 @@ def create_overlap_plot(cloud_left, cloud_right, stimulus_name, action, model_na
     yi, xi = np.mgrid[x.min():x.max():nbins * 1j, y.min():y.max():nbins * 1j]
 
     zi = k(np.vstack([xi.flatten(), yi.flatten()]))
-
     # For right
     x = np.array([i[0] for i in cloud_right])
     y = np.array([i[1] for i in cloud_right])
+
     # y = np.negative(y)
     nbins = 300
     try:
@@ -363,7 +363,7 @@ def create_overlap_plot(cloud_left, cloud_right, stimulus_name, action, model_na
 
     # Make the plot
     fig, ax = plt.subplots(figsize=(10, 10))
-    zi = np.clip(zi, -0.0000015, 0.0000015)  # TODO: Remove
+    # zi = np.clip(zi, -0.0000015, 0.0000015)  # TODO: Remove
 
     pcm = ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
 
@@ -864,7 +864,27 @@ def plot_all_density_plots_across_scaffold(model_name, assay_config_a, assay_con
 
 if __name__ == "__main__":
     # VERSION 2, 2023
-    get_all_density_plots_all_subsets(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
+    save_location = f"../../../../Analysis-Output/Behavioural/Spatial-Density-Plots/dqn_gamma-1/"
+
+    create_j_turn_2_overlap_plot("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 100, False, save_location)
+    create_cstart_overlap_plot("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 100, False, save_location)
+    create_routine_turn_overlap_plot("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 100, False, save_location)
+
+    save_location = f"../../../../Analysis-Output/Behavioural/Spatial-Density-Plots/dqn_gamma-2/"
+
+    create_j_turn_overlap_plot("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100, False, save_location)
+    create_j_turn_2_overlap_plot("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100, False, save_location)
+    create_cstart_overlap_plot("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100, False, save_location)
+    create_routine_turn_overlap_plot("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100, False, save_location)
+
+    save_location = f"../../../../Analysis-Output/Behavioural/Spatial-Density-Plots/dqn_gamma-4/"
+
+    create_j_turn_overlap_plot("dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, False, save_location)
+    create_j_turn_2_overlap_plot("dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, False, save_location)
+    create_cstart_overlap_plot("dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, False, save_location)
+    create_routine_turn_overlap_plot("dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, False, save_location)
+
+    # get_all_density_plots_all_subsets(f"dqn_gamma-5", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
 
     # VERSION 2
 

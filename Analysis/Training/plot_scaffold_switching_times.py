@@ -77,15 +77,3 @@ if __name__ == "__main__":
     dqn_models = ["dqn_gamma-1", "dqn_gamma-2", "dqn_gamma-3", "dqn_gamma-4", "dqn_gamma-5"]
 
     plot_scaffold_durations_multiple_models(dqn_models, figure_name="dqn_gamma", steps=True)
-
-
-
-
-
-
-
-
-
-
-
-

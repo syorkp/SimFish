@@ -5,8 +5,16 @@ from Analysis.Behavioural.Discrete.ActionBlocks.display_action_sequences_block i
 if __name__ == "__main__":
     #                           PREDATOR AVOIDANCE SEQUENCES
 
-    escape_sequences = get_escape_sequences("dqn_predator-2", "Behavioural-Data-Free", "Naturalistic", 20)
-    display_all_sequences(escape_sequences, figure_name="Escapes-dqn_predator-2",)
+    escape_sequences = get_escape_sequences("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100)
+    display_all_sequences(escape_sequences, figure_name="Escapes-dqn_gamma-2", save_figure=True, max_length=25)
+
+    escape_sequences = get_escape_sequences("dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100)
+    display_all_sequences(escape_sequences, figure_name="Escapes-dqn_gamma-4", save_figure=True, max_length=25)
+
+    escape_sequences = get_escape_sequences("dqn_gamma-5", "Behavioural-Data-Free", "Naturalistic", 100)
+    display_all_sequences(escape_sequences, figure_name="Escapes-dqn_gamma-5", save_figure=True, max_length=25)
+
+
     # escape_sequences = get_escape_sequences("dqn_scaffold_20-2", "Behavioural-Data-Free", "Naturalistic", 40)
     # display_all_sequences(escape_sequences)
     # escape_sequences = get_escape_sequences("dqn_scaffold_21-2", "Behavioural-Data-Free", "Naturalistic", 40)

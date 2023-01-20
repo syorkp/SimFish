@@ -64,7 +64,7 @@ def cluster_bouts(impulses, angles, cluster_type, cluster_num, model_name, impul
     # plt.legend([str(a) for a in range(cluster_num)])
     plt.xlabel("Impulse", fontsize=15)
     plt.ylabel("Angle (radians)", fontsize=15)
-    plt.savefig(f"All-Plots/{model_name}/{cluster_type}-{cluster_num}-clustered.jpg")
+    plt.savefig(f"All-Plots/{model_name}/{cluster_type}-{cluster_num}-clustered.jpg", bbox_inches='tight')
     plt.clf()
     plt.close()
 

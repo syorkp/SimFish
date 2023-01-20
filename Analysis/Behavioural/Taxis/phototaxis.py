@@ -11,7 +11,7 @@ from Analysis.Behavioural.Tools.remove_near_wall_data import remove_near_wall_da
 
 # Plots
 
-def plot_light_dark_occupancy(fish_positions, env_variables):
+def plot_light_dark_occupancy(fish_positions, env_variables, model_name):
     if type(fish_positions) is list:
         fish_positions_flattened = np.concatenate(fish_positions, axis=0)
     else:
@@ -26,8 +26,9 @@ def plot_light_dark_occupancy(fish_positions, env_variables):
     dark_field_length = int(env_variables["width"] * env_variables["dark_light_ratio"])
     plt.hlines(dark_field_length, xmin=0, xmax=env_variables["width"])
 
-    plt.show()
-
+    plt.savefig(f"../../../Analysis-Output/Behavioural/Phototaxis/environmental-occupancy-{model_name}")
+    plt.clf()
+    plt.close()
 
 def plot_light_dark_occupancy_kdf(fish_positions, env_variables, save_location):
     if len(fish_positions.shape) > 2:
@@ -64,8 +65,9 @@ def plot_light_dark_occupancy_kdf(fish_positions, env_variables, save_location):
     plt.hlines(dark_field_length, xmin=0, xmax=env_variables["width"])
     plt.savefig(save_location)
 
-    plt.show()
-
+    plt.savefig(f"../../../Analysis-Output/Behavioural/Phototaxis/environmental_occupancy-kdf-{save_location}")
+    plt.clf()
+    plt.close()
 
 def plot_luminance_driven_choice(observations, actions, fish_positions, env_variables, save_location):
     fish_positions_flattened = np.concatenate(fish_positions, axis=0)
@@ -106,13 +108,15 @@ def plot_luminance_driven_choice(observations, actions, fish_positions, env_vari
     plt.ylabel("Frequency", fontsize=20)
     ax.tick_params(axis="x", labelsize=20)
     ax.tick_params(axis="y", labelsize=20)
-    plt.savefig(save_location)
-    plt.show()
+    plt.savefig(f"../../../Analysis-Output/Behavioural/Phototaxis/directional_brightness-{save_location}")
+    plt.clf()
+    plt.close()
+
     # TODO: Plot probability of turn as a function of directional brightness.
     # TODO: Make direction work automatically for both discrete and continuous.
 
 
-def plot_oriention_against_directional_brightness(fish_orientations, observations):
+def plot_oriention_against_directional_brightness(fish_orientations, observations, model_name):
     if type(fish_orientations) is list:
         fish_orientations_flattened = np.concatenate(fish_orientations, axis=0)
     else:
@@ -146,8 +150,9 @@ def plot_oriention_against_directional_brightness(fish_orientations, observation
 
     # plt.xlim(0, 2)
     # plt.ylim(-0.00025, 0.00025)
-    plt.show()
-
+    plt.savefig(f"../../../Analysis-Output/Behavioural/Phototaxis/directional_brightness_scatter-{model_name}")
+    plt.clf()
+    plt.close()
 
 # Plot compilations
 
@@ -158,7 +163,7 @@ def plot_all_phototaxis_analysis(model_name, assay_config, assay_id, n):
     fish_position_data = np.concatenate(fish_position_data)
 
     # Light vs dark region occupancy
-    plot_light_dark_occupancy(fish_position_data, env_variables)
+    plot_light_dark_occupancy(fish_position_data, env_variables, model_name)
     plot_light_dark_occupancy_kdf(fish_position_data, env_variables, model_name)
 
     # Light gradient direction against turn laterality. NOTE: there are correlated factors such as presence of walls
@@ -181,10 +186,10 @@ def plot_all_phototaxis_analysis(model_name, assay_config, assay_id, n):
         action_data,
         observation_data)
     plot_luminance_driven_choice(reduced_observation_data, reduced_action_data, reduced_fish_position,
-                                 env_variables, model_name + "_without_walls")
+                                 env_variables, model_name + "_reduced")
 
     orientation_data = get_parameter_across_trials(model_name, assay_config, assay_id, n, "fish_angle")
-    plot_oriention_against_directional_brightness(orientation_data, observation_data)
+    plot_oriention_against_directional_brightness(orientation_data, observation_data, model_name)
 
 
 def plot_all_phototaxis_analysis_multiple_models(model_names, assay_config, assay_id, n):
@@ -193,7 +198,7 @@ def plot_all_phototaxis_analysis_multiple_models(model_names, assay_config, assa
     compiled_observation_data = []
     compiled_orientation_data = []
 
-    for i in range(1, 2):
+    for i in range(1, 2):   # TODO: Havent made yet
         # Display occupancy scatter plot and KDF.
         learning_params, env_variables, n, b, c = load_assay_configuration_files(f"dqn_scaffold_14-{i}")
         fish_position_data = get_parameter_across_trials(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free",
@@ -239,4 +244,7 @@ if __name__ == "__main__":
     # plot_all_phototaxis_analysis_multiple_models(["dqn_gamma-1", "dqn_gamma-2"], "Behavioural-Data-Free",
     #                                              "Naturalistic", 100)
 
+    plot_all_phototaxis_analysis("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 100)
     plot_all_phototaxis_analysis("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100)
+    plot_all_phototaxis_analysis("dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100)
+    plot_all_phototaxis_analysis("dqn_gamma-5", "Behavioural-Data-Free", "Naturalistic", 100)

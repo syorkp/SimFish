@@ -208,17 +208,12 @@ class TrainingService(BaseService):
         episode_transition_points = self.episode_transitions.keys()
         switch_criteria_met = False
 
-        # print("Checking update configuration")
-
         print(f"Loglen: {len(self.last_episodes_prey_caught)}")
 
         # Switch config by episode
         if next_point in episode_transition_points and self.episode_number > self.episode_transitions[next_point]:
             switch_criteria_met = True
         elif len(self.last_episodes_prey_caught) >= self.min_scaffold_interval:  # Switch config by behavioural conditionals
-
-            print("Checking update configuration2")
-
             prey_conditional_transition_points = self.pci_transitions.keys()
             predators_conditional_transition_points = self.pai_transitions.keys()
             grains_bumped_conditional_transfer_points = self.sgb_transitions.keys()
@@ -233,8 +228,6 @@ class TrainingService(BaseService):
                     np.mean(self.last_episodes_sand_grains_bumped) > self.sgb_transitions[next_point]:
                 switch_criteria_met = True
 
-            print(f"{np.mean(self.last_episodes_prey_caught)}/{self.simulation.available_prey} > {self.pci_transitions[next_point]}")
-            #
             # if switch_criteria_met:
             #     print("Switch criteria met...")
 

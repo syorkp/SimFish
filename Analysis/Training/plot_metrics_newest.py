@@ -34,6 +34,8 @@ def interpolate_metric_data(data, scaffold_points):
 def compute_rolling_averages_over_data_scaled_window(data, max_window, scaffold_points, min_window=10):
     # Compute episode length of each scaffold point...
     scaffold_points = np.array(scaffold_points)
+    scaffold_points_order = np.argsort(scaffold_points[:, 1])
+    scaffold_points = scaffold_points[scaffold_points_order, :]
 
     # Add final window for data since last scaffold point change
     scaffold_points = np.concatenate((scaffold_points, np.array([[max(data[:, 0]), max(scaffold_points[:, 1]+1)]])))
@@ -444,8 +446,8 @@ if __name__ == "__main__":
                               "predator avoidance index (avoided/p_pred)",
                               # "Phototaxis Index"
                               ]
-    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=15, interpolate_scaffold_points=True,
-                                          figure_name="dqn_gamma", scaled_window=False,
+    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=300, interpolate_scaffold_points=True,
+                                          figure_name="dqn_gamma", scaled_window=True,
                                           show_inset=["capture success rate", 34])# key_scaffold_points=[14, 29, 42])
     # plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=100, interpolate_scaffold_points=True,
     #                                       figure_name="dqn_beta_mod", scaled_window=False,

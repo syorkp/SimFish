@@ -1165,8 +1165,8 @@ class BaseEnvironment:
                     self.initiate_repeated_predator_attack()
 
             # Update predator target
-            if self.predator_distance_to_fish() > self.env_variables["max_predator_reorient_distance"]:
-                self.predator_target = np.array(self.fish.body.position)
+            # if self.predator_distance_to_fish() > self.env_variables["max_predator_reorient_distance"]:
+            #     self.predator_target = np.array(self.fish.body.position)
 
             self.predator_body.angle = np.pi / 2 - np.arctan2(
                 self.predator_target[0] - self.predator_body.position[0],

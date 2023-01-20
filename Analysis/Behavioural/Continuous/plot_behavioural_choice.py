@@ -136,7 +136,7 @@ def plot_action_scatter(impulses, angles, model_name, special_impulses=None, spe
 
     plt.xlabel("Impulse", fontsize=15)
     plt.ylabel("Angle (radians)", fontsize=15)
-    plt.savefig(f"All-Plots/{model_name}/{plot_name}.jpg")
+    plt.savefig(f"All-Plots/{model_name}/{plot_name}.jpg", bbox_inches='tight')
     plt.clf()
 
 

@@ -4,9 +4,20 @@ from Analysis.Behavioural.Discrete.ActionBlocks.display_action_sequences_block i
 
 if __name__ == "__main__":
 
-    exploration_sequences = get_exploration_sequences("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100)
+    exploration_sequences = get_exploration_sequences("dqn_gamma-1", "Behavioural-Data-Empty", "Naturalistic", 100)
+    exploration_sequences = exploration_sequences[:200]
     display_all_sequences(exploration_sequences, min_length=20, max_length=40, save_figure=True,
-                          figure_name="Exploration_2-dqn_gamma-2",)
+                          figure_name="Exploration_2-dqn_gamma-1",)
+
+    exploration_sequences = get_exploration_sequences("dqn_gamma-4", "Behavioural-Data-Empty", "Naturalistic", 100)
+    exploration_sequences = exploration_sequences[:200]
+    display_all_sequences(exploration_sequences, min_length=20, max_length=40, save_figure=True,
+                          figure_name="Exploration_2-dqn_gamma-4",)
+
+    exploration_sequences = get_exploration_sequences("dqn_gamma-5", "Behavioural-Data-Empty", "Naturalistic", 100)
+    exploration_sequences = exploration_sequences[:200]
+    display_all_sequences(exploration_sequences, min_length=20, max_length=40, save_figure=True,
+                          figure_name="Exploration_2-dqn_gamma-5",)
 
     # Exploration DQN 14
     # exploration_sequences_14 = get_exploration_sequences(f"dqn_scaffold_14-1", "Behavioural-Data-Free", "Naturalistic", 20)

@@ -18,7 +18,7 @@ def display_sequences(sequences):
     plt.show()
 
 
-def display_all_sequences(sequences, min_length=None, max_length=None, indicate_consumption=False, save_figure=False,
+def display_all_sequences(sequences, min_length=0, max_length=10000000, indicate_consumption=False, save_figure=False,
                           figure_name=None, alternate_action_names=None, indicate_event_point=False):
     if len(sequences) == 0:
         return
@@ -42,21 +42,19 @@ def display_all_sequences(sequences, min_length=None, max_length=None, indicate_
     fig, ax = plt.subplots(figsize=(10, 10))
     used_sequences = []
     for i, seq in enumerate(sequences):
-        if min_length is not None:
-            if len(seq) < min_length:
-                continue
-        if max_length is not None:
-            if len(seq) > max_length:
-                for j, a in enumerate(reversed(seq[:max_length])):
-                    j = plot_dim - j
-                    ax.fill_between((j, j + 1), i, i + 1, color=color_set[a])
-                    used_sequences.append(seq)
-
-                continue
-        for j, a in enumerate(reversed(seq)):
-            j = plot_dim - j
-            ax.fill_between((j, j+1), i, i+1, color=color_set[a])
-        used_sequences.append(seq)
+        if len(seq) < min_length:
+            pass
+        elif len(seq) > max_length:
+            # for j, a in enumerate(reversed(seq[:max_length])):
+            for j, a in enumerate(reversed(seq[len(seq)-max_length:])):
+                j = plot_dim - j
+                ax.fill_between((j, j + 1), i, i + 1, color=color_set[a])
+            used_sequences.append(seq[len(seq)-max_length:])
+        else:
+            for j, a in enumerate(reversed(seq)):
+                j = plot_dim - j
+                ax.fill_between((j, j+1), i, i+1, color=color_set[a])
+            used_sequences.append(seq)
 
     seen = set()
     seen_add = seen.add

@@ -108,6 +108,9 @@ def plot_all_turn_analysis_multiple_models_discrete(model_names, assay_config, a
         compiled_sl_no_prey.append(sl)
         compiled_sr_no_prey.append(sr)
 
+
+    model_config = model_names[0].split("-")[0]
+
     # Cumulative turn direction plots:
     # cumulative_turn_direction_plot_multiple_models(turn_no_prey_sequences_list)
     # cumulative_turn_direction_plot(turn_exploration_sequences,
@@ -120,16 +123,17 @@ def plot_all_turn_analysis_multiple_models_discrete(model_names, assay_config, a
 
     l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_no_prey_sequences)
     cumulative_switching_probability_plot_multiple_models(compiled_sl_no_prey, compiled_sr_no_prey,  sl2, sr2,
-                                                          label=f"Cumulative Switching Probability (no prey) {model_name}")
+                                                          label=f"Cumulative Switching Probability (no prey) {model_config}")
 
 
 if __name__ == "__main__":
     # Get all plots for a single model
-    plot_all_turn_analysis("dqn_gamma-2", "Behavioural-Data-Free", f"Naturalistic", 100)
+    # plot_all_turn_analysis("dqn_gamma-2", "Behavioural-Data-Empty", f"Naturalistic", 100)
 
     # Get all plots for multiple models
-    # plot_all_turn_analysis_multiple_models_discrete(["dqn_gamma-2", "dqn_scaffold_26-2"], "Behavioural-Data-Empty",
-    #                                                 f"Naturalistic", 20, data_cutoff=None)
+    plot_all_turn_analysis_multiple_models_discrete(["dqn_gamma-1", "dqn_gamma-2", "dqn_gamma-4", "dqn_gamma-5"],
+                                                    "Behavioural-Data-Empty",
+                                                    f"Naturalistic", 100, data_cutoff=None)
 
     # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", f"Naturalistic-18")
     # exploration_timestamps, exploration_sequences, exploration_fish_orientations = \

@@ -119,7 +119,7 @@ def create_density_cloud_overlap(cloud_left, cloud_right, action_num, stimulus_n
 
     # Make the plot
     fig, ax = plt.subplots(figsize=(10, 10))
-    zi = np.clip(zi, -0.0000015, 0.0000015)  # TODO: Remove
+    # zi = np.clip(zi, -0.0000015, 0.0000015)  # TODO: Remove
 
     pcm = ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
 

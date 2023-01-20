@@ -6,9 +6,10 @@ from Analysis.Behavioural.Tools.filter_sequences import remove_sCS_heavy
 from Analysis.Behavioural.Tools.BehavLabels.extract_hunting_sequences import get_hunting_sequences_timestamps
 
 if __name__ == "__main__":
-    capture_sequences = get_capture_sequences(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100)
+    capture_sequences = get_capture_sequences(f"dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 100)
+    capture_sequences = capture_sequences[:80]
     display_all_sequences(capture_sequences, indicate_consumption=True, save_figure=True,
-                          figure_name="dqn_gamma_2-consumption_sequences")
+                          figure_name="reduced_dqn_gamma_1-consumption_sequences")
 
 
     # capture_sequences = get_capture_sequences(f"dqn_beta-1", "Behavioural-Data-Free", "Naturalistic", 10)
