@@ -15,27 +15,41 @@ def plot_reward_pre_post_scaffold(model_list, window):
     scaffold_switching_points = [scaffold_points[scaffold_points[:, 1].argsort()] for scaffold_points in scaffold_switching_points]
 
     scaffold_start_episode = [model[0, 0] for model in scaffold_switching_points]
-    all_episode_steps = [np.cumsum(model, axis=1) for model in ordered_chosen_model_data]
-    scaffold_start_step_index = [np.where(episode_steps == scaffold_start_episode[i]) for i, episode_steps
+    all_episode_steps = [np.concatenate((model["Episode Duration"][:, 0:1], np.expand_dims(np.cumsum(model["Episode Duration"][:, 1]), 1)), axis=1)
+                         for model in ordered_chosen_model_data]
+    scaffold_start_step_index = [np.where(episode_steps[:, 0] == scaffold_start_episode[i]) for i, episode_steps
                                  in enumerate(all_episode_steps)]
-    scaffold_start_step = [all_episode_steps[scaffold_start_index] for scaffold_start_index in scaffold_start_step_index]
+    scaffold_start_step = [all_episode_steps[i][scaffold_start_index[0]] for i, scaffold_start_index in enumerate(scaffold_start_step_index)]
 
     # Compute rolling averages
     ordered_chosen_model_data_rolling_averages = compute_rolling_averages(ordered_chosen_model_data, model_data,
-                                                                          "episode reward", window,
+                                                                          metrics, window,
                                                                           scaled_window=False)
 
     all_reward_data = [data["episode reward"][:, 1] for data in ordered_chosen_model_data_rolling_averages]
     max_reward = np.max(np.concatenate(all_reward_data))
     min_reward = np.min(np.concatenate(all_reward_data))
 
-    plt.plot(ordered_chosen_model_data_rolling_averages[0]["episode reward"][:, 0], ordered_chosen_model_data_rolling_averages[0]["episode reward"][:, 1])
-    plt.vlines(scaffold_start_step[0], min_reward, max_reward, color="r")
+    max_steps = min(np.max(model_steps[:, 1]) for model_steps in all_episode_steps)
+
+    for m, model in enumerate(model_list):
+        # TODO: Interpolate steps so is before and after introduction of scaffold. Scale to halfway point between both
+        scaffold_switch_steps = scaffold_start_step[m][0, 1]
+        reward = ordered_chosen_model_data_rolling_averages[m]["episode reward"][:, 1]
+        relevant_steps = all_episode_steps[m][:len(reward), 1]
+        data_before_switch = relevant_steps < scaffold_switch_steps
+
+
+        plt.plot(relevant_steps, reward)
+    plt.vlines(max_steps/2, min_reward, max_reward, color="r")
+    plt.xlim(0, max_steps)
+    plt.xlabel("Training Steps")
+    plt.ylabel("Episode Reward")
     plt.show()
-    # Plot reward across all steps
-    # Add vline at scaffold start.
-    ...
 
 
 if __name__ == "__main__":
-    plot_reward_pre_post_scaffold(["dqn_gamma-1", "dqn_gamma-2"], 20)
+    dqn_models = ["dqn_gamma-1", "dqn_gamma-2", "dqn_gamma-3", "dqn_gamma-4", "dqn_gamma-5"]
+
+    plot_reward_pre_post_scaffold(dqn_models, 30)
+    # TODO: Add option for second set of models, which dont have scaffold switches

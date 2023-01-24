@@ -10539,8 +10539,8 @@ dqn_empty_config_large_gamma_2 = [
 
 dqn_free_config_large_gamma_2 = [
     {
-        "Model Name": "dqn_gamma",
-        "Environment Name": "dqn_gamma_final",
+        "Model Name": "dqn_gamma_pm",
+        "Environment Name": "dqn_gamma_pm_final",
         "Assay Configuration Name": "Behavioural-Data-Free",
         "Trial Number": 2,
         "Checkpoint": None,
@@ -13395,8 +13395,8 @@ dqn_empty_config_large_gamma_3 = [
 
 dqn_free_config_large_gamma_3 = [
     {
-        "Model Name": "dqn_gamma",
-        "Environment Name": "dqn_gamma_final",
+        "Model Name": "dqn_gamma_pm",
+        "Environment Name": "dqn_gamma_pm_final",
         "Assay Configuration Name": "Behavioural-Data-Free",
         "Trial Number": 3,
         "Checkpoint": None,
@@ -16251,8 +16251,8 @@ dqn_empty_config_large_gamma_4 = [
 
 dqn_free_config_large_gamma_4 = [
     {
-        "Model Name": "dqn_gamma",
-        "Environment Name": "dqn_gamma_final",
+        "Model Name": "dqn_gamma_pm",
+        "Environment Name": "dqn_gamma_pm_final",
         "Assay Configuration Name": "Behavioural-Data-Free",
         "Trial Number": 4,
         "Checkpoint": None,
@@ -19107,8 +19107,8 @@ dqn_empty_config_large_gamma_5 = [
 
 dqn_free_config_large_gamma_5 = [
     {
-        "Model Name": "dqn_gamma",
-        "Environment Name": "dqn_gamma_final",
+        "Model Name": "dqn_gamma_pm",
+        "Environment Name": "dqn_gamma_pm_final",
         "Assay Configuration Name": "Behavioural-Data-Free",
         "Trial Number": 5,
         "Checkpoint": None,

@@ -44,7 +44,6 @@ def get_checkpoint(model_name, scaffold_point):
         if ep in checkpoint_nums:
             best_checkpoint = ep
 
-
     # Alert if there is no checkpoint within the scaffold point...
     if best_checkpoint is None:
         print("Error, no checkpoint available within scaffold point")
