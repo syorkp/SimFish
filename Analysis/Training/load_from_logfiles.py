@@ -29,24 +29,42 @@ summary has the following structure:
 
 def load_all_log_data(model_name):
     available_tags = {}
-    log_path = f"../../Training-Output/{model_name}/logs/"
-    file_names = [f for f in os.listdir(log_path) if os.path.isfile(os.path.join(log_path, f))]
+    try:
+        log_path = f"../../Training-Output/{model_name}/logs/"
+        file_names = [f for f in os.listdir(log_path) if os.path.isfile(os.path.join(log_path, f))]
 
-    for file in file_names:
-        try:
-            for i, summary in enumerate(tf.train.summary_iterator(f"{log_path}/{file}")):
-                step = summary.step
-                for v in summary.summary.value:
-                    tag = v.tag
-                    simple_value = v.simple_value
-                    if tag in available_tags.keys():
-                        available_tags[tag].append([step, simple_value])
-                    else:
-                        available_tags[tag] = [[step, simple_value]]
-        except tensorflow.python.framework.errors_impl.DataLossError:
-            print(f"{model_name} - Data loss")
-    return available_tags
+        for file in file_names:
+            try:
+                for i, summary in enumerate(tf.train.summary_iterator(f"{log_path}/{file}")):
+                    step = summary.step
+                    for v in summary.summary.value:
+                        tag = v.tag
+                        simple_value = v.simple_value
+                        if tag in available_tags.keys():
+                            available_tags[tag].append([step, simple_value])
+                        else:
+                            available_tags[tag] = [[step, simple_value]]
+            except tensorflow.python.framework.errors_impl.DataLossError:
+                print(f"{model_name} - Data loss")
+        return available_tags
+    except FileNotFoundError:
+        log_path = f"Training-Output/{model_name}/logs/"
+        file_names = [f for f in os.listdir(log_path) if os.path.isfile(os.path.join(log_path, f))]
 
+        for file in file_names:
+            try:
+                for i, summary in enumerate(tf.train.summary_iterator(f"{log_path}/{file}")):
+                    step = summary.step
+                    for v in summary.summary.value:
+                        tag = v.tag
+                        simple_value = v.simple_value
+                        if tag in available_tags.keys():
+                            available_tags[tag].append([step, simple_value])
+                        else:
+                            available_tags[tag] = [[step, simple_value]]
+            except tensorflow.python.framework.errors_impl.DataLossError:
+                print(f"{model_name} - Data loss")
+        return available_tags
 
 def order_metric_data(data):
     """Data is in format (t, 2) where t is number of timepoints sampled. Each point is [step, value]."""

@@ -20533,6 +20533,57 @@ dqn_free_config_large_gamma_5 = [
     }
     ]
 
+# Assay And Analysis
+
+dqn_gamma_analysis_across_scaffold_1 = [
+    {
+        "Model Name": "dqn_gamma",
+        "Environment Name": "dqn_gamma_empty",
+        "Assay Configuration Name": "Behavioural-Data-Empty",
+        "Trial Number": 1,
+        "Checkpoint": None,
+        "Run Mode": "Assay-Analysis-Across-Scaffold",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 2,
+        "Using GPU": False,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": True,
+        "set random seed": True,
+        "New Simulation": True,
+        "Full Reafference": True,
+        "behavioural recordings": ["environmental positions", "observation"],
+        "network recordings": ["rnn_shared", "internal_state"],
+        "interventions": None,
+        "Assays": [
+            {
+                "assay id": "Naturalistic-1",
+                "stimulus paradigm": "Naturalistic",
+                "duration": 10000,
+                "Tethered": False,
+                "save frames": False,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+            },
+        ],
+        "Analysis": [
+            {
+                "analyis id": "Turn-Analysis",
+                "analysis script": "Analysis/Behavioural/Exploration/turning_analysis_discrete.py",
+                "analysis function": "plot_all_turn_analysis",
+
+            }
+        ]
+    }
+]
 
 #                   TRAINING - DQN
 
@@ -20944,7 +20995,7 @@ ppo_21 = [
 
 
 if run_config is None:
-    run_config = dqn_free_config_large
+    run_config = dqn_gamma_analysis_across_scaffold_1
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]

@@ -5,5 +5,7 @@
     "PAI": {},
     "SGB": {},
     "Finished Condition": {
+        "PCI": 0.4,
+        "PAI": 1000.0
     }
 }

@@ -15,6 +15,8 @@ import Services.PPO.ppo_training_service_discrete_2 as ppo_training_discrete2
 import Services.A2C.a2c_training_service as a2c_training
 import Services.A2C.a2c_assay_service as a2c_assay
 
+from Analysis.Training.get_checkpoints_from_scaffold_points import get_checkpoint
+from Configurations.Utilities.turn_scaffold_point_to_assay_config import transfer_config
 
 # multiprocessing.set_start_method('spawn', force=True)
 
@@ -68,6 +70,10 @@ class TrialManager:
                 else:
                     self.priority_ordered_trials[index]["Model Exists"] = False
             elif trial["Run Mode"] == "Assay":
+                self.priority_ordered_trials[index]["Model Exists"] = True
+                if not os.path.exists(assay_directory_location):
+                    os.makedirs(assay_directory_location)
+            elif trial["Run Mode"] == "Assay-Analysis-Across-Scaffold":
                 self.priority_ordered_trials[index]["Model Exists"] = True
                 if not os.path.exists(assay_directory_location):
                     os.makedirs(assay_directory_location)
@@ -163,6 +169,35 @@ class TrialManager:
                     print('Invalid "Learning Algorithm" selected with discrete actions (training mode)')
                     new_job = None
 
+        elif trial["Run Mode"] == "Assay-Analysis-Across-Scaffold":
+            if trial["Continuous Actions"]:
+                if trial["Learning Algorithm"] == "PPO":
+                    new_job = multiprocessing.Process(target=ppo_assay_continuous.ppo_assay_target_continuous, args=(
+                        trial, total_steps, episode_number, memory_fraction))
+                elif trial["Learning Algorithm"] == "A2C":
+                    new_job = multiprocessing.Process(target=a2c_assay.a2c_assay_target, args=(
+                        trial, total_steps, episode_number, memory_fraction))
+                elif trial["Learning Algorithm"] == "DQN":
+                    print('Cannot use DQN with continuous actions (assay mode)')
+                    new_job = None
+                else:
+                    print('Invalid "Learning Algorithm" selected with continuous actions (assay mode)')
+                    new_job = None
+
+            else:
+                if trial["Learning Algorithm"] == "PPO":
+                    new_job = multiprocessing.Process(target=ppo_assay_discrete.ppo_assay_target_discrete, args=(
+                        trial, total_steps, episode_number, memory_fraction))
+                elif trial["Learning Algorithm"] == "A2C":
+                    print('Cannot use A2C with discrete actions (assay mode)')
+                    new_job = None
+                elif trial["Learning Algorithm"] == "DQN":
+                    new_job = multiprocessing.Process(target=assay.assay_target, args=(
+                        trial, total_steps, episode_number, memory_fraction))
+                else:
+                    print('Invalid "Learning Algorithm" selected with discrete actions (assay mode)')
+                    new_job = None
+
         elif trial["Run Mode"] == "Assay":
             if trial["Continuous Actions"]:
                 if trial["Learning Algorithm"] == "PPO":
@@ -196,7 +231,6 @@ class TrialManager:
             new_job = None
 
         return new_job
-
     def run_priority_loop(self):
         """
         Executes the trials in the required order.
@@ -209,19 +243,57 @@ class TrialManager:
             if to_delete is not None:
                 del running_jobs[to_delete]
                 to_delete = None
-            epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
-            new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
-            if new_job is not None:
-                running_jobs[str(index)] = new_job
-                running_jobs[str(index)].start()
-                print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
-            else:
-                print("New job failed")
+            elif trial["Run Mode"] == "Assay-Analysis-Across-Scaffold":
+                # Find number of scaffold points
+                epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
 
-            while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
-                for process in running_jobs.keys():
-                    if running_jobs[process].is_alive():
-                        pass
+                # Get list of all checkpoints
+                all_checkpoints = [get_checkpoint(model_name=f"{trial['Model Name']}-{trial['Trial Number']}",
+                                                  scaffold_point=s) for s in range(configuration+2)]
+
+                # Iterate
+                for i, chkpt in enumerate(all_checkpoints):
+                    configuration = i + 1
+                    episode_number = chkpt
+
+                    assay_config_name = f"{trial['Model Name']}_c{configuration}"
+                    # Create assay config for that scaffold point
+                    transfer_config(model_name=trial["Model Name"], scaffold_point=configuration,
+                                    assay_config_name=assay_config_name)
+
+                    trial["Environment Name"] = assay_config_name
+                    trial["Assay Configuration Name"] = assay_config_name
+
+                    # Create assay data for that trial
+                    new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
+                    if new_job is not None:
+                        running_jobs[str(index)] = new_job
+                        running_jobs[str(index)].start()
+                        print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
                     else:
-                        to_delete = process
-                        running_jobs[str(index)].join()
+                        print("New job failed")
+
+                    while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
+                        for process in running_jobs.keys():
+                            if running_jobs[process].is_alive():
+                                pass
+                            else:
+                                to_delete = process
+                                running_jobs[str(index)].join()
+            else:
+                epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
+                new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
+                if new_job is not None:
+                    running_jobs[str(index)] = new_job
+                    running_jobs[str(index)].start()
+                    print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
+                else:
+                    print("New job failed")
+
+                while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
+                    for process in running_jobs.keys():
+                        if running_jobs[process].is_alive():
+                            pass
+                        else:
+                            to_delete = process
+                            running_jobs[str(index)].join()
