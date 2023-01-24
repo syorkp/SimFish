@@ -15,12 +15,15 @@ def plot_reward_pre_post_scaffold(model_list, window):
     scaffold_switching_points = [scaffold_points[scaffold_points[:, 1].argsort()] for scaffold_points in scaffold_switching_points]
 
     scaffold_start_episode = [model[0, 0] for model in scaffold_switching_points]
-    scaffold_start_step = ...''
+    all_episode_steps = [np.cumsum(model, axis=1) for model in ordered_chosen_model_data]
+    scaffold_start_step_index = [np.where(episode_steps == scaffold_start_episode[i]) for i, episode_steps
+                                 in enumerate(all_episode_steps)]
+    scaffold_start_step = [all_episode_steps[scaffold_start_index] for scaffold_start_index in scaffold_start_step_index]
 
     # Compute rolling averages
-    ordered_chosen_model_data_rolling_averages = compute_rolling_averages(ordered_chosen_model_data, model_data, metrics,
-                                                                          window, scaled_window=False)
-
+    ordered_chosen_model_data_rolling_averages = compute_rolling_averages(ordered_chosen_model_data, model_data,
+                                                                          "episode reward", window,
+                                                                          scaled_window=False)
 
     all_reward_data = [data["episode reward"][:, 1] for data in ordered_chosen_model_data_rolling_averages]
     max_reward = np.max(np.concatenate(all_reward_data))
