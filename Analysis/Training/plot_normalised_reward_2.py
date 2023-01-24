@@ -33,19 +33,26 @@ def plot_reward_pre_post_scaffold(model_list, window):
     max_steps = min(np.max(model_steps[:, 1]) for model_steps in all_episode_steps)
 
     for m, model in enumerate(model_list):
-        # TODO: Interpolate steps so is before and after introduction of scaffold. Scale to halfway point between both
+        # Interpolate steps so is before and after introduction of scaffold. Scale to halfway point between both
         scaffold_switch_steps = scaffold_start_step[m][0, 1]
         reward = ordered_chosen_model_data_rolling_averages[m]["episode reward"][:, 1]
         relevant_steps = all_episode_steps[m][:len(reward), 1]
         data_before_switch = relevant_steps < scaffold_switch_steps
 
+        relevant_steps /= (2 * np.max(relevant_steps[data_before_switch]))
+        # relevant_steps[data_before_switch] /= (2 * np.max(relevant_steps[data_before_switch]))
+        # relevant_steps[~data_before_switch] /= (np.max(relevant_steps[data_before_switch]))
+        relevant_steps *= max_steps
 
         plt.plot(relevant_steps, reward)
+
+
     plt.vlines(max_steps/2, min_reward, max_reward, color="r")
     plt.xlim(0, max_steps)
     plt.xlabel("Training Steps")
     plt.ylabel("Episode Reward")
     plt.show()
+    # TODO: Add adjustment for window size? (also to metric plot)
 
 
 if __name__ == "__main__":

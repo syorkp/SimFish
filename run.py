@@ -20767,6 +20767,45 @@ dqn_gamma_pm_5 = [
     },
 ]
 
+dqn_gamma_ns_1 = [
+    {
+        "Model Name": "dqn_gamma_ns",
+        "Environment Name": "dqn_gamma_ns",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+dqn_gamma_ns_2 = [
+    {
+        "Model Name": "dqn_gamma_ns",
+        "Environment Name": "dqn_gamma_ns",
+        "Trial Number": 2,
+        "Run Mode": "Training",
+        "Tethered": False,
+        "Realistic Bouts": True,
+        "Continuous Actions": False,
+        "Learning Algorithm": "DQN",
+        "Priority": 1,
+        "Using GPU": True,
+        "monitor gpu": False,
+        "Full Logs": True,
+        "SB Emulator": False,
+        "New Simulation": True,
+        "Profile Speed": False,
+    },
+]
+
 #                   TRAINING - PPO
 
 ppo_gamma_1 = [
