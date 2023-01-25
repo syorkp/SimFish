@@ -35,8 +35,6 @@ def plot_log_bout_energy_costs(model_config):
     ax.set_yticklabels([" "] + list(reversed(action_names)))
 
     plt.show()
-    x = True
-
 
 
 if __name__ == "__main__":

@@ -391,10 +391,12 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
 
     frames *= 255
 
+    save_location = f"Analysis-Output/Behavioural/Videos/{model_name}-{save_id}-behaviour"
+
     if as_gif:
-        make_gif(frames, f"{model_name}-{save_id}-behaviour.gif", duration=len(frames) * s_per_frame, true_image=True)
+        make_gif(frames, f"{save_location}.gif", duration=len(frames) * s_per_frame, true_image=True)
     else:
-        make_video(frames, f"{model_name}-{save_id}-behaviour.mp4", duration=len(frames) * s_per_frame, true_image=True)
+        make_video(frames, f"{save_location}.mp4", duration=len(frames) * s_per_frame, true_image=True)
 
 
 if __name__ == "__main__":
