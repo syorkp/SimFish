@@ -11,6 +11,7 @@ from Analysis.load_data import load_data
 from Configurations.Networks.original_network import base_network_layers, ops, connectivity
 from Tools.make_video import make_video
 from skimage.transform import resize, rescale
+from Tools.make_gif import make_gif
 
 
 class DrawingBoard:
@@ -265,7 +266,7 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 def draw_episode(data, config_name, model_name, continuous_actions, draw_past_actions=True, show_energy_state=True,
                  scale=0.2, draw_action_space_usage=True, trim_to_fish=False, showed_region_quad=500, n_actions_to_show=500,
-                 save_id="placeholder", s_per_frame=0.03, include_background=False):
+                 save_id="placeholder", s_per_frame=0.03, include_background=False, as_gif=False):
     try:
         with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
             env_variables = json.load(f)
@@ -390,7 +391,10 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
 
     frames *= 255
 
-    make_video(frames, f"{model_name}-{save_id}-behaviour.mp4", duration=len(frames) * s_per_frame, true_image=True)
+    if as_gif:
+        make_gif(frames, f"{model_name}-{save_id}-behaviour.gif", duration=len(frames) * s_per_frame, true_image=True)
+    else:
+        make_video(frames, f"{model_name}-{save_id}-behaviour.mp4", duration=len(frames) * s_per_frame, true_image=True)
 
 
 if __name__ == "__main__":
