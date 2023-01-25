@@ -56,6 +56,7 @@ def create_scaffold(scaffold_name, initial_env, initial_params, changes, finishe
 
     for i, change in enumerate(changes):
         if change[-1] == "do_to_params":
+            # Changes not to environment, but to learning_params
             if len(change) > 5:
                 things_to_change = change[2:-1]
                 for j in range(0, len(things_to_change), 2):
@@ -63,15 +64,19 @@ def create_scaffold(scaffold_name, initial_env, initial_params, changes, finishe
             else:
                 initial_params[change[2]] = change[3]
         elif change[-1] == "complex":
+            # To allow multiple changes to both env and params
             initial_env, initial_params = implement_complex_transitions(change[2:-1], initial_env, initial_params)
         else:
-
+            # To allow mulitple changes
             if len(change) > 4:
+                # Implement multiple changes
                 things_to_change = change[2:]
                 for j in range(0, len(things_to_change), 2):
                     initial_env[things_to_change[j]] = things_to_change[j + 1]
             else:
                 initial_env[change[2]] = change[3]
+
+
         save_files(scaffold_name, initial_env, initial_params, i + 2)
 
         transitions[change[0]][str(i + 2)] = change[1]

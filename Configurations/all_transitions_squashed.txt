@@ -1,0 +1,65 @@
+1) Metric-PCI: 0.08333333333333333, Variable-anneling_steps: 500000   - Make part of original
+2) Metric-PCI: 0.08333333333333333, Variable-capture_swim_extra_cost: 50
+
+3) Metric-PCI: 0.08333333333333333, Variable-wall_reflection: False
+
+4) Metric-PCI: 0.08333333333333333, Variable-red_photoreceptor_rf_size: 0.0266
+5) Metric-PCI: 0.08333333333333333, Variable-uv_photoreceptor_rf_size: 0.0266
+6) Metric-PCI: 0.08333333333333333, Variable-red_photoreceptor_rf_size: 0.0133
+7) Metric-PCI: 0.08333333333333333, Variable-uv_photoreceptor_rf_size: 0.0133
+
+8) Metric-PCI: 0.08333333333333333, Variable-shot_noise: True
+
+9) Metric-PCI: 0.08333333333333333, Variable-bkg_scatter: 0.1
+
+10) Metric-PCI: 0.09999999999999999, Variable-light_gain: 181.425
+11) Metric-PCI: 0.09999999999999999, Variable-light_gain: 162.85000000000002
+12) Metric-PCI: 0.09999999999999999, Variable-light_gain: 144.27500000000003
+13) Metric-PCI: 0.09999999999999999, Variable-light_gain: 125.70000000000003
+
+14) Metric-PCI: 0.09999999999999999, Variable-prey_num: 87.5
+15) Metric-PCI: 0.09999999999999999, Variable-prey_cloud_num: 14.0
+16) Metric-PCI: 0.12499999999999999, Variable-prey_num: 75.0
+17) Metric-PCI: 0.12499999999999999, Variable-prey_cloud_num: 12.0
+18) Metric-PCI: 0.15, Variable-prey_num: 62.5
+19) Metric-PCI: 0.15, Variable-prey_cloud_num: 10.0
+20) Metric-PCI: 0.175, Variable-prey_num: 50.0
+
+21) Metric-PCI: 0.175, Variable-prey_cloud_num: 8.0
+22) Metric-PCI: 0.19999999999999998, Variable-prey_num: 37.5
+23) Metric-PCI: 0.19999999999999998, Variable-prey_cloud_num: 6.0
+24) Metric-PCI: 0.22499999999999998, Variable-prey_num: 25.0
+25) Metric-PCI: 0.22499999999999998, Variable-prey_cloud_num: 4.0
+26) Metric-PCI: 0.24999999999999997, Variable-prey_num: 12.5
+27) Metric-PCI: 0.24999999999999997, Variable-prey_cloud_num: 2.0
+
+28) Metric-PCI: 0.24999999999999997, Variable-prey_fluid_displacement: True
+29) Metric-PCI: 0.24999999999999997, Variable-prey_jump: True
+30) Metric-PCI: 0.24999999999999997, Variable-fish_mouth_size: 7
+31) Metric-PCI: 0.24999999999999997, Variable-fish_mouth_size: 6
+32) Metric-PCI: 0.24999999999999997, Variable-fish_mouth_size: 5
+33) Metric-PCI: 0.24999999999999997, Variable-fish_mouth_size: 4
+34) Metric-PCI: 0.24999999999999997, Variable-fraction_capture_permitted: 0.8
+35) Metric-PCI: 0.24999999999999997, Variable-fraction_capture_permitted: 0.6000000000000001
+36) Metric-PCI: 0.24999999999999997, Variable-fraction_capture_permitted: 0.4000000000000001
+37) Metric-PCI: 0.24999999999999997, Variable-fraction_capture_permitted: 0.20000000000000007
+38) Metric-PCI: 0.24999999999999997, Variable-capture_angle_deviation_allowance: 2.5132741228718345
+39) Metric-PCI: 0.24999999999999997, Variable-capture_angle_deviation_allowance: 1.8849555921538759
+40) Metric-PCI: 0.24999999999999997, Variable-capture_angle_deviation_allowance: 1.2566370614359172
+41) Metric-PCI: 0.24999999999999997, Variable-capture_angle_deviation_allowance: 0.6283185307179586
+
+42) Metric-PCI: 0.24999999999999997, Variable-capture_swim_extra_cost: 100
+43) Metric-PCI: 0.24999999999999997, Variable-anneling_steps: 1000000
+
+44) Metric-PCI: 0.24999999999999997, Variable-probability_of_predator: 0.003
+
+45) Metric-PCI: 0.20833333333333331, Variable-distance_from_fish: 327.08188800000005
+46) Metric-PCI: 0.20833333333333331, Variable-distance_from_fish: 290.739456
+
+47) Metric-PCI: 0.20833333333333331, Variable-distance_from_fish: 254.39702400000002
+48) Metric-PCI: 0.20833333333333331, Variable-distance_from_fish: 218.054592
+49) Metric-PCI: 0.20833333333333331, Variable-distance_from_fish: 181.71216
+
+50) Metric-PCI: 0.24999999999999997, Variable-max_salt_damage: 0.02
+
+51) Metric-PCI: 0.24999999999999997, Variable-current_setting: Circular

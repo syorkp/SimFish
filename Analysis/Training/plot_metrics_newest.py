@@ -337,6 +337,8 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
     if show_inset is not None:
         inset_ylim = axs[metric_index].get_ylim()
 
+    plt.show()
+
     plt.savefig(f"../../Analysis-Output/Training/Metric-Plots/{figure_name}.jpg")
     plt.clf()
     plt.close()
@@ -446,7 +448,7 @@ if __name__ == "__main__":
                               "predator avoidance index (avoided/p_pred)",
                               # "Phototaxis Index"
                               ]
-    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=300, interpolate_scaffold_points=True,
+    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=20, interpolate_scaffold_points=True,
                                           figure_name="dqn_gamma", scaled_window=True,
                                           show_inset=["capture success rate", 34])# key_scaffold_points=[14, 29, 42])
     # plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=100, interpolate_scaffold_points=True,

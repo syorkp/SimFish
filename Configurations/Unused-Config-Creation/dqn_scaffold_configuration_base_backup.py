@@ -21,7 +21,7 @@ params = {
        'batch_size': 16,  # How many experience traces to use for each training step.
        'trace_length': 64,  # How long each experience trace will be when training
        'num_episodes': 100000,  # How many episodes of game environment to train network with.
-       'max_epLength': 3000,  # The max allowed length of our episode.
+       'max_epLength': 5000,  # The max allowed length of our episode.
        'epsilon_greedy': True,
        'epsilon_greedy_scaffolding': True,
        'startE': 0.2,  # Starting chance of random action
@@ -143,7 +143,7 @@ env = {
        'predator_inertia': 0.0001,
        'predator_size': 32,  # Radius
        'predator_impulse': 5,  # To produce speed of 13.7mms-1, formerly 1.0
-       'immunity_steps': 200,  # number of steps in the beginning of an episode where the fish is immune from predation
+       'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 181.71216,  # Distance from the fish at which the predator appears. Formerly 498
        'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
@@ -311,10 +311,11 @@ env = {
 }
 
 
-scaffold_name = "dqn_delta"
+scaffold_name = "dqn_gamma_pm"
 
 # For predator scaffolding
 # env["distance_from_fish"] *= 2
+env["immunity_steps"] = 200
 
 #                     Network scaffolding example
 # base_network_layers_updated = copy.copy(base_network_layers)
@@ -344,9 +345,6 @@ changes = []
 low_pci = 0.25 / 3
 high_pci = 0.3 / 3
 
-low_pai = 600
-high_pai = 800
-
 # Initial predator scaffolding
 # changes += build_changes_list_gradual("PCI", low_pci, "distance_from_fish", env["distance_from_fish"],
 #                                       env["distance_from_fish"] / 2, 5, discrete=False)
@@ -362,35 +360,44 @@ high_pai = 800
 
 # 2-10
 changes += [
-       ["PCI", low_pci, "anneling_steps", 500000,
-                        "capture_swim_extra_cost", 50],
-
+       ["PCI", low_pci, "anneling_steps", 500000],
+       # 1) Rewards and Penalties
+       ["PCI", low_pci, "capture_swim_extra_cost", 50],
        ["PCI", low_pci, "wall_reflection", False],
 
        # 2) Visual System
-       ["PCI", low_pci, "red_photoreceptor_rf_size", 0.0133 * 2,
-                        "uv_photoreceptor_rf_size", 0.0133 * 2,
-                        "red_photoreceptor_rf_size", 0.0133 * 1,
-                        "uv_photoreceptor_rf_size", 0.0133 * 1],
-
+       ["PCI", low_pci, "red_photoreceptor_rf_size", 0.0133 * 2],
+       ["PCI", low_pci, "uv_photoreceptor_rf_size", 0.0133 * 2],
+       ["PCI", low_pci, "red_photoreceptor_rf_size", 0.0133 * 1],
+       ["PCI", low_pci, "uv_photoreceptor_rf_size", 0.0133 * 1],
        ["PCI", low_pci, "shot_noise", True],
-
        ["PCI", low_pci, "bkg_scatter", 0.1],
-
-       ["PCI", high_pci, "light_gain", 125.7]
 ]
 
+# 11-14
+changes += build_changes_list_gradual("PCI", high_pci, "light_gain", env["light_gain"], 125.7, 4, discrete=False)
+
 # 2) Exploration 15-18
+# changes += [["PCI", 0.35, "max_epLength", 3000, "baseline_decrease", 0.00075, "prey_num", env["prey_num"]*4,
+#              "prey_cloud_num", env["prey_cloud_num"]*4, "width", 3000, "height", 3000, "complex"]]
 original_prey_num = env["prey_num"]
 original_prey_cloud_num = env["prey_cloud_num"]
 
 # Normal
-changes += [
-            ["PCI", high_pci * 12/8, "prey_cloud_num", original_prey_cloud_num * 5/8,
-                                     "prey_num", original_prey_num * 4/8],
-
-            ["PCI", high_pci * 20/8, "prey_num", original_prey_num * 1/8,
-                                     "prey_cloud_num", original_prey_cloud_num * 1/8],
+changes += [["PCI", high_pci, "prey_num", original_prey_num * 7/8],
+            ["PCI", high_pci, "prey_cloud_num", original_prey_cloud_num * 7/8],
+            ["PCI", high_pci * 10/8, "prey_num", original_prey_num * 6/8],
+            ["PCI", high_pci * 10/8, "prey_cloud_num", original_prey_cloud_num * 6/8],
+            ["PCI", high_pci * 12/8, "prey_num", original_prey_num * 5/8],
+            ["PCI", high_pci * 12/8, "prey_cloud_num", original_prey_cloud_num * 5/8],
+            ["PCI", high_pci * 14/8, "prey_num", original_prey_num * 4/8],
+            ["PCI", high_pci * 14/8, "prey_cloud_num", original_prey_cloud_num * 4/8],
+            ["PCI", high_pci * 16/8, "prey_num", original_prey_num * 3/8],
+            ["PCI", high_pci * 16/8, "prey_cloud_num", original_prey_cloud_num * 3/8],
+            ["PCI", high_pci * 18/8, "prey_num", original_prey_num * 2/8],
+            ["PCI", high_pci * 18/8, "prey_cloud_num", original_prey_cloud_num * 2/8],
+            ["PCI", high_pci * 20/8, "prey_num", original_prey_num * 1/8],
+            ["PCI", high_pci * 20/8, "prey_cloud_num", original_prey_cloud_num * 1/8],
             ]
 # Sand grains
 # changes += [["PCI", high_pci, "prey_num", original_prey_num * 7/8],
@@ -427,30 +434,26 @@ low_pci *= 20/8
 high_pci *= 20/8
 
 # 3) Fine Prey Capture 19-34
-changes += [["PCI", high_pci, "prey_fluid_displacement", True,
-                              "prey_jump", True,
-             ],
-            ["PCI", high_pci, "fish_mouth_size", 4],
-            ["PCI", high_pci,  "fraction_capture_permitted", 0.2],
-            ["PCI", high_pci, "capture_angle_deviation_allowance", np.pi/5],
-
-           ]
-
-changes += [["PCI", high_pci, "capture_swim_extra_cost", 100, "anneling_steps", 1000000]]
+changes += [["PCI", high_pci, "prey_fluid_displacement", True]]
+changes += [["PCI", high_pci, "prey_jump", True]]
+changes += build_changes_list_gradual("PCI", high_pci, "fish_mouth_size", env["fish_mouth_size"], 4, 4, discrete=True)
+changes += build_changes_list_gradual("PCI", high_pci, "fraction_capture_permitted", env["fraction_capture_permitted"],
+                                      0.2, 4, discrete=False)
+changes += build_changes_list_gradual("PCI", high_pci, "capture_angle_deviation_allowance",
+                                      env["capture_angle_deviation_allowance"], np.pi/5, 4, discrete=False)
+changes += [["PCI", high_pci, "capture_swim_extra_cost", 100]]
+changes += [["PCI", high_pci, "anneling_steps", 1000000]]
 
 # 4) Predator avoidance 35
 changes += [["PCI", high_pci, "probability_of_predator", 0.003]]
-
-changes += [["PAI", low_pai, "predator_impulse", 15]]
-
-changes += [["PAI", high_pai, "predator_impulse", 25]]
+changes += build_changes_list_gradual("PCI", low_pci, "predator_impulse", env["predator_impulse"],
+                                      25, 5, discrete=False)
 
 # 5) Other Behaviours 36-37
 changes += [["PCI", high_pci, "max_salt_damage", 0.02]]
-
 changes += [["PCI", high_pci, "current_setting", "Circular"]]
 
-finished_condition = {"PCI": 0.4,
-                      "PAI": 800.0}
+finished_condition = {"PCI": 0.3,
+                      "PAI": 300.0}
 
 create_scaffold(scaffold_name, env, params, changes, finished_condition)

@@ -74,6 +74,7 @@ class TrainingService(BaseService):
         self.original_output_layer = None
 
         self.last_episodes_prey_caught = []
+        self.last_episodes_reward = []
         self.last_episodes_predators_avoided = []
         self.last_episodes_sand_grains_bumped = []
 
@@ -208,7 +209,7 @@ class TrainingService(BaseService):
         episode_transition_points = self.episode_transitions.keys()
         switch_criteria_met = False
 
-        print(f"Loglen: {len(self.last_episodes_prey_caught)}")
+        print(f"Length of logs: {len(self.last_episodes_prey_caught)}")
 
         # Switch config by episode
         if next_point in episode_transition_points and self.episode_number > self.episode_transitions[next_point]:
@@ -238,14 +239,18 @@ class TrainingService(BaseService):
             # Also check whether no improvement in selected metric is present
             if "scaffold_stasis_requirement" in self.learning_params:
                 if switch_criteria_met and self.learning_params["scaffold_stasis_requirement"]:
-                    if next_point in predators_conditional_transition_points:
-                        important_values = np.array(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"]
-                    elif next_point in prey_conditional_transition_points:
-                        important_values = np.array(self.last_episodes_prey_caught) / self.simulation.available_prey
-                    elif next_point in grains_bumped_conditional_transfer_points:
-                        important_values = np.array(self.last_episodes_sand_grains_bumped)
-                    else:
-                        important_values = np.array(self.last_episodes_prey_caught) / self.simulation.available_prey
+                    # When based on target parameter:
+                    # if next_point in predators_conditional_transition_points:
+                    #     important_values = np.array(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"]
+                    # elif next_point in prey_conditional_transition_points:
+                    #     important_values = np.array(self.last_episodes_prey_caught) / self.simulation.available_prey
+                    # elif next_point in grains_bumped_conditional_transfer_points:
+                    #     important_values = np.array(self.last_episodes_sand_grains_bumped)
+                    # else:
+                    #     important_values = np.array(self.last_episodes_prey_caught) / self.simulation.available_prey
+
+                    # When based on episode reward:
+                    important_values = np.array(self.last_episodes_reward)
 
                     pre_values = np.mean(important_values[:int(self.min_scaffold_interval/2)])
                     post_values = np.mean(important_values[int(self.min_scaffold_interval/2):])
@@ -253,9 +258,22 @@ class TrainingService(BaseService):
 
                     if post_values - pre_values > overall_std / 2:
                         switch_criteria_met = False
-                        print(f"""Still improving: Pre: {pre_values} Post: {post_values} Std: {overall_std}""")
+                        print(f"""Still improving Reward: Pre: {pre_values} Post: {post_values} Std: {overall_std}""")
                     else:
-                        print(f"""Stopped improving: Pre: {pre_values} Post: {post_values} Std: {overall_std}""")
+                        print(f"""Stopped improving Reward: Pre: {pre_values} Post: {post_values} Std: {overall_std}""")
+
+                    # And PCI criterion
+                    important_values = np.array(self.last_episodes_prey_caught) / self.simulation.available_prey
+
+                    pre_values = np.mean(important_values[:int(self.min_scaffold_interval/2)])
+                    post_values = np.mean(important_values[int(self.min_scaffold_interval/2):])
+                    overall_std = np.std(important_values)
+
+                    if post_values - pre_values > overall_std / 2:
+                        switch_criteria_met = False
+                        print(f"""Still improving PCI: Pre: {pre_values} Post: {post_values} Std: {overall_std}""")
+                    else:
+                        print(f"""Stopped improving PCI: Pre: {pre_values} Post: {post_values} Std: {overall_std}""")
 
         if switch_criteria_met:
             self.configuration_index = int(next_point)
@@ -281,7 +299,7 @@ class TrainingService(BaseService):
             self.create_environment()
 
             self.last_episodes_prey_caught = []
-
+            self.last_episodes_reward = []
 
             new_base_network_layers = copy.copy(
                 [layer for layer in self.learning_params["base_network_layers"].keys()])
@@ -388,8 +406,12 @@ class TrainingService(BaseService):
         self.last_episodes_prey_caught.append(prey_caught)
         self.last_episodes_predators_avoided.append(predators_avoided)
         self.last_episodes_sand_grains_bumped.append(sand_grains_bumped)
+        self.last_episodes_reward.append(total_episode_reward)
+
         if len(self.last_episodes_prey_caught) > self.min_scaffold_interval:
             self.last_episodes_prey_caught.pop(0)
+        if len(self.last_episodes_reward) > self.min_scaffold_interval:
+            self.last_episodes_reward.pop(0)
         if len(self.last_episodes_predators_avoided) > self.min_scaffold_interval:
             self.last_episodes_predators_avoided.pop(0)
         if len(self.last_episodes_sand_grains_bumped) > self.min_scaffold_interval:
