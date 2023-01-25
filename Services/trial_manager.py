@@ -1,5 +1,7 @@
 import os
 import json
+import shutil
+import sys
 import multiprocessing
 
 import Services.DQN.dqn_training_service as training
@@ -246,10 +248,13 @@ class TrialManager:
             elif trial["Run Mode"] == "Assay-Analysis-Across-Scaffold":
                 # Find number of scaffold points
                 epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
+                model_name = f"{trial['Model Name']}-{trial['Trial Number']}"
 
                 # Get list of all checkpoints
-                all_checkpoints = [get_checkpoint(model_name=f"{trial['Model Name']}-{trial['Trial Number']}",
-                                                  scaffold_point=s) for s in range(configuration+2)]
+                all_checkpoints = [get_checkpoint(model_name=model_name,
+                                                  scaffold_point=s) for s in range(2, configuration+2)]
+
+                new_data_files = []
 
                 # Iterate
                 for i, chkpt in enumerate(all_checkpoints):
@@ -263,6 +268,9 @@ class TrialManager:
 
                     trial["Environment Name"] = assay_config_name
                     trial["Assay Configuration Name"] = assay_config_name
+                    trial["Checkpoint"] = chkpt
+
+                    new_data_files.append(f"{model_name}/{assay_config_name}")
 
                     # Create assay data for that trial
                     new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
@@ -280,6 +288,30 @@ class TrialManager:
                             else:
                                 to_delete = process
                                 running_jobs[str(index)].join()
+
+                    # Do analysis
+                    for analysis in trial["Analysis"]:
+                        # Get arguments
+                        args = []
+                        for arg in analysis["analysis arguments"]:
+                            try:
+                                arg = locals()[arg]
+                            except KeyError:
+                                arg = arg
+                            args.append(arg)
+
+                        print(f"Running analysis {analysis['analysis id']} for model: {model_name}")
+                        chosen_module = __import__(analysis["analysis script"], fromlist=[''])
+                        chosen_function = getattr(chosen_module, analysis["analysis function"])
+                        chosen_function(*args)
+
+                    if trial["Delete Data"]:
+                        for file in new_data_files:
+                            print(f"Deleting files {file}")
+                            shutil.rmtree(file)
+
+
+
             else:
                 epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
                 new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
