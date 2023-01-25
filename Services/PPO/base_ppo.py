@@ -40,13 +40,13 @@ class BasePPO:
         self.current_episode_max_duration = None
         self.total_episode_reward = 0  # Total reward over episode
 
-        self.init_rnn_state_actor = None  # Reset RNN hidden state
-        self.init_rnn_state_actor_ref = None
+        # self.init_rnn_state_actor = None  # Reset RNN hidden state
+        # self.init_rnn_state_actor_ref = None
         self.init_rnn_state_critic = None
         self.init_rnn_state_critic_ref = None
 
-        self.init_rnn_state = self.init_rnn_state_actor  # Reset RNN hidden state
-        self.init_rnn_state_ref = self.init_rnn_state_actor_ref
+        self.init_rnn_state = None # self.init_rnn_state_actor  # Reset RNN hidden state
+        self.init_rnn_state_ref = None  # self.init_rnn_state_actor_ref
 
         # Add attributes only if don't exist yet (prevents errors thrown).
         if not hasattr(self, "new_simulation"):
@@ -91,31 +91,31 @@ class BasePPO:
                             print("Successfully loaded previous state.")
                             data = json.load(f)
                             num_rnns = len(data.keys())/4
-                            self.init_rnn_state_actor = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
-                            self.init_rnn_state_actor_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
+                            self.init_rnn_state = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
+                            self.init_rnn_state_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
 
                         return
                     else:
                         with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
                             print("Successfully loaded previous state.")
                             data = json.load(f)
-                            self.init_rnn_state_actor = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
-                            self.init_rnn_state_actor_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
+                            self.init_rnn_state = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
+                            self.init_rnn_state_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
 
                         return
 
         # Init states for RNN - For steps, not training.
         if self.environment_params["use_dynamic_network"]:
             rnn_state_shapes = self.actor_network.get_rnn_state_shapes()
-            self.init_rnn_state_actor = tuple(
+            self.init_rnn_state = tuple(
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
-            self.init_rnn_state_actor_ref = tuple(
+            self.init_rnn_state_ref = tuple(
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
         else:
-            self.init_rnn_state_actor = (
+            self.init_rnn_state = (
                 np.zeros([1, self.actor_network.rnn_dim]),
                 np.zeros([1, self.actor_network.rnn_dim]))
-            self.init_rnn_state_actor_ref = (
+            self.init_rnn_state_ref = (
                 np.zeros([1, self.actor_network.rnn_dim]),
                 np.zeros([1, self.actor_network.rnn_dim]))
             if not self.sb_emulator or self.separate_networks:
@@ -157,8 +157,8 @@ class BasePPO:
         return actor_cell, internal_states, internal_state_names
 
     def _episode_loop(self, a):
-        rnn_state_actor = copy.copy(self.init_rnn_state_actor)
-        rnn_state_actor_ref = copy.copy(self.init_rnn_state_actor_ref)
+        rnn_state_actor = copy.copy(self.init_rnn_state)
+        rnn_state_actor_ref = copy.copy(self.init_rnn_state_ref)
         rnn_state_critic = copy.copy(self.init_rnn_state_critic)
         rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
 
