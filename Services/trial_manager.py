@@ -233,6 +233,7 @@ class TrialManager:
             new_job = None
 
         return new_job
+
     def run_priority_loop(self):
         """
         Executes the trials in the required order.
@@ -246,13 +247,15 @@ class TrialManager:
                 del running_jobs[to_delete]
                 to_delete = None
             elif trial["Run Mode"] == "Assay-Analysis-Across-Scaffold":
+                complete = False
+
                 # Find number of scaffold points
                 epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
                 model_name = f"{trial['Model Name']}-{trial['Trial Number']}"
 
                 # Get list of all checkpoints
                 all_checkpoints = [get_checkpoint(model_name=model_name,
-                                                  scaffold_point=s) for s in range(2, configuration+2)]
+                                                  scaffold_point=s) for s in range(2, configuration)]
 
                 new_data_files = []
 
@@ -278,6 +281,8 @@ class TrialManager:
                             env["max_current_strength"] = 0.0
                             env["probability_of_predator"] = 0.
                             env["dark_light_ratio"] = 0.0
+                        with open(f"Configurations/Assay-Configs/{assay_config_name}_env.json", 'w') as f:
+                            json.dump(env, f)
 
                     trial["Environment Name"] = assay_config_name
                     trial["Assay Configuration Name"] = assay_config_name
@@ -301,28 +306,32 @@ class TrialManager:
                             else:
                                 to_delete = process
                                 running_jobs[str(index)].join()
+                                print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Complete")
+                                complete = True
 
-                    # Do analysis
-                    for analysis in trial["Analysis"]:
-                        # Get arguments
-                        args = []
-                        for arg in analysis["analysis arguments"]:
-                            try:
-                                arg = locals()[arg]
-                            except KeyError:
-                                arg = arg
-                            args.append(arg)
+                    if complete:
+                        # Do analysis
+                        for analysis in trial["Analysis"]:
+                            # Get arguments
+                            args = []
+                            for arg in analysis["analysis arguments"]:
+                                try:
+                                    arg = locals()[arg]
+                                except KeyError:
+                                    arg = arg
+                                args.append(arg)
 
-                        print(f"Running analysis {analysis['analysis id']} for model: {model_name}")
-                        chosen_module = __import__(analysis["analysis script"], fromlist=[''])
-                        chosen_function = getattr(chosen_module, analysis["analysis function"])
-                        chosen_function(*args)
+                            print(f"Running analysis {analysis['analysis id']} for model: {model_name}")
+                            chosen_module = __import__(analysis["analysis script"], fromlist=[''])
+                            chosen_function = getattr(chosen_module, analysis["analysis function"])
+                            chosen_function(*args)
 
-                    if trial["Delete Data"]:
-                        for file in new_data_files:
-                            print(f"Deleting files {file}")
-                            shutil.rmtree(file)
+                        if trial["Delete Data"]:
+                            for file in new_data_files:
+                                print(f"Deleting files {file}")
+                                shutil.rmtree(file)
 
+                        complete = False
 
 
             else:

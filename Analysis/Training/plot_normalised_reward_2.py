@@ -6,9 +6,11 @@ from Analysis.Training.tools import find_nearest
 from Analysis.Training.plot_metrics_newest import order_chosen_model_data, compute_rolling_averages
 
 
-def plot_reward_pre_post_scaffold(model_list, window):
-    model_data = [load_all_log_data(model) for model in model_list]
+def plot_reward_pre_post_scaffold(model_list, model_list_no_scaffold, window):
     metrics = ["episode reward", "Episode Duration"]
+
+    # For normal models
+    model_data = [load_all_log_data(model) for model in model_list]
 
     ordered_chosen_model_data = order_chosen_model_data(metrics, model_data)
     scaffold_switching_points = [np.array(model["Configuration change"]) for model in model_data]
@@ -57,6 +59,7 @@ def plot_reward_pre_post_scaffold(model_list, window):
 
 if __name__ == "__main__":
     dqn_models = ["dqn_gamma-1", "dqn_gamma-2", "dqn_gamma-3", "dqn_gamma-4", "dqn_gamma-5"]
+    dqn_models_no_scaffold = ["dqn_gamma_ns-1", "dqn_gamma_ns-2"]
 
-    plot_reward_pre_post_scaffold(dqn_models, 30)
+    plot_reward_pre_post_scaffold(dqn_models, dqn_models_no_scaffold, 30)
     # TODO: Add option for second set of models, which dont have scaffold switches
