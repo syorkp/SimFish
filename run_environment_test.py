@@ -48,14 +48,14 @@ if continuous:
     sim_state = ContinuousNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=True, using_gpu=False)
 else:
     if arg is None:
-        arg = "dqn_26_1_videos"  # Default arg
+        arg = "dqn_gamma_pm_final"  # Default arg
 
     file_path = os.path.join(dirname, f"Configurations/Assay-Configs/{arg}_env.json")
     with open(file_path, 'r') as f:
         env = json.load(f)
-    env["prey_num"] = 30
-    env["prey_cloud_num"] = 5
-    env["max_current_strength"] = 0.04
+    # env["prey_num"] = 30
+    # env["prey_cloud_num"] = 5
+    # env["max_current_strength"] = 0.04
     # env["probability_of_predator"] = 1
     # env["immunity_steps"] = 0
     # env["distance_from_fish"] = 181.71216752587327
@@ -65,26 +65,26 @@ else:
     # env["predator_size"] = 32
     # env["predator_impulse"] = 25
 
-    env['prey_mass'] = 1.
-    env['prey_inertia'] = 40.
-    env['prey_size'] = 1.0  # FINAL VALUE - 0.2mm diameter, so 1.
-    env['prey_max_turning_angle'] = 0.25
-    env['p_slow'] = 1.0
-    env['p_fast'] = 0.0
-    env['p_escape'] = 0.5
-    env['p_switch'] = 0.01  # Corresponds to 1/average duration of movement type.
-    env['p_reorient'] = 0.04
-    env['slow_speed_paramecia'] = 0.0  # Impulse to generate 0.5mms-1 for given prey mass
-    env['fast_speed_paramecia'] = 0.07  # Impulse to generate 1.0mms-1 for given prey mass
-    env['jump_speed_paramecia'] = 0.7  # Impulse to generate 10.0mms-1 for given prey mass
-    env['prey_fluid_displacement'] = True
-    env["prey_reproduction_mode"] = True
-
-    env['birth_rate'] = 0.1
-    env['birth_rate_current_pop_scaling'] = 1
-    env['p_prey_death'] = 0.003
-    env['prey_safe_duration'] = 100
-    env['current_setting'] = "Circular"
+    # env['prey_mass'] = 1.
+    # env['prey_inertia'] = 40.
+    # env['prey_size'] = 1.0  # FINAL VALUE - 0.2mm diameter, so 1.
+    # env['prey_max_turning_angle'] = 0.25
+    # env['p_slow'] = 1.0
+    # env['p_fast'] = 0.0
+    # env['p_escape'] = 0.5
+    # env['p_switch'] = 0.01  # Corresponds to 1/average duration of movement type.
+    # env['p_reorient'] = 0.04
+    # env['slow_speed_paramecia'] = 0.0  # Impulse to generate 0.5mms-1 for given prey mass
+    # env['fast_speed_paramecia'] = 0.07  # Impulse to generate 1.0mms-1 for given prey mass
+    # env['jump_speed_paramecia'] = 0.7  # Impulse to generate 10.0mms-1 for given prey mass
+    # env['prey_fluid_displacement'] = True
+    # env["prey_reproduction_mode"] = True
+    #
+    # env['birth_rate'] = 0.1
+    # env['birth_rate_current_pop_scaling'] = 1
+    # env['p_prey_death'] = 0.003
+    # env['prey_safe_duration'] = 100
+    # env['current_setting'] = "Circular"
 
     sim_state = DiscreteNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=True, new_simulation=True,
                                                 using_gpu=False)
@@ -139,12 +139,12 @@ else:
     while not q:
         # action = None
 
-        print(f"{step}: Prey num = {len(sim_state.prey_bodies)}")
+        # print(f"{step}: Prey num = {len(sim_state.prey_bodies)}")
         step += 1
-        key = 6 #input()
+        key = input()
         action_input = int(key)
         s, r, internal, d, fb = sim_state.simulation_step(action_input)
-
+        print(f"{sim_state.fish.prev_action_angle}   -   {sim_state.fish.body.angle}")
         # if angle > 1.0:
         #     sim_state.reset()
         position = sim_state.fish.body.position

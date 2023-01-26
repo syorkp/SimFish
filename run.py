@@ -20540,6 +20540,7 @@ dqn_gamma_analysis_across_scaffold_1 = [
         "Model Name": "dqn_gamma",
         "Environment Name": "dqn_gamma_free",
         "Assay Configuration Name": "Behavioural-Data-Free",
+        "Config Modification": "Empty",
         "Trial Number": 1,
         "Checkpoint": None,
         "Run Mode": "Assay-Analysis-Across-Scaffold",

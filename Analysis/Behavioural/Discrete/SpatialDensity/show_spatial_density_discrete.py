@@ -399,14 +399,14 @@ def create_j_turn_overlap_plot(p1, p2, p3, n, return_objects, save_location):
     pred_cloud_left = []
     for i in range(1, n + 1):
         data = load_data(p1, p2, f"{p3}-{i}")
-        prey_1, pred_1 = get_clouds_with_action(data, 4)
+        prey_1, pred_1 = get_clouds_with_action(data, 5)
         prey_cloud_left = prey_cloud_left + prey_1
         pred_cloud_left = pred_cloud_left + pred_1
     prey_cloud_right = []
     pred_cloud_right = []
     for i in range(1, n + 1):
         data = load_data(p1, p2, f"{p3}-{i}")
-        prey_1, pred_1 = get_clouds_with_action(data, 5)
+        prey_1, pred_1 = get_clouds_with_action(data, 4)
         prey_cloud_right = prey_cloud_right + prey_1
         pred_cloud_right = pred_cloud_right + pred_1
 
@@ -425,14 +425,14 @@ def create_j_turn_2_overlap_plot(p1, p2, p3, n, return_objects, save_location):
     pred_cloud_left = []
     for i in range(1, n + 1):
         data = load_data(p1, p2, f"{p3}-{i}")
-        prey_1, pred_1 = get_clouds_with_action(data, 10)
+        prey_1, pred_1 = get_clouds_with_action(data, 11)
         prey_cloud_left = prey_cloud_left + prey_1
         pred_cloud_left = pred_cloud_left + pred_1
     prey_cloud_right = []
     pred_cloud_right = []
     for i in range(1, n + 1):
         data = load_data(p1, p2, f"{p3}-{i}")
-        prey_1, pred_1 = get_clouds_with_action(data, 11)
+        prey_1, pred_1 = get_clouds_with_action(data, 10)
         prey_cloud_right = prey_cloud_right + prey_1
         pred_cloud_right = pred_cloud_right + pred_1
 
@@ -451,14 +451,14 @@ def create_routine_turn_overlap_plot(p1, p2, p3, n, return_objects, save_locatio
     pred_cloud_left = []
     for i in range(1, n + 1):
         data = load_data(p1, p2, f"{p3}-{i}")
-        prey_1, pred_1 = get_clouds_with_action(data, 1)
+        prey_1, pred_1 = get_clouds_with_action(data, 2)
         prey_cloud_left = prey_cloud_left + prey_1
         pred_cloud_left = pred_cloud_left + pred_1
     prey_cloud_right = []
     pred_cloud_right = []
     for i in range(1, n + 1):
         data = load_data(p1, p2, f"{p3}-{i}")
-        prey_1, pred_1 = get_clouds_with_action(data, 2)
+        prey_1, pred_1 = get_clouds_with_action(data, 1)
         prey_cloud_right = prey_cloud_right + prey_1
         pred_cloud_right = pred_cloud_right + pred_1
 
@@ -542,14 +542,14 @@ def create_cstart_overlap_plot(p1, p2, p3, n, return_objects, save_location):
     pred_cloud_left = []
     for i in range(1, n + 1):
         data = load_data(p1, p2, f"{p3}-{i}")
-        prey_1, pred_1 = get_clouds_with_action(data, 7)
+        prey_1, pred_1 = get_clouds_with_action(data, 8)
         prey_cloud_left = prey_cloud_left + prey_1
         pred_cloud_left = pred_cloud_left + pred_1
     prey_cloud_right = []
     pred_cloud_right = []
     for i in range(1, n + 1):
         data = load_data(p1, p2, f"{p3}-{i}")
-        prey_1, pred_1 = get_clouds_with_action(data, 8)
+        prey_1, pred_1 = get_clouds_with_action(data, 7)
         prey_cloud_right = prey_cloud_right + prey_1
         pred_cloud_right = pred_cloud_right + pred_1
 
@@ -638,11 +638,11 @@ def create_j_turn_overlap_plot_multiple_models(p1, p2, p3, n, n2):
     for m in range(1, n2 + 1):
         for i in range(1, n + 1):
             data = load_data(f"{p1}-{m}", p2, f"{p3}-{i}")
-            prey_1, pred_1 = get_clouds_with_action(data, 4)
+            prey_1, pred_1 = get_clouds_with_action(data, 5)
             prey_cloud_left = prey_cloud_left + prey_1
         for i in range(1, n + 1):
             data = load_data(f"{p1}-{m}", p2, f"{p3}-{i}")
-            prey_1, pred_1 = get_clouds_with_action(data, 5)
+            prey_1, pred_1 = get_clouds_with_action(data, 4)
             prey_cloud_right = prey_cloud_right + prey_1
     n_samples = len(prey_cloud_left) + len(prey_cloud_right)
     # For left
@@ -693,11 +693,11 @@ def create_routine_turn_overlap_plot_multiple_models(p1, p2, p3, n, n2):
     for m in range(1, n2 + 1):
         for i in range(1, n + 1):
             data = load_data(f"{p1}-{m}", p2, f"{p3}-{i}")
-            prey_1, pred_1 = get_clouds_with_action(data, 1)
+            prey_1, pred_1 = get_clouds_with_action(data, 2)
             prey_cloud_left = prey_cloud_left + prey_1
         for i in range(1, n + 1):
             data = load_data(f"{p1}-{m}", p2, f"{p3}-{i}")
-            prey_1, pred_1 = get_clouds_with_action(data, 2)
+            prey_1, pred_1 = get_clouds_with_action(data, 1)
             prey_cloud_right = prey_cloud_right + prey_1
 
     n_samples = len(prey_cloud_left) + len(prey_cloud_right)
@@ -753,7 +753,7 @@ def create_cstart_overlap_plot_multiple_models(p1, p2, p3, n, n2):
             else:
                 print(i)
                 data = load_data(f"{p1}-{m}", p2, f"{p3} {i}")
-            prey_1, pred_1 = get_clouds_with_action(data, 7)
+            prey_1, pred_1 = get_clouds_with_action(data, 8)
             prey_cloud_left = prey_cloud_left + prey_1
         for i in range(1, n + 1):
             if i < 11:
@@ -761,7 +761,7 @@ def create_cstart_overlap_plot_multiple_models(p1, p2, p3, n, n2):
             # data = load_data(p1, f"{p2}-2", f"{p3} {i}")
             else:
                 data = load_data(f"{p1}-{m}", p2, f"{p3} {i}")
-            prey_1, pred_1 = get_clouds_with_action(data, 8)
+            prey_1, pred_1 = get_clouds_with_action(data, 7)
             prey_cloud_right = prey_cloud_right + prey_1
     n_samples = len(prey_cloud_left) + len(prey_cloud_right)
     # For left
@@ -864,8 +864,8 @@ def plot_all_density_plots_across_scaffold(model_name, assay_config_a, assay_con
 
 if __name__ == "__main__":
     # VERSION 2, 2023
-    get_all_density_plots_all_subsets(f"dqn_gamma_pm-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
-    get_all_density_plots_all_subsets(f"dqn_gamma_pm-5", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_gamma_pm-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
+    get_all_density_plots_all_subsets(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
 
 
     # save_location = f"../../../../Analysis-Output/Behavioural/Spatial-Density-Plots/dqn_gamma-1/"

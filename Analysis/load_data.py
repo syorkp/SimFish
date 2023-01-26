@@ -5,6 +5,8 @@ import os
 
 def load_data(model_name, assay_configuration, assay_id):
     """Loads the data of an individual assay from an assay configuration file."""
+    print(f"Attempting to load data from: {os.getcwd()}")
+
     try:
         file = h5py.File(f"../../../../Assay-Output/{model_name}/{assay_configuration}.h5", "r")
     except OSError:
@@ -14,10 +16,10 @@ def load_data(model_name, assay_configuration, assay_id):
             try:
                 file = h5py.File(f"../../Assay-Output/{model_name}/{assay_configuration}.h5", "r")
             except OSError:
-                try :
+                try:
                     file = h5py.File(f"../Assay-Output/{model_name}/{assay_configuration}.h5", "r")
                 except OSError:
-                    file = h5py.File(f"Assay-Output/{model_name}/{assay_configuration}.h5", "r")
+                    file = h5py.File(f"./Assay-Output/{model_name}/{assay_configuration}.h5", "r")
 
     g = file.get(assay_id)
     # print(assay_id)

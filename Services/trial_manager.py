@@ -262,9 +262,22 @@ class TrialManager:
                     episode_number = chkpt
 
                     assay_config_name = f"{trial['Model Name']}_c{configuration}"
+
                     # Create assay config for that scaffold point
                     transfer_config(model_name=trial["Model Name"], scaffold_point=configuration,
                                     assay_config_name=assay_config_name)
+
+                    # If specified, modify the config
+                    if trial["Config Modification"] is not None and trial["Config Modification"] is not False:
+                        print("Altering assay config...")
+                        with open(f"Configurations/Assay-Configs/{assay_config_name}_env.json", "r") as f:
+                            env = json.load(f)
+                        if trial["Config Modification"] == "Empty":
+                            env["prey_num"] = 0
+                            env["max_salt_damage"] = 0.
+                            env["max_current_strength"] = 0.0
+                            env["probability_of_predator"] = 0.
+                            env["dark_light_ratio"] = 0.0
 
                     trial["Environment Name"] = assay_config_name
                     trial["Assay Configuration Name"] = assay_config_name
