@@ -154,7 +154,7 @@ env = {
        'sand_grain_displacement_impulse_scaling_factor': 0.5,
        'sand_grain_displacement_distance': 20,
        'sand_grain_colour': (1, 0, 1),
-       'sand_grain_touch_penalty': 2,
+       'sand_grain_touch_penalty': 200,
 
        'vegetation_size': 100.,
        'vegetation_num': 0,
@@ -207,7 +207,7 @@ env = {
        'energy_state': True,
        'in_light': True,
        'salt': True,  # Inclusion of olfactory salt input and salt death.
-       'salt_reward_penalty': 10000,  # Scales with salt concentration.
+       'salt_reward_penalty': 100000,  # Scales with salt concentration. Was 10000
        "use_dynamic_network": True,
        'salt_concentration_decay': 0.002,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.005,  # Amount by which salt health recovers per step
@@ -281,7 +281,7 @@ env = {
 
        # Reward
        'action_reward_scaling': 0, # Best working 10000,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
-       'consumption_reward_scaling': 1000000,  # Arbitrary (practical) hyperparameter for reward for consumption.
+       'consumption_reward_scaling': 100000,  # Arbitrary (practical) hyperparameter for reward for consumption. Was 1000000
 
        'wall_reflection': True,
        'wall_touch_penalty': 200,
