@@ -256,7 +256,7 @@ class TrainingService(BaseService):
                     post_values = np.mean(important_values[int(self.min_scaffold_interval/2):])
                     overall_std = np.std(important_values)
 
-                    if post_values - pre_values > overall_std / 2:
+                    if post_values - pre_values > overall_std / 10:
                         switch_criteria_met = False
                         print(f"""Still improving Reward: Pre: {pre_values} Post: {post_values} Std: {overall_std}""")
                     else:
@@ -269,7 +269,7 @@ class TrainingService(BaseService):
                     post_values = np.mean(important_values[int(self.min_scaffold_interval/2):])
                     overall_std = np.std(important_values)
 
-                    if post_values - pre_values > overall_std / 2:
+                    if post_values - pre_values > overall_std / 10:
                         switch_criteria_met = False
                         print(f"""Still improving PCI: Pre: {pre_values} Post: {post_values} Std: {overall_std}""")
                     else:
