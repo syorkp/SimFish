@@ -1,6 +1,7 @@
 import numpy as np
 import json
 from datetime import datetime
+import copy
 
 import tensorflow.compat.v1 as tf
 
@@ -39,7 +40,8 @@ class AssayService(BaseService):
         # Configuration
         self.current_configuration_location = f"./Configurations/Assay-Configs/{config_name}"
         self.learning_params, self.environment_params = self.load_configuration_files()
-        self.assays = assays
+
+        self.assays = self.expand_assays(assays)
 
         # Create environment so that network has access
         if self.continuous_actions:
@@ -153,6 +155,17 @@ class AssayService(BaseService):
 
         self.save_metadata()
         self.save_episode_data()
+
+    def expand_assays(self, assays):
+        """Utilitiy function to add in repeats of any assays and bring them into the standard of the program (while
+         allowing immediate simplifications to be made)"""
+        new_assays = []
+        for assay in assays:
+            for i in range(1, assay["repeats"]+1):
+                new_assay_format = copy.copy(assay)
+                new_assay_format["assay id"] = f"{new_assay_format['assay id']}-{i}"
+                new_assays.append(new_assay_format)
+        return new_assays
 
     def perform_assay(self, assay):
         # self.assay_output_data_format = {key: None for key in
