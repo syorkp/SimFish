@@ -30,7 +30,8 @@ def load_data(model_name, assay_configuration, assay_id):
 
 if __name__ == "__main__":
     datas = []
-    d = load_data("dqn_beta-1", "Behavioural-Data-Free", f"Naturalistic-1")
+    d = load_data("dqn_gamma_pm-2", "Behavioural-Data-Free", f"Naturalistic-2")
+    actions = d["action"]
     prey_positions = d["prey_positions"]
     prey_velocity = prey_positions[1:] - prey_positions[:-1]
     prey_velocity *= 5/10
@@ -39,4 +40,3 @@ if __name__ == "__main__":
     #     d = load_data("dqn_beta-1", "Behavioural-Data-Free", f"Naturalistic-{i}")
     #     print(f"{i}-{np.sum(d['consumed'] * 1)}")
     #     datas.append(d)
-    # x = True

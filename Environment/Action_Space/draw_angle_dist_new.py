@@ -35,7 +35,7 @@ def draw_angle_dist_new(bout_id):
     else:
         mean = [0, 0],
         cov = [[0, 0],
-              [0, 0]]
+               [0, 0]]
         print("Draw action error")
 
     bout_vals = np.random.multivariate_normal(mean, cov, 1)
@@ -43,7 +43,7 @@ def draw_angle_dist_new(bout_id):
 
 
 if __name__ == "__main__":
-    x  = draw_angle_dist_new(10)
-    x  = draw_angle_dist_new(5)
+    x = draw_angle_dist_new(10)
+    x = draw_angle_dist_new(5)
 
 

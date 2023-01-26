@@ -33,8 +33,16 @@ class TrialManager:
 
         :param trial_configuration: A list, containing dictionary elements. Could use JSON if easier.
         """
-        # Order the trials
-        trial_configuration.sort(key=lambda item: item.get("Priority"))
+        # Order the trials (if specified
+        priority_specified = True
+        for trial in trial_configuration:
+            if "Priority" not in trial:
+                priority_specified = False
+                break
+
+        if priority_specified:
+            trial_configuration.sort(key=lambda item: item.get("Priority"))
+
         self.priority_ordered_trials = trial_configuration
 
         self.create_output_directories()
@@ -132,11 +140,24 @@ class TrialManager:
 
     def get_new_job(self, trial, total_steps, episode_number, memory_fraction, epsilon, configuration_index):
         print("Creating thread")
-        if trial["Run Mode"] == "Training":
+        # Setting optional variables
+        if "Continuous Actions" in trial:
+            continuous_actions = trial["Continuous Actions"]
+        else:
+            if trial["Learning Algorithm"] == "PPO":
+                continuous_actions = True
+            else:
+                continuous_actions = False
 
-            if trial["Continuous Actions"]:
+        if "SB Emulator" in trial:
+            sb_emulator = trial["SB Emulator"]
+        else:
+            sb_emulator = True
+
+        if trial["Run Mode"] == "Training":
+            if continuous_actions:
                 if trial["Learning Algorithm"] == "PPO":
-                    if trial["SB Emulator"]:
+                    if sb_emulator:
                         new_job = multiprocessing.Process(target=ppo_training_continuous_2.ppo_training_target_continuous_sbe,
                                                           args=(trial, total_steps, episode_number, memory_fraction, configuration_index))
                     else:
@@ -154,7 +175,7 @@ class TrialManager:
 
             else:
                 if trial["Learning Algorithm"] == "PPO":
-                    if trial["SB Emulator"]:
+                    if sb_emulator:
                         new_job = multiprocessing.Process(target=ppo_training_discrete2.ppo_training_target_discrete,
                                                           args=(trial, total_steps, episode_number, memory_fraction,
                                                                 configuration_index))
@@ -172,7 +193,7 @@ class TrialManager:
                     new_job = None
 
         elif trial["Run Mode"] == "Assay-Analysis-Across-Scaffold":
-            if trial["Continuous Actions"]:
+            if continuous_actions:
                 if trial["Learning Algorithm"] == "PPO":
                     new_job = multiprocessing.Process(target=ppo_assay_continuous.ppo_assay_target_continuous, args=(
                         trial, total_steps, episode_number, memory_fraction))
@@ -201,7 +222,7 @@ class TrialManager:
                     new_job = None
 
         elif trial["Run Mode"] == "Assay":
-            if trial["Continuous Actions"]:
+            if continuous_actions:
                 if trial["Learning Algorithm"] == "PPO":
                     new_job = multiprocessing.Process(target=ppo_assay_continuous.ppo_assay_target_continuous, args=(
                         trial, total_steps, episode_number, memory_fraction))

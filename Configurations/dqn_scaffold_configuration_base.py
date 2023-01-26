@@ -276,15 +276,15 @@ env = {
        'ca': 1.5e-04,  # Final for sublinear PPO: 0.0003
        'baseline_decrease': 0.0002,  # Final for sublinear PPO: 0.0015
        'trajectory_A': False,  # Normally 5.0,
-       'trajectory_B': 2.5,
+       'trajectory_B': 0,  # 0 results in linear reward scaling. Previously 2.5
        'consumption_energy_gain': 1.0,
 
        # Reward
        'action_reward_scaling': 0, # Best working 10000,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
-       'consumption_reward_scaling': 1000000,  # Arbitrary (practical) hyperparameter for reward for consumption
+       'consumption_reward_scaling': 1000000,  # Arbitrary (practical) hyperparameter for reward for consumption.
 
        'wall_reflection': True,
-       'wall_touch_penalty': 2,
+       'wall_touch_penalty': 200,
 
        # Currents
        'current_setting': False,  # Current setting. If none, should be False. Current options: Circular, Linear

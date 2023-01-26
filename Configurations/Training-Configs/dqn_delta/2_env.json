@@ -148,7 +148,7 @@
     "action_reward_scaling": 0,
     "consumption_reward_scaling": 1000000,
     "wall_reflection": true,
-    "wall_touch_penalty": 2,
+    "wall_touch_penalty": 200,
     "current_setting": false,
     "max_current_strength": 0.04,
     "current_width": 0.2,

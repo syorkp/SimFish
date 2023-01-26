@@ -10,27 +10,82 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 
 def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fraction):
+    if "monitor gpu" in trial:
+        monitor_gpu = trial["monitor gpu"]
+    else:
+        monitor_gpu = False
+
+    if "Using GPU" in trial:
+        using_gpu = trial["Using GPU"]
+    else:
+        using_gpu = True
+
+    if "New Simulation" in trial:
+        new_simulation = trial["New Simulation"]
+    else:
+        new_simulation = True
+
+    if "Continuous Actions" in trial:
+        continuous_actions = trial["Continuous Actions"]
+    else:
+        continuous_actions = True
+
+    if "Realistic Bouts" in trial:
+        realistic_bouts = trial["Realistic Bouts"]
+    else:
+        realistic_bouts = True
+
+    if "SB Emulator" in trial:
+        sb_emulator = trial["SB Emulator"]
+    else:
+        sb_emulator = True
+
+    if "Checkpoint" in trial:
+        checkpoint = trial["Checkpoint"]
+    else:
+        checkpoint = None
+
+    if "interventions" in trial:
+        interventions = trial["interventions"]
+    else:
+        interventions = None
+
+    if "set random seed" in trial:
+        set_random_seed = trial["set random seed"]
+    else:
+        set_random_seed = False
+
+    if "behavioural recordings" in trial:
+        behavioural_recordings = trial["behavioural recordings"]
+    else:
+        behavioural_recordings = None
+
+    if "network recordings" in trial:
+        network_recordings = trial["network recordings"]
+    else:
+        network_recordings = None
+
     service = PPOAssayServiceContinuous(model_name=trial["Model Name"],
                                         trial_number=trial["Trial Number"],
                                         total_steps=total_steps,
                                         episode_number=episode_number,
-                                        monitor_gpu=trial["monitor gpu"],
-                                        using_gpu=trial["Using GPU"],
+                                        monitor_gpu=monitor_gpu,
+                                        using_gpu=using_gpu,
                                         memory_fraction=memory_fraction,
                                         config_name=trial["Environment Name"],
-                                        realistic_bouts=trial["Realistic Bouts"],
-                                        continuous_environment=trial["Continuous Actions"],
-                                        new_simulation=trial["New Simulation"],
+                                        realistic_bouts=realistic_bouts,
+                                        continuous_environment=continuous_actions,
+                                        new_simulation=new_simulation,
 
                                         assays=trial["Assays"],
-                                        set_random_seed=trial["set random seed"],
+                                        set_random_seed=set_random_seed,
                                         assay_config_name=trial["Assay Configuration Name"],
 
-                                        sb_emulator=trial["SB Emulator"],
-                                        checkpoint=trial["Checkpoint"],
-                                        behavioural_recordings=trial["behavioural recordings"],
-                                        network_recordings=trial["network recordings"],
-                                        interventions=trial["interventions"]
+                                        sb_emulator=sb_emulator,
+                                        checkpoint=checkpoint,
+                                        behavioural_recordings=behavioural_recordings,
+                                        network_recordings=network_recordings,
+                                        interventions=interventions
                                         )
     service.run()
 

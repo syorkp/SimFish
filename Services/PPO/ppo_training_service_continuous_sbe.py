@@ -21,22 +21,58 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 
 def ppo_training_target_continuous_sbe(trial, total_steps, episode_number, memory_fraction, configuration_index):
+    if "monitor gpu" in trial:
+        monitor_gpu = trial["monitor gpu"]
+    else:
+        monitor_gpu = False
+
+    if "Using GPU" in trial:
+        using_gpu = trial["Using GPU"]
+    else:
+        using_gpu = True
+
+    if "New Simulation" in trial:
+        new_simulation = trial["New Simulation"]
+    else:
+        new_simulation = True
+
+    if "Continuous Actions" in trial:
+        continuous_actions = trial["Continuous Actions"]
+    else:
+        continuous_actions = True
+
+    if "Realistic Bouts" in trial:
+        realistic_bouts = trial["Realistic Bouts"]
+    else:
+        realistic_bouts = True
+
+    if "Full Logs" in trial:
+        full_logs = trial["Full Logs"]
+    else:
+        full_logs = True
+
+    if "Profile Speed" in trial:
+        profile_speed = trial["Profile Speed"]
+    else:
+        profile_speed = False
+
+
     services = PPOTrainingServiceContinuousSBE(model_name=trial["Model Name"],
                                                trial_number=trial["Trial Number"],
                                                total_steps=total_steps,
                                                episode_number=episode_number,
-                                               monitor_gpu=trial["monitor gpu"],
-                                               using_gpu=trial["Using GPU"],
+                                               monitor_gpu=monitor_gpu,
+                                               using_gpu=using_gpu,
                                                memory_fraction=memory_fraction,
                                                config_name=trial["Environment Name"],
-                                               realistic_bouts=trial["Realistic Bouts"],
-                                               continuous_actions=trial["Continuous Actions"],
-                                               new_simulation=trial["New Simulation"],
+                                               realistic_bouts=realistic_bouts,
+                                               continuous_actions=continuous_actions,
+                                               new_simulation=new_simulation,
 
                                                model_exists=trial["Model Exists"],
                                                configuration_index=configuration_index,
-                                               full_logs=trial["Full Logs"],
-                                               profile_speed=trial["Profile Speed"],
+                                               full_logs=full_logs,
+                                               profile_speed=profile_speed,
                                                )
     print("Created service...", flush=True)
     services.run()
