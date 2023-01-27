@@ -129,7 +129,7 @@ class TrialManager:
                     else:
                         epsilon = data["epsilon"]
                 else:
-                    epsilon = data["epsilon"]
+                    epsilon = None
                 total_steps = data["total_steps"]
                 episode_number = data["episode_number"]
                 configuration_index = data["configuration_index"]
