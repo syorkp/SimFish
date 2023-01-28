@@ -73,7 +73,17 @@ def cumulative_turn_direction_plot(action_sequences, label):
     plt.ylabel("Cumulative Turn Direction", fontsize=20)
     plt.hlines(0, 0, 10, color="r")
     plt.title(label)
-    plt.savefig(f"../../../Analysis-Output/Behavioural/Turn-Chains/{label}")
+    try:
+        plt.savefig(f"../../../Analysis-Output/Behavioural/Turn-Chains/{label}")
+    except FileNotFoundError:
+        try:
+            plt.savefig(f"../../Analysis-Output/Behavioural/Turn-Chains/{label}")
+        except FileNotFoundError:
+            try:
+                plt.savefig(f"../Analysis-Output/Behavioural/Turn-Chains/{label}")
+            except FileNotFoundError:
+                plt.savefig(f"./Analysis-Output/Behavioural/Turn-Chains/{label}")
+
     plt.clf()
     plt.close()
     # plt.fill_between(range(11), err_min, err_max)
