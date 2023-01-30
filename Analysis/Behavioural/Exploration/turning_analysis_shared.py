@@ -137,7 +137,16 @@ def cumulative_switching_probability_plot_multiple_models(left_durs_list, right_
     plt.title(label)
     ax.legend(prop={'size': 30}, loc="lower right")
     if save_figure:
-        plt.savefig(f"../../../Analysis-Output/Behavioural/Turn-Chains/{label}")
+        try:
+            plt.savefig(f"../../../Analysis-Output/Behavioural/Turn-Chains/{label}")
+        except FileNotFoundError:
+            try:
+                plt.savefig(f"../../Analysis-Output/Behavioural/Turn-Chains/{label}")
+            except FileNotFoundError:
+                try:
+                    plt.savefig(f"../Analysis-Output/Behavioural/Turn-Chains/{label}")
+                except FileNotFoundError:
+                    plt.savefig(f"./Analysis-Output/Behavioural/Turn-Chains/{label}")
     plt.clf()
 
 
@@ -209,7 +218,16 @@ def plot_turning_sequences(fish_angle, save_figure=True):
     plt.ylabel("Turn Amplitude (radians)", fontsize=18)
     fig.tight_layout()
     if save_figure:
-        plt.savefig(f"../../../Analysis-Output/Behavioural/Exploration/orientation_plot.jpg")
+        try:
+            plt.savefig(f"../../../Analysis-Output/Behavioural/Turn-Chains/orientation_plot.jpg")
+        except FileNotFoundError:
+            try:
+                plt.savefig(f"../../Analysis-Output/Behavioural/Turn-Chains/orientation_plot.jpg")
+            except FileNotFoundError:
+                try:
+                    plt.savefig(f"../Analysis-Output/Behavioural/Turn-Chains/orientation_plot.jpg")
+                except FileNotFoundError:
+                    plt.savefig(f"./Analysis-Output/Behavioural/Turn-Chains/orientation_plot.jpg")
     plt.show()
 
 
@@ -270,6 +288,15 @@ def cumulative_switching_probability_plot(left_durs, right_durs, left_durs2, rig
     plt.xlabel("Turn Streak Length", fontsize=30)
     plt.ylabel("Cumulative Probability", fontsize=30)
     plt.legend(["Models", "Random Switching"], fontsize=30)
-    plt.savefig(f"../../../Analysis-Output/Behavioural/Turn-Chains/{save_location}")
+    try:
+        plt.savefig(f"../../../Analysis-Output/Behavioural/Turn-Chains/{save_location}")
+    except FileNotFoundError:
+        try:
+            plt.savefig(f"../../Analysis-Output/Behavioural/Turn-Chains/{save_location}")
+        except FileNotFoundError:
+            try:
+                plt.savefig(f"../Analysis-Output/Behavioural/Turn-Chains/{save_location}")
+            except FileNotFoundError:
+                plt.savefig(f"./Analysis-Output/Behavioural/Turn-Chains/{save_location}")
     plt.clf()
     plt.close()
