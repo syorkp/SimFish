@@ -44,6 +44,14 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.available_prey = self.env_variables["prey_num"]
         self.vector_agreement = []
 
+        # For Reward tracking (debugging)
+        self.energy_associated_reward = 0
+        self.action_associated_reward = 0
+        self.salt_associated_reward = 0
+        self.predator_associated_reward = 0
+        self.wall_associated_reward = 0
+        self.sand_grain_associated_reward = 0
+
     def reset(self):
         # print (f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
         # print(f"Mean UV: {sum([i[1] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -126,6 +134,24 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.available_prey = self.env_variables["prey_num"]
         self.vector_agreement = []
 
+        # For Reward tracking (debugging)
+        print(f"""REWARD CONTRIBUTIONS:        
+Energy: {self.energy_associated_reward}
+Action: {self.action_associated_reward}
+Salt: {self.salt_associated_reward}
+Predator: {self.predator_associated_reward}
+Wall: {self.wall_associated_reward}
+Sand grain: {self.sand_grain_associated_reward}
+""")
+
+
+        self.energy_associated_reward = 0
+        self.action_associated_reward = 0
+        self.salt_associated_reward = 0
+        self.predator_associated_reward = 0
+        self.wall_associated_reward = 0
+        self.sand_grain_associated_reward = 0
+
     def show_new_channel_sectors(self, left_eye_pos, right_eye_pos):
         left_sectors, right_sectors = self.fish.get_all_sectors([left_eye_pos[0], left_eye_pos[1]],
                                                                 [right_eye_pos[0], right_eye_pos[1]],
@@ -174,6 +200,8 @@ class NaturalisticEnvironment(BaseEnvironment):
             reward = self.fish.try_impulse(impulse)
         else:
             reward = self.fish.take_action(action)
+        # For Reward tracking (debugging)
+        self.action_associated_reward += reward
 
         # For impulse direction logging (current opposition metric)
         self.fish.impulse_vector_x = self.fish.prev_action_impulse * np.sin(self.fish.body.angle)
@@ -199,6 +227,8 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.displace_sand_grains()
             if "sand_grain_touch_penalty" in self.env_variables:
                 reward -= self.env_variables["sand_grain_touch_penalty"]
+                self.sand_grain_associated_reward -= self.env_variables["sand_grain_touch_penalty"]
+
             if self.new_simulation:
                 if self.env_variables["current_setting"]:
                     self.bring_fish_in_bounds()
@@ -238,11 +268,15 @@ class NaturalisticEnvironment(BaseEnvironment):
             self.fish.touched_predator = False
             self.recent_cause_of_death = "Predator"
             self.survived_attack = False
+            self.predator_associated_reward -= self.env_variables["predator_cost"]
+            self.salt_associated_reward = 0
+            self.wall_associated_reward = 0
 
         if 'predator_avoidance_reward' in self.env_variables:
             if self.survived_attack:
                 print("Survived attack...")
                 reward += self.env_variables["predator_avoidance_reward"]
+                self.predator_associated_reward += self.env_variables["predator_cost"]
                 self.survived_attack = False
 
         # Relocate fish (Assay mode only)
@@ -255,7 +289,10 @@ class NaturalisticEnvironment(BaseEnvironment):
         if self.new_simulation:
             # Energy level
             if self.env_variables["energy_state"]:
+                old_reward = reward
                 reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
+                self.energy_associated_reward += reward - old_reward
+
                 self.energy_level_log.append(self.fish.energy_level)
                 if self.fish.energy_level < 0:
                     print("Fish ran out of energy")
@@ -278,12 +315,16 @@ class NaturalisticEnvironment(BaseEnvironment):
                     if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables[
                         "salt_recovery"]:
                         reward -= self.env_variables["salt_reward_penalty"] * salt_damage
+                        print(f"Salt-associated reward: {-self.env_variables['salt_reward_penalty'] * salt_damage}")
+                        self.salt_associated_reward -= self.env_variables['salt_reward_penalty'] * salt_damage
 
             if self.predator_body is not None:
                 self.total_predator_steps += 1
 
             if self.fish.touched_edge_this_step:
                 reward -= self.env_variables["wall_touch_penalty"]
+                self.wall_associated_reward -= self.env_variables["wall_touch_penalty"]
+
                 self.fish.touched_edge_this_step = False
 
             if self.env_variables["prey_reproduction_mode"] and self.env_variables["differential_prey"]:

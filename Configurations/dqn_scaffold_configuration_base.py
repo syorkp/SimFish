@@ -368,10 +368,8 @@ changes += [
        ["PCI", low_pci, "wall_reflection", False],
 
        # 2) Visual System
-       ["PCI", low_pci, "red_photoreceptor_rf_size", 0.0133 * 2,
-                        "uv_photoreceptor_rf_size", 0.0133 * 2,
-                        "red_photoreceptor_rf_size", 0.0133 * 1,
-                        "uv_photoreceptor_rf_size", 0.0133 * 1],
+       ["PCI", low_pci, "red_photoreceptor_rf_size", 0.0133,
+                        "uv_photoreceptor_rf_size", 0.0133],
 
        ["PCI", low_pci, "shot_noise", True],
 
