@@ -1,7 +1,6 @@
 import os
 import json
 import shutil
-import sys
 import multiprocessing
 
 import Services.DQN.dqn_training_service as training

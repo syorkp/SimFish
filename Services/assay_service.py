@@ -22,19 +22,12 @@ class AssayService(BaseService):
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_environment, new_simulation, assays, set_random_seed,
                  assay_config_name, checkpoint, behavioural_recordings, network_recordings, interventions,
-                 run_version):
+                 run_version, modification):
 
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                          config_name, realistic_bouts, continuous_environment, new_simulation)
 
         print("AssayService Constructor called")
-
-        if run_version == "Original-Completion" or run_version == "Modified-Completion":
-            set_random_seed = True
-
-        # Set random seed
-        if set_random_seed:
-            np.random.seed(404)
 
         # Assay configuration and save location
         self.data_save_location = f"./Assay-Output/{self.model_id}"
@@ -45,15 +38,38 @@ class AssayService(BaseService):
         self.current_configuration_location = f"./Configurations/Assay-Configs/{config_name}"
         self.learning_params, self.environment_params = self.load_configuration_files()
 
+        # Handling for split assay version
+        if run_version == "Original-Completion":
+            set_random_seed = True
+        elif run_version == "Modified-Completion":
+            set_random_seed = True
+            for assay in assays:
+                assay["assay id"] += "-Mod"
+        elif run_version == "Original":
+            ...
+        else:
+            ...
+
+        self.run_version = run_version
+        self.modification = modification
+
         self.assays = self.expand_assays(assays)
+
+        # Set random seed
+        if set_random_seed:
+            np.random.seed(404)
 
         # Create environment so that network has access
         if self.continuous_actions:
             self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                new_simulation, using_gpu)
+                                                                new_simulation, using_gpu,
+                                                                run_version=run_version,
+                                                                modification=modification)
         else:
             self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                              new_simulation, using_gpu)
+                                                              new_simulation, using_gpu,
+                                                              run_version=run_version,
+                                                              modification=modification)
 
         # Metadata
         self.episode_number = episode_number
@@ -145,8 +161,8 @@ class AssayService(BaseService):
             self.learning_params, self.environment_params = self.load_configuration_files()
 
             self.save_frames = assay["save frames"]
-            self.create_testing_environment(assay)
 
+            self.create_testing_environment(assay)
             self.perform_assay(assay)
 
             if assay["save stimuli"]:
@@ -223,6 +239,8 @@ class AssayService(BaseService):
         Creates the testing environment as specified  by apparatus mode and given assays.
         :return:
         """
+        # TODO: Add re-loading of assay state here!
+
         if assay["stimulus paradigm"] == "Projection":
             if self.continuous_actions:
                 self.simulation = ControlledStimulusEnvironmentContinuous(self.environment_params, assay["stimuli"],
@@ -257,11 +275,17 @@ class AssayService(BaseService):
                 self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
                                                                     self.new_simulation, self.using_gpu,
                                                                     collisions=assay["collisions"],
-                                                                    relocate_fish=self.relocate_fish)
+                                                                    relocate_fish=self.relocate_fish,
+                                                                    run_version=self.run_version,
+                                                                    split_event=self.split_event,
+                                                                    modification=self.modification)
             else:
                 self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
                                                                   self.new_simulation, self.using_gpu,
-                                                                  relocate_fish=self.relocate_fish)
+                                                                  relocate_fish=self.relocate_fish,
+                                                                  run_version=self.run_version,
+                                                                  split_event=self.split_event,
+                                                                  modification=self.modification)
 
         else:
             if self.continuous_actions:

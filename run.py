@@ -216,6 +216,46 @@ dqn_gamma_analysis_across_scaffold_1 = [
     }
 ]
 
+ppo_gamma_analysis_across_scaffold_1 = [
+    {
+        "Model Name": "ppo_gamma",
+        "Environment Name": "ppo_gamma_free",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Config Modification": "Empty",
+        "Trial Number": 3,
+        "Run Mode": "Assay-Analysis-Across-Scaffold",
+        "Learning Algorithm": "PPO",
+        "behavioural recordings": ["environmental positions", "observation"],
+        "network recordings": ["rnn_shared", "internal_state"],
+        "Assays": [
+            {
+                "assay id": "Naturalistic",
+                "repeats": 10,
+                "stimulus paradigm": "Naturalistic",
+                "duration": 10000,
+                "Tethered": False,
+                "save frames": False,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+            },
+        ],
+        "Analysis": [
+            {
+                "analysis id": "Turn-Analysis",
+                "analysis script": "Analysis.Behavioural.Exploration.turning_analysis_discrete",
+                "analysis function": "plot_all_turn_analysis",
+                "analysis arguments": ["model_name", "assay_config_name", "Naturalistic", 10],
+                "Delete Data": True
+            }
+        ],
+    }
+]
+
 #                   TRAINING - DQN
 
 dqn_gamma_1 = [
@@ -446,7 +486,7 @@ ppo_gamma_5 = [
 
 
 if run_config is None:
-    run_config = dqn_gamma_analysis_across_scaffold_1
+    run_config = ppo_gamma_analysis_across_scaffold_1
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]

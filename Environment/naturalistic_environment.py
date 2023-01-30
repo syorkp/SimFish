@@ -11,7 +11,8 @@ from Environment.Fish.fish import Fish
 class NaturalisticEnvironment(BaseEnvironment):
 
     def __init__(self, env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen=False, fish_mass=None,
-                 collisions=True, relocate_fish=None, num_actions=10):
+                 collisions=True, relocate_fish=None, num_actions=10, run_version="Original", split_event=None,
+                 modification=None):
         super().__init__(env_variables, draw_screen, new_simulation, using_gpu, num_actions)
 
         if using_gpu:
@@ -51,6 +52,10 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.predator_associated_reward = 0
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
+
+        self.run_version = run_version
+        self.split_event = modification
+        self.modification = modification
 
     def reset(self):
         # print (f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -151,6 +156,13 @@ Sand grain: {self.sand_grain_associated_reward}
         self.predator_associated_reward = 0
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
+
+    def load_simulation(self, prey_positions, prey_orientations, predator_positions):
+        ...
+
+    def check_condition_met(self):
+        """For the split assay mode - checks whether the specified condition is met at each step"""
+        if
 
     def show_new_channel_sectors(self, left_eye_pos, right_eye_pos):
         left_sectors, right_sectors = self.fish.get_all_sectors([left_eye_pos[0], left_eye_pos[1]],
