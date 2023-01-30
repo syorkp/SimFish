@@ -203,54 +203,55 @@ class NewDrawingBoard:
         adjusted_scatter = self.chosen_math_library.expand_dims(adjusted_scatter, 2)
         return adjusted_scatter
 
-    def create_obstruction_mask_lines_cupy(self, fish_position, prey_locations, predator_locations):
+    def create_obstruction_mask_lines_cupy(self, fish_position, prey_locations, predator_locations, prey_occlusion=False):
         """Must use both numpy and cupy as otherwise GPU runs out of memory."""
         # Reset empty mask
         self.empty_mask[:] = 1.0
 
-        # Compute prey positions relative to fish (Prey_num, 2)
-        prey_relative_positions = prey_locations - fish_position
+        if prey_occlusion:
+            # Compute prey positions relative to fish (Prey_num, 2)
+            prey_relative_positions = prey_locations - fish_position
 
-        # Compute distances of prey from fish.(Prey_num)
-        prey_distances = (prey_relative_positions[:, 0] ** 2 + prey_relative_positions[:, 1] ** 2) ** 0.5
+            # Compute distances of prey from fish.(Prey_num)
+            prey_distances = (prey_relative_positions[:, 0] ** 2 + prey_relative_positions[:, 1] ** 2) ** 0.5
 
-        # Compute angular size of prey from fish position. (Prey_num)
-        prey_half_angular_size = self.chosen_math_library.arctan(self.prey_radius / prey_distances)
+            # Compute angular size of prey from fish position. (Prey_num)
+            prey_half_angular_size = self.chosen_math_library.arctan(self.prey_radius / prey_distances)
 
-        # Compute angle between fish and prey where x-axis=0, and positive values are in upper field. (Prey_num)
-        prey_angles = self.chosen_math_library.arctan(prey_relative_positions[:, 1] / prey_relative_positions[:, 0])
-        prey_angles = self.chosen_math_library.expand_dims(prey_angles, 1)
-        prey_angles = self.chosen_math_library.repeat(prey_angles, 2, 1)
+            # Compute angle between fish and prey where x-axis=0, and positive values are in upper field. (Prey_num)
+            prey_angles = self.chosen_math_library.arctan(prey_relative_positions[:, 1] / prey_relative_positions[:, 0])
+            prey_angles = self.chosen_math_library.expand_dims(prey_angles, 1)
+            prey_angles = self.chosen_math_library.repeat(prey_angles, 2, 1)
 
-        # From prey angular sizes, compute angles of edges of prey. (Prey_num, 2)
-        prey_rf_offsets = self.chosen_math_library.expand_dims(prey_half_angular_size, 1)
-        prey_rf_offsets = self.chosen_math_library.repeat(prey_rf_offsets, 2, 1)
-        prey_rf_offsets = prey_rf_offsets * self.chosen_math_library.array([-1, 1])
-        prey_extremities = prey_angles + prey_rf_offsets
+            # From prey angular sizes, compute angles of edges of prey. (Prey_num, 2)
+            prey_rf_offsets = self.chosen_math_library.expand_dims(prey_half_angular_size, 1)
+            prey_rf_offsets = self.chosen_math_library.repeat(prey_rf_offsets, 2, 1)
+            prey_rf_offsets = prey_rf_offsets * self.chosen_math_library.array([-1, 1])
+            prey_extremities = prey_angles + prey_rf_offsets
 
-        # Number of lines to project through prey or predators, determined by width, height, and size of features. (1)
-        n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2, len(prey_locations), p=prey_half_angular_size)
+            # Number of lines to project through prey or predators, determined by width, height, and size of features. (1)
+            n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2, len(prey_locations), p=prey_half_angular_size)
 
-        # Create array of angles between prey extremities to form lines. (Prey_num * n_lines_prey)
-        interpolated_line_angles = self.chosen_math_library.linspace(prey_extremities[:, 0], prey_extremities[:, 1],
-                                                                     n_lines_prey).flatten()
+            # Create array of angles between prey extremities to form lines. (Prey_num * n_lines_prey)
+            interpolated_line_angles = self.chosen_math_library.linspace(prey_extremities[:, 0], prey_extremities[:, 1],
+                                                                         n_lines_prey).flatten()
 
-        # Computing how far along each line prey are.  (Prey_num * n_lines_prey)
-        prey_distance_along = prey_distances + self.prey_radius
-        prey_distance_along = self.chosen_math_library.expand_dims(prey_distance_along, 1)
-        prey_distance_along = self.chosen_math_library.repeat(prey_distance_along, n_lines_prey, 1)
-        prey_distance_along = self.chosen_math_library.swapaxes(prey_distance_along, 0, 1).flatten()
+            # Computing how far along each line prey are.  (Prey_num * n_lines_prey)
+            prey_distance_along = prey_distances + self.prey_radius
+            prey_distance_along = self.chosen_math_library.expand_dims(prey_distance_along, 1)
+            prey_distance_along = self.chosen_math_library.repeat(prey_distance_along, n_lines_prey, 1)
+            prey_distance_along = self.chosen_math_library.swapaxes(prey_distance_along, 0, 1).flatten()
 
-        # Repeat prey locations so matches dimensions of other variables  (Prey_num * n_lines_prey, 2)
-        expanded_prey_locations = self.chosen_math_library.tile(prey_locations, (n_lines_prey, 1))
+            # Repeat prey locations so matches dimensions of other variables  (Prey_num * n_lines_prey, 2)
+            expanded_prey_locations = self.chosen_math_library.tile(prey_locations, (n_lines_prey, 1))
 
-        # Find which prey are in left half of visual field (as angle convention requires adjustment)
-        # (Prey_num * n_lines_prey)
-        prey_on_left = (expanded_prey_locations[:, 0] < fish_position[0]) * self.chosen_math_library.pi
+            # Find which prey are in left half of visual field (as angle convention requires adjustment)
+            # (Prey_num * n_lines_prey)
+            prey_on_left = (expanded_prey_locations[:, 0] < fish_position[0]) * self.chosen_math_library.pi
 
-        # Assign to array to include predators if present
-        distance_along = prey_distance_along
-        features_on_left = prey_on_left
+            # Assign to array to include predators if present
+            distance_along = prey_distance_along
+            features_on_left = prey_on_left
 
         if predator_locations.size != 0:
             # Do the same for predator features.
@@ -276,9 +277,12 @@ class NewDrawingBoard:
                                                                                   n_lines_predator).flatten()
 
             # Combine prey and predator line angles.
-            interpolated_line_angles = self.chosen_math_library.concatenate(
-                (interpolated_line_angles, predator_interpolated_line_angles),
-                axis=0)
+            if prey_occlusion:
+                interpolated_line_angles = self.chosen_math_library.concatenate(
+                    (interpolated_line_angles, predator_interpolated_line_angles),
+                    axis=0)
+            else:
+                interpolated_line_angles = predator_interpolated_line_angles
 
             # Computing how far along each line predators are.
             predator_distance_along = (predator_distances ** 2 + self.predator_radius ** 2) ** 0.5
@@ -286,11 +290,18 @@ class NewDrawingBoard:
             predator_distance_along = self.chosen_math_library.repeat(predator_distance_along, int(n_lines_predator), 1)
             predator_distance_along = self.chosen_math_library.swapaxes(predator_distance_along, 0, 1).flatten()
             predator_distance_along = predator_distance_along + self.predator_radius
-            distance_along = self.chosen_math_library.concatenate((distance_along, predator_distance_along), axis=0)
+            if prey_occlusion:
+                distance_along = self.chosen_math_library.concatenate((distance_along, predator_distance_along), axis=0)
+            else:
+                distance_along = predator_distance_along
 
             expanded_predator_locations = self.chosen_math_library.tile(predator_locations, (n_lines_predator, 1))
             predators_on_left = (expanded_predator_locations[:, 0] < fish_position[0]) * self.chosen_math_library.pi
-            features_on_left = self.chosen_math_library.concatenate((features_on_left, predators_on_left), 0)
+
+            if prey_occlusion:
+                features_on_left = self.chosen_math_library.concatenate((features_on_left, predators_on_left), 0)
+            else:
+                features_on_left = predators_on_left
 
         total_lines = interpolated_line_angles.shape[0]
 

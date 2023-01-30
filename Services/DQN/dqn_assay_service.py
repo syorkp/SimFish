@@ -72,6 +72,15 @@ def assay_target(trial, total_steps, episode_number, memory_fraction):
     else:
         network_recordings = None
 
+    # Handling for when using split assay version.
+    if trial["Run Mode"] == "Split-Assay":
+        if "Run Index" not in trial:
+            run_version = "First"
+        else:
+            run_version = trial["Run Mode"]
+    else:
+        run_version = "Original"
+
     service = DQNAssayService(model_name=trial["Model Name"],
                               trial_number=trial["Trial Number"],
                               total_steps=total_steps,
@@ -92,6 +101,7 @@ def assay_target(trial, total_steps, episode_number, memory_fraction):
                               behavioural_recordings=behavioural_recordings,
                               network_recordings=network_recordings,
                               interventions=interventions,
+                              run_version=run_version
                               )
 
     service.run()
@@ -102,9 +112,9 @@ class DQNAssayService(AssayService, BaseDQN):
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_actions, new_simulation, assays, set_random_seed,
                  assay_config_name, checkpoint, full_reafference, behavioural_recordings, network_recordings,
-                 interventions):
+                 interventions, run_version):
         """
-        Runs a set of assays provided by the run configuraiton.
+        Runs a set of assays provided by the run configuration.
         """
 
         super().__init__(model_name=model_name, trial_number=trial_number,
@@ -118,7 +128,9 @@ class DQNAssayService(AssayService, BaseDQN):
                          checkpoint=checkpoint,
                          behavioural_recordings=behavioural_recordings,
                          network_recordings=network_recordings,
-                         interventions=interventions)
+                         interventions=interventions,
+                         run_version=run_version
+                         )
 
         # Hacky fix for h5py problem:
         self.last_position_dim = self.environment_params["prey_num"]

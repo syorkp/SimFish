@@ -196,6 +196,36 @@ class TrialManager:
                     new_job = None
 
         elif trial["Run Mode"] == "Assay-Analysis-Across-Scaffold":
+
+            if continuous_actions:
+                if trial["Learning Algorithm"] == "PPO":
+                    new_job = multiprocessing.Process(target=ppo_assay_continuous.ppo_assay_target_continuous, args=(
+                        trial, total_steps, episode_number, memory_fraction))
+                elif trial["Learning Algorithm"] == "A2C":
+                    new_job = multiprocessing.Process(target=a2c_assay.a2c_assay_target, args=(
+                        trial, total_steps, episode_number, memory_fraction))
+                elif trial["Learning Algorithm"] == "DQN":
+                    print('Cannot use DQN with continuous actions (assay mode)')
+                    new_job = None
+                else:
+                    print('Invalid "Learning Algorithm" selected with continuous actions (assay mode)')
+                    new_job = None
+
+            else:
+                if trial["Learning Algorithm"] == "PPO":
+                    new_job = multiprocessing.Process(target=ppo_assay_discrete.ppo_assay_target_discrete, args=(
+                        trial, total_steps, episode_number, memory_fraction))
+                elif trial["Learning Algorithm"] == "A2C":
+                    print('Cannot use A2C with discrete actions (assay mode)')
+                    new_job = None
+                elif trial["Learning Algorithm"] == "DQN":
+                    new_job = multiprocessing.Process(target=assay.assay_target, args=(
+                        trial, total_steps, episode_number, memory_fraction))
+                else:
+                    print('Invalid "Learning Algorithm" selected with discrete actions (assay mode)')
+                    new_job = None
+
+        elif trial["Run Mode"] == "Split-Assay":
             if continuous_actions:
                 if trial["Learning Algorithm"] == "PPO":
                     new_job = multiprocessing.Process(target=ppo_assay_continuous.ppo_assay_target_continuous, args=(
@@ -356,6 +386,42 @@ class TrialManager:
                                 shutil.rmtree(file)
 
                         complete = False
+
+            elif trial["Run Mode"] == "Split-Assay":
+                # Run all assays, up to the point of the split.
+                # TODO: Save as the naturalistic version
+                complete = False
+                epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
+
+                new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
+                if new_job is not None:
+                    running_jobs[str(index)] = new_job
+                    running_jobs[str(index)].start()
+                    print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
+                else:
+                    print("New job failed")
+
+                while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
+                    for process in running_jobs.keys():
+                        if running_jobs[process].is_alive():
+                            pass
+                        else:
+                            to_delete = process
+                            running_jobs[str(index)].join()
+                            print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Pre-Split Complete")
+                            complete = True
+
+                # Run again, twice from split point, with random seed set
+                if complete:
+                    # First (normal) trial completion
+                    trial["Run Index"] = "Original-Completion"
+                    new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon,
+                                               configuration)
+
+                    # Second (modified) trial completion
+                    trial["Run Index"] = "Modified-Completion"
+                    new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon,
+                                               configuration)
 
 
             else:

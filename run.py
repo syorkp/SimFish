@@ -139,6 +139,41 @@ dqn_free_config_large_gamma_1 = [
     }
     ]
 
+# Split timelines assay
+
+dqn_split_assay_test = [
+    {
+        "Model Name": "dqn_gamma",
+        "Environment Name": "dqn_gamma_final",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 1,
+        "Run Mode": "Split-Assay",
+        "Split Event": "One-Prey-Close",
+        "Modification": "Prey-Removal",
+        "Learning Algorithm": "DQN",
+        "behavioural recordings": ["environmental positions", "observation"],
+        "network recordings": ["rnn_shared", "internal_state"],
+        "Assays": [
+            {
+                "assay id": "Naturalistic",
+                "stimulus paradigm": "Naturalistic",
+                "repeats": 10,
+                "duration": 10000,
+                "Tethered": False,
+                "save frames": False,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+            },
+        ]
+    }
+    ]
+
+
 # Assay And Analysis
 
 dqn_gamma_analysis_across_scaffold_1 = [

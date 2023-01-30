@@ -21,14 +21,18 @@ class AssayService(BaseService):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_environment, new_simulation, assays, set_random_seed,
-                 assay_config_name, checkpoint, behavioural_recordings, network_recordings, interventions):
+                 assay_config_name, checkpoint, behavioural_recordings, network_recordings, interventions,
+                 run_version):
 
-        # Set random seed
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                          config_name, realistic_bouts, continuous_environment, new_simulation)
 
         print("AssayService Constructor called")
 
+        if run_version == "Original-Completion" or run_version == "Modified-Completion":
+            set_random_seed = True
+
+        # Set random seed
         if set_random_seed:
             np.random.seed(404)
 
