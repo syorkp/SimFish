@@ -170,6 +170,8 @@ class BaseEnvironment:
         self.first_attack = False
         self.loom_predator_current_size = None
 
+        self.touched_sand_grain = False
+
         # For visualisation of previous actions
         self.action_buffer = []
         self.position_buffer = []
@@ -1237,6 +1239,8 @@ class BaseEnvironment:
         self.space.add(self.sand_grain_bodies[-1], self.sand_grain_shapes[-1])
 
     def touch_grain(self, arbiter, space, data):
+        self.fish.touched_sand_grain = True
+
         if self.last_action == 3:
             self.sand_grains_bumped += 1
 

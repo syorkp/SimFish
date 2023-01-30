@@ -186,6 +186,7 @@ Sand grain: {self.sand_grain_associated_reward}
     def simulation_step(self, action, save_frames, frame_buffer, activations, impulse):
         self.prey_consumed_this_step = False
         self.last_action = action
+        self.fish.touched_sand_grain = False
 
         # Visualisation
         if frame_buffer is None:
@@ -225,9 +226,6 @@ Sand grain: {self.sand_grain_associated_reward}
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.move_prey(micro_step)
             self.displace_sand_grains()
-            if "sand_grain_touch_penalty" in self.env_variables:
-                reward -= self.env_variables["sand_grain_touch_penalty"]
-                self.sand_grain_associated_reward -= self.env_variables["sand_grain_touch_penalty"]
 
             if self.new_simulation:
                 if self.env_variables["current_setting"]:
@@ -278,6 +276,11 @@ Sand grain: {self.sand_grain_associated_reward}
                 reward += self.env_variables["predator_avoidance_reward"]
                 self.predator_associated_reward += self.env_variables["predator_cost"]
                 self.survived_attack = False
+
+        if "sand_grain_touch_penalty" in self.env_variables:
+            if self.fish.touched_sand_grain:
+                reward -= self.env_variables["sand_grain_touch_penalty"]
+                self.sand_grain_associated_reward -= self.env_variables["sand_grain_touch_penalty"]
 
         # Relocate fish (Assay mode only)
         if self.relocate_fish is not None:
