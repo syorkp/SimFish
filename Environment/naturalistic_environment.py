@@ -162,7 +162,7 @@ Sand grain: {self.sand_grain_associated_reward}
 
     def check_condition_met(self):
         """For the split assay mode - checks whether the specified condition is met at each step"""
-        if
+        ...
 
     def show_new_channel_sectors(self, left_eye_pos, right_eye_pos):
         left_sectors, right_sectors = self.fish.get_all_sectors([left_eye_pos[0], left_eye_pos[1]],

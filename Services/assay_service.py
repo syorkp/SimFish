@@ -22,7 +22,7 @@ class AssayService(BaseService):
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_environment, new_simulation, assays, set_random_seed,
                  assay_config_name, checkpoint, behavioural_recordings, network_recordings, interventions,
-                 run_version, modification):
+                 run_version, split_event, modification):
 
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                          config_name, realistic_bouts, continuous_environment, new_simulation)
@@ -52,6 +52,7 @@ class AssayService(BaseService):
 
         self.run_version = run_version
         self.modification = modification
+        self.split_event = split_event
 
         self.assays = self.expand_assays(assays)
 
@@ -163,6 +164,12 @@ class AssayService(BaseService):
             self.save_frames = assay["save frames"]
 
             self.create_testing_environment(assay)
+            if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
+                # TODO: Finish these.
+                self.load_assay_buffer()
+                self.simulation.load_simulation()
+
+
             self.perform_assay(assay)
 
             if assay["save stimuli"]:
@@ -186,6 +193,9 @@ class AssayService(BaseService):
                 new_assay_format["assay id"] = f"{new_assay_format['assay id']}-{i}"
                 new_assays.append(new_assay_format)
         return new_assays
+
+    def load_assay_buffer(self):
+        ...
 
     def perform_assay(self, assay):
         # self.assay_output_data_format = {key: None for key in
@@ -239,7 +249,6 @@ class AssayService(BaseService):
         Creates the testing environment as specified  by apparatus mode and given assays.
         :return:
         """
-        # TODO: Add re-loading of assay state here!
 
         if assay["stimulus paradigm"] == "Projection":
             if self.continuous_actions:
@@ -296,6 +305,7 @@ class AssayService(BaseService):
                 self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
                                                                   self.new_simulation, self.using_gpu,
                                                                   relocate_fish=self.relocate_fish)
+
 
     def ablate_units(self, ablated_layers):
 

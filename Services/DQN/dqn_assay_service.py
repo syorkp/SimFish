@@ -74,12 +74,14 @@ def assay_target(trial, total_steps, episode_number, memory_fraction):
 
     # Handling for when using split assay version.
     modification = None
+    split_event = None
     if trial["Run Mode"] == "Split-Assay":
         if "Run Index" not in trial:
             run_version = "First"
         else:
             modification = trial["Modification"]
             run_version = trial["Run Mode"]
+            split_event = trial["Split Event"]
     else:
         run_version = "Original"
 
@@ -104,6 +106,7 @@ def assay_target(trial, total_steps, episode_number, memory_fraction):
                               network_recordings=network_recordings,
                               interventions=interventions,
                               run_version=run_version,
+                              split_event=split_event,
                               modification=modification
                               )
 
@@ -115,7 +118,7 @@ class DQNAssayService(AssayService, BaseDQN):
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_actions, new_simulation, assays, set_random_seed,
                  assay_config_name, checkpoint, full_reafference, behavioural_recordings, network_recordings,
-                 interventions, run_version, modification):
+                 interventions, run_version, split_event, modification):
         """
         Runs a set of assays provided by the run configuration.
         """
@@ -133,6 +136,7 @@ class DQNAssayService(AssayService, BaseDQN):
                          network_recordings=network_recordings,
                          interventions=interventions,
                          run_version=run_version,
+                         split_event=split_event,
                          modification=modification
                          )
 
