@@ -502,9 +502,9 @@ class BaseDQN:
 
         # Saving step data
         if "environmental positions" in self.buffer.recordings:
-            prey_orientations = [p.body.angle for p in self.simulation.prey_bodies]
+            prey_orientations = [p.angle for p in self.simulation.prey_bodies]
             try:
-                predator_orientation = self.simulation.predator_body.body.angle
+                predator_orientation = self.simulation.predator_body.angle
             except:
                 predator_orientation = 0
             prey_ages = self.simulation.prey_ages

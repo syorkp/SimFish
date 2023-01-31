@@ -144,21 +144,22 @@ dqn_free_config_large_gamma_1 = [
 dqn_split_assay_test = [
     {
         "Model Name": "dqn_gamma",
-        "Environment Name": "dqn_gamma_final",
+        "Environment Name": "dqn_gamma_final_mod",
         "Assay Configuration Name": "Behavioural-Data-Free",
-        "Trial Number": 1,
+        "Trial Number": 2,
         "Run Mode": "Split-Assay",
         "Split Event": "One-Prey-Close",
-        "Modification": "Prey-Removal",
+        "Modification": "Nearby-Prey-Removal",
         "Learning Algorithm": "DQN",
+        "Using GPU": False,
         "behavioural recordings": ["environmental positions", "observation"],
         "network recordings": ["rnn_shared", "internal_state"],
         "Assays": [
             {
                 "assay id": "Naturalistic",
                 "stimulus paradigm": "Naturalistic",
-                "repeats": 10,
-                "duration": 10000,
+                "repeats": 1,
+                "duration": 20,
                 "Tethered": False,
                 "save frames": False,
                 "use_mu": True,
@@ -171,7 +172,7 @@ dqn_split_assay_test = [
             },
         ]
     }
-    ]
+]
 
 
 # Assay And Analysis
@@ -486,7 +487,7 @@ ppo_gamma_5 = [
 
 
 if run_config is None:
-    run_config = ppo_gamma_analysis_across_scaffold_1
+    run_config = dqn_split_assay_test
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]

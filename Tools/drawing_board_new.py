@@ -303,6 +303,10 @@ class NewDrawingBoard:
             else:
                 features_on_left = predators_on_left
 
+        # If no predators, and no prey occlusion, return now with empty obstruction mask
+        if "interpolated_line_angles" not in locals():
+            return self.empty_mask
+
         total_lines = interpolated_line_angles.shape[0]
 
         # Ensure all angles are in designated range

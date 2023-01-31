@@ -247,7 +247,8 @@ class ContinuousPPO(BasePPO):
 
     def _episode_loop(self, a=None):
         self.update_sigmas()
-        a = [4.0, 0.0]
+        if a is None:
+            a = [4.0, 0.0]
         super(ContinuousPPO, self)._episode_loop(a)
 
     def _assay_step_loop_multivariate2(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,

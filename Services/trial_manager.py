@@ -86,6 +86,10 @@ class TrialManager:
                 self.priority_ordered_trials[index]["Model Exists"] = True
                 if not os.path.exists(assay_directory_location):
                     os.makedirs(assay_directory_location)
+            elif trial["Run Mode"] == "Split-Assay":
+                self.priority_ordered_trials[index]["Model Exists"] = True
+                if not os.path.exists(assay_directory_location):
+                    os.makedirs(assay_directory_location)
         # print(self.priority_ordered_trials)
 
     @staticmethod
@@ -118,7 +122,7 @@ class TrialManager:
         Extracts the saved parameters in teh saved_parameters.json document.
         :return:
         """
-        if trial["Model Exists"]:
+        try:
             output_directory_location = f"./Training-Output/{trial['Model Name']}-{trial['Trial Number']}"
             with open(f"{output_directory_location}/saved_parameters.json", "r") as file:
                 data = json.load(file)
@@ -132,7 +136,7 @@ class TrialManager:
                 total_steps = data["total_steps"]
                 episode_number = data["episode_number"]
                 configuration_index = data["configuration_index"]
-        else:
+        except FileNotFoundError:
             epsilon = None
             total_steps = None
             episode_number = None
@@ -389,7 +393,6 @@ class TrialManager:
 
             elif trial["Run Mode"] == "Split-Assay":
                 # Run all assays, up to the point of the split.
-                # TODO: Save as the naturalistic version
                 complete = False
                 epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
 
@@ -413,16 +416,49 @@ class TrialManager:
 
                 # Run again, twice from split point, with random seed set
                 if complete:
+
                     # Second (modified) trial completion
                     trial["Run Index"] = "Modified-Completion"
                     new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon,
                                                configuration)
+                    if new_job is not None:
+                        running_jobs[str(index)] = new_job
+                        running_jobs[str(index)].start()
+                        print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
+                    else:
+                        print("New job failed")
+
+                    while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
+                        for process in running_jobs.keys():
+                            if running_jobs[process].is_alive():
+                                pass
+                            else:
+                                to_delete = process
+                                running_jobs[str(index)].join()
+                                print(
+                                    f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Pre-Split Complete")
+                                complete = True
 
                     # First (normal) trial completion
                     trial["Run Index"] = "Original-Completion"
                     new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon,
                                                configuration)
+                if new_job is not None:
+                    running_jobs[str(index)] = new_job
+                    running_jobs[str(index)].start()
+                    print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
+                else:
+                    print("New job failed")
 
+                while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
+                    for process in running_jobs.keys():
+                        if running_jobs[process].is_alive():
+                            pass
+                        else:
+                            to_delete = process
+                            running_jobs[str(index)].join()
+                            print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Pre-Split Complete")
+                            complete = True
 
             else:
                 epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)

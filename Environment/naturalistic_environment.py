@@ -55,7 +55,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.sand_grain_associated_reward = 0
 
         self.run_version = run_version
-        self.split_event = modification
+        self.split_event = split_event
         self.modification = modification
 
     def reset(self):
@@ -157,8 +157,9 @@ Sand grain: {self.sand_grain_associated_reward}
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
 
-    def load_simulation(self, buffer, background, num_steps):
-        self.num_steps = num_steps
+    def load_simulation(self, buffer, background):
+        self.num_steps = buffer.fish_position_buffer.shape[0]
+
         self.board.background_grating = self.chosen_math_library.array(background)
 
         self.salt_location = buffer.salt_location
@@ -191,6 +192,8 @@ Sand grain: {self.sand_grain_associated_reward}
                                            predator_target=predator_target)
 
         self.fish.body.position = np.array(buffer.fish_position_buffer[-1])
+        self.fish.body.angle = np.array(buffer.fish_orientation_buffer[-1])
+        self.fish.energy_level = buffer.internal_state_buffer[-1][0]
         self.fish.prev_action_impulse = buffer.internal_state_buffer[-1][1]
         self.fish.prev_action_angle = buffer.internal_state_buffer[-1][2]
 
@@ -201,12 +204,9 @@ Sand grain: {self.sand_grain_associated_reward}
                                                                   frame_buffer=[])
         return observation
 
-
-
     def check_condition_met(self):
         """For the split assay mode - checks whether the specified condition is met at each step"""
 
-        # Note of conditions to impose: Remove nearby prey, add nearby prey.
         if self.split_event == "One-Prey-Close":
             max_angular_deviation = np.pi/2
             max_distance = 100  # 10mm
@@ -223,7 +223,31 @@ Sand grain: {self.sand_grain_associated_reward}
         elif self.split_event == "Empty-Surroundings":
             ...
 
+        else:
+            print("Invalid Split Event Entered")
+
         return False
+
+    def make_modification(self):
+        # Note of conditions to impose: Remove nearby prey, add nearby prey.
+        if self.modification == "Nearby-Prey-Removal":
+            max_angular_deviation = np.pi/2
+            max_distance = 100  # 10mm
+
+            prey_near = self.check_proximity_all_prey(sensing_distance=max_distance)
+            fish_prey_incidence = self.get_fish_prey_incidence()
+            within_visual_field = np.absolute(fish_prey_incidence) < max_angular_deviation
+
+            prey_close = prey_near * within_visual_field
+
+            prey_index_offset = len(self.prey_bodies)
+            for i, p in enumerate(reversed(prey_close)):
+                if p:
+                    self.remove_prey(prey_index_offset-i)
+                    print("Removed prey due to modification")
+
+        else:
+            print("Invalid Modification Entered")
 
     def show_new_channel_sectors(self, left_eye_pos, right_eye_pos):
         left_sectors, right_sectors = self.fish.get_all_sectors([left_eye_pos[0], left_eye_pos[1]],

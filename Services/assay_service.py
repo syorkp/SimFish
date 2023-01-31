@@ -171,7 +171,12 @@ class AssayService(BaseService):
 
             self.create_testing_environment(assay)
 
-            self.perform_assay(assay)
+            if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
+                background = self.load_assay_buffer(assay)
+            else:
+                background = None
+
+            self.perform_assay(assay, background=background)
 
             if assay["save stimuli"]:
                 self.save_stimuli_data(assay)
@@ -247,6 +252,7 @@ class AssayService(BaseService):
         return data["background"], num_steps_elapsed
 
     def perform_assay(self, assay):
+        """Just for PPO"""
         # self.assay_output_data_format = {key: None for key in
         #                                  assay["behavioural recordings"] + assay["network recordings"]}
         # self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])

@@ -157,16 +157,24 @@ class DQNAssayService(AssayService, BaseDQN):
             self.init_states()
             AssayService._run(self)
 
-    def perform_assay(self, assay):
+    def perform_assay(self, assay, background=None):
         # self.assay_output_data_format = {key: None for key in assay["recordings"]}
         # self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
 
-        # TODO: move back to outer so applies to PPO too.
+        if self.rnn_input is not None:
+            rnn_state = copy.copy(self.rnn_input[0])
+            rnn_state_ref = copy.copy(self.rnn_input[1])
+        else:
+            rnn_state = copy.copy(self.init_rnn_state)
+            rnn_state_ref = copy.copy(self.init_rnn_state_ref)
+
         if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
-            background, num_steps = self.load_assay_buffer(assay)
+            o = self.simulation.load_simulation(self.buffer, background)
+            internal_state = self.buffer.internal_state_buffer[-1]
+            a = self.buffer.action_buffer[-1]
 
-            o = self.simulation.load_simulation(self.buffer, background, num_steps)
-
+            if self.run_version == "Modified-Completion":
+                self.simulation.make_modification()
 
             a, updated_rnn_state, rnn2_state, network_layers, sa, sv = \
                 self.sess.run(
@@ -187,24 +195,16 @@ class DQNAssayService(AssayService, BaseDQN):
                                # self.main_QN.learning_rate: self.learning_params["learning_rate"],
                                })
 
-            a = ...
-            self.step_number = num_steps
+            self.step_number = self.buffer.internal_state_buffer.shape[0]
 
         else:
             self.simulation.reset()
             a = 0
             self.step_number = 0
 
-        if self.rnn_input is not None:
-            rnn_state = copy.copy(self.rnn_input[0])
-            rnn_state_ref = copy.copy(self.rnn_input[1])
-        else:
-            rnn_state = copy.copy(self.init_rnn_state)
-            rnn_state_ref = copy.copy(self.init_rnn_state_ref)
-
         sa = np.zeros((1, 128))
 
-        o, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=3,
+        o, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=a,
                                                                                      frame_buffer=self.frame_buffer,
                                                                                      save_frames=True,
                                                                                      activations=(sa,))
@@ -214,6 +214,7 @@ class DQNAssayService(AssayService, BaseDQN):
             action_reafference = [a]
 
         while self.step_number < assay["duration"]:
+            print(self.step_number)
             # if assay["reset"] and self.step_number % assay["reset interval"] == 0:
             #     rnn_state = (
             #         np.zeros([1, self.main_QN.rnn_dim]), np.zeros([1, self.main_QN.rnn_dim]))  # Reset RNN hidden state
