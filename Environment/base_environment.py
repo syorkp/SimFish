@@ -264,7 +264,7 @@ class BaseEnvironment:
         p_prey_birth = self.env_variables["birth_rate"] * (self.env_variables["prey_num"] - num_prey)
         for cloud in self.prey_cloud_locations:
             if np.random.rand(1) < p_prey_birth:
-                if not self.check_proximity(cloud, self.env_variables["birth_rate_region_size"]/2):
+                if not self.check_proximity(cloud, self.env_variables["birth_rate_region_size"]):
                     new_location = (
                         np.random.randint(low=cloud[0] - (self.env_variables["birth_rate_region_size"] / 2),
                                           high=cloud[0] + (self.env_variables["birth_rate_region_size"] / 2)),
@@ -274,9 +274,14 @@ class BaseEnvironment:
                     self.create_prey(new_location)
                     self.available_prey += 1
 
-    def reset_salt_gradient(self):
-        salt_source_x = np.random.randint(0, self.env_variables['width'] - 1)
-        salt_source_y = np.random.randint(0, self.env_variables['height'] - 1)
+    def reset_salt_gradient(self, salt_source=None):
+        if salt_source is None:
+            salt_source_x = np.random.randint(0, self.env_variables['width'] - 1)
+            salt_source_y = np.random.randint(0, self.env_variables['height'] - 1)
+        else:
+            salt_source_x = salt_source[0]
+            salt_source_y = salt_source[1]
+
         self.salt_location = [salt_source_x, salt_source_y]
         salt_distance = (((salt_source_x - self.xp[:, None]) ** 2 + (
                 salt_source_y - self.yp[None, :]) ** 2) ** 0.5)  # Measure of distance from source at every point.
@@ -666,7 +671,7 @@ class BaseEnvironment:
         self.fish.touched_edge_this_step = True
         return True
 
-    def create_prey(self, prey_position=None):
+    def create_prey(self, prey_position=None, prey_orientation=None):
         self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
         self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_size']))
         self.prey_shapes[-1].elasticity = 1.0
@@ -696,6 +701,7 @@ class BaseEnvironment:
                 )
         else:
             self.prey_bodies[-1].position = prey_position
+
         self.prey_shapes[-1].color = (0, 0, 1)
         self.prey_shapes[-1].collision_type = 2
         # self.prey_shapes[-1].filter = pymunk.ShapeFilter(

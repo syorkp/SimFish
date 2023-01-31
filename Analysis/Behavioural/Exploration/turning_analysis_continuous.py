@@ -5,7 +5,8 @@ from Analysis.Behavioural.Tools.BehavLabels.extract_turn_sequences import extrac
     extract_purely_turn_sequences
 from Analysis.Behavioural.Exploration.turning_analysis_shared import randomly_switching_fish, model_of_action_switching, \
     cumulative_turn_direction_plot_multiple_models, cumulative_turn_direction_plot, \
-    cumulative_switching_probability_plot_multiple_models, randomly_switching_fish_new
+    cumulative_switching_probability_plot_multiple_models, randomly_switching_fish_new,\
+    cumulative_switching_probability_plot
 from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import \
     label_exploration_sequences_free_swimming_multiple_trials, \
     label_exploration_sequences_no_prey_multiple_trials
@@ -53,6 +54,55 @@ def get_all_angle_sequences_labelled(compiled_turn_directions, compiled_labels):
         compiled_all_action_sequences.append(all_action_sequences)
     compiled_all_action_sequences = [item for sublist in compiled_all_action_sequences for item in sublist]
     return compiled_all_action_sequences
+
+
+def plot_all_turn_analysis_continuous(model_name, assay_config, assay_id, n,
+                                                      use_purely_turn_sequences=False, threshold_for_angle=0.1,
+                                                      data_cutoff=None):
+
+    no_prey_exploration_labelled = label_exploration_sequences_no_prey_multiple_trials(model_name, assay_config,
+                                                                                       assay_id, n)
+    free_swimming_exploration_labelled = label_exploration_sequences_free_swimming_multiple_trials(model_name,
+                                                                                                   assay_config,
+                                                                                                   assay_id, n)
+    all_angles = get_all_angles(model_name, assay_config, assay_id, n)
+
+    if data_cutoff is not None:
+        no_prey_exploration_labelled = [labels[:data_cutoff] for labels in no_prey_exploration_labelled]
+        free_swimming_exploration_labelled = [labels[:data_cutoff] for labels in free_swimming_exploration_labelled]
+        all_angles = [angles[:data_cutoff] for angles in all_angles]
+
+    # Convert angle sequences to int encoding
+    all_directions = [convert_continuous_angles_to_turn_directions(trial, threshold_for_angle=0.05) for trial in
+                      all_angles]
+
+    # Get sequences of angles
+    no_prey_exploration_angle_sequences = get_all_angle_sequences_labelled(all_directions,
+                                                                           no_prey_exploration_labelled)
+    free_swimming_exploration_angle_sequences = get_all_angle_sequences_labelled(all_directions,
+                                                                                 free_swimming_exploration_labelled)
+
+    if use_purely_turn_sequences:
+        turn_exploration_sequences = extract_purely_turn_sequences(free_swimming_exploration_angle_sequences, 5)
+        turn_no_prey_sequences = extract_purely_turn_sequences(no_prey_exploration_angle_sequences, 5)
+    else:
+        turn_exploration_sequences = extract_turn_sequences(free_swimming_exploration_angle_sequences)
+        turn_no_prey_sequences = extract_turn_sequences(no_prey_exploration_angle_sequences)
+
+    l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
+    l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_exploration_sequences)
+    cumulative_switching_probability_plot(sl, sr, sl2, sr2,
+                                          save_location=f"Cumulative Switching Probability (exploration) {model_name}")
+
+    l, r, sl, sr = model_of_action_switching(turn_no_prey_sequences)
+    l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_no_prey_sequences)
+    cumulative_switching_probability_plot(sl, sr, sl2, sr2, save_location=f"Cumulative Switching Probability (no prey) {model_name}")
+    # Cumulative turn direction plots:
+    # cumulative_turn_direction_plot_multiple_models(turn_no_prey_sequences_list)
+    # cumulative_turn_direction_plot(turn_exploration_sequences,
+    #                                label=f"Cumulative Turn Direction (no prey or walls, only turns) {model_name}")
+
+    # Cumulative probability plot.
 
 
 def plot_all_turn_analysis_multiple_models_continuous(model_names, assay_config, assay_id, n,

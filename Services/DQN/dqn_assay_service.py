@@ -161,6 +161,17 @@ class DQNAssayService(AssayService, BaseDQN):
         # self.assay_output_data_format = {key: None for key in assay["recordings"]}
         # self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
 
+        if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
+            background, prey_orientations, num_steps = self.load_assay_buffer(assay)
+            self.simulation.load_simulation(self.buffer, background, prey_orientations, num_steps)
+            a = ...
+            self.step_number = num_steps
+
+        else:
+            self.simulation.reset()
+            a = 0
+            self.step_number = 0
+
         if self.rnn_input is not None:
             rnn_state = copy.copy(self.rnn_input[0])
             rnn_state_ref = copy.copy(self.rnn_input[1])
@@ -168,21 +179,17 @@ class DQNAssayService(AssayService, BaseDQN):
             rnn_state = copy.copy(self.init_rnn_state)
             rnn_state_ref = copy.copy(self.init_rnn_state_ref)
 
-        self.simulation.reset()
-
         sa = np.zeros((1, 128))
 
         o, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=3,
                                                                                      frame_buffer=self.frame_buffer,
                                                                                      save_frames=True,
                                                                                      activations=(sa,))
-        a = 0
         if self.full_reafference:
             action_reafference = [[a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]]
         else:
             action_reafference = [a]
 
-        self.step_number = 0
         while self.step_number < assay["duration"]:
             # if assay["reset"] and self.step_number % assay["reset interval"] == 0:
             #     rnn_state = (
@@ -221,8 +228,10 @@ class DQNAssayService(AssayService, BaseDQN):
                         internal_state[0, index] = self.salt_interruptions[self.step_number]
             self.previous_action = a
 
-            o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
-                                                                       a=action_reafference, rnn_state=rnn_state,
+            o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o,
+                                                                       internal_state=internal_state,
+                                                                       a=action_reafference,
+                                                                       rnn_state=rnn_state,
                                                                        rnn_state_ref=rnn_state_ref)
             o = o1
 

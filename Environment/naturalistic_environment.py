@@ -150,7 +150,6 @@ Wall: {self.wall_associated_reward}
 Sand grain: {self.sand_grain_associated_reward}
 """)
 
-
         self.energy_associated_reward = 0
         self.action_associated_reward = 0
         self.salt_associated_reward = 0
@@ -158,8 +157,29 @@ Sand grain: {self.sand_grain_associated_reward}
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
 
-    def load_simulation(self, prey_positions, prey_orientations, predator_positions):
-        ...
+    def load_simulation(self, buffer, background, prey_orientations, predator_orientations, num_steps):
+        self.num_steps = num_steps
+        self.board.background_grating = self.chosen_math_library.array(background)
+
+        self.salt_location = buffer.salt_location
+        self.reset_salt_gradient(buffer.salt_location)
+
+        final_step_prey_positions = buffer.prey_positions_buffer[-1]
+        for p, o in zip(final_step_prey_positions, prey_orientations):
+            if p[0] != 10000.0:
+                self.create_prey(prey_position=p, prey_orientation=o)
+
+        final_step_predator_positions = buffer.predator_positions_buffer[-1]
+
+
+        # Create prey in proper positions and orientations
+        # Create predators "
+
+        self.fish.body.position = np.array(buffer.fish_position_buffer[-1])
+        self.fish.prev_action_impulse = buffer.internal_state_buffer[-1][1]
+        self.fish.prev_action_angle = buffer.internal_state_buffer[-1][2]
+
+
 
     def check_condition_met(self):
         """For the split assay mode - checks whether the specified condition is met at each step"""
