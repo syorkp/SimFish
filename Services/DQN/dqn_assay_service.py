@@ -68,6 +68,19 @@ def assay_target(trial, total_steps, episode_number, memory_fraction):
     else:
         network_recordings = None
 
+    # Handling for when using split assay version.
+    modification = None
+    split_event = None
+    if trial["Run Mode"] == "Split-Assay":
+        if "Run Index" not in trial:
+            run_version = "First"
+        else:
+            modification = trial["Modification"]
+            run_version = trial["Run Mode"]
+            split_event = trial["Split Event"]
+    else:
+        run_version = "Original"
+
     service = DQNAssayService(model_name=trial["Model Name"],
                               trial_number=trial["Trial Number"],
                               total_steps=total_steps,
@@ -86,6 +99,9 @@ def assay_target(trial, total_steps, episode_number, memory_fraction):
                               behavioural_recordings=behavioural_recordings,
                               network_recordings=network_recordings,
                               interventions=interventions,
+                              run_version=run_version,
+                              split_event=split_event,
+                              modification=modification
                               )
 
     service.run()
@@ -96,9 +112,9 @@ class DQNAssayService(AssayService, BaseDQN):
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_actions, assays, set_random_seed,
                  assay_config_name, checkpoint, full_reafference, behavioural_recordings, network_recordings,
-                 interventions):
+                 interventions, run_version, split_event, modification):
         """
-        Runs a set of assays provided by the run configuraiton.
+        Runs a set of assays provided by the run configuration.
         """
 
         super().__init__(model_name=model_name, trial_number=trial_number,
@@ -112,7 +128,11 @@ class DQNAssayService(AssayService, BaseDQN):
                          checkpoint=checkpoint,
                          behavioural_recordings=behavioural_recordings,
                          network_recordings=network_recordings,
-                         interventions=interventions)
+                         interventions=interventions,
+                         run_version=run_version,
+                         split_event=split_event,
+                         modification=modification
+                         )
 
         # Hacky fix for h5py problem:
         self.last_position_dim = self.environment_params["prey_num"]
@@ -135,6 +155,40 @@ class DQNAssayService(AssayService, BaseDQN):
         # self.assay_output_data_format = {key: None for key in assay["recordings"]}
         # self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
 
+        # TODO: move back to outer so applies to PPO too.
+        if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
+            background, num_steps = self.load_assay_buffer(assay)
+
+            o = self.simulation.load_simulation(self.buffer, background, num_steps)
+
+
+            a, updated_rnn_state, rnn2_state, network_layers, sa, sv = \
+                self.sess.run(
+                    [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
+                     self.main_QN.network_graph,
+
+                     self.main_QN.streamA,
+                     self.main_QN.streamV,
+                     ],
+                    feed_dict={self.main_QN.observation: o,
+                               self.main_QN.internal_state: internal_state,
+                               self.main_QN.prev_actions: a,
+                               self.main_QN.train_length: 1,
+                               self.main_QN.rnn_state_in: rnn_state,
+
+                               self.main_QN.batch_size: 1,
+                               self.main_QN.exp_keep: 1.0,
+                               # self.main_QN.learning_rate: self.learning_params["learning_rate"],
+                               })
+
+            a = ...
+            self.step_number = num_steps
+
+        else:
+            self.simulation.reset()
+            a = 0
+            self.step_number = 0
+
         if self.rnn_input is not None:
             rnn_state = copy.copy(self.rnn_input[0])
             rnn_state_ref = copy.copy(self.rnn_input[1])
@@ -142,21 +196,17 @@ class DQNAssayService(AssayService, BaseDQN):
             rnn_state = copy.copy(self.init_rnn_state)
             rnn_state_ref = copy.copy(self.init_rnn_state_ref)
 
-        self.simulation.reset()
-
         sa = np.zeros((1, 128))
 
         o, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=3,
                                                                                      frame_buffer=self.frame_buffer,
                                                                                      save_frames=True,
                                                                                      activations=(sa,))
-        a = 0
         if self.full_reafference:
             action_reafference = [[a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]]
         else:
             action_reafference = [a]
 
-        self.step_number = 0
         while self.step_number < assay["duration"]:
             # if assay["reset"] and self.step_number % assay["reset interval"] == 0:
             #     rnn_state = (
@@ -195,8 +245,10 @@ class DQNAssayService(AssayService, BaseDQN):
                         internal_state[0, index] = self.salt_interruptions[self.step_number]
             self.previous_action = a
 
-            o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o, internal_state=internal_state,
-                                                                       a=action_reafference, rnn_state=rnn_state,
+            o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o,
+                                                                       internal_state=internal_state,
+                                                                       a=action_reafference,
+                                                                       rnn_state=rnn_state,
                                                                        rnn_state_ref=rnn_state_ref)
             o = o1
 

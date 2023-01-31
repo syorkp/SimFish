@@ -2,6 +2,7 @@ import numpy as np
 import json
 from datetime import datetime
 import copy
+import h5py
 
 import tensorflow.compat.v1 as tf
 
@@ -21,16 +22,13 @@ class AssayService(BaseService):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_environment, assays, set_random_seed,
-                 assay_config_name, checkpoint, behavioural_recordings, network_recordings, interventions):
+                 assay_config_name, checkpoint, behavioural_recordings, network_recordings, interventions,
+                 run_version, split_event, modification):
 
-        # Set random seed
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                          config_name, realistic_bouts, continuous_environment)
 
         print("AssayService Constructor called")
-
-        if set_random_seed:
-            np.random.seed(404)
 
         # Assay configuration and save location
         self.data_save_location = f"./Assay-Output/{self.model_id}"
@@ -41,15 +39,44 @@ class AssayService(BaseService):
         self.current_configuration_location = f"./Configurations/Assay-Configs/{config_name}"
         self.learning_params, self.environment_params = self.load_configuration_files()
 
+        # Handling for split assay version
+        if run_version == "Original-Completion":
+            set_random_seed = True
+        elif run_version == "Modified-Completion":
+            set_random_seed = True
+            modified_assays = []
+            for assay in assays:
+                modified_assay = copy.copy(assay)
+                modified_assay["assay id"] += "-Mod"
+                modified_assays.append(modified_assay)
+            assays = assays + modified_assay
+
+        elif run_version == "Original":
+            ...
+        else:
+            ...
+
+        self.run_version = run_version
+        self.modification = modification
+        self.split_event = split_event
+
         self.assays = self.expand_assays(assays)
+
+        # Set random seed
+        if set_random_seed:
+            np.random.seed(404)
 
         # Create environment so that network has access
         if self.continuous_actions:
             self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                using_gpu)
+                                                                using_gpu,
+                                                                run_version=run_version,
+                                                                modification=modification)
         else:
             self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                              using_gpu)
+                                                              using_gpu,
+                                                              run_version=run_version,
+                                                              modification=modification)
 
         # Metadata
         self.episode_number = episode_number
@@ -141,6 +168,7 @@ class AssayService(BaseService):
             self.learning_params, self.environment_params = self.load_configuration_files()
 
             self.save_frames = assay["save frames"]
+
             self.create_testing_environment(assay)
 
             self.perform_assay(assay)
@@ -166,6 +194,57 @@ class AssayService(BaseService):
                 new_assay_format["assay id"] = f"{new_assay_format['assay id']}-{i}"
                 new_assays.append(new_assay_format)
         return new_assays
+
+    def load_assay_buffer(self, assay):
+        # Get the assay id of the base trial (without mod)
+        assay_id = assay["assay id"].replace("-Mod", "")
+        file = h5py.File(f"{self.data_save_location}/{self.assay_configuration_id}.h5", "r")
+        g = file.get(assay_id)
+
+        data = {key: np.array(g.get(key)) for key in g.keys()}
+        # TODO: Make sure its the same for ppo assay buffer.
+
+        # Impose buffer
+        self.buffer.action_buffer = data["action"].tolist()
+        self.buffer.observation_buffer = data["observation"].tolist()
+        self.buffer.reward_buffer = data["reward"].tolist()
+        self.buffer.internal_state_buffer = data["internal_state"].tolist()
+        self.buffer.rnn_state_buffer = data["rnn_state_actor"].tolist()
+        self.buffer.rnn_state_ref_buffer = data["rnn_state_actor_ref"].tolist()
+
+        self.buffer.fish_position_buffer = data["fish_position"].tolist()
+        self.buffer.fish_angle_buffer = data["angle"].tolist()
+        self.buffer.predator_position_buffer = data["predator_positions"].tolist()
+        self.buffer.salt_health_buffer = data["salt_health"].tolist()
+        self.buffer.prey_positions_buffer = data["prey_positions"].tolist()
+        self.buffer.sand_grain_position_buffer = data["sand_grain_positions"].tolist()
+        self.buffer.vegetation_position_buffer = data["vegetation_positions"].tolist()
+        self.buffer.salt_location = data["salt_location"].tolist()
+        self.buffer.prey_consumed_buffer = data["consumed"].tolist()
+
+        self.buffer.prey_orientations_buffer = data["prey_orientations"].tolist()
+        self.buffer.predator_orientation_buffer = data["predator_orientation"].tolist()
+        self.buffer.prey_age_buffer = data["prey_ages"].tolist()
+        self.buffer.prey_gait_buffer = data["prey_gaits"].tolist()
+
+        # TODO: Missing: Advantage buffer, return buffer
+
+        # Set number of steps - to both service and environment
+        num_steps_elapsed = data["observation"].shape[0]
+
+        # Load RNN states to model.
+        num_rnns = self.buffer.rnn_state_buffer.shape[1] / 2
+        self.init_rnn_state = tuple(
+            (np.array(self.buffer.rnn_state_buffer[-1, shape]),
+             np.array(self.buffer.rnn_state_buffer[-1, shape])) for shape in
+            range(0, int(num_rnns), 2))
+        self.init_rnn_state_ref = tuple(
+            (np.array(self.buffer.rnn_state_buffer_ref[-1, shape]),
+             np.array(self.buffer.rnn_state_buffer_ref[-1, shape])) for shape in
+            range(0, int(num_rnns), 2))
+
+        # Impose background.
+        return data["background"], num_steps_elapsed
 
     def perform_assay(self, assay):
         # self.assay_output_data_format = {key: None for key in
@@ -219,6 +298,7 @@ class AssayService(BaseService):
         Creates the testing environment as specified  by apparatus mode and given assays.
         :return:
         """
+
         if assay["stimulus paradigm"] == "Projection":
             if self.continuous_actions:
                 self.simulation = ControlledStimulusEnvironmentContinuous(self.environment_params, assay["stimuli"],
@@ -251,11 +331,17 @@ class AssayService(BaseService):
                 self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
                                                                     self.using_gpu,
                                                                     collisions=assay["collisions"],
-                                                                    relocate_fish=self.relocate_fish)
+                                                                    relocate_fish=self.relocate_fish,
+                                                                    run_version=self.run_version,
+                                                                    split_event=self.split_event,
+                                                                    modification=self.modification)
             else:
                 self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
                                                                   self.using_gpu,
-                                                                  relocate_fish=self.relocate_fish)
+                                                                  relocate_fish=self.relocate_fish,
+                                                                  run_version=self.run_version,
+                                                                  split_event=self.split_event,
+                                                                  modification=self.modification)
 
         else:
             if self.continuous_actions:

@@ -139,6 +139,41 @@ dqn_free_config_large_gamma_1 = [
     }
     ]
 
+# Split timelines assay
+
+dqn_split_assay_test = [
+    {
+        "Model Name": "dqn_gamma",
+        "Environment Name": "dqn_gamma_final",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 1,
+        "Run Mode": "Split-Assay",
+        "Split Event": "One-Prey-Close",
+        "Modification": "Prey-Removal",
+        "Learning Algorithm": "DQN",
+        "behavioural recordings": ["environmental positions", "observation"],
+        "network recordings": ["rnn_shared", "internal_state"],
+        "Assays": [
+            {
+                "assay id": "Naturalistic",
+                "stimulus paradigm": "Naturalistic",
+                "repeats": 10,
+                "duration": 10000,
+                "Tethered": False,
+                "save frames": False,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+            },
+        ]
+    }
+    ]
+
+
 # Assay And Analysis
 
 dqn_gamma_analysis_across_scaffold_1 = [
@@ -181,22 +216,23 @@ dqn_gamma_analysis_across_scaffold_1 = [
     }
 ]
 
-assay_test = [
+ppo_gamma_analysis_across_scaffold_1 = [
     {
-        "Model Name": "local_test",
-        "Environment Name": "local_test",
+        "Model Name": "ppo_gamma",
+        "Environment Name": "ppo_gamma_free",
         "Assay Configuration Name": "Behavioural-Data-Free",
-        "Trial Number": 1,
-        "Run Mode": "Assay",
-        "Learning Algorithm": "DQN",
+        "Config Modification": "Empty",
+        "Trial Number": 3,
+        "Run Mode": "Assay-Analysis-Across-Scaffold",
+        "Learning Algorithm": "PPO",
         "behavioural recordings": ["environmental positions", "observation"],
         "network recordings": ["rnn_shared", "internal_state"],
         "Assays": [
             {
                 "assay id": "Naturalistic",
-                "stimulus paradigm": "Naturalistic",
                 "repeats": 10,
-                "duration": 100,
+                "stimulus paradigm": "Naturalistic",
+                "duration": 10000,
                 "Tethered": False,
                 "save frames": False,
                 "use_mu": True,
@@ -207,9 +243,19 @@ assay_test = [
                 "moving": False,
                 "collisions": True,
             },
-        ]
+        ],
+        "Analysis": [
+            {
+                "analysis id": "Turn-Analysis",
+                "analysis script": "Analysis.Behavioural.Exploration.turning_analysis_continuous",
+                "analysis function": "plot_all_turn_analysis_continuous",
+                "analysis arguments": ["model_name", "assay_config_name", "Naturalistic", 10],
+                "Delete Data": True
+            }
+        ],
     }
-    ]
+]
+
 #                   TRAINING - DQN
 
 local_test = [
@@ -449,7 +495,7 @@ ppo_gamma_5 = [
 
 
 if run_config is None:
-    run_config = dqn_gamma_analysis_across_scaffold_1
+    run_config = ppo_gamma_analysis_across_scaffold_1
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]

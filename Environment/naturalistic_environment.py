@@ -6,12 +6,14 @@ import pymunk
 
 from Environment.base_environment import BaseEnvironment
 from Environment.Fish.fish import Fish
+from Analysis.Behavioural.Tools.get_fish_prey_incidence import get_fish_prey_incidence_multiple_prey
 
 
 class NaturalisticEnvironment(BaseEnvironment):
 
     def __init__(self, env_variables, realistic_bouts, using_gpu, draw_screen=False, fish_mass=None,
-                 collisions=True, relocate_fish=None, num_actions=10):
+                 collisions=True, relocate_fish=None, num_actions=10, run_version="Original", split_event=None,
+                 modification=None):
         super().__init__(env_variables, draw_screen, using_gpu, num_actions)
 
         if using_gpu:
@@ -50,6 +52,10 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.predator_associated_reward = 0
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
+
+        self.run_version = run_version
+        self.split_event = modification
+        self.modification = modification
 
     def reset(self):
         # print (f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -143,13 +149,80 @@ Wall: {self.wall_associated_reward}
 Sand grain: {self.sand_grain_associated_reward}
 """)
 
-
         self.energy_associated_reward = 0
         self.action_associated_reward = 0
         self.salt_associated_reward = 0
         self.predator_associated_reward = 0
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
+
+    def load_simulation(self, buffer, background, num_steps):
+        self.num_steps = num_steps
+        self.board.background_grating = self.chosen_math_library.array(background)
+
+        self.salt_location = buffer.salt_location
+        self.reset_salt_gradient(buffer.salt_location)
+
+        # Create prey in proper positions and orientations
+        final_step_prey_positions = buffer.prey_positions_buffer[-1]
+        final_step_prey_orientations = buffer.prey_orientations_buffer[-1]
+        for p, o in zip(final_step_prey_positions, final_step_prey_orientations):
+            if p[0] != 10000.0:
+                self.create_prey(prey_position=p, prey_orientation=o)
+
+        # Create predators in proper position and orientation.
+        final_step_predator_position = buffer.predator_positions_buffer[-1]
+        final_step_predator_orientation = buffer.predator_orientations_buffer[-1]
+        if final_step_predator_position[0] != 10000.0:
+
+            # Find step when predator was introduced. Get fish position then.
+            predator_present = (buffer.predator_positions_buffer[:, 0] != 10000.0)
+            predator_lifespan = 0
+            for p in reversed(predator_present):
+                if p:
+                    predator_lifespan += 1
+                else:
+                    break
+            predator_target = buffer.fish_position_buffer[-predator_lifespan]
+
+            self.create_realistic_predator(predator_position=final_step_predator_position,
+                                           predator_orientation=final_step_predator_orientation,
+                                           predator_target=predator_target)
+
+        self.fish.body.position = np.array(buffer.fish_position_buffer[-1])
+        self.fish.prev_action_impulse = buffer.internal_state_buffer[-1][1]
+        self.fish.prev_action_angle = buffer.internal_state_buffer[-1][2]
+
+        # Get latest observation.
+        observation, frame_buffer = self.resolve_visual_input_new(save_frames=False,
+                                                                  activations=[],
+                                                                  internal_state=[],
+                                                                  frame_buffer=[])
+        return observation
+
+
+
+    def check_condition_met(self):
+        """For the split assay mode - checks whether the specified condition is met at each step"""
+
+        # Note of conditions to impose: Remove nearby prey, add nearby prey.
+        if self.split_event == "One-Prey-Close":
+            max_angular_deviation = np.pi/2
+            max_distance = 100  # 10mm
+
+            prey_near = self.check_proximity_all_prey(sensing_distance=max_distance)
+            fish_prey_incidence = self.get_fish_prey_incidence()
+            within_visual_field = np.absolute(fish_prey_incidence) < max_angular_deviation
+
+            prey_close = prey_near * within_visual_field
+            num_prey_close = np.sum(prey_close * 1)
+            if num_prey_close == 1:
+                return True
+
+        elif self.split_event == "Empty-Surroundings":
+            ...
+
+        return False
 
     def show_new_channel_sectors(self, left_eye_pos, right_eye_pos):
         left_sectors, right_sectors = self.fish.get_all_sectors([left_eye_pos[0], left_eye_pos[1]],

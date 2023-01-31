@@ -251,7 +251,7 @@ class BaseEnvironment:
         p_prey_birth = self.env_variables["birth_rate"] * (self.env_variables["prey_num"] - num_prey)
         for cloud in self.prey_cloud_locations:
             if np.random.rand(1) < p_prey_birth:
-                if not self.check_proximity(cloud, self.env_variables["birth_rate_region_size"]/2):
+                if not self.check_proximity(cloud, self.env_variables["birth_rate_region_size"]):
                     new_location = (
                         np.random.randint(low=cloud[0] - (self.env_variables["birth_rate_region_size"] / 2),
                                           high=cloud[0] + (self.env_variables["birth_rate_region_size"] / 2)),
@@ -261,9 +261,14 @@ class BaseEnvironment:
                     self.create_prey(new_location)
                     self.available_prey += 1
 
-    def reset_salt_gradient(self):
-        salt_source_x = np.random.randint(0, self.env_variables['width'] - 1)
-        salt_source_y = np.random.randint(0, self.env_variables['height'] - 1)
+    def reset_salt_gradient(self, salt_source=None):
+        if salt_source is None:
+            salt_source_x = np.random.randint(0, self.env_variables['width'] - 1)
+            salt_source_y = np.random.randint(0, self.env_variables['height'] - 1)
+        else:
+            salt_source_x = salt_source[0]
+            salt_source_y = salt_source[1]
+
         self.salt_location = [salt_source_x, salt_source_y]
         salt_distance = (((salt_source_x - self.xp[:, None]) ** 2 + (
                 salt_source_y - self.yp[None, :]) ** 2) ** 0.5)  # Measure of distance from source at every point.
@@ -613,7 +618,7 @@ class BaseEnvironment:
         self.fish.touched_edge_this_step = True
         return True
 
-    def create_prey(self, prey_position=None):
+    def create_prey(self, prey_position=None, prey_orientation=None):
         self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
         self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_size']))
         self.prey_shapes[-1].elasticity = 1.0
@@ -643,6 +648,7 @@ class BaseEnvironment:
                 )
         else:
             self.prey_bodies[-1].position = prey_position
+
         self.prey_shapes[-1].color = (0, 0, 1)
         self.prey_shapes[-1].collision_type = 2
         # self.prey_shapes[-1].filter = pymunk.ShapeFilter(
@@ -672,12 +678,56 @@ class BaseEnvironment:
             return False
 
     def check_proximity_all_prey(self, sensing_distance):
+        # all_prey_positions = np.array([pr.position for pr in self.prey_bodies])
+        # fish_position = self.fish.body.position
+        # within_x = (all_prey_positions[:, 0] > fish_position[0] - sensing_distance) * (all_prey_positions[:, 0] < fish_position[0] + sensing_distance)
+        # within_y = (all_prey_positions[:, 1] > fish_position[1] - sensing_distance) * (all_prey_positions[:, 1] < fish_position[1] + sensing_distance)
+        # within_range = within_x * within_y
+
         all_prey_positions = np.array([pr.position for pr in self.prey_bodies])
-        fish_position = self.fish.body.position
-        within_x = (all_prey_positions[:, 0] > fish_position[0] - sensing_distance) * (all_prey_positions[:, 0] < fish_position[0] + sensing_distance)
-        within_y = (all_prey_positions[:, 1] > fish_position[1] - sensing_distance) * (all_prey_positions[:, 1] < fish_position[1] + sensing_distance)
-        within_range = within_x * within_y
+        fish_position = np.expand_dims(np.array(self.fish.body.position), 0)
+        fish_prey_vectors = all_prey_positions - fish_position
+
+        fish_prey_distances = ((fish_prey_vectors[:, 0] ** 2) + (fish_prey_vectors[:, 1] ** 2) ** 0.5)
+        within_range = fish_prey_distances < sensing_distance
         return within_range
+
+    def get_fish_prey_incidence(self):
+        fish_orientation = self.fish.body.angle
+        fish_position = np.expand_dims(np.array(self.fish.body.position), axis=1)
+        paramecium_positions = np.array([pr.position for pr in self.prey_bodies])
+
+        fish_orientation_sign = ((fish_orientation >= 0) * 1) + ((fish_orientation < 0) * -1)
+
+        # Remove full orientations (so is between -2pi and 2pi
+        fish_orientation %= 2 * np.pi * fish_orientation_sign
+
+        # Convert to positive scale between 0 and 2pi
+        fish_orientation[fish_orientation < 0] += 2 * np.pi
+
+        fish_prey_vectors = paramecium_positions - np.expand_dims(fish_position, 1)
+
+        # Adjust according to quadrents.
+        fish_prey_angles = np.arctan(fish_prey_vectors[:, 1] / fish_prey_vectors[:, 0])
+
+        #   Generates positive angle from left x axis clockwise.
+        # UL quadrent
+        in_ul_quadrent = (fish_prey_vectors[:, 0] < 0) * (fish_prey_vectors[:, 1] > 0)
+        fish_prey_angles[in_ul_quadrent] += np.pi
+        # BR quadrent
+        in_br_quadrent = (fish_prey_vectors[:, 0] > 0) * (fish_prey_vectors[:, 1] < 0)
+        fish_prey_angles[in_br_quadrent] += (np.pi * 2)
+        # BL quadrent
+        in_bl_quadrent = (fish_prey_vectors[:, 0] < 0) * (fish_prey_vectors[:, 1] < 0)
+        fish_prey_angles[in_bl_quadrent] += np.pi
+
+        # Angle ends up being between 0 and 2pi as clockwise from right x-axis. Same frame as fish angle:
+        fish_prey_incidence = np.expand_dims(fish_orientation, 1) - fish_prey_angles
+
+        fish_prey_incidence[fish_prey_incidence > np.pi] %= np.pi
+        fish_prey_incidence[fish_prey_incidence < -np.pi] %= -np.pi
+
+        return fish_prey_incidence
 
     def move_prey(self, micro_step):
         if len(self.prey_bodies) == 0:
@@ -919,7 +969,45 @@ class BaseEnvironment:
         elif y_position > self.env_variables["height"] - buffer_region:
             return True
 
-    def create_realistic_predator(self):
+    def create_realistic_predator_existing(self, predator_position, predator_orientation, predator_target):
+
+        self.predator_body = pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia'])
+        self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_size'])
+        self.predator_shape.elasticity = 1.0
+
+        self.predator_body.position = (predator_position[0], predator_position[1])
+        self.predator_body.angle = predator_orientation
+        self.predator_target = predator_target
+        self.total_predator_steps = 0
+
+        if self.new_simulation:
+            self.predator_shape.color = (0, 1, 0)
+            self.predator_location = (predator_position[0], predator_position[1])
+            self.remaining_predator_attacks = 1 + np.sum(
+                np.random.choice([0, 1], self.env_variables["max_predator_attacks"] - 1,
+                                 p=[1.0 - self.env_variables["further_attack_probability"],
+                                    self.env_variables["further_attack_probability"]]))
+            if self.env_variables["predator_first_attack_loom"]:
+                # Set fish position based on final predator size
+                self.predator_location = (predator_position[0], predator_position[1])
+
+                self.predator_body.position = self.predator_location
+                self.loom_predator_current_size = self.env_variables['initial_predator_size']
+                self.first_attack = True
+        else:
+            self.predator_shape.color = (0, 0, 1)
+
+        self.predator_shape.collision_type = 5
+        self.predator_shape.filter = pymunk.ShapeFilter(
+            mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # Category 2 objects cant collide with predator
+
+        self.space.add(self.predator_body, self.predator_shape)
+
+
+    def create_realistic_predator(self, predator_position=None, predator_orientation=None, predator_target=None):
+        if predator_position is not None:
+            return self.create_realistic_predator_existing(predator_position, predator_orientation, predator_target)
+
         self.predator_body = pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia'])
         self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_size'])
         self.predator_shape.elasticity = 1.0

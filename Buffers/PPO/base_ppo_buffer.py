@@ -358,6 +358,8 @@ class BasePPOBuffer:
             self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
 
         if "environmental positions" in self.recordings:
+            print(np.array(self.action_buffer).shape)
+            print(np.array(self.action_buffer))
             self.create_data_group("impulse", np.array(self.action_buffer)[:, 0], assay_group)
             self.create_data_group("angle", np.array(self.action_buffer)[:, 1], assay_group)
             self.create_data_group("fish_position", np.array(self.fish_position_buffer), assay_group)

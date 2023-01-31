@@ -203,54 +203,58 @@ class DrawingBoard:
         adjusted_scatter = self.chosen_math_library.expand_dims(adjusted_scatter, 2)
         return adjusted_scatter
 
-    def create_obstruction_mask_lines_cupy(self, fish_position, prey_locations, predator_locations):
+    def create_obstruction_mask_lines_cupy(self, fish_position, prey_locations, predator_locations, prey_occlusion=False):
         """Must use both numpy and cupy as otherwise GPU runs out of memory."""
         # Reset empty mask
         self.empty_mask[:] = 1.0
 
-        # Compute prey positions relative to fish (Prey_num, 2)
-        prey_relative_positions = prey_locations - fish_position
+        if predator_locations.size == 0 and (not prey_occlusion or prey_locations.size == 0):
+            return self.empty_mask
 
-        # Compute distances of prey from fish.(Prey_num)
-        prey_distances = (prey_relative_positions[:, 0] ** 2 + prey_relative_positions[:, 1] ** 2) ** 0.5
+        if prey_occlusion:
+            # Compute prey positions relative to fish (Prey_num, 2)
+            prey_relative_positions = prey_locations - fish_position
 
-        # Compute angular size of prey from fish position. (Prey_num)
-        prey_half_angular_size = self.chosen_math_library.arctan(self.prey_radius / prey_distances)
+            # Compute distances of prey from fish.(Prey_num)
+            prey_distances = (prey_relative_positions[:, 0] ** 2 + prey_relative_positions[:, 1] ** 2) ** 0.5
 
-        # Compute angle between fish and prey where x-axis=0, and positive values are in upper field. (Prey_num)
-        prey_angles = self.chosen_math_library.arctan(prey_relative_positions[:, 1] / prey_relative_positions[:, 0])
-        prey_angles = self.chosen_math_library.expand_dims(prey_angles, 1)
-        prey_angles = self.chosen_math_library.repeat(prey_angles, 2, 1)
+            # Compute angular size of prey from fish position. (Prey_num)
+            prey_half_angular_size = self.chosen_math_library.arctan(self.prey_radius / prey_distances)
 
-        # From prey angular sizes, compute angles of edges of prey. (Prey_num, 2)
-        prey_rf_offsets = self.chosen_math_library.expand_dims(prey_half_angular_size, 1)
-        prey_rf_offsets = self.chosen_math_library.repeat(prey_rf_offsets, 2, 1)
-        prey_rf_offsets = prey_rf_offsets * self.chosen_math_library.array([-1, 1])
-        prey_extremities = prey_angles + prey_rf_offsets
+            # Compute angle between fish and prey where x-axis=0, and positive values are in upper field. (Prey_num)
+            prey_angles = self.chosen_math_library.arctan(prey_relative_positions[:, 1] / prey_relative_positions[:, 0])
+            prey_angles = self.chosen_math_library.expand_dims(prey_angles, 1)
+            prey_angles = self.chosen_math_library.repeat(prey_angles, 2, 1)
 
-        # Number of lines to project through prey or predators, determined by width, height, and size of features. (1)
-        n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2, len(prey_locations), p=prey_half_angular_size)
+            # From prey angular sizes, compute angles of edges of prey. (Prey_num, 2)
+            prey_rf_offsets = self.chosen_math_library.expand_dims(prey_half_angular_size, 1)
+            prey_rf_offsets = self.chosen_math_library.repeat(prey_rf_offsets, 2, 1)
+            prey_rf_offsets = prey_rf_offsets * self.chosen_math_library.array([-1, 1])
+            prey_extremities = prey_angles + prey_rf_offsets
 
-        # Create array of angles between prey extremities to form lines. (Prey_num * n_lines_prey)
-        interpolated_line_angles = self.chosen_math_library.linspace(prey_extremities[:, 0], prey_extremities[:, 1],
-                                                                     n_lines_prey).flatten()
+            # Number of lines to project through prey or predators, determined by width, height, and size of features. (1)
+            n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2, len(prey_locations), p=prey_half_angular_size)
 
-        # Computing how far along each line prey are.  (Prey_num * n_lines_prey)
-        prey_distance_along = prey_distances + self.prey_radius
-        prey_distance_along = self.chosen_math_library.expand_dims(prey_distance_along, 1)
-        prey_distance_along = self.chosen_math_library.repeat(prey_distance_along, n_lines_prey, 1)
-        prey_distance_along = self.chosen_math_library.swapaxes(prey_distance_along, 0, 1).flatten()
+            # Create array of angles between prey extremities to form lines. (Prey_num * n_lines_prey)
+            interpolated_line_angles = self.chosen_math_library.linspace(prey_extremities[:, 0], prey_extremities[:, 1],
+                                                                         n_lines_prey).flatten()
 
-        # Repeat prey locations so matches dimensions of other variables  (Prey_num * n_lines_prey, 2)
-        expanded_prey_locations = self.chosen_math_library.tile(prey_locations, (n_lines_prey, 1))
+            # Computing how far along each line prey are.  (Prey_num * n_lines_prey)
+            prey_distance_along = prey_distances + self.prey_radius
+            prey_distance_along = self.chosen_math_library.expand_dims(prey_distance_along, 1)
+            prey_distance_along = self.chosen_math_library.repeat(prey_distance_along, n_lines_prey, 1)
+            prey_distance_along = self.chosen_math_library.swapaxes(prey_distance_along, 0, 1).flatten()
 
-        # Find which prey are in left half of visual field (as angle convention requires adjustment)
-        # (Prey_num * n_lines_prey)
-        prey_on_left = (expanded_prey_locations[:, 0] < fish_position[0]) * self.chosen_math_library.pi
+            # Repeat prey locations so matches dimensions of other variables  (Prey_num * n_lines_prey, 2)
+            expanded_prey_locations = self.chosen_math_library.tile(prey_locations, (n_lines_prey, 1))
 
-        # Assign to array to include predators if present
-        distance_along = prey_distance_along
-        features_on_left = prey_on_left
+            # Find which prey are in left half of visual field (as angle convention requires adjustment)
+            # (Prey_num * n_lines_prey)
+            prey_on_left = (expanded_prey_locations[:, 0] < fish_position[0]) * self.chosen_math_library.pi
+
+            # Assign to array to include predators if present
+            distance_along = prey_distance_along
+            features_on_left = prey_on_left
 
         if predator_locations.size != 0:
             # Do the same for predator features.
@@ -276,9 +280,12 @@ class DrawingBoard:
                                                                                   n_lines_predator).flatten()
 
             # Combine prey and predator line angles.
-            interpolated_line_angles = self.chosen_math_library.concatenate(
-                (interpolated_line_angles, predator_interpolated_line_angles),
-                axis=0)
+            if prey_occlusion:
+                interpolated_line_angles = self.chosen_math_library.concatenate(
+                    (interpolated_line_angles, predator_interpolated_line_angles),
+                    axis=0)
+            else:
+                interpolated_line_angles = predator_interpolated_line_angles
 
             # Computing how far along each line predators are.
             predator_distance_along = (predator_distances ** 2 + self.predator_radius ** 2) ** 0.5
@@ -286,11 +293,18 @@ class DrawingBoard:
             predator_distance_along = self.chosen_math_library.repeat(predator_distance_along, int(n_lines_predator), 1)
             predator_distance_along = self.chosen_math_library.swapaxes(predator_distance_along, 0, 1).flatten()
             predator_distance_along = predator_distance_along + self.predator_radius
-            distance_along = self.chosen_math_library.concatenate((distance_along, predator_distance_along), axis=0)
+            if prey_occlusion:
+                distance_along = self.chosen_math_library.concatenate((distance_along, predator_distance_along), axis=0)
+            else:
+                distance_along = predator_distance_along
 
             expanded_predator_locations = self.chosen_math_library.tile(predator_locations, (n_lines_predator, 1))
             predators_on_left = (expanded_predator_locations[:, 0] < fish_position[0]) * self.chosen_math_library.pi
-            features_on_left = self.chosen_math_library.concatenate((features_on_left, predators_on_left), 0)
+
+            if prey_occlusion:
+                features_on_left = self.chosen_math_library.concatenate((features_on_left, predators_on_left), 0)
+            else:
+                features_on_left = predators_on_left
 
         total_lines = interpolated_line_angles.shape[0]
 
@@ -442,6 +456,253 @@ class DrawingBoard:
         except IndexError:
             full_set = self.chosen_math_library.clip(full_set, 0, self.width - 1)
             self.empty_mask[full_set[:, 1], full_set[:, 0]] = 0.0
+
+        # For debugging:
+        # try:
+        #     mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
+        # except IndexError:
+        #     print("IndexError")
+        #     full_set[full_set > 1499] = 1499
+        #     full_set[full_set < 0] = 0
+        #     mask[full_set[:, 1], full_set[:, 0]] = 0  # NOTE: Inverting x and y to match standard in program.
+        #
+        #     plt.imshow(mask)
+        #     plt.scatter(prey_locations[:, 0], prey_locations[:, 1])
+        #     plt.show()
+        #     mask = None
+
+        return self.empty_mask
+
+    def create_obstruction_mask_lines_mixed(self, fish_position, prey_locations, predator_locations, prey_occlusion=False):
+        """Must use both numpy and cupy as otherwise GPU runs out of memory."""
+        # Reset empty mask
+        self.empty_mask[:] = 1
+
+        if prey_occlusion:
+            # Compute prey positions relative to fish (Prey_num, 2)
+            prey_relative_positions = prey_locations - fish_position
+
+            # Compute distances of prey from fish.(Prey_num)
+            prey_distances = (prey_relative_positions[:, 0] ** 2 + prey_relative_positions[:, 1] ** 2) ** 0.5
+
+            # Compute angular size of prey from fish position. (Prey_num)
+            prey_half_angular_size = np.arctan(self.prey_radius / prey_distances)
+
+            # Compute angle between fish and prey where x-axis=0, and positive values are in upper field. (Prey_num)
+            prey_angles = np.arctan(prey_relative_positions[:, 1] / prey_relative_positions[:, 0])
+            prey_angles = np.expand_dims(prey_angles, 1)
+            prey_angles = np.repeat(prey_angles, 2, 1)
+
+            # From prey angular sizes, compute angles of edges of prey. (Prey_num, 2)
+            prey_rf_offsets = np.expand_dims(prey_half_angular_size, 1)
+            prey_rf_offsets = np.repeat(prey_rf_offsets, 2, 1)
+            prey_rf_offsets = prey_rf_offsets * np.array([-1, 1])
+            prey_extremities = prey_angles + prey_rf_offsets
+
+            # Number of lines to project through prey or predators, determined by width, height, and size of features. (1)
+            n_lines_prey = self.compute_n(np.max(prey_half_angular_size) * 2, len(prey_locations))
+
+            # Create array of angles between prey extremities to form lines. (Prey_num * n_lines_prey)
+            interpolated_line_angles = np.linspace(prey_extremities[:, 0], prey_extremities[:, 1], n_lines_prey).flatten()
+
+            # Computing how far along each line prey are.  (Prey_num * n_lines_prey)
+            prey_distance_along = prey_distances + self.prey_radius
+            prey_distance_along = np.expand_dims(prey_distance_along, 1)
+            prey_distance_along = np.repeat(prey_distance_along, n_lines_prey, 1)
+            prey_distance_along = np.swapaxes(prey_distance_along, 0, 1).flatten()
+
+            # Repeat prey locations so matches dimensions of other variables  (Prey_num * n_lines_prey, 2)
+            expanded_prey_locations = np.tile(prey_locations, (n_lines_prey, 1))
+
+            # Find which prey are in left half of visual field (as angle convention requires adjustment)
+            # (Prey_num * n_lines_prey)
+            prey_on_left = (expanded_prey_locations[:, 0] < fish_position[0]) * np.pi
+
+            # Assign to array to include predators if present
+            distance_along = prey_distance_along
+            features_on_left = prey_on_left
+
+        if predator_locations.size != 0:
+            # Do the same for predator features.
+            predator_relative_positions = predator_locations - fish_position
+            predator_distances = (predator_relative_positions[:, 0] ** 2 + predator_relative_positions[:, 1] ** 2) \
+                                 ** 0.5
+            predator_half_angular_size = np.arctan(self.predator_radius / predator_distances)
+
+            predator_angles = np.arctan(predator_relative_positions[:, 1] / predator_relative_positions[:, 0])
+            predator_angles_expanded = np.expand_dims(predator_angles, 1)
+            predator_angles_expanded = np.repeat(predator_angles_expanded, 2, 1)
+
+            predator_rf_offsets = np.expand_dims(predator_half_angular_size, 1)
+            predator_rf_offsets = np.repeat(predator_rf_offsets, 2, 1)
+            predator_rf_offsets = predator_rf_offsets * np.array([-1, 1])
+            predator_extremities = predator_angles_expanded + predator_rf_offsets
+
+            # Number of lines to project through prey or predators, determined by width, height, and size of features.
+            n_lines_predator = self.compute_n(np.max(predator_half_angular_size) * 2, 1)
+            predator_interpolated_line_angles = np.linspace(predator_extremities[:, 0], predator_extremities[:, 1],
+                                                            n_lines_predator).flatten()
+
+            # Combine prey and predator line angles.
+            if prey_occlusion:
+                interpolated_line_angles = np.concatenate((interpolated_line_angles, predator_interpolated_line_angles),
+                                                          axis=0)
+            else:
+                interpolated_line_angles = predator_interpolated_line_angles
+
+            # Computing how far along each line predators are.
+            predator_distance_along = (predator_distances ** 2 + self.predator_radius ** 2) ** 0.5
+            predator_distance_along = np.expand_dims(predator_distance_along, 1)
+            predator_distance_along = np.repeat(predator_distance_along, int(n_lines_predator), 1)
+            predator_distance_along = np.swapaxes(predator_distance_along, 0, 1).flatten()
+            predator_distance_along = predator_distance_along + self.predator_radius
+
+            if prey_occlusion:
+                distance_along = np.concatenate((distance_along, predator_distance_along), axis=0)
+            else:
+                distance_along = predator_distance_along
+
+
+            expanded_predator_locations = np.tile(predator_locations, (n_lines_predator, 1))
+            predators_on_left = (expanded_predator_locations[:, 0] < fish_position[0]) * np.pi
+
+            if prey_occlusion:
+                features_on_left = np.concatenate((features_on_left, predators_on_left), 0)
+            else:
+                features_on_left = predators_on_left
+
+        total_lines = interpolated_line_angles.shape[0]
+
+        # Ensure all angles are in designated range
+        interpolated_line_angles_scaling = (interpolated_line_angles // (np.pi * 2)) * np.pi * -2
+        interpolated_line_angles = interpolated_line_angles + interpolated_line_angles_scaling
+
+        # Compute m using tan (N_obj x n)
+        m = np.tan(interpolated_line_angles)
+
+        # Compute c (N_obj*n)
+        c = -m * fish_position[0]
+        c = c + fish_position[1]
+
+        # Compute components of intersections (N_obj*n x 4)
+        c_exp = np.expand_dims(c, 1)
+        c_exp = np.repeat(c_exp, 4, 1)
+
+        # Slicing repeated matrices so have correct dimensions. (N_obj * n)
+        multiplication_matrix = self.multiplication_matrix[:total_lines]
+        addition_matrix = self.addition_matrix[:total_lines]
+        mul1_full = self.mul1_full[:total_lines]
+        mul_for_hypothetical = self.mul_for_hypothetical[:total_lines]
+        add_for_hypothetical = self.add_for_hypothetical[:total_lines]
+
+        # Operations to compute all intersections of lines found
+        m_mul = np.expand_dims(m, 1)
+        full_m = np.repeat(m_mul, 4, 1)
+        m_mul = full_m * mul1_full
+        m_mul[:, :3] = 1
+        addition_matrix = addition_matrix * m_mul
+        division_matrix = full_m
+        division_matrix[:, 1] = 1
+        division_matrix[:, 3] = 1
+
+        intersection_components = ((c_exp * multiplication_matrix) + addition_matrix) / division_matrix
+        intersection_coordinates = np.expand_dims(intersection_components, 2)
+        intersection_coordinates = np.repeat(intersection_coordinates, 2, 2)
+        intersection_coordinates = (intersection_coordinates * mul_for_hypothetical) + add_for_hypothetical
+
+        # Compute possible intersections (N_obj n 2 x 2 x 2)
+        conditional_tiled = self.conditional_tiled[:total_lines]
+        valid_points_ls = (intersection_components > 0) * 1
+        valid_points_more = (intersection_components < conditional_tiled) * 1
+        valid_points = valid_points_more * valid_points_ls
+        valid_intersection_coordinates = intersection_coordinates[valid_points == 1]
+
+        # Compute angles from the valid intersections (to find those matching original angles) (N_obj x 2)
+        possible_vectors = valid_intersection_coordinates - fish_position
+        computed_angles = np.arctan2(possible_vectors[:, 1], possible_vectors[:, 0])
+
+        # Make sure angles are in correct range.
+        angles_scaling = (computed_angles // (np.pi * 2)) * np.pi * -2
+        computed_angles = computed_angles + angles_scaling
+
+        computed_angles = np.round(computed_angles, 2)
+
+        # Add adjustment for features appearing in left of visual field (needed because of angles convention)
+        interpolated_line_angles = interpolated_line_angles + features_on_left
+
+        # Make sure angles in correct range.
+        interpolated_line_angles_scaling = (interpolated_line_angles // (np.pi * 2)) * np.pi * -2
+        interpolated_line_angles = interpolated_line_angles + interpolated_line_angles_scaling
+
+        # Get original angles in correct format.
+        original_angles = np.round(interpolated_line_angles, 2)
+        original_angles = np.expand_dims(original_angles, 1)
+        original_angles = np.repeat(original_angles, 2, 1).flatten()
+
+        # Check which angles match (should be precisely half)
+        same_values = (computed_angles == original_angles) * 1
+        selected_intersections = valid_intersection_coordinates[same_values == 1]
+
+        # Finding coordinates of object extremities.
+        proj_vector = selected_intersections - fish_position
+        proj_distance = (proj_vector[:, 0] ** 2 + proj_vector[:, 1] ** 2) ** 0.5
+
+        # Compute fraction along the projection vector at which features lie
+        fraction_along = distance_along / proj_distance
+        # try:
+        #     fraction_along = distance_along/proj_distance
+        # except ValueError:
+        #     print(f"Distance along dimensions: {distance_along.shape}")
+        #     print(f"Proj distance dimensions: {proj_distance.shape}")
+        #     print(f"Fish position: {fish_position}")
+        #     print(f"Prey positions: {prey_locations}")
+        #     print(f"Predator position: {predator_locations}")
+
+        fraction_along = np.expand_dims(fraction_along, 1)
+        fraction_along = np.repeat(fraction_along, 2, 1)
+
+        # Find coordinates of lines on features.
+        points_on_features = proj_vector * fraction_along
+        points_on_features = fish_position + points_on_features
+        points_on_features = np.expand_dims(points_on_features, 1)
+
+        selected_intersections = np.reshape(selected_intersections, (total_lines, 1, 2))
+
+        # Combine the valid wall intersection coordinates with the points found on features (total_lines, 2, 2)
+        vertices = np.concatenate((selected_intersections, points_on_features), 1)
+        vertices_xvals = vertices[:, :, 0]
+        vertices_yvals = vertices[:, :, 1]
+
+        # INTERPOLATION  - Get max and min vals in all vertices
+        min_x = np.min(vertices_xvals, axis=1)
+        max_x = np.max(vertices_xvals, axis=1)
+        min_y = np.min(vertices_yvals, axis=1)
+        max_y = np.max(vertices_yvals, axis=1)
+
+        # SEGMENT COMPUTATION  - Compute length of x and y ranges to test
+        x_lens = np.max(max_x - min_x)
+        y_lens = np.max(max_y - min_y)
+
+        x_len = round(x_lens)
+        y_len = round(y_lens)
+
+        # Get arrays of x and y to interpolate for each line (all must have same length due to array size).
+        x_ranges = np.linspace(min_x, max_x, x_len)
+        y_ranges = np.linspace(min_y, max_y, y_len)
+
+        # Interpolation of lines, both in x and y.
+        y_values = (m * x_ranges) + c
+        y_values = np.floor(y_values)
+        set_1 = np.stack((x_ranges, y_values), axis=-1)
+        x_values = (y_ranges - c) / m
+        x_values = np.floor(x_values)
+        set_2 = np.stack((x_values, y_ranges), axis=-1)
+        full_set = np.vstack((set_1, set_2)).astype(int)
+        full_set = self.chosen_math_library.array(full_set)
+
+        full_set = full_set.reshape(-1, 2)
+
+        self.empty_mask[full_set[:, 1], full_set[:, 0]] = 0
 
         # For debugging:
         # try:

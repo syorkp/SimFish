@@ -60,6 +60,19 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
     else:
         network_recordings = None
 
+    # Handling for when using split assay version.
+    modification = None
+    split_event = None
+    if trial["Run Mode"] == "Split-Assay":
+        if "Run Index" not in trial:
+            run_version = "First"
+        else:
+            modification = trial["Modification"]
+            split_event = trial["Split Event"]
+            run_version = trial["Run Mode"]
+    else:
+        run_version = "Original"
+
     service = PPOAssayServiceContinuous(model_name=trial["Model Name"],
                                         trial_number=trial["Trial Number"],
                                         total_steps=total_steps,
@@ -78,7 +91,10 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
                                         checkpoint=checkpoint,
                                         behavioural_recordings=behavioural_recordings,
                                         network_recordings=network_recordings,
-                                        interventions=interventions
+                                        interventions=interventions,
+                                        run_version=run_version,
+                                        split_event=split_event,
+                                        modification=modification
                                         )
     service.run()
 
@@ -87,7 +103,8 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, realistic_bouts, continuous_environment, assays, set_random_seed,
-                 assay_config_name, sb_emulator, checkpoint, behavioural_recordings, network_recordings, interventions):
+                 assay_config_name, sb_emulator, checkpoint, behavioural_recordings, network_recordings, interventions,
+                 run_version, split_event, modification):
         """
         Runs a set of assays provided by the run configuraiton.
         """
@@ -108,7 +125,10 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                          checkpoint=checkpoint,
                          behavioural_recordings=behavioural_recordings,
                          network_recordings=network_recordings,
-                         interventions=interventions
+                         interventions=interventions,
+                         run_version=run_version,
+                         split_event=split_event,
+                         modification=modification
                          )
 
         self.multivariate = self.learning_params["multivariate"]
