@@ -377,6 +377,7 @@ class TrialManager:
                             print(f"Running analysis {analysis['analysis id']} for model: {model_name}")
                             chosen_module = __import__(analysis["analysis script"], fromlist=[''])
                             chosen_function = getattr(chosen_module, analysis["analysis function"])
+                            print(args)
                             chosen_function(*args)
 
                         if trial["Delete Data"]:
