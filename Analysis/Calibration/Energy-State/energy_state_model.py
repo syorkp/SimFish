@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.fish import Fish
 from Environment.Fish.continuous_fish import ContinuousFish
-from Tools.drawing_board import DrawingBoard
+from Tools.drawing_board_new import DrawingBoard
 
 
 def build_fish_model(env_variables, continuous):

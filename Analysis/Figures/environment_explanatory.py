@@ -6,7 +6,7 @@ from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.eye import Eye
 
 # from Analysis.Video.behaviour_video_construction import DrawingBoard
-from Tools.drawing_board import DrawingBoard
+from Tools.drawing_board_new import DrawingBoard
 from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.anchored_scale_bar import AnchoredHScaleBar
 

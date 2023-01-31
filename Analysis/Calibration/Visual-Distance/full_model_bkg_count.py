@@ -3,7 +3,7 @@ Script to directly compute photons from bkg_scatter given all bkg_scatter, decay
 """
 
 import numpy as np
-from Tools.drawing_board import DrawingBoard
+from Tools.drawing_board_new import DrawingBoard
 from Environment.Fish.eye import Eye
 from Analysis.load_model_config import load_assay_configuration_files
 

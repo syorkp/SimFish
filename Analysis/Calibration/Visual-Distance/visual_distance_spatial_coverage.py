@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.eye import Eye
-from Tools.drawing_board import DrawingBoard
+from Tools.drawing_board_new import DrawingBoard
 
 
 def display_pr_coverage(model_name):

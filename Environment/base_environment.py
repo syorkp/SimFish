@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from skimage.transform import resize, rescale
 import pymunk
 
-from Tools.drawing_board import DrawingBoard
+from Tools.drawing_board_new import DrawingBoard
 
 
 class BaseEnvironment:
