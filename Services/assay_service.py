@@ -44,8 +44,13 @@ class AssayService(BaseService):
             set_random_seed = True
         elif run_version == "Modified-Completion":
             set_random_seed = True
+            modified_assays = []
             for assay in assays:
-                assay["assay id"] += "-Mod"
+                modified_assay = copy.copy(assay)
+                modified_assay["assay id"] += "-Mod"
+                modified_assays.append(modified_assay)
+            assays = assays + modified_assay
+
         elif run_version == "Original":
             ...
         else:
@@ -196,11 +201,14 @@ class AssayService(BaseService):
 
     def load_assay_buffer(self, assay):
         # Get the assay id of the base trial (without mod)
-        assay_id = assay["assay id"]
+        assay_id = assay["assay id"].replace("-Mod", "")
         file = h5py.File(f"{self.data_save_location}/{self.assay_configuration_id}.h5", "r")
         g = file.get(assay_id)
+
         data = {key: np.array(g.get(key)) for key in g.keys()}
 
+        # Impose buffer
+        # TODO: Work out precisely which buffer attributes need filling.
 
     def perform_assay(self, assay):
         # self.assay_output_data_format = {key: None for key in
