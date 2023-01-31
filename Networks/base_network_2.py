@@ -7,7 +7,7 @@ class BaseNetwork2:
 
     """A base network without RNN."""
 
-    def __init__(self, simulation, my_scope, internal_states, action_dim, new_simulation, output_dim=512):
+    def __init__(self, simulation, my_scope, internal_states, action_dim, output_dim=512):
 
         self.num_arms = simulation.fish.left_eye.observation_size  # Rays for each eye
 

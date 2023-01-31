@@ -11,10 +11,10 @@ from Analysis.Behavioural.Tools.get_fish_prey_incidence import get_fish_prey_inc
 
 class NaturalisticEnvironment(BaseEnvironment):
 
-    def __init__(self, env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen=False, fish_mass=None,
+    def __init__(self, env_variables, realistic_bouts, using_gpu, draw_screen=False, fish_mass=None,
                  collisions=True, relocate_fish=None, num_actions=10, run_version="Original", split_event=None,
                  modification=None):
-        super().__init__(env_variables, draw_screen, new_simulation, using_gpu, num_actions)
+        super().__init__(env_variables, draw_screen, using_gpu, num_actions)
 
         if using_gpu:
             import cupy as cp
@@ -27,14 +27,13 @@ class NaturalisticEnvironment(BaseEnvironment):
         # self.max_observation_vals = [[0, 0, 0]]
 
         # For currents (new simulation):
-        if self.new_simulation:
-            self.impulse_vector_field = None
-            self.coordinates_in_current = None  # May be used to provide efficient checking. Although vector comp probably faster.
-            self.create_current()
-            self.capture_fraction = int(
-                self.env_variables["phys_steps_per_sim_step"] * self.env_variables['fraction_capture_permitted'])
-            self.capture_start = 1  # int((self.env_variables['phys_steps_per_sim_step'] - self.capture_fraction) / 2)
-            self.capture_end = self.capture_start + self.capture_fraction
+        self.impulse_vector_field = None
+        self.coordinates_in_current = None  # May be used to provide efficient checking. Although vector comp probably faster.
+        self.create_current()
+        self.capture_fraction = int(
+            self.env_variables["phys_steps_per_sim_step"] * self.env_variables['fraction_capture_permitted'])
+        self.capture_start = 1  # int((self.env_variables['phys_steps_per_sim_step'] - self.capture_fraction) / 2)
+        self.capture_end = self.capture_start + self.capture_fraction
 
         self.paramecia_distances = []
         self.relocate_fish = relocate_fish
@@ -324,14 +323,13 @@ Sand grain: {self.sand_grain_associated_reward}
             self.move_prey(micro_step)
             self.displace_sand_grains()
 
-            if self.new_simulation:
-                if self.env_variables["current_setting"]:
-                    self.bring_fish_in_bounds()
-                    self.resolve_currents(micro_step)
-                if self.fish.making_capture and self.capture_start <= micro_step <= self.capture_end:
-                    self.fish.capture_possible = True
-                else:
-                    self.fish.capture_possible = False
+            if self.env_variables["current_setting"]:
+                self.bring_fish_in_bounds()
+                self.resolve_currents(micro_step)
+            if self.fish.making_capture and self.capture_start <= micro_step <= self.capture_end:
+                self.fish.capture_possible = True
+            else:
+                self.fish.capture_possible = False
             if self.predator_body is not None:
                 self.move_realistic_predator(micro_step)
 
@@ -349,13 +347,7 @@ Sand grain: {self.sand_grain_associated_reward}
             if self.fish.touched_edge:
                 self.fish.touched_edge = False
 
-            if self.show_all:
-                self.board.erase_visualisation(bkg=0.3)
-                self.draw_shapes(visualisation=True)
-                if self.draw_screen:
-                    self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5) / 255.)
-                    plt.pause(0.0001)
-
+ 
         if self.fish.touched_predator:
             print("Fish eaten by predator")
             reward -= self.env_variables['predator_cost']
@@ -386,57 +378,56 @@ Sand grain: {self.sand_grain_associated_reward}
 
         self.bring_fish_in_bounds()
 
-        if self.new_simulation:
-            # Energy level
-            if self.env_variables["energy_state"]:
-                old_reward = reward
-                reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
-                self.energy_associated_reward += reward - old_reward
+        # Energy level
+        if self.env_variables["energy_state"]:
+            old_reward = reward
+            reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
+            self.energy_associated_reward += reward - old_reward
 
-                self.energy_level_log.append(self.fish.energy_level)
-                if self.fish.energy_level < 0:
-                    print("Fish ran out of energy")
-                    done = True
-                    self.recent_cause_of_death = "Starvation"
+            self.energy_level_log.append(self.fish.energy_level)
+            if self.fish.energy_level < 0:
+                print("Fish ran out of energy")
+                done = True
+                self.recent_cause_of_death = "Starvation"
 
-            # Salt health
-            if self.env_variables["salt"]:
-                salt_damage = self.salt_gradient[int(self.fish.body.position[0]), int(self.fish.body.position[1])]
-                self.salt_damage_history.append(salt_damage)
-                self.fish.salt_health = self.fish.salt_health + self.env_variables["salt_recovery"] - salt_damage
-                if self.fish.salt_health > 1.0:
-                    self.fish.salt_health = 1.0
-                if self.fish.salt_health < 0:
-                    print("Fish too salty")
-                    done = True
-                    self.recent_cause_of_death = "Salt"
+        # Salt health
+        if self.env_variables["salt"]:
+            salt_damage = self.salt_gradient[int(self.fish.body.position[0]), int(self.fish.body.position[1])]
+            self.salt_damage_history.append(salt_damage)
+            self.fish.salt_health = self.fish.salt_health + self.env_variables["salt_recovery"] - salt_damage
+            if self.fish.salt_health > 1.0:
+                self.fish.salt_health = 1.0
+            if self.fish.salt_health < 0:
+                print("Fish too salty")
+                done = True
+                self.recent_cause_of_death = "Salt"
 
-                if "salt_reward_penalty" in self.env_variables:
-                    if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables[
-                        "salt_recovery"]:
-                        reward -= self.env_variables["salt_reward_penalty"] * salt_damage
-                        print(f"Salt-associated reward: {-self.env_variables['salt_reward_penalty'] * salt_damage}")
-                        self.salt_associated_reward -= self.env_variables['salt_reward_penalty'] * salt_damage
+            if "salt_reward_penalty" in self.env_variables:
+                if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables[
+                    "salt_recovery"]:
+                    reward -= self.env_variables["salt_reward_penalty"] * salt_damage
+                    print(f"Salt-associated reward: {-self.env_variables['salt_reward_penalty'] * salt_damage}")
+                    self.salt_associated_reward -= self.env_variables['salt_reward_penalty'] * salt_damage
 
-            if self.predator_body is not None:
-                self.total_predator_steps += 1
+        if self.predator_body is not None:
+            self.total_predator_steps += 1
 
-            if self.fish.touched_edge_this_step:
-                reward -= self.env_variables["wall_touch_penalty"]
-                self.wall_associated_reward -= self.env_variables["wall_touch_penalty"]
+        if self.fish.touched_edge_this_step:
+            reward -= self.env_variables["wall_touch_penalty"]
+            self.wall_associated_reward -= self.env_variables["wall_touch_penalty"]
 
-                self.fish.touched_edge_this_step = False
+            self.fish.touched_edge_this_step = False
 
-            if self.env_variables["prey_reproduction_mode"] and self.env_variables["differential_prey"]:
-                self.reproduce_prey()
-                self.prey_ages = [age + 1 for age in self.prey_ages]
-                for i, age in enumerate(self.prey_ages):
-                    if age > self.env_variables["prey_safe_duration"] and np.random.rand(1) < self.env_variables[
-                        "p_prey_death"]:
-                        if not self.check_proximity(self.prey_bodies[i].position, 200):
-                            # print("Removed prey")
-                            self.remove_prey(i)
-                            self.available_prey -= 1
+        if self.env_variables["prey_reproduction_mode"] and self.env_variables["differential_prey"]:
+            self.reproduce_prey()
+            self.prey_ages = [age + 1 for age in self.prey_ages]
+            for i, age in enumerate(self.prey_ages):
+                if age > self.env_variables["prey_safe_duration"] and np.random.rand(1) < self.env_variables[
+                    "p_prey_death"]:
+                    if not self.check_proximity(self.prey_bodies[i].position, 200):
+                        # print("Removed prey")
+                        self.remove_prey(i)
+                        self.available_prey -= 1
 
         # Log whether or not fish in light
         self.in_light_history.append(self.fish.body.position[0] > self.dark_col)
@@ -467,48 +458,20 @@ Sand grain: {self.sand_grain_associated_reward}
             internal_state.append(0)
         internal_state = np.array([internal_state])
 
-        # OLD:
-        # if self.env_variables['hunger'] and self.env_variables['stress']:
-        #     internal_state = np.array([[in_light, self.fish.hungry, self.fish.stress]])
-        # elif self.env_variables['hunger']:
-        #     internal_state = np.array([[in_light, self.fish.hungry]])
-        # elif self.env_variables['stress']:
-        #     internal_state = np.array([[in_light, self.fish.stress]])
-        # elif self.env_variables['energy_state']:
-        #     internal_state = np.array([[in_light, self.fish.energy_level]])
-        # else:
-        #     internal_state = np.array([[in_light]])
-
-        if self.run_version == "Original":
-            if self.check_condition_met():
-                done = True
-
-        if self.new_simulation:
-            observation, frame_buffer = self.resolve_visual_input_new(save_frames, activations, internal_state,
+        
+        observation, frame_buffer = self.resolve_visual_input(save_frames, activations, internal_state,
                                                                       frame_buffer)
-        else:
-            observation, frame_buffer = self.resolve_visual_input(save_frames, activations, internal_state,
-                                                                  frame_buffer)
 
-        # comb_obs = np.concatenate((observation[:, :, 0], observation[:, :, 1]), axis=0)
-        # self.mean_observation_vals += [np.sum(comb_obs, axis=0)/len(comb_obs)]
-        # self.max_observation_vals += [np.max(comb_obs, axis=0)]
 
         return observation, reward, internal_state, done, frame_buffer
 
     def init_predator(self):
-        if self.new_simulation:
-            if self.predator_location is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
-                    self.num_steps > self.env_variables['immunity_steps'] and not self.check_fish_near_vegetation() \
-                    and not self.check_fish_not_near_wall():
-                self.create_realistic_predator()
-        else:
-            if self.predator_shape is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
-                    self.num_steps > self.env_variables['immunity_steps'] and not self.check_fish_near_vegetation() \
-                    and not self.check_fish_not_near_wall():
-                self.create_realistic_predator()
+        if self.predator_location is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
+                self.num_steps > self.env_variables['immunity_steps'] and not self.check_fish_near_vegetation() \
+                and not self.check_fish_not_near_wall():
+            self.create_realistic_predator()
 
-    def resolve_visual_input_new(self, save_frames, activations, internal_state, frame_buffer):
+    def resolve_visual_input(self, save_frames, activations, internal_state, frame_buffer):
         right_eye_pos = (
             -np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
             +np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
@@ -529,7 +492,7 @@ Sand grain: {self.sand_grain_associated_reward}
         self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
         self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 
-        if save_frames or self.draw_screen:
+        if save_frames:
             self.board.erase_visualisation(bkg=0.3)
             self.draw_shapes(visualisation=True)
             relative_dark_gain = self.env_variables["dark_gain"] / self.env_variables["light_gain"]
@@ -539,14 +502,9 @@ Sand grain: {self.sand_grain_associated_reward}
                 self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
                 self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 
-            if save_frames:
-                scaling_factor = 1500 / self.env_variables["width"]
-                frame = self.output_frame(activations, internal_state, scale=0.25 * scaling_factor)
-                frame_buffer.append(frame)
-            if self.draw_screen:
-                frame = self.output_frame(activations, internal_state, scale=0.5) / 255.
-                self.board_image.set_data(frame / np.max(frame))
-                plt.pause(0.000001)
+            scaling_factor = 1500 / self.env_variables["width"]
+            frame = self.output_frame(activations, internal_state, scale=0.25 * scaling_factor)
+            frame_buffer.append(frame)
 
         # observation = self.chosen_math_library.dstack((self.fish.left_eye.readings,
         #                                                self.fish.right_eye.readings))
@@ -585,36 +543,6 @@ Sand grain: {self.sand_grain_associated_reward}
         axs[1].set_ylabel("Right eye")
         axs[1].set_xlabel("Photoreceptor")
         plt.show()
-
-    def resolve_visual_input(self, save_frames, activations, internal_state, frame_buffer):
-        right_eye_pos = (
-            -np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
-            +np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
-        left_eye_pos = (
-            +np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
-            -np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
-
-        self.fish.left_eye.read(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
-        self.fish.right_eye.read(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
-
-        if save_frames or self.draw_screen:
-            self.board.erase_visualisation(bkg=0.3)
-            self.draw_shapes(visualisation=True)
-            relative_dark_gain = self.env_variables["dark_gain"] / self.env_variables["light_gain"]
-            self.board.apply_light(self.dark_col, relative_dark_gain, 1, visualisation=True)
-            self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
-            self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
-            plt.imshow(self.board.db)
-            plt.show()
-            if save_frames:
-                frame_buffer.append(self.output_frame(activations, internal_state, scale=0.25))
-            if self.draw_screen:
-                self.board_image.set_data(self.output_frame(activations, internal_state, scale=0.5) / 255.)
-                plt.pause(0.000001)
-
-        observation = np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
-                                 self.fish.readings_to_photons(self.fish.right_eye.readings)))
-        return observation
 
     def create_current(self):
         """

@@ -7,7 +7,7 @@ import skimage.draw as draw
 from skimage import io
 
 
-class NewDrawingBoard:
+class DrawingBoard:
 
     def __init__(self, width, height, decay_rate, photoreceptor_rf_size, using_gpu, visualise_mask, prey_size=4,
                  predator_size=100, visible_scatter=0.3, background_grating_frequency=50, dark_light_ratio=0.0,
@@ -207,6 +207,9 @@ class NewDrawingBoard:
         """Must use both numpy and cupy as otherwise GPU runs out of memory."""
         # Reset empty mask
         self.empty_mask[:] = 1.0
+
+        if predator_locations.size == 0 and (not prey_occlusion or prey_locations.size == 0):
+            return self.empty_mask
 
         if prey_occlusion:
             # Compute prey positions relative to fish (Prey_num, 2)
@@ -977,7 +980,7 @@ class NewDrawingBoard:
 
 
 if __name__ == "__main__":
-    d = NewDrawingBoard(500, 500)
+    d = DrawingBoard(500, 500)
     d.circle((100, 200), 100, (1, 0, 0))
     d.line((50, 50), (100, 200), (0, 1, 0))
     d.show()

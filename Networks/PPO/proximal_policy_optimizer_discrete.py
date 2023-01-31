@@ -7,10 +7,10 @@ tf.disable_v2_behavior()
 
 class PPONetworkActor(BaseNetwork):
 
-    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, clip_param, num_actions, epsilon_greedy=False, new_simulation=False):
+    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, clip_param, num_actions, epsilon_greedy=False):
 
         # Variables
-        super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim=1, new_simulation=new_simulation)
+        super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim=1)
 
         #            ----------        Non-Reflected       ---------            #
 

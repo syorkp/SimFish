@@ -13,9 +13,8 @@ class Fish:
     Created to simplify the SimState class, while making it easier to have environments with multiple agents in future.
     """
 
-    def __init__(self, board, env_variables, dark_col, realistic_bouts, new_simulation, using_gpu,
+    def __init__(self, board, env_variables, dark_col, realistic_bouts, using_gpu,
                  fish_mass=None):
-        self.new_simulation = new_simulation
 
         # For the purpose of producing a calibration curve.
         if fish_mass is None:
@@ -58,26 +57,15 @@ class Fish:
         self.isomerization_probability = self.env_variables['isomerization_frequency'] / self.env_variables[
             'sim_steps_per_second']
 
-        if self.new_simulation:
-            max_visual_distance = (self.env_variables["width"] ** 2 + self.env_variables["height"] ** 2) ** 0.5
-            if "max_visual_range" in self.env_variables:
-                if self.env_variables["max_visual_range"]:
-                    max_visual_distance = self.env_variables["max_visual_range"]
+        max_visual_distance = (self.env_variables["width"] ** 2 + self.env_variables["height"] ** 2) ** 0.5
+        if "max_visual_range" in self.env_variables:
+            if self.env_variables["max_visual_range"]:
+                max_visual_distance = self.env_variables["max_visual_range"]
 
-            self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True, env_variables, dark_col, using_gpu,
+        self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True, env_variables, dark_col, using_gpu,
+                            max_visual_range=max_visual_distance)
+        self.right_eye = Eye(board, self.verg_angle, self.retinal_field, False, env_variables, dark_col, using_gpu,
                                 max_visual_range=max_visual_distance)
-            self.right_eye = Eye(board, self.verg_angle, self.retinal_field, False, env_variables, dark_col, using_gpu,
-                                 max_visual_range=max_visual_distance)
-        else:
-            self.left_eye = VisFan(board, self.verg_angle, self.retinal_field, True,
-                                   env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
-                                   env_variables['max_vis_dist'], env_variables['dark_gain'],
-                                   env_variables['light_gain'], env_variables['bkg_scatter'], dark_col)
-
-            self.right_eye = VisFan(board, self.verg_angle, self.retinal_field, False,
-                                    env_variables['num_photoreceptors'], env_variables['min_vis_dist'],
-                                    env_variables['max_vis_dist'], env_variables['dark_gain'],
-                                    env_variables['light_gain'], env_variables['bkg_scatter'], dark_col)
 
         self.hungry = 0
         self.stress = 1
@@ -382,20 +370,6 @@ class Fish:
         return -self.env_variables['j_turn_cost']
 
     def readings_to_photons(self, readings):
-        if self.new_simulation:
-            return self._readings_to_photons_new(readings)
-        else:
-            return self._readings_to_photons(readings)
-
-    def _readings_to_photons(self, readings):
-        photons = np.random.poisson(readings * self.env_variables['photon_ratio'])
-        if self.env_variables['read_noise_sigma'] > 0:
-            noise = np.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
-            photons += noise.astype(int)
-        photons = photons.clip(0, 255)
-        return photons
-
-    def _readings_to_photons_new(self, readings):
         """Rounds down observations to form array of discrete photon events."""
         # No longer need below as is removed from GPU earlier (before observation padding).
         # if self.using_gpu:

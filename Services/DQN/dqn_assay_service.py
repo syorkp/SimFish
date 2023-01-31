@@ -27,10 +27,6 @@ def assay_target(trial, total_steps, episode_number, memory_fraction):
     else:
         using_gpu = True
 
-    if "New Simulation" in trial:
-        new_simulation = trial["New Simulation"]
-    else:
-        new_simulation = True
 
     if "Continuous Actions" in trial:
         continuous_actions = trial["Continuous Actions"]
@@ -95,8 +91,6 @@ def assay_target(trial, total_steps, episode_number, memory_fraction):
                               config_name=trial["Environment Name"],
                               realistic_bouts=realistic_bouts,
                               continuous_actions=continuous_actions,
-                              new_simulation=new_simulation,
-
                               assays=trial["Assays"],
                               set_random_seed=set_random_seed,
                               assay_config_name=trial["Assay Configuration Name"],
@@ -116,7 +110,7 @@ def assay_target(trial, total_steps, episode_number, memory_fraction):
 class DQNAssayService(AssayService, BaseDQN):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_actions, new_simulation, assays, set_random_seed,
+                 config_name, realistic_bouts, continuous_actions, assays, set_random_seed,
                  assay_config_name, checkpoint, full_reafference, behavioural_recordings, network_recordings,
                  interventions, run_version, split_event, modification):
         """
@@ -128,7 +122,7 @@ class DQNAssayService(AssayService, BaseDQN):
                          monitor_gpu=monitor_gpu, using_gpu=using_gpu,
                          memory_fraction=memory_fraction, config_name=config_name,
                          realistic_bouts=realistic_bouts,
-                         continuous_environment=continuous_actions, new_simulation=new_simulation, assays=assays,
+                         continuous_environment=continuous_actions, assays=assays,
                          set_random_seed=set_random_seed,
                          assay_config_name=assay_config_name,
                          checkpoint=checkpoint,

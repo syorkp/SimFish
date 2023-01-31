@@ -7,20 +7,20 @@ from Environment.Fish.fish import Fish
 
 class DiscreteNaturalisticEnvironment(NaturalisticEnvironment):
 
-    def __init__(self, env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen=False, fish_mass=None,
+    def __init__(self, env_variables, realistic_bouts, using_gpu, draw_screen=False, fish_mass=None,
                  collisions=True, relocate_fish=None, num_actions=10, run_version="Original", split_event=None,
                  modification=None):
 
-        super().__init__(env_variables, realistic_bouts, new_simulation, using_gpu, draw_screen, fish_mass, collisions,
+        super().__init__(env_variables, realistic_bouts, using_gpu, draw_screen, fish_mass, collisions,
                          relocate_fish, num_actions=num_actions, run_version=run_version, split_event=split_event,
                          modification=modification)
 
         # Create the fish class instance and add to the space.
         if fish_mass is None:
-            self.fish = Fish(self.board, env_variables, self.dark_col, realistic_bouts, new_simulation, using_gpu)
+            self.fish = Fish(self.board, env_variables, self.dark_col, realistic_bouts, using_gpu)
         else:
             # In the event that I am producing a calibration curve for distance moved.
-            self.fish = Fish(self.board, env_variables, self.dark_col, realistic_bouts, new_simulation, using_gpu,
+            self.fish = Fish(self.board, env_variables, self.dark_col, realistic_bouts, using_gpu,
                              fish_mass=fish_mass)
 
         self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)

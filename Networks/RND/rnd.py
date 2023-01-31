@@ -6,8 +6,8 @@ from Networks.base_network_2 import BaseNetwork2
 
 class RandomNetworkDistiller(BaseNetwork2):
 
-    def __init__(self, simulation, my_scope, internal_states, predictor, new_simulation=True):
-        super().__init__(simulation, my_scope, internal_states, action_dim=2, new_simulation=new_simulation)
+    def __init__(self, simulation, my_scope, internal_states, predictor):
+        super().__init__(simulation, my_scope, internal_states, action_dim=2)
 
         self.stream_1, self.stream_2 = tf.split(self.output, 2, 1)
         self.stream_1_ref, self.stream_2_ref = tf.split(self.output_ref, 2, 1)

@@ -4,7 +4,6 @@ import json
 
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
-from Networks.A2C.advantage_actor_critic import A2CNetwork
 from Networks.PPO.proximal_policy_optimizer_continuous import PPONetworkActor
 from Networks.PPO.proximal_policy_optimizer_continuous_multivariate import PPONetworkActorMultivariate
 from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator import PPONetworkActorMultivariate2
@@ -90,7 +89,7 @@ def load_network_variables_a2c(model_name, conf_name):
         return sorted_vars
 
 
-def create_ppo_network(simulation, environment_params, learning_params, multivariate=True, new_simulation=True):
+def create_ppo_network(simulation, environment_params, learning_params, multivariate=True):
         """
         Create the main and target Q networks, according to the configuration parameters.
         :return: The main network and the target network graphs.
@@ -125,7 +124,6 @@ def create_ppo_network(simulation, environment_params, learning_params, multivar
                                                                              'clip_param'],
                                                                          input_sigmas=learning_params[
                                                                              'input_sigmas'],
-                                                                         # new_simulation=new_simulation,
                                                                          impose_action_mask=environment_params[
                                                                              'impose_action_mask'],
                                                                          base_network_layers=learning_params[
@@ -155,7 +153,6 @@ def create_ppo_network(simulation, environment_params, learning_params, multivar
                                                                                'clip_param'],
                                                                            input_sigmas=learning_params[
                                                                                'input_sigmas'],
-                                                                           new_simulation=new_simulation,
                                                                            impose_action_mask=
                                                                            environment_params[
                                                                                'impose_action_mask'],
@@ -181,7 +178,6 @@ def create_ppo_network(simulation, environment_params, learning_params, multivar
                                                                           'clip_param'],
                                                                       input_sigmas=learning_params[
                                                                           'input_sigmas'],
-                                                                      new_simulation=new_simulation,
                                                                       impose_action_mask=environment_params[
                                                                           'impose_action_mask'],
                                                                       value_coefficient=value_coefficient,

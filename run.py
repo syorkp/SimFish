@@ -259,6 +259,15 @@ ppo_gamma_analysis_across_scaffold_1 = [
 
 #                   TRAINING - DQN
 
+local_test = [
+    {
+        "Model Name": "local_test",
+        "Environment Name": "local_test",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Learning Algorithm": "DQN",
+    },
+]
 dqn_gamma_1 = [
     {
         "Model Name": "dqn_gamma",

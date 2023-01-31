@@ -36,7 +36,7 @@ def delete_nv_folder():
 class BaseService:
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_actions, new_simulation, monitor_performance=False):
+                 config_name, realistic_bouts, continuous_actions, monitor_performance=False):
 
         self.monitor_performance = monitor_performance
         if self.monitor_performance:
@@ -87,7 +87,6 @@ class BaseService:
             self.total_steps = 0
 
         # Switchover at start of phase 1
-        self.new_simulation = new_simulation
 
         if not self.using_gpu:
             os.environ["CUDA_VISIBLE_DEVICES"] = "-1"

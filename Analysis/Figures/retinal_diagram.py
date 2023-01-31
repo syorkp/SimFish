@@ -5,7 +5,7 @@ from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.eye import Eye
 
 # from Analysis.Video.behaviour_video_construction import DrawingBoard
-from Tools.drawing_board_new import NewDrawingBoard
+from Tools.drawing_board_new import DrawingBoard
 from Analysis.load_data import load_data
 
 
@@ -13,7 +13,7 @@ from Analysis.load_data import load_data
 learning_params, env_variables, n, b, c = load_assay_configuration_files(model_name="dqn_scaffold_18-1")
 
 fish_body_colour = (0, 1, 0)
-board = NewDrawingBoard(env_variables["width"], env_variables["height"], env_variables["decay_rate"],
+board = DrawingBoard(env_variables["width"], env_variables["height"], env_variables["decay_rate"],
                         env_variables["uv_photoreceptor_rf_size"],
                         using_gpu=False, visualise_mask=False, prey_size=1,
                         light_gain=env_variables["light_gain"], visible_scatter=env_variables["bkg_scatter"],

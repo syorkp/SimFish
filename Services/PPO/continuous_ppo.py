@@ -66,7 +66,6 @@ class ContinuousPPO(BasePPO):
                                                                              'clip_param'],
                                                                          input_sigmas=self.learning_params[
                                                                              'input_sigmas'],
-                                                                         # new_simulation=self.new_simulation,
                                                                          impose_action_mask=self.environment_params[
                                                                              'impose_action_mask'],
                                                                          base_network_layers=self.learning_params[
@@ -96,7 +95,6 @@ class ContinuousPPO(BasePPO):
                                                                                     'clip_param'],
                                                                                 input_sigmas=self.learning_params[
                                                                                     'input_sigmas'],
-                                                                                new_simulation=self.new_simulation,
                                                                                 impose_action_mask=
                                                                                 self.environment_params[
                                                                                     'impose_action_mask'],
@@ -123,7 +121,6 @@ class ContinuousPPO(BasePPO):
                                                                                'clip_param'],
                                                                            input_sigmas=self.learning_params[
                                                                                'input_sigmas'],
-                                                                           new_simulation=self.new_simulation,
                                                                            impose_action_mask=self.environment_params[
                                                                                'impose_action_mask'],
                                                                            value_coefficient=value_coefficient,
@@ -142,7 +139,6 @@ class ContinuousPPO(BasePPO):
                                                                                 'clip_param'],
                                                                             input_sigmas=self.learning_params[
                                                                                 'input_sigmas'],
-                                                                            new_simulation=self.new_simulation,
                                                                             impose_action_mask=self.environment_params[
                                                                                 'impose_action_mask'],
                                                                             value_coefficient=value_coefficient,
@@ -162,7 +158,6 @@ class ContinuousPPO(BasePPO):
                                                                               'clip_param'],
                                                                           input_sigmas=self.learning_params[
                                                                               'input_sigmas'],
-                                                                          new_simulation=self.new_simulation,
                                                                           impose_action_mask=self.environment_params[
                                                                               'impose_action_mask'],
                                                                           value_coefficient=value_coefficient,
@@ -182,7 +177,6 @@ class ContinuousPPO(BasePPO):
                                                                      'max_angle_change'],
                                                                  clip_param=self.environment_params['clip_param'],
                                                                  input_sigmas=self.learning_params['input_sigmas'],
-                                                                 new_simulation=self.new_simulation,
                                                                  impose_action_mask=self.environment_params[
                                                                      'impose_action_mask'],
                                                                  impulse_scaling=self.environment_params[
@@ -200,7 +194,6 @@ class ContinuousPPO(BasePPO):
                                                  max_angle_change=self.environment_params['max_angle_change'],
                                                  clip_param=self.environment_params['clip_param'],
                                                  beta_impulse=self.learning_params['beta_distribution'],
-                                                 new_simulation=self.new_simulation,
                                                  impose_action_mask=self.environment_params['impose_action_mask'],
 
                                                  )
@@ -213,14 +206,12 @@ class ContinuousPPO(BasePPO):
                 my_scope='target_rdn',
                 internal_states=internal_states,
                 predictor=False,
-                new_simulation=self.new_simulation,
             )
             self.predictor_rdn = RandomNetworkDistiller(
                 simulation=self.simulation,
                 my_scope='predictor_rdn',
                 internal_states=internal_states,
                 predictor=True,
-                new_simulation=self.new_simulation,
             )
 
     def update_sigmas(self):
@@ -253,16 +244,6 @@ class ContinuousPPO(BasePPO):
 
     def _assay_step_loop_multivariate2(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
                                        rnn_state_critic, rnn_state_critic_ref):
-        if self.new_simulation and self.environment_params["use_dynamic_network"]:
-            return self._assay_step_loop_multivariate2_new(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                                           rnn_state_critic, rnn_state_critic_ref)
-        else:
-            return self._assay_step_loop_multivariate2_old(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                                           rnn_state_critic, rnn_state_critic_ref)
-
-    def _assay_step_loop_multivariate2_new(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                           rnn_state_critic,
-                                           rnn_state_critic_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0],
              a[1],

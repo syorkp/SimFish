@@ -13,9 +13,6 @@ import Services.PPO.ppo_training_service_discrete as ppo_training_discrete
 import Services.PPO.ppo_assay_service_discrete as ppo_assay_discrete
 import Services.PPO.ppo_training_service_discrete_2 as ppo_training_discrete2
 
-import Services.A2C.a2c_training_service as a2c_training
-import Services.A2C.a2c_assay_service as a2c_assay
-
 from Analysis.Training.get_checkpoints_from_scaffold_points import get_checkpoint
 from Configurations.Utilities.turn_scaffold_point_to_assay_config import transfer_config
 
@@ -169,9 +166,6 @@ class TrialManager:
                     else:
                         new_job = multiprocessing.Process(target=ppo_training_continuous.ppo_training_target_continuous,
                                                       args=(trial, total_steps, episode_number, memory_fraction, configuration_index))
-                elif trial["Learning Algorithm"] == "A2C":
-                    new_job = multiprocessing.Process(target=a2c_training.a2c_training_target,
-                                                      args=(trial, total_steps, episode_number, memory_fraction, configuration_index))
                 elif trial["Learning Algorithm"] == "DQN":
                     print('Cannot use DQN with continuous actions (training mode)')
                     new_job = None
@@ -188,9 +182,6 @@ class TrialManager:
                     else:
                         new_job = multiprocessing.Process(target=ppo_training_discrete.ppo_training_target_discrete,
                                                           args=(trial, total_steps, episode_number, memory_fraction, configuration_index))
-                elif trial["Learning Algorithm"] == "A2C":
-                    print('Cannot use A2C with discrete actions (training mode)')
-                    new_job = None
                 elif trial["Learning Algorithm"] == "DQN":
                     new_job = multiprocessing.Process(target=training.training_target,
                                                       args=(trial, epsilon, total_steps, episode_number, memory_fraction, configuration_index))
@@ -233,9 +224,6 @@ class TrialManager:
                 if trial["Learning Algorithm"] == "PPO":
                     new_job = multiprocessing.Process(target=ppo_assay_continuous.ppo_assay_target_continuous, args=(
                         trial, total_steps, episode_number, memory_fraction))
-                elif trial["Learning Algorithm"] == "A2C":
-                    new_job = multiprocessing.Process(target=a2c_assay.a2c_assay_target, args=(
-                        trial, total_steps, episode_number, memory_fraction))
                 elif trial["Learning Algorithm"] == "DQN":
                     print('Cannot use DQN with continuous actions (assay mode)')
                     new_job = None
@@ -247,9 +235,6 @@ class TrialManager:
                 if trial["Learning Algorithm"] == "PPO":
                     new_job = multiprocessing.Process(target=ppo_assay_discrete.ppo_assay_target_discrete, args=(
                         trial, total_steps, episode_number, memory_fraction))
-                elif trial["Learning Algorithm"] == "A2C":
-                    print('Cannot use A2C with discrete actions (assay mode)')
-                    new_job = None
                 elif trial["Learning Algorithm"] == "DQN":
                     new_job = multiprocessing.Process(target=assay.assay_target, args=(
                         trial, total_steps, episode_number, memory_fraction))
@@ -262,9 +247,6 @@ class TrialManager:
                 if trial["Learning Algorithm"] == "PPO":
                     new_job = multiprocessing.Process(target=ppo_assay_continuous.ppo_assay_target_continuous, args=(
                         trial, total_steps, episode_number, memory_fraction))
-                elif trial["Learning Algorithm"] == "A2C":
-                    new_job = multiprocessing.Process(target=a2c_assay.a2c_assay_target, args=(
-                        trial, total_steps, episode_number, memory_fraction))
                 elif trial["Learning Algorithm"] == "DQN":
                     print('Cannot use DQN with continuous actions (assay mode)')
                     new_job = None
@@ -276,9 +258,6 @@ class TrialManager:
                 if trial["Learning Algorithm"] == "PPO":
                     new_job = multiprocessing.Process(target=ppo_assay_discrete.ppo_assay_target_discrete, args=(
                         trial, total_steps, episode_number, memory_fraction))
-                elif trial["Learning Algorithm"] == "A2C":
-                    print('Cannot use A2C with discrete actions (assay mode)')
-                    new_job = None
                 elif trial["Learning Algorithm"] == "DQN":
                     new_job = multiprocessing.Process(target=assay.assay_target, args=(
                         trial, total_steps, episode_number, memory_fraction))

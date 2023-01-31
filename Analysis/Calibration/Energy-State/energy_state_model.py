@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.fish import Fish
 from Environment.Fish.continuous_fish import ContinuousFish
-from Tools.drawing_board_new import NewDrawingBoard
+from Tools.drawing_board_new import DrawingBoard
 
 
 def build_fish_model(env_variables, continuous):
 
-    db = NewDrawingBoard(env_variables["width"],
+    db = DrawingBoard(env_variables["width"],
                          env_variables["height"],
                          env_variables["decay_rate"],
                          env_variables["uv_photoreceptor_rf_size"],

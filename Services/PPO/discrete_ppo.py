@@ -41,7 +41,6 @@ class DiscretePPO(BasePPO):
                                                                  clip_param=self.environment_params['clip_param'],
                                                                  num_actions=self.learning_params['num_actions'],
                                                                  epsilon_greedy=self.epsilon_greedy,
-                                                                 new_simulation=self.new_simulation,
 
                                                                  )
         else:
@@ -53,7 +52,6 @@ class DiscretePPO(BasePPO):
                                                  clip_param=self.environment_params['clip_param'],
                                                  num_actions=self.learning_params['num_actions'],
                                                  epsilon_greedy=self.epsilon_greedy,
-                                                 new_simulation=self.new_simulation,
                                                  )
 
     def _episode_loop(self, a=None):
