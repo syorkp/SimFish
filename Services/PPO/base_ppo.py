@@ -49,8 +49,6 @@ class BasePPO:
         self.init_rnn_state_ref = None  # self.init_rnn_state_actor_ref
 
         # Add attributes only if don't exist yet (prevents errors thrown).
-        if not hasattr(self, "new_simulation"):
-            self.new_simulation = None
         if not hasattr(self, "get_internal_state_order"):
             self.get_internal_state_order = None
         if not hasattr(self, "sb_emulator"):
@@ -151,7 +149,6 @@ class BasePPO:
                                                    my_scope='critic',
                                                    internal_states=internal_states,
                                                    outputs_per_step=output_dimension,
-                                                   new_simulation=self.new_simulation,
                                                    )
 
         return actor_cell, internal_states, internal_state_names

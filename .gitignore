@@ -1,3 +1,4 @@
+*.pyc
 venv
 Assay-Output
 Training-Output

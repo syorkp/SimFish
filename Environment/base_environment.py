@@ -7,68 +7,57 @@ from skimage.transform import resize, rescale
 import pymunk
 
 from Tools.drawing_board import DrawingBoard
-from Tools.drawing_board_new import NewDrawingBoard
 
 
 class BaseEnvironment:
     """A base class to represent environments, for extension to ProjectionEnvironment, VVR and Naturalistic
     environment classes."""
 
-    def __init__(self, env_variables, draw_screen, new_simulation, using_gpu, num_actions):
-        self.new_simulation = new_simulation
+    def __init__(self, env_variables, draw_screen, using_gpu, num_actions):
         self.num_actions = num_actions
 
         self.env_variables = env_variables
-        if self.new_simulation:
-            # Rescale bkg_scatter to avoid disruption for larger fields
-            model = np.poly1d([1.32283913e-18, -4.10522256e-14, 4.92470049e-10, -2.86744090e-06, 8.22376164e-03,
-                               4.07923942e-01])  # TODO: Keep parameters updated
-            self.env_variables["bkg_scatter"] = self.env_variables["bkg_scatter"] / (
-                        model(self.env_variables["width"]) / model(1500))
-            print(f"New bkg scatter: {self.env_variables['bkg_scatter']}")
+        # Rescale bkg_scatter to avoid disruption for larger fields
+        model = np.poly1d([1.32283913e-18, -4.10522256e-14, 4.92470049e-10, -2.86744090e-06, 8.22376164e-03,
+                            4.07923942e-01])  # TODO: Keep parameters updated
+        self.env_variables["bkg_scatter"] = self.env_variables["bkg_scatter"] / (
+                    model(self.env_variables["width"]) / model(1500))
+        print(f"New bkg scatter: {self.env_variables['bkg_scatter']}")
 
-            max_photoreceptor_rf_size = max([self.env_variables['uv_photoreceptor_rf_size'],
-                                             self.env_variables['red_photoreceptor_rf_size']])
-            if "light_gradient" in self.env_variables:
-                light_gradient = self.env_variables['light_gradient']
-            else:
-                light_gradient = 0
-
-            max_visual_distance = (self.env_variables["width"] ** 2 + self.env_variables["height"] ** 2) ** 0.5
-            if "max_visual_range" in self.env_variables:
-                if self.env_variables["max_visual_range"]:
-                    max_visual_distance = self.env_variables["max_visual_range"]
-
-            self.board = NewDrawingBoard(self.env_variables['width'], self.env_variables['height'],
-                                         decay_rate=self.env_variables['decay_rate'],
-                                         photoreceptor_rf_size=max_photoreceptor_rf_size,
-                                         using_gpu=using_gpu, visualise_mask=self.env_variables['visualise_mask'],
-                                         prey_size=self.env_variables['prey_size'],
-                                         predator_size=self.env_variables['predator_size'],
-                                         visible_scatter=self.env_variables['bkg_scatter'],
-                                         background_grating_frequency=self.env_variables[
-                                             'background_grating_frequency'],
-                                         dark_light_ratio=self.env_variables['dark_light_ratio'],
-                                         dark_gain=self.env_variables['dark_gain'],
-                                         light_gain=self.env_variables['light_gain'],
-                                         red_occlusion_gain=self.env_variables['red_occlusion_gain'],
-                                         uv_occlusion_gain=self.env_variables['uv_occlusion_gain'],
-                                         red2_occlusion_gain=self.env_variables['red2_occlusion_gain'],
-                                         light_gradient=light_gradient,
-                                         max_visual_distance=max_visual_distance
-                                         )
+        max_photoreceptor_rf_size = max([self.env_variables['uv_photoreceptor_rf_size'],
+                                            self.env_variables['red_photoreceptor_rf_size']])
+        if "light_gradient" in self.env_variables:
+            light_gradient = self.env_variables['light_gradient']
         else:
-            self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'])
+            light_gradient = 0
+
+        max_visual_distance = (self.env_variables["width"] ** 2 + self.env_variables["height"] ** 2) ** 0.5
+        if "max_visual_range" in self.env_variables:
+            if self.env_variables["max_visual_range"]:
+                max_visual_distance = self.env_variables["max_visual_range"]
+
+        self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'],
+                                        decay_rate=self.env_variables['decay_rate'],
+                                        photoreceptor_rf_size=max_photoreceptor_rf_size,
+                                        using_gpu=using_gpu, visualise_mask=self.env_variables['visualise_mask'],
+                                        prey_size=self.env_variables['prey_size'],
+                                        predator_size=self.env_variables['predator_size'],
+                                        visible_scatter=self.env_variables['bkg_scatter'],
+                                        background_grating_frequency=self.env_variables[
+                                            'background_grating_frequency'],
+                                        dark_light_ratio=self.env_variables['dark_light_ratio'],
+                                        dark_gain=self.env_variables['dark_gain'],
+                                        light_gain=self.env_variables['light_gain'],
+                                        red_occlusion_gain=self.env_variables['red_occlusion_gain'],
+                                        uv_occlusion_gain=self.env_variables['uv_occlusion_gain'],
+                                        red2_occlusion_gain=self.env_variables['red2_occlusion_gain'],
+                                        light_gradient=light_gradient,
+                                        max_visual_distance=max_visual_distance
+                                        )
         self.draw_screen = draw_screen
         self.show_all = False
         self.num_steps = 0
         self.fish = None
-
-        if self.draw_screen:
-            self.board_fig, self.ax_board = plt.subplots()
-            self.board_image = plt.imshow(np.zeros((self.env_variables['height'], self.env_variables['width'], 3)))
-            plt.ion()
-            plt.show()
 
         self.dark_col = int(self.env_variables['width'] * self.env_variables['dark_light_ratio'])
         if self.dark_col == 0:  # Fixes bug with left wall always being invisible.
@@ -192,9 +181,8 @@ class BaseEnvironment:
         self.sand_grains_bumped = 0
         self.steps_near_vegetation = 0
         self.energy_level_log = []
-        if self.new_simulation:
-            self.board.light_gain = self.env_variables["light_gain"]
-            self.board.luminance_mask = self.board.get_luminance_mask(self.env_variables["dark_light_ratio"], self.env_variables["dark_gain"])
+        self.board.light_gain = self.env_variables["light_gain"]
+        self.board.luminance_mask = self.board.get_luminance_mask(self.env_variables["dark_light_ratio"], self.env_variables["dark_gain"])
 
         # New energy system:
         self.fish.energy_level = 1
@@ -216,26 +204,25 @@ class BaseEnvironment:
         if self.predator_shape is not None:
             self.remove_realistic_predator()
 
-        if self.new_simulation:
-            self.predator_location = None
-            self.remaining_predator_attacks = None
-            self.total_predator_steps = None
-            self.new_attack_due = False
-            # Reset salt gradient
-            if self.env_variables["salt"]:
-                self.reset_salt_gradient()
-                self.fish.salt_health = 1.0
-                self.salt_damage_history = []
+        self.predator_location = None
+        self.remaining_predator_attacks = None
+        self.total_predator_steps = None
+        self.new_attack_due = False
+        # Reset salt gradient
+        if self.env_variables["salt"]:
+            self.reset_salt_gradient()
+            self.fish.salt_health = 1.0
+            self.salt_damage_history = []
 
-            self.paramecia_gaits = []
+        self.paramecia_gaits = []
 
-            if self.env_variables["prey_reproduction_mode"]:
-                self.prey_ages = []
+        if self.env_variables["prey_reproduction_mode"]:
+            self.prey_ages = []
 
-            self.first_attack = False
-            self.loom_predator_current_size = None
+        self.first_attack = False
+        self.loom_predator_current_size = None
 
-            self.board.reset()
+        self.board.reset()
 
         self.prey_shapes = []
         self.prey_bodies = []
@@ -375,13 +362,10 @@ class BaseEnvironment:
         arena[:, 0, 0] = np.ones(self.env_variables['height']) * 255
         arena[:, self.env_variables['width'] - 1, 0] = np.ones(self.env_variables['height']) * 255
 
-        if self.new_simulation:
-            empty_green_eyes = np.zeros((20, self.env_variables["width"], 1))
-            eyes = self.fish.get_visual_inputs_new()
-            eyes = np.concatenate((eyes[:, :, :1], empty_green_eyes, eyes[:, :, 1:2]),
-                                  axis=2)  # Note removes second red channel.
-        else:
-            eyes = self.fish.get_visual_inputs()
+        empty_green_eyes = np.zeros((20, self.env_variables["width"], 1))
+        eyes = self.fish.get_visual_inputs_new()
+        eyes = np.concatenate((eyes[:, :, :1], empty_green_eyes, eyes[:, :, 1:2]),
+                                axis=2)  # Note removes second red channel.
 
         frame = np.vstack((arena, np.zeros((50, self.env_variables['width'], 3)), eyes))
 
@@ -602,43 +586,6 @@ class BaseEnvironment:
         return False
 
     def touch_wall(self, arbiter, space, data):
-        if self.new_simulation and not self.env_variables["wall_reflection"]:
-            return self._touch_wall_new(arbiter, space, data)
-        else:
-            return self._touch_wall(arbiter, space, data)
-
-    def _touch_wall(self, arbiter, space, data):
-        # print(f"Fish touched wall: {self.fish.body.position}")
-        new_position_x = self.fish.body.position[0]
-        new_position_y = self.fish.body.position[1]
-
-        if new_position_x < self.env_variables['wall_buffer_distance']:  # Wall d
-            new_position_x = self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] + \
-                             self.env_variables["fish_tail_length"]
-        elif new_position_x > self.env_variables['width'] - self.env_variables['wall_buffer_distance']:  # wall b
-            new_position_x = self.env_variables['width'] - (
-                    self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] +
-                    self.env_variables["fish_tail_length"])
-        if new_position_y < self.env_variables['wall_buffer_distance']:  # wall a
-            new_position_y = self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] + \
-                             self.env_variables["fish_tail_length"]
-        elif new_position_y > self.env_variables['height'] - self.env_variables['wall_buffer_distance']:  # wall c
-            new_position_y = self.env_variables['height'] - (
-                    self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] +
-                    self.env_variables["fish_tail_length"])
-
-        new_position = pymunk.Vec2d(new_position_x, new_position_y)
-        self.fish.body.position = new_position
-        self.fish.body.velocity = (0, 0)
-
-        if self.fish.body.angle < np.pi:
-            self.fish.body.angle += np.pi
-        else:
-            self.fish.body.angle -= np.pi
-        self.fish.touched_edge = True
-        return True
-
-    def _touch_wall_new(self, arbiter, space, data):
         position_x = self.fish.body.position[0]
         position_y = self.fish.body.position[1]
 
@@ -733,27 +680,6 @@ class BaseEnvironment:
         return within_range
 
     def move_prey(self, micro_step):
-        if self.new_simulation:
-            self._move_prey_new(micro_step)
-        else:
-            self._move_prey()
-
-    def _move_prey(self):
-        # Not, currently, a prey isn't guaranteed to try to escape if a loud predator is near, only if it was going to
-        # move anyway. Should reconsider this in the future.
-        to_move = np.where(np.random.rand(len(self.prey_bodies)) < self.env_variables['prey_impulse_rate'])[0]
-        for ii in range(len(to_move)):
-            if self.check_proximity(self.prey_bodies[to_move[ii]].position,
-                                    self.env_variables['prey_sensing_distance']) and self.env_variables["prey_jump"]:
-                self.prey_bodies[ii].angle = self.fish.body.angle + np.random.uniform(-1, 1)
-                self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.get_last_action_magnitude(), 0))
-            else:
-                adjustment = np.random.uniform(-self.env_variables['prey_max_turning_angle'],
-                                               self.env_variables['prey_max_turning_angle'])
-                self.prey_bodies[to_move[ii]].angle = self.prey_bodies[to_move[ii]].angle + adjustment
-                self.prey_bodies[to_move[ii]].apply_impulse_at_local_point((self.env_variables['prey_impulse'], 0))
-
-    def _move_prey_new(self, micro_step):
         if len(self.prey_bodies) == 0:
             return
 
@@ -813,12 +739,6 @@ class BaseEnvironment:
                 prey_body.apply_impulse_at_local_point((impulses[i], 0))
 
     def touch_prey(self, arbiter, space, data):
-        if self.new_simulation:
-            return self.touch_prey_new(arbiter, space, data)
-        else:
-            return self.touch_prey_old(arbiter, space, data)
-
-    def touch_prey_new(self, arbiter, space, data):
         valid_capture = False
         if self.fish.capture_possible:
             for i, shp in enumerate(self.prey_shapes):
@@ -884,21 +804,6 @@ class BaseEnvironment:
             self.failed_capture_attempts += 1
             return True
 
-    def touch_prey_old(self, arbiter, space, data):
-        if self.fish.making_capture:
-            for i, shp in enumerate(self.prey_shapes):
-                if shp == arbiter.shapes[0]:
-                    space.remove(shp, shp.body)
-                    self.prey_shapes.remove(shp)
-                    self.prey_bodies.remove(shp.body)
-            self.prey_caught += 1
-            self.fish.prey_consumed = True
-            self.prey_consumed_this_step = True
-
-            return False
-        else:
-            return True
-
     def remove_prey(self, prey_index):
         self.space.remove(self.prey_shapes[prey_index], self.prey_shapes[prey_index].body)
         del self.prey_shapes[prey_index]
@@ -918,11 +823,8 @@ class BaseEnvironment:
             np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'],
                               self.env_variables['height'] - (
                                       self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'])))
-        if self.new_simulation:
-            self.predator_shapes[-1].color = (0, 1, 0)
-            # Made green so still visible to us but not to fish.
-        else:
-            self.predator_shapes[-1].color = (0, 0, 1)
+        self.predator_shapes[-1].color = (0, 1, 0)
+        # Made green so still visible to us but not to fish.
         self.predator_shapes[-1].collision_type = 5
 
         self.space.add(self.predator_bodies[-1], self.predator_shapes[-1])
@@ -1035,24 +937,21 @@ class BaseEnvironment:
         self.predator_target = fish_position
         self.total_predator_steps = 0
 
-        if self.new_simulation:
-            self.predator_shape.color = (0, 1, 0)
-            self.predator_location = (x_position, y_position)
-            self.remaining_predator_attacks = 1 + np.sum(
-                np.random.choice([0, 1], self.env_variables["max_predator_attacks"] - 1,
-                                 p=[1.0 - self.env_variables["further_attack_probability"],
-                                    self.env_variables["further_attack_probability"]]))
-            if self.env_variables["predator_first_attack_loom"]:
-                # Set fish position based on final predator size
-                dx = (self.env_variables["final_predator_size"] * 0.8) * np.sin(angle_from_fish)
-                dy = (self.env_variables["final_predator_size"] * 0.8) * np.cos(angle_from_fish)
-                self.predator_location = (fish_position[0] + dx, fish_position[1] + dy)
+        self.predator_shape.color = (0, 1, 0)
+        self.predator_location = (x_position, y_position)
+        self.remaining_predator_attacks = 1 + np.sum(
+            np.random.choice([0, 1], self.env_variables["max_predator_attacks"] - 1,
+                                p=[1.0 - self.env_variables["further_attack_probability"],
+                                self.env_variables["further_attack_probability"]]))
+        if self.env_variables["predator_first_attack_loom"]:
+            # Set fish position based on final predator size
+            dx = (self.env_variables["final_predator_size"] * 0.8) * np.sin(angle_from_fish)
+            dy = (self.env_variables["final_predator_size"] * 0.8) * np.cos(angle_from_fish)
+            self.predator_location = (fish_position[0] + dx, fish_position[1] + dy)
 
-                self.predator_body.position = self.predator_location
-                self.loom_predator_current_size = self.env_variables['initial_predator_size']
-                self.first_attack = True
-        else:
-            self.predator_shape.color = (0, 0, 1)
+            self.predator_body.position = self.predator_location
+            self.loom_predator_current_size = self.env_variables['initial_predator_size']
+            self.first_attack = True
 
         self.predator_shape.collision_type = 5
         self.predator_shape.filter = pymunk.ShapeFilter(
@@ -1103,21 +1002,7 @@ class BaseEnvironment:
         return ((self.predator_body.position[0] - self.fish.body.position[0]) ** 2 +
                 (self.predator_body.position[1] - self.fish.body.position[1]) ** 2) ** 0.5
 
-    def _move_realistic_predator_old(self):
-        if self.check_predator_at_target():
-            self.remove_realistic_predator()
-            self.predator_attacks_avoided += 1
-            return
-        if self.check_predator_outside_walls():
-            self.remove_realistic_predator()
-            return
-
-        self.predator_body.angle = np.pi / 2 - np.arctan2(
-            self.predator_target[0] - self.predator_body.position[0],
-            self.predator_target[1] - self.predator_body.position[1])
-        self.predator_body.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
-
-    def _move_realistic_predator_new(self, micro_step):
+    def _move_realistic_predator(self, micro_step):
         if self.first_attack:
             # If the first attack is to be a loom attack (specified by selecting loom stimulus in env config)
             if self.loom_predator_current_size < self.env_variables["final_predator_size"]:
@@ -1174,12 +1059,6 @@ class BaseEnvironment:
                 self.predator_target[0] - self.predator_body.position[0],
                 self.predator_target[1] - self.predator_body.position[1])
             self.predator_body.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
-
-    def move_realistic_predator(self, micro_step):
-        if self.new_simulation:
-            self._move_realistic_predator_new(micro_step)
-        else:
-            self._move_realistic_predator_old()
 
     def remove_realistic_predator(self, arbiter=None, space=None, data=None):
         if self.predator_body is not None:

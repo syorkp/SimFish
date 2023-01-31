@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.eye import Eye
-from Tools.drawing_board_new import NewDrawingBoard
+from Tools.drawing_board import DrawingBoard
 
 
 def display_pr_coverage(model_name):
@@ -14,7 +14,7 @@ def display_pr_coverage(model_name):
     max_photoreceptor_rf_size = max([env_variables['uv_photoreceptor_rf_size'],
                                      env_variables['red_photoreceptor_rf_size']])
 
-    board = NewDrawingBoard(env_variables['width'], env_variables['height'],
+    board = DrawingBoard(env_variables['width'], env_variables['height'],
                                  decay_rate=env_variables['decay_rate'],
                                  photoreceptor_rf_size=max_photoreceptor_rf_size,
                                  using_gpu=False, visualise_mask=env_variables['visualise_mask'],

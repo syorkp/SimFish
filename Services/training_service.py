@@ -27,11 +27,11 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 class TrainingService(BaseService):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_actions, new_simulation, model_exists, configuration_index,
+                 config_name, realistic_bouts, continuous_actions, model_exists, configuration_index,
                  full_logs, profile_speed):
 
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                         config_name, realistic_bouts, continuous_actions, new_simulation, profile_speed)
+                         config_name, realistic_bouts, continuous_actions, profile_speed)
 
         print("TrainingService Constructor called")
 
@@ -197,12 +197,11 @@ class TrainingService(BaseService):
     def create_environment(self):
         if self.continuous_actions:
             self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                self.new_simulation, self.using_gpu,
+                                                                self.using_gpu,
                                                                 num_actions=self.learning_params["num_actions"])
         else:
-            self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                              self.new_simulation, self.using_gpu,
-                                                              num_actions=self.learning_params["num_actions"])
+            self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts, 
+                                                              self.using_gpu, num_actions=self.learning_params["num_actions"])
 
     def check_update_configuration(self):
         next_point = str(self.configuration_index + 1)
@@ -334,22 +333,21 @@ class TrainingService(BaseService):
                     'anneling_steps']
 
             # Make sure visual system parameters are updated.
-            if self.new_simulation:
-                self.simulation.fish.left_eye.red_photoreceptor_rf_size = self.environment_params["red_photoreceptor_rf_size"]
-                self.simulation.fish.left_eye.uv_photoreceptor_rf_size = self.environment_params["uv_photoreceptor_rf_size"]
-                self.simulation.fish.left_eye.env_variables = self.environment_params
-                self.simulation.fish.left_eye.get_repeated_computations()
+            self.simulation.fish.left_eye.red_photoreceptor_rf_size = self.environment_params["red_photoreceptor_rf_size"]
+            self.simulation.fish.left_eye.uv_photoreceptor_rf_size = self.environment_params["uv_photoreceptor_rf_size"]
+            self.simulation.fish.left_eye.env_variables = self.environment_params
+            self.simulation.fish.left_eye.get_repeated_computations()
 
-                self.simulation.fish.right_eye.red_photoreceptor_rf_size = self.environment_params["red_photoreceptor_rf_size"]
-                self.simulation.fish.right_eye.uv_photoreceptor_rf_size = self.environment_params["uv_photoreceptor_rf_size"]
-                self.simulation.fish.right_eye.env_variables = self.environment_params
-                self.simulation.fish.right_eye.get_repeated_computations()
+            self.simulation.fish.right_eye.red_photoreceptor_rf_size = self.environment_params["red_photoreceptor_rf_size"]
+            self.simulation.fish.right_eye.uv_photoreceptor_rf_size = self.environment_params["uv_photoreceptor_rf_size"]
+            self.simulation.fish.right_eye.env_variables = self.environment_params
+            self.simulation.fish.right_eye.get_repeated_computations()
 
-                self.simulation.board.light_gain = self.environment_params["light_gain"]
-                if "light_gradient" in self.environment_params:
-                    self.simulation.board.light_gradient = self.environment_params["light_gradient"]
+            self.simulation.board.light_gain = self.environment_params["light_gain"]
+            if "light_gradient" in self.environment_params:
+                self.simulation.board.light_gradient = self.environment_params["light_gradient"]
 
-                self.simulation.create_current()
+            self.simulation.create_current()
         else:
             self.switched_configuration = False
 

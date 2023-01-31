@@ -14,14 +14,14 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     For this environment, the following stimuli are available: prey, predators.
     """
 
-    def __init__(self, env_variables, stimuli, realistic_bouts, new_simulation, using_gpu, tethered=True, set_positions=False, moving=False,
+    def __init__(self, env_variables, stimuli, realistic_bouts, using_gpu, tethered=True, set_positions=False, moving=False,
                  random=False, reset_each_step=False, reset_interval=1, background=None, draw_screen=False, assay_all_details=None):
-        super().__init__(env_variables, draw_screen, new_simulation, using_gpu)
+        super().__init__(env_variables, draw_screen, using_gpu)
 
         if tethered:
-            self.fish = TetheredFish(self.board, env_variables, self.dark_col, realistic_bouts, new_simulation, using_gpu)
+            self.fish = TetheredFish(self.board, env_variables, self.dark_col, realistic_bouts, using_gpu)
         else:
-            self.fish = Fish(self.board, env_variables, self.dark_col, realistic_bouts, new_simulation, using_gpu)
+            self.fish = Fish(self.board, env_variables, self.dark_col, realistic_bouts, using_gpu)
         self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 
         # TODO: Unify in future with other stimuli
@@ -111,33 +111,32 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.space.step(self.env_variables['phys_dt'])
 
-            if self.new_simulation:
-                # Salt health
-                if self.env_variables["salt"]:
-                    salt_damage = self.salt_gradient[int(self.fish.body.position[0]), int(self.fish.body.position[1])]
-                    self.salt_damage_history.append(salt_damage)
-                    self.fish.salt_health = self.fish.salt_health + self.env_variables["salt_recovery"] - salt_damage
-                    if self.fish.salt_health > 1.0:
-                        self.fish.salt_health = 1.0
-                    if self.fish.salt_health < 0:
-                        print("Fish too salty")
-                        done = True
-                    if "salt_reward_penalty" in self.env_variables:
-                        if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables[
-                            "salt_recovery"]:
-                            reward -= self.env_variables["salt_reward_penalty"] * salt_damage
-                # Energy level
+            # Salt health
+            if self.env_variables["salt"]:
+                salt_damage = self.salt_gradient[int(self.fish.body.position[0]), int(self.fish.body.position[1])]
+                self.salt_damage_history.append(salt_damage)
+                self.fish.salt_health = self.fish.salt_health + self.env_variables["salt_recovery"] - salt_damage
+                if self.fish.salt_health > 1.0:
+                    self.fish.salt_health = 1.0
+                if self.fish.salt_health < 0:
+                    print("Fish too salty")
+                    done = True
+                if "salt_reward_penalty" in self.env_variables:
+                    if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables[
+                        "salt_recovery"]:
+                        reward -= self.env_variables["salt_reward_penalty"] * salt_damage
+            # Energy level
 
-                if self.env_variables["energy_state"]:
-                    reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
-                    if self.assay_full_detail["energy_state_control"] == "Held":
-                        self.fish.energy_level = 1.0
-                    elif self.assay_full_detail["energy_state_control"] is list:
-                        self.fish.energy_level = self.assay_full_detail["energy_state_control"][self.num_steps]
-                    self.energy_level_log.append(self.fish.energy_level)
-                    if self.fish.energy_level < 0:
-                        print("Fish ran out of energy")
-                        done = True
+            if self.env_variables["energy_state"]:
+                reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
+                if self.assay_full_detail["energy_state_control"] == "Held":
+                    self.fish.energy_level = 1.0
+                elif self.assay_full_detail["energy_state_control"] is list:
+                    self.fish.energy_level = self.assay_full_detail["energy_state_control"][self.num_steps]
+                self.energy_level_log.append(self.fish.energy_level)
+                if self.fish.energy_level < 0:
+                    print("Fish ran out of energy")
+                    done = True
 
             if self.fish.touched_edge:
                 self.fish.touched_edge = False

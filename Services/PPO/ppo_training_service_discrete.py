@@ -24,8 +24,6 @@ def ppo_training_target_discrete(trial, total_steps, episode_number, memory_frac
                                           config_name=trial["Environment Name"],
                                           realistic_bouts=trial["Realistic Bouts"],
                                           continuous_actions=trial["Continuous Actions"],
-                                          new_simulation=trial["New Simulation"],
-
                                           model_exists=trial["Model Exists"],
                                           configuration_index=configuration_index,
                                           full_logs=trial["Full Logs"],
@@ -37,7 +35,7 @@ def ppo_training_target_discrete(trial, total_steps, episode_number, memory_frac
 class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_actions, new_simulation, model_exists, configuration_index,
+                 config_name, realistic_bouts, continuous_actions, model_exists, configuration_index,
                  full_logs, profile_speed):
         super().__init__(model_name=model_name, trial_number=trial_number,
                          total_steps=total_steps, episode_number=episode_number,
@@ -45,7 +43,6 @@ class PPOTrainingServiceDiscrete(TrainingService, DiscretePPO):
                          memory_fraction=memory_fraction, config_name=config_name,
                          realistic_bouts=realistic_bouts,
                          continuous_actions=continuous_actions,
-                         new_simulation=new_simulation,
                          model_exists=model_exists,
                          configuration_index=configuration_index,
                          full_logs=full_logs,

@@ -7,7 +7,7 @@ class BaseNetwork:
 
     """A base network containing all components used in child networks."""
 
-    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim, new_simulation):
+    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim):
 
         self.num_arms = simulation.fish.left_eye.observation_size  # Rays for each eye
         self.rnn_dim = rnn_dim

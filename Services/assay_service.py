@@ -20,12 +20,12 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 class AssayService(BaseService):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_environment, new_simulation, assays, set_random_seed,
+                 config_name, realistic_bouts, continuous_environment, assays, set_random_seed,
                  assay_config_name, checkpoint, behavioural_recordings, network_recordings, interventions):
 
         # Set random seed
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                         config_name, realistic_bouts, continuous_environment, new_simulation)
+                         config_name, realistic_bouts, continuous_environment)
 
         print("AssayService Constructor called")
 
@@ -46,10 +46,10 @@ class AssayService(BaseService):
         # Create environment so that network has access
         if self.continuous_actions:
             self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                new_simulation, using_gpu)
+                                                                using_gpu)
         else:
             self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                              new_simulation, using_gpu)
+                                                              using_gpu)
 
         # Metadata
         self.episode_number = episode_number
@@ -223,7 +223,6 @@ class AssayService(BaseService):
             if self.continuous_actions:
                 self.simulation = ControlledStimulusEnvironmentContinuous(self.environment_params, assay["stimuli"],
                                                                           self.realistic_bouts,
-                                                                          self.new_simulation,
                                                                           self.using_gpu,
                                                                           tethered=assay["Tethered"],
                                                                           set_positions=assay["set positions"],
@@ -237,7 +236,6 @@ class AssayService(BaseService):
             else:
                 self.simulation = ControlledStimulusEnvironment(self.environment_params, assay["stimuli"],
                                                                 self.realistic_bouts,
-                                                                self.new_simulation,
                                                                 self.using_gpu,
                                                                 tethered=assay["Tethered"],
                                                                 set_positions=assay["set positions"],
@@ -251,22 +249,22 @@ class AssayService(BaseService):
         elif assay["stimulus paradigm"] == "Naturalistic":
             if self.continuous_actions:
                 self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                    self.new_simulation, self.using_gpu,
+                                                                    self.using_gpu,
                                                                     collisions=assay["collisions"],
                                                                     relocate_fish=self.relocate_fish)
             else:
                 self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                  self.new_simulation, self.using_gpu,
+                                                                  self.using_gpu,
                                                                   relocate_fish=self.relocate_fish)
 
         else:
             if self.continuous_actions:
                 self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                    self.new_simulation, self.using_gpu,
+                                                                    self.using_gpu,
                                                                     relocate_fish=self.relocate_fish)
             else:
                 self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                  self.new_simulation, self.using_gpu,
+                                                                  self.using_gpu,
                                                                   relocate_fish=self.relocate_fish)
 
     def ablate_units(self, ablated_layers):

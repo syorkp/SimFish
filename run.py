@@ -181,8 +181,46 @@ dqn_gamma_analysis_across_scaffold_1 = [
     }
 ]
 
+assay_test = [
+    {
+        "Model Name": "local_test",
+        "Environment Name": "local_test",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 1,
+        "Run Mode": "Assay",
+        "Learning Algorithm": "DQN",
+        "behavioural recordings": ["environmental positions", "observation"],
+        "network recordings": ["rnn_shared", "internal_state"],
+        "Assays": [
+            {
+                "assay id": "Naturalistic",
+                "stimulus paradigm": "Naturalistic",
+                "repeats": 10,
+                "duration": 100,
+                "Tethered": False,
+                "save frames": False,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+            },
+        ]
+    }
+    ]
 #                   TRAINING - DQN
 
+local_test = [
+    {
+        "Model Name": "local_test",
+        "Environment Name": "local_test",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Learning Algorithm": "DQN",
+    },
+]
 dqn_gamma_1 = [
     {
         "Model Name": "dqn_gamma",

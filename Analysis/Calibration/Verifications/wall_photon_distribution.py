@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.eye import Eye
-from Tools.drawing_board_new import NewDrawingBoard
+from Tools.drawing_board import DrawingBoard
 
 
 def get_orientation_to_closest_wall(width, height, x, y):
@@ -53,7 +53,7 @@ def generate_wall_inputs_full_field(eye, drawing_board, width, height, env_varia
 
 
 def build_board_and_eye(env_variables):
-    board = NewDrawingBoard(env_variables["width"], env_variables["height"], env_variables["decay_rate"],
+    board = DrawingBoard(env_variables["width"], env_variables["height"], env_variables["decay_rate"],
                             env_variables["uv_photoreceptor_rf_size"], False, False, 1,
                             light_gain=env_variables["light_gain"], visible_scatter=env_variables["bkg_scatter"])
 

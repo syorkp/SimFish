@@ -421,11 +421,11 @@ if __name__ == "__main__":
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-5")
-    model_name = "dqn_new-2"
-    data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-11")
-    assay_config_name = "dqn_new_2"
-    draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
-                 trim_to_fish=True, showed_region_quad=750, save_id="dqn_new_diverging_rnn", include_background=True)
+    model_name = "local_test-1"
+    data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
+    assay_config_name = "local_test"
+    draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=True,
+                 trim_to_fish=False, showed_region_quad=50, save_id="try", include_background=True)
 
 
 

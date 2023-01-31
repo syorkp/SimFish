@@ -20,11 +20,6 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
     else:
         using_gpu = True
 
-    if "New Simulation" in trial:
-        new_simulation = trial["New Simulation"]
-    else:
-        new_simulation = True
-
     if "Continuous Actions" in trial:
         continuous_actions = trial["Continuous Actions"]
     else:
@@ -75,8 +70,6 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
                                         config_name=trial["Environment Name"],
                                         realistic_bouts=realistic_bouts,
                                         continuous_environment=continuous_actions,
-                                        new_simulation=new_simulation,
-
                                         assays=trial["Assays"],
                                         set_random_seed=set_random_seed,
                                         assay_config_name=trial["Assay Configuration Name"],
@@ -93,7 +86,7 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
 class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_environment, new_simulation, assays, set_random_seed,
+                 config_name, realistic_bouts, continuous_environment, assays, set_random_seed,
                  assay_config_name, sb_emulator, checkpoint, behavioural_recordings, network_recordings, interventions):
         """
         Runs a set of assays provided by the run configuraiton.
@@ -109,7 +102,6 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                          config_name=config_name,
                          realistic_bouts=realistic_bouts,
                          continuous_environment=continuous_environment,
-                         new_simulation=new_simulation,
                          assays=assays,
                          set_random_seed=set_random_seed,
                          assay_config_name=assay_config_name,

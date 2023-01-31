@@ -3,7 +3,7 @@ Script to directly compute photons from bkg_scatter given all bkg_scatter, decay
 """
 
 import numpy as np
-from Tools.drawing_board_new import NewDrawingBoard
+from Tools.drawing_board import DrawingBoard
 from Environment.Fish.eye import Eye
 from Analysis.load_model_config import load_assay_configuration_files
 
@@ -14,7 +14,7 @@ def get_max_bkg_scatter(bkg_scatter, decay_rate, pr_size, width, height, luminan
     fish_orientation = np.pi/4
 
     # Create board and get masked pixels
-    board = NewDrawingBoard(width, height, decay_rate, pr_size, False, False, 1, light_gain=luminance, visible_scatter=bkg_scatter)
+    board = DrawingBoard(width, height, decay_rate, pr_size, False, False, 1, light_gain=luminance, visible_scatter=bkg_scatter)
     board.erase(bkg_scatter)
     masked_pixels = board.get_masked_pixels(fish_position, np.array([]), np.array([]))
 
