@@ -247,8 +247,8 @@ ppo_gamma_analysis_across_scaffold_1 = [
         "Analysis": [
             {
                 "analysis id": "Turn-Analysis",
-                "analysis script": "Analysis.Behavioural.Exploration.turning_analysis_discrete",
-                "analysis function": "plot_all_turn_analysis",
+                "analysis script": "Analysis.Behavioural.Exploration.turning_analysis_continuous",
+                "analysis function": "plot_all_turn_analysis_multiple_models_continuous",
                 "analysis arguments": ["model_name", "assay_config_name", "Naturalistic", 10],
                 "Delete Data": True
             }

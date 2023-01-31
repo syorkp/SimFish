@@ -2,6 +2,7 @@ import numpy as np
 import json
 from datetime import datetime
 import copy
+import h5py
 
 import tensorflow.compat.v1 as tf
 
@@ -169,7 +170,6 @@ class AssayService(BaseService):
                 self.load_assay_buffer()
                 self.simulation.load_simulation()
 
-
             self.perform_assay(assay)
 
             if assay["save stimuli"]:
@@ -194,8 +194,13 @@ class AssayService(BaseService):
                 new_assays.append(new_assay_format)
         return new_assays
 
-    def load_assay_buffer(self):
-        ...
+    def load_assay_buffer(self, assay):
+        # Get the assay id of the base trial (without mod)
+        assay_id = assay["assay id"]
+        file = h5py.File(f"{self.data_save_location}/{self.assay_configuration_id}.h5", "r")
+        g = file.get(assay_id)
+        data = {key: np.array(g.get(key)) for key in g.keys()}
+
 
     def perform_assay(self, assay):
         # self.assay_output_data_format = {key: None for key in
@@ -305,7 +310,6 @@ class AssayService(BaseService):
                 self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
                                                                   self.new_simulation, self.using_gpu,
                                                                   relocate_fish=self.relocate_fish)
-
 
     def ablate_units(self, ablated_layers):
 

@@ -6,6 +6,7 @@ import pymunk
 
 from Environment.base_environment import BaseEnvironment
 from Environment.Fish.fish import Fish
+from Analysis.Behavioural.Tools.get_fish_prey_incidence import get_fish_prey_incidence_multiple_prey
 
 
 class NaturalisticEnvironment(BaseEnvironment):
@@ -162,7 +163,25 @@ Sand grain: {self.sand_grain_associated_reward}
 
     def check_condition_met(self):
         """For the split assay mode - checks whether the specified condition is met at each step"""
-        ...
+
+        # Note of conditions to impose: Remove nearby prey, add nearby prey.
+        if self.split_event == "One-Prey-Close":
+            max_angular_deviation = np.pi/2
+            max_distance = 100  # 10mm
+
+            prey_near = self.check_proximity_all_prey(sensing_distance=max_distance)
+            fish_prey_incidence = self.get_fish_prey_incidence()
+            within_visual_field = np.absolute(fish_prey_incidence) < max_angular_deviation
+
+            prey_close = prey_near * within_visual_field
+            num_prey_close = np.sum(prey_close * 1)
+            if num_prey_close == 1:
+                return True
+
+        elif self.split_event == "Empty-Surroundings":
+            ...
+
+        return False
 
     def show_new_channel_sectors(self, left_eye_pos, right_eye_pos):
         left_sectors, right_sectors = self.fish.get_all_sectors([left_eye_pos[0], left_eye_pos[1]],
@@ -393,6 +412,10 @@ Sand grain: {self.sand_grain_associated_reward}
         #     internal_state = np.array([[in_light, self.fish.energy_level]])
         # else:
         #     internal_state = np.array([[in_light]])
+
+        if self.run_version == "Original":
+            if self.check_condition_met():
+                done = True
 
         if self.new_simulation:
             observation, frame_buffer = self.resolve_visual_input_new(save_frames, activations, internal_state,

@@ -249,7 +249,7 @@ env = {
        'uv_scaling_factor': 1,  # Pixel counts are multiplied by this
        'red_2_scaling_factor': 1/500.0,  # Pixel counts are multiplied by this
        'red_occlusion_gain': 0.0,  # 0 Being complete construction.
-       'uv_occlusion_gain': 1.0,
+       'uv_occlusion_gain': 0.0,
        'red2_occlusion_gain': 0.0,
 
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
