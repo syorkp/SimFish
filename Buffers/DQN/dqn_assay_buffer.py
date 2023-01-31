@@ -42,6 +42,13 @@ class DQNAssayBuffer:
         self.conv_layer_buffer = []
         self.efference_copy_buffer = []
 
+        # Extra buffers (needed for perfect reloading of states)
+        self.prey_orientation_buffer = []
+        self.predator_orientation_buffer = []
+        self.prey_age_buffer = []
+        self.prey_gait_buffer = []
+
+
     def reset(self):
         self.action_buffer = []
         self.observation_buffer = []
@@ -68,6 +75,12 @@ class DQNAssayBuffer:
 
             self.conv_layer_buffer = []
 
+            # Extra buffers (needed for perfect reloading of states)
+            self.prey_orientation_buffer = []
+            self.predator_orientation_buffer = []
+            self.prey_age_buffer = []
+            self.prey_gait_buffer = []
+
     def add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
@@ -81,7 +94,9 @@ class DQNAssayBuffer:
 
     def save_environmental_positions(self, action, fish_position, prey_consumed, predator_present, prey_positions,
                                      predator_position, sand_grain_positions, vegetation_positions, fish_angle,
-                                     salt_health, efference_copy):
+                                     salt_health, efference_copy,
+                                     prey_orientation, predator_orientation, prey_age, prey_gait):
+
         self.action_buffer.append(action)
         self.fish_position_buffer.append(fish_position)
         self.prey_consumed_buffer.append(prey_consumed)
@@ -94,6 +109,12 @@ class DQNAssayBuffer:
         self.salt_health_buffer.append(salt_health)
 
         self.efference_copy_buffer.append(efference_copy)
+
+        # Extra buffers (needed for perfect reloading of states)
+        self.prey_orientation_buffer.append(prey_orientation)
+        self.predator_orientation_buffer.append(predator_orientation)
+        self.prey_age_buffer.append(prey_age)
+        self.prey_gait_buffer.append(prey_gait)
 
     def create_data_group(self, key, data, assay_group):
         # TODO: Compress data.
@@ -217,6 +238,7 @@ class DQNAssayBuffer:
             for layer in self.unit_recordings.keys():
                 self.create_data_group(layer, np.array(self.unit_recordings[layer]).squeeze(), assay_group)
             self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer).squeeze(), assay_group)
+            self.create_data_group("rnn_state_actor_ref", np.array(self.rnn_state_ref_buffer).squeeze(), assay_group)
 
             self.internal_state_buffer = np.array(self.internal_state_buffer)
             self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
@@ -235,6 +257,7 @@ class DQNAssayBuffer:
         else:
             if "rnn state" in self.unit_recordings:
                 self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer).squeeze(), assay_group)
+                self.create_data_group("rnn_state_actor_ref", np.array(self.rnn_state_ref_buffer).squeeze(), assay_group)
 
             if "internal state" in self.unit_recordings:
                 self.internal_state_buffer = np.array(self.internal_state_buffer)
@@ -284,6 +307,12 @@ class DQNAssayBuffer:
             self.create_data_group("vegetation_positions", np.array(self.vegetation_position_buffer), assay_group)
 
             self.create_data_group("background", np.array(background), assay_group)
+
+            # Extra buffers (needed for perfect reloading of states)
+            self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
+            self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
+            self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
+            self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
 
         if "reward assessments" in self.recordings:
             self.create_data_group("reward", np.array(self.reward_buffer), assay_group)

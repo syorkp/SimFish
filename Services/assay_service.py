@@ -210,6 +210,7 @@ class AssayService(BaseService):
         self.buffer.reward_buffer = data["reward"].tolist()
         self.buffer.internal_state_buffer = data["internal_state"].tolist()
         self.buffer.rnn_state_buffer = data["rnn_state_actor"].tolist()
+        self.buffer.rnn_state_ref_buffer = data["rnn_state_actor_ref"].tolist()
 
         self.buffer.fish_position_buffer = data["fish_position"].tolist()
         self.buffer.fish_angle_buffer = data["angle"].tolist()
@@ -221,7 +222,12 @@ class AssayService(BaseService):
         self.buffer.salt_location = data["salt_location"].tolist()
         self.buffer.prey_consumed_buffer = data["consumed"].tolist()
 
-        # TODO: Missing: Currents, advantage buffer, return buffer, reflected rnn state, prey_orientations
+        self.buffer.prey_orientations_buffer = data["prey_orientations"].tolist()
+        self.buffer.predator_orientation_buffer = data["predator_orientation"].tolist()
+        self.buffer.prey_age_buffer = data["prey_ages"].tolist()
+        self.buffer.prey_gait_buffer = data["prey_gaits"].tolist()
+
+        # TODO: Missing: Advantage buffer, return buffer
 
         # Set number of steps - to both service and environment
         num_steps_elapsed = data["observation"].shape[0]
@@ -229,16 +235,16 @@ class AssayService(BaseService):
         # Load RNN states to model.
         num_rnns = self.buffer.rnn_state_buffer.shape[1] / 2
         self.init_rnn_state = tuple(
-            (np.array(self.buffer.rnn_state_buffer[0, shape]),
-             np.array(self.buffer.rnn_state_buffer[0, shape])) for shape in
+            (np.array(self.buffer.rnn_state_buffer[-1, shape]),
+             np.array(self.buffer.rnn_state_buffer[-1, shape])) for shape in
             range(0, int(num_rnns), 2))
         self.init_rnn_state_ref = tuple(
-            (np.array(self.buffer.rnn_state_buffer[0, shape]),
-             np.array(self.buffer.rnn_state_buffer[0, shape])) for shape in
+            (np.array(self.buffer.rnn_state_buffer_ref[-1, shape]),
+             np.array(self.buffer.rnn_state_buffer_ref[-1, shape])) for shape in
             range(0, int(num_rnns), 2))
 
         # Impose background.
-        return data["background"], data["prey_orientations"], num_steps_elapsed
+        return data["background"], num_steps_elapsed
 
     def perform_assay(self, assay):
         # self.assay_output_data_format = {key: None for key in

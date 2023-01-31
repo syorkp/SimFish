@@ -161,9 +161,32 @@ class DQNAssayService(AssayService, BaseDQN):
         # self.assay_output_data_format = {key: None for key in assay["recordings"]}
         # self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
 
+        # TODO: move back to outer so applies to PPO too.
         if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
-            background, prey_orientations, num_steps = self.load_assay_buffer(assay)
-            self.simulation.load_simulation(self.buffer, background, prey_orientations, num_steps)
+            background, num_steps = self.load_assay_buffer(assay)
+
+            o = self.simulation.load_simulation(self.buffer, background, num_steps)
+
+
+            a, updated_rnn_state, rnn2_state, network_layers, sa, sv = \
+                self.sess.run(
+                    [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
+                     self.main_QN.network_graph,
+
+                     self.main_QN.streamA,
+                     self.main_QN.streamV,
+                     ],
+                    feed_dict={self.main_QN.observation: o,
+                               self.main_QN.internal_state: internal_state,
+                               self.main_QN.prev_actions: a,
+                               self.main_QN.train_length: 1,
+                               self.main_QN.rnn_state_in: rnn_state,
+
+                               self.main_QN.batch_size: 1,
+                               self.main_QN.exp_keep: 1.0,
+                               # self.main_QN.learning_rate: self.learning_params["learning_rate"],
+                               })
+
             a = ...
             self.step_number = num_steps
 

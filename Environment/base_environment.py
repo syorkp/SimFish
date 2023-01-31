@@ -1067,7 +1067,45 @@ class BaseEnvironment:
         elif y_position > self.env_variables["height"] - buffer_region:
             return True
 
-    def create_realistic_predator(self):
+    def create_realistic_predator_existing(self, predator_position, predator_orientation, predator_target):
+
+        self.predator_body = pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia'])
+        self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_size'])
+        self.predator_shape.elasticity = 1.0
+
+        self.predator_body.position = (predator_position[0], predator_position[1])
+        self.predator_body.angle = predator_orientation
+        self.predator_target = predator_target
+        self.total_predator_steps = 0
+
+        if self.new_simulation:
+            self.predator_shape.color = (0, 1, 0)
+            self.predator_location = (predator_position[0], predator_position[1])
+            self.remaining_predator_attacks = 1 + np.sum(
+                np.random.choice([0, 1], self.env_variables["max_predator_attacks"] - 1,
+                                 p=[1.0 - self.env_variables["further_attack_probability"],
+                                    self.env_variables["further_attack_probability"]]))
+            if self.env_variables["predator_first_attack_loom"]:
+                # Set fish position based on final predator size
+                self.predator_location = (predator_position[0], predator_position[1])
+
+                self.predator_body.position = self.predator_location
+                self.loom_predator_current_size = self.env_variables['initial_predator_size']
+                self.first_attack = True
+        else:
+            self.predator_shape.color = (0, 0, 1)
+
+        self.predator_shape.collision_type = 5
+        self.predator_shape.filter = pymunk.ShapeFilter(
+            mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # Category 2 objects cant collide with predator
+
+        self.space.add(self.predator_body, self.predator_shape)
+
+
+    def create_realistic_predator(self, predator_position=None, predator_orientation=None, predator_target=None):
+        if predator_position is not None:
+            return self.create_realistic_predator_existing(predator_position, predator_orientation, predator_target)
+
         self.predator_body = pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia'])
         self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_size'])
         self.predator_shape.elasticity = 1.0

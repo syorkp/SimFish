@@ -84,9 +84,13 @@ class BaseDQN:
                         with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
                             print("Successfully loaded previous state.")
                             data = json.load(f)
-                            num_rnns = len(data.keys())/4
-                            self.init_rnn_state = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
-                            self.init_rnn_state_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
+                            num_rnns = len(data.keys()) / 4
+                            self.init_rnn_state = tuple(
+                                (np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for
+                                shape in range(int(num_rnns)))
+                            self.init_rnn_state_ref = tuple(
+                                (np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"]))
+                                for shape in range(int(num_rnns)))
 
                         return
                     else:
@@ -94,7 +98,8 @@ class BaseDQN:
                             print("Successfully loaded previous state.")
                             data = json.load(f)
                             self.init_rnn_state = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
-                            self.init_rnn_state_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
+                            self.init_rnn_state_ref = (
+                            np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
 
                         return
 
@@ -272,7 +277,7 @@ class BaseDQN:
             return self._step_loop_old(o, internal_state, a, rnn_state)
 
     def assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
-        if self.new_simulation:# and self.environment_params["use_dynamic_network"]:
+        if self.new_simulation:  # and self.environment_params["use_dynamic_network"]:
             return self._assay_step_loop_new(o, internal_state, a, rnn_state, rnn_state_ref)
         else:
             return self._assay_step_loop_old(o, internal_state, a, rnn_state, rnn_state_ref)
@@ -309,7 +314,8 @@ class BaseDQN:
                                                                                                  frame_buffer=self.frame_buffer,
                                                                                                  save_frames=self.save_frames,
                                                                                                  activations=(sa,))
-        action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+        action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
+                              self.simulation.fish.prev_action_angle]
         self.total_steps += 1
         return o, action_reafference, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state
 
@@ -338,8 +344,8 @@ class BaseDQN:
                            self.main_QN.internal_state: internal_state,
                            self.main_QN.prev_actions: [a],
                            self.main_QN.train_length: 1,
-                           self.main_QN.rnn_state_in: rnn_state ,
-                           self.main_QN.rnn_state_in_ref: rnn_state_ref, # TODO: TEST CHANGE HERE:
+                           self.main_QN.rnn_state_in: rnn_state,
+                           self.main_QN.rnn_state_in_ref: rnn_state_ref,  # TODO: TEST CHANGE HERE:
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0,
                            self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -351,7 +357,8 @@ class BaseDQN:
                                                                                                  frame_buffer=self.frame_buffer,
                                                                                                  save_frames=self.save_frames,
                                                                                                  activations=(sa,))
-        action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+        action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
+                              self.simulation.fish.prev_action_angle]
 
         if self.save_environmental_data:
             sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
@@ -480,7 +487,8 @@ class BaseDQN:
                                                                                                   frame_buffer=self.frame_buffer)
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
-        action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+        action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
+                              self.simulation.fish.prev_action_angle]
 
         # Update buffer
         self.buffer.add_training(observation=o,
@@ -494,6 +502,14 @@ class BaseDQN:
 
         # Saving step data
         if "environmental positions" in self.buffer.recordings:
+            prey_orientations = [p.body.angle for p in self.simulation.prey_bodies]
+            try:
+                predator_orientation = self.simulation.predator_body.body.angle
+            except:
+                predator_orientation = 0
+            prey_ages = self.simulation.prey_ages
+            prey_gait = self.simulation.paramecia_gaits
+
             self.buffer.save_environmental_positions(chosen_a,
                                                      self.simulation.fish.body.position,
                                                      self.simulation.prey_consumed_this_step,
@@ -504,7 +520,11 @@ class BaseDQN:
                                                      vegetation_positions,
                                                      self.simulation.fish.body.angle,
                                                      self.simulation.fish.salt_health,
-                                                     efference_copy=a
+                                                     efference_copy=a,
+                                                     prey_orientation=prey_orientations,
+                                                     predator_orientation=predator_orientation,
+                                                     prey_age=prey_ages,
+                                                     prey_gait=prey_gait
                                                      )
         self.buffer.make_desired_recordings(network_layers)
 
@@ -539,10 +559,10 @@ class BaseDQN:
                                                                                                   frame_buffer=self.frame_buffer)
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
         if self.full_reafference:
-            action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+            action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
+                                  self.simulation.fish.prev_action_angle]
         else:
             action_reafference = chosen_a
-
 
         # Update buffer
         self.buffer.add_training(observation=o,
@@ -555,6 +575,14 @@ class BaseDQN:
 
         # Saving step data
         if "environmental positions" in self.buffer.recordings:
+            prey_orientations = [p.body.angle for p in self.simulation.prey_bodies]
+            try:
+                predator_orientation = self.simulation.predator_body.body.angle
+            except:
+                predator_orientation = 0
+            prey_ages = self.simulation.prey_ages
+            prey_gait = self.simulation.paramecia_gaits
+
             self.buffer.save_environmental_positions(chosen_a,
                                                      self.simulation.fish.body.position,
                                                      self.simulation.prey_consumed_this_step,
@@ -565,7 +593,11 @@ class BaseDQN:
                                                      vegetation_positions,
                                                      self.simulation.fish.body.angle,
                                                      self.simulation.fish.salt_health,
-                                                     efference_copy=a
+                                                     efference_copy=a,
+                                                     prey_orientation=prey_orientations,
+                                                     predator_orientation=predator_orientation,
+                                                     prey_age=prey_ages,
+                                                     prey_gait=prey_gait
                                                      )
         if "convolutional layers" in self.buffer.unit_recordings:
             self.buffer.save_cnn_data(conv_layers)
@@ -642,7 +674,7 @@ class BaseDQN:
             self.main_QN.train_length: self.learning_params['trace_length'],
             self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
             self.main_QN.rnn_state_in: state_train,
-            self.main_QN.rnn_state_in_ref: state_train_ref, # TODO: TEST CHANGE HERE:
+            self.main_QN.rnn_state_in_ref: state_train_ref,  # TODO: TEST CHANGE HERE:
             self.main_QN.batch_size: self.learning_params['batch_size'],
             self.main_QN.exp_keep: 1.0,
             self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -654,7 +686,7 @@ class BaseDQN:
             self.target_QN.train_length: self.learning_params['trace_length'],
             self.target_QN.internal_state: np.vstack(train_batch[:, 3]),
             self.target_QN.rnn_state_in: state_train,
-            self.target_QN.rnn_state_in_ref: state_train_ref, # TODO: TEST CHANGE HERE:
+            self.target_QN.rnn_state_in_ref: state_train_ref,  # TODO: TEST CHANGE HERE:
             self.target_QN.batch_size: self.learning_params['batch_size'],
             self.target_QN.exp_keep: 1.0,
             self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -694,7 +726,6 @@ class BaseDQN:
         # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
         train_batch = self.experience_buffer.sample(self.learning_params['batch_size'],
                                                     self.learning_params['trace_length'])
-
 
         # Below we perform the Double-DQN update to the target Q-values
         Q1 = self.sess.run(self.main_QN.predict, feed_dict={

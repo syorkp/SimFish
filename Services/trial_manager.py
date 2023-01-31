@@ -413,13 +413,13 @@ class TrialManager:
 
                 # Run again, twice from split point, with random seed set
                 if complete:
-                    # First (normal) trial completion
-                    trial["Run Index"] = "Original-Completion"
+                    # Second (modified) trial completion
+                    trial["Run Index"] = "Modified-Completion"
                     new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon,
                                                configuration)
 
-                    # Second (modified) trial completion
-                    trial["Run Index"] = "Modified-Completion"
+                    # First (normal) trial completion
+                    trial["Run Index"] = "Original-Completion"
                     new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon,
                                                configuration)
 

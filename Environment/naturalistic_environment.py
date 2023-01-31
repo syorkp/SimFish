@@ -157,27 +157,49 @@ Sand grain: {self.sand_grain_associated_reward}
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
 
-    def load_simulation(self, buffer, background, prey_orientations, predator_orientations, num_steps):
+    def load_simulation(self, buffer, background, num_steps):
         self.num_steps = num_steps
         self.board.background_grating = self.chosen_math_library.array(background)
 
         self.salt_location = buffer.salt_location
         self.reset_salt_gradient(buffer.salt_location)
 
+        # Create prey in proper positions and orientations
         final_step_prey_positions = buffer.prey_positions_buffer[-1]
-        for p, o in zip(final_step_prey_positions, prey_orientations):
+        final_step_prey_orientations = buffer.prey_orientations_buffer[-1]
+        for p, o in zip(final_step_prey_positions, final_step_prey_orientations):
             if p[0] != 10000.0:
                 self.create_prey(prey_position=p, prey_orientation=o)
 
-        final_step_predator_positions = buffer.predator_positions_buffer[-1]
+        # Create predators in proper position and orientation.
+        final_step_predator_position = buffer.predator_positions_buffer[-1]
+        final_step_predator_orientation = buffer.predator_orientations_buffer[-1]
+        if final_step_predator_position[0] != 10000.0:
 
+            # Find step when predator was introduced. Get fish position then.
+            predator_present = (buffer.predator_positions_buffer[:, 0] != 10000.0)
+            predator_lifespan = 0
+            for p in reversed(predator_present):
+                if p:
+                    predator_lifespan += 1
+                else:
+                    break
+            predator_target = buffer.fish_position_buffer[-predator_lifespan]
 
-        # Create prey in proper positions and orientations
-        # Create predators "
+            self.create_realistic_predator(predator_position=final_step_predator_position,
+                                           predator_orientation=final_step_predator_orientation,
+                                           predator_target=predator_target)
 
         self.fish.body.position = np.array(buffer.fish_position_buffer[-1])
         self.fish.prev_action_impulse = buffer.internal_state_buffer[-1][1]
         self.fish.prev_action_angle = buffer.internal_state_buffer[-1][2]
+
+        # Get latest observation.
+        observation, frame_buffer = self.resolve_visual_input_new(save_frames=False,
+                                                                  activations=[],
+                                                                  internal_state=[],
+                                                                  frame_buffer=[])
+        return observation
 
 
 
