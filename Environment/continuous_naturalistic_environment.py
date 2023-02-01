@@ -9,7 +9,7 @@ from Environment.Fish.continuous_fish import ContinuousFish
 class ContinuousNaturalisticEnvironment(NaturalisticEnvironment):
 
     def __init__(self, env_variables, realistic_bouts, using_gpu, draw_screen=False, fish_mass=None,
-                 collisions=True, relocate_fish=None, num_actions=10, run_version="Original", split_event=None,
+                 collisions=True, relocate_fish=None, num_actions=10, run_version=None, split_event=None,
                  modification=None):
 
         super().__init__(env_variables, realistic_bouts, using_gpu, draw_screen, fish_mass, collisions,

@@ -222,6 +222,7 @@ Sand grain: {self.sand_grain_associated_reward}
         elif self.split_event == "Empty-Surroundings":
             ...
 
+
         else:
             print("Invalid Split Event Entered")
 
