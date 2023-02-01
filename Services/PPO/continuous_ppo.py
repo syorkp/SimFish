@@ -313,6 +313,14 @@ class ContinuousPPO(BasePPO):
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
 
         if "environmental positions" in self.buffer.recordings:
+            prey_orientations = [p.angle for p in self.simulation.prey_bodies]
+            try:
+                predator_orientation = self.simulation.predator_body.angle
+            except:
+                predator_orientation = 0
+            prey_ages = self.simulation.prey_ages
+            prey_gait = self.simulation.paramecia_gaits
+
             self.buffer.save_environmental_positions(self.simulation.fish.body.position,
                                                      self.simulation.prey_consumed_this_step,
                                                      self.simulation.predator_body,
@@ -323,6 +331,10 @@ class ContinuousPPO(BasePPO):
                                                      self.simulation.fish.body.angle,
                                                      self.simulation.fish.salt_health,
                                                      efference_copy=a,
+                                                     prey_orientation=prey_orientations,
+                                                     predator_orientation=predator_orientation,
+                                                     prey_age=prey_ages,
+                                                     prey_gait=prey_gait
                                                      )
 
         self.buffer.make_desired_recordings(network_layers)
@@ -609,6 +621,14 @@ class ContinuousPPO(BasePPO):
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
 
         if "environmental positions" in self.buffer.recordings:
+            prey_orientations = [p.angle for p in self.simulation.prey_bodies]
+            try:
+                predator_orientation = self.simulation.predator_body.angle
+            except:
+                predator_orientation = 0
+            prey_ages = self.simulation.prey_ages
+            prey_gait = self.simulation.paramecia_gaits
+
             self.buffer.save_environmental_positions(self.simulation.fish.body.position,
                                                      self.simulation.prey_consumed_this_step,
                                                      self.simulation.predator_body,
@@ -617,6 +637,10 @@ class ContinuousPPO(BasePPO):
                                                      sand_grain_positions,
                                                      vegetation_positions,
                                                      self.simulation.fish.body.angle,
+                                                     prey_orientation=prey_orientations,
+                                                     predator_orientation=predator_orientation,
+                                                     prey_age=prey_ages,
+                                                     prey_gait=prey_gait
                                                      )
         if "convolutional layers" in self.buffer.recordings:
             self.buffer.save_conv_states(conv1l_actor, conv2l_actor, conv3l_actor, conv4l_actor, conv1r_actor,

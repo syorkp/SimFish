@@ -95,7 +95,7 @@ class DQNAssayBuffer:
     def save_environmental_positions(self, action, fish_position, prey_consumed, predator_present, prey_positions,
                                      predator_position, sand_grain_positions, vegetation_positions, fish_angle,
                                      salt_health, efference_copy,
-                                     prey_orientation, predator_orientation, prey_age, prey_gait):
+                                     prey_orientation=None, predator_orientation=None, prey_age=None, prey_gait=None):
 
         self.action_buffer.append(action)
         self.fish_position_buffer.append(fish_position)
@@ -111,10 +111,11 @@ class DQNAssayBuffer:
         self.efference_copy_buffer.append(efference_copy)
 
         # Extra buffers (needed for perfect reloading of states)
-        self.prey_orientation_buffer.append(prey_orientation)
-        self.predator_orientation_buffer.append(predator_orientation)
-        self.prey_age_buffer.append(prey_age)
-        self.prey_gait_buffer.append(prey_gait)
+        if self.assay:
+            self.prey_orientation_buffer.append(prey_orientation)
+            self.predator_orientation_buffer.append(predator_orientation)
+            self.prey_age_buffer.append(prey_age)
+            self.prey_gait_buffer.append(prey_gait)
 
     def create_data_group(self, key, data, assay_group):
         # TODO: Compress data.

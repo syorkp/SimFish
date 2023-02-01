@@ -64,6 +64,12 @@ class BasePPOBuffer:
             self.rnn_layer_names = []
             self.salt_health_buffer = []
 
+            # Extra buffers (needed for perfect reloading of states)
+            self.prey_orientation_buffer = []
+            self.predator_orientation_buffer = []
+            self.prey_age_buffer = []
+            self.prey_gait_buffer = []
+
     def reset(self):
         self.action_buffer = []
         self.observation_buffer = []
@@ -110,6 +116,12 @@ class BasePPOBuffer:
             self.unit_recordings = None
             self.salt_health_buffer = []
 
+            # Extra buffers (needed for perfect reloading of states)
+            self.prey_orientation_buffer = []
+            self.predator_orientation_buffer = []
+            self.prey_age_buffer = []
+            self.prey_gait_buffer = []
+
         self.pointer = 0
 
     def tidy(self):
@@ -138,7 +150,9 @@ class BasePPOBuffer:
 
     def save_environmental_positions(self, fish_position, prey_consumed, predator_present, prey_positions,
                                      predator_position, sand_grain_positions, vegetation_positions, fish_angle,
-                                     salt_health, efference_copy):
+                                     salt_health, efference_copy,
+                                     prey_orientation=None, predator_orientation=None, prey_age=None, prey_gait=None):
+
         self.fish_position_buffer.append(fish_position)
         self.prey_consumed_buffer.append(prey_consumed)
         self.predator_presence_buffer.append(predator_present)
@@ -149,6 +163,13 @@ class BasePPOBuffer:
         self.fish_angle_buffer.append(fish_angle)
         self.salt_health_buffer.append(salt_health)
         self.efference_copy_buffer.append(efference_copy)
+
+        if self.assay:
+            # Extra buffers (needed for perfect reloading of states)
+            self.prey_orientation_buffer.append(prey_orientation)
+            self.predator_orientation_buffer.append(predator_orientation)
+            self.prey_age_buffer.append(prey_age)
+            self.prey_gait_buffer.append(prey_gait)
 
     def save_conv_states(self, actor_conv1l, actor_conv2l, actor_conv3l, actor_conv4l, actor_conv1r, actor_conv2r,
                          actor_conv3r, actor_conv4r,
@@ -358,8 +379,6 @@ class BasePPOBuffer:
             self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
 
         if "environmental positions" in self.recordings:
-            print(np.array(self.action_buffer).shape)
-            print(np.array(self.action_buffer))
             self.create_data_group("impulse", np.array(self.action_buffer)[:, 0], assay_group)
             self.create_data_group("angle", np.array(self.action_buffer)[:, 1], assay_group)
             self.create_data_group("fish_position", np.array(self.fish_position_buffer), assay_group)
@@ -383,6 +402,12 @@ class BasePPOBuffer:
             except:
                 print(background)
                 print(background.shape)
+
+            # Extra buffers (needed for perfect reloading of states)
+            self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
+            self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
+            self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
+            self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
 
         if "convolutional layers" in self.unit_recordings:
             self.create_data_group("actor_conv1l", np.array(self.actor_conv1l_buffer), assay_group)

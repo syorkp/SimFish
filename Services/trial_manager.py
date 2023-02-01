@@ -393,8 +393,13 @@ class TrialManager:
                             print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Pre-Split Complete")
                             complete = True
 
+
                 # Run again, twice from split point, with random seed set
                 if complete:
+                    if to_delete is not None:
+                        del running_jobs[to_delete]
+                        to_delete = None
+
                     complete = False
                     # Second (modified) trial completion
                     trial["Run Index"] = "Modified-Completion"
@@ -418,6 +423,10 @@ class TrialManager:
                                     f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Post-Split Modified Complete")
                                 complete = True
                 if complete:
+                    if to_delete is not None:
+                        del running_jobs[to_delete]
+                        to_delete = None
+                        
                     # First (normal) trial completion
                     trial["Run Index"] = "Original-Completion"
                     new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon,

@@ -52,7 +52,7 @@ class AssayService(BaseService):
             assays = assays + modified_assay
 
         elif run_version == "Original":
-            ...
+            x = True
         else:
             ...
 
@@ -287,8 +287,11 @@ class AssayService(BaseService):
         else:
             background = self.simulation.board.background_grating[:, :, 0]
 
-        self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id,
-                                    self.get_internal_state_order(), background,
+        self.buffer.save_assay_data(assay_id=assay['assay id'],
+                                    data_save_location=self.data_save_location,
+                                    assay_configuration_id=self.assay_configuration_id,
+                                    internal_state_order=self.get_internal_state_order(),
+                                    background=background,
                                     salt_location=salt_location)
         self.buffer.reset()
         print(f"Assay: {assay['assay id']} Completed")
