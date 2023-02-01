@@ -296,10 +296,12 @@ class ContinuousPPO(BasePPO):
 
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
+        action_reafference = action + [self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+
         # Update buffer
         self.buffer.add_training(observation=o,
                                  internal_state=internal_state,
-                                 action=action,
+                                 action=action_reafference,
                                  reward=given_reward,
                                  value=V,
                                  l_p_action=0,
