@@ -218,12 +218,10 @@ Sand grain: {self.sand_grain_associated_reward}
             num_prey_close = np.sum(prey_close * 1)
             if num_prey_close == 1:
                 return True
-
         elif self.split_event == "Empty-Surroundings":
             ...
-
-
         else:
+            print(self.split_event)
             print("Invalid Split Event Entered")
 
         return False

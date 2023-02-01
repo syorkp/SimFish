@@ -72,14 +72,14 @@ def assay_target(trial, total_steps, episode_number, memory_fraction):
     modification = None
     split_event = None
     if trial["Run Mode"] == "Split-Assay":
+        split_event = trial["Split Event"]
         if "Run Index" not in trial:
-            run_version = "First"
+            run_version = "Original"
         else:
             modification = trial["Modification"]
-            run_version = trial["Run Mode"]
-            split_event = trial["Split Event"]
+            run_version = trial["Run Index"]
     else:
-        run_version = "Original"
+        run_version = None
 
     service = DQNAssayService(model_name=trial["Model Name"],
                               trial_number=trial["Trial Number"],
@@ -163,6 +163,7 @@ class DQNAssayService(AssayService, BaseDQN):
             rnn_state_ref = copy.copy(self.init_rnn_state_ref)
 
         if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
+            print("Loading Simulation")
             o = self.simulation.load_simulation(self.buffer, background)
             internal_state = self.buffer.internal_state_buffer[-1]
             a = self.buffer.action_buffer[-1]

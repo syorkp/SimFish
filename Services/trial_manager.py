@@ -362,11 +362,12 @@ class TrialManager:
                             chosen_function = getattr(chosen_module, analysis["analysis function"])
 
                             chosen_function(*args)
-
-                        if trial["Delete Data"]:
-                            for file in new_data_files:
-                                print(f"Deleting files {file}")
-                                shutil.rmtree(file)
+                        
+                        if "Delete Data" in trial:
+                            if trial["Delete Data"]:
+                                for file in new_data_files:
+                                    print(f"Deleting files {file}")
+                                    shutil.rmtree(file)
 
                         complete = False
 

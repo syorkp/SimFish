@@ -41,19 +41,18 @@ class AssayService(BaseService):
 
         # Handling for split assay version
         if run_version == "Original-Completion":
+            print("Running for completion of original")
             set_random_seed = True
         elif run_version == "Modified-Completion":
+            print("Running for completion of modified")
             set_random_seed = True
-            modified_assays = []
             for assay in assays:
-                modified_assay = copy.copy(assay)
-                modified_assay["assay id"] += "-Mod"
-                modified_assays.append(modified_assay)
-            assays = assays + modified_assay
-
+                assay["assay id"] += "-Mod"
         elif run_version == "Original":
+            print("Running for pre-split original")
             x = True
         else:
+            print("Incorrectly specified.")
             ...
 
         self.run_version = run_version
@@ -71,11 +70,13 @@ class AssayService(BaseService):
             self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
                                                                 using_gpu,
                                                                 run_version=run_version,
+                                                                split_event=split_event,
                                                                 modification=modification)
         else:
             self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
                                                               using_gpu,
                                                               run_version=run_version,
+                                                              split_event=split_event,
                                                               modification=modification)
 
         # Metadata
@@ -239,14 +240,14 @@ class AssayService(BaseService):
         num_steps_elapsed = data["observation"].shape[0]
 
         # Load RNN states to model.
-        num_rnns = self.buffer.rnn_state_buffer.shape[1] / 2
+        num_rnns = np.array(self.buffer.rnn_state_buffer).shape[1] / 2
         self.init_rnn_state = tuple(
-            (np.array(self.buffer.rnn_state_buffer[-1, shape]),
-             np.array(self.buffer.rnn_state_buffer[-1, shape])) for shape in
+            (np.array(data["rnn_state_actor"][-1, shape]),
+             np.array(data["rnn_state_actor"][-1, shape])) for shape in
             range(0, int(num_rnns), 2))
         self.init_rnn_state_ref = tuple(
-            (np.array(self.buffer.rnn_state_buffer_ref[-1, shape]),
-             np.array(self.buffer.rnn_state_buffer_ref[-1, shape])) for shape in
+            (np.array(data["rnn_state_actor_ref"][-1, shape]),
+             np.array(data["rnn_state_actor_ref"][-1, shape])) for shape in
             range(0, int(num_rnns), 2))
 
         # Impose background.

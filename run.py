@@ -152,7 +152,7 @@ dqn_split_assay_test = [
         "Modification": "Nearby-Prey-Removal",
         "Learning Algorithm": "DQN",
         "Using GPU": False,
-        "behavioural recordings": ["environmental positions", "observation"],
+        "behavioural recordings": ["environmental positions", "observation", "reward assessments"],
         "network recordings": ["rnn_shared", "internal_state"],
         "Assays": [
             {
@@ -184,6 +184,7 @@ dqn_gamma_analysis_across_scaffold_1 = [
         "Assay Configuration Name": "Behavioural-Data-Free",
         "Config Modification": "Empty",
         "Trial Number": 1,
+        "Delete Data": True,
         "Run Mode": "Assay-Analysis-Across-Scaffold",
         "Learning Algorithm": "DQN",
         "behavioural recordings": ["environmental positions", "observation"],

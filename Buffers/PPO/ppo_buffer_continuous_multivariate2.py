@@ -235,6 +235,7 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
             self.create_data_group("sigma_impulse", np.array(self.si_i_buffer)[:, 0], assay_group)
             self.create_data_group("sigma_angle", np.array(self.si_a_buffer)[:, 0], assay_group)
 
+        print(f"{assay_id} Data Saved")
         hdf5_file.close()
 
     def check_buffers(self):

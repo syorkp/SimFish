@@ -48,6 +48,9 @@ class DQNAssayBuffer:
         self.prey_age_buffer = []
         self.prey_gait_buffer = []
 
+        self.value_buffer = []
+        self.return_buffer = []
+
 
     def reset(self):
         self.action_buffer = []
@@ -320,6 +323,8 @@ class DQNAssayBuffer:
             self.create_data_group("advantage", np.array(self.advantage_buffer), assay_group)
             self.create_data_group("value", np.array(self.value_buffer), assay_group)
             self.create_data_group("returns", np.array(self.return_buffer), assay_group)
+
+        print(f"{assay_id} Data Saved")
 
         return hdf5_file, assay_group
 

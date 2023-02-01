@@ -729,8 +729,9 @@ class BaseEnvironment:
 
     def get_fish_prey_incidence(self):
         fish_orientation = self.fish.body.angle
-        fish_position = np.expand_dims(np.array(self.fish.body.position), axis=1)
+        fish_position = np.expand_dims(np.array(self.fish.body.position), axis=0)
         paramecium_positions = np.array([pr.position for pr in self.prey_bodies])
+        fish_orientation = np.array([fish_orientation])
 
         fish_orientation_sign = ((fish_orientation >= 0) * 1) + ((fish_orientation < 0) * -1)
 
@@ -740,7 +741,7 @@ class BaseEnvironment:
         # Convert to positive scale between 0 and 2pi
         fish_orientation[fish_orientation < 0] += 2 * np.pi
 
-        fish_prey_vectors = paramecium_positions - np.expand_dims(fish_position, 1)
+        fish_prey_vectors = paramecium_positions - fish_position
 
         # Adjust according to quadrents.
         fish_prey_angles = np.arctan(fish_prey_vectors[:, 1] / fish_prey_vectors[:, 0])
@@ -757,7 +758,7 @@ class BaseEnvironment:
         fish_prey_angles[in_bl_quadrent] += np.pi
 
         # Angle ends up being between 0 and 2pi as clockwise from right x-axis. Same frame as fish angle:
-        fish_prey_incidence = np.expand_dims(fish_orientation, 1) - fish_prey_angles
+        fish_prey_incidence = np.expand_dims(np.array([fish_orientation]), 1) - fish_prey_angles
 
         fish_prey_incidence[fish_prey_incidence > np.pi] %= np.pi
         fish_prey_incidence[fish_prey_incidence < -np.pi] %= -np.pi
