@@ -393,10 +393,8 @@ class TrialManager:
                             print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Pre-Split Complete")
                             complete = True
 
-                print("Here")
                 # Run again, twice from split point, with random seed set
                 if complete:
-                    print("Here 2")
                     complete = False
                     # Second (modified) trial completion
                     trial["Run Index"] = "Modified-Completion"

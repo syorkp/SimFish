@@ -58,7 +58,6 @@ class Fish:
             'sim_steps_per_second']
 
         max_visual_distance = np.absolute(np.log(0.001)/self.env_variables["decay_rate"])
-        print(max_visual_distance)
 
         self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True, env_variables, dark_col, using_gpu,
                             max_visual_range=max_visual_distance)

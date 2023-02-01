@@ -488,7 +488,8 @@ Sand grain: {self.sand_grain_associated_reward}
             predator_bodies = np.array([])
 
         full_masked_image = self.board.get_masked_pixels(np.array(self.fish.body.position),
-                                                         np.array([i.position for i in self.prey_bodies]),
+                                                         np.array([i.position for i in self.prey_bodies] +
+                                                                  [i.position for i in self.sand_grain_bodies]),
                                                          predator_bodies
                                                          )
 
