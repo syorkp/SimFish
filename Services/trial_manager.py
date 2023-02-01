@@ -324,7 +324,7 @@ class TrialManager:
                     trial["Assay Configuration Name"] = assay_config_name
                     trial["Checkpoint"] = chkpt
 
-                    new_data_files.append(f"Assay-Output/{model_name}/{assay_config_name}")
+                    new_data_files.append(f"Assay-Output/{model_name}/{assay_config_name}.h5")
 
                     # Create assay data for that trial
                     new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
