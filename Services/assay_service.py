@@ -282,8 +282,13 @@ class AssayService(BaseService):
         else:
             salt_location = None
 
+        if self.using_gpu:
+            background = self.simulation.board.background_grating.get()[:, :, 0]
+        else:
+            background = self.simulation.board.background_grating[:, :, 0]
+
         self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id,
-                                    self.get_internal_state_order(), self.simulation.board.background_grating.get()[:, :, 0],
+                                    self.get_internal_state_order(), background,
                                     salt_location=salt_location)
         self.buffer.reset()
         print(f"Assay: {assay['assay id']} Completed")
