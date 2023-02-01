@@ -53,7 +53,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
 
-        self.run_version = run_version
+        self.assay_run_version = run_version
         self.split_event = split_event
         self.modification = modification
 
@@ -458,6 +458,9 @@ Sand grain: {self.sand_grain_associated_reward}
             internal_state.append(0)
         internal_state = np.array([internal_state])
 
+        if self.assay_run_version == "Original":
+            if self.check_condition_met():
+                done = True
         
         observation, frame_buffer = self.resolve_visual_input(save_frames, activations, internal_state,
                                                                       frame_buffer)

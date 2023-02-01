@@ -591,6 +591,43 @@ class BaseEnvironment:
         return False
 
     def touch_wall(self, arbiter, space, data):
+        if self.env_variables["wall_reflection"]:
+            return self._touch_wall(arbiter, space, data)
+        else:
+            return self._touch_wall_reflect(arbiter, space, data)
+
+    def _touch_wall_reflect(self, arbiter, space, data):
+        # print(f"Fish touched wall: {self.fish.body.position}")
+        new_position_x = self.fish.body.position[0]
+        new_position_y = self.fish.body.position[1]
+
+        if new_position_x < self.env_variables['wall_buffer_distance']:  # Wall d
+            new_position_x = self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] + \
+                             self.env_variables["fish_tail_length"]
+        elif new_position_x > self.env_variables['width'] - self.env_variables['wall_buffer_distance']:  # wall b
+            new_position_x = self.env_variables['width'] - (
+                    self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] +
+                    self.env_variables["fish_tail_length"])
+        if new_position_y < self.env_variables['wall_buffer_distance']:  # wall a
+            new_position_y = self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] + \
+                             self.env_variables["fish_tail_length"]
+        elif new_position_y > self.env_variables['height'] - self.env_variables['wall_buffer_distance']:  # wall c
+            new_position_y = self.env_variables['height'] - (
+                    self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] +
+                    self.env_variables["fish_tail_length"])
+
+        new_position = pymunk.Vec2d(new_position_x, new_position_y)
+        self.fish.body.position = new_position
+        self.fish.body.velocity = (0, 0)
+
+        if self.fish.body.angle < np.pi:
+            self.fish.body.angle += np.pi
+        else:
+            self.fish.body.angle -= np.pi
+        self.fish.touched_edge = True
+        return True
+
+    def _touch_wall(self, arbiter, space, data):
         position_x = self.fish.body.position[0]
         position_y = self.fish.body.position[1]
 
