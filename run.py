@@ -232,7 +232,7 @@ ppo_gamma_analysis_across_scaffold_1 = [
         "Assays": [
             {
                 "assay id": "Naturalistic",
-                "repeats": 10,
+                "repeats": 1,
                 "stimulus paradigm": "Naturalistic",
                 "duration": 10000,
                 "Tethered": False,
@@ -251,7 +251,7 @@ ppo_gamma_analysis_across_scaffold_1 = [
                 "analysis id": "Turn-Analysis",
                 "analysis script": "Analysis.Behavioural.Exploration.turning_analysis_continuous",
                 "analysis function": "plot_all_turn_analysis_continuous",
-                "analysis arguments": ["model_name", "assay_config_name", "Naturalistic", 10],
+                "analysis arguments": ["model_name", "assay_config_name", "Naturalistic", 1],
                 "Delete Data": True
             }
         ],
