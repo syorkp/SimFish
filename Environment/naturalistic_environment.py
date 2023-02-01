@@ -157,7 +157,7 @@ Sand grain: {self.sand_grain_associated_reward}
         self.sand_grain_associated_reward = 0
 
     def load_simulation(self, buffer, background):
-        self.num_steps = buffer.fish_position_buffer.shape[0]
+        self.num_steps = len(buffer.fish_position_buffer)
 
         self.board.background_grating = self.chosen_math_library.array(background)
 
@@ -172,12 +172,12 @@ Sand grain: {self.sand_grain_associated_reward}
                 self.create_prey(prey_position=p, prey_orientation=o)
 
         # Create predators in proper position and orientation.
-        final_step_predator_position = buffer.predator_positions_buffer[-1]
-        final_step_predator_orientation = buffer.predator_orientations_buffer[-1]
+        final_step_predator_position = buffer.predator_position_buffer[-1]
+        final_step_predator_orientation = buffer.predator_orientation_buffer[-1]
         if final_step_predator_position[0] != 10000.0:
 
             # Find step when predator was introduced. Get fish position then.
-            predator_present = (buffer.predator_positions_buffer[:, 0] != 10000.0)
+            predator_present = (np.array(buffer.predator_position_buffer)[:, 0] != 10000.0)
             predator_lifespan = 0
             for p in reversed(predator_present):
                 if p:
@@ -191,13 +191,13 @@ Sand grain: {self.sand_grain_associated_reward}
                                            predator_target=predator_target)
 
         self.fish.body.position = np.array(buffer.fish_position_buffer[-1])
-        self.fish.body.angle = np.array(buffer.fish_orientation_buffer[-1])
+        self.fish.body.angle = np.array(buffer.fish_angle_buffer[-1])
         self.fish.energy_level = buffer.internal_state_buffer[-1][0]
         self.fish.prev_action_impulse = buffer.internal_state_buffer[-1][1]
         self.fish.prev_action_angle = buffer.internal_state_buffer[-1][2]
 
         # Get latest observation.
-        observation, frame_buffer = self.resolve_visual_input_new(save_frames=False,
+        observation, frame_buffer = self.resolve_visual_input(save_frames=False,
                                                                   activations=[],
                                                                   internal_state=[],
                                                                   frame_buffer=[])
@@ -330,7 +330,7 @@ Sand grain: {self.sand_grain_associated_reward}
             else:
                 self.fish.capture_possible = False
             if self.predator_body is not None:
-                self.move_realistic_predator(micro_step)
+                self.move_predator(micro_step)
 
             self.space.step(self.env_variables['phys_dt'])
 
