@@ -57,10 +57,7 @@ class Fish:
         self.isomerization_probability = self.env_variables['isomerization_frequency'] / self.env_variables[
             'sim_steps_per_second']
 
-        max_visual_distance = (self.env_variables["width"] ** 2 + self.env_variables["height"] ** 2) ** 0.5
-        if "max_visual_range" in self.env_variables:
-            if self.env_variables["max_visual_range"]:
-                max_visual_distance = self.env_variables["max_visual_range"]
+        max_visual_distance = np.log(0.001)/self.env_variables["decay_rate"]
 
         self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True, env_variables, dark_col, using_gpu,
                             max_visual_range=max_visual_distance)

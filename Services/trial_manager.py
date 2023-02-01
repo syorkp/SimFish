@@ -395,7 +395,7 @@ class TrialManager:
 
                 # Run again, twice from split point, with random seed set
                 if complete:
-
+                    complete = False
                     # Second (modified) trial completion
                     trial["Run Index"] = "Modified-Completion"
                     new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon,
@@ -415,29 +415,29 @@ class TrialManager:
                                 to_delete = process
                                 running_jobs[str(index)].join()
                                 print(
-                                    f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Pre-Split Complete")
+                                    f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Post-Split Modified Complete")
                                 complete = True
-
+                if complete:
                     # First (normal) trial completion
                     trial["Run Index"] = "Original-Completion"
                     new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon,
-                                               configuration)
-                if new_job is not None:
-                    running_jobs[str(index)] = new_job
-                    running_jobs[str(index)].start()
-                    print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
-                else:
-                    print("New job failed")
+                                                   configuration)
+                    if new_job is not None:
+                        running_jobs[str(index)] = new_job
+                        running_jobs[str(index)].start()
+                        print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
+                    else:
+                        print("New job failed")
 
-                while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
-                    for process in running_jobs.keys():
-                        if running_jobs[process].is_alive():
-                            pass
-                        else:
-                            to_delete = process
-                            running_jobs[str(index)].join()
-                            print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Pre-Split Complete")
-                            complete = True
+                    while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
+                        for process in running_jobs.keys():
+                            if running_jobs[process].is_alive():
+                                pass
+                            else:
+                                to_delete = process
+                                running_jobs[str(index)].join()
+                                print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Post-Split Original Complete")
+                                complete = True
 
             else:
                 epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
