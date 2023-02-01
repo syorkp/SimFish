@@ -201,6 +201,7 @@ class AssayService(BaseService):
         return new_assays
 
     def load_assay_buffer(self, assay):
+        print("Loading Assay Buffer")
         # Get the assay id of the base trial (without mod)
         assay_id = assay["assay id"].replace("-Mod", "")
         file = h5py.File(f"{self.data_save_location}/{self.assay_configuration_id}.h5", "r")
@@ -251,7 +252,7 @@ class AssayService(BaseService):
         # Impose background.
         return data["background"], num_steps_elapsed
 
-    def perform_assay(self, assay):
+    def perform_assay(self, assay, background=None):
         """Just for PPO"""
         # self.assay_output_data_format = {key: None for key in
         #                                  assay["behavioural recordings"] + assay["network recordings"]}
