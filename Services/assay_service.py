@@ -174,6 +174,7 @@ class AssayService(BaseService):
 
             if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
                 background = self.load_assay_buffer(assay)
+                print(background)
             else:
                 background = None
 

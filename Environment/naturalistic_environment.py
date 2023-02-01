@@ -159,7 +159,9 @@ Sand grain: {self.sand_grain_associated_reward}
     def load_simulation(self, buffer, background):
         self.num_steps = len(buffer.fish_position_buffer)
 
-        self.board.background_grating = self.chosen_math_library.array(background)
+        print(np.array(background).shape)
+        print()
+        self.board.background_grating = self.chosen_math_library.array(np.expand_dims(background, 2))
 
         self.salt_location = buffer.salt_location
         self.reset_salt_gradient(buffer.salt_location)
