@@ -12,7 +12,7 @@ from Analysis.Behavioural.Tools.get_fish_prey_incidence import get_fish_prey_inc
 class NaturalisticEnvironment(BaseEnvironment):
 
     def __init__(self, env_variables, realistic_bouts, using_gpu, draw_screen=False, fish_mass=None,
-                 collisions=True, relocate_fish=None, num_actions=10, run_version="Original", split_event=None,
+                 collisions=True, relocate_fish=None, num_actions=10, run_version=None, split_event=None,
                  modification=None):
         super().__init__(env_variables, draw_screen, using_gpu, num_actions)
 
