@@ -121,8 +121,8 @@ class DQNAssayBuffer:
         try:
             assay_group.create_dataset(key, data=data)
         except (RuntimeError, OSError) as exception:
-            print(f"Failed saving {key}. Attempting to delete existing data.")
-            print(exception)
+            # print(f"Failed saving {key}. Attempting to delete existing data.")
+            # print(exception)
             del assay_group[key]
             self.create_data_group(key, data, assay_group)
             # assay_group.create_dataset(key, data=data)

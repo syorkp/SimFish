@@ -32,7 +32,8 @@ class BaseEnvironment:
             light_gradient = 0
 
         # Set max visual distance to the point at which 99.9% of photons have been lost to absorption mask.
-        max_visual_distance = np.log(0.001)/self.env_variables["decay_rate"]
+        max_visual_distance = np.absolute(np.log(0.001)/self.env_variables["decay_rate"])
+        print(max_visual_distance)
 
         self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'],
                                         decay_rate=self.env_variables['decay_rate'],
