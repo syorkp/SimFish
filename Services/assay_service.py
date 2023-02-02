@@ -264,6 +264,9 @@ class AssayService(BaseService):
         if assay["use_mu"]:
             self.use_mu = True
 
+
+        # TODO: implement environment loading etc as in dqn_assay_service. Will require modification of self._episode_loop() for RNN state, env reset, step num,
+
         self._episode_loop()
         self.log_stimuli()
 
