@@ -325,7 +325,9 @@ class TrialManager:
 
                     new_data_files.append(f"Assay-Output/{model_name}/{assay_config_name}.h5")
 
-                    # Create assay data for that trial
+
+
+                    # ASSAY: Create assay data for that trial
                     new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
                     if new_job is not None:
                         running_jobs[str(index)] = new_job
@@ -344,8 +346,8 @@ class TrialManager:
                                 running_jobs[str(index)].join()
                                 print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Complete")
                                 complete = True
-                    to_delete = None
 
+                    #  ANALYSIS
                     if complete:
                         # Do analysis
                         for analysis in trial["Analysis"]:
