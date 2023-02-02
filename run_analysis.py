@@ -35,13 +35,14 @@ elif run_config == "dense":
     produce_meis("dqn_scaffold_26-2", "rnn_in", full_reafference=True, iterations=100, conv=False)
 elif run_config == "draw_ep":
     models = ["dqn_gamma_pm-2", "dqn_gamma_pm-3", "dqn_gamma_pm-4", "dqn_gamma_pm-5"]
+    models = ["dqn_gamma-3"]
     for model in models:
-        for i in range(1, 4):
+        for i in range(1, 51):
             data = load_data(model, "Behavioural-Data-Free", f"Naturalistic-{i}")
-            assay_config_name = "dqn_gamma_pm_final"
+            assay_config_name = "dqn_gamma_final"
             draw_episode(data, assay_config_name, model, continuous_actions=False, show_energy_state=False,
                          trim_to_fish=True, showed_region_quad=750, save_id=f"{i}", include_background=True,
-                         as_gif=True)
+                         as_gif=False, s_per_frame=0.3)
 
     # model_name = "dqn_scaffold_33-1"
     # data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
