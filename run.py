@@ -153,7 +153,7 @@ dqn_free_config_large_gamma_3 = [
             {
                 "assay id": "Naturalistic",
                 "stimulus paradigm": "Naturalistic",
-                "repeats": 10,
+                "repeats": 50,
                 "duration": 10000,
                 "Tethered": False,
                 "save frames": False,
