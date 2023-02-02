@@ -367,7 +367,7 @@ class TrialManager:
                             if trial["Delete Data"]:
                                 for file in new_data_files:
                                     print(f"Deleting files {file}")
-                                    shutil.rmtree(file)
+                                    os.remove(file)
 
                         complete = False
 
