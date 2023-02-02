@@ -346,7 +346,7 @@ class TrialManager:
                                 running_jobs[str(index)].join()
                                 print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Complete")
                                 complete = True
-
+                    print("HEREEE")
                     #  ANALYSIS
                     if complete:
                         # Do analysis
