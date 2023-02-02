@@ -454,6 +454,7 @@ def create_routine_turn_overlap_plot(p1, p2, p3, n, return_objects, save_locatio
         prey_1, pred_1 = get_clouds_with_action(data, 2)
         prey_cloud_left = prey_cloud_left + prey_1
         pred_cloud_left = pred_cloud_left + pred_1
+
     prey_cloud_right = []
     pred_cloud_right = []
     for i in range(1, n + 1):

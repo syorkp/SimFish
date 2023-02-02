@@ -319,24 +319,27 @@ class DQNAssayBuffer:
             self.create_data_group("background", np.array(background), assay_group)
 
             # Extra buffers (needed for perfect reloading of states)
-            self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
-            self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
+            try:
+                self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
+                self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
 
-            print("prey_ages")
-            print(self.prey_age_buffer)
-            print("prey_gaits")
-            print(self.prey_gait_buffer)
-            print("reward")
-            print(self.reward_buffer)
-            print("advantage")
-            print(self.advantage_buffer)
-            print("value")
-            print(self.value_buffer)
-            print("returns")
-            print(self.return_buffer)
-            self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
+                # print("prey_ages")
+                # print(self.prey_age_buffer)
+                # print("prey_gaits")
+                # print(self.prey_gait_buffer)
+                # print("reward")
+                # print(self.reward_buffer)
+                # print("advantage")
+                # print(self.advantage_buffer)
+                # print("value")
+                # print(self.value_buffer)
+                # print("returns")
+                # print(self.return_buffer)
+                self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
 
-            self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
+                self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
+            except TypeError:
+                print("Still need to pad these.")
 
         if "reward assessments" in self.recordings:
             self.create_data_group("reward", np.array(self.reward_buffer), assay_group)
