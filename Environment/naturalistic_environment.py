@@ -159,8 +159,6 @@ Sand grain: {self.sand_grain_associated_reward}
     def load_simulation(self, buffer, background):
         self.num_steps = len(buffer.fish_position_buffer)
 
-        print(np.array(background).shape)
-        print()
         self.board.background_grating = self.chosen_math_library.array(np.expand_dims(background, 2))
 
         self.salt_location = buffer.salt_location
@@ -241,7 +239,7 @@ Sand grain: {self.sand_grain_associated_reward}
             prey_close = prey_near * within_visual_field
 
             prey_index_offset = len(self.prey_bodies)
-            for i, p in enumerate(reversed(prey_close)):
+            for i, p in enumerate(reversed(prey_close[0][0])):
                 if p:
                     self.remove_prey(prey_index_offset-i)
                     print("Removed prey due to modification")
@@ -332,7 +330,7 @@ Sand grain: {self.sand_grain_associated_reward}
             else:
                 self.fish.capture_possible = False
             if self.predator_body is not None:
-                self.move_predator(micro_step)
+                self.move_predator()
 
             self.space.step(self.env_variables['phys_dt'])
 

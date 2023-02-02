@@ -158,15 +158,19 @@ class DQNAssayService(AssayService, BaseDQN):
         if self.rnn_input is not None:
             rnn_state = copy.copy(self.rnn_input[0])
             rnn_state_ref = copy.copy(self.rnn_input[1])
+            print("1")
         else:
             rnn_state = copy.copy(self.init_rnn_state)
             rnn_state_ref = copy.copy(self.init_rnn_state_ref)
+            print("2")
 
         if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
             print("Loading Simulation")
             o = self.simulation.load_simulation(self.buffer, background)
             internal_state = self.buffer.internal_state_buffer[-1]
             a = self.buffer.action_buffer[-1]
+
+            a = np.array([a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle])
 
             if self.run_version == "Modified-Completion":
                 self.simulation.make_modification()
@@ -180,8 +184,8 @@ class DQNAssayService(AssayService, BaseDQN):
                      self.main_QN.streamV,
                      ],
                     feed_dict={self.main_QN.observation: o,
-                               self.main_QN.internal_state: internal_state,
-                               self.main_QN.prev_actions: a,
+                               self.main_QN.internal_state: np.expand_dims(internal_state, 0),
+                               self.main_QN.prev_actions: np.expand_dims(a, 0),
                                self.main_QN.train_length: 1,
                                self.main_QN.rnn_state_in: rnn_state,
 
@@ -190,8 +194,8 @@ class DQNAssayService(AssayService, BaseDQN):
                                # self.main_QN.learning_rate: self.learning_params["learning_rate"],
                                })
 
-            self.step_number = self.buffer.internal_state_buffer.shape[0]
-
+            self.step_number = len(self.buffer.internal_state_buffer)
+            self.step_number -= 5
         else:
             self.simulation.reset()
             a = 0

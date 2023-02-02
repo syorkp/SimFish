@@ -174,7 +174,6 @@ class AssayService(BaseService):
 
             if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
                 background = self.load_assay_buffer(assay)
-                print(background)
             else:
                 background = None
 
@@ -243,16 +242,16 @@ class AssayService(BaseService):
         # Load RNN states to model.
         num_rnns = np.array(self.buffer.rnn_state_buffer).shape[1] / 2
         self.init_rnn_state = tuple(
-            (np.array(data["rnn_state_actor"][-1, shape]),
-             np.array(data["rnn_state_actor"][-1, shape])) for shape in
+            (np.array(data["rnn_state_actor"][-2:-1, shape]),
+             np.array(data["rnn_state_actor"][-2:-1, shape])) for shape in
             range(0, int(num_rnns), 2))
         self.init_rnn_state_ref = tuple(
-            (np.array(data["rnn_state_actor_ref"][-1, shape]),
-             np.array(data["rnn_state_actor_ref"][-1, shape])) for shape in
+            (np.array(data["rnn_state_actor_ref"][-2:-1, shape]),
+             np.array(data["rnn_state_actor_ref"][-2:-1, shape])) for shape in
             range(0, int(num_rnns), 2))
 
         # Impose background.
-        return data["background"], num_steps_elapsed
+        return data["background"]
 
     def perform_assay(self, assay, background=None):
         """Just for PPO"""
