@@ -41,7 +41,7 @@ def get_frameshift_sequences(action_sequences):
     return new_sequences
 
 
-def plot_all_turn_analysis(model_name, assay_config, assay_id, n, use_purely_turn_sequences=True, data_cutoff=None):
+def plot_all_turn_analysis(model_name, assay_config, assay_id, n, figure_moniker="", use_purely_turn_sequences=True, data_cutoff=None):
     no_prey_actions, no_prey_timestamps = get_no_prey_stimuli_sequences(model_name, assay_config, assay_id, n, data_cutoff)
     otherwise_exploration_sequences = get_exploration_sequences(model_name, assay_config, assay_id, n, data_cutoff)
 
@@ -54,9 +54,9 @@ def plot_all_turn_analysis(model_name, assay_config, assay_id, n, use_purely_tur
 
     # Cumulative turn direction plots:
     cumulative_turn_direction_plot(turn_no_prey_sequences,
-                                   label=f"Cumulative Turn Direction (no prey near, only turns) {model_name}")
+                                   label=f"Cumulative Turn Direction (no prey near, only turns) {model_name} - {figure_moniker}")
     cumulative_turn_direction_plot(turn_exploration_sequences,
-                                   label=f"Cumulative Turn Direction (no prey or walls, only turns) {model_name}")
+                                   label=f"Cumulative Turn Direction (no prey or walls, only turns) {model_name} - {figure_moniker}")
 
     # Cumulative probability plot.
     l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)

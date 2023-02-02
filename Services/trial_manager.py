@@ -356,6 +356,7 @@ class TrialManager:
                                 except KeyError:
                                     arg = arg
                                 args.append(arg)
+                            args.append(f"Scaffold Point: {configuration}")
 
                             print(f"Running analysis {analysis['analysis id']} for model: {model_name}")
                             chosen_module = __import__(analysis["analysis script"], fromlist=[''])
