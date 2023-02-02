@@ -151,7 +151,7 @@ class DQNAssayService(AssayService, BaseDQN):
             self.init_states()
             AssayService._run(self)
 
-    def perform_assay(self, assay, background=None):
+    def perform_assay(self, assay, background=None, energy_state=None):
         # self.assay_output_data_format = {key: None for key in assay["recordings"]}
         # self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
 
@@ -166,7 +166,7 @@ class DQNAssayService(AssayService, BaseDQN):
 
         if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
             print("Loading Simulation")
-            o = self.simulation.load_simulation(self.buffer, background)
+            o = self.simulation.load_simulation(self.buffer, background, energy_state)
             internal_state = self.buffer.internal_state_buffer[-1]
             a = self.buffer.action_buffer[-1]
 
@@ -184,7 +184,7 @@ class DQNAssayService(AssayService, BaseDQN):
                      self.main_QN.streamV,
                      ],
                     feed_dict={self.main_QN.observation: o,
-                               self.main_QN.internal_state: np.expand_dims(internal_state, 0),
+                               self.main_QN.internal_state: internal_state,
                                self.main_QN.prev_actions: np.expand_dims(a, 0),
                                self.main_QN.train_length: 1,
                                self.main_QN.rnn_state_in: rnn_state,
@@ -195,6 +195,7 @@ class DQNAssayService(AssayService, BaseDQN):
                                # self.main_QN.learning_rate: self.learning_params["learning_rate"],
                                })
 
+            a = a[0]
             self.step_number = len(self.buffer.internal_state_buffer)
             self.step_number -= 5
         else:

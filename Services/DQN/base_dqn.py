@@ -278,7 +278,7 @@ class BaseDQN:
                            self.main_QN.prev_actions: [a],
                            self.main_QN.train_length: 1,
                            self.main_QN.rnn_state_in: rnn_state,
-                           self.main_QN.rnn_state_in_ref: rnn_state_ref,  # TODO: TEST CHANGE HERE:
+                           self.main_QN.rnn_state_in_ref: rnn_state_ref,
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0,
                            self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -293,7 +293,7 @@ class BaseDQN:
                            self.main_QN.prev_actions: [a],
                            self.main_QN.train_length: 1,
                            self.main_QN.rnn_state_in: rnn_state,
-                           self.main_QN.rnn_state_in_ref: rnn_state_ref,  # TODO: TEST CHANGE HERE:
+                           self.main_QN.rnn_state_in_ref: rnn_state_ref,
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0,
                            self.main_QN.learning_rate: self.learning_params["learning_rate"],

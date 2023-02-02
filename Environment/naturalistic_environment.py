@@ -156,13 +156,14 @@ Sand grain: {self.sand_grain_associated_reward}
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
 
-    def load_simulation(self, buffer, background):
+    def load_simulation(self, buffer, background, energy_state):
         self.num_steps = len(buffer.fish_position_buffer)
 
         self.board.background_grating = self.chosen_math_library.array(np.expand_dims(background, 2))
 
         self.salt_location = buffer.salt_location
         self.reset_salt_gradient(buffer.salt_location)
+        self.clear_environmental_features()
 
         # Create prey in proper positions and orientations
         final_step_prey_positions = buffer.prey_positions_buffer[-1]
@@ -170,6 +171,9 @@ Sand grain: {self.sand_grain_associated_reward}
         for p, o in zip(final_step_prey_positions, final_step_prey_orientations):
             if p[0] != 10000.0:
                 self.create_prey(prey_position=p, prey_orientation=o)
+
+        self.prey_ages = buffer.prey_age_buffer[-1]
+        self.prey_gaits = buffer.prey_gait_buffer[-1]
 
         # Create predators in proper position and orientation.
         final_step_predator_position = buffer.predator_position_buffer[-1]
@@ -192,9 +196,10 @@ Sand grain: {self.sand_grain_associated_reward}
 
         self.fish.body.position = np.array(buffer.fish_position_buffer[-1])
         self.fish.body.angle = np.array(buffer.fish_angle_buffer[-1])
-        self.fish.energy_level = buffer.internal_state_buffer[-1][0]
-        self.fish.prev_action_impulse = buffer.internal_state_buffer[-1][1]
-        self.fish.prev_action_angle = buffer.internal_state_buffer[-1][2]
+        self.fish.energy_level = energy_state
+
+        self.fish.prev_action_impulse = buffer.efference_copy_buffer[-1][0][1]
+        self.fish.prev_action_angle = buffer.internal_state_buffer[-1][0][2]
 
         # Get latest observation.
         observation, frame_buffer = self.resolve_visual_input(save_frames=False,

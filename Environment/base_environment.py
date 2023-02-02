@@ -169,22 +169,9 @@ class BaseEnvironment:
         self.in_light_history = []
         self.survived_attack = False
 
-    def reset(self):
-        self.num_steps = 0
-        self.fish.hungry = 0
-        self.fish.stress = 1
-        self.fish.touched_edge_this_step = False
-        self.prey_caught = 0
-        self.predator_attacks_avoided = 0
-        self.sand_grains_bumped = 0
-        self.steps_near_vegetation = 0
-        self.energy_level_log = []
-        self.board.light_gain = self.env_variables["light_gain"]
-        self.board.luminance_mask = self.board.get_luminance_mask(self.env_variables["dark_light_ratio"], self.env_variables["dark_gain"])
 
-        # New energy system:
-        self.fish.energy_level = 1
-
+    def clear_environmental_features(self):
+        """Removes all prey, predators, vegetation, and sand grains from simulation"""
         for i, shp in enumerate(self.prey_shapes):
             self.space.remove(shp, shp.body)
 
@@ -199,28 +186,20 @@ class BaseEnvironment:
 
         self.prey_cloud_wall_shapes = []
 
-        if self.predator_shape is not None:
-            self.remove_realistic_predator()
-
-        self.predator_location = None
-        self.remaining_predator_attacks = None
-        self.total_predator_steps = None
-        self.new_attack_due = False
-        # Reset salt gradient
-        if self.env_variables["salt"]:
-            self.reset_salt_gradient()
-            self.fish.salt_health = 1.0
-            self.salt_damage_history = []
-
         self.paramecia_gaits = []
 
         if self.env_variables["prey_reproduction_mode"]:
             self.prey_ages = []
 
+
+        if self.predator_shape is not None:
+            self.remove_realistic_predator()
+        self.predator_location = None
+        self.remaining_predator_attacks = None
+        self.total_predator_steps = None
+        self.new_attack_due = False
         self.first_attack = False
         self.loom_predator_current_size = None
-
-        self.board.reset()
 
         self.prey_shapes = []
         self.prey_bodies = []
@@ -233,6 +212,32 @@ class BaseEnvironment:
 
         self.vegetation_bodies = []
         self.vegetation_shapes = []
+
+    def reset(self):
+        self.num_steps = 0
+        self.fish.hungry = 0
+        self.fish.stress = 1
+        self.fish.touched_edge_this_step = False
+        self.prey_caught = 0
+        self.predator_attacks_avoided = 0
+        self.sand_grains_bumped = 0
+        self.steps_near_vegetation = 0
+        self.energy_level_log = []
+        self.board.light_gain = self.env_variables["light_gain"]
+        self.board.luminance_mask = self.board.get_luminance_mask(self.env_variables["dark_light_ratio"],
+                                                                  self.env_variables["dark_gain"])
+
+        # New energy system:
+        self.fish.energy_level = 1
+
+        # Reset salt gradient
+        if self.env_variables["salt"]:
+            self.reset_salt_gradient()
+            self.fish.salt_health = 1.0
+            self.salt_damage_history = []
+
+        self.clear_environmental_features()
+        self.board.reset()
 
         self.mask_buffer = []
         self.action_buffer = []

@@ -242,17 +242,18 @@ class DQNAssayBuffer:
             for layer in self.unit_recordings.keys():
                 self.create_data_group(layer, np.array(self.unit_recordings[layer]).squeeze(), assay_group)
 
-            for i, r in enumerate(self.rnn_state_buffer):
-                print(f"{i}-{np.array(r[0]).shape}")
+            # for i, r in enumerate(self.rnn_state_buffer):
+            #     print(f"{i}-{np.array(r[0]).shape}")
 
             # print(self.rnn_state_buffer)
-            self.rnn_state_buffer = np.array(self.rnn_state_buffer).squeeze().astype(np.float64)
-            self.rnn_state_ref_buffer = np.array(self.rnn_state_ref_buffer).squeeze().astype(np.float64)
+            self.rnn_state_buffer = np.array(self.rnn_state_buffer).squeeze()
+            self.rnn_state_ref_buffer = np.array(self.rnn_state_ref_buffer).squeeze()
 
-            self.create_data_group("rnn_state_actor", self.rnn_state_buffer , assay_group)
-            self.create_data_group("rnn_state_actor_ref", self.rnn_state_ref_buffer , assay_group)
+            self.create_data_group("rnn_state_actor", self.rnn_state_buffer, assay_group)
+            self.create_data_group("rnn_state_actor_ref", self.rnn_state_ref_buffer, assay_group)
 
             self.internal_state_buffer = np.array(self.internal_state_buffer)
+
             self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
             # Get internal state names and save each.
             for i, state in enumerate(internal_state_order):
@@ -307,11 +308,8 @@ class DQNAssayBuffer:
             self.predator_presence_buffer = [0 if i is None else 1 for i in self.predator_presence_buffer]
             self.create_data_group("predator_presence", np.array(self.predator_presence_buffer), assay_group)
 
-            try:
-                self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
-            except:
-                self.fix_prey_position_buffer()
-                self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
+            self.fix_prey_position_buffer()
+            self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
 
             self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)
 
@@ -323,7 +321,21 @@ class DQNAssayBuffer:
             # Extra buffers (needed for perfect reloading of states)
             self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
             self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
+
+            print("prey_ages")
+            print(self.prey_age_buffer)
+            print("prey_gaits")
+            print(self.prey_gait_buffer)
+            print("reward")
+            print(self.reward_buffer)
+            print("advantage")
+            print(self.advantage_buffer)
+            print("value")
+            print(self.value_buffer)
+            print("returns")
+            print(self.return_buffer)
             self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
+
             self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
 
         if "reward assessments" in self.recordings:

@@ -173,11 +173,11 @@ class AssayService(BaseService):
             self.create_testing_environment(assay)
 
             if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
-                background = self.load_assay_buffer(assay)
+                background, energy_state = self.load_assay_buffer(assay)
             else:
-                background = None
+                background, energy_state = None, None
 
-            self.perform_assay(assay, background=background)
+            self.perform_assay(assay, background=background, energy_state=energy_state)
 
             if assay["save stimuli"]:
                 self.save_stimuli_data(assay)
@@ -215,10 +215,11 @@ class AssayService(BaseService):
         self.buffer.action_buffer = data["action"].tolist()
         self.buffer.observation_buffer = data["observation"].tolist()
         self.buffer.reward_buffer = data["reward"].tolist()
-        self.buffer.internal_state_buffer = data["internal_state"].tolist()
+        self.buffer.internal_state_buffer = [np.array([internal_state]) for internal_state in data["internal_state"].tolist()]
+        self.buffer.efference_copy_buffer = data["efference_copy"].tolist()
 
-        self.buffer.rnn_state_buffer = [(timepoint[0], timepoint[1]) for timepoint in data["rnn_state_actor"]]
-        self.buffer.rnn_state_ref_buffer = [(timepoint[0], timepoint[1]) for timepoint in data["rnn_state_actor_ref"]]
+        self.buffer.rnn_state_buffer = [np.array([([timepoint[0]], [timepoint[1]])]) for timepoint in data["rnn_state_actor"]]
+        self.buffer.rnn_state_ref_buffer = [np.array([([timepoint[0]], [timepoint[1]])]) for timepoint in data["rnn_state_actor_ref"]]
 
         self.buffer.fish_position_buffer = data["fish_position"].tolist()
         self.buffer.fish_angle_buffer = data["angle"].tolist()
@@ -229,6 +230,8 @@ class AssayService(BaseService):
         self.buffer.vegetation_position_buffer = data["vegetation_positions"].tolist()
         self.buffer.salt_location = data["salt_location"].tolist()
         self.buffer.prey_consumed_buffer = data["consumed"].tolist()
+
+        energy_state = data["energy_state"][-1]
 
         self.buffer.prey_orientations_buffer = data["prey_orientations"].tolist()
         self.buffer.predator_orientation_buffer = data["predator_orientation"].tolist()
@@ -241,7 +244,7 @@ class AssayService(BaseService):
         num_steps_elapsed = data["observation"].shape[0]
 
         # Load RNN states to model.
-        num_rnns = np.array(self.buffer.rnn_state_buffer).shape[1] / 2
+        num_rnns = np.array(self.buffer.rnn_state_buffer).shape[2] / 2
         self.init_rnn_state = tuple(
             (np.array(data["rnn_state_actor"][-2:-1, shape]),
              np.array(data["rnn_state_actor"][-2:-1, shape])) for shape in
@@ -252,9 +255,9 @@ class AssayService(BaseService):
             range(0, int(num_rnns), 2))
 
         # Impose background.
-        return data["background"]
+        return data["background"], energy_state
 
-    def perform_assay(self, assay, background=None):
+    def perform_assay(self, assay, background=None, energy_state=None):
         """Just for PPO"""
         # self.assay_output_data_format = {key: None for key in
         #                                  assay["behavioural recordings"] + assay["network recordings"]}
