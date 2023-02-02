@@ -216,8 +216,9 @@ class AssayService(BaseService):
         self.buffer.observation_buffer = data["observation"].tolist()
         self.buffer.reward_buffer = data["reward"].tolist()
         self.buffer.internal_state_buffer = data["internal_state"].tolist()
-        self.buffer.rnn_state_buffer = data["rnn_state_actor"].tolist()
-        self.buffer.rnn_state_ref_buffer = data["rnn_state_actor_ref"].tolist()
+
+        self.buffer.rnn_state_buffer = [(timepoint[0], timepoint[1]) for timepoint in data["rnn_state_actor"]]
+        self.buffer.rnn_state_ref_buffer = [(timepoint[0], timepoint[1]) for timepoint in data["rnn_state_actor_ref"]]
 
         self.buffer.fish_position_buffer = data["fish_position"].tolist()
         self.buffer.fish_angle_buffer = data["angle"].tolist()

@@ -241,9 +241,16 @@ class DQNAssayBuffer:
         if self.use_dynamic_network:
             for layer in self.unit_recordings.keys():
                 self.create_data_group(layer, np.array(self.unit_recordings[layer]).squeeze(), assay_group)
-            print(np.array(self.rnn_state_buffer).squeeze())
-            self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer).squeeze(), assay_group)
-            self.create_data_group("rnn_state_actor_ref", np.array(self.rnn_state_ref_buffer).squeeze(), assay_group)
+
+            for i, r in enumerate(self.rnn_state_buffer):
+                print(f"{i}-{np.array(r[0]).shape}")
+
+            # print(self.rnn_state_buffer)
+            self.rnn_state_buffer = np.array(self.rnn_state_buffer).squeeze().astype(np.float64)
+            self.rnn_state_ref_buffer = np.array(self.rnn_state_ref_buffer).squeeze().astype(np.float64)
+
+            self.create_data_group("rnn_state_actor", self.rnn_state_buffer , assay_group)
+            self.create_data_group("rnn_state_actor_ref", self.rnn_state_ref_buffer , assay_group)
 
             self.internal_state_buffer = np.array(self.internal_state_buffer)
             self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))

@@ -342,6 +342,7 @@ class BaseDQN:
                            self.main_QN.prev_actions: a,
                            self.main_QN.train_length: 1,
                            self.main_QN.rnn_state_in: rnn_state,
+                           self.main_QN.rnn_state_in_ref: rnn_state_ref,
 
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0,
@@ -399,7 +400,7 @@ class BaseDQN:
         # return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
         return o, action_reafference, given_reward, internal_state1, o1, d, updated_rnn_state
 
-    def _assay_step_loop_new_static(self, o, internal_state, a, rnn_state):
+    def _assay_step_loop_new_static(self, o, internal_state, a, rnn_state, rnn_state_ref):
         chosen_a, updated_rnn_state, rnn2_state, sa, sv, o2, conv_layers = \
             self.sess.run(
                 [self.main_QN.predict, self.main_QN.rnn_state, self.main_QN.rnn_state_ref,
@@ -415,6 +416,8 @@ class BaseDQN:
                            self.main_QN.prev_actions: a,
                            self.main_QN.trainLength: 1,
                            self.main_QN.rnn_state_in: rnn_state,
+                           self.main_QN.rnn_state_in_ref: rnn_state_ref,
+
                            self.main_QN.batch_size: 1,
                            self.main_QN.exp_keep: 1.0,
                            # self.main_QN.learning_rate: self.learning_params["learning_rate"],

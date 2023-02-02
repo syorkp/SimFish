@@ -142,7 +142,6 @@ class TrialManager:
         return epsilon, total_steps, episode_number, configuration_index
 
     def get_new_job(self, trial, total_steps, episode_number, memory_fraction, epsilon, configuration_index):
-        print("Creating thread")
         # Setting optional variables
         if "Continuous Actions" in trial:
             continuous_actions = trial["Continuous Actions"]
@@ -331,7 +330,8 @@ class TrialManager:
                     if new_job is not None:
                         running_jobs[str(index)] = new_job
                         running_jobs[str(index)].start()
-                        print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
+                        print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']},"
+                              f" Scaffold Point {configuration}")
                     else:
                         print("New job failed")
 
@@ -344,6 +344,7 @@ class TrialManager:
                                 running_jobs[str(index)].join()
                                 print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Complete")
                                 complete = True
+                    to_delete = None
 
                     if complete:
                         # Do analysis
@@ -395,7 +396,6 @@ class TrialManager:
                             print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Pre-Split Complete")
                             complete = True
 
-
                 # Run again, twice from split point, with random seed set
                 if complete:
                     if to_delete is not None:
@@ -424,6 +424,8 @@ class TrialManager:
                                 print(
                                     f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Post-Split Modified Complete")
                                 complete = True
+                    to_delete = None
+
                 if complete:
                     if to_delete is not None:
                         del running_jobs[to_delete]
@@ -449,6 +451,7 @@ class TrialManager:
                                 running_jobs[str(index)].join()
                                 print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Post-Split Original Complete")
                                 complete = True
+                    to_delete = None
 
             else:
                 epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
