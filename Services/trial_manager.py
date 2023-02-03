@@ -490,6 +490,7 @@ class TrialManager:
 
                 # Iterate
                 for i, chkpt in enumerate(all_checkpoints):
+                    complete = False
                     configuration = i + 1
                     episode_number = chkpt
                     assay_config_name = f"{trial['Model Name']}_c{configuration}"
