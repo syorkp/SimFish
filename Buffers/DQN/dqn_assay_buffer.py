@@ -48,9 +48,11 @@ class DQNAssayBuffer:
         self.prey_age_buffer = []
         self.prey_gait_buffer = []
 
+        # Tracking switch step
+        self.switch_step = None
+
         self.value_buffer = []
         self.return_buffer = []
-
 
     def reset(self):
         self.action_buffer = []
@@ -83,6 +85,8 @@ class DQNAssayBuffer:
             self.predator_orientation_buffer = []
             self.prey_age_buffer = []
             self.prey_gait_buffer = []
+
+            self.switch_step = None
 
     def add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref):
         self.observation_buffer.append(observation)
@@ -226,6 +230,16 @@ class DQNAssayBuffer:
             new_conv_layers[j] = np.array(new_conv_layers[j])
         self.conv_layer_buffer = new_conv_layers
 
+    def pad_buffer(self, buffer):
+        max_dim = 0
+        for b in buffer:
+            if len(b) > max_dim:
+                max_dim = b
+        for b in buffer:
+            if len(b) < max_dim:
+                b.append(0)
+        return buffer
+
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order,
                         background, salt_location=None):
         hdf5_file = h5py.File(f"{data_save_location}/{assay_configuration_id}.h5", "a")
@@ -310,8 +324,11 @@ class DQNAssayBuffer:
             self.predator_presence_buffer = [0 if i is None else 1 for i in self.predator_presence_buffer]
             self.create_data_group("predator_presence", np.array(self.predator_presence_buffer), assay_group)
 
-            # self.fix_prey_position_buffer()
-            self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
+            try:
+                self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
+            except:
+                self.fix_prey_position_buffer()
+                self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
 
             self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)
 
@@ -320,26 +337,15 @@ class DQNAssayBuffer:
 
             self.create_data_group("background", np.array(background), assay_group)
 
+            if self.switch_step != None:
+                self.create_data_group("switch_step", np.array([self.switch_step]), assay_group)
+
             # Extra buffers (needed for perfect reloading of states)
             try:
-                self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
-                self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
-
-                # print("prey_ages")
-                # print(self.prey_age_buffer)
-                # print("prey_gaits")
-                # print(self.prey_gait_buffer)
-                # print("reward")
-                # print(self.reward_buffer)
-                # print("advantage")
-                # print(self.advantage_buffer)
-                # print("value")
-                # print(self.value_buffer)
-                # print("returns")
-                # print(self.return_buffer)
-                self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
-
-                self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
+                self.create_data_group("prey_orientations", np.array(self.pad_buffer(self.prey_orientation_buffer)), assay_group)
+                self.create_data_group("predator_orientation", np.array(self.pad_buffer(self.predator_orientation_buffer)), assay_group)
+                self.create_data_group("prey_ages", np.array(self.pad_buffer(self.prey_age_buffer)), assay_group)
+                self.create_data_group("prey_gaits", np.array(self.pad_buffer(self.prey_gait_buffer)), assay_group)
             except TypeError:
                 print("Still need to pad these.")
 

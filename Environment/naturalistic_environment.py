@@ -213,7 +213,7 @@ Sand grain: {self.sand_grain_associated_reward}
 
         if self.split_event == "One-Prey-Close":
             max_angular_deviation = np.pi/2
-            max_distance = 100  # 10mm
+            max_distance = 1000  # 10mm
 
             prey_near = self.check_proximity_all_prey(sensing_distance=max_distance)
             fish_prey_incidence = self.get_fish_prey_incidence()
@@ -466,6 +466,7 @@ Sand grain: {self.sand_grain_associated_reward}
         if self.assay_run_version == "Original":
             if self.check_condition_met():
                 done = True
+                self.switch_step = self.num_steps
         
         observation, frame_buffer = self.resolve_visual_input(save_frames, activations, internal_state,
                                                                       frame_buffer)

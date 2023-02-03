@@ -158,11 +158,9 @@ class DQNAssayService(AssayService, BaseDQN):
         if self.rnn_input is not None:
             rnn_state = copy.copy(self.rnn_input[0])
             rnn_state_ref = copy.copy(self.rnn_input[1])
-            print("1")
         else:
             rnn_state = copy.copy(self.init_rnn_state)
             rnn_state_ref = copy.copy(self.init_rnn_state_ref)
-            print("2")
 
         if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
             print("Loading Simulation")
@@ -197,7 +195,6 @@ class DQNAssayService(AssayService, BaseDQN):
 
             a = a[0]
             self.step_number = len(self.buffer.internal_state_buffer)
-            self.step_number -= 5
         else:
             self.simulation.reset()
             a = 0
@@ -215,7 +212,6 @@ class DQNAssayService(AssayService, BaseDQN):
             action_reafference = [a]
 
         while self.step_number < assay["duration"]:
-            print(self.step_number)
             # if assay["reset"] and self.step_number % assay["reset interval"] == 0:
             #     rnn_state = (
             #         np.zeros([1, self.main_QN.rnn_dim]), np.zeros([1, self.main_QN.rnn_dim]))  # Reset RNN hidden state
@@ -261,6 +257,10 @@ class DQNAssayService(AssayService, BaseDQN):
             o = o1
 
             if d:
+                if self.run_version == "Original":
+                    if self.simulation.switch_step != None:
+                        self.buffer.switch_step = self.simulation.switch_step
+
                 break
             if self.full_reafference:
                 # As simulation step returns full action

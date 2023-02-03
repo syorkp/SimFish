@@ -54,7 +54,6 @@ class AssayService(BaseService):
             pass
         else:
             print("Incorrectly specified.")
-            ...
 
         self.run_version = run_version
         self.modification = modification
@@ -231,6 +230,7 @@ class AssayService(BaseService):
         self.buffer.vegetation_position_buffer = data["vegetation_positions"].tolist()
         self.buffer.salt_location = data["salt_location"].tolist()
         self.buffer.prey_consumed_buffer = data["consumed"].tolist()
+        self.buffer.switch_step = data["switch_step"]
 
         energy_state = data["energy_state"][-1]
 
@@ -268,8 +268,8 @@ class AssayService(BaseService):
         if assay["use_mu"]:
             self.use_mu = True
 
-
-        # TODO: implement environment loading etc as in dqn_assay_service. Will require modification of self._episode_loop() for RNN state, env reset, step num,
+        # TODO: implement environment loading etc as in dqn_assay_service. Will require modification of
+        #  self._episode_loop() for RNN state, env reset, step num,
 
         self._episode_loop()
         self.log_stimuli()

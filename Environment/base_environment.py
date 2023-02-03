@@ -169,6 +169,7 @@ class BaseEnvironment:
         self.in_light_history = []
         self.survived_attack = False
 
+        self.switch_step = None
 
     def clear_environmental_features(self):
         """Removes all prey, predators, vegetation, and sand grains from simulation"""
@@ -226,6 +227,7 @@ class BaseEnvironment:
         self.board.light_gain = self.env_variables["light_gain"]
         self.board.luminance_mask = self.board.get_luminance_mask(self.env_variables["dark_light_ratio"],
                                                                   self.env_variables["dark_gain"])
+        self.switch_step = None
 
         # New energy system:
         self.fish.energy_level = 1

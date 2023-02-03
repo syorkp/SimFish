@@ -221,7 +221,7 @@ dqn_split_assay_test = [
                 "assay id": "Naturalistic",
                 "stimulus paradigm": "Naturalistic",
                 "repeats": 1,
-                "duration": 20,
+                "duration": 2000,
                 "Tethered": False,
                 "save frames": False,
                 "use_mu": True,
@@ -607,5 +607,5 @@ else:
     run_config = globals()[run_config]
 
 print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-manager = TrialManager(run_config, parallel_jobs=1)
+manager = TrialManager(dqn_split_assay_test, parallel_jobs=1)
 manager.run_priority_loop()
