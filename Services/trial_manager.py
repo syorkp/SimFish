@@ -279,7 +279,7 @@ class TrialManager:
                                           scaffold_point=s) for s in range(2, configuration)]
 
         new_data_files = []
-        to_delete
+        to_delete = None
 
         # Iterate
         for i, chkpt in enumerate(all_checkpoints):
