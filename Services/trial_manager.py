@@ -543,7 +543,7 @@ class TrialManager:
                                 print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Complete")
                                 complete = True
 
-                    print("HERE 145")
+                    print(f"HERE 145 {chkpt}")
                     print(complete)
                     #  2 - ANALYSIS
                     if complete:
