@@ -469,6 +469,7 @@ class TrialManager:
         memory_fraction = 0.99 / self.parallel_jobs
         running_jobs = {}
         to_delete = None
+        print("Here")
         for index, trial in enumerate(self.priority_ordered_trials):
             if to_delete is not None:
                 del running_jobs[to_delete]
