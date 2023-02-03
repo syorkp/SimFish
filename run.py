@@ -297,7 +297,7 @@ dqn_delta_analysis_across_scaffold_3 = [
                 "assay id": "Naturalistic",
                 "repeats": 1,
                 "stimulus paradigm": "Naturalistic",
-                "duration": 10,
+                "duration": 100,
                 "Tethered": False,
                 "save frames": False,
                 "use_mu": True,
