@@ -254,9 +254,9 @@ dqn_gamma_analysis_across_scaffold_1 = [
         "Assays": [
             {
                 "assay id": "Naturalistic",
-                "repeats": 10,
+                "repeats": 1,
                 "stimulus paradigm": "Naturalistic",
-                "duration": 10000,
+                "duration": 10,
                 "Tethered": False,
                 "save frames": False,
                 "use_mu": True,
