@@ -475,7 +475,7 @@ class TrialManager:
                 del running_jobs[to_delete]
                 to_delete = None
             elif trial["Run Mode"] == "Assay-Analysis-Across-Scaffold":
-                self.run_analysis_across_scaffold(index, trial, running_jobs, memory_fraction, to_delete)
+                self.run_analysis_across_scaffold(index, trial, running_jobs, memory_fraction)
             elif trial["Run Mode"] == "Split-Assay":
                 self.run_split_assay_mode(index, trial, running_jobs, memory_fraction, to_delete)
             else:
