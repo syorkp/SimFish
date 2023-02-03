@@ -543,11 +543,7 @@ class TrialManager:
                                 print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Complete")
                                 complete = True
 
-                                if to_delete is not None:
-                                    del running_jobs[to_delete]
-                                    to_delete = None
-
-                    print("Here")
+                    print("HERE 145")
                     print(complete)
                     #  2 - ANALYSIS
                     if complete:
