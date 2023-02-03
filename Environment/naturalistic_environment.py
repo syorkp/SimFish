@@ -334,8 +334,9 @@ Sand grain: {self.sand_grain_associated_reward}
                 self.fish.capture_possible = True
             else:
                 self.fish.capture_possible = False
+
             if self.predator_body is not None:
-                self.move_predator()
+                self.move_predator(micro_step)
 
             self.space.step(self.env_variables['phys_dt'])
 
