@@ -280,13 +280,13 @@ dqn_gamma_analysis_across_scaffold_1 = [
     }
 ]
 
-dqn_gamma_analysis_across_scaffold_3 = [
+dqn_delta_analysis_across_scaffold_3 = [
     {
-        "Model Name": "dqn_gamma",
-        "Environment Name": "dqn_gamma_free",
+        "Model Name": "dqn_delta",
+        "Environment Name": "dqn_delta_free",
         "Assay Configuration Name": "Behavioural-Data-Free",
         "Config Modification": "Empty",
-        "Trial Number": 3,
+        "Trial Number": 1,
         "Delete Data": True,
         "Run Mode": "Assay-Analysis-Across-Scaffold",
         "Learning Algorithm": "DQN",
