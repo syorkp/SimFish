@@ -533,7 +533,6 @@ class TrialManager:
                     else:
                         print("New job failed")
 
-                    print(running_jobs)
                     while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
                         for process in running_jobs.keys():
                             if running_jobs[process].is_alive():
@@ -543,7 +542,10 @@ class TrialManager:
                                 running_jobs[str(index)].join()
                                 print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Complete")
                                 complete = True
-                                print("A")
+
+                                if to_delete is not None:
+                                    del running_jobs[to_delete]
+                                    to_delete = None
 
                     print("Here")
                     print(complete)
