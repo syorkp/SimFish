@@ -208,7 +208,7 @@ dqn_split_assay_test = [
         "Model Name": "dqn_gamma",
         "Environment Name": "dqn_gamma_final_mod",
         "Assay Configuration Name": "Behavioural-Data-Free",
-        "Trial Number": 2,
+        "Trial Number": 3,
         "Run Mode": "Split-Assay",
         "Split Event": "One-Prey-Close",
         "Modification": "Nearby-Prey-Removal",
