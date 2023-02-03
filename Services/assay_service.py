@@ -50,7 +50,8 @@ class AssayService(BaseService):
                 assay["assay id"] += "-Mod"
         elif run_version == "Original":
             print("Running for pre-split original")
-            x = True
+        elif run_version == None:
+            pass
         else:
             print("Incorrectly specified.")
             ...
