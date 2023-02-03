@@ -469,7 +469,7 @@ class TrialManager:
         memory_fraction = 0.99 / self.parallel_jobs
         running_jobs = {}
         to_delete = None
-        print("Here")
+
         for index, trial in enumerate(self.priority_ordered_trials):
             if to_delete is not None:
                 del running_jobs[to_delete]
@@ -477,7 +477,7 @@ class TrialManager:
             elif trial["Run Mode"] == "Assay-Analysis-Across-Scaffold":
                 # self.run_analysis_across_scaffold(index, trial, running_jobs, memory_fraction, to_delete)
                 complete = False
-
+                print("Here")
                 # Find number of scaffold points
                 epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
                 model_name = f"{trial['Model Name']}-{trial['Trial Number']}"
