@@ -543,10 +543,14 @@ class TrialManager:
                                 print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Complete")
                                 complete = True
 
+                    print("Here")
+                    print(complete)
                     #  2 - ANALYSIS
                     if complete:
+                        print("Here2")
                         # Do analysis
                         for analysis in trial["Analysis"]:
+                            print("Here3")
                             # Get arguments
                             args = []
                             for arg in analysis["analysis arguments"]:
