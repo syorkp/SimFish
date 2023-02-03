@@ -60,3 +60,6 @@ def convert_prey_position_data(prey_positions_compiled):
     new_prey_position_array = np.delete(overly_large_position_array, to_delete, axis=1)
     new_prey_position_array[new_prey_position_array == 1000.] = 10000.
     return new_prey_position_array
+
+
+if __name__ == "__main__":

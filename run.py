@@ -169,6 +169,37 @@ dqn_free_config_large_gamma_3 = [
     }
     ]
 
+assay_gathering_test = [
+    {
+        "Model Name": "dqn_gamma",
+        "Environment Name": "dqn_gamma_final",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Trial Number": 3,
+        "Run Mode": "Assay",
+        "Learning Algorithm": "DQN",
+        "Using GPU": False,
+        "behavioural recordings": ["environmental positions", "observation"],
+        "network recordings": ["rnn_shared", "internal_state"],
+        "Assays": [
+            {
+                "assay id": "Naturalistic",
+                "stimulus paradigm": "Naturalistic",
+                "repeats": 1,
+                "duration": 10,
+                "Tethered": False,
+                "save frames": False,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+            },
+        ]
+    }
+    ]
+
 
 # Split timelines assay
 
@@ -528,7 +559,7 @@ ppo_gamma_5 = [
 
 
 if run_config is None:
-    run_config = dqn_split_assay_test
+    run_config = assay_gathering_test
 else:
     print(f"{run_config} entered.")
     run_config = globals()[run_config]

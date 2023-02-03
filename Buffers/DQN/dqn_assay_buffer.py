@@ -162,6 +162,8 @@ class DQNAssayBuffer:
         # NEW - Has an entire column for each prey that exists at any given time
         # For each step, shift the array of positions across until aligned (should be the min difference with above
         # values).
+        print("Fixing buffer")
+        print(self.prey_positions_buffer)
         num_steps = len(self.prey_positions_buffer)
         num_prey_init = len(self.prey_positions_buffer[0])
         overly_large_position_array = np.ones((num_steps, num_prey_init * 100, 2)) * 10000

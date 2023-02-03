@@ -411,7 +411,7 @@ Sand grain: {self.sand_grain_associated_reward}
                 if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables[
                     "salt_recovery"]:
                     reward -= self.env_variables["salt_reward_penalty"] * salt_damage
-                    print(f"Salt-associated reward: {-self.env_variables['salt_reward_penalty'] * salt_damage}")
+                    # print(f"Salt-associated reward: {-self.env_variables['salt_reward_penalty'] * salt_damage}")
                     self.salt_associated_reward -= self.env_variables['salt_reward_penalty'] * salt_damage
 
         if self.predator_body is not None:

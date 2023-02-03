@@ -29,8 +29,9 @@ def load_data(model_name, assay_configuration, assay_id):
 
 
 if __name__ == "__main__":
+    d = load_data("dqn_gamma-1", "dqn_gamma_c1", f"Naturalistic-1")
     datas = []
-    d = load_data("dqn_gamma-2", "Behavioural-Data-Free", f"Naturalistic-1")
+    d = load_data("dqn_gamma-3", "Behavioural-Data-Free", f"Naturalistic-3")
     d1 = load_data("dqn_gamma-2", "Behavioural-Data-Free", f"Naturalistic-Mod-1")
     actions = d["action"]
     prey_positions = d["prey_positions"]

@@ -267,7 +267,7 @@ class TrialManager:
 
         return new_job
 
-    def run_analysis_across_scaffold(self, index, trial, running_jobs, memory_fraction, to_delete):
+    def run_analysis_across_scaffold(self, index, trial, running_jobs, memory_fraction):
         complete = False
 
         # Find number of scaffold points
@@ -279,16 +279,17 @@ class TrialManager:
                                           scaffold_point=s) for s in range(2, configuration)]
 
         new_data_files = []
+        to_delete
 
         # Iterate
         for i, chkpt in enumerate(all_checkpoints):
             configuration = i + 1
             episode_number = chkpt
-
             assay_config_name = f"{trial['Model Name']}_c{configuration}"
 
             # Create assay config for that scaffold point
-            transfer_config(model_name=trial["Model Name"], scaffold_point=configuration,
+            transfer_config(model_name=trial["Model Name"],
+                            scaffold_point=configuration,
                             assay_config_name=assay_config_name)
 
             # If specified, modify the config
@@ -305,13 +306,16 @@ class TrialManager:
                 with open(f"Configurations/Assay-Configs/{assay_config_name}_env.json", 'w') as f:
                     json.dump(env, f)
 
+            # Change parameters of trial to match the given checkpoint
             trial["Environment Name"] = assay_config_name
             trial["Assay Configuration Name"] = assay_config_name
             trial["Checkpoint"] = chkpt
 
+            # Log a file to be deleted
             new_data_files.append(f"Assay-Output/{model_name}/{assay_config_name}.h5")
 
-            # ASSAY: Create assay data for that trial
+
+            # 1 - ASSAY: Create assay data for that trial
             new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
             if new_job is not None:
                 running_jobs[str(index)] = new_job
@@ -330,8 +334,8 @@ class TrialManager:
                         running_jobs[str(index)].join()
                         print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Complete")
                         complete = True
-            print("HEREEE")
-            #  ANALYSIS
+
+            #  2 - ANALYSIS
             if complete:
                 # Do analysis
                 for analysis in trial["Analysis"]:
