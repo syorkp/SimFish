@@ -42,7 +42,7 @@ elif run_config == "draw_ep":
             assay_config_name = "dqn_gamma_final"
             draw_episode(data, assay_config_name, model, continuous_actions=False, show_energy_state=False,
                          trim_to_fish=True, showed_region_quad=750, save_id=f"{i}", include_background=True,
-                         as_gif=False, s_per_frame=0.3)
+                         as_gif=False, s_per_frame=0.1, scale=0.5)
 
     # model_name = "dqn_scaffold_33-1"
     # data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")

@@ -349,9 +349,9 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
 
             board.db_visualisation[rrs, ccs] = (0, 0, 1)
 
-
-        if data["predator_presence"][step]:
-            board.circle(data["predator_positions"][step], env_variables['predator_size'], (0, 1, 0))
+        #
+        # if data["predator_presence"][step]:
+        #     board.circle(data["predator_positions"][step], env_variables['predator_size'], (0, 1, 0))
 
         if draw_action_space_usage:
             if continuous_actions:
