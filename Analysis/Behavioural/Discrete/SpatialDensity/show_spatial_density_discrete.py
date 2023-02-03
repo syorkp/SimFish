@@ -866,8 +866,18 @@ def plot_all_density_plots_across_scaffold(model_name, assay_config_a, assay_con
 if __name__ == "__main__":
     # VERSION 2, 2023
     # get_all_density_plots_all_subsets(f"dqn_gamma_pm-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
-    get_all_density_plots_all_subsets(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
 
+    save_location = f"../../../../Analysis-Output/Behavioural/Spatial-Density-Plots/dqn_gamma-4/"
+
+    create_cstart_overlap_plot(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False,
+                               save_location=save_location)
+    create_routine_turn_overlap_plot(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False,
+                               save_location=save_location)
+    create_j_turn_overlap_plot(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False,
+                               save_location=save_location)
+    create_j_turn_2_overlap_plot(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False,
+                               save_location=save_location)
 
     # save_location = f"../../../../Analysis-Output/Behavioural/Spatial-Density-Plots/dqn_gamma-1/"
     #

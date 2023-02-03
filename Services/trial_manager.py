@@ -194,9 +194,7 @@ class TrialManager:
                 if trial["Learning Algorithm"] == "PPO":
                     new_job = multiprocessing.Process(target=ppo_assay_continuous.ppo_assay_target_continuous, args=(
                         trial, total_steps, episode_number, memory_fraction))
-                elif trial["Learning Algorithm"] == "A2C":
-                    new_job = multiprocessing.Process(target=a2c_assay.a2c_assay_target, args=(
-                        trial, total_steps, episode_number, memory_fraction))
+
                 elif trial["Learning Algorithm"] == "DQN":
                     print('Cannot use DQN with continuous actions (assay mode)')
                     new_job = None
@@ -269,6 +267,197 @@ class TrialManager:
 
         return new_job
 
+    def run_analysis_across_scaffold(self, index, trial, running_jobs, memory_fraction, to_delete):
+        complete = False
+
+        # Find number of scaffold points
+        epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
+        model_name = f"{trial['Model Name']}-{trial['Trial Number']}"
+
+        # Get list of all checkpoints
+        all_checkpoints = [get_checkpoint(model_name=model_name,
+                                          scaffold_point=s) for s in range(2, configuration)]
+
+        new_data_files = []
+
+        # Iterate
+        for i, chkpt in enumerate(all_checkpoints):
+            configuration = i + 1
+            episode_number = chkpt
+
+            assay_config_name = f"{trial['Model Name']}_c{configuration}"
+
+            # Create assay config for that scaffold point
+            transfer_config(model_name=trial["Model Name"], scaffold_point=configuration,
+                            assay_config_name=assay_config_name)
+
+            # If specified, modify the config
+            if trial["Config Modification"] is not None and trial["Config Modification"] is not False:
+                print("Altering assay config...")
+                with open(f"Configurations/Assay-Configs/{assay_config_name}_env.json", "r") as f:
+                    env = json.load(f)
+                if trial["Config Modification"] == "Empty":
+                    env["prey_num"] = 0
+                    env["max_salt_damage"] = 0.
+                    env["max_current_strength"] = 0.0
+                    env["probability_of_predator"] = 0.
+                    env["dark_light_ratio"] = 0.0
+                with open(f"Configurations/Assay-Configs/{assay_config_name}_env.json", 'w') as f:
+                    json.dump(env, f)
+
+            trial["Environment Name"] = assay_config_name
+            trial["Assay Configuration Name"] = assay_config_name
+            trial["Checkpoint"] = chkpt
+
+            new_data_files.append(f"Assay-Output/{model_name}/{assay_config_name}.h5")
+
+            # ASSAY: Create assay data for that trial
+            new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
+            if new_job is not None:
+                running_jobs[str(index)] = new_job
+                running_jobs[str(index)].start()
+                print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']},"
+                      f" Scaffold Point {configuration}")
+            else:
+                print("New job failed")
+
+            while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
+                for process in running_jobs.keys():
+                    if running_jobs[process].is_alive():
+                        pass
+                    else:
+                        to_delete = process
+                        running_jobs[str(index)].join()
+                        print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Complete")
+                        complete = True
+            print("HEREEE")
+            #  ANALYSIS
+            if complete:
+                # Do analysis
+                for analysis in trial["Analysis"]:
+                    # Get arguments
+                    args = []
+                    for arg in analysis["analysis arguments"]:
+                        try:
+                            arg = locals()[arg]
+                        except KeyError:
+                            arg = arg
+                        args.append(arg)
+                    args.append(f"Scaffold Point: {configuration}")
+
+                    print(f"Running analysis {analysis['analysis id']} for model: {model_name}")
+                    chosen_module = __import__(analysis["analysis script"], fromlist=[''])
+                    chosen_function = getattr(chosen_module, analysis["analysis function"])
+
+                    chosen_function(*args)
+
+                if "Delete Data" in trial:
+                    if trial["Delete Data"]:
+                        for file in new_data_files:
+                            print(f"Deleting files {file}")
+                            os.remove(file)
+
+                complete = False
+
+    def run_split_assay_mode(self, index, trial, running_jobs, memory_fraction, to_delete):
+        # Run all assays, up to the point of the split.
+        complete = False
+        epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
+
+        new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
+        if new_job is not None:
+            running_jobs[str(index)] = new_job
+            running_jobs[str(index)].start()
+            print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
+        else:
+            print("New job failed")
+
+        while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
+            for process in running_jobs.keys():
+                if running_jobs[process].is_alive():
+                    pass
+                else:
+                    to_delete = process
+                    running_jobs[str(index)].join()
+                    print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Pre-Split Complete")
+                    complete = True
+
+        # Run again, twice from split point, with random seed set
+        if complete:
+            if to_delete is not None:
+                del running_jobs[to_delete]
+                to_delete = None
+
+            complete = False
+            # Second (modified) trial completion
+            trial["Run Index"] = "Modified-Completion"
+            new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon,
+                                       configuration)
+            if new_job is not None:
+                running_jobs[str(index)] = new_job
+                running_jobs[str(index)].start()
+                print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
+            else:
+                print("New job failed")
+
+            while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
+                for process in running_jobs.keys():
+                    if running_jobs[process].is_alive():
+                        pass
+                    else:
+                        to_delete = process
+                        running_jobs[str(index)].join()
+                        print(
+                            f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Post-Split Modified Complete")
+                        complete = True
+            to_delete = None
+
+        if complete:
+            if to_delete is not None:
+                del running_jobs[to_delete]
+                to_delete = None
+
+            # First (normal) trial completion
+            trial["Run Index"] = "Original-Completion"
+            new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon,
+                                       configuration)
+            if new_job is not None:
+                running_jobs[str(index)] = new_job
+                running_jobs[str(index)].start()
+                print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
+            else:
+                print("New job failed")
+
+            while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
+                for process in running_jobs.keys():
+                    if running_jobs[process].is_alive():
+                        pass
+                    else:
+                        to_delete = process
+                        running_jobs[str(index)].join()
+                        print(
+                            f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Post-Split Original Complete")
+                        complete = True
+            to_delete = None
+
+    def run_training(self, index, trial, running_jobs, memory_fraction, to_delete):
+        epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
+        new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
+        if new_job is not None:
+            running_jobs[str(index)] = new_job
+            running_jobs[str(index)].start()
+            print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
+        else:
+            print("New job failed")
+
+        while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
+            for process in running_jobs.keys():
+                if running_jobs[process].is_alive():
+                    pass
+                else:
+                    to_delete = process
+                    running_jobs[str(index)].join()
+
     def run_priority_loop(self):
         """
         Executes the trials in the required order.
@@ -282,193 +471,8 @@ class TrialManager:
                 del running_jobs[to_delete]
                 to_delete = None
             elif trial["Run Mode"] == "Assay-Analysis-Across-Scaffold":
-                complete = False
-
-                # Find number of scaffold points
-                epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
-                model_name = f"{trial['Model Name']}-{trial['Trial Number']}"
-
-                # Get list of all checkpoints
-                all_checkpoints = [get_checkpoint(model_name=model_name,
-                                                  scaffold_point=s) for s in range(2, configuration)]
-
-                new_data_files = []
-
-                # Iterate
-                for i, chkpt in enumerate(all_checkpoints):
-                    configuration = i + 1
-                    episode_number = chkpt
-
-                    assay_config_name = f"{trial['Model Name']}_c{configuration}"
-
-                    # Create assay config for that scaffold point
-                    transfer_config(model_name=trial["Model Name"], scaffold_point=configuration,
-                                    assay_config_name=assay_config_name)
-
-                    # If specified, modify the config
-                    if trial["Config Modification"] is not None and trial["Config Modification"] is not False:
-                        print("Altering assay config...")
-                        with open(f"Configurations/Assay-Configs/{assay_config_name}_env.json", "r") as f:
-                            env = json.load(f)
-                        if trial["Config Modification"] == "Empty":
-                            env["prey_num"] = 0
-                            env["max_salt_damage"] = 0.
-                            env["max_current_strength"] = 0.0
-                            env["probability_of_predator"] = 0.
-                            env["dark_light_ratio"] = 0.0
-                        with open(f"Configurations/Assay-Configs/{assay_config_name}_env.json", 'w') as f:
-                            json.dump(env, f)
-
-                    trial["Environment Name"] = assay_config_name
-                    trial["Assay Configuration Name"] = assay_config_name
-                    trial["Checkpoint"] = chkpt
-
-                    new_data_files.append(f"Assay-Output/{model_name}/{assay_config_name}.h5")
-
-
-
-                    # ASSAY: Create assay data for that trial
-                    new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
-                    if new_job is not None:
-                        running_jobs[str(index)] = new_job
-                        running_jobs[str(index)].start()
-                        print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']},"
-                              f" Scaffold Point {configuration}")
-                    else:
-                        print("New job failed")
-
-                    while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
-                        for process in running_jobs.keys():
-                            if running_jobs[process].is_alive():
-                                pass
-                            else:
-                                to_delete = process
-                                running_jobs[str(index)].join()
-                                print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Complete")
-                                complete = True
-                    print("HEREEE")
-                    #  ANALYSIS
-                    if complete:
-                        # Do analysis
-                        for analysis in trial["Analysis"]:
-                            # Get arguments
-                            args = []
-                            for arg in analysis["analysis arguments"]:
-                                try:
-                                    arg = locals()[arg]
-                                except KeyError:
-                                    arg = arg
-                                args.append(arg)
-                            args.append(f"Scaffold Point: {configuration}")
-
-                            print(f"Running analysis {analysis['analysis id']} for model: {model_name}")
-                            chosen_module = __import__(analysis["analysis script"], fromlist=[''])
-                            chosen_function = getattr(chosen_module, analysis["analysis function"])
-
-                            chosen_function(*args)
-                        
-                        if "Delete Data" in trial:
-                            if trial["Delete Data"]:
-                                for file in new_data_files:
-                                    print(f"Deleting files {file}")
-                                    os.remove(file)
-
-                        complete = False
-
+                self.run_analysis_across_scaffold(index, trial, running_jobs, memory_fraction, to_delete)
             elif trial["Run Mode"] == "Split-Assay":
-                # Run all assays, up to the point of the split.
-                complete = False
-                epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
-
-                new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
-                if new_job is not None:
-                    running_jobs[str(index)] = new_job
-                    running_jobs[str(index)].start()
-                    print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
-                else:
-                    print("New job failed")
-
-                while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
-                    for process in running_jobs.keys():
-                        if running_jobs[process].is_alive():
-                            pass
-                        else:
-                            to_delete = process
-                            running_jobs[str(index)].join()
-                            print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Pre-Split Complete")
-                            complete = True
-
-                # Run again, twice from split point, with random seed set
-                if complete:
-                    if to_delete is not None:
-                        del running_jobs[to_delete]
-                        to_delete = None
-
-                    complete = False
-                    # Second (modified) trial completion
-                    trial["Run Index"] = "Modified-Completion"
-                    new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon,
-                                               configuration)
-                    if new_job is not None:
-                        running_jobs[str(index)] = new_job
-                        running_jobs[str(index)].start()
-                        print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
-                    else:
-                        print("New job failed")
-
-                    while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
-                        for process in running_jobs.keys():
-                            if running_jobs[process].is_alive():
-                                pass
-                            else:
-                                to_delete = process
-                                running_jobs[str(index)].join()
-                                print(
-                                    f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Post-Split Modified Complete")
-                                complete = True
-                    to_delete = None
-
-                if complete:
-                    if to_delete is not None:
-                        del running_jobs[to_delete]
-                        to_delete = None
-                        
-                    # First (normal) trial completion
-                    trial["Run Index"] = "Original-Completion"
-                    new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon,
-                                                   configuration)
-                    if new_job is not None:
-                        running_jobs[str(index)] = new_job
-                        running_jobs[str(index)].start()
-                        print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
-                    else:
-                        print("New job failed")
-
-                    while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
-                        for process in running_jobs.keys():
-                            if running_jobs[process].is_alive():
-                                pass
-                            else:
-                                to_delete = process
-                                running_jobs[str(index)].join()
-                                print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Post-Split Original Complete")
-                                complete = True
-                    to_delete = None
-
+                self.run_split_assay_mode(index, trial, running_jobs, memory_fraction, to_delete)
             else:
-                epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
-                new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
-                if new_job is not None:
-                    running_jobs[str(index)] = new_job
-                    running_jobs[str(index)].start()
-                    print(f"Starting {trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']}")
-                else:
-                    print("New job failed")
-
-                while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
-                    for process in running_jobs.keys():
-                        if running_jobs[process].is_alive():
-                            pass
-                        else:
-                            to_delete = process
-                            running_jobs[str(index)].join()
+                self.run_training(index, trial, running_jobs, memory_fraction, to_delete)

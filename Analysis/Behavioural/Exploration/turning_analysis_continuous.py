@@ -181,9 +181,12 @@ def plot_all_turn_analysis_multiple_models_continuous(model_names, assay_config,
 
 
 if __name__ == "__main__":
-    plot_all_turn_analysis_multiple_models_continuous(["ppo_scaffold_21-1", "ppo_scaffold_21-2"],
-                                                      "Behavioural-Data-Empty",
-                                                      f"Naturalistic", 20, threshold_for_angle=0.1, data_cutoff=None)
+    for i in range(1, 15):
+        plot_all_turn_analysis_continuous("ppo_gamma-3", f"ppo_gamma_c{i}", "Naturalistic", 1, figure_moniker=i)
+
+    # plot_all_turn_analysis_multiple_models_continuous(["ppo_scaffold_21-1", "ppo_scaffold_21-2"],
+    #                                                   "Behavioural-Data-Empty",
+    #                                                   f"Naturalistic", 20, threshold_for_angle=0.1, data_cutoff=None)
     # d = load_data("ppo_scaffold_21-1", "Behavioural-Data-Free", "Naturalistic-3")
     # exploration_np_ts = label_exploration_sequences_free_swimming(d) * 1
     # all_turns = d["angle"][1:]

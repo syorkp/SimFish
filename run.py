@@ -411,19 +411,19 @@ dqn_gamma_pm_5 = [
     },
 ]
 
-dqn_gamma_ns_1 = [
+dqn_delta_ns_1 = [
     {
-        "Model Name": "dqn_gamma_ns",
-        "Environment Name": "dqn_gamma_ns",
+        "Model Name": "dqn_delta_ns",
+        "Environment Name": "dqn_delta_ns",
         "Trial Number": 1,
         "Run Mode": "Training",
         "Learning Algorithm": "DQN",
     },
 ]
-dqn_gamma_ns_2 = [
+dqn_delta_ns_2 = [
     {
-        "Model Name": "dqn_gamma_ns",
-        "Environment Name": "dqn_gamma_ns",
+        "Model Name": "dqn_delta_ns",
+        "Environment Name": "dqn_delta_ns",
         "Trial Number": 2,
         "Run Mode": "Training",
         "Learning Algorithm": "DQN",
