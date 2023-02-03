@@ -310,7 +310,7 @@ class DQNAssayBuffer:
             self.predator_presence_buffer = [0 if i is None else 1 for i in self.predator_presence_buffer]
             self.create_data_group("predator_presence", np.array(self.predator_presence_buffer), assay_group)
 
-            self.fix_prey_position_buffer()
+            # self.fix_prey_position_buffer()
             self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
 
             self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)
