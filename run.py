@@ -314,7 +314,7 @@ dqn_delta_analysis_across_scaffold_3 = [
                 "analysis id": "Turn-Analysis",
                 "analysis script": "Analysis.Behavioural.Exploration.turning_analysis_discrete",
                 "analysis function": "plot_all_turn_analysis",
-                "analysis arguments": ["model_name", "assay_config_name", "Naturalistic", 1],
+                "analysis arguments": ["model_name", "assay_config_name", "Naturalistic", 5],
                 "Delete Data": True
             }
         ],
