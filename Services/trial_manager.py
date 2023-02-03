@@ -533,12 +533,11 @@ class TrialManager:
                     else:
                         print("New job failed")
 
+                    print(running_jobs)
                     while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
-                        print("G")
                         for process in running_jobs.keys():
                             if running_jobs[process].is_alive():
                                 pass
-                                print("H")
                             else:
                                 to_delete = process
                                 running_jobs[str(index)].join()
