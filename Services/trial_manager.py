@@ -538,11 +538,13 @@ class TrialManager:
                         for process in running_jobs.keys():
                             if running_jobs[process].is_alive():
                                 pass
+                                print("H")
                             else:
                                 to_delete = process
                                 running_jobs[str(index)].join()
                                 print(f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Complete")
                                 complete = True
+                                print("A")
 
                     print("Here")
                     print(complete)
