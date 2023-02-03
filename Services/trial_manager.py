@@ -267,7 +267,7 @@ class TrialManager:
 
         return new_job
 
-    def run_analysis_across_scaffold(self, index, trial, running_jobs, memory_fraction):
+    def run_analysis_across_scaffold(self, index, trial, running_jobs, memory_fraction, to_delete):
         complete = False
 
         # Find number of scaffold points
@@ -279,7 +279,6 @@ class TrialManager:
                                           scaffold_point=s) for s in range(2, configuration)]
 
         new_data_files = []
-        to_delete = None
 
         # Iterate
         for i, chkpt in enumerate(all_checkpoints):
@@ -475,7 +474,7 @@ class TrialManager:
                 del running_jobs[to_delete]
                 to_delete = None
             elif trial["Run Mode"] == "Assay-Analysis-Across-Scaffold":
-                self.run_analysis_across_scaffold(index, trial, running_jobs, memory_fraction)
+                self.run_analysis_across_scaffold(index, trial, running_jobs, memory_fraction, to_delete)
             elif trial["Run Mode"] == "Split-Assay":
                 self.run_split_assay_mode(index, trial, running_jobs, memory_fraction, to_delete)
             else:
