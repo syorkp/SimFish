@@ -280,6 +280,48 @@ dqn_gamma_analysis_across_scaffold_1 = [
     }
 ]
 
+dqn_gamma_analysis_across_scaffold_3 = [
+    {
+        "Model Name": "dqn_gamma",
+        "Environment Name": "dqn_gamma_free",
+        "Assay Configuration Name": "Behavioural-Data-Free",
+        "Config Modification": "Empty",
+        "Trial Number": 3,
+        "Delete Data": True,
+        "Run Mode": "Assay-Analysis-Across-Scaffold",
+        "Learning Algorithm": "DQN",
+        "behavioural recordings": ["environmental positions", "observation"],
+        "network recordings": ["rnn_shared", "internal_state"],
+        "Assays": [
+            {
+                "assay id": "Naturalistic",
+                "repeats": 1,
+                "stimulus paradigm": "Naturalistic",
+                "duration": 10,
+                "Tethered": False,
+                "save frames": False,
+                "use_mu": True,
+                "save stimuli": False,
+                "random positions": False,
+                "reset": False,
+                "background": None,
+                "moving": False,
+                "collisions": True,
+            },
+        ],
+        "Analysis": [
+            {
+                "analysis id": "Turn-Analysis",
+                "analysis script": "Analysis.Behavioural.Exploration.turning_analysis_discrete",
+                "analysis function": "plot_all_turn_analysis",
+                "analysis arguments": ["model_name", "assay_config_name", "Naturalistic", 10],
+                "Delete Data": True
+            }
+        ],
+    }
+]
+
+
 ppo_gamma_analysis_across_scaffold_1 = [
     {
         "Model Name": "ppo_gamma",

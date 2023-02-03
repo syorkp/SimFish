@@ -477,7 +477,7 @@ class TrialManager:
             elif trial["Run Mode"] == "Assay-Analysis-Across-Scaffold":
                 # self.run_analysis_across_scaffold(index, trial, running_jobs, memory_fraction, to_delete)
                 complete = False
-                print("Here")
+
                 # Find number of scaffold points
                 epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
                 model_name = f"{trial['Model Name']}-{trial['Trial Number']}"
