@@ -101,6 +101,7 @@ class Eye:
             self.expand_observation = False
             self.observation_size = self.max_photoreceptor_num
 
+        self.plot_photoreceptors(self.uv_photoreceptor_angles.get(), self.red_photoreceptor_angles.get(), self.uv_photoreceptor_rf_size/3, self.red_photoreceptor_rf_size/3, is_left)
         # Compute repeated measures:
         self.channel_angles_surrounding = None
         self.channel_angles_surrounding_red = None
@@ -120,6 +121,31 @@ class Eye:
         self.uv_signal_fail = []
         self.red2_signal_fail = []
 
+    def plot_photoreceptors(self, uv_photoreceptor_angles, red_photoreceptor_angles, uv_photoreceptor_rf_size, red_photoreceptor_rf_size, is_left):
+    # Plot the photoreceptors on a polar plot:
+        plt.ioff()
+
+        fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
+        ax.set_yticklabels([])
+        ax.set_theta_zero_location('N')
+        ax.set_theta_direction(-1)
+        uv_rfs = np.zeros((len(uv_photoreceptor_angles), 2))
+        red_rfs = np.zeros((len(red_photoreceptor_angles), 2))
+        uv_rfs[:,0] = uv_photoreceptor_angles - uv_photoreceptor_rf_size/2
+        uv_rfs[:,1] = uv_photoreceptor_angles + uv_photoreceptor_rf_size/2
+        red_rfs[:,0] = red_photoreceptor_angles - red_photoreceptor_rf_size/2
+        red_rfs[:,1] = red_photoreceptor_angles + red_photoreceptor_rf_size/2
+        r_uv = np.ones(uv_rfs.shape)*0.9
+        r_red = np.ones(red_rfs.shape)*1.1
+        ax.plot(uv_rfs.T, r_uv.T, color='b', alpha=0.3, linewidth=5)
+        ax.plot(red_rfs.T, r_red.T, color='r', alpha=0.3, linewidth=5)
+        if is_left:
+            plt.savefig('left_eye.png')
+        else:
+            plt.savefig('right_eye.png')
+        fig.clf()
+        plt.ion()
+    
     def get_repeated_computations(self):
         if self.shared_photoreceptor_channels:
             channel_angles_surrounding = self.chosen_math_library.expand_dims(self.photoreceptor_angles, 1)
@@ -180,22 +206,6 @@ class Eye:
             min_angle = np.pi / 2 - retinal_field / 2 - verg_angle / 2
             max_angle = np.pi / 2 + retinal_field / 2 - verg_angle / 2
         return self.chosen_math_library.linspace(min_angle, max_angle, photoreceptor_num)
-
-    def sample_half_normal_distribution(self, min_angle, max_angle, photoreceptor_num):
-        # Problem is that fish will find it difficult to learn with such large trial-to-trial variablility in input
-        # distribution, though maybe is realistic. Alternatively, can set random seed for this part?
-        sampled_values = np.random.randn(photoreceptor_num)
-        sampled_values = [abs(i) for i in sampled_values]
-        scaling_factor = max(sampled_values)
-        sampled_values = sampled_values / scaling_factor
-
-        difference = abs(max_angle - min_angle)
-        sampled_values = sampled_values * difference
-        sampled_values = sampled_values - max_angle
-
-        sampled_values = sampled_values * -1
-
-        return np.array(sorted(sampled_values))
 
     def create_half_normal_distribution(self, min_angle, max_angle, photoreceptor_num, sigma=1):
         mu = 0

@@ -71,10 +71,6 @@ class BaseService:
         self.continuous_actions = continuous_actions
         self.realistic_bouts = realistic_bouts
 
-        # Data
-        self.save_frames = False
-        self.frame_buffer = []
-
         # Maintain trial variables
         if episode_number is not None:
             self.episode_number = episode_number + 1
@@ -163,8 +159,8 @@ class BaseService:
 
         if self.simulation.prey_bodies:
             prey_positions = [prey.position for prey in self.simulation.prey_bodies]
-            prey_positions = [[i[0], i[1]] for i in prey_positions]
-            while True:
+            prey_positions = np.array([[i[0], i[1]] for i in prey_positions])
+            while True: 
                 if len(prey_positions) < self.last_position_dim:
                     prey_positions = np.append(prey_positions, [[10000, 10000]], axis=0)
                 else:

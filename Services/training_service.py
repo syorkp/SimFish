@@ -622,37 +622,29 @@ class TrainingService(BaseService):
                 self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
 
         if self.episode_number % self.learning_params['summaryLength'] == 0 and self.episode_number != 0:
-            if self.learning_params["save_gifs"]:
-                # Create the GIF
-                if len(self.frame_buffer) > 0:
-                    make_video(self.frame_buffer, f"{self.model_location}/episodes/episode-{str(self.episode_number)}.mp4",
-                             duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-                    if self.visualise_mask:
-                        make_video(self.simulation.mask_buffer,
-                                 f"{self.model_location}/episodes/mask-buffer-episode-{str(self.episode_number)}.mp4",
-                                 duration=len(self.simulation.mask_buffer) * self.learning_params['time_per_step'],
-                                 true_image=True)
-                    # make_gif(self.frame_buffer, f"{self.model_location}/episodes/episode-{str(self.episode_number)}.gif",
-                    #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-                    # if self.visualise_mask:
-                    #     make_gif(self.simulation.mask_buffer,
-                    #              f"{self.model_location}/episodes/mask-buffer-episode-{str(self.episode_number)}.gif",
-                    #              duration=len(self.simulation.mask_buffer) * self.learning_params['time_per_step'],
-                    #              true_image=True)
-                self.frame_buffer = []
-                self.save_frames = False
+            if self.using_gpu:
+                background = self.simulation.board.global_background_grating.get()[:, :, 0]
             else:
-                self.episode_buffer.save_assay_data(f"Episode {self.episode_number}", self.model_location + "/episodes", f"Episode {self.episode_number}")
-                self.episode_buffer.reset()
-                self.save_environmental_data = False
+                background = self.simulation.board.global_background_grating[:, :, 0]
+            if self.environment_params["salt"]:
+                salt_location = self.simulation.salt_location
+            else:
+                salt_location = None
+            internal_state_order = self.get_internal_state_order()
+
+            self.buffer.save_assay_data(f"Episode {self.episode_number}",
+                                        self.model_location + "/episodes",
+                                        f"Episode {self.episode_number}",
+                                        internal_state_order=internal_state_order,
+                                        background=background,
+                                        salt_location=salt_location)
+            self.buffer.reset()
+            self.save_environmental_data = False
 
         if (self.episode_number + 1) % self.learning_params['summaryLength'] == 0:
-            print('starting to save frames', flush=True)
-            if self.learning_params["save_gifs"]:
-                self.save_frames = True
-            else:
-                self.save_environmental_data = True
-                self.episode_buffer.init_assay_recordings(["environmental_positions", "observation"], [])
+            print('starting to log data', flush=True)
+            self.save_environmental_data = True
+            #self.buffer.init_assay_recordings(["environmental positions", "observation", "internal state"], [])
 
         if self.monitor_gpu:
             print(f"GPU usage {os.system('gpustat -cp')}")

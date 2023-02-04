@@ -20,6 +20,7 @@ class BaseEnvironment:
         # Rescale bkg_scatter to avoid disruption for larger fields
         model = np.poly1d([1.32283913e-18, -4.10522256e-14, 4.92470049e-10, -2.86744090e-06, 8.22376164e-03,
                             4.07923942e-01])  # TODO: Keep parameters updated
+        print(f"Original bkg scatter: {self.env_variables['bkg_scatter']}")
         self.env_variables["bkg_scatter"] = self.env_variables["bkg_scatter"] / (
                     model(self.env_variables["width"]) / model(1500))
         print(f"New bkg scatter: {self.env_variables['bkg_scatter']}")
@@ -31,13 +32,13 @@ class BaseEnvironment:
         else:
             light_gradient = 0
 
-        max_visual_distance = (self.env_variables["width"] ** 2 + self.env_variables["height"] ** 2) ** 0.5
-        if "max_visual_range" in self.env_variables:
-            if self.env_variables["max_visual_range"]:
-                max_visual_distance = self.env_variables["max_visual_range"]
+        # Set max visual distance to the point at which 99.9% of photons have been lost to absorption mask.
+        max_visual_distance = np.absolute(np.log(0.001)/self.env_variables["decay_rate"])
+
 
         self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'],
-                                        decay_rate=self.env_variables['decay_rate'],
+                                        uv_decay_rate=self.env_variables['decay_rate'],
+                                        red_decay_rate=self.env_variables['decay_rate'],
                                         photoreceptor_rf_size=max_photoreceptor_rf_size,
                                         using_gpu=using_gpu, visualise_mask=self.env_variables['visualise_mask'],
                                         prey_size=self.env_variables['prey_size'],
@@ -48,9 +49,7 @@ class BaseEnvironment:
                                         dark_light_ratio=self.env_variables['dark_light_ratio'],
                                         dark_gain=self.env_variables['dark_gain'],
                                         light_gain=self.env_variables['light_gain'],
-                                        red_occlusion_gain=self.env_variables['red_occlusion_gain'],
-                                        uv_occlusion_gain=self.env_variables['uv_occlusion_gain'],
-                                        red2_occlusion_gain=self.env_variables['red2_occlusion_gain'],
+                                        occlusion_gain=(self.env_variables['red_occlusion_gain'], self.env_variables['uv_occlusion_gain'], self.env_variables['red2_occlusion_gain']),
                                         light_gradient=light_gradient,
                                         max_visual_distance=max_visual_distance
                                         )
@@ -182,7 +181,7 @@ class BaseEnvironment:
         self.steps_near_vegetation = 0
         self.energy_level_log = []
         self.board.light_gain = self.env_variables["light_gain"]
-        self.board.luminance_mask = self.board.get_luminance_mask(self.env_variables["dark_light_ratio"], self.env_variables["dark_gain"])
+        self.board.global_luminance_mask = self.board.get_luminance_mask(self.env_variables["dark_light_ratio"], self.env_variables["dark_gain"])
 
         # New energy system:
         self.fish.energy_level = 1
@@ -347,191 +346,65 @@ class BaseEnvironment:
 
         return extra_area
 
-    def output_frame(self, activations, internal_state, scale=0.25):
-        # Adjust scale for larger environments
+# TODO: FIX THIS
+    # def output_frame(self, activations, internal_state, scale=0.25):
+    #     # Adjust scale for larger environments
 
-        # Saving mask frames (for debugging)
-        if self.visualise_mask:
-            frame = self.board.mask_buffer_time_point * 255.0
-            frame = rescale(frame, scale, multichannel=True, anti_aliasing=True)
-            self.mask_buffer.append(frame)
-            self.board.mask_buffer_point = None
+    #     # Saving mask frames (for debugging)
+    #     if self.visualise_mask:
+    #         frame = self.board.mask_buffer_time_point * 255.0
+    #         frame = rescale(frame, scale, multichannel=True, anti_aliasing=True)
+    #         self.mask_buffer.append(frame)
+    #         self.board.mask_buffer_point = None
 
-        if self.using_gpu:
-            arena = copy.copy(self.board.db_visualisation.get() * 255.0)
-        else:
-            arena = copy.copy(self.board.db_visualisation * 255.0)
+    #     if self.using_gpu:
+    #         arena = copy.copy(self.board.db_visualisation.get() * 255.0)
+    #     else:
+    #         arena = copy.copy(self.board.db_visualisation * 255.0)
 
-        arena[0, :, 0] = np.ones(self.env_variables['width']) * 255
-        arena[self.env_variables['height'] - 1, :, 0] = np.ones(self.env_variables['width']) * 255
-        arena[:, 0, 0] = np.ones(self.env_variables['height']) * 255
-        arena[:, self.env_variables['width'] - 1, 0] = np.ones(self.env_variables['height']) * 255
+    #     arena[0, :, 0] = np.ones(self.env_variables['width']) * 255
+    #     arena[self.env_variables['height'] - 1, :, 0] = np.ones(self.env_variables['width']) * 255
+    #     arena[:, 0, 0] = np.ones(self.env_variables['height']) * 255
+    #     arena[:, self.env_variables['width'] - 1, 0] = np.ones(self.env_variables['height']) * 255
 
-        empty_green_eyes = np.zeros((20, self.env_variables["width"], 1))
-        eyes = self.fish.get_visual_inputs_new()
-        eyes = np.concatenate((eyes[:, :, :1], empty_green_eyes, eyes[:, :, 1:2]),
-                                axis=2)  # Note removes second red channel.
+    #     empty_green_eyes = np.zeros((20, self.env_variables["width"], 1))
+    #     eyes = self.fish.get_visual_inputs_new()
+    #     eyes = np.concatenate((eyes[:, :, :1], empty_green_eyes, eyes[:, :, 1:2]),
+    #                             axis=2)  # Note removes second red channel.
 
-        frame = np.vstack((arena, np.zeros((50, self.env_variables['width'], 3)), eyes))
+    #     frame = np.vstack((arena, np.zeros((50, self.env_variables['width'], 3)), eyes))
 
-        this_ac = np.zeros((20, self.env_variables['width'], 3))
-        this_ac[:, :, 0] = resize(internal_state, (20, self.env_variables['width']), anti_aliasing=False, order=0) * 255
-        this_ac[:, :, 1] = resize(internal_state, (20, self.env_variables['width']), anti_aliasing=False, order=0) * 255
-        this_ac[:, :, 2] = resize(internal_state, (20, self.env_variables['width']), anti_aliasing=False, order=0) * 255
+    #     this_ac = np.zeros((20, self.env_variables['width'], 3))
+    #     this_ac[:, :, 0] = resize(internal_state, (20, self.env_variables['width']), anti_aliasing=False, order=0) * 255
+    #     this_ac[:, :, 1] = resize(internal_state, (20, self.env_variables['width']), anti_aliasing=False, order=0) * 255
+    #     this_ac[:, :, 2] = resize(internal_state, (20, self.env_variables['width']), anti_aliasing=False, order=0) * 255
 
-        frame = np.vstack((frame, np.zeros((20, self.env_variables['width'], 3)), this_ac))
+    #     frame = np.vstack((frame, np.zeros((20, self.env_variables['width'], 3)), this_ac))
 
-        if activations is not None:
+    #     if activations is not None:
 
-            adr = [-1, 1]
-            for ac in range(len(activations)):
-                this_ac = np.zeros((20, self.env_variables['width'], 3))
-                pos = (activations[ac] - adr[0]) / (adr[1] - adr[0])
+    #         adr = [-1, 1]
+    #         for ac in range(len(activations)):
+    #             this_ac = np.zeros((20, self.env_variables['width'], 3))
+    #             pos = (activations[ac] - adr[0]) / (adr[1] - adr[0])
 
-                pos[pos < 0] = 0
-                pos[pos > 1] = 1
+    #             pos[pos < 0] = 0
+    #             pos[pos > 1] = 1
 
-                this_ac[:, :, 0] = resize(pos, (20, self.env_variables['width'])) * 255
-                this_ac[:, :, 1] = resize(pos, (20, self.env_variables['width'])) * 255
-                this_ac[:, :, 2] = resize(pos, (20, self.env_variables['width'])) * 255
+    #             this_ac[:, :, 0] = resize(pos, (20, self.env_variables['width'])) * 255
+    #             this_ac[:, :, 1] = resize(pos, (20, self.env_variables['width'])) * 255
+    #             this_ac[:, :, 2] = resize(pos, (20, self.env_variables['width'])) * 255
 
-                frame = np.vstack((frame, np.zeros((20, self.env_variables['width'], 3)), this_ac))
+    #             frame = np.vstack((frame, np.zeros((20, self.env_variables['width'], 3)), this_ac))
 
-        if self.env_variables["show_action_space_usage"]:
-            action_display = self.get_action_space_usage_display(frame.shape)
-            frame = np.hstack((frame, np.zeros((frame.shape[0], 20, 3)), action_display))
+    #     if self.env_variables["show_action_space_usage"]:
+    #         action_display = self.get_action_space_usage_display(frame.shape)
+    #         frame = np.hstack((frame, np.zeros((frame.shape[0], 20, 3)), action_display))
 
-        frame = rescale(frame, scale, multichannel=True, anti_aliasing=True)
+    #     frame = rescale(frame, scale, multichannel=True, anti_aliasing=True)
 
-        return frame
+    #     return frame
 
-    def draw_shapes(self, visualisation):
-        if visualisation:
-            if self.env_variables["show_previous_actions"]:
-                self._draw_past_actions(self.env_variables["show_previous_actions"])
-            scaling_factor = 1500 / self.env_variables["width"]
-            self._draw_shapes_environmental(visualisation, self.env_variables['prey_size_visualisation']/scaling_factor)
-        else:
-            self._draw_shapes_environmental(visualisation, self.env_variables['prey_size'])
-
-    def _draw_past_actions(self, n_actions_to_show):
-        # Select subset of actions to show
-        if len(self.action_buffer) > n_actions_to_show:
-            actions_to_show = self.action_buffer[len(self.action_buffer)-n_actions_to_show:]
-            positions_to_show = self.position_buffer[len(self.position_buffer)-n_actions_to_show:]
-            fish_angles_to_show = self.fish_angle_buffer[len(self.fish_angle_buffer)-n_actions_to_show:]
-        else:
-            actions_to_show = self.action_buffer
-            positions_to_show = self.position_buffer
-            fish_angles_to_show = self.fish_angle_buffer
-
-        for i, a in enumerate(actions_to_show):
-            adjusted_colour_index = ((1-self.env_variables["bkg_scatter"]) * (i+1)/len(actions_to_show)) + self.env_variables["bkg_scatter"]
-            if self.continuous_actions:
-                # action_colour = (1 * ((i+1)/len(actions_to_show)), 0, 0)
-                if a[1] < 0:
-                    action_colour = (adjusted_colour_index, self.env_variables["bkg_scatter"], self.env_variables["bkg_scatter"])
-                else:
-                    action_colour = (self.env_variables["bkg_scatter"], adjusted_colour_index, adjusted_colour_index)
-
-                self.board.show_action_continuous(a[0], a[1], fish_angles_to_show[i], positions_to_show[i][0],
-                                       positions_to_show[i][1], action_colour)
-            else:
-                action_colour = self.fish.get_action_colour(actions_to_show[i], adjusted_colour_index, self.env_variables["bkg_scatter"])
-                self.board.show_action_discrete(fish_angles_to_show[i], positions_to_show[i][0],
-                                       positions_to_show[i][1], action_colour)
-
-    def _draw_shapes_environmental(self, visualisation, prey_size):
-        if visualisation:  # Only draw fish if in visualisation mode
-            if self.env_variables["show_fish_body_energy_state"]:
-                fish_body_colour = (1 - self.fish.energy_level, self.fish.energy_level, 0)
-            else:
-                fish_body_colour = self.fish.head.color
-
-            self.board.fish_shape(self.fish.body.position, self.env_variables['fish_mouth_size'],
-                                  self.env_variables['fish_head_size'], self.env_variables['fish_tail_length'],
-                                  self.fish.mouth.color, fish_body_colour, self.fish.body.angle)
-
-        if len(self.prey_bodies) > 0:
-            px = np.round(np.array([pr.position[0] for pr in self.prey_bodies])).astype(int)
-            py = np.round(np.array([pr.position[1] for pr in self.prey_bodies])).astype(int)
-            rrs, ccs = self.board.multi_circles(px, py, prey_size)
-            rrs = np.clip(rrs, 0, self.env_variables["width"]-1)
-            ccs = np.clip(ccs, 0, self.env_variables["height"]-1)
-
-            try:
-                if visualisation:
-                    self.board.db_visualisation[rrs, ccs] = self.prey_shapes[0].color
-                else:
-                    self.board.db[rrs, ccs] = self.prey_shapes[0].color
-            except IndexError:
-                print(f"Index Error for: PX: {max(rrs.flatten())}, PY: {max(ccs.flatten())}")
-                if max(rrs.flatten()) > self.env_variables['height']:
-                    lost_index = np.argmax(py)
-                elif max(ccs.flatten()) > self.env_variables['width']:
-                    lost_index = np.argmax(px)
-                else:
-                    lost_index = 0
-                    print(f"Fix needs to be tuned: PX: {max(px)}, PY: {max(py)}")
-                self.prey_bodies.pop(lost_index)
-                self.prey_shapes.pop(lost_index)
-                self.draw_shapes(visualisation=visualisation)
-
-        if len(self.sand_grain_bodies) > 0:
-            px = np.round(np.array([pr.position[0] for pr in self.sand_grain_bodies])).astype(int)
-            py = np.round(np.array([pr.position[1] for pr in self.sand_grain_bodies])).astype(int)
-            if visualisation:
-                rrs, ccs = self.board.multi_circles(px, py, prey_size)
-            else:
-                rrs, ccs = self.board.multi_circles(px, py, self.env_variables['sand_grain_size'])
-
-            try:
-                if visualisation:
-                    self.board.db_visualisation[rrs, ccs] = self.sand_grain_shapes[0].color
-                else:
-                    self.board.db[rrs, ccs] = self.sand_grain_shapes[0].color
-            except IndexError:
-                print(f"Index Error for: RRS: {max(rrs.flatten())}, CCS: {max(ccs.flatten())}")
-                if max(rrs.flatten()) > self.env_variables['width']:
-                    lost_index = np.argmax(px)
-                elif max(ccs.flatten()) > self.env_variables['height']:
-                    lost_index = np.argmax(py)
-                else:
-                    lost_index = 0
-                    print(f"Fix needs to be tuned: PX: {max(px)}, PY: {max(py)}")
-                self.sand_grain_bodies.pop(lost_index)
-                self.sand_grain_shapes.pop(lost_index)
-                self.draw_shapes(visualisation=visualisation)
-
-        for i, pr in enumerate(self.predator_bodies):
-            self.board.circle(pr.position, self.env_variables['predator_size'], self.predator_shapes[i].color, visualisation)
-
-        for i, pr in enumerate(self.vegetation_bodies):
-            self.board.vegetation(pr.position, self.env_variables['vegetation_size'], self.vegetation_shapes[i].color, visualisation)
-
-        if self.predator_body is not None:
-            if self.first_attack:
-                self.board.circle(self.predator_body.position, self.loom_predator_current_size,
-                                  self.predator_shape.color, visualisation)
-            else:
-                self.board.circle(self.predator_body.position, self.env_variables['predator_size'],
-                                  self.predator_shape.color, visualisation)
-
-        # For displaying location of salt source
-        if visualisation:
-            if self.env_variables["salt"] and self.env_variables["max_salt_damage"] > 0:
-                self.board.show_salt_location(self.salt_location)
-
-        # For creating a screen around prey to test.
-        if self.background:
-            if self.background == "Green":
-                colour = (0, 1, 0)
-            elif self.background == "Red":
-                colour = (1, 0, 0)
-            else:
-                print("Invalid Background Colour")
-                return
-            self.board.create_screen(self.fish.body.position, self.env_variables["max_vis_dist"], colour)
 
     def build_prey_cloud_walls(self):
         for i in self.prey_cloud_locations:
@@ -980,22 +853,19 @@ class BaseEnvironment:
         self.predator_target = predator_target
         self.total_predator_steps = 0
 
-        if self.new_simulation:
-            self.predator_shape.color = (0, 1, 0)
+        self.predator_shape.color = (0, 1, 0)
+        self.predator_location = (predator_position[0], predator_position[1])
+        self.remaining_predator_attacks = 1 + np.sum(
+            np.random.choice([0, 1], self.env_variables["max_predator_attacks"] - 1,
+                                p=[1.0 - self.env_variables["further_attack_probability"],
+                                self.env_variables["further_attack_probability"]]))
+        if self.env_variables["predator_first_attack_loom"]:
+            # Set fish position based on final predator size
             self.predator_location = (predator_position[0], predator_position[1])
-            self.remaining_predator_attacks = 1 + np.sum(
-                np.random.choice([0, 1], self.env_variables["max_predator_attacks"] - 1,
-                                 p=[1.0 - self.env_variables["further_attack_probability"],
-                                    self.env_variables["further_attack_probability"]]))
-            if self.env_variables["predator_first_attack_loom"]:
-                # Set fish position based on final predator size
-                self.predator_location = (predator_position[0], predator_position[1])
 
-                self.predator_body.position = self.predator_location
-                self.loom_predator_current_size = self.env_variables['initial_predator_size']
-                self.first_attack = True
-        else:
-            self.predator_shape.color = (0, 0, 1)
+            self.predator_body.position = self.predator_location
+            self.loom_predator_current_size = self.env_variables['initial_predator_size']
+            self.first_attack = True
 
         self.predator_shape.collision_type = 5
         self.predator_shape.filter = pymunk.ShapeFilter(
@@ -1090,7 +960,7 @@ class BaseEnvironment:
         return ((self.predator_body.position[0] - self.fish.body.position[0]) ** 2 +
                 (self.predator_body.position[1] - self.fish.body.position[1]) ** 2) ** 0.5
 
-    def _move_realistic_predator(self, micro_step):
+    def move_realistic_predator(self, micro_step):
         if self.first_attack:
             # If the first attack is to be a loom attack (specified by selecting loom stimulus in env config)
             if self.loom_predator_current_size < self.env_variables["final_predator_size"]:

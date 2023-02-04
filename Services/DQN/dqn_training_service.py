@@ -96,6 +96,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
             'anneling_steps']
         self.pre_train_steps = self.total_steps + self.learning_params["pre_train_steps"]  # To prevent training following loading if no buffer.
         self.initial_exploration_steps = self.learning_params["pre_train_steps"]  # To allow an initial period of exploration, not repeated upon loading.
+        self.last_position_dim = self.environment_params["prey_num"]
 
         self.writer = None
         self.trainables = None
@@ -108,10 +109,10 @@ class DQNTrainingService(TrainingService, BaseDQN):
             self.epsilon = self.learning_params["startE"]
 
         self.experience_buffer = ExperienceBuffer(output_location=self.model_location, buffer_size=self.learning_params["exp_buffer_size"])
-        if self.learning_params["save_gifs"]:
-            self.episode_buffer = None
-        else:
-            self.episode_buffer = DQNAssayBuffer()
+        #if self.learning_params["save_gifs"]:
+        #    self.episode_buffer = None
+        #else:
+        self.buffer = DQNAssayBuffer()
 
     def run(self):
         sess = self.create_session()
@@ -169,12 +170,12 @@ class DQNTrainingService(TrainingService, BaseDQN):
     def episode_loop(self):
         t0 = time()
         self.current_episode_max_duration = self.learning_params["max_epLength"]
-        all_actions, total_episode_reward, episode_buffer = BaseDQN.episode_loop(self)
+        all_actions, total_episode_reward, experience = BaseDQN.episode_loop(self)
 
         self.save_episode(episode_start_t=t0,
                           all_actions=all_actions,
                           total_episode_reward=total_episode_reward,
-                          episode_buffer=episode_buffer,
+                          experience=experience,
                           prey_caught=self.simulation.prey_caught,
                           predators_avoided=self.simulation.predator_attacks_avoided,
                           sand_grains_bumped=self.simulation.sand_grains_bumped,
@@ -183,10 +184,10 @@ class DQNTrainingService(TrainingService, BaseDQN):
         print(f"""{self.model_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}
 Total episode reward: {total_episode_reward}\n""", flush=True)
 
-    def save_episode(self, episode_start_t, all_actions, total_episode_reward, episode_buffer, prey_caught,
+    def save_episode(self, episode_start_t, all_actions, total_episode_reward, experience, prey_caught,
                      predators_avoided, sand_grains_bumped, steps_near_vegetation):
         """
-        Saves the episode the the experience buffer. Also creates a gif if at interval.
+        Saves the episode the the experience buffer.
         :param prey_caught:
         :param steps_near_vegetation:
         :param sand_grains_bumped:
@@ -234,7 +235,7 @@ Total episode reward: {total_episode_reward}\n""", flush=True)
             with open(f"{self.model_location}/saved_parameters.json", "w") as file:
                 json.dump(output_data, file)
 
-        buffer_array = np.array(episode_buffer)
-        episode_buffer = list(zip(buffer_array))
-        self.experience_buffer.add(episode_buffer)
+        buffer_array = np.array(experience)
+        experience = list(zip(buffer_array))
+        self.experience_buffer.add(experience)
         # Periodically save the model.

@@ -268,6 +268,15 @@ local_test = [
         "Learning Algorithm": "DQN",
     },
 ]
+local_test_large = [
+    {
+        "Model Name": "local_test_large",
+        "Environment Name": "local_test_large",
+        "Trial Number": 1,
+        "Run Mode": "Training",
+        "Learning Algorithm": "DQN",
+    },
+]
 dqn_gamma_1 = [
     {
         "Model Name": "dqn_gamma",
