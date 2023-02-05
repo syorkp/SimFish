@@ -200,7 +200,7 @@ class BaseDQN:
         sv = np.zeros((1, 128))  # Placeholder for the state value stream
 
         # Take the first simulation step, with a capture action. Assigns observation, reward, internal state, done, and
-        o, r, internal_state, d = self.simulation.simulation_step(action=3, activations=(sa,))
+        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=3, activations=(sa,))
 
         # For benchmarking each episode.
         all_actions = []
@@ -214,9 +214,11 @@ class BaseDQN:
         else:
             action_reafference = a
         if self.debug:
-            fig = plt.figure(figsize=(4, 3), dpi=10)
+            #fig = plt.figure(figsize=(4, 3), dpi=10)
+            fig, ax = plt.subplots()
+            plt.ion()
             moviewriter = FFMpegWriter(fps=15)
-            moviewriter.setup(fig, 'debug.mp3')
+            moviewriter.setup(fig, 'debug.mp4')
         while step_number < self.learning_params["max_epLength"]:
             step_number += 1
             o, a, r, i_s, o1, d, rnn_state, rnn_state_ref, FOV = self.step_loop(o=o,
@@ -225,9 +227,11 @@ class BaseDQN:
                                                                            rnn_state=rnn_state,
                                                                            rnn_state_ref=rnn_state_ref)
             if self.debug:
-                fig.clf()
-                plt.imshow(FOV)
+                if self.using_gpu:
+                    FOV = FOV.get()
+                ax.imshow(FOV/np.max(FOV))
                 moviewriter.grab_frame()
+                ax.clear()
             all_actions.append(a[0])
             experience.append(np.reshape(np.array([o, np.array(a), r, internal_state, o1, d]), [1, 6]))
             total_episode_reward += r
@@ -247,8 +251,11 @@ class BaseDQN:
                     self.init_rnn_state_ref = rnn_state_ref
                 break
         # Add the episode to the experience buffer
-        moviewriter.finish()
-        fig.clf()
+        if self.debug:
+            moviewriter.finish()
+            self.debug = False 
+            fig.clf()
+
         return all_actions, total_episode_reward, experience
 
     def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
@@ -300,7 +307,7 @@ class BaseDQN:
             action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
                                 self.simulation.fish.prev_action_angle]
         else:
-            o1, given_reward, internal_state, d = self.simulation.simulation_step(action=chosen_a, activations=(sa,))
+            o1, given_reward, internal_state, d, FOV = self.simulation.simulation_step(action=chosen_a, activations=(sa,))
             action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
                                 self.simulation.fish.prev_action_angle]
             FOV = None

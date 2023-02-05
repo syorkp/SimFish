@@ -144,7 +144,7 @@ class Eye:
         else:
             plt.savefig('right_eye.png')
         fig.clf()
-        plt.ion()
+        #plt.ion()
     
     def get_repeated_computations(self):
         if self.shared_photoreceptor_channels:
