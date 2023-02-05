@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 class Eye:
 
-    def __init__(self, board, verg_angle, retinal_field, is_left, env_variables, dark_col, using_gpu, max_visual_range):
+    def __init__(self, board, verg_angle, retinal_field, is_left, env_variables, dark_col, using_gpu, max_visual_range, plot_rfs=False):
         # Use CUPY if using GPU.
         self.using_gpu = using_gpu
         if using_gpu:
@@ -101,7 +101,9 @@ class Eye:
             self.expand_observation = False
             self.observation_size = self.max_photoreceptor_num
 
-        self.plot_photoreceptors(self.uv_photoreceptor_angles.get(), self.red_photoreceptor_angles.get(), self.uv_photoreceptor_rf_size/3, self.red_photoreceptor_rf_size/3, is_left)
+        if plot_rfs:
+            self.plot_photoreceptors(self.uv_photoreceptor_angles.get(), self.red_photoreceptor_angles.get(),
+                                     self.uv_photoreceptor_rf_size, self.red_photoreceptor_rf_size, is_left)
         # Compute repeated measures:
         self.channel_angles_surrounding = None
         self.channel_angles_surrounding_red = None

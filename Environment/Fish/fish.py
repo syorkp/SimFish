@@ -57,7 +57,6 @@ class Fish:
         self.isomerization_probability = self.env_variables['isomerization_frequency'] / self.env_variables[
             'sim_steps_per_second']
 
-        # Set max visual distance to the point at which 99.9% of photons have been lost to absorption mask.
         max_visual_distance = np.absolute(np.log(0.001)/self.env_variables["decay_rate"])
 
         self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True, env_variables, dark_col, using_gpu,

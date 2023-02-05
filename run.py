@@ -140,17 +140,43 @@ if __name__ == "__main__": # may be needed to run on windows
         }
         ]
 
-    # Split timelines assay
-
-    dqn_split_assay_test = [
+    dqn_free_config_large_gamma_3 = [
         {
             "Model Name": "dqn_gamma",
-            "Environment Name": "dqn_gamma_final_mod",
+            "Environment Name": "dqn_gamma_final",
             "Assay Configuration Name": "Behavioural-Data-Free",
-            "Trial Number": 2,
-            "Run Mode": "Split-Assay",
-            "Split Event": "One-Prey-Close",
-            "Modification": "Nearby-Prey-Removal",
+            "Trial Number": 3,
+            "Run Mode": "Assay",
+            "Learning Algorithm": "DQN",
+            "behavioural recordings": ["environmental positions", "observation"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "stimulus paradigm": "Naturalistic",
+                    "repeats": 50,
+                    "duration": 10000,
+                    "Tethered": False,
+                    "save frames": False,
+                    "use_mu": True,
+                    "save stimuli": False,
+                    "random positions": False,
+                    "reset": False,
+                    "background": None,
+                    "moving": False,
+                    "collisions": True,
+                },
+            ]
+        }
+        ]
+
+    assay_gathering_test = [
+        {
+            "Model Name": "dqn_gamma",
+            "Environment Name": "dqn_gamma_final",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 3,
+            "Run Mode": "Assay",
             "Learning Algorithm": "DQN",
             "Using GPU": False,
             "behavioural recordings": ["environmental positions", "observation"],
@@ -160,7 +186,43 @@ if __name__ == "__main__": # may be needed to run on windows
                     "assay id": "Naturalistic",
                     "stimulus paradigm": "Naturalistic",
                     "repeats": 1,
-                    "duration": 20,
+                    "duration": 10,
+                    "Tethered": False,
+                    "save frames": False,
+                    "use_mu": True,
+                    "save stimuli": False,
+                    "random positions": False,
+                    "reset": False,
+                    "background": None,
+                    "moving": False,
+                    "collisions": True,
+                },
+            ]
+        }
+        ]
+
+
+    # Split timelines assay
+
+    dqn_split_assay_test = [
+        {
+            "Model Name": "dqn_gamma",
+            "Environment Name": "dqn_gamma_final_mod",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 3,
+            "Run Mode": "Split-Assay",
+            "Split Event": "One-Prey-Close",
+            "Modification": "Nearby-Prey-Removal",
+            "Learning Algorithm": "DQN",
+            "Using GPU": False,
+            "behavioural recordings": ["environmental positions", "observation", "reward assessments"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "stimulus paradigm": "Naturalistic",
+                    "repeats": 1,
+                    "duration": 2000,
                     "Tethered": False,
                     "save frames": False,
                     "use_mu": True,
@@ -176,7 +238,7 @@ if __name__ == "__main__": # may be needed to run on windows
     ]
 
 
-    # Assay And Analysis
+        # Assay And Analysis
 
     dqn_gamma_analysis_across_scaffold_1 = [
         {
@@ -185,6 +247,7 @@ if __name__ == "__main__": # may be needed to run on windows
             "Assay Configuration Name": "Behavioural-Data-Free",
             "Config Modification": "Empty",
             "Trial Number": 1,
+            "Delete Data": True,
             "Run Mode": "Assay-Analysis-Across-Scaffold",
             "Learning Algorithm": "DQN",
             "behavioural recordings": ["environmental positions", "observation"],
@@ -192,7 +255,7 @@ if __name__ == "__main__": # may be needed to run on windows
             "Assays": [
                 {
                     "assay id": "Naturalistic",
-                    "repeats": 10,
+                    "repeats": 100,
                     "stimulus paradigm": "Naturalistic",
                     "duration": 10000,
                     "Tethered": False,
@@ -218,6 +281,48 @@ if __name__ == "__main__": # may be needed to run on windows
         }
     ]
 
+    dqn_delta_analysis_across_scaffold_3 = [
+        {
+            "Model Name": "dqn_delta",
+            "Environment Name": "dqn_delta_free",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Config Modification": "Empty",
+            "Trial Number": 1,
+            "Delete Data": True,
+            "Run Mode": "Assay-Analysis-Across-Scaffold",
+            "Learning Algorithm": "DQN",
+            "behavioural recordings": ["environmental positions", "observation"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "repeats": 5,
+                    "stimulus paradigm": "Naturalistic",
+                    "duration": 100,
+                    "Tethered": False,
+                    "save frames": False,
+                    "use_mu": True,
+                    "save stimuli": False,
+                    "random positions": False,
+                    "reset": False,
+                    "background": None,
+                    "moving": False,
+                    "collisions": True,
+                },
+            ],
+            "Analysis": [
+                {
+                    "analysis id": "Turn-Analysis",
+                    "analysis script": "Analysis.Behavioural.Exploration.turning_analysis_discrete",
+                    "analysis function": "plot_all_turn_analysis",
+                    "analysis arguments": ["model_name", "assay_config_name", "Naturalistic", 5],
+                    "Delete Data": True
+                }
+            ],
+        }
+    ]
+
+
     ppo_gamma_analysis_across_scaffold_1 = [
         {
             "Model Name": "ppo_gamma",
@@ -232,7 +337,7 @@ if __name__ == "__main__": # may be needed to run on windows
             "Assays": [
                 {
                     "assay id": "Naturalistic",
-                    "repeats": 10,
+                    "repeats": 1,
                     "stimulus paradigm": "Naturalistic",
                     "duration": 10000,
                     "Tethered": False,
@@ -251,14 +356,14 @@ if __name__ == "__main__": # may be needed to run on windows
                     "analysis id": "Turn-Analysis",
                     "analysis script": "Analysis.Behavioural.Exploration.turning_analysis_continuous",
                     "analysis function": "plot_all_turn_analysis_continuous",
-                    "analysis arguments": ["model_name", "assay_config_name", "Naturalistic", 10],
+                    "analysis arguments": ["model_name", "assay_config_name", "Naturalistic", 1],
                     "Delete Data": True
                 }
             ],
         }
     ]
 
-    #                   TRAINING - DQN
+        #                   TRAINING - DQN
 
     local_test = [
         {
@@ -389,19 +494,19 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
-    dqn_gamma_ns_1 = [
+    dqn_delta_ns_1 = [
         {
-            "Model Name": "dqn_gamma_ns",
-            "Environment Name": "dqn_gamma_ns",
+            "Model Name": "dqn_delta_ns",
+            "Environment Name": "dqn_delta_ns",
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
     ]
-    dqn_gamma_ns_2 = [
+    dqn_delta_ns_2 = [
         {
-            "Model Name": "dqn_gamma_ns",
-            "Environment Name": "dqn_gamma_ns",
+            "Model Name": "dqn_delta_ns",
+            "Environment Name": "dqn_delta_ns",
             "Trial Number": 2,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
@@ -506,11 +611,11 @@ if __name__ == "__main__": # may be needed to run on windows
 
 
     if run_config is None:
-        run_config = dqn_split_assay_test
+        run_config = assay_gathering_test
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]
 
-    print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-    manager = TrialManager(run_config, parallel_jobs=1)
-    manager.run_priority_loop()
+        print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+        manager = TrialManager(run_config, parallel_jobs=1)
+        manager.run_priority_loop()

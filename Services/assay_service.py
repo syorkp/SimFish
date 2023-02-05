@@ -41,20 +41,19 @@ class AssayService(BaseService):
 
         # Handling for split assay version
         if run_version == "Original-Completion":
+            print("Running for completion of original")
             set_random_seed = True
         elif run_version == "Modified-Completion":
+            print("Running for completion of modified")
             set_random_seed = True
-            modified_assays = []
             for assay in assays:
-                modified_assay = copy.copy(assay)
-                modified_assay["assay id"] += "-Mod"
-                modified_assays.append(modified_assay)
-            assays = assays + modified_assay
-
+                assay["assay id"] += "-Mod"
         elif run_version == "Original":
-            ...
+            print("Running for pre-split original")
+        elif run_version == None:
+            pass
         else:
-            ...
+            print("Incorrectly specified.")
 
         self.run_version = run_version
         self.modification = modification
@@ -71,11 +70,13 @@ class AssayService(BaseService):
             self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
                                                                 using_gpu,
                                                                 run_version=run_version,
+                                                                split_event=split_event,
                                                                 modification=modification)
         else:
             self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
                                                               using_gpu,
                                                               run_version=run_version,
+                                                              split_event=split_event,
                                                               modification=modification)
 
         # Metadata
@@ -172,11 +173,11 @@ class AssayService(BaseService):
             self.create_testing_environment(assay)
 
             if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
-                background = self.load_assay_buffer(assay)
+                background, energy_state = self.load_assay_buffer(assay)
             else:
-                background = None
+                background, energy_state = None, None
 
-            self.perform_assay(assay, background=background)
+            self.perform_assay(assay, background=background, energy_state=energy_state)
 
             if assay["save stimuli"]:
                 self.save_stimuli_data(assay)
@@ -201,6 +202,7 @@ class AssayService(BaseService):
         return new_assays
 
     def load_assay_buffer(self, assay):
+        print("Loading Assay Buffer")
         # Get the assay id of the base trial (without mod)
         assay_id = assay["assay id"].replace("-Mod", "")
         file = h5py.File(f"{self.data_save_location}/{self.assay_configuration_id}.h5", "r")
@@ -213,9 +215,11 @@ class AssayService(BaseService):
         self.buffer.action_buffer = data["action"].tolist()
         self.buffer.observation_buffer = data["observation"].tolist()
         self.buffer.reward_buffer = data["reward"].tolist()
-        self.buffer.internal_state_buffer = data["internal_state"].tolist()
-        self.buffer.rnn_state_buffer = data["rnn_state_actor"].tolist()
-        self.buffer.rnn_state_ref_buffer = data["rnn_state_actor_ref"].tolist()
+        self.buffer.internal_state_buffer = [np.array([internal_state]) for internal_state in data["internal_state"].tolist()]
+        self.buffer.efference_copy_buffer = data["efference_copy"].tolist()
+
+        self.buffer.rnn_state_buffer = [np.array([([timepoint[0]], [timepoint[1]])]) for timepoint in data["rnn_state_actor"]]
+        self.buffer.rnn_state_ref_buffer = [np.array([([timepoint[0]], [timepoint[1]])]) for timepoint in data["rnn_state_actor_ref"]]
 
         self.buffer.fish_position_buffer = data["fish_position"].tolist()
         self.buffer.fish_angle_buffer = data["angle"].tolist()
@@ -226,6 +230,9 @@ class AssayService(BaseService):
         self.buffer.vegetation_position_buffer = data["vegetation_positions"].tolist()
         self.buffer.salt_location = data["salt_location"].tolist()
         self.buffer.prey_consumed_buffer = data["consumed"].tolist()
+        self.buffer.switch_step = data["switch_step"]
+
+        energy_state = data["energy_state"][-1]
 
         self.buffer.prey_orientations_buffer = data["prey_orientations"].tolist()
         self.buffer.predator_orientation_buffer = data["predator_orientation"].tolist()
@@ -238,20 +245,20 @@ class AssayService(BaseService):
         num_steps_elapsed = data["observation"].shape[0]
 
         # Load RNN states to model.
-        num_rnns = self.buffer.rnn_state_buffer.shape[1] / 2
+        num_rnns = np.array(self.buffer.rnn_state_buffer).shape[2] / 2
         self.init_rnn_state = tuple(
-            (np.array(self.buffer.rnn_state_buffer[-1, shape]),
-             np.array(self.buffer.rnn_state_buffer[-1, shape])) for shape in
+            (np.array(data["rnn_state_actor"][-2:-1, shape]),
+             np.array(data["rnn_state_actor"][-2:-1, shape])) for shape in
             range(0, int(num_rnns), 2))
         self.init_rnn_state_ref = tuple(
-            (np.array(self.buffer.rnn_state_buffer_ref[-1, shape]),
-             np.array(self.buffer.rnn_state_buffer_ref[-1, shape])) for shape in
+            (np.array(data["rnn_state_actor_ref"][-2:-1, shape]),
+             np.array(data["rnn_state_actor_ref"][-2:-1, shape])) for shape in
             range(0, int(num_rnns), 2))
 
         # Impose background.
-        return data["background"], num_steps_elapsed
+        return data["background"], energy_state
 
-    def perform_assay(self, assay):
+    def perform_assay(self, assay, background=None, energy_state=None):
         """Just for PPO"""
         # self.assay_output_data_format = {key: None for key in
         #                                  assay["behavioural recordings"] + assay["network recordings"]}
@@ -260,6 +267,9 @@ class AssayService(BaseService):
         self.current_episode_max_duration = assay["duration"]
         if assay["use_mu"]:
             self.use_mu = True
+
+        # TODO: implement environment loading etc as in dqn_assay_service. Will require modification of
+        #  self._episode_loop() for RNN state, env reset, step num,
 
         self._episode_loop()
         self.log_stimuli()
@@ -281,8 +291,16 @@ class AssayService(BaseService):
         else:
             salt_location = None
 
-        self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id,
-                                    self.get_internal_state_order(), self.simulation.board.background_grating.get()[:, :, 0],
+        if self.using_gpu:
+            background = self.simulation.board.background_grating.get()[:, :, 0]
+        else:
+            background = self.simulation.board.background_grating[:, :, 0]
+
+        self.buffer.save_assay_data(assay_id=assay['assay id'],
+                                    data_save_location=self.data_save_location,
+                                    assay_configuration_id=self.assay_configuration_id,
+                                    internal_state_order=self.get_internal_state_order(),
+                                    background=background,
                                     salt_location=salt_location)
         self.buffer.reset()
         print(f"Assay: {assay['assay id']} Completed")

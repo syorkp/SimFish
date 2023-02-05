@@ -56,7 +56,7 @@ def get_all_angle_sequences_labelled(compiled_turn_directions, compiled_labels):
     return compiled_all_action_sequences
 
 
-def plot_all_turn_analysis_continuous(model_name, assay_config, assay_id, n,
+def plot_all_turn_analysis_continuous(model_name, assay_config, assay_id, n, figure_moniker="",
                                                       use_purely_turn_sequences=False, threshold_for_angle=0.1,
                                                       data_cutoff=None):
 
@@ -92,11 +92,11 @@ def plot_all_turn_analysis_continuous(model_name, assay_config, assay_id, n,
     l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
     l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_exploration_sequences)
     cumulative_switching_probability_plot(sl, sr, sl2, sr2,
-                                          save_location=f"Cumulative Switching Probability (exploration) {model_name}")
+                                          save_location=f"Cumulative Switching Probability (exploration) {model_name}-{figure_moniker}")
 
     l, r, sl, sr = model_of_action_switching(turn_no_prey_sequences)
     l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_no_prey_sequences)
-    cumulative_switching_probability_plot(sl, sr, sl2, sr2, save_location=f"Cumulative Switching Probability (no prey) {model_name}")
+    cumulative_switching_probability_plot(sl, sr, sl2, sr2, save_location=f"Cumulative Switching Probability (no prey) {model_name}-{figure_moniker}")
     # Cumulative turn direction plots:
     # cumulative_turn_direction_plot_multiple_models(turn_no_prey_sequences_list)
     # cumulative_turn_direction_plot(turn_exploration_sequences,
@@ -181,9 +181,12 @@ def plot_all_turn_analysis_multiple_models_continuous(model_names, assay_config,
 
 
 if __name__ == "__main__":
-    plot_all_turn_analysis_multiple_models_continuous(["ppo_scaffold_21-1", "ppo_scaffold_21-2"],
-                                                      "Behavioural-Data-Empty",
-                                                      f"Naturalistic", 20, threshold_for_angle=0.1, data_cutoff=None)
+    for i in range(1, 15):
+        plot_all_turn_analysis_continuous("ppo_gamma-3", f"ppo_gamma_c{i}", "Naturalistic", 1, figure_moniker=i)
+
+    # plot_all_turn_analysis_multiple_models_continuous(["ppo_scaffold_21-1", "ppo_scaffold_21-2"],
+    #                                                   "Behavioural-Data-Empty",
+    #                                                   f"Naturalistic", 20, threshold_for_angle=0.1, data_cutoff=None)
     # d = load_data("ppo_scaffold_21-1", "Behavioural-Data-Free", "Naturalistic-3")
     # exploration_np_ts = label_exploration_sequences_free_swimming(d) * 1
     # all_turns = d["angle"][1:]

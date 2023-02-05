@@ -24,7 +24,6 @@ class ControlledStimulusEnvironment(BaseEnvironment):
             self.fish = Fish(self.board, env_variables, self.dark_col, realistic_bouts, using_gpu)
         self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 
-        # TODO: Unify in future with other stimuli
         self.prey_positions = {}
         self.predator_positions = {}
         self.set_positions = set_positions

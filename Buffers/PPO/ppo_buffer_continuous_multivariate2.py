@@ -224,8 +224,9 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
             # actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice
 
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, background, internal_state_order=None, salt_location=None):
-        hdf5_file, assay_group = BasePPOBuffer.save_assay_data(self, assay_id, data_save_location,
-                                                               assay_configuration_id, background, internal_state_order,
+        hdf5_file, assay_group = BasePPOBuffer.save_assay_data(self, assay_id=assay_id, data_save_location=data_save_location,
+                                                               assay_configuration_id=assay_configuration_id, background=background,
+                                                               internal_state_order=internal_state_order,
                                                                salt_location=salt_location)
 
         if "environmental positions" in self.recordings:
@@ -234,6 +235,7 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
             self.create_data_group("sigma_impulse", np.array(self.si_i_buffer)[:, 0], assay_group)
             self.create_data_group("sigma_angle", np.array(self.si_a_buffer)[:, 0], assay_group)
 
+        print(f"{assay_id} Data Saved")
         hdf5_file.close()
 
     def check_buffers(self):

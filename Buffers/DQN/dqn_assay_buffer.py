@@ -50,6 +50,11 @@ class DQNAssayBuffer:
         self.prey_age_buffer = []
         self.prey_gait_buffer = []
 
+        # Tracking switch step
+        self.switch_step = None
+
+        self.value_buffer = []
+        self.return_buffer = []
 
     def reset(self):
         self.action_buffer = []
@@ -83,6 +88,8 @@ class DQNAssayBuffer:
             self.prey_age_buffer = []
             self.prey_gait_buffer = []
 
+            self.switch_step = None
+
     def add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
@@ -97,7 +104,7 @@ class DQNAssayBuffer:
     def save_environmental_positions(self, action, fish_position, prey_consumed, predator_present, prey_positions,
                                      predator_position, sand_grain_positions, vegetation_positions, fish_angle,
                                      salt_health, efference_copy,
-                                     prey_orientation, predator_orientation, prey_age, prey_gait):
+                                     prey_orientation=None, predator_orientation=None, prey_age=None, prey_gait=None):
 
         self.action_buffer.append(action)
         self.fish_position_buffer.append(fish_position)
@@ -113,10 +120,11 @@ class DQNAssayBuffer:
         self.efference_copy_buffer.append(efference_copy)
 
         # Extra buffers (needed for perfect reloading of states)
-        self.prey_orientation_buffer.append(prey_orientation)
-        self.predator_orientation_buffer.append(predator_orientation)
-        self.prey_age_buffer.append(prey_age)
-        self.prey_gait_buffer.append(prey_gait)
+        if self.assay:
+            self.prey_orientation_buffer.append(prey_orientation)
+            self.predator_orientation_buffer.append(predator_orientation)
+            self.prey_age_buffer.append(prey_age)
+            self.prey_gait_buffer.append(prey_gait)
 
     def create_data_group(self, key, data, assay_group):
         # TODO: Compress data.
@@ -130,8 +138,8 @@ class DQNAssayBuffer:
            
             assay_group.create_dataset(key, data=data)
         except (RuntimeError, OSError) as exception:
-            print(f"Failed saving {key}. Attempting to delete existing data.")
-            print(exception)
+            # print(f"Failed saving {key}. Attempting to delete existing data.")
+            # print(exception)
             del assay_group[key]
             self.create_data_group(key, data, assay_group)
             # assay_group.create_dataset(key, data=data)
@@ -167,6 +175,8 @@ class DQNAssayBuffer:
         # NEW - Has an entire column for each prey that exists at any given time
         # For each step, shift the array of positions across until aligned (should be the min difference with above
         # values).
+        print("Fixing buffer")
+        print(self.prey_positions_buffer)
         num_steps = len(self.prey_positions_buffer)
         num_prey_init = len(self.prey_positions_buffer[0])
         overly_large_position_array = np.ones((num_steps, num_prey_init * 100, 2)) * 10000
@@ -229,6 +239,16 @@ class DQNAssayBuffer:
             new_conv_layers[j] = np.array(new_conv_layers[j])
         self.conv_layer_buffer = new_conv_layers
 
+    def pad_buffer(self, buffer):
+        max_dim = 0
+        for b in buffer:
+            if len(b) > max_dim:
+                max_dim = b
+        for b in buffer:
+            if len(b) < max_dim:
+                b.append(0)
+        return buffer
+
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order,
                         background, salt_location=None):
         hdf5_file = h5py.File(f"{data_save_location}/{assay_configuration_id}.h5", "a")
@@ -244,12 +264,21 @@ class DQNAssayBuffer:
         self.create_data_group("observation", np.array(self.observation_buffer), assay_group)
 
         if self.use_dynamic_network:
-            #for layer in self.unit_recordings.keys():
-            #    self.create_data_group(layer, np.array(self.unit_recordings[layer]).squeeze(), assay_group)
-            self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer).squeeze(), assay_group)
-            self.create_data_group("rnn_state_actor_ref", np.array(self.rnn_state_ref_buffer).squeeze(), assay_group)
+            for layer in self.unit_recordings.keys():
+                self.create_data_group(layer, np.array(self.unit_recordings[layer]).squeeze(), assay_group)
+
+            # for i, r in enumerate(self.rnn_state_buffer):
+            #     print(f"{i}-{np.array(r[0]).shape}")
+
+            # print(self.rnn_state_buffer)
+            self.rnn_state_buffer = np.array(self.rnn_state_buffer).squeeze()
+            self.rnn_state_ref_buffer = np.array(self.rnn_state_ref_buffer).squeeze()
+
+            self.create_data_group("rnn_state_actor", self.rnn_state_buffer, assay_group)
+            self.create_data_group("rnn_state_actor_ref", self.rnn_state_ref_buffer, assay_group)
 
             self.internal_state_buffer = np.array(self.internal_state_buffer)
+
             self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
             # Get internal state names and save each.
             for i, state in enumerate(internal_state_order):
@@ -317,17 +346,25 @@ class DQNAssayBuffer:
 
         self.create_data_group("background", np.array(background), assay_group)
 
+        if self.switch_step != None:
+            self.create_data_group("switch_step", np.array([self.switch_step]), assay_group)
+
         # Extra buffers (needed for perfect reloading of states)
-        #self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
-        #self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
-        #self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
-        #self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
+        try:
+            self.create_data_group("prey_orientations", np.array(self.pad_buffer(self.prey_orientation_buffer)), assay_group)
+            self.create_data_group("predator_orientation", np.array(self.pad_buffer(self.predator_orientation_buffer)), assay_group)
+            self.create_data_group("prey_ages", np.array(self.pad_buffer(self.prey_age_buffer)), assay_group)
+            self.create_data_group("prey_gaits", np.array(self.pad_buffer(self.prey_gait_buffer)), assay_group)
+        except TypeError:
+            print("Still need to pad these.")
 
 #        if "reward assessments" in self.recordings:
         self.create_data_group("reward", np.array(self.reward_buffer), assay_group)
         self.create_data_group("advantage", np.array(self.advantage_buffer), assay_group)
         self.create_data_group("value", np.array(self.value_buffer), assay_group)
         self.create_data_group("returns", np.array(self.return_buffer), assay_group)
+
+        print(f"{assay_id} Data Saved")
 
         return hdf5_file, assay_group
 

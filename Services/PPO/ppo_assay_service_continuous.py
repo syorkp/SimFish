@@ -65,13 +65,13 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
     split_event = None
     if trial["Run Mode"] == "Split-Assay":
         if "Run Index" not in trial:
-            run_version = "First"
+            run_version = "Original"
         else:
             modification = trial["Modification"]
             split_event = trial["Split Event"]
-            run_version = trial["Run Mode"]
+            run_version = trial["Run Index"]
     else:
-        run_version = "Original"
+        run_version = None
 
     service = PPOAssayServiceContinuous(model_name=trial["Model Name"],
                                         trial_number=trial["Trial Number"],

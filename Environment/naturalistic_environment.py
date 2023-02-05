@@ -13,7 +13,7 @@ from matplotlib.animation import FFMpegWriter
 class NaturalisticEnvironment(BaseEnvironment):
 
     def __init__(self, env_variables, realistic_bouts, using_gpu, draw_screen=False, fish_mass=None,
-                 collisions=True, relocate_fish=None, num_actions=10, run_version="Original", split_event=None,
+                 collisions=True, relocate_fish=None, num_actions=10, run_version=None, split_event=None,
                  modification=None):
         super().__init__(env_variables, draw_screen, using_gpu, num_actions)
 
@@ -54,7 +54,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
 
-        self.run_version = run_version
+        self.assay_run_version = run_version
         self.split_event = split_event
         self.modification = modification
 
@@ -157,15 +157,15 @@ Sand grain: {self.sand_grain_associated_reward}
         self.predator_associated_reward = 0
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
- 
 
-    def load_simulation(self, buffer, background):
-        self.num_steps = buffer.fish_position_buffer.shape[0]
+    def load_simulation(self, buffer, background, energy_state):
+        self.num_steps = len(buffer.fish_position_buffer)
 
-        self.board.background_grating = self.chosen_math_library.array(background)
+        self.board.background_grating = self.chosen_math_library.array(np.expand_dims(background, 2))
 
         self.salt_location = buffer.salt_location
         self.reset_salt_gradient(buffer.salt_location)
+        self.clear_environmental_features()
 
         # Create prey in proper positions and orientations
         final_step_prey_positions = buffer.prey_positions_buffer[-1]
@@ -174,13 +174,16 @@ Sand grain: {self.sand_grain_associated_reward}
             if p[0] != 10000.0:
                 self.create_prey(prey_position=p, prey_orientation=o)
 
+        self.prey_ages = buffer.prey_age_buffer[-1]
+        self.prey_gaits = buffer.prey_gait_buffer[-1]
+
         # Create predators in proper position and orientation.
-        final_step_predator_position = buffer.predator_positions_buffer[-1]
-        final_step_predator_orientation = buffer.predator_orientations_buffer[-1]
+        final_step_predator_position = buffer.predator_position_buffer[-1]
+        final_step_predator_orientation = buffer.predator_orientation_buffer[-1]
         if final_step_predator_position[0] != 10000.0:
 
             # Find step when predator was introduced. Get fish position then.
-            predator_present = (buffer.predator_positions_buffer[:, 0] != 10000.0)
+            predator_present = (np.array(buffer.predator_position_buffer)[:, 0] != 10000.0)
             predator_lifespan = 0
             for p in reversed(predator_present):
                 if p:
@@ -194,10 +197,11 @@ Sand grain: {self.sand_grain_associated_reward}
                                            predator_target=predator_target)
 
         self.fish.body.position = np.array(buffer.fish_position_buffer[-1])
-        self.fish.body.angle = np.array(buffer.fish_orientation_buffer[-1])
-        self.fish.energy_level = buffer.internal_state_buffer[-1][0]
-        self.fish.prev_action_impulse = buffer.internal_state_buffer[-1][1]
-        self.fish.prev_action_angle = buffer.internal_state_buffer[-1][2]
+        self.fish.body.angle = np.array(buffer.fish_angle_buffer[-1])
+        self.fish.energy_level = energy_state
+
+        self.fish.prev_action_impulse = buffer.efference_copy_buffer[-1][0][1]
+        self.fish.prev_action_angle = buffer.internal_state_buffer[-1][0][2]
 
         # Get latest observation.
         observation = self.resolve_visual_input(activations=[], internal_state=[])
@@ -208,7 +212,7 @@ Sand grain: {self.sand_grain_associated_reward}
 
         if self.split_event == "One-Prey-Close":
             max_angular_deviation = np.pi/2
-            max_distance = 100  # 10mm
+            max_distance = 1000  # 10mm
 
             prey_near = self.check_proximity_all_prey(sensing_distance=max_distance)
             fish_prey_incidence = self.get_fish_prey_incidence()
@@ -218,11 +222,10 @@ Sand grain: {self.sand_grain_associated_reward}
             num_prey_close = np.sum(prey_close * 1)
             if num_prey_close == 1:
                 return True
-
         elif self.split_event == "Empty-Surroundings":
             ...
-
         else:
+            print(self.split_event)
             print("Invalid Split Event Entered")
 
         return False
@@ -240,7 +243,7 @@ Sand grain: {self.sand_grain_associated_reward}
             prey_close = prey_near * within_visual_field
 
             prey_index_offset = len(self.prey_bodies)
-            for i, p in enumerate(reversed(prey_close)):
+            for i, p in enumerate(reversed(prey_close[0][0])):
                 if p:
                     self.remove_prey(prey_index_offset-i)
                     print("Removed prey due to modification")
@@ -328,8 +331,9 @@ Sand grain: {self.sand_grain_associated_reward}
                 self.fish.capture_possible = True
             else:
                 self.fish.capture_possible = False
+
             if self.predator_body is not None:
-                self.move_realistic_predator(micro_step)
+                self.move_predator(micro_step)
 
             self.space.step(self.env_variables['phys_dt'])
 
@@ -404,7 +408,7 @@ Sand grain: {self.sand_grain_associated_reward}
                 if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables[
                     "salt_recovery"]:
                     reward -= self.env_variables["salt_reward_penalty"] * salt_damage
-                    print(f"Salt-associated reward: {-self.env_variables['salt_reward_penalty'] * salt_damage}")
+                    # print(f"Salt-associated reward: {-self.env_variables['salt_reward_penalty'] * salt_damage}")
                     self.salt_associated_reward -= self.env_variables['salt_reward_penalty'] * salt_damage
 
         if self.predator_body is not None:
@@ -468,6 +472,10 @@ Sand grain: {self.sand_grain_associated_reward}
             internal_state.append(0)
         internal_state = np.array([internal_state])
 
+        if self.assay_run_version == "Original":
+            if self.check_condition_met():
+                done = True
+                self.switch_step = self.num_steps
         
         observation, FOV = self.resolve_visual_input()
 
@@ -496,7 +504,8 @@ Sand grain: {self.sand_grain_associated_reward}
             predator_bodies = np.array([])
 
         full_masked_image = self.board.get_masked_pixels(np.array(self.fish.body.position),
-                                                         np.array([i.position for i in self.prey_bodies]),
+                                                         np.array([i.position for i in self.prey_bodies] +
+                                                                  [i.position for i in self.sand_grain_bodies]),
                                                          predator_bodies
                                                          )
         

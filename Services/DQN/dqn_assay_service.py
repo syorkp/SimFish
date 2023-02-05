@@ -72,14 +72,14 @@ def assay_target(trial, total_steps, episode_number, memory_fraction):
     modification = None
     split_event = None
     if trial["Run Mode"] == "Split-Assay":
+        split_event = trial["Split Event"]
         if "Run Index" not in trial:
-            run_version = "First"
+            run_version = "Original"
         else:
             modification = trial["Modification"]
-            run_version = trial["Run Mode"]
-            split_event = trial["Split Event"]
+            run_version = trial["Run Index"]
     else:
-        run_version = "Original"
+        run_version = None
 
     service = DQNAssayService(model_name=trial["Model Name"],
                               trial_number=trial["Trial Number"],
@@ -151,7 +151,7 @@ class DQNAssayService(AssayService, BaseDQN):
             self.init_states()
             AssayService._run(self)
 
-    def perform_assay(self, assay, background=None):
+    def perform_assay(self, assay, background=None, energy_state=None):
         # self.assay_output_data_format = {key: None for key in assay["recordings"]}
         # self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
 
@@ -163,9 +163,12 @@ class DQNAssayService(AssayService, BaseDQN):
             rnn_state_ref = copy.copy(self.init_rnn_state_ref)
 
         if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
-            o = self.simulation.load_simulation(self.buffer, background)
+            print("Loading Simulation")
+            o = self.simulation.load_simulation(self.buffer, background, energy_state)
             internal_state = self.buffer.internal_state_buffer[-1]
             a = self.buffer.action_buffer[-1]
+
+            a = np.array([a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle])
 
             if self.run_version == "Modified-Completion":
                 self.simulation.make_modification()
@@ -180,17 +183,18 @@ class DQNAssayService(AssayService, BaseDQN):
                      ],
                     feed_dict={self.main_QN.observation: o,
                                self.main_QN.internal_state: internal_state,
-                               self.main_QN.prev_actions: a,
+                               self.main_QN.prev_actions: np.expand_dims(a, 0),
                                self.main_QN.train_length: 1,
                                self.main_QN.rnn_state_in: rnn_state,
+                               self.main_QN.rnn_state_in_ref: rnn_state_ref,
 
                                self.main_QN.batch_size: 1,
                                self.main_QN.exp_keep: 1.0,
                                # self.main_QN.learning_rate: self.learning_params["learning_rate"],
                                })
 
-            self.step_number = self.buffer.internal_state_buffer.shape[0]
-
+            a = a[0]
+            self.step_number = len(self.buffer.internal_state_buffer)
         else:
             self.simulation.reset()
             a = 0
@@ -208,7 +212,6 @@ class DQNAssayService(AssayService, BaseDQN):
             action_reafference = [a]
 
         while self.step_number < assay["duration"]:
-            print(self.step_number)
             # if assay["reset"] and self.step_number % assay["reset interval"] == 0:
             #     rnn_state = (
             #         np.zeros([1, self.main_QN.rnn_dim]), np.zeros([1, self.main_QN.rnn_dim]))  # Reset RNN hidden state
@@ -254,6 +257,10 @@ class DQNAssayService(AssayService, BaseDQN):
             o = o1
 
             if d:
+                if self.run_version == "Original":
+                    if self.simulation.switch_step != None:
+                        self.buffer.switch_step = self.simulation.switch_step
+
                 break
             if self.full_reafference:
                 # As simulation step returns full action
