@@ -435,20 +435,9 @@ Sand grain: {self.sand_grain_associated_reward}
         self.in_light_history.append(self.fish.body.position[0] > self.dark_col)
 
         self.num_steps += 1
-        self.board.erase(bkg=self.env_variables['bkg_scatter'])
-        #TODO: remove items outside visual range
-        prey_pos = np.zeros((len(self.prey_bodies), 2), dtype=int)
-        prey_pos[:,0] = np.round(np.array([pr.position[0] for pr in self.prey_bodies]) - self.fish.body.position[0]).astype(int)
-        prey_pos[:,1] = np.round(np.array([pr.position[1] for pr in self.prey_bodies]) - self.fish.body.position[1]).astype(int)
 
-        sand_pos = np.zeros((len(self.sand_grain_bodies), 2), dtype=int)
-        sand_pos[:,0] = np.round(np.array([sg.position[0] for sg in self.sand_grain_bodies]) - self.fish.body.position[0]).astype(int)
-        sand_pos[:,1] = np.round(np.array([sg.position[1] for sg in self.sand_grain_bodies]) - self.fish.body.position[1]).astype(int)
-
-        FOV = self.board.get_FOV(self.fish.body.position)
-        self.board.draw_shapes_environmental(False, prey_pos, sand_pos, self.env_variables['sand_grain_colour'])
-        self.board.draw_walls(FOV)
-        self.board.draw_background(FOV)
+        # Drawing the features visible at this step:
+        self.draw_visible_features()
 
         # Calculate internal state
         internal_state = []
@@ -490,7 +479,7 @@ Sand grain: {self.sand_grain_associated_reward}
 
     def resolve_visual_input(self):
        
-        # eye positions within FOV
+        # eye positions within FOV - Relative eye positions to FOV
         right_eye_pos = (
             -np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.board.max_visual_distance,
             +np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.board.max_visual_distance)

@@ -28,7 +28,6 @@ class DrawingBoard:
 
         self.db = self.get_base_arena(0.3)
 
-
     def get_base_arena(self, bkg=0.3):
         db = (np.ones((self.height, self.width, 3), dtype=np.double) * bkg)
         db[1:2, :] = np.array([1, 0, 0])
@@ -368,7 +367,6 @@ def draw_episode(data_file, config_file, continuous_actions=False,  draw_past_ac
 
                 board.db_visualisation[rrs, ccs] = (0, 0, 1)
 
-
             if data["predator_presence"][step]:
                 board.circle(data["predator_positions"][step], env_variables['predator_size'], (0, 1, 0))
 
@@ -441,8 +439,7 @@ def draw_episode(data_file, config_file, continuous_actions=False,  draw_past_ac
                     labelbottom = False, bottom = False)
             ax7.clear()
             ax7.plot(data['rnn_state_actor'][plot_start:step, 0, 30:40])
-            ax7.tick_params(left = False, right = False , labelleft = False ,
-                    labelbottom = False, bottom = False)
+            ax7.tick_params(left=False, right=False , labelleft=False, labelbottom=False, bottom=False)
             #plt.draw()
             #plt.pause(0.001)
             board.db = board.get_base_arena(0.3)
@@ -454,8 +451,9 @@ def draw_episode(data_file, config_file, continuous_actions=False,  draw_past_ac
 
 
 if __name__ == "__main__":
+    model = "local_test_large"
 
-    config_file = './Configurations/Training-Configs/local_test_large/1_env.json'
+    config_file = f'./Configurations/Training-Configs/{model}/1_env.json'
     data_file = './Training-Output/local_test_large-1/episodes/Episode 4.h5'
 
     draw_episode(data_file, config_file, continuous_actions=False, show_energy_state=True,

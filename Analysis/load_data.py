@@ -3,26 +3,31 @@ import numpy as np
 import os
 
 
-def load_data(model_name, assay_configuration, assay_id):
+def load_data(model_name, assay_configuration, assay_id, training_data=False):
     """Loads the data of an individual assay from an assay configuration file."""
-    print(f"Attempting to load data from: {os.getcwd()}")
+    # print(f"Attempting to load data from: {os.getcwd()}")
+
+    if training_data:
+        data_dir = "Training-Output"
+    else:
+        data_dir = "Assay-Output"
 
     try:
-        file = h5py.File(f"../../../../Assay-Output/{model_name}/{assay_configuration}.h5", "r")
+        file = h5py.File(f"../../../../{data_dir}/{model_name}/{assay_configuration}.h5", "r")
     except OSError:
         try:
-            file = h5py.File(f"../../../Assay-Output/{model_name}/{assay_configuration}.h5", "r")
+            file = h5py.File(f"../../../{data_dir}/{model_name}/{assay_configuration}.h5", "r")
         except OSError:
             try:
-                file = h5py.File(f"../../Assay-Output/{model_name}/{assay_configuration}.h5", "r")
+                file = h5py.File(f"../../{data_dir}/{model_name}/{assay_configuration}.h5", "r")
             except OSError:
                 try:
-                    file = h5py.File(f"../Assay-Output/{model_name}/{assay_configuration}.h5", "r")
+                    file = h5py.File(f"../{data_dir}/{model_name}/{assay_configuration}.h5", "r")
                 except OSError:
-                    file = h5py.File(f"./Assay-Output/{model_name}/{assay_configuration}.h5", "r")
+                    file = h5py.File(f"./{data_dir}/{model_name}/{assay_configuration}.h5", "r")
 
     g = file.get(assay_id)
-    # print(assay_id)
+
     data = {key: np.array(g.get(key)) for key in g.keys()}
     file.close()
     return data

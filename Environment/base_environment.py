@@ -170,18 +170,6 @@ class BaseEnvironment:
         self.survived_attack = False
 
         self.switch_step = None
-    def reset(self):
-        self.num_steps = 0
-        self.fish.hungry = 0
-        self.fish.stress = 1
-        self.fish.touched_edge_this_step = False
-        self.prey_caught = 0
-        self.predator_attacks_avoided = 0
-        self.sand_grains_bumped = 0
-        self.steps_near_vegetation = 0
-        self.energy_level_log = []
-        self.board.light_gain = self.env_variables["light_gain"]
-        self.board.global_luminance_mask = self.board.get_luminance_mask(self.env_variables["dark_light_ratio"], self.env_variables["dark_gain"])
 
     def clear_environmental_features(self):
         """Removes all prey, predators, vegetation, and sand grains from simulation"""
@@ -226,6 +214,22 @@ class BaseEnvironment:
         self.vegetation_bodies = []
         self.vegetation_shapes = []
 
+    def draw_visible_features(self):
+        #TODO: remove items outside visual range
+        prey_pos = np.zeros((len(self.prey_bodies), 2), dtype=int)
+        prey_pos[:,0] = np.round(np.array([pr.position[0] for pr in self.prey_bodies]) - self.fish.body.position[0]).astype(int)
+        prey_pos[:,1] = np.round(np.array([pr.position[1] for pr in self.prey_bodies]) - self.fish.body.position[1]).astype(int)
+
+        sand_pos = np.zeros((len(self.sand_grain_bodies), 2), dtype=int)
+        sand_pos[:,0] = np.round(np.array([sg.position[0] for sg in self.sand_grain_bodies]) - self.fish.body.position[0]).astype(int)
+        sand_pos[:,1] = np.round(np.array([sg.position[1] for sg in self.sand_grain_bodies]) - self.fish.body.position[1]).astype(int)
+
+        self.board.erase(bkg=self.env_variables['bkg_scatter'])
+        FOV = self.board.get_field_of_view(self.fish.body.position)
+        self.board.draw_shapes_environmental(False, prey_pos, sand_pos, self.env_variables['sand_grain_colour'])
+        self.board.draw_walls(FOV)
+        self.board.draw_background(FOV)
+
     def reset(self):
         self.num_steps = 0
         self.fish.hungry = 0
@@ -237,8 +241,11 @@ class BaseEnvironment:
         self.steps_near_vegetation = 0
         self.energy_level_log = []
         self.board.light_gain = self.env_variables["light_gain"]
-        self.board.luminance_mask = self.board.get_luminance_mask(self.env_variables["dark_light_ratio"],
-                                                                  self.env_variables["dark_gain"])
+        # No need for this to be computed each time? When config changes then creates new NaturalisticEnv and
+        # DrawingBoard instances.
+        # self.board.global_luminance_mask = self.board.get_luminance_mask(self.env_variables["dark_light_ratio"],
+        #                                                                  self.env_variables["dark_gain"])
+
         self.switch_step = None
 
         # New energy system:

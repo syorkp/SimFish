@@ -559,6 +559,15 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
+    dqn_delta_test_1 = [
+        {
+            "Model Name": "dqn_delta_test",
+            "Environment Name": "dqn_delta_test",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
 
     #                   TRAINING - PPO
 

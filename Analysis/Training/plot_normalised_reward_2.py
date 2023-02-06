@@ -83,8 +83,8 @@ def plot_reward_pre_post_scaffold(model_list, model_list_no_scaffold, window):
 
 
 if __name__ == "__main__":
-    dqn_models = ["dqn_gamma-1", "dqn_gamma-2", "dqn_gamma-3", "dqn_gamma-4", "dqn_gamma-5"]
-    dqn_models_no_scaffold = ["dqn_gamma_ns-1", "dqn_gamma_ns-2"]
+    dqn_models = ["dqn_delta-1", "dqn_delta-2", "dqn_delta-3", "dqn_delta-4", "dqn_delta-5"]
+    dqn_models_no_scaffold = ["dqn_delta_ns-1", "dqn_delta_ns-2"]
 
     plot_reward_pre_post_scaffold(dqn_models, dqn_models_no_scaffold, 30)
     # TODO: Add option for second set of models, which dont have scaffold switches

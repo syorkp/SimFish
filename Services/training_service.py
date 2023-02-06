@@ -16,6 +16,8 @@ from Tools.make_gif import make_gif
 from Tools.make_video import make_video
 from Tools.graph_functions import update_target_graph, update_target
 from Analysis.Behavioural.Exploration.turn_chain_metric import get_normalised_turn_chain_metric_continuous
+from Analysis.Video.behaviour_video_construction import draw_episode
+from Analysis.load_data import load_data
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -638,6 +640,10 @@ class TrainingService(BaseService):
                                         internal_state_order=internal_state_order,
                                         background=background,
                                         salt_location=salt_location)
+            episode_data = load_data(self.model_name, "episodes", f"Episode {self.episode_number}", training_data=True)
+            draw_episode(episode_data, self.config_name, self.model_name, self.continuous_actions,
+                         save_id=f"Episode {self.episode_number}")
+
             self.buffer.reset()
             self.save_environmental_data = False
 

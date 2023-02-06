@@ -9,9 +9,10 @@ from skimage import io
 
 class DrawingBoard:
 
-    def __init__(self, arena_width, arena_height, uv_decay_rate, red_decay_rate, photoreceptor_rf_size, using_gpu, visualise_mask, prey_size=4,
+    def __init__(self, arena_width, arena_height, uv_decay_rate, red_decay_rate, photoreceptor_rf_size, using_gpu,
+                 visualise_mask, prey_size=4,
                  predator_size=100, visible_scatter=0.3, background_grating_frequency=50, dark_light_ratio=0.0,
-                 dark_gain=0.01, light_gain=1.0, occlusion_gain=(1.0, 1.0, 1.0), 
+                 dark_gain=0.01, light_gain=1.0, occlusion_gain=(1.0, 1.0, 1.0),
                  light_gradient=0, max_visual_distance=1500, show_background=True):
 
         self.using_gpu = using_gpu
@@ -29,20 +30,20 @@ class DrawingBoard:
         self.light_gain = light_gain
         self.light_gradient = light_gradient
         self.photoreceptor_rf_size = photoreceptor_rf_size
-        #self.db = None
-        #self.db_visualisation = None
+        # self.db = None
+        # self.db_visualisation = None
         max_visual_distance = np.round(max_visual_distance).astype(np.int32)
         self.local_dim = max_visual_distance * 2 + 1
         self.max_visual_distance = max_visual_distance
         self.base_db = self.get_base_arena()
         self.base_db_illuminated = self.get_base_arena(visible_scatter)
         self.erase(visible_scatter)
-#        self.local_db = self.chosen_math_library.zeros((self.local_dim, self.local_dim, 3))
+        #        self.local_db = self.chosen_math_library.zeros((self.local_dim, self.local_dim, 3))
 
         self.global_background_grating = self.get_background_grating(background_grating_frequency)
         self.global_luminance_mask = self.get_luminance_mask(dark_light_ratio, dark_gain)
         self.local_scatter = self.get_local_scatter()
- 
+
         self.prey_size = prey_size * 2
         self.prey_radius = prey_size
         self.predator_size = predator_size * 2
@@ -78,7 +79,7 @@ class DrawingBoard:
         self.empty_mask = self.chosen_math_library.ones((self.local_dim, self.local_dim, 1), dtype=np.float64)
 
         self.show_background = show_background
-        
+
     def get_background_grating(self, frequency, linear=False):
         if linear:
             return self.linear_texture(frequency)
@@ -209,12 +210,14 @@ class DrawingBoard:
 
         adjusted_uv_scatter = desired_uv_scatter * implicit_scatter
         adjusted_red_scatter = desired_red_scatter * implicit_scatter
-        adjusted_scatter = self.chosen_math_library.stack([adjusted_red_scatter, adjusted_uv_scatter, adjusted_red_scatter],
-                                                          axis=2)
-        #adjusted_scatter = self.chosen_math_library.expand_dims(adjusted_scatter, 2)
+        adjusted_scatter = self.chosen_math_library.stack(
+            [adjusted_red_scatter, adjusted_uv_scatter, adjusted_red_scatter],
+            axis=2)
+        # adjusted_scatter = self.chosen_math_library.expand_dims(adjusted_scatter, 2)
         return adjusted_scatter
 
-    def create_obstruction_mask_lines_cupy(self, fish_position, prey_locations, predator_locations, prey_occlusion=False):
+    def create_obstruction_mask_lines_cupy(self, fish_position, prey_locations, predator_locations,
+                                           prey_occlusion=False):
         """Must use both numpy and cupy as otherwise GPU runs out of memory. positions are board-centric"""
         # Reset empty mask
         self.empty_mask[:] = 1.0
@@ -233,7 +236,7 @@ class DrawingBoard:
             prey_relative_positions = prey_relative_positions[prey_distances < self.max_visual_distance, :]
             prey_distances = prey_distances[prey_distances < self.max_visual_distance]
             prey_locations_FOV = prey_relative_positions + self.max_visual_distance
-            
+
             # Compute angular size of prey from fish position. (Prey_num)
             prey_half_angular_size = self.chosen_math_library.arctan(self.prey_radius / prey_distances)
 
@@ -249,7 +252,8 @@ class DrawingBoard:
             prey_extremities = prey_angles + prey_rf_offsets
 
             # Number of lines to project through prey or predators, determined by width, height, and size of features. (1)
-            n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2, len(prey_locations_FOV), p=prey_half_angular_size)
+            n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2,
+                                          len(prey_locations_FOV), p=prey_half_angular_size)
 
             # Create array of angles between prey extremities to form lines. (Prey_num * n_lines_prey)
             interpolated_line_angles = self.chosen_math_library.linspace(prey_extremities[:, 0], prey_extremities[:, 1],
@@ -331,7 +335,7 @@ class DrawingBoard:
 
         # Ensure all angles are in designated range
         interpolated_line_angles_scaling = (interpolated_line_angles // (
-                    self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
+                self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
         interpolated_line_angles = interpolated_line_angles + interpolated_line_angles_scaling
 
         # Compute m using tan (N_obj x n)
@@ -357,7 +361,7 @@ class DrawingBoard:
             conditional_tiled = self.conditional_tiled[:total_lines]
         else:
             multiplication_matrix, addition_matrix, mul1_full, mul_for_hypothetical, add_for_hypothetical, \
-                conditional_tiled = self.compute_repeated_computations_extended(num_lines=total_lines)
+            conditional_tiled = self.compute_repeated_computations_extended(num_lines=total_lines)
 
         # Operations to compute all intersections of lines found
         m_mul = self.chosen_math_library.expand_dims(m, 1)
@@ -396,7 +400,7 @@ class DrawingBoard:
 
         # Make sure angles in correct range.
         interpolated_line_angles_scaling = (interpolated_line_angles // (
-                    self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
+                self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
         interpolated_line_angles = interpolated_line_angles + interpolated_line_angles_scaling
 
         # Get original angles in correct format.
@@ -492,23 +496,30 @@ class DrawingBoard:
         #     plt.show()
         #     mask = None
 
-        return self.empty_mask
+        occluded = (self.empty_mask[:, :, 0] == 0.0)
+        O = self.chosen_math_library.repeat(self.empty_mask, 3, 2)
+        # O = self.chosen_math_library.concatenate((self.empty_mask, self.empty_mask, self.empty_mask), axis=2)
+        O[:, :, 0] += occluded * self.occlusion_gain[0]
+        O[:, :, 1] += occluded * self.occlusion_gain[1]
+        O[:, :, 2] += occluded * self.occlusion_gain[2]
+
+        return O
 
     def get_luminance_mask(self, dark_light_ratio, dark_gain):
         dark_field_length = int(self.width * dark_light_ratio)
-        luminance_mask = self.chosen_math_library.ones((self.width, self.height, 3))
+        luminance_mask = self.chosen_math_library.ones((self.width, self.height, 1))
         if self.light_gradient > 0 and dark_field_length > 0:
-            luminance_mask[:, :dark_field_length, :] *= dark_gain
-            luminance_mask[:, dark_field_length:, :] *= self.light_gain
+            luminance_mask[:dark_field_length, :, :] *= dark_gain
+            luminance_mask[dark_field_length:, :, :] *= self.light_gain
             gradient = self.chosen_math_library.linspace(dark_gain, self.light_gain, self.light_gradient)
             gradient = self.chosen_math_library.expand_dims(gradient, 1)
             gradient = self.chosen_math_library.repeat(gradient, self.height, 1)
-            gradient = self.chosen_math_library.expand_dims(gradient.T, 2)
-            luminance_mask[:, int(dark_field_length-(self.light_gradient/2)):int(dark_field_length+(self.light_gradient/2)), :] = gradient
+            gradient = self.chosen_math_library.expand_dims(gradient, 2)
+            luminance_mask[int(dark_field_length-(self.light_gradient/2)):int(dark_field_length+(self.light_gradient/2)), :, :] = gradient
 
         else:
-            luminance_mask[:, :dark_field_length, :] *= dark_gain
-            luminance_mask[:, dark_field_length:, :] *= self.light_gain
+            luminance_mask[:dark_field_length, :, :] *= dark_gain
+            luminance_mask[dark_field_length:, :, :] *= self.light_gain
 
         return luminance_mask
 
@@ -518,29 +529,22 @@ class DrawingBoard:
         With Red.UV.Red2
         """
 
-        FOV = self.get_FOV(fish_position)
+        FOV = self.get_field_of_view(fish_position)
 
-
-        A = self.chosen_math_library.array(self.local_db)
+        A = self.chosen_math_library.array(self.full_db)
 
         # apply FOV portion of luminance mask
         local_luminance_mask = self.global_luminance_mask[FOV['enclosed_fov'][0]:FOV['enclosed_fov'][1],
-                                                         FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], :]
+                               FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], :]
         A[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
-          FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], :] *= local_luminance_mask
-
+        FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], :] *= local_luminance_mask
 
         if prey_locations.size + predator_locations.size == 0:
-            O = self.chosen_math_library.ones((self.local_dim, self.local_dim, 1), dtype=np.float64)
+            O = self.chosen_math_library.ones((self.local_dim, self.local_dim, 3), dtype=np.float64)
         else:
-            O = self.create_obstruction_mask_lines_cupy(self.chosen_math_library.array(fish_position), self.chosen_math_library.array(prey_locations),
+            O = self.create_obstruction_mask_lines_cupy(self.chosen_math_library.array(fish_position),
+                                                        self.chosen_math_library.array(prey_locations),
                                                         self.chosen_math_library.array(predator_locations))
-        occluded = O[:, :, 0] == 0.0
-        O = self.chosen_math_library.concatenate((O, O, O), axis=2)
-        O[:, :, 0] += occluded * self.occlusion_gain[0]
-        O[:, :, 1] += occluded * self.occlusion_gain[1]
-        O[:, :, 2] += occluded * self.occlusion_gain[2]
-
 
         return A * O * self.local_scatter
 
@@ -554,33 +558,33 @@ class DrawingBoard:
             Max lines num: {self.max_lines_num}
             Required lines for this feature alone: {n * number_of_this_feature}
             """)
-            n = (self.max_lines_num * 0.8)/number_of_this_feature
+            n = (self.max_lines_num * 0.8) / number_of_this_feature
 
         return int(n)
 
     def reset(self):
         """To be called at start of episode"""
         self.global_background_grating = self.get_background_grating(0)
-        self.local_scatter = self.get_local_scatter()
 
+        # Dont need to call each ep?
+        # self.local_scatter = self.get_local_scatter()
 
     def erase(self, bkg=0):
-        #self.local_db = self.chosen_math_library.zeros((self.local_dim, self.local_dim, 3))
+        # self.local_db = self.chosen_math_library.zeros((self.local_dim, self.local_dim, 3))
 
         if bkg == 0:
-            self.local_db = self.chosen_math_library.copy(self.base_db)
+            self.full_db = self.chosen_math_library.copy(self.base_db)
         else:
-            self.local_db = self.chosen_math_library.copy(self.base_db_illuminated)
-
+            self.full_db = self.chosen_math_library.copy(self.base_db_illuminated)
 
     def get_base_arena(self, bkg=0.0):
         if bkg == 0:
             db = self.chosen_math_library.zeros((self.local_dim, self.local_dim, 3), dtype=np.double)
         else:
-            db = (self.chosen_math_library.ones((self.local_dim, self.local_dim, 3), dtype=np.double) * bkg) / self.light_gain
+            db = (self.chosen_math_library.ones((self.local_dim, self.local_dim, 3),
+                                                dtype=np.double) * bkg) / self.light_gain
         return db
 
- 
     def circle(self, center, rad, color, visualisation=False):
         rr, cc = draw.circle(center[1], center[0], rad, self.db.shape)
         if visualisation:
@@ -644,40 +648,45 @@ class DrawingBoard:
     def _draw_past_actions(self, n_actions_to_show):
         # Select subset of actions to show
         if len(self.action_buffer) > n_actions_to_show:
-            actions_to_show = self.action_buffer[len(self.action_buffer)-n_actions_to_show:]
-            positions_to_show = self.position_buffer[len(self.position_buffer)-n_actions_to_show:]
-            fish_angles_to_show = self.fish_angle_buffer[len(self.fish_angle_buffer)-n_actions_to_show:]
+            actions_to_show = self.action_buffer[len(self.action_buffer) - n_actions_to_show:]
+            positions_to_show = self.position_buffer[len(self.position_buffer) - n_actions_to_show:]
+            fish_angles_to_show = self.fish_angle_buffer[len(self.fish_angle_buffer) - n_actions_to_show:]
         else:
             actions_to_show = self.action_buffer
             positions_to_show = self.position_buffer
             fish_angles_to_show = self.fish_angle_buffer
 
         for i, a in enumerate(actions_to_show):
-            adjusted_colour_index = ((1-self.env_variables["bkg_scatter"]) * (i+1)/len(actions_to_show)) + self.env_variables["bkg_scatter"]
+            adjusted_colour_index = ((1 - self.env_variables["bkg_scatter"]) * (i + 1) / len(actions_to_show)) + \
+                                    self.env_variables["bkg_scatter"]
             if self.continuous_actions:
                 # action_colour = (1 * ((i+1)/len(actions_to_show)), 0, 0)
                 if a[1] < 0:
-                    action_colour = (adjusted_colour_index, self.env_variables["bkg_scatter"], self.env_variables["bkg_scatter"])
+                    action_colour = (
+                    adjusted_colour_index, self.env_variables["bkg_scatter"], self.env_variables["bkg_scatter"])
                 else:
                     action_colour = (self.env_variables["bkg_scatter"], adjusted_colour_index, adjusted_colour_index)
 
                 self.board.show_action_continuous(a[0], a[1], fish_angles_to_show[i], positions_to_show[i][0],
-                                       positions_to_show[i][1], action_colour)
+                                                  positions_to_show[i][1], action_colour)
             else:
-                action_colour = self.fish.get_action_colour(actions_to_show[i], adjusted_colour_index, self.env_variables["bkg_scatter"])
+                action_colour = self.fish.get_action_colour(actions_to_show[i], adjusted_colour_index,
+                                                            self.env_variables["bkg_scatter"])
                 self.board.show_action_discrete(fish_angles_to_show[i], positions_to_show[i][0],
-                                       positions_to_show[i][1], action_colour)
+                                                positions_to_show[i][1], action_colour)
 
     def draw_walls(self, FOV):
-        self.local_db[FOV['local_coordinates_fov'][0], FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], 0] = 1
-        self.local_db[FOV['local_coordinates_fov'][1]-1, FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], 0] = 1
-        self.local_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1], FOV['local_coordinates_fov'][2], 0] = 1
-        self.local_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1], FOV['local_coordinates_fov'][3]-1, 0] = 1
+        self.full_db[FOV['local_coordinates_fov'][0], FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3],
+        0] = 1
+        self.full_db[FOV['local_coordinates_fov'][1] - 1,
+        FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], 0] = 1
+        self.full_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1], FOV['local_coordinates_fov'][2],
+        0] = 1
+        self.full_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
+        FOV['local_coordinates_fov'][3] - 1, 0] = 1
 
-        
-
-
-    def draw_shapes_environmental(self, visualisation, prey_pos, sand_grain_pos=[], sand_grain_colour=(0,0,1)): # prey/sand positions are fish-centric
+    def draw_shapes_environmental(self, visualisation, prey_pos, sand_grain_pos=[],
+                                  sand_grain_colour=(0, 0, 1)):  # prey/sand positions are fish-centric
         # if visualisation:  # Only draw fish if in visualisation mode
         #     if self.env_variables["show_fish_body_energy_state"]:
         #         fish_body_colour = (1 - self.fish.energy_level, self.fish.energy_level, 0)
@@ -687,32 +696,31 @@ class DrawingBoard:
         #     self.fish_shape(self.fish.body.position, self.env_variables['fish_mouth_size'],
         #                           self.env_variables['fish_head_size'], self.env_variables['fish_tail_length'],
         #                           self.fish.mouth.color, fish_body_colour, self.fish.body.angle)
-        
-        prey_pos += self.max_visual_distance+1 # fish-centric to fov-centric
-        sand_grain_pos += self.max_visual_distance+1
-        
+
+        prey_pos += self.max_visual_distance + 1  # fish-centric to fov-centric
+        sand_grain_pos += self.max_visual_distance + 1
+
         # remove out of bounds prey
-        prey_pos = prey_pos[np.all((np.all(prey_pos<=self.local_dim, axis=1),
-                            np.all(prey_pos>=0, axis=1)), axis=0)]
+        prey_pos = prey_pos[np.all((np.all(prey_pos <= self.local_dim, axis=1),
+                                    np.all(prey_pos >= 0, axis=1)), axis=0)]
         # remove out of bounds sand grains
-        sand_grain_pos = sand_grain_pos[np.all((np.all(sand_grain_pos<=self.local_dim, axis=1),
-                            np.all(sand_grain_pos>=0, axis=1)), axis=0)]
-  
+        sand_grain_pos = sand_grain_pos[np.all((np.all(sand_grain_pos <= self.local_dim, axis=1),
+                                                np.all(sand_grain_pos >= 0, axis=1)), axis=0)]
+
         if len(prey_pos) > 0:
-            #px = np.round(np.array([pr.position[0] for pr in self.prey_bodies])).astype(int)
-            #py = np.round(np.array([pr.position[1] for pr in self.prey_bodies])).astype(int)
-            rrs, ccs = self.multi_circles(prey_pos[:,0], prey_pos[:,1], self.prey_size)
-            rrs = np.clip(rrs, 0, self.local_dim-1)
-            ccs = np.clip(ccs, 0, self.local_dim-1)
+            # px = np.round(np.array([pr.position[0] for pr in self.prey_bodies])).astype(int)
+            # py = np.round(np.array([pr.position[1] for pr in self.prey_bodies])).astype(int)
+            rrs, ccs = self.multi_circles(prey_pos[:, 0], prey_pos[:, 1], self.prey_size)
+            rrs = np.clip(rrs, 0, self.local_dim - 1)
+            ccs = np.clip(ccs, 0, self.local_dim - 1)
 
-#            try:
-#                if visualisation:
-#                    self.board.db_visualisation[rrs, ccs] = self.prey_shapes[0].color
-#                else:
-#                    self.board.db[rrs, ccs] = self.prey_shapes[0].color
+            #            try:
+            #                if visualisation:
+            #                    self.board.db_visualisation[rrs, ccs] = self.prey_shapes[0].color
+            #                else:
+            #                    self.board.db[rrs, ccs] = self.prey_shapes[0].color
 
-            
-            self.local_db[rrs, ccs, 1] = 1
+            self.full_db[rrs, ccs, 1] = 1
 
             # except IndexError:
             #     print(f"Index Error for: PX: {max(rrs.flatten())}, PY: {max(ccs.flatten())}")
@@ -728,7 +736,7 @@ class DrawingBoard:
             #     self.draw_shapes(visualisation=visualisation)
 
         if len(sand_grain_pos) > 0:
-            rrs, ccs = self.multi_circles(sand_grain_pos[:,0], sand_grain_pos[:,1], self.prey_size)
+            rrs, ccs = self.multi_circles(sand_grain_pos[:, 0], sand_grain_pos[:, 1], self.prey_size)
             self.board.db[rrs, ccs] = sand_grain_colour
 
         # for i, pr in enumerate(self.predator_bodies):
@@ -761,20 +769,21 @@ class DrawingBoard:
         #         return
         #     self.board.create_screen(self.fish.body.position, self.env_variables["max_vis_dist"], colour)
 
-    def draw_background(self, FOV): # slice the global background for current field of view
-        
-        background_slice = self.global_background_grating[FOV['enclosed_fov'][0]:FOV['enclosed_fov'][1], FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], 0]
-       
-        self.local_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1], FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], 2] = background_slice
+    def draw_background(self, FOV):  # slice the global background for current field of view
 
+        background_slice = self.global_background_grating[FOV['enclosed_fov'][0]:FOV['enclosed_fov'][1],
+                           FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], 0]
 
-    def get_FOV(self, fish_location): # use field location to get field of view
+        self.full_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
+        FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], 2] = background_slice
+
+    def get_field_of_view(self, fish_location):  # use field location to get field of view
         # top bottom left right
         fish_location = np.round(fish_location).astype(int)
-        full_fov = [fish_location[1] - self.max_visual_distance,     \
-                   fish_location[1] + self.max_visual_distance + 1, \
-                   fish_location[0] - self.max_visual_distance,     \
-                   fish_location[0] + self.max_visual_distance + 1]
+        full_fov = [fish_location[1] - self.max_visual_distance,
+                    fish_location[1] + self.max_visual_distance + 1,
+                    fish_location[0] - self.max_visual_distance,
+                    fish_location[0] + self.max_visual_distance + 1]
 
         # check if field of view is within bounds of global background
         local_coordinates_fov = [0, self.local_dim, 0, self.local_dim]
@@ -791,9 +800,8 @@ class DrawingBoard:
         if full_fov[3] > self.global_background_grating.shape[1]:
             enclosed_fov[3] = self.global_background_grating.shape[1]
             local_coordinates_fov[3] = self.local_dim - (full_fov[3] - self.global_background_grating.shape[1])
-        
-        return {'full_fov': full_fov, 'enclosed_fov': enclosed_fov, 'local_coordinates_fov': local_coordinates_fov}
 
+        return {'full_fov': full_fov, 'enclosed_fov': enclosed_fov, 'local_coordinates_fov': local_coordinates_fov}
 
 
 if __name__ == "__main__":
@@ -801,5 +809,3 @@ if __name__ == "__main__":
     d.circle((100, 200), 100, (1, 0, 0))
     d.line((50, 50), (100, 200), (0, 1, 0))
     d.show()
-
-

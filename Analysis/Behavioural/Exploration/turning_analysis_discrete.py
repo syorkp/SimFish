@@ -61,11 +61,11 @@ def plot_all_turn_analysis(model_name, assay_config, assay_id, n, figure_moniker
     # Cumulative probability plot.
     l, r, sl, sr = model_of_action_switching(turn_exploration_sequences)
     l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_exploration_sequences)
-    cumulative_switching_probability_plot(sl, sr, sl2, sr2, save_location=f"Cumulative Switching Probability (exploration) {model_name}")
+    cumulative_switching_probability_plot(sl, sr, sl2, sr2, save_location=f"Cumulative Switching Probability (exploration) {model_name} - {figure_moniker}")
 
     l, r, sl, sr = model_of_action_switching(turn_no_prey_sequences)
     l2, r2, sl2, sr2 = randomly_switching_fish_new(turn_no_prey_sequences)
-    cumulative_switching_probability_plot(sl, sr, sl2, sr2, save_location=f"Cumulative Switching Probability (no prey) {model_name}")
+    cumulative_switching_probability_plot(sl, sr, sl2, sr2, save_location=f"Cumulative Switching Probability (no prey) {model_name} - {figure_moniker}")
 
 
 def plot_all_turn_analysis_multiple_models_discrete(model_names, assay_config, assay_id, n, use_purely_turn_sequences=True,
@@ -128,12 +128,13 @@ def plot_all_turn_analysis_multiple_models_discrete(model_names, assay_config, a
 
 if __name__ == "__main__":
     # Get all plots for a single model
-    # plot_all_turn_analysis("dqn_gamma-2", "Behavioural-Data-Empty", f"Naturalistic", 100)
+    for i in range(1, 31):
+        plot_all_turn_analysis("dqn_gamma-1", f"dqn_gamma_c{i}", f"Naturalistic", 100, figure_moniker=str(i))
 
     # Get all plots for multiple models
-    plot_all_turn_analysis_multiple_models_discrete(["dqn_gamma-1", "dqn_gamma-2", "dqn_gamma-4", "dqn_gamma-5"],
-                                                    "Behavioural-Data-Empty",
-                                                    f"Naturalistic", 100, data_cutoff=None)
+    # plot_all_turn_analysis_multiple_models_discrete(["dqn_gamma-1", "dqn_gamma-2", "dqn_gamma-4", "dqn_gamma-5"],
+    #                                                 "Behavioural-Data-Empty",
+    #                                                 f"Naturalistic", 100, data_cutoff=None)
 
     # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", f"Naturalistic-18")
     # exploration_timestamps, exploration_sequences, exploration_fish_orientations = \

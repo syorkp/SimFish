@@ -289,6 +289,7 @@ class BaseDQN:
                     self.main_QN.exp_keep: 1.0,
                     self.main_QN.learning_rate: self.learning_params["learning_rate"],
                     }
+
         if np.random.rand(1) < self.epsilon or self.total_steps < self.initial_exploration_steps:
             [updated_rnn_state, updated_rnn_state_ref, sa, sv] = self.sess.run(
                 [self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref, self.main_QN.streamA,
@@ -302,15 +303,14 @@ class BaseDQN:
             chosen_a = chosen_a[0]
 
         # Simulation step
+        o1, given_reward, internal_state, d, FOV = self.simulation.simulation_step(action=chosen_a, activations=(sa,))
+        action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
+                              self.simulation.fish.prev_action_angle]
         if self.debug:
-            o1, given_reward, internal_state, d, FOV = self.simulation.simulation_step(action=chosen_a, activations=(sa,))
-            action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
-                                self.simulation.fish.prev_action_angle]
+            pass
         else:
-            o1, given_reward, internal_state, d, FOV = self.simulation.simulation_step(action=chosen_a, activations=(sa,))
-            action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
-                                self.simulation.fish.prev_action_angle]
             FOV = None
+
         if self.save_environmental_data:
             # sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
             # self.episode_buffer.save_environmental_positions(self.simulation.fish.body.position,
