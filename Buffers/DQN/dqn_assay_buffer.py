@@ -358,7 +358,7 @@ class DQNAssayBuffer:
             self.create_data_group("predator_orientation", np.array(self.pad_buffer(self.predator_orientation_buffer)), assay_group)
             self.create_data_group("prey_ages", np.array(self.pad_buffer(self.prey_age_buffer)), assay_group)
             self.create_data_group("prey_gaits", np.array(self.pad_buffer(self.prey_gait_buffer)), assay_group)
-        except TypeError:
+        except:
             print("Still need to pad these.")
 
 #        if "reward assessments" in self.recordings:
