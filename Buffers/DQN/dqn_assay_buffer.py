@@ -10,7 +10,7 @@ class DQNAssayBuffer:
     NOTE: Class is NOT integrated with experience buffer as is the case with PPO.
     """
 
-    def __init__(self, use_dynamic_network=False):
+    def __init__(self, use_dynamic_network=True):
         self.assay = True
         self.recordings = None
         self.use_dynamic_network = use_dynamic_network
@@ -21,6 +21,8 @@ class DQNAssayBuffer:
         self.reward_buffer = []
         self.internal_state_buffer = []
         self.advantage_buffer = []
+        self.value_buffer = []
+
         self.return_buffer = []
         self.rnn_state_buffer = []
         self.rnn_state_ref_buffer = []
@@ -126,7 +128,14 @@ class DQNAssayBuffer:
 
     def create_data_group(self, key, data, assay_group):
         # TODO: Compress data.
+        #if data.dtype == np.object:
+        #    dt = h5py.vlen_dtype(np.dtype('float32')) # should enable saving of variable length arrays (eg reproducing prey)
+        #    print(data[0].shape)
+        #else:
+        #    dt = data.dtype
+
         try:
+           
             assay_group.create_dataset(key, data=data)
         except (RuntimeError, OSError) as exception:
             # print(f"Failed saving {key}. Attempting to delete existing data.")
@@ -135,9 +144,9 @@ class DQNAssayBuffer:
             self.create_data_group(key, data, assay_group)
             # assay_group.create_dataset(key, data=data)
 
-    def init_assay_recordings(self, recordings, network_recordings):
-        self.recordings = recordings
-        self.unit_recordings = {i: [] for i in network_recordings}
+    # def init_assay_recordings(self, recordings, network_recordings):
+    #     self.recordings = recordings
+    #     self.unit_recordings = {i: [] for i in network_recordings}
 
     def make_desired_recordings(self, network_layers):
         for l in self.unit_recordings.keys():
@@ -251,8 +260,8 @@ class DQNAssayBuffer:
 
         # self.create_data_group("step", np.array([i for i in range(len(self.observation_buffer))]), assay_group)
 
-        if "observation" in self.recordings:
-            self.create_data_group("observation", np.array(self.observation_buffer), assay_group)
+        #if "observation" in self.recordings:
+        self.create_data_group("observation", np.array(self.observation_buffer), assay_group)
 
         if self.use_dynamic_network:
             for layer in self.unit_recordings.keys():
@@ -314,46 +323,46 @@ class DQNAssayBuffer:
                 self.create_data_group("conv3r", np.array(self.conv_layer_buffer[6]).squeeze(), assay_group)
                 self.create_data_group("conv4r", np.array(self.conv_layer_buffer[7]).squeeze(), assay_group)
 
-        if "environmental positions" in self.recordings:
-            self.create_data_group("action", np.array(self.action_buffer), assay_group)
-            self.create_data_group("impulse", np.array(self.efference_copy_buffer)[:, 0, 1], assay_group)
-            self.create_data_group("angle", np.array(self.efference_copy_buffer)[:, 0, 2], assay_group)
-            self.create_data_group("fish_position", np.array(self.fish_position_buffer), assay_group)
-            self.create_data_group("fish_angle", np.array(self.fish_angle_buffer), assay_group)
-            self.create_data_group("consumed", np.array(self.prey_consumed_buffer), assay_group)
-            self.predator_presence_buffer = [0 if i is None else 1 for i in self.predator_presence_buffer]
-            self.create_data_group("predator_presence", np.array(self.predator_presence_buffer), assay_group)
+        #if "environmental positions" in self.recordings:
+        self.create_data_group("action", np.array(self.action_buffer), assay_group)
+        self.create_data_group("impulse", np.array(self.efference_copy_buffer)[:, 1], assay_group)
+        self.create_data_group("angle", np.array(self.efference_copy_buffer)[:, 2], assay_group)
+        self.create_data_group("fish_position", np.array(self.fish_position_buffer), assay_group)
+        self.create_data_group("fish_angle", np.array(self.fish_angle_buffer), assay_group)
+        self.create_data_group("consumed", np.array(self.prey_consumed_buffer), assay_group)
+        self.predator_presence_buffer = [0 if i is None else 1 for i in self.predator_presence_buffer]
+        self.create_data_group("predator_presence", np.array(self.predator_presence_buffer), assay_group)
 
-            try:
-                self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
-            except:
-                self.fix_prey_position_buffer()
-                self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
+        try:
+            self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
+        except:
+            self.fix_prey_position_buffer()
+            self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
 
-            self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)
+        self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)
 
-            self.create_data_group("sand_grain_positions", np.array(self.sand_grain_position_buffer), assay_group)
-            self.create_data_group("vegetation_positions", np.array(self.vegetation_position_buffer), assay_group)
+        self.create_data_group("sand_grain_positions", np.array(self.sand_grain_position_buffer), assay_group)
+        self.create_data_group("vegetation_positions", np.array(self.vegetation_position_buffer), assay_group)
 
-            self.create_data_group("background", np.array(background), assay_group)
+        self.create_data_group("background", np.array(background), assay_group)
 
-            if self.switch_step != None:
-                self.create_data_group("switch_step", np.array([self.switch_step]), assay_group)
+        if self.switch_step != None:
+            self.create_data_group("switch_step", np.array([self.switch_step]), assay_group)
 
-            # Extra buffers (needed for perfect reloading of states)
-            try:
-                self.create_data_group("prey_orientations", np.array(self.pad_buffer(self.prey_orientation_buffer)), assay_group)
-                self.create_data_group("predator_orientation", np.array(self.pad_buffer(self.predator_orientation_buffer)), assay_group)
-                self.create_data_group("prey_ages", np.array(self.pad_buffer(self.prey_age_buffer)), assay_group)
-                self.create_data_group("prey_gaits", np.array(self.pad_buffer(self.prey_gait_buffer)), assay_group)
-            except TypeError:
-                print("Still need to pad these.")
+        # Extra buffers (needed for perfect reloading of states)
+        try:
+            self.create_data_group("prey_orientations", np.array(self.pad_buffer(self.prey_orientation_buffer)), assay_group)
+            self.create_data_group("predator_orientation", np.array(self.pad_buffer(self.predator_orientation_buffer)), assay_group)
+            self.create_data_group("prey_ages", np.array(self.pad_buffer(self.prey_age_buffer)), assay_group)
+            self.create_data_group("prey_gaits", np.array(self.pad_buffer(self.prey_gait_buffer)), assay_group)
+        except TypeError:
+            print("Still need to pad these.")
 
-        if "reward assessments" in self.recordings:
-            self.create_data_group("reward", np.array(self.reward_buffer), assay_group)
-            self.create_data_group("advantage", np.array(self.advantage_buffer), assay_group)
-            self.create_data_group("value", np.array(self.value_buffer), assay_group)
-            self.create_data_group("returns", np.array(self.return_buffer), assay_group)
+#        if "reward assessments" in self.recordings:
+        self.create_data_group("reward", np.array(self.reward_buffer), assay_group)
+        self.create_data_group("advantage", np.array(self.advantage_buffer), assay_group)
+        self.create_data_group("value", np.array(self.value_buffer), assay_group)
+        self.create_data_group("returns", np.array(self.return_buffer), assay_group)
 
         print(f"{assay_id} Data Saved")
 

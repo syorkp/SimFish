@@ -1,4 +1,6 @@
 *.pyc
+*.png
+*.mp4
 venv
 Assay-Output
 Training-Output

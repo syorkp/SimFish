@@ -69,10 +69,10 @@ class DiscreteNaturalisticEnvironment(NaturalisticEnvironment):
         self.cs_required = self.env_variables["cs_required"]
         super().reset()
 
-    def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None, impulse=None):
+    def simulation_step(self, action, activations=None, impulse=None):
         if self.cs_required:
             self.fish.making_capture = False
         else:
             self.fish.making_capture = True
-        return super().simulation_step(action, save_frames, frame_buffer, activations, impulse)
+        return super().simulation_step(action, activations, impulse)
 

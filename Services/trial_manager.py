@@ -3,8 +3,8 @@ import json
 import shutil
 import multiprocessing
 
-import Services.DQN.dqn_training_service as training
-import Services.DQN.dqn_assay_service as assay
+import Services.DQN.dqn_training_service as dqn_training_service
+import Services.DQN.dqn_assay_service as dqn_assay_service
 
 import Services.PPO.ppo_training_service_continuous as ppo_training_continuous
 import Services.PPO.ppo_assay_service_continuous as ppo_assay_continuous
@@ -182,7 +182,7 @@ class TrialManager:
                         new_job = multiprocessing.Process(target=ppo_training_discrete.ppo_training_target_discrete,
                                                           args=(trial, total_steps, episode_number, memory_fraction, configuration_index))
                 elif trial["Learning Algorithm"] == "DQN":
-                    new_job = multiprocessing.Process(target=training.training_target,
+                    new_job = multiprocessing.Process(target=dqn_training_service.training_target,
                                                       args=(trial, epsilon, total_steps, episode_number, memory_fraction, configuration_index))
                 else:
                     print('Invalid "Learning Algorithm" selected with discrete actions (training mode)')
@@ -210,7 +210,7 @@ class TrialManager:
                     print('Cannot use A2C with discrete actions (assay mode)')
                     new_job = None
                 elif trial["Learning Algorithm"] == "DQN":
-                    new_job = multiprocessing.Process(target=assay.assay_target, args=(
+                    new_job = multiprocessing.Process(target=dqn_assay_service.assay_target, args=(
                         trial, total_steps, episode_number, memory_fraction))
                 else:
                     print('Invalid "Learning Algorithm" selected with discrete actions (assay mode)')
@@ -233,7 +233,7 @@ class TrialManager:
                     new_job = multiprocessing.Process(target=ppo_assay_discrete.ppo_assay_target_discrete, args=(
                         trial, total_steps, episode_number, memory_fraction))
                 elif trial["Learning Algorithm"] == "DQN":
-                    new_job = multiprocessing.Process(target=assay.assay_target, args=(
+                    new_job = multiprocessing.Process(target=dqn_assay_service.assay_target, args=(
                         trial, total_steps, episode_number, memory_fraction))
                 else:
                     print('Invalid "Learning Algorithm" selected with discrete actions (assay mode)')
@@ -256,7 +256,7 @@ class TrialManager:
                     new_job = multiprocessing.Process(target=ppo_assay_discrete.ppo_assay_target_discrete, args=(
                         trial, total_steps, episode_number, memory_fraction))
                 elif trial["Learning Algorithm"] == "DQN":
-                    new_job = multiprocessing.Process(target=assay.assay_target, args=(
+                    new_job = multiprocessing.Process(target=dqn_assay_service.assay_target, args=(
                         trial, total_steps, episode_number, memory_fraction))
                 else:
                     print('Invalid "Learning Algorithm" selected with discrete actions (assay mode)')

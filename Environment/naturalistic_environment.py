@@ -7,6 +7,7 @@ import pymunk
 from Environment.base_environment import BaseEnvironment
 from Environment.Fish.fish import Fish
 from Analysis.Behavioural.Tools.get_fish_prey_incidence import get_fish_prey_incidence_multiple_prey
+from matplotlib.animation import FFMpegWriter
 
 
 class NaturalisticEnvironment(BaseEnvironment):
@@ -56,6 +57,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.assay_run_version = run_version
         self.split_event = split_event
         self.modification = modification
+
 
     def reset(self):
         # print (f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -202,10 +204,7 @@ Sand grain: {self.sand_grain_associated_reward}
         self.fish.prev_action_angle = buffer.internal_state_buffer[-1][0][2]
 
         # Get latest observation.
-        observation, frame_buffer = self.resolve_visual_input(save_frames=False,
-                                                                  activations=[],
-                                                                  internal_state=[],
-                                                                  frame_buffer=[])
+        observation = self.resolve_visual_input(activations=[], internal_state=[])
         return observation
 
     def check_condition_met(self):
@@ -283,14 +282,12 @@ Sand grain: {self.sand_grain_associated_reward}
                                         np.clip(self.fish.body.position[1], 6, self.env_variables["height"] - 30))
             self.fish.body.position = new_position
 
-    def simulation_step(self, action, save_frames, frame_buffer, activations, impulse):
+    def simulation_step(self, action, activations, impulse):
         self.prey_consumed_this_step = False
         self.last_action = action
         self.fish.touched_sand_grain = False
 
         # Visualisation
-        if frame_buffer is None:
-            frame_buffer = []
         if self.env_variables["show_previous_actions"]:
             self.action_buffer.append(action)
             self.fish_angle_buffer.append(self.fish.body.angle)
@@ -439,7 +436,19 @@ Sand grain: {self.sand_grain_associated_reward}
 
         self.num_steps += 1
         self.board.erase(bkg=self.env_variables['bkg_scatter'])
-        self.draw_shapes(visualisation=False)
+        #TODO: remove items outside visual range
+        prey_pos = np.zeros((len(self.prey_bodies), 2), dtype=int)
+        prey_pos[:,0] = np.round(np.array([pr.position[0] for pr in self.prey_bodies]) - self.fish.body.position[0]).astype(int)
+        prey_pos[:,1] = np.round(np.array([pr.position[1] for pr in self.prey_bodies]) - self.fish.body.position[1]).astype(int)
+
+        sand_pos = np.zeros((len(self.sand_grain_bodies), 2), dtype=int)
+        sand_pos[:,0] = np.round(np.array([sg.position[0] for sg in self.sand_grain_bodies]) - self.fish.body.position[0]).astype(int)
+        sand_pos[:,1] = np.round(np.array([sg.position[1] for sg in self.sand_grain_bodies]) - self.fish.body.position[1]).astype(int)
+
+        FOV = self.board.get_FOV(self.fish.body.position)
+        self.board.draw_shapes_environmental(False, prey_pos, sand_pos, self.env_variables['sand_grain_colour'])
+        self.board.draw_walls(FOV)
+        self.board.draw_background(FOV)
 
         # Calculate internal state
         internal_state = []
@@ -468,11 +477,10 @@ Sand grain: {self.sand_grain_associated_reward}
                 done = True
                 self.switch_step = self.num_steps
         
-        observation, frame_buffer = self.resolve_visual_input(save_frames, activations, internal_state,
-                                                                      frame_buffer)
+        observation, FOV = self.resolve_visual_input()
 
 
-        return observation, reward, internal_state, done, frame_buffer
+        return observation, reward, internal_state, done, FOV
 
     def init_predator(self):
         if self.predator_location is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
@@ -480,13 +488,15 @@ Sand grain: {self.sand_grain_associated_reward}
                 and not self.check_fish_not_near_wall():
             self.create_realistic_predator()
 
-    def resolve_visual_input(self, save_frames, activations, internal_state, frame_buffer):
+    def resolve_visual_input(self):
+       
+        # eye positions within FOV
         right_eye_pos = (
-            -np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
-            +np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
+            -np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.board.max_visual_distance,
+            +np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.board.max_visual_distance)
         left_eye_pos = (
-            +np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
-            -np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
+            +np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.board.max_visual_distance,
+            -np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.board.max_visual_distance)
 
         if self.predator_body is not None:
             predator_bodies = np.array([self.predator_body.position])
@@ -498,23 +508,23 @@ Sand grain: {self.sand_grain_associated_reward}
                                                                   [i.position for i in self.sand_grain_bodies]),
                                                          predator_bodies
                                                          )
-
+        
         self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
         self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 
-        if save_frames:
-            self.board.erase_visualisation(bkg=0.3)
-            self.draw_shapes(visualisation=True)
-            relative_dark_gain = self.env_variables["dark_gain"] / self.env_variables["light_gain"]
-            self.board.apply_light(self.dark_col, relative_dark_gain, 1, visualisation=True)
+        # if save_frames:
+        #     self.board.erase_visualisation(bkg=0.3)
+        #     self.draw_shapes(visualisation=True)
+        #     relative_dark_gain = self.env_variables["dark_gain"] / self.env_variables["light_gain"]
+        #     self.board.apply_light(self.dark_col, relative_dark_gain, 1, visualisation=True)
 
-            if self.env_variables['show_channel_sectors']:
-                self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
-                self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
+        #     if self.env_variables['show_channel_sectors']:
+        #         self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
+        #         self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 
-            scaling_factor = 1500 / self.env_variables["width"]
-            frame = self.output_frame(activations, internal_state, scale=0.25 * scaling_factor)
-            frame_buffer.append(frame)
+        #     scaling_factor = 1500 / self.env_variables["width"]
+        #     frame = self.output_frame(activations, internal_state, scale=0.25 * scaling_factor)
+        #     frame_buffer.append(frame)
 
         # observation = self.chosen_math_library.dstack((self.fish.left_eye.readings,
         #                                                self.fish.right_eye.readings))
@@ -531,7 +541,7 @@ Sand grain: {self.sand_grain_associated_reward}
         # else:
         #     return observation, frame_buffer
 
-        return observation, frame_buffer
+        return observation, full_masked_image
 
     def plot_observation(self, observation):
         if self.using_gpu:
@@ -740,3 +750,4 @@ Sand grain: {self.sand_grain_associated_reward}
             choice = np.random.choice(range(len(suitable_locations)))
             location_away = suitable_locations[choice]
             self.fish.body.position = np.array(location_away)
+    

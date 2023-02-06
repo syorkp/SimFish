@@ -54,10 +54,10 @@ params = {
 
        # Saving and video parameters
        'time_per_step': 0.03,  # Length of each step used in gif creation
-       'summaryLength': 200,  # Number of episodes to periodically save for analysis
+       'summaryLength': 2,  # Number of episodes to periodically save for analysis
        'rnn_dim_shared': 512,  # number of rnn cells. Should no longer be used.
        'extra_rnn': False,
-       'save_gifs': True,
+       'save_gifs': False,
 
        # Dynamic network construction
        'reflected': reflected,
@@ -86,8 +86,8 @@ params = {
 env = {
        #                                     Shared
 
-       'width': 800,  # arena size
-       'height': 800,
+       'width': 4000,  # arena size
+       'height': 4000,
        'drag': 0.7,  # water drag
        'phys_dt': 0.2,  # physics time step
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
@@ -110,7 +110,7 @@ env = {
        'prey_inertia': 40.,
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-       'prey_num': 20,
+       'prey_num': 200,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
@@ -119,7 +119,7 @@ env = {
        'prey_fluid_displacement': False,
        'prey_jump': False,
        'differential_prey': True,
-       'prey_cloud_num': 2,
+       'prey_cloud_num': 20,
 
        # Prey movement
        'p_slow': 1.0,
@@ -145,7 +145,7 @@ env = {
        'predator_impulse': 5,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 200,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 181.71216,  # Distance from the fish at which the predator appears. Formerly 498
-       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.01,  # Probability with which the predator appears at each step.
 
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
@@ -163,7 +163,7 @@ env = {
        'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'light_gradient': 20,
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
-       'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001
+       'bkg_scatter': 0.1,  # base brightness of the background FORMERLY 0.00001
        'dark_gain': 60.0,  # gain of brightness in the dark side
        'light_gain': 200.0,  # gain of brightness in the bright side
 
@@ -311,7 +311,7 @@ env = {
 }
 
 
-scaffold_name = "local_test"
+scaffold_name = "local_test_large"
 
 # For predator scaffolding
 # env["distance_from_fish"] *= 2
