@@ -1,0 +1,203 @@
+{
+    "batch_size": 16,
+    "trace_length": 64,
+    "num_episodes": 100000,
+    "max_epLength": 3000,
+    "epsilon_greedy": true,
+    "epsilon_greedy_scaffolding": true,
+    "startE": 0.2,
+    "endE": 0.01,
+    "update_freq": 100,
+    "y": 0.99,
+    "anneling_steps": 1000000,
+    "pre_train_steps": 50000,
+    "exp_buffer_size": 500,
+    "tau": 0.001,
+    "n_updates_per_iteration": 4,
+    "rnn_state_computation": false,
+    "learning_rate": 0.0001,
+    "lambda_entropy": 0.01,
+    "multivariate": false,
+    "beta_distribution": false,
+    "gamma": 0.99,
+    "lambda": 0.9,
+    "input_sigmas": true,
+    "sigma_scaffolding": false,
+    "num_actions": 12,
+    "time_per_step": 0.03,
+    "summaryLength": 50,
+    "extra_rnn": false,
+    "save_gifs": false,
+    "reflected": true,
+    "base_network_layers": {
+        "conv1l": [
+            "conv1d",
+            16,
+            16,
+            4
+        ],
+        "conv2l": [
+            "conv1d",
+            8,
+            8,
+            2
+        ],
+        "conv3l": [
+            "conv1d",
+            8,
+            4,
+            1
+        ],
+        "conv4l": [
+            "conv1d",
+            64,
+            4,
+            1
+        ],
+        "conv1r": [
+            "conv1d",
+            16,
+            16,
+            4
+        ],
+        "conv2r": [
+            "conv1d",
+            8,
+            8,
+            2
+        ],
+        "conv3r": [
+            "conv1d",
+            8,
+            4,
+            1
+        ],
+        "conv4r": [
+            "conv1d",
+            64,
+            4,
+            1
+        ],
+        "rnn": [
+            "dynamic_rnn",
+            64
+        ]
+    },
+    "modular_network_layers": {},
+    "ops": {
+        "eye_split": [
+            "eye_split",
+            [
+                "observation"
+            ],
+            [
+                "left_eye",
+                "right_eye"
+            ]
+        ],
+        "flatten1": [
+            "flatten",
+            [
+                "conv4l"
+            ],
+            [
+                "conv4l_flat"
+            ]
+        ],
+        "flatten2": [
+            "flatten",
+            [
+                "conv4r"
+            ],
+            [
+                "conv4r_flat"
+            ]
+        ],
+        "join_eyes": [
+            "concatenate",
+            [
+                "conv4l_flat",
+                "conv4r_flat",
+                "internal_state",
+                "prev_actions",
+                "prev_action_impulse",
+                "prev_action_angle"
+            ],
+            [
+                "flattened_conv"
+            ]
+        ]
+    },
+    "connectivity": [
+        [
+            "full",
+            [
+                "left_eye",
+                "conv1l"
+            ]
+        ],
+        [
+            "full",
+            [
+                "conv1l",
+                "conv2l"
+            ]
+        ],
+        [
+            "full",
+            [
+                "conv2l",
+                "conv3l"
+            ]
+        ],
+        [
+            "full",
+            [
+                "conv3l",
+                "conv4l"
+            ]
+        ],
+        [
+            "full",
+            [
+                "right_eye",
+                "conv1r"
+            ]
+        ],
+        [
+            "full",
+            [
+                "conv1r",
+                "conv2r"
+            ]
+        ],
+        [
+            "full",
+            [
+                "conv2r",
+                "conv3r"
+            ]
+        ],
+        [
+            "full",
+            [
+                "conv3r",
+                "conv4r"
+            ]
+        ],
+        [
+            "full",
+            [
+                "flattened_conv",
+                "rnn"
+            ]
+        ]
+    ],
+    "use_rnd": false,
+    "reuse_eyes": true,
+    "maintain_state": true,
+    "network_saving_frequency": 20,
+    "network_saving_frequency_steps": 100000,
+    "min_scaffold_interval": 100,
+    "scaffold_stasis_requirement": true
+}

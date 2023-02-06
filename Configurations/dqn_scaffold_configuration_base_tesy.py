@@ -13,8 +13,7 @@ import numpy as np
 # all distances in pixels
 
 from Utilities.scaffold_creation import create_scaffold, build_changes_list_gradual
-from Networks.original_network import connectivity, reflected, base_network_layers, modular_network_layers, ops
-
+from Networks.reduced_network import connectivity, reflected, base_network_layers, modular_network_layers, ops
 
 params = {
        # Learning (Universal)
@@ -54,8 +53,8 @@ params = {
 
        # Saving and video parameters
        'time_per_step': 0.03,  # Length of each step used in gif creation
-       'summaryLength': 2,  # Number of episodes to periodically save for analysis
-       'rnn_dim_shared': 512,  # number of rnn cells. Should no longer be used.
+       'summaryLength': 50,  # Number of episodes to periodically save for analysis
+       #'rnn_dim_shared': 512,  # number of rnn cells. Should no longer be used.
        'extra_rnn': False,
        'save_gifs': False,
 
@@ -86,8 +85,8 @@ params = {
 env = {
        #                                     Shared
 
-       'width': 4000,  # arena size
-       'height': 4000,
+       'width': 3000,  # arena size
+       'height': 3000,
        'drag': 0.7,  # water drag
        'phys_dt': 0.2,  # physics time step
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
@@ -110,7 +109,7 @@ env = {
        'prey_inertia': 40.,
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-       'prey_num': 200,
+       'prey_num': 100,
        'prey_impulse': 0.0,  # impulse each prey receives per step
        'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
@@ -119,7 +118,7 @@ env = {
        'prey_fluid_displacement': False,
        'prey_jump': False,
        'differential_prey': True,
-       'prey_cloud_num': 20,
+       'prey_cloud_num': 16,
 
        # Prey movement
        'p_slow': 1.0,
@@ -145,7 +144,7 @@ env = {
        'predator_impulse': 5,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 200,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 181.71216,  # Distance from the fish at which the predator appears. Formerly 498
-       'probability_of_predator': 0.01,  # Probability with which the predator appears at each step.
+       'probability_of_predator': 0.003,  # Probability with which the predator appears at each step.
 
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
@@ -165,7 +164,7 @@ env = {
        'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'bkg_scatter': 0.1,  # base brightness of the background FORMERLY 0.00001
        'dark_gain': 60.0,  # gain of brightness in the dark side
-       'light_gain': 200.0,  # gain of brightness in the bright side
+       'light_gain': 125.7,  # gain of brightness in the bright side
 
        'rest_cost': 2,
        'capture_swim_extra_cost': 5,
@@ -211,7 +210,7 @@ env = {
        "use_dynamic_network": True,
        'salt_concentration_decay': 0.002,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.005,  # Amount by which salt health recovers per step
-       'max_salt_damage': 0.0,  # Salt damage at centre of source. Before, was 0.02
+       'max_salt_damage': 0.02,  # Salt damage at centre of source. Before, was 0.02
 
        # GIFs and debugging
        'visualise_mask': False,  # For debugging purposes.
@@ -254,8 +253,8 @@ env = {
        # Arbitrary fish parameters
 
        # Fish Visual System
-       'uv_photoreceptor_rf_size': 0.0133 * 3,  # Radians (0.76 degrees) - Yoshimatsu et al. (2019)
-       'red_photoreceptor_rf_size': 0.0133 * 3,  # Kept same
+       'uv_photoreceptor_rf_size': 0.0133,  # Radians (0.76 degrees) - Yoshimatsu et al. (2019)
+       'red_photoreceptor_rf_size': 0.0133,  # Kept same
        'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
        'red_photoreceptor_num': 63,
        'minimum_observation_size': 100,  # Parameter to determine padded observation size (avoids conv layer size bug).
@@ -265,7 +264,7 @@ env = {
        # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
 
        # Shot noise
-       'shot_noise': False,  # Whether to model observation of individual photons as a poisson process.
+       'shot_noise': True,  # Whether to model observation of individual photons as a poisson process.
 
        # For dark noise:
        'isomerization_frequency': 0.0,  # Average frequency of photoisomerization per second per photoreceptor
@@ -311,7 +310,7 @@ env = {
 }
 
 
-scaffold_name = "local_test_large"
+scaffold_name = "reduced_dqn"
 
 # For predator scaffolding
 # env["distance_from_fish"] *= 2
@@ -365,17 +364,7 @@ changes += [
        ["PCI", low_pci, "anneling_steps", 500000,
                         "capture_swim_extra_cost", 50],
 
-       ["PCI", low_pci, "wall_reflection", False],
-
-       # 2) Visual System
-       ["PCI", low_pci, "red_photoreceptor_rf_size", 0.0133,
-                        "uv_photoreceptor_rf_size", 0.0133],
-
-       ["PCI", low_pci, "shot_noise", True],
-
-       ["PCI", low_pci, "bkg_scatter", 0.1],
-
-       ["PCI", high_pci, "light_gain", 125.7]
+       ["PCI", low_pci, "wall_reflection", False]
 ]
 
 # 2) Exploration 15-18
@@ -437,14 +426,12 @@ changes += [["PCI", high_pci, "prey_fluid_displacement", True,
 changes += [["PCI", high_pci, "capture_swim_extra_cost", 100, "anneling_steps", 1000000]]
 
 # 4) Predator avoidance 35
-changes += [["PCI", high_pci, "probability_of_predator", 0.003]]
 
 changes += [["PAI", low_pai, "predator_impulse", 15]]
 
 changes += [["PAI", high_pai, "predator_impulse", 25]]
 
 # 5) Other Behaviours 36-37
-changes += [["PCI", high_pci, "max_salt_damage", 0.02]] 
 
 changes += [["PCI", high_pci, "current_setting", "Circular"]]
 

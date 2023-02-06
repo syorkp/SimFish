@@ -127,8 +127,6 @@ class BaseDQN:
         internal_states = max(internal_states, 1)
         internal_state_names = self.get_internal_state_order()
 
-        cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
-        cell_t = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
 
         if self.environment_params["use_dynamic_network"]:
             if "reuse_eyes" in self.learning_params:
@@ -167,6 +165,9 @@ class BaseDQN:
                                              reuse_eyes=reuse_eyes,
                                              )
         else:
+            cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
+            cell_t = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
+
             self.main_QN = QNetwork(simulation=self.simulation,
                                     rnn_dim=self.learning_params['rnn_dim_shared'],
                                     rnn_cell=cell,
@@ -229,7 +230,7 @@ class BaseDQN:
             if self.debug:
                 if self.using_gpu:
                     FOV = FOV.get()
-                ax.imshow(FOV/np.max(FOV))
+                ax.imshow(FOV/self.environment_params['light_gain'])
                 moviewriter.grab_frame()
                 ax.clear()
             all_actions.append(a[0])
@@ -302,15 +303,9 @@ class BaseDQN:
             chosen_a = chosen_a[0]
 
         # Simulation step
-        if self.debug:
-            o1, given_reward, internal_state, d, FOV = self.simulation.simulation_step(action=chosen_a, activations=(sa,))
-            action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
-                                self.simulation.fish.prev_action_angle]
-        else:
-            o1, given_reward, internal_state, d, FOV = self.simulation.simulation_step(action=chosen_a, activations=(sa,))
-            action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
-                                self.simulation.fish.prev_action_angle]
-            FOV = None
+        o1, given_reward, internal_state, d, FOV = self.simulation.simulation_step(action=chosen_a, activations=(sa,))
+        action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
+                            self.simulation.fish.prev_action_angle]
         if self.save_environmental_data:
             # sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
             # self.episode_buffer.save_environmental_positions(self.simulation.fish.body.position,

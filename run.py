@@ -383,6 +383,15 @@ if __name__ == "__main__": # may be needed to run on windows
             "Learning Algorithm": "DQN",
         },
     ]
+    reduced_dqn = [
+        {
+            "Model Name": "reduced_dqn",
+            "Environment Name": "reduced_dqn",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
     dqn_gamma_1 = [
         {
             "Model Name": "dqn_gamma",
