@@ -56,7 +56,7 @@ class DQNAssayBuffer:
         self.value_buffer = []
         self.return_buffer = []
 
-        self.unit_recordings = []
+        self.unit_recordings = {}
 
     def reset(self):
         self.action_buffer = []
@@ -91,7 +91,7 @@ class DQNAssayBuffer:
             self.prey_gait_buffer = []
 
             self.switch_step = None
-            self.unit_recordings = []
+            self.unit_recordings = {}
 
     def add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref):
         self.observation_buffer.append(observation)
