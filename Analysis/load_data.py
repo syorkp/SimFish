@@ -8,23 +8,23 @@ def load_data(model_name, assay_configuration, assay_id, training_data=False):
     # print(f"Attempting to load data from: {os.getcwd()}")
 
     if training_data:
-        data_dir = "Training-Output"
+        filepath = f"Training-Output/{model_name}/episodes/{assay_configuration}"
     else:
-        data_dir = "Assay-Output"
+        filepath = f"Assay-Output/{model_name}/{assay_configuration}"
 
     try:
-        file = h5py.File(f"../../../../{data_dir}/{model_name}/{assay_configuration}.h5", "r")
+        file = h5py.File(f"../../../../{filepath}.h5", "r")
     except OSError:
         try:
-            file = h5py.File(f"../../../{data_dir}/{model_name}/{assay_configuration}.h5", "r")
+            file = h5py.File(f"../../../{filepath}.h5", "r")
         except OSError:
             try:
-                file = h5py.File(f"../../{data_dir}/{model_name}/{assay_configuration}.h5", "r")
+                file = h5py.File(f"../../{filepath}.h5", "r")
             except OSError:
                 try:
-                    file = h5py.File(f"../{data_dir}/{model_name}/{assay_configuration}.h5", "r")
+                    file = h5py.File(f"../{filepath}.h5", "r")
                 except OSError:
-                    file = h5py.File(f"./{data_dir}/{model_name}/{assay_configuration}.h5", "r")
+                    file = h5py.File(f"./{filepath}.h5", "r")
 
     g = file.get(assay_id)
 
