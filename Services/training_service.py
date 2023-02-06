@@ -640,9 +640,10 @@ class TrainingService(BaseService):
                                         internal_state_order=internal_state_order,
                                         background=background,
                                         salt_location=salt_location)
-            episode_data = load_data(self.model_name, "episodes", f"Episode {self.episode_number}", training_data=True)
+            episode_data = load_data(self.model_name, f"Episode {self.episode_number}",
+                                     f"Episode {self.episode_number}", training_data=True)
             draw_episode(episode_data, self.config_name, self.model_name, self.continuous_actions,
-                         save_id=f"Episode {self.episode_number}")
+                         save_id=f"Episode {self.episode_number}", training_episode=True)
 
             self.buffer.reset()
             self.save_environmental_data = False

@@ -392,9 +392,9 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
     frames *= 255
 
     if training_episode:
-        save_location = f"Analysis-Output/Behavioural/Videos/{model_name}-{save_id}-behaviour"
-    else:
         save_location = f"Training-Output/{model_name}/episodes/{save_id}"
+    else:
+        save_location = f"Analysis-Output/Behavioural/Videos/{model_name}-{save_id}-behaviour"
 
     if as_gif:
         make_gif(frames, f"{save_location}.gif", duration=len(frames) * s_per_frame, true_image=True)
