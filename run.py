@@ -255,7 +255,7 @@ if __name__ == "__main__": # may be needed to run on windows
             "Assays": [
                 {
                     "assay id": "Naturalistic",
-                    "repeats": 100,
+                    "repeats": 10,
                     "stimulus paradigm": "Naturalistic",
                     "duration": 10000,
                     "Tethered": False,
