@@ -235,6 +235,9 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
         action = a + [self.simulation.fish.prev_action_impulse,
                       self.simulation.fish.prev_action_angle]
 
+        sa = np.zeros((1, 128))
+        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=a, activations=(sa,))
+
         self.buffer.action_buffer.append(action)  # Add to buffer for loading of previous actions
 
         self.step_number = 0
@@ -272,14 +275,14 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
             self.step_number += 1
 
-            r, internal_state, o, d, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic, rnn_state_critic_ref, a = self.step_loop(
+            r, internal_state, o, d, rnn_state, rnn_state_ref, rnn_state, rnn_state_ref, a = self.step_loop(
                 o=o,
                 internal_state=internal_state,
                 a=a,
-                rnn_state_actor=rnn_state_actor,
-                rnn_state_actor_ref=rnn_state_actor_ref,
-                rnn_state_critic=rnn_state_critic,
-                rnn_state_critic_ref=rnn_state_critic_ref
+                rnn_state_actor=rnn_state,
+                rnn_state_actor_ref=rnn_state_ref,
+                rnn_state_critic=rnn_state,
+                rnn_state_critic_ref=rnn_state_ref
             )
 
             self.total_episode_reward += r
