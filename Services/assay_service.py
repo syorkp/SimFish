@@ -292,9 +292,9 @@ class AssayService(BaseService):
             salt_location = None
 
         if self.using_gpu:
-            background = self.simulation.board.background_grating.get()[:, :, 0]
+            background = self.simulation.board.global_background_grating.get()[:, :, 0]
         else:
-            background = self.simulation.board.background_grating[:, :, 0]
+            background = self.simulation.board.global_background_grating[:, :, 0]
 
         self.buffer.save_assay_data(assay_id=assay['assay id'],
                                     data_save_location=self.data_save_location,
