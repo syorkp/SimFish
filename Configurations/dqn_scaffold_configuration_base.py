@@ -364,6 +364,7 @@ high_pai = 800
 env["shot_noise"] = True
 env["bkg_scatter"] = 0.1
 env["max_salt_damage"] = 0.02
+env["light_gain"] = 125.7
 
 # 2-10
 changes += [
@@ -380,9 +381,9 @@ changes += [
 
     # ["PCI", low_pci, "bkg_scatter", 0.1],
 
-    ["PCI", high_pci, "light_gain", 160.],
+    # ["PCI", high_pci, "light_gain", 160.],
 
-    ["PCI", high_pci, "light_gain", 125.7]
+    # ["PCI", high_pci, "light_gain", 125.7]
 ]
 
 # 2) Exploration 15-18
