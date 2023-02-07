@@ -284,10 +284,14 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
             self.total_episode_reward += r
             if d:
-                if "maintain_state" in self.learning_params:
-                    if self.learning_params["maintain_state"]:
-                        self.init_rnn_state = rnn_state_actor
-                        self.init_rnn_state_ref = rnn_state_actor_ref
+                if self.run_version == "Original":
+                    if self.simulation.switch_step != None:
+                        self.buffer.switch_step = self.simulation.switch_step
+                    else:
+                        # If no split occurs, return without saving data.
+                        print("No split occurred, as condition never met. Returning without saving data.")
+                        return False
+
                 break
 
         self.log_stimuli()

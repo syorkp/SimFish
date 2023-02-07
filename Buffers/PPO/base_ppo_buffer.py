@@ -70,6 +70,8 @@ class BasePPOBuffer:
             self.prey_age_buffer = []
             self.prey_gait_buffer = []
 
+            self.switch_step = None
+
     def reset(self):
         self.action_buffer = []
         self.observation_buffer = []
@@ -121,6 +123,8 @@ class BasePPOBuffer:
             self.predator_orientation_buffer = []
             self.prey_age_buffer = []
             self.prey_gait_buffer = []
+
+            self.switch_step = None
 
         self.pointer = 0
 
@@ -402,6 +406,9 @@ class BasePPOBuffer:
             except:
                 print(background)
                 print(background.shape)
+
+            if self.switch_step != None:
+                self.create_data_group("switch_step", np.array([self.switch_step]), assay_group)
 
             # Extra buffers (needed for perfect reloading of states)
             self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
