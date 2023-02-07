@@ -47,6 +47,12 @@
     "sand_grain_num": 0,
     "sand_grain_displacement_impulse_scaling_factor": 0.5,
     "sand_grain_displacement_distance": 20,
+    "sand_grain_colour": [
+        1,
+        0,
+        1
+    ],
+    "sand_grain_touch_penalty": 20000,
     "vegetation_size": 100.0,
     "vegetation_num": 0,
     "vegetation_effect_distance": 150,
@@ -120,7 +126,7 @@
     "uv_scaling_factor": 1,
     "red_2_scaling_factor": 0.002,
     "red_occlusion_gain": 0.0,
-    "uv_occlusion_gain": 1.0,
+    "uv_occlusion_gain": 0.0,
     "red2_occlusion_gain": 0.0,
     "wall_buffer_distance": 40,
     "uv_photoreceptor_rf_size": 0.0133,

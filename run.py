@@ -389,6 +389,7 @@ if __name__ == "__main__": # may be needed to run on windows
             "Model Name": "dqn_epsilon",
             "Environment Name": "dqn_epsilon",
             "Trial Number": 1,
+            "Use GPU": False,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
@@ -621,7 +622,7 @@ if __name__ == "__main__": # may be needed to run on windows
 
 
     if run_config is None:
-        run_config = assay_gathering_test
+        run_config = dqn_epsilon_1
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]

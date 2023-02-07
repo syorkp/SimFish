@@ -27,7 +27,6 @@ def assay_target(trial, total_steps, episode_number, memory_fraction):
     else:
         using_gpu = True
 
-
     if "Continuous Actions" in trial:
         continuous_actions = trial["Continuous Actions"]
     else:
@@ -258,6 +257,10 @@ class DQNAssayService(AssayService, BaseDQN):
                 if self.run_version == "Original":
                     if self.simulation.switch_step != None:
                         self.buffer.switch_step = self.simulation.switch_step
+                    else:
+                        # If no split occurs, return without saving data.
+                        print("No split occurred, as condition never met. Returning without saving data.")
+                        return False
 
                 break
             if self.full_reafference:
@@ -286,9 +289,9 @@ class DQNAssayService(AssayService, BaseDQN):
             draw_episode(episode_data, self.config_name, f"{self.model_name}-{self.model_number}", self.continuous_actions,
                          save_id=f"{self.assay_configuration_id}-{assay['assay id']}", training_episode=False)
 
-
         print(f"Assay: {assay['assay id']} Completed")
         print("")
+        return True
 
     def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         return BaseDQN.assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref)

@@ -177,7 +177,10 @@ class AssayService(BaseService):
             else:
                 background, energy_state = None, None
 
-            self.perform_assay(assay, background=background, energy_state=energy_state)
+            while True:
+                complete = self.perform_assay(assay, background=background, energy_state=energy_state)
+                if complete:
+                    break
 
             if assay["save stimuli"]:
                 self.save_stimuli_data(assay)
@@ -257,60 +260,6 @@ class AssayService(BaseService):
 
         # Impose background.
         return data["background"], energy_state
-
-    def perform_assay(self, assay, background=None, energy_state=None):
-        """Just for PPO"""
-        # self.assay_output_data_format = {key: None for key in
-        #                                  assay["behavioural recordings"] + assay["network recordings"]}
-        # self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
-
-        self.current_episode_max_duration = assay["duration"]
-        if assay["use_mu"]:
-            self.use_mu = True
-
-        # TODO: implement environment loading etc as in dqn_assay_service. Will require modification of
-        #  self._episode_loop() for RNN state, env reset, step num,
-
-        self._episode_loop()
-        self.log_stimuli()
-
-
-        #     # make_gif(self.frame_buffer,
-        #     #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
-        #     #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-        #     make_video(self.frame_buffer,
-        #              f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
-        #              duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-        # self.frame_buffer = []
-
-        if "reward assessments" in self.buffer.recordings:
-            self.buffer.calculate_advantages_and_returns()
-
-        if self.environment_params["salt"]:
-            salt_location = self.simulation.salt_location
-        else:
-            salt_location = None
-
-        if self.using_gpu:
-            background = self.simulation.board.global_background_grating.get()[:, :, 0]
-        else:
-            background = self.simulation.board.global_background_grating[:, :, 0]
-
-        self.buffer.save_assay_data(assay_id=assay['assay id'],
-                                    data_save_location=self.data_save_location,
-                                    assay_configuration_id=self.assay_configuration_id,
-                                    internal_state_order=self.get_internal_state_order(),
-                                    background=background,
-                                    salt_location=salt_location)
-        self.buffer.reset()
-        if assay["save frames"]:
-            episode_data = load_data(f"{self.model_name}-{self.model_number}", self.assay_configuration_id,
-                                     assay['assay id'], training_data=False)
-            draw_episode(episode_data, self.config_name, f"{self.model_name}-{self.model_number}", self.continuous_actions,
-                         save_id=f"{self.assay_configuration_id}-{assay['assay id']}", training_episode=False)
-
-        print(f"Assay: {assay['assay id']} Completed")
-        print("")
 
     def log_stimuli(self):
         stimuli = self.simulation.stimuli_information
