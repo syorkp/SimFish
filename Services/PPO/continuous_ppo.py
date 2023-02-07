@@ -289,10 +289,8 @@ class ContinuousPPO(BasePPO):
             else:
                 action = [impulse[0][0], angle[0][0]]
 
-        o1, given_reward, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=action,
-                                                                                                     frame_buffer=self.frame_buffer,
-                                                                                                     save_frames=True,
-                                                                                                     activations=(sa,))
+        o1, given_reward, new_internal_state, d, FOV = self.simulation.simulation_step(action=action,
+                                                                                       activations=(sa,))
 
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
@@ -395,9 +393,7 @@ class ContinuousPPO(BasePPO):
             else:
                 action = [impulse[0][0], angle[0][0]]
 
-        o1, given_reward, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=action,
-                                                                                                     frame_buffer=self.frame_buffer,
-                                                                                                     save_frames=True,
+        o1, given_reward, new_internal_state, d, FOV = self.simulation.simulation_step(action=action,
                                                                                                      activations=(sa,))
 
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
@@ -496,10 +492,7 @@ class ContinuousPPO(BasePPO):
         )
         action = [impulse[0][0], angle[0][0]]
 
-        o1, given_reward, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=action,
-                                                                                                     frame_buffer=self.frame_buffer,
-                                                                                                     save_frames=True,
-                                                                                                     activations=(sa,))
+        o1, given_reward, new_internal_state, d, FOV = self.simulation.simulation_step(action=action, activations=(sa,))
 
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
@@ -598,9 +591,7 @@ class ContinuousPPO(BasePPO):
 
         action = [impulse[0][0], angle[0][0]]
 
-        o1, given_reward, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=action,
-                                                                                                     frame_buffer=self.frame_buffer,
-                                                                                                     save_frames=True,
+        o1, given_reward, new_internal_state, d, FOV = self.simulation.simulation_step(action=action,
                                                                                                      activations=(sa,))
 
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
@@ -710,10 +701,8 @@ class ContinuousPPO(BasePPO):
             action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(
             action=action,
-            frame_buffer=self.frame_buffer,
-            save_frames=self.save_frames,
             activations=sa)
 
         self.buffer.add_training(observation=o,
@@ -802,10 +791,8 @@ class ContinuousPPO(BasePPO):
             action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(
             action=action,
-            frame_buffer=self.frame_buffer,
-            save_frames=self.save_frames,
             activations=sa)
 
         if self.save_environmental_data:
@@ -893,10 +880,8 @@ class ContinuousPPO(BasePPO):
             action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(
             action=action,
-            frame_buffer=self.frame_buffer,
-            save_frames=self.save_frames,
             activations=sa)
 
         self.buffer.add_training(observation=o,
@@ -990,10 +975,8 @@ class ContinuousPPO(BasePPO):
             action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(
             action=action,
-            frame_buffer=self.frame_buffer,
-            save_frames=self.save_frames,
             activations=sa)
 
         if self.use_rnd:
@@ -1116,10 +1099,8 @@ class ContinuousPPO(BasePPO):
             action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(
             action=action,
-            frame_buffer=self.frame_buffer,
-            save_frames=self.save_frames,
             activations=sa)
 
         # Changing action to include final action consequences.
@@ -1253,10 +1234,8 @@ class ContinuousPPO(BasePPO):
             action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(
             action=action,
-            frame_buffer=self.frame_buffer,
-            save_frames=self.save_frames,
             activations=sa)
 
         action_consequences = [self.simulation.fish.prev_action_impulse / self.environment_params["max_impulse"],
@@ -1386,10 +1365,8 @@ class ContinuousPPO(BasePPO):
         action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(
             action=action,
-            frame_buffer=self.frame_buffer,
-            save_frames=self.save_frames,
             activations=sa)
 
         # Update buffer
@@ -1453,10 +1430,8 @@ class ContinuousPPO(BasePPO):
         action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(
             action=action,
-            frame_buffer=self.frame_buffer,
-            save_frames=self.save_frames,
             activations=sa)
 
         # Update buffer
@@ -1524,10 +1499,8 @@ class ContinuousPPO(BasePPO):
         action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(
             action=action,
-            frame_buffer=self.frame_buffer,
-            save_frames=self.save_frames,
             activations=sa)
 
         # Update buffer
@@ -1591,10 +1564,8 @@ class ContinuousPPO(BasePPO):
         action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, r, new_internal_state, d, self.frame_buffer = self.simulation.simulation_step(
+        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(
             action=action,
-            frame_buffer=self.frame_buffer,
-            save_frames=self.save_frames,
             activations=sa)
 
         # Update buffer

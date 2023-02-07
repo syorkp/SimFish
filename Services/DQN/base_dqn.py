@@ -304,6 +304,7 @@ class BaseDQN:
 
         # Simulation step
         o1, given_reward, internal_state, d, FOV = self.simulation.simulation_step(action=chosen_a, activations=(sa,))
+
         action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
                               self.simulation.fish.prev_action_angle]
         if self.debug:
@@ -393,7 +394,7 @@ class BaseDQN:
                            })
 
         chosen_a = chosen_a[0]
-        o1, given_reward, internal_state1, d = self.simulation.simulation_step(action=chosen_a, activations=(sa,))
+        o1, given_reward, internal_state1, d, FOV = self.simulation.simulation_step(action=chosen_a, activations=(sa,))
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
         action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
@@ -464,7 +465,7 @@ class BaseDQN:
                            })
 
         chosen_a = chosen_a[0]
-        o1, given_reward, internal_state1, d = self.simulation.simulation_step(action=chosen_a, activations=(sa,))
+        o1, given_reward, internal_state1, d, FOV = self.simulation.simulation_step(action=chosen_a, activations=(sa,))
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
         if self.full_reafference:
             action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
