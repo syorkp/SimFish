@@ -313,6 +313,8 @@ class TrialManager:
 
             # Log a file to be deleted
             new_data_files.append(f"Assay-Output/{model_name}/{assay_config_name}.h5")
+            new_data_files.append(f"Assay-Output/{model_name}/{assay_config_name}.json")
+            new_data_files.append(f"Assay-Output/{model_name}/{assay_config_name}-summary_data.json")
 
             # 1 - ASSAY: Create assay data for that trial
             new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon,

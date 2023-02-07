@@ -11,8 +11,8 @@ from Environment.controlled_stimulus_environment import ControlledStimulusEnviro
 from Environment.controlled_stimulus_environment_continuous import ControlledStimulusEnvironmentContinuous
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Services.base_service import BaseService
-from Tools.make_gif import make_gif
-from Tools.make_video import make_video
+from Analysis.Video.behaviour_video_construction import draw_episode
+from Analysis.load_data import load_data
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -274,7 +274,7 @@ class AssayService(BaseService):
         self._episode_loop()
         self.log_stimuli()
 
-        # if assay["save frames"]:
+
         #     # make_gif(self.frame_buffer,
         #     #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
         #     #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
@@ -303,6 +303,12 @@ class AssayService(BaseService):
                                     background=background,
                                     salt_location=salt_location)
         self.buffer.reset()
+        if assay["save frames"]:
+            episode_data = load_data(f"{self.model_name}-{self.model_number}", self.assay_configuration_id,
+                                     assay['assay id'], training_data=False)
+            draw_episode(episode_data, self.config_name, f"{self.model_name}-{self.model_number}", self.continuous_actions,
+                         save_id=f"{self.assay_configuration_id}-{assay['assay id']}", training_episode=False)
+
         print(f"Assay: {assay['assay id']} Completed")
         print("")
 

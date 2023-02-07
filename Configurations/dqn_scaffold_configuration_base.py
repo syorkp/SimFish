@@ -310,7 +310,8 @@ env = {
     'fixed_prey_distribution': False,
 }
 
-scaffold_name = "dqn_delta"
+scaffold_name = "dqn_epsilon"
+
 
 # For predator scaffolding
 # env["distance_from_fish"] *= 2
@@ -361,7 +362,8 @@ high_pai = 800
 
 # Start with shot noise
 env["shot_noise"] = True
-
+env["bkg_scatter"] = 0.1
+env["max_salt_damage"] = 0.02
 
 # 2-10
 changes += [
@@ -376,7 +378,7 @@ changes += [
 
     # ["PCI", low_pci, "shot_noise", True],
 
-    ["PCI", low_pci, "bkg_scatter", 0.1],
+    # ["PCI", low_pci, "bkg_scatter", 0.1],
 
     ["PCI", high_pci, "light_gain", 160.],
 
@@ -456,7 +458,7 @@ changes += [["PAI", low_pai, "predator_impulse", 15]]
 changes += [["PAI", high_pai, "predator_impulse", 25]]
 
 # 5) Other Behaviours 36-37
-changes += [["PCI", high_pci, "max_salt_damage", 0.02]]
+# changes += [["PCI", high_pci, "max_salt_damage", 0.02]]
 
 changes += [["PCI", high_pci, "current_setting", "Circular"]]
 

@@ -383,25 +383,26 @@ if __name__ == "__main__": # may be needed to run on windows
             "Learning Algorithm": "DQN",
         },
     ]
-    dqn_gamma_1 = [
+
+    dqn_epsilon_1 = [
         {
-            "Model Name": "dqn_gamma",
-            "Environment Name": "dqn_gamma",
+            "Model Name": "dqn_epsilon",
+            "Environment Name": "dqn_epsilon",
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
     ]
-    dqn_gamma_2 = [
+    dqn_epsilon_2 = [
         {
-            "Model Name": "dqn_gamma",
-            "Environment Name": "dqn_gamma",
+            "Model Name": "dqn_epsilon",
+            "Environment Name": "dqn_epsilon",
             "Trial Number": 2,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
     ]
-    dqn_gamma_3 = [
+    dqn_epsilon_3 = [
         {
             "Model Name": "dqn_gamma",
             "Environment Name": "dqn_gamma",
@@ -410,19 +411,19 @@ if __name__ == "__main__": # may be needed to run on windows
             "Learning Algorithm": "DQN",
         },
     ]
-    dqn_gamma_4 = [
+    dqn_epsilon_4 = [
         {
-            "Model Name": "dqn_gamma",
-            "Environment Name": "dqn_gamma",
+            "Model Name": "dqn_epsilon",
+            "Environment Name": "dqn_epsilon",
             "Trial Number": 4,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
     ]
-    dqn_gamma_5 = [
+    dqn_epsilon_5 = [
         {
-            "Model Name": "dqn_gamma",
-            "Environment Name": "dqn_gamma",
+            "Model Name": "dqn_epsilon",
+            "Environment Name": "dqn_epsilon",
             "Trial Number": 5,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
