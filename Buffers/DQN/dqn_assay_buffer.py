@@ -147,9 +147,9 @@ class DQNAssayBuffer:
             self.create_data_group(key, data, assay_group)
             # assay_group.create_dataset(key, data=data)
 
-    # def init_assay_recordings(self, recordings, network_recordings):
-    #     self.recordings = recordings
-    #     self.unit_recordings = {i: [] for i in network_recordings}
+    def init_assay_recordings(self, recordings, network_recordings):
+        self.recordings = recordings
+        self.unit_recordings = {i: [] for i in network_recordings}
 
     def make_desired_recordings(self, network_layers):
         for l in self.unit_recordings.keys():
