@@ -396,8 +396,8 @@ if __name__ == "__main__": # may be needed to run on windows
     ]
     dqn_epsilon_3 = [
         {
-            "Model Name": "dqn_gamma",
-            "Environment Name": "dqn_gamma",
+            "Model Name": "dqn_epsilon",
+            "Environment Name": "dqn_epsilon",
             "Trial Number": 3,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
