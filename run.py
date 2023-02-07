@@ -237,8 +237,39 @@ if __name__ == "__main__": # may be needed to run on windows
         }
     ]
 
+    ppo_split_assay_test = [
+        {
+            "Model Name": "ppo_gamma",
+            "Environment Name": "ppo_gamma_2",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 2,
+            "Run Mode": "Split-Assay",
+            "Split Event": "One-Prey-Close",
+            "Modification": "Nearby-Prey-Removal",
+            "Learning Algorithm": "PPO",
+            "behavioural recordings": ["environmental positions", "observation", "reward assessments"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "stimulus paradigm": "Naturalistic",
+                    "repeats": 1,
+                    "duration": 2000,
+                    "Tethered": False,
+                    "save frames": False,
+                    "use_mu": True,
+                    "save stimuli": False,
+                    "random positions": False,
+                    "reset": False,
+                    "background": None,
+                    "moving": False,
+                    "collisions": True,
+                },
+            ]
+        }
+    ]
 
-        # Assay And Analysis
+    # Assay And Analysis
 
     dqn_gamma_analysis_across_scaffold_1 = [
         {
@@ -281,46 +312,6 @@ if __name__ == "__main__": # may be needed to run on windows
         }
     ]
 
-    dqn_delta_analysis_across_scaffold_3 = [
-        {
-            "Model Name": "dqn_delta",
-            "Environment Name": "dqn_delta_free",
-            "Assay Configuration Name": "Behavioural-Data-Free",
-            "Config Modification": "Empty",
-            "Trial Number": 1,
-            "Delete Data": True,
-            "Run Mode": "Assay-Analysis-Across-Scaffold",
-            "Learning Algorithm": "DQN",
-            "behavioural recordings": ["environmental positions", "observation"],
-            "network recordings": ["rnn_shared", "internal_state"],
-            "Assays": [
-                {
-                    "assay id": "Naturalistic",
-                    "repeats": 5,
-                    "stimulus paradigm": "Naturalistic",
-                    "duration": 100,
-                    "Tethered": False,
-                    "save frames": False,
-                    "use_mu": True,
-                    "save stimuli": False,
-                    "random positions": False,
-                    "reset": False,
-                    "background": None,
-                    "moving": False,
-                    "collisions": True,
-                },
-            ],
-            "Analysis": [
-                {
-                    "analysis id": "Turn-Analysis",
-                    "analysis script": "Analysis.Behavioural.Exploration.turning_analysis_discrete",
-                    "analysis function": "plot_all_turn_analysis",
-                    "analysis arguments": ["model_name", "assay_config_name", "Naturalistic", 5],
-                    "Delete Data": True
-                }
-            ],
-        }
-    ]
 
 
     ppo_gamma_analysis_across_scaffold_1 = [
@@ -363,7 +354,7 @@ if __name__ == "__main__": # may be needed to run on windows
         }
     ]
 
-        #                   TRAINING - DQN
+    #                   TRAINING - DQN
 
     local_test = [
         {
