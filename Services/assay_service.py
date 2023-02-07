@@ -274,14 +274,14 @@ class AssayService(BaseService):
         self._episode_loop()
         self.log_stimuli()
 
-        if assay["save frames"]:
-            # make_gif(self.frame_buffer,
-            #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
-            #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-            make_video(self.frame_buffer,
-                     f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
-                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-        self.frame_buffer = []
+        # if assay["save frames"]:
+        #     # make_gif(self.frame_buffer,
+        #     #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
+        #     #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+        #     make_video(self.frame_buffer,
+        #              f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
+        #              duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+        # self.frame_buffer = []
 
         if "reward assessments" in self.buffer.recordings:
             self.buffer.calculate_advantages_and_returns()
@@ -437,14 +437,14 @@ class AssayService(BaseService):
     def save_assay_results(self, assay):
         """No longer used - saves data in JSON"""
         # Saves all the information from the assays in JSON format.
-        if assay["save frames"]:
-            make_video(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.mp4",
-                     duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
-                     true_image=True)
-            # make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
-            #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
-            #          true_image=True)
-
-        self.frame_buffer = []
+        # if assay["save frames"]:
+        #     make_video(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.mp4",
+        #              duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
+        #              true_image=True)
+        #     # make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
+        #     #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
+        #     #          true_image=True)
+        #
+        # self.frame_buffer = []
         with open(f"{self.data_save_location}/{assay['assay id']}.json", "w") as output_file:
             json.dump(self.assay_output_data, output_file)

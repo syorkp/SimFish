@@ -363,6 +363,7 @@ class BaseDQN:
 
         self.total_steps += 1
         return o, action_reafference, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, FOV
+
     # TODO: merge this with the above function
     def assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         if self.environment_params["use_dynamic_network"]:

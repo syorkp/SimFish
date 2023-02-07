@@ -202,10 +202,8 @@ class DQNAssayService(AssayService, BaseDQN):
 
         sa = np.zeros((1, 128))
 
-        o, r, internal_state, d, self.frame_buffer = self.simulation.simulation_step(action=a,
-                                                                                     frame_buffer=self.frame_buffer,
-                                                                                     save_frames=True,
-                                                                                     activations=(sa,))
+        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=a, activations=(sa,))
+
         if self.full_reafference:
             action_reafference = [[a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]]
         else:
@@ -281,15 +279,14 @@ class DQNAssayService(AssayService, BaseDQN):
                                     self.internal_state_order, background=background,
                                     salt_location=salt_location)
         self.log_stimuli()
-        if assay["save frames"] and len(self.frame_buffer) > 5:
-            # make_gif(self.frame_buffer,
-            #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
-            #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-            make_video(self.frame_buffer,
-                       f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
-                       duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-
-        self.frame_buffer = []
+        # if assay["save frames"] and len(self.frame_buffer) > 5:
+        #     # make_gif(self.frame_buffer,
+        #     #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
+        #     #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+        #     make_video(self.frame_buffer,
+        #                f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
+        #                duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+        # self.frame_buffer = []
 
         self.buffer.reset()
         print(f"Assay: {assay['assay id']} Completed")
@@ -299,14 +296,14 @@ class DQNAssayService(AssayService, BaseDQN):
         return BaseDQN.assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref)
 
     def save_hdf5_data(self, assay):
-        if assay["save frames"]:
-            # make_gif(self.frame_buffer,
-            #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
-            #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-            make_video(self.frame_buffer,
-                       f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
-                       duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-        self.frame_buffer = []
+        # if assay["save frames"]:
+        #     # make_gif(self.frame_buffer,
+        #     #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
+        #     #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+        #     make_video(self.frame_buffer,
+        #                f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
+        #                duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
+        # self.frame_buffer = []
 
         # absolute_path = '/home/sam/PycharmProjects/SimFish/Assay-Output/new_differential_prey_ref-3' + f'/{self.assay_configuration_id}.h5'
         # hdf5_file = h5py.File(absolute_path, "a")
@@ -430,13 +427,13 @@ class DQNAssayService(AssayService, BaseDQN):
     def save_assay_results(self, assay):
         """No longer used - saves data in JSON"""
         # Saves all the information from the assays in JSON format.
-        if assay["save frames"]:
-            # make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
-            #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
-            #          true_image=True)
-            make_video(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.mp4",
-                       duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
-                       true_image=True)
-        self.frame_buffer = []
+        # if assay["save frames"]:
+        #     # make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
+        #     #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
+        #     #          true_image=True)
+        #     make_video(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.mp4",
+        #                duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
+        #                true_image=True)
+        # self.frame_buffer = []
         with open(f"{self.data_save_location}/{assay['assay id']}.json", "w") as output_file:
             json.dump(self.assay_output_data, output_file)
