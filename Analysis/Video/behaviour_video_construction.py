@@ -1,7 +1,6 @@
 import copy
 
 import numpy as np
-import json
 import math
 import matplotlib.pyplot as plt
 import skimage.draw as draw
@@ -264,19 +263,19 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
     return extra_area
 
 
-def draw_episode(data, config_name, model_name, continuous_actions, draw_past_actions=True, show_energy_state=True,
+def draw_episode(data, env_variables, save_location, continuous_actions, draw_past_actions=True, show_energy_state=True,
                  scale=0.2, draw_action_space_usage=True, trim_to_fish=False, showed_region_quad=500, n_actions_to_show=500,
-                 save_id="placeholder", s_per_frame=0.03, include_background=False, as_gif=False, training_episode=False):
-    try:
-        with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
-            env_variables = json.load(f)
-    except FileNotFoundError:
-        with open(f"Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
-            env_variables = json.load(f)
+                 s_per_frame=0.03, include_background=False, as_gif=False):
+    #try:
+    #    with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
+    #        env_variables = json.load(f)
+    #except FileNotFoundError:
+    #    with open(f"Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
+    #        env_variables = json.load(f)
 
     board = DrawingBoard(env_variables["width"], env_variables["height"], data, include_background)
     if show_energy_state:
-        energy_levels = data["internal_state"][:, 0]
+        energy_levels = data["energy_state"]
     fish_positions = data["fish_position"]
     num_steps = fish_positions.shape[0]
 
@@ -391,10 +390,10 @@ def draw_episode(data, config_name, model_name, continuous_actions, draw_past_ac
 
     frames *= 255
 
-    if training_episode:
-        save_location = f"Training-Output/{model_name}/episodes/{save_id}"
-    else:
-        save_location = f"Analysis-Output/Behavioural/Videos/{model_name}-{save_id}-behaviour"
+    #if training_episode:
+    #    save_location = f"Training-Output/{model_name}/episodes/{save_id}"
+    #else:
+    #    save_location = f"Analysis-Output/Behavioural/Videos/{model_name}-{save_id}-behaviour"
 
     if as_gif:
         make_gif(frames, f"{save_location}.gif", duration=len(frames) * s_per_frame, true_image=True)

@@ -31,7 +31,7 @@ class BaseDQN:
         self.epsilon = None
         self.step_drop = None
 
-        self.debug = True
+        self.debug = False
         # Networks
         self.main_QN = None
         self.target_QN = None
@@ -229,7 +229,8 @@ class BaseDQN:
             if self.debug:
                 if self.using_gpu:
                     FOV = FOV.get()
-                ax.imshow(FOV/np.max(FOV))
+                FOV = np.clip(FOV/self.environment_params['light_gain'], 0, 1)
+                ax.imshow(FOV)
                 moviewriter.grab_frame()
                 ax.clear()
             all_actions.append(a[0])
