@@ -142,6 +142,8 @@ class TrialManager:
         return epsilon, total_steps, episode_number, configuration_index
 
     def get_new_job(self, trial, total_steps, episode_number, memory_fraction, epsilon, configuration_index):
+        print("Creating job")
+        print(trial)
         # Setting optional variables
         if "Continuous Actions" in trial:
             continuous_actions = trial["Continuous Actions"]
