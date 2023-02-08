@@ -242,6 +242,9 @@ class BasePPOBuffer:
             return buffer
 
     def calculate_advantages_and_returns(self, normalise_advantage=True):
+        self.reward_buffer = np.array(self.reward_buffer)
+        self.value_buffer = np.array(self.value_buffer)
+
         delta = self.reward_buffer[:-1] + self.gamma * self.value_buffer[1:] - self.value_buffer[:-1]
         advantage = self.discount_cumsum(delta, self.gamma * self.lmbda)
         if normalise_advantage:
