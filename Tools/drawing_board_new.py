@@ -531,13 +531,14 @@ class DrawingBoard:
 
         FOV = self.get_field_of_view(fish_position)
 
-        A = self.chosen_math_library.array(self.full_db)
+        A = self.chosen_math_library.array(self.local_db)
 
         # apply FOV portion of luminance mask
         local_luminance_mask = self.global_luminance_mask[FOV['enclosed_fov'][0]:FOV['enclosed_fov'][1],
-                               FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], :]
+                                                          FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], :]
+
         A[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
-        FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], :] *= local_luminance_mask
+          FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], :] *= local_luminance_mask
 
         if prey_locations.size + predator_locations.size == 0:
             O = self.chosen_math_library.ones((self.local_dim, self.local_dim, 3), dtype=np.float64)
@@ -573,9 +574,9 @@ class DrawingBoard:
         # self.local_db = self.chosen_math_library.zeros((self.local_dim, self.local_dim, 3))
 
         if bkg == 0:
-            self.full_db = self.chosen_math_library.copy(self.base_db)
+            self.local_db = self.chosen_math_library.copy(self.base_db)
         else:
-            self.full_db = self.chosen_math_library.copy(self.base_db_illuminated)
+            self.local_db = self.chosen_math_library.copy(self.base_db_illuminated)
 
     def get_base_arena(self, bkg=0.0):
         if bkg == 0:
@@ -676,16 +677,16 @@ class DrawingBoard:
                                                 positions_to_show[i][1], action_colour)
 
     def draw_walls(self, FOV):
-        self.full_db[FOV['local_coordinates_fov'][0], FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3],
+        self.local_db[FOV['local_coordinates_fov'][0], FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3],
         0] = 1
-        self.full_db[FOV['local_coordinates_fov'][1] - 1,
+        self.local_db[FOV['local_coordinates_fov'][1] - 1,
         FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], 0] = 1
-        self.full_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1], FOV['local_coordinates_fov'][2],
+        self.local_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1], FOV['local_coordinates_fov'][2],
         0] = 1
-        self.full_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
+        self.local_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
         FOV['local_coordinates_fov'][3] - 1, 0] = 1
 
-    def draw_shapes_environmental(self, visualisation, prey_pos, sand_grain_pos=[],
+    def draw_shapes_environmental(self, visualisation, prey_pos, sand_grain_pos=np.array([]),
                                   sand_grain_colour=(0, 0, 1)):  # prey/sand positions are fish-centric
         # if visualisation:  # Only draw fish if in visualisation mode
         #     if self.env_variables["show_fish_body_energy_state"]:
@@ -720,7 +721,7 @@ class DrawingBoard:
             #                else:
             #                    self.board.db[rrs, ccs] = self.prey_shapes[0].color
 
-            self.full_db[rrs, ccs, 1] = 1
+            self.local_db[rrs, ccs, 1] = 1
 
             # except IndexError:
             #     print(f"Index Error for: PX: {max(rrs.flatten())}, PY: {max(ccs.flatten())}")
@@ -774,7 +775,7 @@ class DrawingBoard:
         background_slice = self.global_background_grating[FOV['enclosed_fov'][0]:FOV['enclosed_fov'][1],
                            FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], 0]
 
-        self.full_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
+        self.local_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
         FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], 2] = background_slice
 
     def get_field_of_view(self, fish_location):  # use field location to get field of view

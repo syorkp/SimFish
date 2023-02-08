@@ -414,10 +414,14 @@ class BasePPOBuffer:
                 self.create_data_group("switch_step", np.array([self.switch_step]), assay_group)
 
             # Extra buffers (needed for perfect reloading of states)
-            self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
-            self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
-            self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
-            self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
+            try:
+                self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
+                self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
+                self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
+                self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
+            except:
+                print("Data saving error")
+                print(self.prey_orientation_buffer)
 
         if "convolutional layers" in self.unit_recordings:
             self.create_data_group("actor_conv1l", np.array(self.actor_conv1l_buffer), assay_group)

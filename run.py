@@ -118,6 +118,7 @@ if __name__ == "__main__": # may be needed to run on windows
             "Trial Number": 1,
             "Run Mode": "Assay",
             "Learning Algorithm": "DQN",
+            "Using GPU": False,
             "behavioural recordings": ["environmental positions", "observation"],
             "network recordings": ["rnn_shared", "internal_state"],
             "Assays": [
@@ -613,11 +614,11 @@ if __name__ == "__main__": # may be needed to run on windows
 
 
     if run_config is None:
-        run_config = dqn_epsilon_1
+        run_config = dqn_free_config_large_gamma_1
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]
 
-        print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-        manager = TrialManager(run_config, parallel_jobs=1)
-        manager.run_priority_loop()
+    print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+    manager = TrialManager(run_config, parallel_jobs=1)
+    manager.run_priority_loop()
