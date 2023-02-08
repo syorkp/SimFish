@@ -277,7 +277,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
             self.step_number += 1
 
-            r, internal_state, o, d, rnn_state, rnn_state_ref, rnn_state, rnn_state_ref, a = self.step_loop(
+            r, internal_state, o, d, rnn_state, rnn_state_ref, _, __, a = self.step_loop(
                 o=o,
                 internal_state=internal_state,
                 a=a,
