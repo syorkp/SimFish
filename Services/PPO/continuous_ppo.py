@@ -1151,7 +1151,7 @@ class ContinuousPPO(BasePPO):
 
         if self.save_environmental_data:
             sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
-            self.episode_buffer.save_environmental_positions(self.simulation.fish.body.position,
+            self.buffer.save_environmental_positions(self.simulation.fish.body.position,
                                                              self.simulation.prey_consumed_this_step,
                                                              self.simulation.predator_body,
                                                              prey_positions,
