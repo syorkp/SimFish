@@ -1151,15 +1151,31 @@ class ContinuousPPO(BasePPO):
 
         if self.save_environmental_data:
             sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
+            prey_orientations = [p.angle for p in self.simulation.prey_bodies]
+            try:
+                predator_orientation = self.simulation.predator_body.angle
+            except:
+                predator_orientation = 0
+            prey_ages = self.simulation.prey_ages
+            prey_gait = self.simulation.paramecia_gaits
+
             self.buffer.save_environmental_positions(self.simulation.fish.body.position,
-                                                             self.simulation.prey_consumed_this_step,
-                                                             self.simulation.predator_body,
-                                                             prey_positions,
-                                                             predator_position,
-                                                             sand_grain_positions,
-                                                             vegetation_positions,
-                                                             self.simulation.fish.body.angle,
-                                                             )
+                                                     self.simulation.prey_consumed_this_step,
+                                                     self.simulation.predator_body,
+                                                     prey_positions,
+                                                     predator_position,
+                                                     sand_grain_positions,
+                                                     vegetation_positions,
+                                                     self.simulation.fish.body.angle,
+                                                     self.simulation.fish.salt_health,
+                                                     efference_copy=a,
+                                                     prey_orientation=prey_orientations,
+                                                     predator_orientation=predator_orientation,
+                                                     prey_age=prey_ages,
+                                                     prey_gait=prey_gait
+                                                     )
+
+
 
         si_i = si[0][0]
         si_a = si[0][1]
