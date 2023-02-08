@@ -159,6 +159,9 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
         else:
             self.separate_networks = False
 
+
+        self.last_position_dim = self.environment_params["prey_num"]
+
     def run(self):
         sess = self.create_session()
         print("Creating session...", flush=True)
