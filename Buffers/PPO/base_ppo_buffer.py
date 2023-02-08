@@ -393,8 +393,8 @@ class BasePPOBuffer:
             #     print(f"{i}-{np.array(r[0]).shape}")
 
             # print(self.rnn_state_buffer)
-            self.rnn_state_buffer = np.array(self.rnn_state_buffer).squeeze()
-            self.rnn_state_ref_buffer = np.array(self.rnn_state_ref_buffer).squeeze()
+            self.rnn_state_buffer = np.array(self.actor_rnn_state_buffer).squeeze()
+            self.rnn_state_ref_buffer = np.array(self.actor_rnn_state_ref_buffer).squeeze()
 
             self.create_data_group("rnn_state_actor", self.rnn_state_buffer, assay_group)
             self.create_data_group("rnn_state_actor_ref", self.rnn_state_ref_buffer, assay_group)
@@ -416,8 +416,8 @@ class BasePPOBuffer:
 
         else:
             if "rnn state" in self.unit_recordings:
-                self.create_data_group("rnn_state_actor", np.array(self.rnn_state_buffer).squeeze(), assay_group)
-                self.create_data_group("rnn_state_actor_ref", np.array(self.rnn_state_ref_buffer).squeeze(), assay_group)
+                self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer).squeeze(), assay_group)
+                self.create_data_group("rnn_state_actor_ref", np.array(self.actor_rnn_state_ref_buffer).squeeze(), assay_group)
 
             if "internal state" in self.unit_recordings:
                 self.internal_state_buffer = np.array(self.internal_state_buffer)
