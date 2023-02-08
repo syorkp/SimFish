@@ -372,6 +372,7 @@ class TrialManager:
                 complete = False
 
     def run_split_assay_mode(self, index, trial, running_jobs, memory_fraction, to_delete):
+        print("Running Split Assay Mode")
         # Run all assays, up to the point of the split.
         complete = False
         epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
