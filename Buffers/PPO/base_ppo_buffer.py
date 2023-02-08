@@ -33,16 +33,16 @@ class BasePPOBuffer:
         self.critic_loss_buffer = []
         self.efference_copy_buffer = []
 
-        if assay:
-            self.fish_position_buffer = []
-            self.prey_consumed_buffer = []
-            self.predator_presence_buffer = []
-            self.prey_positions_buffer = []
-            self.predator_position_buffer = []
-            self.sand_grain_position_buffer = []
-            self.vegetation_position_buffer = []
-            self.fish_angle_buffer = []
+        self.fish_position_buffer = []
+        self.prey_consumed_buffer = []
+        self.predator_presence_buffer = []
+        self.prey_positions_buffer = []
+        self.predator_position_buffer = []
+        self.sand_grain_position_buffer = []
+        self.vegetation_position_buffer = []
+        self.fish_angle_buffer = []
 
+        if assay:
             self.actor_conv1l_buffer = []
             self.actor_conv2l_buffer = []
             self.actor_conv3l_buffer = []
@@ -85,17 +85,16 @@ class BasePPOBuffer:
 
         self.critic_loss_buffer = []
         self.efference_copy_buffer = []
+        self.fish_position_buffer = []
+        self.prey_consumed_buffer = []
+        self.predator_presence_buffer = []
+        self.prey_positions_buffer = []
+        self.predator_position_buffer = []
+        self.sand_grain_position_buffer = []
+        self.vegetation_position_buffer = []
+        self.fish_angle_buffer = []
 
         if self.assay:
-            self.fish_position_buffer = []
-            self.prey_consumed_buffer = []
-            self.predator_presence_buffer = []
-            self.prey_positions_buffer = []
-            self.predator_position_buffer = []
-            self.sand_grain_position_buffer = []
-            self.vegetation_position_buffer = []
-            self.fish_angle_buffer = []
-
             # Old method
             self.actor_conv1l_buffer = []
             self.actor_conv2l_buffer = []
