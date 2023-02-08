@@ -302,7 +302,6 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
         self.log_stimuli()
 
-
         #     # make_gif(self.frame_buffer,
         #     #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
         #     #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
@@ -334,25 +333,28 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
         if assay["save frames"]:
             episode_data = load_data(f"{self.model_name}-{self.model_number}", self.assay_configuration_id,
                                      assay['assay id'], training_data=False)
-            draw_episode(episode_data, self.config_name, f"{self.model_name}-{self.model_number}", self.continuous_actions,
+            draw_episode(episode_data, self.config_name, f"{self.model_name}-{self.model_number}",
+                         self.continuous_actions,
                          save_id=f"{self.assay_configuration_id}-{assay['assay id']}", training_episode=False)
 
         print(f"Assay: {assay['assay id']} Completed")
         print("")
         return True
 
-
     def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                   rnn_state_critic_ref):
-        if self.multivariate:
-            if self.sb_emulator:
-                return self._assay_step_loop_multivariate2(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                                           rnn_state_critic,
-                                                           rnn_state_critic_ref)
-            else:
-                return self._assay_step_loop_multivariate(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                                          rnn_state_critic,
-                                                          rnn_state_critic_ref)
-        else:
-            return self._assay_step_loop(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
-                                         rnn_state_critic_ref)
+        # if self.multivariate:
+        #     if self.sb_emulator:
+        #         return self._assay_step_loop_multivariate2(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+        #                                                    rnn_state_critic,
+        #                                                    rnn_state_critic_ref)
+        #     else:
+        #         return self._assay_step_loop_multivariate(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+        #                                                   rnn_state_critic,
+        #                                                   rnn_state_critic_ref)
+        # else:
+        #     return self._assay_step_loop(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
+        #                                  rnn_state_critic_ref)
+        return self._assay_step_loop_multivariate2(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
+                                                   rnn_state_critic,
+                                                   rnn_state_critic_ref)
