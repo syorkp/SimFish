@@ -251,8 +251,6 @@ class ContinuousPPO(BasePPO):
              self.simulation.fish.prev_action_angle,
              ]# Set impulse to scale to be inputted to network
 
-        print(rnn_state_actor)
-
         impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, network_layers, \
         mu_i, mu_a, mu1, mu1_ref, mu_a1, mu_a_ref, si_i, si_a = self.sess.run(
             [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.value_output,

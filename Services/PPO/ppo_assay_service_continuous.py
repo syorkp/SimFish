@@ -112,6 +112,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
         """
         Runs a set of assays provided by the run configuraiton.
         """
+        print(f"H: {split_event}")
         # Set random seed
         super().__init__(model_name=model_name,
                          trial_number=trial_number,
