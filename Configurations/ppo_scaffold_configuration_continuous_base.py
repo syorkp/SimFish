@@ -147,6 +147,8 @@ env = {
        'sand_grain_num': 0,
        'sand_grain_displacement_impulse_scaling_factor': 0.5,
        'sand_grain_displacement_distance': 20,
+       'sand_grain_colour': (1, 0, 1),
+       'sand_grain_touch_penalty': 20000,
 
        'vegetation_size': 100.,
        'vegetation_num': 0,

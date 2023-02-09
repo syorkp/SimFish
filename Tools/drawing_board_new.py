@@ -7,6 +7,64 @@ import skimage.draw as draw
 from skimage import io
 
 
+class FieldOfView:
+
+    def __init__(self, local_dim, max_visual_distance, env_width, env_height):
+        self.local_dim = local_dim
+        self.max_visual_distance = max_visual_distance
+        self.env_width = env_width
+        self.env_height = env_height
+
+        self.full_fov_top = None
+        self.full_fov_bottom = None
+        self.full_fov_left = None
+        self.full_fov_right = None
+
+        self.local_fov_top = None
+        self.local_fov_bottom = None
+        self.local_fov_left = None
+        self.local_fov_right = None
+
+        self.enclosed_fov_top = None
+        self.enclosed_fov_bottom = None
+        self.enclosed_fov_left = None
+        self.enclosed_fov_right = None
+
+    def update_field_of_view(self, fish_position):
+        fish_position = np.round(fish_position).astype(int)
+
+        self.full_fov_top = fish_position[1] - self.max_visual_distance
+        self.full_fov_bottom = fish_position[1] + self.max_visual_distance + 1
+        self.full_fov_left = fish_position[0] - self.max_visual_distance
+        self.full_fov_right = fish_position[0] + self.max_visual_distance + 1
+
+        self.local_fov_top = 0
+        self.local_fov_bottom = self.local_dim
+        self.local_fov_left = 0
+        self.local_fov_right = self.local_dim
+
+        self.enclosed_fov_top = self.full_fov_top
+        self.enclosed_fov_bottom = self.full_fov_bottom
+        self.enclosed_fov_left = self.full_fov_left
+        self.enclosed_fov_right = self.full_fov_right
+
+        if self.full_fov_top < 0:
+            self.enclosed_fov_top = 0
+            self.local_fov_top = -self.full_fov_top
+
+        if self.full_fov_bottom > self.env_width:
+            self.enclosed_fov_bottom = self.env_width
+            self.local_fov_bottom = self.local_dim - (self.full_fov_bottom - self.env_width)
+
+        if self.full_fov_left < 0:
+            self.enclosed_fov_left = 0
+            self.local_fov_left = -self.full_fov_left
+
+        if self.full_fov_right > self.env_height:
+            self.enclosed_fov_right = self.env_height
+            self.local_fov_right = self.local_dim - (self.full_fov_right - self.env_height)
+
+
 class DrawingBoard:
 
     def __init__(self, arena_width, arena_height, uv_decay_rate, red_decay_rate, photoreceptor_rf_size, using_gpu,
@@ -523,6 +581,38 @@ class DrawingBoard:
 
         return luminance_mask
 
+    def extend_A(self, A, FOV):
+        """Extends the arena pixels (red1 channel), by stretching the values computed at the wall points along the
+        whole FOV in that direction"""
+
+        if FOV["full_fov"][0] < 0:
+            low_dim_top = abs(FOV["full_fov"][0])
+        else:
+            low_dim_top = 0
+        if FOV["full_fov"][2] < 0:
+            low_dim_left = abs(FOV["full_fov"][2])
+        else:
+            low_dim_left = 0
+
+        if FOV["full_fov"][1] > self.height:
+            high_dim_bottom = abs(FOV["full_fov"][1]) - (self.height)
+        else:
+            high_dim_bottom = self.local_dim - 1
+        if FOV["full_fov"][3] > self.width:
+            high_dim_right = abs(FOV["full_fov"][3]) - (self.width)
+        else:
+            high_dim_right = self.local_dim - 1
+
+        pixel_to_extend = A[low_dim_top, low_dim_left, 0]
+        A[:, :low_dim_left, 0] = pixel_to_extend
+        A[:low_dim_top, :, 0] = pixel_to_extend
+
+        pixel_to_extend = A[high_dim_bottom, high_dim_right, 0]
+        A[:, -high_dim_right:, 0] = pixel_to_extend
+        A[-high_dim_bottom:, :, 0] = pixel_to_extend
+
+        return A
+
     def get_masked_pixels(self, fish_position, prey_locations, predator_locations):
         """
         Returns masked pixels in form W.H.3
@@ -531,13 +621,17 @@ class DrawingBoard:
 
         FOV = self.get_field_of_view(fish_position)
 
-        A = self.chosen_math_library.array(self.full_db)
+        A = self.chosen_math_library.array(self.local_db)
 
         # apply FOV portion of luminance mask
         local_luminance_mask = self.global_luminance_mask[FOV['enclosed_fov'][0]:FOV['enclosed_fov'][1],
-                               FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], :]
+                                                          FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], :]
+
         A[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
-        FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], :] *= local_luminance_mask
+          FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], :] *= local_luminance_mask
+
+        # If FOV extends outside the arena, extend the A image
+        A = self.extend_A(A, FOV)
 
         if prey_locations.size + predator_locations.size == 0:
             O = self.chosen_math_library.ones((self.local_dim, self.local_dim, 3), dtype=np.float64)
@@ -573,9 +667,9 @@ class DrawingBoard:
         # self.local_db = self.chosen_math_library.zeros((self.local_dim, self.local_dim, 3))
 
         if bkg == 0:
-            self.full_db = self.chosen_math_library.copy(self.base_db)
+            self.local_db = self.chosen_math_library.copy(self.base_db)
         else:
-            self.full_db = self.chosen_math_library.copy(self.base_db_illuminated)
+            self.local_db = self.chosen_math_library.copy(self.base_db_illuminated)
 
     def get_base_arena(self, bkg=0.0):
         if bkg == 0:
@@ -676,16 +770,18 @@ class DrawingBoard:
                                                 positions_to_show[i][1], action_colour)
 
     def draw_walls(self, FOV):
-        self.full_db[FOV['local_coordinates_fov'][0], FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3],
+        """Draws walls as deep into FOV beyond wall objects as possible."""
+
+        self.local_db[FOV['local_coordinates_fov'][0], FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3],
         0] = 1
-        self.full_db[FOV['local_coordinates_fov'][1] - 1,
+        self.local_db[FOV['local_coordinates_fov'][1] - 1,
         FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], 0] = 1
-        self.full_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1], FOV['local_coordinates_fov'][2],
+        self.local_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1], FOV['local_coordinates_fov'][2],
         0] = 1
-        self.full_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
+        self.local_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
         FOV['local_coordinates_fov'][3] - 1, 0] = 1
 
-    def draw_shapes_environmental(self, visualisation, prey_pos, sand_grain_pos=[],
+    def draw_shapes_environmental(self, visualisation, prey_pos, sand_grain_pos=np.array([]),
                                   sand_grain_colour=(0, 0, 1)):  # prey/sand positions are fish-centric
         # if visualisation:  # Only draw fish if in visualisation mode
         #     if self.env_variables["show_fish_body_energy_state"]:
@@ -720,7 +816,7 @@ class DrawingBoard:
             #                else:
             #                    self.board.db[rrs, ccs] = self.prey_shapes[0].color
 
-            self.full_db[rrs, ccs, 1] = 1
+            self.local_db[rrs, ccs, 1] = 1
 
             # except IndexError:
             #     print(f"Index Error for: PX: {max(rrs.flatten())}, PY: {max(ccs.flatten())}")
@@ -774,7 +870,7 @@ class DrawingBoard:
         background_slice = self.global_background_grating[FOV['enclosed_fov'][0]:FOV['enclosed_fov'][1],
                            FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], 0]
 
-        self.full_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
+        self.local_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
         FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], 2] = background_slice
 
     def get_field_of_view(self, fish_location):  # use field location to get field of view

@@ -10,8 +10,8 @@ from Buffers.DQN.dqn_assay_buffer import DQNAssayBuffer
 from Environment.Action_Space.draw_angle_dist import get_modal_impulse_and_angle
 from Services.assay_service import AssayService
 from Services.DQN.base_dqn import BaseDQN
-from Tools.make_gif import make_gif
-from Tools.make_video import make_video
+from Analysis.Video.behaviour_video_construction import draw_episode
+from Analysis.load_data import load_data
 
 tf.logging.set_verbosity(tf.logging.ERROR)
 
@@ -26,7 +26,6 @@ def assay_target(trial, total_steps, episode_number, memory_fraction):
         using_gpu = trial["Using GPU"]
     else:
         using_gpu = True
-
 
     if "Continuous Actions" in trial:
         continuous_actions = trial["Continuous Actions"]
@@ -258,6 +257,10 @@ class DQNAssayService(AssayService, BaseDQN):
                 if self.run_version == "Original":
                     if self.simulation.switch_step != None:
                         self.buffer.switch_step = self.simulation.switch_step
+                    else:
+                        # If no split occurs, return without saving data.
+                        print("No split occurred, as condition never met. Returning without saving data.")
+                        return False
 
                 break
             if self.full_reafference:
@@ -279,18 +282,16 @@ class DQNAssayService(AssayService, BaseDQN):
                                     self.internal_state_order, background=background,
                                     salt_location=salt_location)
         self.log_stimuli()
-        # if assay["save frames"] and len(self.frame_buffer) > 5:
-        #     # make_gif(self.frame_buffer,
-        #     #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
-        #     #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-        #     make_video(self.frame_buffer,
-        #                f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
-        #                duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-        # self.frame_buffer = []
-
         self.buffer.reset()
+        if assay["save frames"]:
+            episode_data = load_data(f"{self.model_name}-{self.model_number}", self.assay_configuration_id,
+                                     assay['assay id'], training_data=False)
+            draw_episode(episode_data, self.config_name, f"{self.model_name}-{self.model_number}", self.continuous_actions,
+                         save_id=f"{self.assay_configuration_id}-{assay['assay id']}", training_episode=False)
+
         print(f"Assay: {assay['assay id']} Completed")
         print("")
+        return True
 
     def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         return BaseDQN.assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref)

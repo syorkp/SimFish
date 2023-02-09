@@ -348,6 +348,7 @@ class DQNAssayBuffer:
         self.create_data_group("sand_grain_positions", np.array(self.sand_grain_position_buffer), assay_group)
         self.create_data_group("vegetation_positions", np.array(self.vegetation_position_buffer), assay_group)
 
+        # Features needed for state reloading
         self.create_data_group("background", np.array(background), assay_group)
 
         if self.switch_step != None:
@@ -360,7 +361,7 @@ class DQNAssayBuffer:
             self.create_data_group("prey_ages", np.array(self.pad_buffer(self.prey_age_buffer)), assay_group)
             self.create_data_group("prey_gaits", np.array(self.pad_buffer(self.prey_gait_buffer)), assay_group)
         except:
-            print("Still need to pad these.")
+            print("Failed to save additional values.")
 
 #        if "reward assessments" in self.recordings:
         self.create_data_group("reward", np.array(self.reward_buffer), assay_group)

@@ -159,6 +159,9 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
         else:
             self.separate_networks = False
 
+
+        self.last_position_dim = self.environment_params["prey_num"]
+
     def run(self):
         sess = self.create_session()
         print("Creating session...", flush=True)
@@ -229,14 +232,16 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
         if self.use_rnd:
             self.buffer.update_rewards_rnd()
 
-        if self.multivariate:
-            if self.separate_networks:
-                ContinuousPPO.train_network_multivariate2_split_networks(self)
-            else:
-                ContinuousPPO.train_network_multivariate2(self)
+        # if self.multivariate:
+        #     if self.separate_networks:
+        #         ContinuousPPO.train_network_multivariate2_split_networks(self)
+        #     else:
+        #         ContinuousPPO.train_network_multivariate2(self)
+        #
+        # else:
+        #     ContinuousPPO.train_network(self)
 
-        else:
-            ContinuousPPO.train_network(self)
+        ContinuousPPO.train_network_multivariate2(self)
 
         # Add the episode to tensorflow logs
         self.save_episode(episode_start_t=t0,
@@ -253,45 +258,53 @@ Total episode reward: {self.total_episode_reward}\n""", flush=True)
 
     def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                   rnn_state_critic_ref):
-        if self.multivariate:
-            if self.learning_params["beta_distribution"]:
-                if self.full_logs:
-                    return self._step_loop_multivariate_beta_sbe_full_logs(o, internal_state, a, rnn_state_actor,
-                                                                      rnn_state_actor_ref, rnn_state_critic,
-                                                                      rnn_state_critic_ref)
-                else:
-                    return self._step_loop_multivariate_beta_sbe_reduced_logs(o, internal_state, a, rnn_state_actor,
-                                                                         rnn_state_actor_ref, rnn_state_critic,
-                                                                         rnn_state_critic_ref)
-            else:
-                if self.separate_networks:
-                    if self.full_logs:
-                        return self._step_loop_multivariate_sbe_sn_full_logs(o, internal_state, a, rnn_state_actor,
-                                                                          rnn_state_actor_ref, rnn_state_critic,
-                                                                          rnn_state_critic_ref)
-                    else:
-                        return self._step_loop_multivariate_sbe_sn_reduced_logs(o, internal_state, a, rnn_state_actor,
-                                                                             rnn_state_actor_ref, rnn_state_critic,
-                                                                             rnn_state_critic_ref)
-                else:
-                    if self.full_logs:
-                        return self._step_loop_multivariate_sbe_full_logs(o, internal_state, a, rnn_state_actor,
-                                                                          rnn_state_actor_ref, rnn_state_critic,
-                                                                          rnn_state_critic_ref)
-                    else:
-                        return self._step_loop_multivariate_sbe_reduced_logs(o, internal_state, a, rnn_state_actor,
-                                                                             rnn_state_actor_ref, rnn_state_critic,
-                                                                             rnn_state_critic_ref)
-        else:
-            if self.full_logs:
-                return self._step_loop_full_logs(o, internal_state, a, rnn_state_actor,
-                                                          rnn_state_actor_ref, rnn_state_critic,
-                                                          rnn_state_critic_ref)
-            else:
-                return self._step_loop_reduced_logs(o, internal_state, a, rnn_state_actor,
-                                                             rnn_state_actor_ref, rnn_state_critic,
-                                                             rnn_state_critic_ref)
+        # if self.multivariate:
+        #     if self.learning_params["beta_distribution"]:
+        #         if self.full_logs:
+        #             return self._step_loop_multivariate_beta_sbe_full_logs(o, internal_state, a, rnn_state_actor,
+        #                                                               rnn_state_actor_ref, rnn_state_critic,
+        #                                                               rnn_state_critic_ref)
+        #         else:
+        #             return self._step_loop_multivariate_beta_sbe_reduced_logs(o, internal_state, a, rnn_state_actor,
+        #                                                                  rnn_state_actor_ref, rnn_state_critic,
+        #                                                                  rnn_state_critic_ref)
+        #     else:
+        #         if self.separate_networks:
+        #             if self.full_logs:
+        #                 return self._step_loop_multivariate_sbe_sn_full_logs(o, internal_state, a, rnn_state_actor,
+        #                                                                   rnn_state_actor_ref, rnn_state_critic,
+        #                                                                   rnn_state_critic_ref)
+        #             else:
+        #                 return self._step_loop_multivariate_sbe_sn_reduced_logs(o, internal_state, a, rnn_state_actor,
+        #                                                                      rnn_state_actor_ref, rnn_state_critic,
+        #                                                                      rnn_state_critic_ref)
+        #         else:
+        #             if self.full_logs:
+        #                 return self._step_loop_multivariate_sbe_full_logs(o, internal_state, a, rnn_state_actor,
+        #                                                                   rnn_state_actor_ref, rnn_state_critic,
+        #                                                                   rnn_state_critic_ref)
+        #             else:
+        #                 return self._step_loop_multivariate_sbe_reduced_logs(o, internal_state, a, rnn_state_actor,
+        #                                                                      rnn_state_actor_ref, rnn_state_critic,
+        #                                                                      rnn_state_critic_ref)
+        # else:
+        #     if self.full_logs:
+        #         return self._step_loop_full_logs(o, internal_state, a, rnn_state_actor,
+        #                                                   rnn_state_actor_ref, rnn_state_critic,
+        #                                                   rnn_state_critic_ref)
+        #     else:
+        #         return self._step_loop_reduced_logs(o, internal_state, a, rnn_state_actor,
+        #                                                      rnn_state_actor_ref, rnn_state_critic,
+        #                                                      rnn_state_critic_ref)
 
+        if self.full_logs:
+            return self._step_loop_multivariate_sbe_full_logs(o, internal_state, a, rnn_state_actor,
+                                                              rnn_state_actor_ref, rnn_state_critic,
+                                                              rnn_state_critic_ref)
+        else:
+            return self._step_loop_multivariate_sbe_reduced_logs(o, internal_state, a, rnn_state_actor,
+                                                                 rnn_state_actor_ref, rnn_state_critic,
+                                                                 rnn_state_critic_ref)
     def save_episode(self, episode_start_t, total_episode_reward, prey_caught,
                      predators_avoided, sand_grains_bumped, steps_near_vegetation):
         """

@@ -269,7 +269,7 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 
 def draw_episode(data, env_variables, save_location, continuous_actions, draw_past_actions=True, show_energy_state=True,
-                 scale=1.0, draw_action_space_usage=True, trim_to_fish=True, showed_region_quad=500, n_actions_to_show=500,
+                 scale=1.0, draw_action_space_usage=True, trim_to_fish=True, save_id="", showed_region_quad=500, n_actions_to_show=500,
                  s_per_frame=0.03, include_background=True, as_gif=False):
     #try:
     #    with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
@@ -277,6 +277,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     #except FileNotFoundError:
     #    with open(f"Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
     #        env_variables = json.load(f)
+    save_location += save_id
 
     fig = plt.figure(facecolor='0.9', figsize=(4, 3))
     gs = fig.add_gridspec(nrows=9, ncols=9, left=0.05, right=0.85,

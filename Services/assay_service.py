@@ -11,8 +11,8 @@ from Environment.controlled_stimulus_environment import ControlledStimulusEnviro
 from Environment.controlled_stimulus_environment_continuous import ControlledStimulusEnvironmentContinuous
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Services.base_service import BaseService
-from Tools.make_gif import make_gif
-from Tools.make_video import make_video
+from Analysis.Video.behaviour_video_construction import draw_episode
+from Analysis.load_data import load_data
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -174,10 +174,17 @@ class AssayService(BaseService):
 
             if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
                 background, energy_state = self.load_assay_buffer(assay)
+
+                # End in the event first trial had no end.
+                if background is False:
+                    return
             else:
                 background, energy_state = None, None
 
-            self.perform_assay(assay, background=background, energy_state=energy_state)
+            while True:
+                complete = self.perform_assay(assay, background=background, energy_state=energy_state)
+                if complete:
+                    break
 
             if assay["save stimuli"]:
                 self.save_stimuli_data(assay)
@@ -211,8 +218,20 @@ class AssayService(BaseService):
         data = {key: np.array(g.get(key)) for key in g.keys()}
         # TODO: Make sure its the same for ppo assay buffer.
 
+        try:
+            self.buffer.switch_step = data["switch_step"]
+        except KeyError:
+            print("Trial had no switch.")
+            return False, False
+
         # Impose buffer
-        self.buffer.action_buffer = data["action"].tolist()
+        # Do differentially for DQN and PPO
+        if self.continuous_actions:
+            actions = np.concatenate((np.expand_dims(data["impulse"], 1), np.expand_dims(data["angle"], 1)), axis=1).tolist()
+        else:
+            self.buffer.action_buffer = data["action"].tolist()
+
+
         self.buffer.observation_buffer = data["observation"].tolist()
         self.buffer.reward_buffer = data["reward"].tolist()
         self.buffer.internal_state_buffer = [np.array([internal_state]) for internal_state in data["internal_state"].tolist()]
@@ -230,7 +249,6 @@ class AssayService(BaseService):
         self.buffer.vegetation_position_buffer = data["vegetation_positions"].tolist()
         self.buffer.salt_location = data["salt_location"].tolist()
         self.buffer.prey_consumed_buffer = data["consumed"].tolist()
-        self.buffer.switch_step = data["switch_step"]
 
         energy_state = data["energy_state"][-1]
 
@@ -257,54 +275,6 @@ class AssayService(BaseService):
 
         # Impose background.
         return data["background"], energy_state
-
-    def perform_assay(self, assay, background=None, energy_state=None):
-        """Just for PPO"""
-        # self.assay_output_data_format = {key: None for key in
-        #                                  assay["behavioural recordings"] + assay["network recordings"]}
-        # self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
-
-        self.current_episode_max_duration = assay["duration"]
-        if assay["use_mu"]:
-            self.use_mu = True
-
-        # TODO: implement environment loading etc as in dqn_assay_service. Will require modification of
-        #  self._episode_loop() for RNN state, env reset, step num,
-
-        self._episode_loop()
-        self.log_stimuli()
-
-        # if assay["save frames"]:
-        #     # make_gif(self.frame_buffer,
-        #     #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
-        #     #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-        #     make_video(self.frame_buffer,
-        #              f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
-        #              duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-        # self.frame_buffer = []
-
-        if "reward assessments" in self.buffer.recordings:
-            self.buffer.calculate_advantages_and_returns()
-
-        if self.environment_params["salt"]:
-            salt_location = self.simulation.salt_location
-        else:
-            salt_location = None
-
-        if self.using_gpu:
-            background = self.simulation.board.global_background_grating.get()[:, :, 0]
-        else:
-            background = self.simulation.board.global_background_grating[:, :, 0]
-
-        self.buffer.save_assay_data(assay_id=assay['assay id'],
-                                    data_save_location=self.data_save_location,
-                                    assay_configuration_id=self.assay_configuration_id,
-                                    internal_state_order=self.get_internal_state_order(),
-                                    background=background,
-                                    salt_location=salt_location)
-        self.buffer.reset()
-        print(f"Assay: {assay['assay id']} Completed")
-        print("")
 
     def log_stimuli(self):
         stimuli = self.simulation.stimuli_information

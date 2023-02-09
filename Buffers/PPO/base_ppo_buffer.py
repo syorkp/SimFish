@@ -33,16 +33,17 @@ class BasePPOBuffer:
         self.critic_loss_buffer = []
         self.efference_copy_buffer = []
 
-        if assay:
-            self.fish_position_buffer = []
-            self.prey_consumed_buffer = []
-            self.predator_presence_buffer = []
-            self.prey_positions_buffer = []
-            self.predator_position_buffer = []
-            self.sand_grain_position_buffer = []
-            self.vegetation_position_buffer = []
-            self.fish_angle_buffer = []
+        self.fish_position_buffer = []
+        self.prey_consumed_buffer = []
+        self.predator_presence_buffer = []
+        self.prey_positions_buffer = []
+        self.predator_position_buffer = []
+        self.sand_grain_position_buffer = []
+        self.vegetation_position_buffer = []
+        self.fish_angle_buffer = []
+        self.salt_health_buffer = []
 
+        if assay:
             self.actor_conv1l_buffer = []
             self.actor_conv2l_buffer = []
             self.actor_conv3l_buffer = []
@@ -62,13 +63,14 @@ class BasePPOBuffer:
             self.critic_conv4r_buffer = []
 
             self.rnn_layer_names = []
-            self.salt_health_buffer = []
 
             # Extra buffers (needed for perfect reloading of states)
             self.prey_orientation_buffer = []
             self.predator_orientation_buffer = []
             self.prey_age_buffer = []
             self.prey_gait_buffer = []
+
+            self.switch_step = None
 
     def reset(self):
         self.action_buffer = []
@@ -83,17 +85,17 @@ class BasePPOBuffer:
 
         self.critic_loss_buffer = []
         self.efference_copy_buffer = []
+        self.fish_position_buffer = []
+        self.prey_consumed_buffer = []
+        self.predator_presence_buffer = []
+        self.prey_positions_buffer = []
+        self.predator_position_buffer = []
+        self.sand_grain_position_buffer = []
+        self.vegetation_position_buffer = []
+        self.fish_angle_buffer = []
+        self.salt_health_buffer = []
 
         if self.assay:
-            self.fish_position_buffer = []
-            self.prey_consumed_buffer = []
-            self.predator_presence_buffer = []
-            self.prey_positions_buffer = []
-            self.predator_position_buffer = []
-            self.sand_grain_position_buffer = []
-            self.vegetation_position_buffer = []
-            self.fish_angle_buffer = []
-
             # Old method
             self.actor_conv1l_buffer = []
             self.actor_conv2l_buffer = []
@@ -114,13 +116,14 @@ class BasePPOBuffer:
             self.critic_conv4r_buffer = []
 
             self.unit_recordings = None
-            self.salt_health_buffer = []
 
             # Extra buffers (needed for perfect reloading of states)
             self.prey_orientation_buffer = []
             self.predator_orientation_buffer = []
             self.prey_age_buffer = []
             self.prey_gait_buffer = []
+
+            self.switch_step = None
 
         self.pointer = 0
 
@@ -238,6 +241,9 @@ class BasePPOBuffer:
             return buffer
 
     def calculate_advantages_and_returns(self, normalise_advantage=True):
+        self.reward_buffer = np.array(self.reward_buffer)
+        self.value_buffer = np.array(self.value_buffer)
+
         delta = self.reward_buffer[:-1] + self.gamma * self.value_buffer[1:] - self.value_buffer[:-1]
         advantage = self.discount_cumsum(delta, self.gamma * self.lmbda)
         if normalise_advantage:
@@ -354,8 +360,47 @@ class BasePPOBuffer:
         if "observation" in self.recordings:
             self.create_data_group("observation", np.array(self.observation_buffer), assay_group)
 
-        if "internal state" in self.unit_recordings:
+        # if "internal state" in self.unit_recordings:
+        #     self.internal_state_buffer = np.array(self.internal_state_buffer)
+        #     self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
+        #     # Get internal state names and save each.
+        #     for i, state in enumerate(internal_state_order):
+        #         self.create_data_group(state, np.array(self.internal_state_buffer[:, i]), assay_group)
+        #         if state == "salt":
+        #             if salt_location is None:
+        #                 salt_location = [150000, 150000]
+        #             self.create_data_group("salt_location", np.array(salt_location), assay_group)
+        #             self.create_data_group("salt_health", np.array(self.salt_health_buffer), assay_group)
+        #
+        #     # Save efference copy
+        #     self.efference_copy_buffer = np.array(self.efference_copy_buffer)
+        #     self.create_data_group("efference_copy", self.efference_copy_buffer, assay_group)
+        #
+        # if "rnn state" in self.unit_recordings:
+        #     self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
+        #
+        # if self.use_dynamic_network:
+        #     for layer in self.unit_recordings.keys():
+        #         self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
+        #     self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
+
+
+        if self.use_dynamic_network:
+            for layer in self.unit_recordings.keys():
+                self.create_data_group(layer, np.array(self.unit_recordings[layer]).squeeze(), assay_group)
+
+            # for i, r in enumerate(self.rnn_state_buffer):
+            #     print(f"{i}-{np.array(r[0]).shape}")
+
+            # print(self.rnn_state_buffer)
+            self.rnn_state_buffer = np.array(self.actor_rnn_state_buffer).squeeze()
+            self.rnn_state_ref_buffer = np.array(self.actor_rnn_state_ref_buffer).squeeze()
+
+            self.create_data_group("rnn_state_actor", self.rnn_state_buffer, assay_group)
+            self.create_data_group("rnn_state_actor_ref", self.rnn_state_ref_buffer, assay_group)
+
             self.internal_state_buffer = np.array(self.internal_state_buffer)
+
             self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
             # Get internal state names and save each.
             for i, state in enumerate(internal_state_order):
@@ -366,17 +411,40 @@ class BasePPOBuffer:
                     self.create_data_group("salt_location", np.array(salt_location), assay_group)
                     self.create_data_group("salt_health", np.array(self.salt_health_buffer), assay_group)
 
-            # Save efference copy
             self.efference_copy_buffer = np.array(self.efference_copy_buffer)
             self.create_data_group("efference_copy", self.efference_copy_buffer, assay_group)
 
-        if "rnn state" in self.unit_recordings:
-            self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
+        else:
+            if "rnn state" in self.unit_recordings:
+                self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer).squeeze(), assay_group)
+                self.create_data_group("rnn_state_actor_ref", np.array(self.actor_rnn_state_ref_buffer).squeeze(), assay_group)
 
-        if self.use_dynamic_network:
-            for layer in self.unit_recordings.keys():
-                self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
-            self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
+            if "internal state" in self.unit_recordings:
+                self.internal_state_buffer = np.array(self.internal_state_buffer)
+                self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
+                # Get internal state names and save each.
+                for i, state in enumerate(internal_state_order):
+                    self.create_data_group(state, np.array(self.internal_state_buffer[:, i]), assay_group)
+                    if state == "salt":
+                        if salt_location is None:
+                            salt_location = [150000, 150000]
+                        self.create_data_group("salt_location", np.array(salt_location), assay_group)
+                        self.create_data_group("salt_health", np.array(self.salt_health_buffer), assay_group)
+
+                self.efference_copy_buffer = np.array(self.efference_copy_buffer)
+                self.create_data_group("efference_copy", self.efference_copy_buffer, assay_group)
+
+            if "convolutional layers" in self.unit_recordings:
+                self.organise_conv_recordings()
+                self.create_data_group("conv1l", np.array(self.conv_layer_buffer[0]).squeeze(), assay_group)
+                self.create_data_group("conv2l", np.array(self.conv_layer_buffer[1]).squeeze(), assay_group)
+                self.create_data_group("conv3l", np.array(self.conv_layer_buffer[2]).squeeze(), assay_group)
+                self.create_data_group("conv4l", np.array(self.conv_layer_buffer[3]).squeeze(), assay_group)
+                self.create_data_group("conv1r", np.array(self.conv_layer_buffer[4]).squeeze(), assay_group)
+                self.create_data_group("conv2r", np.array(self.conv_layer_buffer[5]).squeeze(), assay_group)
+                self.create_data_group("conv3r", np.array(self.conv_layer_buffer[6]).squeeze(), assay_group)
+                self.create_data_group("conv4r", np.array(self.conv_layer_buffer[7]).squeeze(), assay_group)
+
 
         if "environmental positions" in self.recordings:
             self.create_data_group("impulse", np.array(self.action_buffer)[:, 0], assay_group)
@@ -400,14 +468,19 @@ class BasePPOBuffer:
             try:
                 self.create_data_group("background", np.array(background), assay_group)
             except:
-                print(background)
-                print(background.shape)
+                print("Failed to save background.")
+
+            if self.switch_step != None:
+                self.create_data_group("switch_step", np.array([self.switch_step]), assay_group)
 
             # Extra buffers (needed for perfect reloading of states)
-            self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
-            self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
-            self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
-            self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
+            try:
+                self.create_data_group("prey_orientations", self.pad_buffer(np.array(self.prey_orientation_buffer)), assay_group)
+                self.create_data_group("predator_orientation", self.pad_buffer(np.array(self.predator_orientation_buffer)), assay_group)
+                self.create_data_group("prey_ages", self.pad_buffer(np.array(self.prey_age_buffer)), assay_group)
+                self.create_data_group("prey_gaits", self.pad_buffer(np.array(self.prey_gait_buffer)), assay_group)
+            except:
+                print("Failed to save additional values")
 
         if "convolutional layers" in self.unit_recordings:
             self.create_data_group("actor_conv1l", np.array(self.actor_conv1l_buffer), assay_group)
@@ -434,6 +507,16 @@ class BasePPOBuffer:
             self.create_data_group("returns", np.array(self.return_buffer), assay_group)
 
         return hdf5_file, assay_group
+
+    def pad_buffer(self, buffer):
+        max_dim = 0
+        for b in buffer:
+            if len(b) > max_dim:
+                max_dim = b
+        for b in buffer:
+            if len(b) < max_dim:
+                b.append(0)
+        return buffer
 
     @staticmethod
     def discount_cumsum(x, discount):

@@ -76,6 +76,8 @@ class NaturalisticEnvironment(BaseEnvironment):
                                    np.random.randint(self.env_variables['fish_mouth_size'] + 40,
                                                      self.env_variables['height'] - (self.env_variables[
                                                                                          'fish_mouth_size'] + 40)))
+        self.fish.body.position = (2900, 2900)
+
         self.fish.body.angle = np.random.random() * 2 * np.pi
         self.fish.body.velocity = (0, 0)
         if self.env_variables["current_setting"]:
