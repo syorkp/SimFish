@@ -138,6 +138,8 @@ class DrawingBoard:
 
         self.show_background = show_background
 
+        self.FOV = FieldOfView(self.local_dim, self.max_visual_distance, self.width, self.height)
+
     def get_background_grating(self, frequency, linear=False):
         if linear:
             return self.linear_texture(frequency)
@@ -581,30 +583,48 @@ class DrawingBoard:
 
         return luminance_mask
 
-    def extend_A(self, A, FOV):
+    def extend_A(self, A):
         """Extends the arena pixels (red1 channel), by stretching the values computed at the wall points along the
         whole FOV in that direction"""
 
-        if FOV["full_fov"][0] < 0:
-            low_dim_top = abs(FOV["full_fov"][0])
+        # if FOV["full_fov"][0] < 0:
+        #     low_dim_top = abs(FOV["full_fov"][0])
+        # else:
+        #     low_dim_top = 0
+        # if FOV["full_fov"][2] < 0:
+        #     low_dim_left = abs(FOV["full_fov"][2])
+        # else:
+        #     low_dim_left = 0
+        #
+        # if FOV["full_fov"][1] > self.height:
+        #     high_dim_bottom = abs(FOV["full_fov"][1]) - (self.height - 1)
+        # else:
+        #     high_dim_bottom = 0
+        # if FOV["full_fov"][3] > self.width:
+        #     high_dim_right = abs(FOV["full_fov"][3]) - (self.width - 1)
+        # else:
+        #     high_dim_right = 0
+
+        if self.FOV.full_fov_top < 0:
+            low_dim_top = abs(self.FOV.full_fov_top[0])
         else:
             low_dim_top = 0
-        if FOV["full_fov"][2] < 0:
-            low_dim_left = abs(FOV["full_fov"][2])
+        if self.FOV.full_fov_left < 0:
+            low_dim_left = abs(self.FOV.full_fov_left)
         else:
             low_dim_left = 0
 
-        if FOV["full_fov"][1] > self.height:
-            high_dim_bottom = abs(FOV["full_fov"][1]) - (self.height - 1)
+        if self.FOV.full_fov_bottom > self.height:
+            high_dim_bottom = abs(self.FOV.full_fov_bottom) - (self.height - 1)
         else:
             high_dim_bottom = 0
-        if FOV["full_fov"][3] > self.width:
-            high_dim_right = abs(FOV["full_fov"][3]) - (self.width - 1)
+        if self.FOV.full_fov_right > self.width:
+            high_dim_right = abs(self.FOV.full_fov_right) - (self.width - 1)
         else:
             high_dim_right = 0
 
         # Top and left walls
-        pixel_strip_x = A[:, low_dim_left, 0]
+        pixel_strip_x = A[:, low_dim_left, 0]  # Preserve luminance gradient by taking slice.
         pixel_block_x = np.repeat(np.expand_dims(pixel_strip_x, 1), low_dim_left, axis=1)
         A[:, :low_dim_left, 0] = pixel_block_x
 
@@ -625,7 +645,6 @@ class DrawingBoard:
             high_dim_bottom = -A.shape[0]
         A[-high_dim_bottom:, :, 0] = pixel_block_y
 
-        # Preserve luminance gradient by taking slice.
         return A
 
     def get_masked_pixels(self, fish_position, prey_locations, predator_locations):
@@ -633,20 +652,24 @@ class DrawingBoard:
         Returns masked pixels in form W.H.3
         With Red.UV.Red2
         """
-
-        FOV = self.get_field_of_view(fish_position)
+        self.FOV.update_field_of_view(fish_position)
+        # FOV = self.get_field_of_view(fish_position)
 
         A = self.chosen_math_library.array(self.local_db)
 
         # apply FOV portion of luminance mask
-        local_luminance_mask = self.global_luminance_mask[FOV['enclosed_fov'][0]:FOV['enclosed_fov'][1],
-                                                          FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], :]
+        # local_luminance_mask = self.global_luminance_mask[FOV['enclosed_fov'][0]:FOV['enclosed_fov'][1],
+        #                                                   FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], :]
+        local_luminance_mask = self.global_luminance_mask[self.FOV.enclosed_fov_top:self.FOV.enclosed_fov_bottom,
+                                                          self.FOV.enclosed_fov_left:self.FOV.enclosed_fov_right,, :]
 
-        A[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
-          FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], :] *= local_luminance_mask
+        # A[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
+        #   FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], :] *= local_luminance_mask
+        A[self.FOV.local_fov_top:self.FOV.local_fov_bottom,
+          self.FOV.local_fov_left:self.FOV.local_fov_right, :] *= local_luminance_mask
 
         # If FOV extends outside the arena, extend the A image
-        A = self.extend_A(A, FOV)
+        A = self.extend_A(A)
 
         if prey_locations.size + predator_locations.size == 0:
             O = self.chosen_math_library.ones((self.local_dim, self.local_dim, 3), dtype=np.float64)
