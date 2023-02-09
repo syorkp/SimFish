@@ -464,10 +464,8 @@ class BasePPOBuffer:
         self.create_data_group("sand_grain_positions", np.array(self.sand_grain_position_buffer), assay_group)
         self.create_data_group("vegetation_positions", np.array(self.vegetation_position_buffer), assay_group)
 
-        try:
-            self.create_data_group("background", np.array(background), assay_group)
-        except:
-            print("Failed to save background.")
+        self.create_data_group("background", np.array(background), assay_group)
+
 
         if self.switch_step != None:
             self.create_data_group("switch_step", np.array([self.switch_step]), assay_group)

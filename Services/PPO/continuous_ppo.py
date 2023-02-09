@@ -311,7 +311,7 @@ class ContinuousPPO(BasePPO):
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
 
         if "environmental positions" in self.buffer.recordings:
-            prey_orientations = [p.angle for p in self.simulation.prey_bodies]
+            prey_orientations = np.array([p.angle for p in self.simulation.prey_bodies]).astype(np.float32)
             try:
                 predator_orientation = self.simulation.predator_body.angle
             except:
