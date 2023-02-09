@@ -612,8 +612,8 @@ class DrawingBoard:
         A[:low_dim_top, :, 0] = pixel_to_extend
 
         pixel_to_extend = A[high_dim_bottom, high_dim_right, 0]
-        A[:, high_dim_right:, 0] = pixel_to_extend
-        A[high_dim_bottom:, :, 0] = pixel_to_extend
+        A[:, -high_dim_right:, 0] = pixel_to_extend
+        A[-high_dim_bottom:, :, 0] = pixel_to_extend
 
         return A
 
