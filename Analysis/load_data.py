@@ -35,13 +35,12 @@ def load_data(model_name, assay_configuration, assay_id, training_data=False):
 
 if __name__ == "__main__":
     datas = []
-    d = load_data("dqn_gamma-1", "Behavioural-Data-Free", f"Naturalistic-1")
-    d1 = load_data("dqn_gamma-3", "Behavioural-Data-Free", f"Naturalistic-Mod-1")
-    actions = d["action"]
-    prey_positions = d["prey_positions"]
-    prey_velocity = prey_positions[1:] - prey_positions[:-1]
-    prey_velocity *= 5/10
-    prey_velocity2 = (prey_velocity[:, :, 0] ** 2 + prey_velocity[:, :, 1] ** 2) ** 0.5
+    red_channel = []
+    for i in range(1, 21):
+        d = load_data("dqn_gamma-1", "Behavioural-Data-Free", f"Naturalistic-{i}")
+        red_channel.append(d["observation"][:, :, 0])
+    red_channel = np.concatenate(red_channel, axis=0)
+
     # for i in range(1, 21):
     #     d = load_data("dqn_beta-1", "Behavioural-Data-Free", f"Naturalistic-{i}")
     #     print(f"{i}-{np.sum(d['consumed'] * 1)}")

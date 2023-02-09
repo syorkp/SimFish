@@ -121,7 +121,7 @@
     "initial_predator_size": 20,
     "final_predator_size": 200,
     "duration_of_loom": 10,
-    "red_scaling_factor": 0.002,
+    "red_scaling_factor": 0.01,
     "uv_scaling_factor": 1,
     "red_2_scaling_factor": 0.002,
     "red_occlusion_gain": 0.0,
