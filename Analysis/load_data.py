@@ -35,7 +35,7 @@ def load_data(model_name, assay_configuration, assay_id, training_data=False):
 
 if __name__ == "__main__":
     datas = []
-    d = load_data("ppo_gamma-2", "Behavioural-Data-Free", f"Naturalistic-1")
+    d = load_data("dqn_gamma-1", "Behavioural-Data-Free", f"Naturalistic-1")
     d1 = load_data("dqn_gamma-3", "Behavioural-Data-Free", f"Naturalistic-Mod-1")
     actions = d["action"]
     prey_positions = d["prey_positions"]

@@ -611,7 +611,6 @@ class DrawingBoard:
         A[:, high_dim_right:, 0] = pixel_to_extend
         A[high_dim_bottom:, :, 0] = pixel_to_extend
 
-        x = True
         return A
 
     def get_masked_pixels(self, fish_position, prey_locations, predator_locations):
