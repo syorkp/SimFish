@@ -361,6 +361,7 @@ if __name__ == "__main__": # may be needed to run on windows
             "Model Name": "local_test",
             "Environment Name": "local_test",
             "Trial Number": 1,
+            "Using GPU": False,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
@@ -613,7 +614,7 @@ if __name__ == "__main__": # may be needed to run on windows
 
 
     if run_config is None:
-        run_config = dqn_free_config_large_gamma_1
+        run_config = local_test
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]

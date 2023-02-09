@@ -595,22 +595,37 @@ class DrawingBoard:
             low_dim_left = 0
 
         if FOV["full_fov"][1] > self.height:
-            high_dim_bottom = abs(FOV["full_fov"][1]) - (self.height)
+            high_dim_bottom = abs(FOV["full_fov"][1]) - (self.height - 1)
         else:
-            high_dim_bottom = self.local_dim - 1
+            high_dim_bottom = 0
         if FOV["full_fov"][3] > self.width:
-            high_dim_right = abs(FOV["full_fov"][3]) - (self.width)
+            high_dim_right = abs(FOV["full_fov"][3]) - (self.width - 1)
         else:
-            high_dim_right = self.local_dim - 1
+            high_dim_right = 0
 
-        pixel_to_extend = A[low_dim_top, low_dim_left, 0]
-        A[:, :low_dim_left, 0] = pixel_to_extend
-        A[:low_dim_top, :, 0] = pixel_to_extend
+        # Top and left walls
+        pixel_strip_x = A[:, low_dim_left, 0]
+        pixel_block_x = np.repeat(np.expand_dims(pixel_strip_x, 1), low_dim_left, axis=1)
+        A[:, :low_dim_left, 0] = pixel_block_x
 
-        pixel_to_extend = A[high_dim_bottom, high_dim_right, 0]
-        A[:, -high_dim_right:, 0] = pixel_to_extend
-        A[-high_dim_bottom:, :, 0] = pixel_to_extend
+        pixel_strip_y = A[low_dim_top, :, 0]
+        pixel_block_y = np.repeat(np.expand_dims(pixel_strip_y, 0), low_dim_top, axis=0)
+        A[:low_dim_top, :, 0] = pixel_block_y
 
+        # Bottom and right walls
+        pixel_strip_x = A[:, -high_dim_right, 0]
+        pixel_block_x = np.repeat(np.expand_dims(pixel_strip_x, 1), high_dim_right, 1)
+        if high_dim_right == 0:  # Necessary due to numpy indexing inconsistency.
+            high_dim_right = -A.shape[1]
+        A[:, -high_dim_right:, 0] = pixel_block_x
+
+        pixel_strip_y = A[-high_dim_bottom, :, 0]
+        pixel_block_y = np.repeat(np.expand_dims(pixel_strip_y, 0), high_dim_bottom, 0)
+        if high_dim_bottom == 0:
+            high_dim_bottom = -A.shape[0]
+        A[-high_dim_bottom:, :, 0] = pixel_block_y
+
+        # Preserve luminance gradient by taking slice.
         return A
 
     def get_masked_pixels(self, fish_position, prey_locations, predator_locations):
