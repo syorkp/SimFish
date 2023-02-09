@@ -2,6 +2,9 @@ import copy
 
 import numpy as np
 import math
+import sys
+import h5py
+import json
 import matplotlib.pyplot as plt
 import skimage.draw as draw
 from skimage import io
@@ -11,6 +14,8 @@ from Configurations.Networks.original_network import base_network_layers, ops, c
 from Tools.make_video import make_video
 from skimage.transform import resize, rescale
 from Tools.make_gif import make_gif
+from matplotlib.animation import FFMpegWriter
+
 
 
 class DrawingBoard:
@@ -264,8 +269,8 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 
 def draw_episode(data, env_variables, save_location, continuous_actions, draw_past_actions=True, show_energy_state=True,
-                 scale=0.2, draw_action_space_usage=True, trim_to_fish=False, showed_region_quad=500, n_actions_to_show=500,
-                 s_per_frame=0.03, include_background=False, as_gif=False):
+                 scale=1.0, draw_action_space_usage=True, trim_to_fish=True, showed_region_quad=500, n_actions_to_show=500,
+                 s_per_frame=0.03, include_background=True, as_gif=False):
     #try:
     #    with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
     #        env_variables = json.load(f)
@@ -273,132 +278,191 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     #    with open(f"Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
     #        env_variables = json.load(f)
 
+    fig = plt.figure(facecolor='0.9', figsize=(4, 3))
+    gs = fig.add_gridspec(nrows=9, ncols=9, left=0.05, right=0.85,
+                      hspace=0.1, wspace=0.05)
+    ax0 = fig.add_subplot(gs[:-1, 0:6])
+    
+    ax1 = fig.add_subplot(gs[-1, 0:4])
+    ax2 = fig.add_subplot(gs[-1, 4:8])
+    ax3 = fig.add_subplot(gs[0, 6:])
+    ax4 = fig.add_subplot(gs[1, 6:])
+    ax5 = fig.add_subplot(gs[2, 6:])
+    ax6 = fig.add_subplot(gs[3, 6:])
+    ax7 = fig.add_subplot(gs[4, 6:])
+    metadata = dict(title='Movie Test', artist='Matplotlib',
+                comment='Movie support!')
+    writer = FFMpegWriter(fps=15, metadata=metadata)
+
     board = DrawingBoard(env_variables["width"], env_variables["height"], data, include_background)
     if show_energy_state:
         energy_levels = data["energy_state"]
     fish_positions = data["fish_position"]
     num_steps = fish_positions.shape[0]
 
-    frames = []
+    #frames = []
     action_buffer = []
     position_buffer = []
     orientation_buffer = []
     consumption_buffer = []
-    if trim_to_fish:
-        frames = np.zeros((num_steps, np.int(scale * showed_region_quad*2), np.int(scale * showed_region_quad*2), 3))
-    else:
-        if draw_action_space_usage:
-            addon = 300
-        else:
-            addon = 0
+    # if trim_to_fish:
+    #     frames = np.zeros((num_steps, np.int(scale * showed_region_quad*2), np.int(scale * showed_region_quad*2), 3))
+    # else:
+    #     if draw_action_space_usage:
+    #         addon = 300
+    #     else:
+    #         addon = 0
                 
-        frames = np.zeros((num_steps, np.int(env_variables["height"]*scale), np.int((env_variables["width"]+addon)*scale), 3))
-    for step in range(num_steps):
-        print(f"{step}/{num_steps}")
-        if continuous_actions:
-            action_buffer.append([data["impulse"][step], data["angle"][step]])
-        else:
-            action_buffer.append(data["action"][step])
-        position_buffer.append(fish_positions[step])
-        orientation_buffer.append(data["fish_angle"][step])
-        consumption_buffer.append(data["consumed"][step])
+    #     frames = np.zeros((num_steps, np.int(env_variables["height"]*scale), np.int((env_variables["width"]+addon)*scale), 3))
+    with writer.saving(fig, f"{save_location}.mp4", 300):
 
-        if draw_past_actions:
-            # adjusted_colour_index = ((1 - env_variables["bkg_scatter"]) * (step + 1) / n_actions_to_show) + \
-            #                         env_variables["bkg_scatter"]
-            # adjusted_colour_index = (1 - env_variables["bkg_scatter"]) + env_variables["bkg_scatter"]
-            adjusted_colour_index = 1
-            board, action_buffer, position_buffer, orientation_buffer = draw_previous_actions(board, action_buffer,
-                                                                                              position_buffer, orientation_buffer,
-                                                                                              adjusted_colour_index=adjusted_colour_index,
-                                                                                              continuous_actions=continuous_actions,
-                                                                                              n_actions_to_show=n_actions_to_show,
-                                                                                              bkg_scatter=env_variables["bkg_scatter"],
-                                                                                              consumption_buffer=consumption_buffer)
+        for step in range(num_steps):
+            print(f"{step}/{num_steps}")
+            if continuous_actions:
+                action_buffer.append([data["impulse"][step], data["angle"][step]])
+            else:
+                action_buffer.append(data["action"][step])
+            position_buffer.append(fish_positions[step])
+            orientation_buffer.append(data["fish_angle"][step])
+            consumption_buffer.append(data["consumed"][step])
+
+            if draw_past_actions:
+                # adjusted_colour_index = ((1 - env_variables["bkg_scatter"]) * (step + 1) / n_actions_to_show) + \
+                #                         env_variables["bkg_scatter"]
+                # adjusted_colour_index = (1 - env_variables["bkg_scatter"]) + env_variables["bkg_scatter"]
+                adjusted_colour_index = 1
+                board, action_buffer, position_buffer, orientation_buffer = draw_previous_actions(board, action_buffer,
+                                                                                                position_buffer, orientation_buffer,
+                                                                                                adjusted_colour_index=adjusted_colour_index,
+                                                                                                continuous_actions=continuous_actions,
+                                                                                                n_actions_to_show=n_actions_to_show,
+                                                                                                bkg_scatter=env_variables["bkg_scatter"],
+                                                                                                consumption_buffer=consumption_buffer)
 
 
 
-        if show_energy_state:
-            fish_body_colour = (1-energy_levels[step], energy_levels[step], 0)
-        else:
-            fish_body_colour = (0, 1, 0)
+            if show_energy_state:
+                fish_body_colour = (1-energy_levels[step], energy_levels[step], 0)
+            else:
+                fish_body_colour = (0, 1, 0)
 
-        board.fish_shape(fish_positions[step], env_variables['fish_mouth_size'],
-                              env_variables['fish_head_size'], env_variables['fish_tail_length'],
-                         (0, 1, 0), fish_body_colour, data["fish_angle"][step])
+            board.fish_shape(fish_positions[step], env_variables['fish_mouth_size'],
+                                env_variables['fish_head_size'], env_variables['fish_tail_length'],
+                            (0, 1, 0), fish_body_colour, data["fish_angle"][step])
 
-        # Draw prey
-        px = np.round(np.array([pr[0] for pr in data["prey_positions"][step]])).astype(int)
-        py = np.round(np.array([pr[1] for pr in data["prey_positions"][step]])).astype(int)
-        rrs, ccs = board.multi_circles(px, py, env_variables["prey_size_visualisation"])
-
-        rrs = np.clip(rrs, 0, env_variables["width"]-1)
-        ccs = np.clip(ccs, 0, env_variables["height"]-1)
-
-        board.db[rrs, ccs] = (0, 0, 1)
-
-        # Draw sand grains
-        if env_variables["sand_grain_num"] > 0:
-            px = np.round(np.array([pr.position[0] for pr in data["sand_grain_positions"]])).astype(int)
-            py = np.round(np.array([pr.position[1] for pr in data["sand_grain_positions"]])).astype(int)
+            # Draw prey
+            px = np.round(np.array([pr[0] for pr in data["prey_positions"][step]])).astype(int)
+            py = np.round(np.array([pr[1] for pr in data["prey_positions"][step]])).astype(int)
             rrs, ccs = board.multi_circles(px, py, env_variables["prey_size_visualisation"])
 
-            rrs = np.clip(rrs, 0, env_variables["width"] - 1)
-            ccs = np.clip(ccs, 0, env_variables["height"] - 1)
+            rrs = np.clip(rrs, 0, env_variables["width"]-1)
+            ccs = np.clip(ccs, 0, env_variables["height"]-1)
 
-            board.db_visualisation[rrs, ccs] = (0, 0, 1)
+            board.db[rrs, ccs] = (0, 0, 1)
+
+            # Draw sand grains
+            if env_variables["sand_grain_num"] > 0:
+                px = np.round(np.array([pr.position[0] for pr in data["sand_grain_positions"]])).astype(int)
+                py = np.round(np.array([pr.position[1] for pr in data["sand_grain_positions"]])).astype(int)
+                rrs, ccs = board.multi_circles(px, py, env_variables["prey_size_visualisation"])
+
+                rrs = np.clip(rrs, 0, env_variables["width"] - 1)
+                ccs = np.clip(ccs, 0, env_variables["height"] - 1)
+
+                board.db_visualisation[rrs, ccs] = (0, 0, 1)
 
 
-        if data["predator_presence"][step]:
-            board.circle(data["predator_positions"][step], env_variables['predator_size'], (0, 1, 0))
+            if data["predator_presence"][step]:
+                board.circle(data["predator_positions"][step], env_variables['predator_size'], (0, 1, 0))
 
-        if draw_action_space_usage:
-            if continuous_actions:
-                action_space_strip = draw_action_space_usage_continuous(board.db.shape[0], board.db.shape[1], action_buffer)
-            else:
-                action_space_strip = draw_action_space_usage_discrete(board.db.shape[0], board.db.shape[1], action_buffer)
+            # if draw_action_space_usage:
+            #     if continuous_actions:
+            #         action_space_strip = draw_action_space_usage_continuous(board.db.shape[0], board.db.shape[1], action_buffer)
+            #     else:
+            #         action_space_strip = draw_action_space_usage_discrete(board.db.shape[0], board.db.shape[1], action_buffer)
 
-            frame = np.hstack((board.db, np.zeros((board.db.shape[0], 20, 3)), action_space_strip))
-        else:
+            #     frame = np.hstack((board.db, np.zeros((board.db.shape[0], 20, 3)), action_space_strip))
+            # else:
             frame = board.db
 
-        if trim_to_fish:
-            centre_y, centre_x = fish_positions[step][0], fish_positions[step][1]
-            # print(centre_x, centre_y)
-            dist_x1 = centre_x
-            dist_x2 = env_variables["width"] - centre_x
-            dist_y1 = centre_y
-            dist_y2 = env_variables["height"] - centre_y
-            # print(dist_x1, dist_x2, dist_y1, dist_y2)
-            if dist_x1 < showed_region_quad:
-                centre_x += showed_region_quad - dist_x1
-            elif dist_x2 < showed_region_quad:
-                centre_x -= showed_region_quad - dist_x2
-            if dist_y1 < showed_region_quad:
-                centre_y += showed_region_quad - dist_y1
-            if dist_y2 < showed_region_quad:
-                centre_y -= showed_region_quad - dist_y2
-            centre_x = int(centre_x)
-            centre_y = int(centre_y)
-            # Compute centre position - so can deal with edges
-            frame = frame[centre_x-showed_region_quad:centre_x+showed_region_quad,
-                    centre_y-showed_region_quad:centre_y+showed_region_quad]
+            if trim_to_fish:
+                centre_y, centre_x = fish_positions[step][0], fish_positions[step][1]
+                # print(centre_x, centre_y)
+                dist_x1 = centre_x
+                dist_x2 = env_variables["width"] - centre_x
+                dist_y1 = centre_y
+                dist_y2 = env_variables["height"] - centre_y
+                # print(dist_x1, dist_x2, dist_y1, dist_y2)
+                if dist_x1 < showed_region_quad:
+                    centre_x += showed_region_quad - dist_x1
+                elif dist_x2 < showed_region_quad:
+                    centre_x -= showed_region_quad - dist_x2
+                if dist_y1 < showed_region_quad:
+                    centre_y += showed_region_quad - dist_y1
+                if dist_y2 < showed_region_quad:
+                    centre_y -= showed_region_quad - dist_y2
+                centre_x = int(centre_x)
+                centre_y = int(centre_y)
+                # Compute centre position - so can deal with edges
+                frame = frame[centre_x-showed_region_quad:centre_x+showed_region_quad,
+                        centre_y-showed_region_quad:centre_y+showed_region_quad]
 
-        frames[step, :, :, :] = rescale(frame, scale, multichannel=True, anti_aliasing=True)
+            this_frame = rescale(frame, scale, multichannel=True, anti_aliasing=True)
+            ax0.clear()
+            ax0.imshow(this_frame, interpolation='nearest', aspect='auto')
+            ax0.tick_params(left = False, right = False , labelleft = False ,
+                    labelbottom = False, bottom = False)
 
-        board.db = board.get_base_arena(0.3)
+            left_obs = data['observation'][step, :, :, 0].T
 
-    frames *= 255
+            right_obs = data['observation'][step, :, :, 1].T
+            ax1.clear()
+            ax2.clear()
+            ax1.imshow(left_obs, interpolation='nearest', aspect='auto', vmin=1, vmax=256)
+            ax1.tick_params(left = False, right = False , labelleft = False ,
+                    labelbottom = False, bottom = False)
+            ax2.imshow(right_obs, interpolation='nearest', aspect='auto', vmin=1, vmax=256)
+            ax2.tick_params(left = False, right = False , labelleft = False ,
+                    labelbottom = False, bottom = False)
+
+            plot_start = max(0, step - 100)
+            ax3.clear()
+            ax3.plot(energy_levels[plot_start:step], color='green')
+            ax3.tick_params(left = False, right = False , labelleft = False ,
+                    labelbottom = False, bottom = False)
+            ax4.clear()
+            ax4.plot(data['rnn_state_actor'][plot_start:step, 0, :10])
+            ax4.tick_params(left = False, right = False , labelleft = False ,
+                    labelbottom = False, bottom = False)
+            ax5.clear()
+            ax5.plot(data['rnn_state_actor'][plot_start:step, 0, 10:20])
+            ax5.tick_params(left = False, right = False , labelleft = False ,
+                    labelbottom = False, bottom = False)
+            ax6.clear()
+            ax6.plot(data['rnn_state_actor'][plot_start:step, 0, 20:30])
+            ax6.tick_params(left = False, right = False , labelleft = False ,
+                    labelbottom = False, bottom = False)
+            ax7.clear()
+            ax7.plot(data['rnn_state_actor'][plot_start:step, 0, 30:40])
+            ax7.tick_params(left=False, right=False , labelleft=False, labelbottom=False, bottom=False)
+            #plt.draw()
+            #plt.pause(0.001)
+            board.db = board.get_base_arena(0.3)
+            writer.grab_frame()
+
+            board.db = board.get_base_arena(0.3)
+
+    #frames *= 255
 
     #if training_episode:
     #    save_location = f"Training-Output/{model_name}/episodes/{save_id}"
     #else:
     #    save_location = f"Analysis-Output/Behavioural/Videos/{model_name}-{save_id}-behaviour"
 
-    if as_gif:
-        make_gif(frames, f"{save_location}.gif", duration=len(frames) * s_per_frame, true_image=True)
-    else:
-        make_video(frames, f"{save_location}.mp4", duration=len(frames) * s_per_frame, true_image=True)
+    # if as_gif:
+    #     make_gif(frames, f"{save_location}.gif", duration=len(frames) * s_per_frame, true_image=True)
+    # else:
+    #     make_video(frames, f"{save_location}.mp4", duration=len(frames) * s_per_frame, true_image=True)
 
 
 if __name__ == "__main__":
@@ -423,11 +487,19 @@ if __name__ == "__main__":
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-5")
-    model_name = "local_test-1"
-    data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
-    assay_config_name = "local_test"
-    draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=True,
-                 trim_to_fish=False, showed_region_quad=50, save_id="try", include_background=True)
+    data_file = sys.argv[1]
+    config_file = sys.argv[2]
+
+    with open(config_file, 'r') as f:
+        env_variables = json.load(f)
+    with h5py.File(data_file, 'r') as datfl:
+        group = list(datfl.keys())[0]
+        data = {}
+        for key in datfl[group].keys():
+            data[key] = np.array(datfl[group][key])
+
+    draw_episode(data, env_variables, '', continuous_actions=False, show_energy_state=True,
+                 trim_to_fish=True, showed_region_quad=500, include_background=True)
 
 
 
