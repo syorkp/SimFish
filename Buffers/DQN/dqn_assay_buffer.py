@@ -363,7 +363,6 @@ class DQNAssayBuffer:
         except:
             print("Failed to save additional values.")
 
-#        if "reward assessments" in self.recordings:
         self.create_data_group("reward", np.array(self.reward_buffer), assay_group)
         self.create_data_group("advantage", np.array(self.advantage_buffer), assay_group)
         self.create_data_group("value", np.array(self.value_buffer), assay_group)
