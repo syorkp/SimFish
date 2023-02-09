@@ -143,7 +143,7 @@ if __name__ == "__main__": # may be needed to run on windows
     dqn_free_config_large_gamma_3 = [
         {
             "Model Name": "dqn_gamma",
-            "Environment Name": "dqn_gamma_final",
+            "Environment Name": "dqn_gamma_final_x",
             "Assay Configuration Name": "Behavioural-Data-Free",
             "Trial Number": 1,
             "Run Mode": "Assay",
@@ -154,8 +154,8 @@ if __name__ == "__main__": # may be needed to run on windows
                 {
                     "assay id": "Naturalistic",
                     "stimulus paradigm": "Naturalistic",
-                    "repeats": 5,
-                    "duration": 1000,
+                    "repeats": 50,
+                    "duration": 100,
                     "Tethered": False,
                     "save frames": False,
                     "use_mu": True,
@@ -311,8 +311,6 @@ if __name__ == "__main__": # may be needed to run on windows
             ],
         }
     ]
-
-
 
     ppo_gamma_analysis_across_scaffold_1 = [
         {
