@@ -593,7 +593,6 @@ class DrawingBoard:
             low_dim_left = abs(FOV["full_fov"][2])
         else:
             low_dim_left = 0
-        print(FOV)
 
         if FOV["full_fov"][1] > self.height:
             high_dim_bottom = abs(FOV["full_fov"][1]) - self.height
@@ -603,9 +602,6 @@ class DrawingBoard:
             high_dim_right = abs(FOV["full_fov"][3]) - self.width
         else:
             high_dim_right = self.local_dim
-
-        print(high_dim_bottom)
-        print(high_dim_right)
 
         pixel_to_extend = A[low_dim_top, low_dim_left, 0]
         A[:, :low_dim_left, 0] = pixel_to_extend
