@@ -174,6 +174,10 @@ class AssayService(BaseService):
 
             if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
                 background, energy_state = self.load_assay_buffer(assay)
+
+                # End in the event first trial had no end.
+                if background is False:
+                    return
             else:
                 background, energy_state = None, None
 
@@ -214,12 +218,19 @@ class AssayService(BaseService):
         data = {key: np.array(g.get(key)) for key in g.keys()}
         # TODO: Make sure its the same for ppo assay buffer.
 
+        try:
+            self.buffer.switch_step = data["switch_step"]
+        except KeyError:
+            print("Trial had no switch.")
+            return False, False
+
         # Impose buffer
         # Do differentially for DQN and PPO
         if self.continuous_actions:
             actions = np.concatenate((np.expand_dims(data["impulse"], 1), np.expand_dims(data["angle"], 1)), axis=1).tolist()
         else:
             self.buffer.action_buffer = data["action"].tolist()
+
 
         self.buffer.observation_buffer = data["observation"].tolist()
         self.buffer.reward_buffer = data["reward"].tolist()
@@ -238,7 +249,6 @@ class AssayService(BaseService):
         self.buffer.vegetation_position_buffer = data["vegetation_positions"].tolist()
         self.buffer.salt_location = data["salt_location"].tolist()
         self.buffer.prey_consumed_buffer = data["consumed"].tolist()
-        self.buffer.switch_step = data["switch_step"]
 
         energy_state = data["energy_state"][-1]
 

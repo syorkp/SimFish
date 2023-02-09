@@ -468,21 +468,19 @@ class BasePPOBuffer:
             try:
                 self.create_data_group("background", np.array(background), assay_group)
             except:
-                print(background)
-                print(background.shape)
+                print("Failed to save background.")
 
             if self.switch_step != None:
                 self.create_data_group("switch_step", np.array([self.switch_step]), assay_group)
 
             # Extra buffers (needed for perfect reloading of states)
             try:
-                self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
-                self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
-                self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
-                self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
+                self.create_data_group("prey_orientations", self.pad_buffer(np.array(self.prey_orientation_buffer)), assay_group)
+                self.create_data_group("predator_orientation", self.pad_buffer(np.array(self.predator_orientation_buffer)), assay_group)
+                self.create_data_group("prey_ages", self.pad_buffer(np.array(self.prey_age_buffer)), assay_group)
+                self.create_data_group("prey_gaits", self.pad_buffer(np.array(self.prey_gait_buffer)), assay_group)
             except:
-                print("Data saving error")
-                print(self.prey_orientation_buffer)
+                print("Failed to save additional values")
 
         if "convolutional layers" in self.unit_recordings:
             self.create_data_group("actor_conv1l", np.array(self.actor_conv1l_buffer), assay_group)
@@ -509,6 +507,16 @@ class BasePPOBuffer:
             self.create_data_group("returns", np.array(self.return_buffer), assay_group)
 
         return hdf5_file, assay_group
+
+    def pad_buffer(self, buffer):
+        max_dim = 0
+        for b in buffer:
+            if len(b) > max_dim:
+                max_dim = b
+        for b in buffer:
+            if len(b) < max_dim:
+                b.append(0)
+        return buffer
 
     @staticmethod
     def discount_cumsum(x, discount):
