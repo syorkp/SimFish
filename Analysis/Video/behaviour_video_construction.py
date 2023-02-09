@@ -488,8 +488,11 @@ if __name__ == "__main__":
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-5")
-    data_file = sys.argv[1]
-    config_file = sys.argv[2]
+    # data_file = sys.argv[1]
+    # config_file = sys.argv[2]
+
+    data_file = "../../Assay-Output/dqn_gamma-1/Behavioural-Data-Empty.h5"
+    config_file = f"../../Configurations/Assay-Configs/dqn_gamma_final_env.json"
 
     with open(config_file, 'r') as f:
         env_variables = json.load(f)

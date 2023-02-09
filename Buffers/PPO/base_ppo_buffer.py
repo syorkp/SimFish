@@ -357,8 +357,7 @@ class BasePPOBuffer:
         except ValueError:
             assay_group = hdf5_file.get(assay_id)
 
-        if "observation" in self.recordings:
-            self.create_data_group("observation", np.array(self.observation_buffer), assay_group)
+        self.create_data_group("observation", np.array(self.observation_buffer), assay_group)
 
         # if "internal state" in self.unit_recordings:
         #     self.internal_state_buffer = np.array(self.internal_state_buffer)
@@ -473,11 +472,20 @@ class BasePPOBuffer:
         # Extra buffers (needed for perfect reloading of states)
         try:
             self.create_data_group("prey_orientations", self.pad_buffer(np.array(self.prey_orientation_buffer)), assay_group)
+        except:
+            print("Failed to save prey_orientations values")
+        try:
             self.create_data_group("predator_orientation", self.pad_buffer(np.array(self.predator_orientation_buffer)), assay_group)
+        except:
+            print("Failed to save predator_orientation values")
+        try:
             self.create_data_group("prey_ages", self.pad_buffer(np.array(self.prey_age_buffer)), assay_group)
+        except:
+            print("Failed to save prey_ages values")
+        try:
             self.create_data_group("prey_gaits", self.pad_buffer(np.array(self.prey_gait_buffer)), assay_group)
         except:
-            print("Failed to save additional values")
+            print("Failed to save prey_gaits values")
 
         self.create_data_group("reward", np.array(self.reward_buffer), assay_group)
         self.create_data_group("advantage", np.array(self.advantage_buffer), assay_group)
