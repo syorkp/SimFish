@@ -79,7 +79,6 @@ if __name__ == "__main__": # may be needed to run on windows
 
     #                    ASSAY
 
-
     dqn_empty_config_large_gamma_1 = [
         {
             "Model Name": "dqn_gamma",
@@ -146,7 +145,7 @@ if __name__ == "__main__": # may be needed to run on windows
             "Model Name": "dqn_gamma",
             "Environment Name": "dqn_gamma_final",
             "Assay Configuration Name": "Behavioural-Data-Free",
-            "Trial Number": 3,
+            "Trial Number": 1,
             "Run Mode": "Assay",
             "Learning Algorithm": "DQN",
             "behavioural recordings": ["environmental positions", "observation"],
@@ -155,8 +154,8 @@ if __name__ == "__main__": # may be needed to run on windows
                 {
                     "assay id": "Naturalistic",
                     "stimulus paradigm": "Naturalistic",
-                    "repeats": 50,
-                    "duration": 10000,
+                    "repeats": 5,
+                    "duration": 1000,
                     "Tethered": False,
                     "save frames": False,
                     "use_mu": True,
