@@ -661,7 +661,7 @@ class DrawingBoard:
         # local_luminance_mask = self.global_luminance_mask[FOV['enclosed_fov'][0]:FOV['enclosed_fov'][1],
         #                                                   FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], :]
         local_luminance_mask = self.global_luminance_mask[self.FOV.enclosed_fov_top:self.FOV.enclosed_fov_bottom,
-                                                          self.FOV.enclosed_fov_left:self.FOV.enclosed_fov_right,, :]
+                                                          self.FOV.enclosed_fov_left:self.FOV.enclosed_fov_right, :]
 
         # A[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
         #   FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], :] *= local_luminance_mask
