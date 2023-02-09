@@ -214,11 +214,9 @@ class BaseDQN:
         else:
             action_reafference = a
         if self.debug:
-            #fig = plt.figure(figsize=(4, 3), dpi=10)
-            fig, ax = plt.subplots()
-            plt.ion()
+            fig, ax = plt.subplots(figsize=(4, 3))
             moviewriter = FFMpegWriter(fps=15)
-            moviewriter.setup(fig, 'debug.mp4')
+            moviewriter.setup(fig, 'debug.mp4', dpi=500)
         while step_number < self.learning_params["max_epLength"]:
             step_number += 1
             o, a, r, i_s, o1, d, rnn_state, rnn_state_ref, FOV = self.step_loop(o=o,
@@ -353,7 +351,7 @@ class BaseDQN:
                             self.simulation.fish.prev_action_angle]
 
             # Update buffer
-            self.buffer.add_training(observation=o,
+            self.buffer.add_training(observation=o1,
                                     internal_state=internal_state,
                                     # action=chosen_a,
                                     action=action_reafference,
