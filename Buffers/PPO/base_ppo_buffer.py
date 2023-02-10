@@ -473,8 +473,9 @@ class BasePPOBuffer:
         try:
             self.create_data_group("prey_orientations", self.pad_buffer(np.array(self.prey_orientation_buffer)), assay_group)
         except:
-            print(self.pad_buffer(np.array(self.prey_orientation_buffer)))
-            print(self.pad_buffer(np.array(self.prey_orientation_buffer)).shape)
+            print(np.array(self.prey_orientation_buffer))
+            print(np.array(self.prey_orientation_buffer).shape)
+            self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
             print("Failed to save prey_orientations values")
         try:
             self.create_data_group("predator_orientation", self.pad_buffer(np.array(self.predator_orientation_buffer)), assay_group)

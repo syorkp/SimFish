@@ -333,12 +333,12 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
                 # adjusted_colour_index = (1 - env_variables["bkg_scatter"]) + env_variables["bkg_scatter"]
                 adjusted_colour_index = 1
                 board, action_buffer, position_buffer, orientation_buffer = draw_previous_actions(board, action_buffer,
-                                                                                                position_buffer, orientation_buffer,
-                                                                                                adjusted_colour_index=adjusted_colour_index,
-                                                                                                continuous_actions=continuous_actions,
-                                                                                                n_actions_to_show=n_actions_to_show,
-                                                                                                bkg_scatter=env_variables["bkg_scatter"],
-                                                                                                consumption_buffer=consumption_buffer)
+                                                                                                  position_buffer, orientation_buffer,
+                                                                                                  adjusted_colour_index=adjusted_colour_index,
+                                                                                                  continuous_actions=continuous_actions,
+                                                                                                  n_actions_to_show=n_actions_to_show,
+                                                                                                  bkg_scatter=env_variables["bkg_scatter"],
+                                                                                                  consumption_buffer=consumption_buffer)
 
 
 
