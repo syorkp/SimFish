@@ -227,7 +227,7 @@ class AssayService(BaseService):
         # Impose buffer
         # Do differentially for DQN and PPO
         if self.continuous_actions:
-            actions = np.concatenate((np.expand_dims(data["impulse"], 1), np.expand_dims(data["angle"], 1)), axis=1).tolist()
+            self.buffer.action_buffer = np.concatenate((np.expand_dims(data["impulse"], 1), np.expand_dims(data["angle"], 1)), axis=1).tolist()
         else:
             self.buffer.action_buffer = data["action"].tolist()
 
