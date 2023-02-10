@@ -44,6 +44,14 @@ class BasePPOBuffer:
         self.salt_health_buffer = []
         self.unit_recordings = {}
 
+        # Extra buffers (needed for perfect reloading of states)
+        self.prey_orientation_buffer = []
+        self.predator_orientation_buffer = []
+        self.prey_age_buffer = []
+        self.prey_gait_buffer = []
+
+        self.switch_step = None
+
         if assay:
             self.actor_conv1l_buffer = []
             self.actor_conv2l_buffer = []
@@ -65,13 +73,6 @@ class BasePPOBuffer:
 
             self.rnn_layer_names = []
 
-            # Extra buffers (needed for perfect reloading of states)
-            self.prey_orientation_buffer = []
-            self.predator_orientation_buffer = []
-            self.prey_age_buffer = []
-            self.prey_gait_buffer = []
-
-            self.switch_step = None
 
     def reset(self):
         self.action_buffer = []
@@ -98,6 +99,12 @@ class BasePPOBuffer:
         self.unit_recordings = {}
         self.switch_step = None
 
+        # Extra buffers (needed for perfect reloading of states)
+        self.prey_orientation_buffer = []
+        self.predator_orientation_buffer = []
+        self.prey_age_buffer = []
+        self.prey_gait_buffer = []
+
         if self.assay:
             # Old method
             self.actor_conv1l_buffer = []
@@ -118,11 +125,7 @@ class BasePPOBuffer:
             self.critic_conv3r_buffer = []
             self.critic_conv4r_buffer = []
 
-            # Extra buffers (needed for perfect reloading of states)
-            self.prey_orientation_buffer = []
-            self.predator_orientation_buffer = []
-            self.prey_age_buffer = []
-            self.prey_gait_buffer = []
+
 
 
         self.pointer = 0
