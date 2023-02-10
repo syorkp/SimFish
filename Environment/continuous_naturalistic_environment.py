@@ -80,3 +80,8 @@ class ContinuousNaturalisticEnvironment(NaturalisticEnvironment):
         # print(f"{self.num_steps}: {np.array(self.fish.body.position)}")
         return super().simulation_step(action, activations, impulse)
 
+    def load_simulation(self, buffer, background, energy_state):
+        self.fish.prev_action_impulse = buffer.efference_copy_buffer[-1][2]
+        self.fish.prev_action_angle = buffer.internal_state_buffer[-1][3]
+        super().load_simulation(buffer, background, energy_state)
+

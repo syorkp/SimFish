@@ -201,9 +201,6 @@ Sand grain: {self.sand_grain_associated_reward}
         self.fish.body.angle = np.array(buffer.fish_angle_buffer[-1])
         self.fish.energy_level = energy_state
 
-        self.fish.prev_action_impulse = buffer.efference_copy_buffer[-1][0][1]
-        self.fish.prev_action_angle = buffer.internal_state_buffer[-1][0][2]
-
         # Get latest observation.
         observation = self.resolve_visual_input(activations=[], internal_state=[])
         return observation

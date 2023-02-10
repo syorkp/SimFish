@@ -36,12 +36,5 @@ def load_data(model_name, assay_configuration, assay_id, training_data=False):
 if __name__ == "__main__":
     datas = []
     red_channel = []
-    for i in range(1, 51):
-        d = load_data("dqn_gamma-1", "Behavioural-Data-Free", f"Naturalistic-{i}")
-        red_channel.append(d["observation"][:, :, 0])
-    red_channel = np.concatenate(red_channel, axis=0)
+    d = load_data("ppo_gamma-2", "Behavioural-Data-Free", f"Naturalistic-1")
 
-    # for i in range(1, 21):
-    #     d = load_data("dqn_beta-1", "Behavioural-Data-Free", f"Naturalistic-{i}")
-    #     print(f"{i}-{np.sum(d['consumed'] * 1)}")
-    #     datas.append(d)
