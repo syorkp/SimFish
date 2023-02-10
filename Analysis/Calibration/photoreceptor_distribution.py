@@ -39,5 +39,14 @@ if __name__ == "__main__":
     angs -= min(angs)
     angs *= 180/np.pi
 
-    plt.scatter(angs, [1 for i in angs])
+    bins = np.linspace(0, max(angs)+10, 15)
+    bin_diff = bins[1] - bins[0]
+
+    density = [np.sum((angs<b+bin_diff)*(angs>=b)*1) for b in bins]
+    density = np.array(density)/bin_diff
+    density = list(reversed(density))
+
+    plt.plot([i*bin_diff for i in range(len(density))], density)
+    plt.ylabel("density (RFs/deg)")
+    plt.xlabel("deg")
     plt.show()
