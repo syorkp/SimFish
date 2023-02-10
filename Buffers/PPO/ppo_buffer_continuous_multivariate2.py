@@ -229,11 +229,10 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
                                                                internal_state_order=internal_state_order,
                                                                salt_location=salt_location)
 
-        if "environmental positions" in self.recordings:
-            self.create_data_group("mu_impulse", np.array(self.mu_i_buffer)[:, 0], assay_group)
-            self.create_data_group("mu_angle", np.array(self.mu_a_buffer)[:, 0], assay_group)
-            self.create_data_group("sigma_impulse", np.array(self.si_i_buffer)[:, 0], assay_group)
-            self.create_data_group("sigma_angle", np.array(self.si_a_buffer)[:, 0], assay_group)
+        self.create_data_group("mu_impulse", np.array(self.mu_i_buffer)[:, 0], assay_group)
+        self.create_data_group("mu_angle", np.array(self.mu_a_buffer)[:, 0], assay_group)
+        self.create_data_group("sigma_impulse", np.array(self.si_i_buffer)[:, 0], assay_group)
+        self.create_data_group("sigma_angle", np.array(self.si_a_buffer)[:, 0], assay_group)
 
         print(f"{assay_id} Data Saved")
         hdf5_file.close()
