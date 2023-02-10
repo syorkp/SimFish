@@ -35,7 +35,7 @@ if __name__ == "__main__":
     min_angle = -np.pi / 2 - retinal_field / 2 + verg_angle / 2
     max_angle = -np.pi / 2 + retinal_field / 2 + verg_angle / 2
 
-    angs = create_half_normal_distribution(min_angle, max_angle, 55)
+    angs = create_half_normal_distribution(min_angle, max_angle, 40)
     angs -= min(angs)
     angs *= 180/np.pi
 

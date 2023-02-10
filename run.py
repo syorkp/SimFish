@@ -374,12 +374,33 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
+    dqn_test_1 = [
+        {
+            "Model Name": "dqn_test",
+            "Environment Name": "dqn_epsilon",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Profile Speed": True,
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    dqn_test_scaled_1 = [
+        {
+            "Model Name": "dqn_test_scaled",
+            "Environment Name": "dqn_epsilon_scaled",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Profile Speed": True,
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+
     dqn_epsilon_1 = [
         {
             "Model Name": "dqn_epsilon",
             "Environment Name": "dqn_epsilon",
             "Trial Number": 1,
-            "Use GPU": False,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },

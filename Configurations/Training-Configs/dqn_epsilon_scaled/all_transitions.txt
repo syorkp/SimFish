@@ -1,0 +1,16 @@
+1) Metric-PCI: 0.08333333333333333, Multiple changes
+2) Metric-PCI: 0.08333333333333333, Variable-wall_reflection: False
+3) Metric-PCI: 0.08333333333333333, Multiple changes
+4) Metric-PCI: 0.15, Multiple changes
+5) Metric-PCI: 0.15, Multiple changes
+6) Metric-PCI: 0.24999999999999997, Multiple changes
+7) Metric-PCI: 0.24999999999999997, Multiple changes
+8) Metric-PCI: 0.24999999999999997, Multiple changes
+9) Metric-PCI: 0.24999999999999997, Variable-fish_mouth_size: 16
+10) Metric-PCI: 0.24999999999999997, Variable-fraction_capture_permitted: 0.2
+11) Metric-PCI: 0.24999999999999997, Variable-capture_angle_deviation_allowance: 0.6283185307179586
+12) Metric-PCI: 0.24999999999999997, Multiple changes
+13) Metric-PCI: 0.24999999999999997, Variable-probability_of_predator: 0.003
+14) Metric-PAI: 600, Variable-predator_impulse: 15
+15) Metric-PAI: 800, Variable-predator_impulse: 25
+16) Metric-PCI: 0.24999999999999997, Variable-current_setting: Circular

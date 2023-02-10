@@ -318,7 +318,8 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     with writer.saving(fig, f"{save_location}.mp4", 300):
 
         for step in range(num_steps):
-            print(f"{step}/{num_steps}")
+            if "Training-Output" not in save_location:
+                print(f"{step}/{num_steps}")
             if continuous_actions:
                 action_buffer.append([data["impulse"][step], data["angle"][step]])
             else:
