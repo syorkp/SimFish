@@ -625,22 +625,22 @@ class DrawingBoard:
 
         # Top and left walls
         pixel_strip_x = A[:, low_dim_left, 0]  # Preserve luminance gradient by taking slice.
-        pixel_block_x = np.repeat(np.expand_dims(pixel_strip_x, 1), low_dim_left, axis=1)
+        pixel_block_x = self.chosen_math_library.repeat(self.chosen_math_library.expand_dims(pixel_strip_x, 1), low_dim_left, axis=1)
         A[:, :low_dim_left, 0] = pixel_block_x
 
         pixel_strip_y = A[low_dim_top, :, 0]
-        pixel_block_y = np.repeat(np.expand_dims(pixel_strip_y, 0), low_dim_top, axis=0)
+        pixel_block_y = self.chosen_math_library.repeat(self.chosen_math_library.expand_dims(pixel_strip_y, 0), low_dim_top, axis=0)
         A[:low_dim_top, :, 0] = pixel_block_y
 
         # Bottom and right walls
         pixel_strip_x = A[:, -high_dim_right, 0]
-        pixel_block_x = np.repeat(np.expand_dims(pixel_strip_x, 1), high_dim_right, 1)
+        pixel_block_x = self.chosen_math_library.repeat(self.chosen_math_library.expand_dims(pixel_strip_x, 1), high_dim_right, 1)
         if high_dim_right == 0:  # Necessary due to numpy indexing inconsistency.
             high_dim_right = -A.shape[1]
         A[:, -high_dim_right:, 0] = pixel_block_x
 
         pixel_strip_y = A[-high_dim_bottom, :, 0]
-        pixel_block_y = np.repeat(np.expand_dims(pixel_strip_y, 0), high_dim_bottom, 0)
+        pixel_block_y = self.chosen_math_library.repeat(self.chosen_math_library.expand_dims(pixel_strip_y, 0), high_dim_bottom, 0)
         if high_dim_bottom == 0:
             high_dim_bottom = -A.shape[0]
         A[-high_dim_bottom:, :, 0] = pixel_block_y
