@@ -78,5 +78,5 @@ class DiscreteNaturalisticEnvironment(NaturalisticEnvironment):
 
     def load_simulation(self, buffer, background, energy_state):
         self.fish.prev_action_impulse = buffer.efference_copy_buffer[-1][0][1]
-        self.fish.prev_action_angle = buffer.internal_state_buffer[-1][0][2]
+        self.fish.prev_action_angle = buffer.efference_copy_buffer[-1][0][2]
         super().load_simulation(buffer, background, energy_state)
