@@ -606,7 +606,7 @@ class DrawingBoard:
         #     high_dim_right = 0
 
         if self.FOV.full_fov_top < 0:
-            low_dim_top = abs(self.FOV.full_fov_top[0])
+            low_dim_top = abs(self.FOV.full_fov_top)
         else:
             low_dim_top = 0
         if self.FOV.full_fov_left < 0:
