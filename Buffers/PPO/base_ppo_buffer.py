@@ -42,6 +42,7 @@ class BasePPOBuffer:
         self.vegetation_position_buffer = []
         self.fish_angle_buffer = []
         self.salt_health_buffer = []
+        self.unit_recordings = {}
 
         if assay:
             self.actor_conv1l_buffer = []
@@ -94,6 +95,7 @@ class BasePPOBuffer:
         self.vegetation_position_buffer = []
         self.fish_angle_buffer = []
         self.salt_health_buffer = []
+        self.unit_recordings = {}
 
         if self.assay:
             # Old method
@@ -114,8 +116,6 @@ class BasePPOBuffer:
             self.critic_conv2r_buffer = []
             self.critic_conv3r_buffer = []
             self.critic_conv4r_buffer = []
-
-            self.unit_recordings = None
 
             # Extra buffers (needed for perfect reloading of states)
             self.prey_orientation_buffer = []
