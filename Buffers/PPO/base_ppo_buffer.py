@@ -96,6 +96,7 @@ class BasePPOBuffer:
         self.fish_angle_buffer = []
         self.salt_health_buffer = []
         self.unit_recordings = {}
+        self.switch_step = None
 
         if self.assay:
             # Old method
@@ -123,7 +124,6 @@ class BasePPOBuffer:
             self.prey_age_buffer = []
             self.prey_gait_buffer = []
 
-            self.switch_step = None
 
         self.pointer = 0
 
