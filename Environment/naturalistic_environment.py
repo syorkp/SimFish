@@ -202,7 +202,7 @@ Sand grain: {self.sand_grain_associated_reward}
         self.fish.energy_level = energy_state
 
         # Get latest observation.
-        observation = self.resolve_visual_input(activations=[], internal_state=[])
+        observation = self.resolve_visual_input()
         return observation
 
     def check_condition_met(self):
