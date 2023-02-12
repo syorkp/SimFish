@@ -282,10 +282,12 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     fig = plt.figure(facecolor='0.9', figsize=(4, 3))
     gs = fig.add_gridspec(nrows=9, ncols=9, left=0.05, right=0.85,
                       hspace=0.1, wspace=0.05)
-    ax0 = fig.add_subplot(gs[:-1, 0:6])
+    ax0 = fig.add_subplot(gs[:7, 0:6])
     
-    ax1 = fig.add_subplot(gs[-1, 0:4])
-    ax2 = fig.add_subplot(gs[-1, 4:8])
+    ax1 = fig.add_subplot(gs[7, 0:4])
+    ax2 = fig.add_subplot(gs[7, 4:8])
+    ax11 = fig.add_subplot(gs[8, 0:4])
+    ax22 = fig.add_subplot(gs[8, 4:8])
     ax3 = fig.add_subplot(gs[0, 6:])
     ax4 = fig.add_subplot(gs[1, 6:])
     ax5 = fig.add_subplot(gs[2, 6:])
@@ -425,6 +427,18 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
                     labelbottom = False, bottom = False)
             ax2.imshow(right_obs, interpolation='nearest', aspect='auto', vmin=1, vmax=256)
             ax2.tick_params(left = False, right = False , labelleft = False ,
+                    labelbottom = False, bottom = False)
+
+            left_obs_c = data['observation_classic'][step, :, :, 0].T
+
+            right_obs_c = data['observation_classic'][step, :, :, 1].T
+            ax11.clear()
+            ax22.clear()
+            ax11.imshow(left_obs_c, interpolation='nearest', aspect='auto', vmin=1, vmax=256)
+            ax11.tick_params(left = False, right = False , labelleft = False ,
+                    labelbottom = False, bottom = False)
+            ax22.imshow(right_obs_c, interpolation='nearest', aspect='auto', vmin=1, vmax=256)
+            ax22.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
 
             plot_start = max(0, step - 100)
