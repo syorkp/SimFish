@@ -158,10 +158,9 @@ Total episode reward: {self.total_episode_reward}\n""")
         """
         Saves the episode the the experience buffer. Also creates a gif if at interval.
         """
-
+        TrainingService._save_episode_continuous_variables(self)
         TrainingService._save_episode(self, episode_start_t, total_episode_reward, prey_caught,
                                       predators_avoided, sand_grains_bumped, steps_near_vegetation)
-        TrainingService._save_episode_continuous_variables(self)
 
         output_data = {"episode_number": self.episode_number, "total_steps": self.total_steps,
                        "configuration_index": self.configuration_index}
