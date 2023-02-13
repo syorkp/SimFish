@@ -295,7 +295,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     ax7 = fig.add_subplot(gs[4, 6:])
     metadata = dict(title='Movie Test', artist='Matplotlib',
                 comment='Movie support!')
-    writer = FFMpegWriter(fps=15, metadata=metadata, codec='mpeg4')
+    writer = FFMpegWriter(fps=15, metadata=metadata, codec='mpeg4', bitrate=1000000)
 
     board = DrawingBoard(env_variables["width"], env_variables["height"], data, include_background)
     if show_energy_state:
