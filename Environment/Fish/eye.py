@@ -248,7 +248,12 @@ class Eye:
         interp_red_readings[:, 1] = self.chosen_math_library.interp(self.interpolated_observation, self.red_photoreceptor_angles, self.red_readings[:, 1])
 
         self.readings = self.chosen_math_library.concatenate(
-             (interp_red_readings[:, 0:1], interp_uv_readings, interp_red_readings[:, 1:]), axis=1).get()
+             (interp_red_readings[:, 0:1], interp_uv_readings, interp_red_readings[:, 1:]), axis=1)
+
+        if self.using_gpu:
+            self.readings = self.readings.get()
+        else:
+            pass
 
     
     def _read_prey_proj(self, eye_x, eye_y, uv_pr_angles, fish_angle, rf_size, lum_mask, prey_pos):
@@ -307,8 +312,6 @@ class Eye:
         """Find index of closest value in array."""
         idx = (np.abs(array - value)).argmin()
         return idx
-
-
 
     def _read_stacked(self, masked_arena_pixels_uv, masked_arena_pixels_red, eye_x, eye_y, channel_angles_surrounding,
                       n_channels_uv, n_channels_red):

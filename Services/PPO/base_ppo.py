@@ -165,7 +165,7 @@ class BasePPO:
         self.simulation.reset()
         sa = np.zeros((1, 128))  # Kept for GIFs.
 
-        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=a, activations=(sa,))
+        o, r, internal_state, d, FOV, o_c = self.simulation.simulation_step(action=a, activations=(sa,))
 
         self.total_episode_reward = 0  # Total reward over episode
 

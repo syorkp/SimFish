@@ -50,9 +50,9 @@ class PPOBufferContinuousMultivariate(BasePPOBuffer):
 
         self.efference_copy_buffer = []
 
-    def add_training(self, observation, internal_state, action, reward, value, l_p_action, actor_rnn_state,
+    def add_training(self, observation, observation_classic, internal_state, action, reward, value, l_p_action, actor_rnn_state,
                      actor_rnn_state_ref, critic_rnn_state, critic_rnn_state_ref):
-        super().add_training(observation, internal_state, reward, action, value, actor_rnn_state,
+        super().add_training(observation, observation_classic, internal_state, reward, action, value, actor_rnn_state,
                      actor_rnn_state_ref, critic_rnn_state, critic_rnn_state_ref)
         self.log_action_probability_buffer.append(l_p_action)
         self.action_buffer.append(action)
