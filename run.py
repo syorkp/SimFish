@@ -394,6 +394,15 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
+    dqn_epsilon_6 = [
+        {
+            "Model Name": "dqn_epsilon",
+            "Environment Name": "dqn_epsilon_1",
+            "Trial Number": 6,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
 
     dqn_epsilon_1 = [
         {
