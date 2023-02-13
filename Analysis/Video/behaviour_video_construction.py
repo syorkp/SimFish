@@ -293,6 +293,10 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     ax5 = fig.add_subplot(gs[2, 6:])
     ax6 = fig.add_subplot(gs[3, 6:])
     ax7 = fig.add_subplot(gs[4, 6:])
+    ax8 = fig.add_subplot(gs[5, 6])
+    if continuous_actions:
+        ax9 = fig.add_subplot(gs[5, 7])
+
     metadata = dict(title='Movie Test', artist='Matplotlib',
                 comment='Movie support!')
     writer = FFMpegWriter(fps=15, metadata=metadata, codec='mpeg4', bitrate=1000000)
@@ -326,6 +330,12 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
                 action_buffer.append([data["impulse"][step], data["angle"][step]])
             else:
                 action_buffer.append(data["action"][step])
+                bins = np.arange(0, np.max(action_buffer)+1.5) - 0.5
+                actions = np.arange(0, np.max(action_buffer)+1)
+
+                action_hist = np.histogram(action_buffer, bins)[0]
+                actions = actions[action_hist > 0]
+                action_hist = action_hist[action_hist > 0]
             position_buffer.append(fish_positions[step])
             orientation_buffer.append(data["fish_angle"][step])
             consumption_buffer.append(data["consumed"][step])
@@ -413,7 +423,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
 
             this_frame = rescale(frame, scale, multichannel=True, anti_aliasing=True)
             ax0.clear()
-            ax0.imshow(this_frame, interpolation='nearest', aspect='auto')
+            ax0.imshow(np.clip(this_frame, 0, 1), interpolation='nearest', aspect='auto')
             ax0.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
 
@@ -422,10 +432,10 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             right_obs = data['observation'][step, :, :, 1].T
             ax1.clear()
             ax2.clear()
-            ax1.imshow(left_obs, interpolation='nearest', aspect='auto', vmin=1, vmax=256)
+            ax1.imshow(np.clip(left_obs, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
             ax1.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
-            ax2.imshow(right_obs, interpolation='nearest', aspect='auto', vmin=1, vmax=256)
+            ax2.imshow(np.clip(right_obs, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
             ax2.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
 
@@ -434,10 +444,10 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             right_obs_c = data['observation_classic'][step, :, :, 1].T
             ax11.clear()
             ax22.clear()
-            ax11.imshow(left_obs_c, interpolation='nearest', aspect='auto', vmin=1, vmax=256)
+            ax11.imshow(np.clip(left_obs_c, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
             ax11.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
-            ax22.imshow(right_obs_c, interpolation='nearest', aspect='auto', vmin=1, vmax=256)
+            ax22.imshow(np.clip(right_obs_c, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
             ax22.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
 
@@ -461,13 +471,29 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             ax7.clear()
             ax7.plot(data['rnn_state_actor'][plot_start:step, 0, 30:40])
             ax7.tick_params(left=False, right=False , labelleft=False, labelbottom=False, bottom=False)
+
+            if continuous_actions:
+                ab = np.array(action_buffer)
+
+                ax8.clear()
+                ax8.hist(ab[:, 0], bins=20)
+                plt.tick_params(labelsize=2)
+
+                ax9.clear()
+                ax9.hist(ab[:, 1], bins=20)
+                plt.tick_params(labelsize=2)
+
+            else:
+
+                ax8.clear()
+                ax8.pie(action_hist, labels=actions, textprops={'fontsize': 2})
+
             #plt.draw()
             #plt.pause(0.001)
             board.db = board.get_base_arena(0.3)
             writer.grab_frame()
 
             board.db = board.get_base_arena(0.3)
-
     #frames *= 255
 
     #if training_episode:
