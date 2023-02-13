@@ -277,6 +277,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     #except FileNotFoundError:
     #    with open(f"Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
     #        env_variables = json.load(f)
+
     save_location += save_id
 
     fig = plt.figure(facecolor='0.9', figsize=(4, 3))
@@ -293,9 +294,9 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     ax5 = fig.add_subplot(gs[2, 6:])
     ax6 = fig.add_subplot(gs[3, 6:])
     ax7 = fig.add_subplot(gs[4, 6:])
-    ax8 = fig.add_subplot(gs[5, 6])
+    ax8 = fig.add_subplot(gs[5, 7])
     if continuous_actions:
-        ax9 = fig.add_subplot(gs[5, 7])
+        ax9 = fig.add_subplot(gs[5, 8])
 
     metadata = dict(title='Movie Test', artist='Matplotlib',
                 comment='Movie support!')
@@ -321,7 +322,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     #         addon = 0
                 
     #     frames = np.zeros((num_steps, np.int(env_variables["height"]*scale), np.int((env_variables["width"]+addon)*scale), 3))
-    with writer.saving(fig, f"{save_location}.mp4", 300):
+    with writer.saving(fig, f"{save_location}.mp4", 500):
 
         for step in range(num_steps):
             if "Training-Output" not in save_location:
@@ -453,19 +454,19 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
 
             plot_start = max(0, step - 100)
             ax3.clear()
-            ax3.plot(energy_levels[plot_start:step], color='green')
+            ax3.plot(energy_levels[plot_start:step], color='green', linewidth=0.5)
             ax3.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
             ax4.clear()
-            ax4.plot(data['rnn_state_actor'][plot_start:step, 0, :10])
+            ax4.plot(data['rnn_state_actor'][plot_start:step, 0, :10], linewidth=0.5)
             ax4.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
             ax5.clear()
-            ax5.plot(data['rnn_state_actor'][plot_start:step, 0, 10:20])
+            ax5.plot(data['rnn_state_actor'][plot_start:step, 0, 10:20], linewidth=0.5)
             ax5.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
             ax6.clear()
-            ax6.plot(data['rnn_state_actor'][plot_start:step, 0, 20:30])
+            ax6.plot(data['rnn_state_actor'][plot_start:step, 0, 20:30], linewidth=0.5)
             ax6.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
             ax7.clear()
@@ -477,11 +478,15 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
 
                 ax8.clear()
                 ax8.hist(ab[:, 0], bins=20)
-                plt.tick_params(labelsize=2)
+                ax8.tick_params(axis='both', which='major', labelsize=3, length=1, width=0.1)
+                for _, spine in ax8.spines.items():
+                    spine.set_linewidth(0.1)
 
                 ax9.clear()
                 ax9.hist(ab[:, 1], bins=20)
-                plt.tick_params(labelsize=2)
+                ax9.tick_params(axis='both', which='major', labelsize=3, length=1, width=0.1)
+                for _, spine in ax9.spines.items():
+                    spine.set_linewidth(0.1)
 
             else:
 
