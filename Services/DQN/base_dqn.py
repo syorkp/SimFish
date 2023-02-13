@@ -12,6 +12,7 @@ from Tools.graph_functions import update_target
 import matplotlib.pyplot as plt
 from matplotlib.animation import FFMpegWriter
 
+
 class BaseDQN:
 
     def __init__(self):
@@ -96,7 +97,7 @@ class BaseDQN:
                             data = json.load(f)
                             self.init_rnn_state = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
                             self.init_rnn_state_ref = (
-                            np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
+                                np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
 
                         return
 
@@ -227,7 +228,7 @@ class BaseDQN:
             if self.debug:
                 if self.using_gpu:
                     FOV = FOV.get()
-                FOV = np.clip(FOV/self.environment_params['light_gain'], 0, 1)
+                FOV = np.clip(FOV / self.environment_params['light_gain'], 0, 1)
                 ax.imshow(FOV)
                 moviewriter.grab_frame()
                 ax.clear()
@@ -252,7 +253,7 @@ class BaseDQN:
         # Add the episode to the experience buffer
         if self.debug:
             moviewriter.finish()
-            self.debug = False 
+            self.debug = False
             fig.clf()
 
         return all_actions, total_episode_reward, experience
@@ -278,16 +279,16 @@ class BaseDQN:
         updated_rnn_state: The updated RNN state
         """
         # Generate actions and corresponding steps.
-        feed_dict={self.main_QN.observation: o,
-                    self.main_QN.internal_state: internal_state,
-                    self.main_QN.prev_actions: [a],
-                    self.main_QN.train_length: 1,
-                    self.main_QN.rnn_state_in: rnn_state,
-                    self.main_QN.rnn_state_in_ref: rnn_state_ref,
-                    self.main_QN.batch_size: 1,
-                    self.main_QN.exp_keep: 1.0,
-                    self.main_QN.learning_rate: self.learning_params["learning_rate"],
-                    }
+        feed_dict = {self.main_QN.observation: o,
+                     self.main_QN.internal_state: internal_state,
+                     self.main_QN.prev_actions: [a],
+                     self.main_QN.train_length: 1,
+                     self.main_QN.rnn_state_in: rnn_state,
+                     self.main_QN.rnn_state_in_ref: rnn_state_ref,
+                     self.main_QN.batch_size: 1,
+                     self.main_QN.exp_keep: 1.0,
+                     self.main_QN.learning_rate: self.learning_params["learning_rate"],
+                     }
 
         if np.random.rand(1) < self.epsilon or self.total_steps < self.initial_exploration_steps:
             [updated_rnn_state, updated_rnn_state_ref, sa, sv] = self.sess.run(
@@ -302,7 +303,8 @@ class BaseDQN:
             chosen_a = chosen_a[0]
 
         # Simulation step
-        o1, given_reward, internal_state, d, FOV, o_c = self.simulation.simulation_step(action=chosen_a, activations=(sa,))
+        o1, given_reward, internal_state, d, FOV, o_c = self.simulation.simulation_step(action=chosen_a,
+                                                                                        activations=(sa,))
 
         action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
                               self.simulation.fish.prev_action_angle]
@@ -348,19 +350,18 @@ class BaseDQN:
                                                      prey_gait=prey_gait
                                                      )
             action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
-                            self.simulation.fish.prev_action_angle]
+                                  self.simulation.fish.prev_action_angle]
 
             # Update buffer
             self.buffer.add_training(observation=o1,
                                      observation_classic=o_c,
-                                    internal_state=internal_state,
-                                    # action=chosen_a,
-                                    action=action_reafference,
-                                    reward=given_reward,
-                                    rnn_state=updated_rnn_state,
-                                    rnn_state_ref=updated_rnn_state_ref,
-                                    )
-
+                                     internal_state=internal_state,
+                                     # action=chosen_a,
+                                     action=action_reafference,
+                                     reward=given_reward,
+                                     rnn_state=updated_rnn_state,
+                                     rnn_state_ref=updated_rnn_state_ref,
+                                     )
 
         self.total_steps += 1
         return o, action_reafference, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, FOV
@@ -394,7 +395,8 @@ class BaseDQN:
                            })
 
         chosen_a = chosen_a[0]
-        o1, given_reward, internal_state1, d, FOV = self.simulation.simulation_step(action=chosen_a, activations=(sa,))
+        o1, given_reward, internal_state1, d, FOV, o_c = self.simulation.simulation_step(action=chosen_a,
+                                                                                         activations=(sa,))
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
         action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
@@ -402,6 +404,7 @@ class BaseDQN:
 
         # Update buffer
         self.buffer.add_training(observation=o,
+                                 observation_classic=o_c,
                                  internal_state=internal_state,
                                  # action=chosen_a,
                                  action=action_reafference,
@@ -465,7 +468,8 @@ class BaseDQN:
                            })
 
         chosen_a = chosen_a[0]
-        o1, given_reward, internal_state1, d, FOV = self.simulation.simulation_step(action=chosen_a, activations=(sa,))
+        o1, given_reward, internal_state1, d, FOV, o_c = self.simulation.simulation_step(action=chosen_a,
+                                                                                         activations=(sa,))
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
         if self.full_reafference:
             action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
@@ -475,6 +479,7 @@ class BaseDQN:
 
         # Update buffer
         self.buffer.add_training(observation=o,
+                                 observation_classic=o_c,
                                  internal_state=internal_state,
                                  action=chosen_a,
                                  reward=given_reward,
@@ -512,7 +517,6 @@ class BaseDQN:
             self.buffer.save_cnn_data(conv_layers)
 
         return o, action_reafference, given_reward, internal_state1, o1, d, updated_rnn_state
-
 
     def train_networks(self):
         """
@@ -616,4 +620,3 @@ class BaseDQN:
                                  self.main_QN.exp_keep: 1.0,
                                  self.main_QN.learning_rate: self.learning_params["learning_rate"],
                                  })
-
