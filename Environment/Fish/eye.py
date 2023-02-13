@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 class Eye:
 
-    def __init__(self, board, verg_angle, retinal_field, is_left, env_variables, dark_col, using_gpu, max_visual_range, plot_rfs=True):
+    def __init__(self, board, verg_angle, retinal_field, is_left, env_variables, dark_col, using_gpu, max_visual_range, plot_rfs=False):
         # Use CUPY if using GPU.
         self.using_gpu = using_gpu
         if using_gpu:

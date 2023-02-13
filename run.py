@@ -172,21 +172,20 @@ if __name__ == "__main__": # may be needed to run on windows
 
     assay_gathering_test = [
         {
-            "Model Name": "dqn_gamma",
-            "Environment Name": "dqn_gamma_final",
+            "Model Name": "dqn_epsilon",
+            "Environment Name": "dqn_epsilon_final",
             "Assay Configuration Name": "Behavioural-Data-Free",
-            "Trial Number": 3,
+            "Trial Number": 6,
             "Run Mode": "Assay",
             "Learning Algorithm": "DQN",
-            "Using GPU": False,
             "behavioural recordings": ["environmental positions", "observation"],
             "network recordings": ["rnn_shared", "internal_state"],
             "Assays": [
                 {
                     "assay id": "Naturalistic",
                     "stimulus paradigm": "Naturalistic",
-                    "repeats": 1,
-                    "duration": 10,
+                    "repeats": 10,
+                    "duration": 1000,
                     "Tethered": False,
                     "save frames": False,
                     "use_mu": True,
@@ -395,6 +394,15 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
+    dqn_epsilon_6 = [
+        {
+            "Model Name": "dqn_epsilon",
+            "Environment Name": "dqn_epsilon_1",
+            "Trial Number": 6,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
 
     dqn_epsilon_1 = [
         {
