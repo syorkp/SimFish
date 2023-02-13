@@ -15,8 +15,9 @@ def display_pr_coverage(model_name):
                                      env_variables['red_photoreceptor_rf_size']])
 
     board = DrawingBoard(env_variables['width'], env_variables['height'],
-                                 decay_rate=env_variables['decay_rate'],
-                                 photoreceptor_rf_size=max_photoreceptor_rf_size,
+                                 uv_decay_rate=env_variables['decay_rate'],
+                         red_decay_rate=env_variables['decay_rate'],
+                         photoreceptor_rf_size=max_photoreceptor_rf_size,
                                  using_gpu=False, visualise_mask=env_variables['visualise_mask'],
                                  prey_size=env_variables['prey_size'],
                                  predator_size=env_variables['predator_size'],
@@ -26,16 +27,14 @@ def display_pr_coverage(model_name):
                                  dark_light_ratio=env_variables['dark_light_ratio'],
                                  dark_gain=env_variables['dark_gain'],
                                  light_gain=env_variables['light_gain'],
-                                 red_occlusion_gain=env_variables['red_occlusion_gain'],
-                                 uv_occlusion_gain=env_variables['uv_occlusion_gain'],
-                                 red2_occlusion_gain=env_variables['red2_occlusion_gain']
+                                 occlusion_gain=[env_variables['red_occlusion_gain'], env_variables['uv_occlusion_gain'], env_variables['red2_occlusion_gain']]
                                  )
 
     dark_col = int(env_variables['width'] * env_variables['dark_light_ratio'])
     verg_angle = env_variables['eyes_verg_angle'] * (np.pi / 180)
     retinal_field = env_variables['visual_field'] * (np.pi / 180)
-    test_eye_l = Eye(board, verg_angle, retinal_field, True, env_variables, dark_col, False)
-    test_eye_r = Eye(board, verg_angle, retinal_field, False, env_variables, dark_col, False)
+    test_eye_l = Eye(board, verg_angle, retinal_field, True, env_variables, dark_col, False, 700)
+    test_eye_r = Eye(board, verg_angle, retinal_field, False, env_variables, dark_col, False, 700)
 
     right_eye_pos = (
         -np.cos(np.pi / 2 - 0) * env_variables['eyes_biasx'] + 500,
@@ -91,5 +90,7 @@ def display_pr_coverage(model_name):
     plt.imshow(arena)
     plt.show()
 
-model_name = "dqn_scaffold_10-1"
-display_pr_coverage(model_name)
+
+if __name__ == "__main__":
+    model_name = "dqn_gamma-1"
+    display_pr_coverage(model_name)
