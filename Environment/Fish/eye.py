@@ -242,12 +242,13 @@ class Eye:
 
             if len(sand_grain_positions) > 0:
                 proj_readings_sand_grains = self._read_prey_proj(eye_x=eye_x,
-                                                                    eye_y=eye_y,
-                                                                    uv_pr_angles=self.uv_photoreceptor_angles,
-                                                                    fish_angle=fish_angle,
-                                                                    rf_size=self.uv_photoreceptor_rf_size,
-                                                                    lum_mask=lum_mask,
-                                                                    prey_pos=np.array(sand_grain_positions))
+                                                                 eye_y=eye_y,
+                                                                 uv_pr_angles=self.uv_photoreceptor_angles,
+                                                                 fish_angle=fish_angle,
+                                                                 rf_size=self.uv_photoreceptor_rf_size,
+                                                                 lum_mask=lum_mask,
+                                                                 prey_pos=np.array(sand_grain_positions)
+                                                                 )
 
                 proj_uv_readings_sand_grains = self.env_variables["sand_grain_colour"][1] * proj_readings_sand_grains
                 uv_readings += proj_uv_readings_sand_grains

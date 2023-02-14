@@ -394,17 +394,6 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
-    dqn_epsilon_6 = [
-        {
-            "Model Name": "dqn_epsilon",
-            "Environment Name": "dqn_epsilon_1",
-            "Trial Number": 6,
-            "Using GPU": False,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-
     dqn_epsilon_1 = [
         {
             "Model Name": "dqn_epsilon",
@@ -450,6 +439,18 @@ if __name__ == "__main__": # may be needed to run on windows
             "Learning Algorithm": "DQN",
         },
     ]
+
+    dqn_epsilon_6 = [
+        {
+            "Model Name": "dqn_epsilon",
+            "Environment Name": "dqn_epsilon",
+            "Trial Number": 6,
+            "Profile Speed": True,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
 
     dqn_gamma_sg_1 = [
         {
