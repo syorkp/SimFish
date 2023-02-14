@@ -11,7 +11,7 @@ from Configurations.Templates.interruptions import energy_state_profile_long_ter
     efference_G, efference_H, efference_V, efference_W, efference_X, efference_Y, efference_Z, long_term_visual_interruption_profile, \
     brief_interruption_profile, fish_relocation_to_nowhere, energy_state_profile_long_term, long_term_interruption_profile, rnn_zeros
 
-if __name__ == "__main__": # may be needed to run on windows
+if __name__ == "__main__":  # may be needed to run on windows
     # Get config argument
     try:
         run_config = sys.argv[1]
@@ -502,6 +502,44 @@ if __name__ == "__main__": # may be needed to run on windows
             "Model Name": "dqn_gamma_pm",
             "Environment Name": "dqn_gamma_pm",
             "Trial Number": 5,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    dqn_gamma_6 = [
+        {
+            "Model Name": "dqn_gamma",
+            "Environment Name": "dqn_gamma",
+            "Trial Number": 6,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    dqn_gamma_7 = [
+        {
+            "Model Name": "dqn_gamma",
+            "Environment Name": "dqn_gamma",
+            "Trial Number": 7,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    dqn_predator_1 = [
+        {
+            "Model Name": "dqn_predator",
+            "Environment Name": "dqn_predator",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    dqn_predator_2 = [
+        {
+            "Model Name": "dqn_predator",
+            "Environment Name": "dqn_predator",
+            "Trial Number": 2,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },

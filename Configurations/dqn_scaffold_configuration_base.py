@@ -242,7 +242,7 @@ env = {
     # Visual system scaling factors (to set CNN inputs into 0 to 255 range):
     'red_scaling_factor': 0.01,  # Pixel counts are multiplied by this
     'uv_scaling_factor': 1,  # Pixel counts are multiplied by this
-    'red_2_scaling_factor': 1 / 500.0,  # Pixel counts are multiplied by this
+    'red_2_scaling_factor': 1 / 200.0,  # Pixel counts are multiplied by this
     'red_occlusion_gain': 0.0,  # 0 Being complete construction.
     'uv_occlusion_gain': 0.0,
     'red2_occlusion_gain': 0.0,
