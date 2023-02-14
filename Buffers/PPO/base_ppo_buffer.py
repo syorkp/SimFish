@@ -20,7 +20,6 @@ class BasePPOBuffer:
         # Buffer for training
         self.action_buffer = []
         self.observation_buffer = []
-        self.observation_classic_buffer = []
         self.reward_buffer = []
         self.internal_state_buffer = []
         self.value_buffer = []
@@ -78,7 +77,6 @@ class BasePPOBuffer:
     def reset(self):
         self.action_buffer = []
         self.observation_buffer = []
-        self.observation_classic_buffer = []
         self.reward_buffer = []
         self.internal_state_buffer = []
         self.value_buffer = []
@@ -131,7 +129,6 @@ class BasePPOBuffer:
 
     def tidy(self):
         self.observation_buffer = np.array(self.observation_buffer)
-        self.observation_classic_buffer = np.array(self.observation_classic_buffer)
 
         self.action_buffer = np.array(self.action_buffer)
         self.reward_buffer = np.array(self.reward_buffer)
@@ -143,10 +140,9 @@ class BasePPOBuffer:
         self.critic_rnn_state_buffer = np.array(self.critic_rnn_state_buffer)
         self.critic_rnn_state_ref_buffer = np.array(self.critic_rnn_state_ref_buffer)
 
-    def add_training(self, observation, observation_classic, internal_state, reward, action, value, actor_rnn_state,
+    def add_training(self, observation, internal_state, reward, action, value, actor_rnn_state,
                      actor_rnn_state_ref, critic_rnn_state, critic_rnn_state_ref):
         self.observation_buffer.append(observation)
-        self.observation_classic_buffer.append(observation_classic)
         self.internal_state_buffer.append(internal_state)
         self.reward_buffer.append(reward)
         self.value_buffer.append(value)
@@ -363,7 +359,6 @@ class BasePPOBuffer:
             assay_group = hdf5_file.get(assay_id)
 
         self.create_data_group("observation", np.array(self.observation_buffer), assay_group)
-        self.create_data_group("observation_classic", np.array(self.observation_classic_buffer), assay_group)
 
         # if "internal state" in self.unit_recordings:
         #     self.internal_state_buffer = np.array(self.internal_state_buffer)

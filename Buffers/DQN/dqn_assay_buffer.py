@@ -18,7 +18,6 @@ class DQNAssayBuffer:
         # Buffer for training
         self.action_buffer = []
         self.observation_buffer = []
-        self.observation_classic_buffer = []
         self.reward_buffer = []
         self.internal_state_buffer = []
         self.advantage_buffer = []
@@ -62,7 +61,6 @@ class DQNAssayBuffer:
     def reset(self):
         self.action_buffer = []
         self.observation_buffer = []
-        self.observation_classic_buffer = []
         self.reward_buffer = []
         self.internal_state_buffer = []
         self.value_buffer = []
@@ -95,8 +93,7 @@ class DQNAssayBuffer:
             self.switch_step = None
             self.unit_recordings = {}
 
-    def add_training(self, observation, observation_classic, internal_state, reward, action, rnn_state, rnn_state_ref):
-        self.observation_classic_buffer.append(observation_classic)
+    def add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
         self.reward_buffer.append(reward)
@@ -267,7 +264,6 @@ class DQNAssayBuffer:
 
         #if "observation" in self.recordings:
         self.create_data_group("observation", np.array(self.observation_buffer), assay_group)
-        self.create_data_group("observation_classic", np.array(self.observation_classic_buffer), assay_group)
 
         if self.use_dynamic_network:
             for layer in self.unit_recordings.keys():

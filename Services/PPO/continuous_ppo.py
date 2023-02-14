@@ -289,7 +289,7 @@ class ContinuousPPO(BasePPO):
             else:
                 action = [impulse[0][0], angle[0][0]]
 
-        o1, given_reward, new_internal_state, d, FOV, o_c = self.simulation.simulation_step(action=action,
+        o1, given_reward, new_internal_state, d, FOV = self.simulation.simulation_step(action=action,
                                                                                        activations=(sa,))
 
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
@@ -298,7 +298,6 @@ class ContinuousPPO(BasePPO):
 
         # Update buffer
         self.buffer.add_training(observation=o1,
-                                 observation_classic=o_c,
                                  internal_state=internal_state,
                                  action=action_reafference,
                                  reward=given_reward,
@@ -404,7 +403,7 @@ class ContinuousPPO(BasePPO):
             action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, r, new_internal_state, d, FOV, o_c = self.simulation.simulation_step(
+        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(
             action=action,
             activations=sa)
 
@@ -432,7 +431,6 @@ class ContinuousPPO(BasePPO):
             prediction_error = (predictor_output - target_output) ** 2
             # Update buffer
             self.buffer.add_training(observation=o1,
-                                     observation_classic=o_c,
                                      internal_state=internal_state,
                                      action=action,
                                      reward=r,
@@ -446,7 +444,6 @@ class ContinuousPPO(BasePPO):
         else:
             action = action + action_consequences
             self.buffer.add_training(observation=o1,
-                                     observation_classic=o_c,
                                      internal_state=internal_state,
                                      action=action,
                                      reward=r,
@@ -557,7 +554,7 @@ class ContinuousPPO(BasePPO):
             action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, r, new_internal_state, d, FOV, o_c = self.simulation.simulation_step(
+        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(
             action=action,
             activations=sa)
 
@@ -585,7 +582,6 @@ class ContinuousPPO(BasePPO):
 
             # Update buffer
             self.buffer.add_training(observation=o1,
-                                     observation_classic=o_c,
                                      internal_state=internal_state,
                                      action=action,
                                      reward=r,
@@ -599,7 +595,6 @@ class ContinuousPPO(BasePPO):
         else:
             action = action + action_consequences
             self.buffer.add_training(observation=o1,
-                                     observation_classic=o_c,
                                      internal_state=internal_state,
                                      action=action,
                                      reward=r,

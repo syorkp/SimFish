@@ -440,17 +440,17 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             ax2.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
 
-            left_obs_c = data['observation_classic'][step, :, :, 0].T
-
-            right_obs_c = data['observation_classic'][step, :, :, 1].T
-            ax11.clear()
-            ax22.clear()
-            ax11.imshow(np.clip(left_obs_c, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
-            ax11.tick_params(left = False, right = False , labelleft = False ,
-                    labelbottom = False, bottom = False)
-            ax22.imshow(np.clip(right_obs_c, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
-            ax22.tick_params(left = False, right = False , labelleft = False ,
-                    labelbottom = False, bottom = False)
+            # left_obs_c = data['observation_classic'][step, :, :, 0].T
+            #
+            # right_obs_c = data['observation_classic'][step, :, :, 1].T
+            # ax11.clear()
+            # ax22.clear()
+            # ax11.imshow(np.clip(left_obs_c, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
+            # ax11.tick_params(left = False, right = False , labelleft = False ,
+            #         labelbottom = False, bottom = False)
+            # ax22.imshow(np.clip(right_obs_c, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
+            # ax22.tick_params(left = False, right = False , labelleft = False ,
+            #         labelbottom = False, bottom = False)
 
             plot_start = max(0, step - 100)
             ax3.clear()

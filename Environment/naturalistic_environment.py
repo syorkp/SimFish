@@ -202,7 +202,7 @@ Sand grain: {self.sand_grain_associated_reward}
         self.fish.energy_level = energy_state
 
         # Get latest observation.
-        observation = self.resolve_visual_input()
+        observation, FOV = self.resolve_visual_input()
         return observation
 
     def check_condition_met(self):
@@ -464,10 +464,10 @@ Sand grain: {self.sand_grain_associated_reward}
                 done = True
                 self.switch_step = self.num_steps
         
-        observation, FOV, observation_classic = self.resolve_visual_input()
+        observation, FOV = self.resolve_visual_input()
 
 
-        return observation, reward, internal_state, done, FOV, observation_classic
+        return observation, reward, internal_state, done, FOV
 
     def init_predator(self):
         if self.predator_location is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
@@ -476,7 +476,6 @@ Sand grain: {self.sand_grain_associated_reward}
             self.create_realistic_predator()
 
     def resolve_visual_input(self):
-       
         # eye positions within FOV - Relative eye positions to FOV
         right_eye_pos = (
             -np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.board.max_visual_distance,
@@ -498,29 +497,17 @@ Sand grain: {self.sand_grain_associated_reward}
         
         # Convert to FOV coordinates (to match eye coordinates)
         prey_locations_array = np.array(prey_locations) - np.array(self.fish.body.position) + self.board.max_visual_distance
+        if len(sand_grain_locations) > 0:
+            sand_grain_locations_array = np.array(sand_grain_locations) - np.array(self.fish.body.position) + self.board.max_visual_distance
+        else:
+            sand_grain_locations_array = np.array([])
 
         self.fish.left_eye.read(full_masked_image, left_eye_pos[0],
-                                left_eye_pos[1], self.fish.body.angle, lum_mask, prey_locations_array)
+                                left_eye_pos[1], self.fish.body.angle, lum_mask, prey_locations_array, sand_grain_locations_array)
         self.fish.right_eye.read(full_masked_image, right_eye_pos[0],
-                                 right_eye_pos[1], self.fish.body.angle, lum_mask, prey_locations_array)
+                                 right_eye_pos[1], self.fish.body.angle, lum_mask, prey_locations_array, sand_grain_locations_array)
 
-
-        observation = np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
-                                 self.fish.readings_to_photons(self.fish.right_eye.readings)))
-
-        self.draw_uv_shapes()
-        full_masked_image, lum_mask = self.board.get_masked_pixels(np.array(self.fish.body.position),
-                                                                   np.array(prey_locations + sand_grain_locations),
-                                                                   predator_bodies)
-
-        self.fish.left_eye.read(full_masked_image, left_eye_pos[0],
-                                left_eye_pos[1], self.fish.body.angle, lum_mask, prey_locations_array, proj=False)
-        self.fish.right_eye.read(full_masked_image, right_eye_pos[0],
-                                 right_eye_pos[1], self.fish.body.angle, lum_mask, prey_locations_array, proj=False)
-
-        observation_classic = np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
-                                 self.fish.readings_to_photons(self.fish.right_eye.readings)))
-        return observation, full_masked_image, observation_classic
+        return observation, full_masked_image
 
     def plot_observation(self, observation):
         if self.using_gpu:

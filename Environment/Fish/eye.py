@@ -5,12 +5,14 @@ from skimage.transform import resize
 import scipy.signal as signal
 import matplotlib.pyplot as plt
 
+
 # from Tools.resize import resize as myresize
 
 
 class Eye:
 
-    def __init__(self, board, verg_angle, retinal_field, is_left, env_variables, dark_col, using_gpu, max_visual_range, plot_rfs=False):
+    def __init__(self, board, verg_angle, retinal_field, is_left, env_variables, dark_col, using_gpu, max_visual_range,
+                 plot_rfs=False):
         # Use CUPY if using GPU.
         self.using_gpu = using_gpu
         if using_gpu:
@@ -24,7 +26,8 @@ class Eye:
         self.dark_gain = env_variables['dark_gain']
         self.light_gain = env_variables['light_gain']
         self.bkg_scatter = env_variables['bkg_scatter']
-        self.isomerization_probability = env_variables['isomerization_frequency']/env_variables['sim_steps_per_second']
+        self.isomerization_probability = env_variables['isomerization_frequency'] / env_variables[
+            'sim_steps_per_second']
         self.dark_col = dark_col
         self.dist = None
         self.theta = None
@@ -33,21 +36,21 @@ class Eye:
         self.env_variables = env_variables
         self.max_visual_range = max_visual_range
         self.prey_diam = self.env_variables['prey_size']
-                
-        self.scattering_coef = 0.01      #TODO: This is a parameter that needs to added to the config file.
-        self.scatter_sigma_0 = 0         #TODO: This is a parameter that needs to added to the config file.
 
-        self.sz_rf_spacing = 0.04      #2.3 deg. TODO: This is a parameter that needs to added to the config file.
-        self.sz_size = 1.047            #60 deg. TODO: This is a parameter that needs to added to the config file.
-        self.sz_oversampling_factor = 2.5    #TODO: This is a parameter that needs to added to the config file.
+        self.scattering_coef = 0.01  # TODO: This is a parameter that needs to added to the config file.
+        self.scatter_sigma_0 = 0  # TODO: This is a parameter that needs to added to the config file.
+
+        self.sz_rf_spacing = 0.04  # 2.3 deg. TODO: This is a parameter that needs to added to the config file.
+        self.sz_size = 1.047  # 60 deg. TODO: This is a parameter that needs to added to the config file.
+        self.sz_oversampling_factor = 2.5  # TODO: This is a parameter that needs to added to the config file.
         self.periphery_rf_spacing = self.sz_rf_spacing * self.sz_oversampling_factor
         self.density_range = self.periphery_rf_spacing - self.sz_rf_spacing
-        self.sigmoid_steepness = 5.0    #TODO: This is a parameter that needs to added to the config file.
+        self.sigmoid_steepness = 5.0  # TODO: This is a parameter that needs to added to the config file.
 
-        self.ang_bin = 0.001                                            # this is the bin size for the projection
-        self.ang = np.arange(-np.pi, np.pi+self.ang_bin, self.ang_bin)  # this is the angle range for the projection
+        self.ang_bin = 0.001  # this is the bin size for the projection
+        self.ang = np.arange(-np.pi, np.pi + self.ang_bin, self.ang_bin)  # this is the angle range for the projection
 
-        self.filter_bins = 20                                           # this is the number of bins for the scattering filter
+        self.filter_bins = 20  # this is the number of bins for the scattering filter
 
         self.shared_photoreceptor_channels = False
 
@@ -58,14 +61,15 @@ class Eye:
         self.uv_photoreceptor_num = len(self.uv_photoreceptor_angles)
         self.red_photoreceptor_num = self.uv_photoreceptor_num
 
-        self.interpolated_observation = self.chosen_math_library.arange(self.chosen_math_library.min(self.uv_photoreceptor_angles),
-                                                                        self.chosen_math_library.max(self.uv_photoreceptor_angles),
-                                                                        self.sz_rf_spacing/2)
+        self.interpolated_observation = self.chosen_math_library.arange(
+            self.chosen_math_library.min(self.uv_photoreceptor_angles),
+            self.chosen_math_library.max(self.uv_photoreceptor_angles),
+            self.sz_rf_spacing / 2)
 
         self.observation_size = len(self.interpolated_observation)
 
         self.red_photoreceptor_angles = self.update_angles(verg_angle, retinal_field, is_left,
-                                                            self.red_photoreceptor_num)
+                                                           self.red_photoreceptor_num)
 
         self.uv_readings = self.chosen_math_library.zeros((self.uv_photoreceptor_num, 1))
         self.red_readings = self.chosen_math_library.zeros((self.red_photoreceptor_num, 1))
@@ -88,15 +92,17 @@ class Eye:
         self.get_repeated_computations()
 
         self.channel_angles_surrounding_stacked = self.chosen_math_library.concatenate((self.channel_angles_surrounding,
-                                                                                        self.channel_angles_surrounding_red), axis=0)
+                                                                                        self.channel_angles_surrounding_red),
+                                                                                       axis=0)
 
         self.snr = []
         self.red_signal_fail = []
         self.uv_signal_fail = []
         self.red2_signal_fail = []
 
-    def plot_photoreceptors(self, uv_photoreceptor_angles, red_photoreceptor_angles, uv_photoreceptor_rf_size, red_photoreceptor_rf_size, is_left):
-    # Plot the photoreceptors on a polar plot:
+    def plot_photoreceptors(self, uv_photoreceptor_angles, red_photoreceptor_angles, uv_photoreceptor_rf_size,
+                            red_photoreceptor_rf_size, is_left):
+        # Plot the photoreceptors on a polar plot:
         plt.ioff()
 
         fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
@@ -105,12 +111,12 @@ class Eye:
         ax.set_theta_direction(-1)
         uv_rfs = np.zeros((len(uv_photoreceptor_angles), 2))
         red_rfs = np.zeros((len(red_photoreceptor_angles), 2))
-        uv_rfs[:,0] = uv_photoreceptor_angles - uv_photoreceptor_rf_size/2
-        uv_rfs[:,1] = uv_photoreceptor_angles + uv_photoreceptor_rf_size/2
-        red_rfs[:,0] = red_photoreceptor_angles - red_photoreceptor_rf_size/2
-        red_rfs[:,1] = red_photoreceptor_angles + red_photoreceptor_rf_size/2
-        r_uv = np.ones(uv_rfs.shape)*0.9
-        r_red = np.ones(red_rfs.shape)*1.1
+        uv_rfs[:, 0] = uv_photoreceptor_angles - uv_photoreceptor_rf_size / 2
+        uv_rfs[:, 1] = uv_photoreceptor_angles + uv_photoreceptor_rf_size / 2
+        red_rfs[:, 0] = red_photoreceptor_angles - red_photoreceptor_rf_size / 2
+        red_rfs[:, 1] = red_photoreceptor_angles + red_photoreceptor_rf_size / 2
+        r_uv = np.ones(uv_rfs.shape) * 0.9
+        r_red = np.ones(red_rfs.shape) * 1.1
         ax.plot(uv_rfs.T, r_uv.T, color='b', alpha=0.3, linewidth=1)
         ax.plot(red_rfs.T, r_red.T, color='r', alpha=0.3, linewidth=1)
         if is_left:
@@ -118,8 +124,8 @@ class Eye:
         else:
             plt.savefig('right_eye.png')
         fig.clf()
-        #plt.ion()
-    
+        # plt.ion()
+
     def get_repeated_computations(self):
         if self.shared_photoreceptor_channels:
             channel_angles_surrounding = self.chosen_math_library.expand_dims(self.photoreceptor_angles, 1)
@@ -176,7 +182,8 @@ class Eye:
 
         pr = [0]
         while True:
-            spacing = self.sz_rf_spacing + self.density_range / (1 + np.exp(-self.sigmoid_steepness * (pr[-1] - self.sz_size)))
+            spacing = self.sz_rf_spacing + self.density_range / (
+                        1 + np.exp(-self.sigmoid_steepness * (pr[-1] - self.sz_size)))
             pr.append(pr[-1] + spacing)
             if pr[-1] > retinal_field:
                 break
@@ -201,8 +208,8 @@ class Eye:
             max_angle = np.pi / 2 + retinal_field / 2 - verg_angle / 2
         return self.chosen_math_library.linspace(min_angle, max_angle, photoreceptor_num)
 
-
-    def read(self, masked_arena_pixels, eye_x, eye_y, fish_angle, lum_mask, prey_pos, proj=True):
+    def read(self, masked_arena_pixels, eye_x, eye_y, fish_angle, lum_mask, prey_positions, sand_grain_positions,
+             proj=True):
         """
         Resolve RF coordinates for each photoreceptor, and use those to sum the relevant pixels.
 
@@ -213,15 +220,15 @@ class Eye:
         channel_angles_surrounding = self.channel_angles_surrounding_stacked + fish_angle
         uv_arena_pixels = masked_arena_pixels[:, :, 1:2]
         red_arena_pixels = self.chosen_math_library.concatenate(
-                (masked_arena_pixels[:, :, 0:1], masked_arena_pixels[:, :, 2:]), axis=2)
+            (masked_arena_pixels[:, :, 0:1], masked_arena_pixels[:, :, 2:]), axis=2)
         uv_readings, red_readings = self._read_stacked(masked_arena_pixels_uv=uv_arena_pixels,
-                                                        masked_arena_pixels_red=red_arena_pixels,
-                                                        eye_x=eye_x,
-                                                        eye_y=eye_y,
-                                                        channel_angles_surrounding=channel_angles_surrounding,
-                                                        n_channels_uv=self.uv_photoreceptor_num,
-                                                        n_channels_red=self.red_photoreceptor_num)
-        
+                                                       masked_arena_pixels_red=red_arena_pixels,
+                                                       eye_x=eye_x,
+                                                       eye_y=eye_y,
+                                                       channel_angles_surrounding=channel_angles_surrounding,
+                                                       n_channels_uv=self.uv_photoreceptor_num,
+                                                       n_channels_red=self.red_photoreceptor_num)
+
         if proj:
             proj_uv_readings = self._read_prey_proj(eye_x=eye_x,
                                                     eye_y=eye_y,
@@ -229,33 +236,56 @@ class Eye:
                                                     fish_angle=fish_angle,
                                                     rf_size=self.uv_photoreceptor_rf_size,
                                                     lum_mask=lum_mask,
-                                                    prey_pos=np.array(prey_pos))
+                                                    prey_pos=np.array(prey_positions))
+
             uv_readings += proj_uv_readings
 
+            if len(sand_grain_positions) > 0:
+                proj_readings_sand_grains = self._read_prey_proj(eye_x=eye_x,
+                                                                    eye_y=eye_y,
+                                                                    uv_pr_angles=self.uv_photoreceptor_angles,
+                                                                    fish_angle=fish_angle,
+                                                                    rf_size=self.uv_photoreceptor_rf_size,
+                                                                    lum_mask=lum_mask,
+                                                                    prey_pos=np.array(sand_grain_positions))
+
+                proj_uv_readings_sand_grains = self.env_variables["sand_grain_colour"][1] * proj_readings_sand_grains
+                uv_readings += proj_uv_readings_sand_grains
+
+                proj_red_readings_sand_grains = self.env_variables["sand_grain_colour"][0] * proj_readings_sand_grains
+                red_readings += proj_red_readings_sand_grains
+
         uv_readings_scaled = self.scale_readings(uv_readings,
-                                                    self.env_variables['uv_scaling_factor'] * self.env_variables["light_gain"]/200)
+                                                 self.env_variables['uv_scaling_factor'] * self.env_variables[
+                                                     "light_gain"] / 200)
         self.uv_readings = self.add_noise_to_readings(uv_readings_scaled)
 
         red_readings_scaled = self.scale_readings(red_readings,
-                                                    self.env_variables['red_scaling_factor'] * self.env_variables["light_gain"]/200,
-                                                    self.env_variables['red_2_scaling_factor'] * self.env_variables["light_gain"]/200)
+                                                  self.env_variables['red_scaling_factor'] * self.env_variables[
+                                                      "light_gain"] / 200,
+                                                  self.env_variables['red_2_scaling_factor'] * self.env_variables[
+                                                      "light_gain"] / 200)
         self.red_readings = self.add_noise_to_readings(red_readings_scaled)
 
         interp_uv_readings = self.chosen_math_library.zeros((self.interpolated_observation.shape[0], 1))
         interp_red_readings = self.chosen_math_library.zeros((self.interpolated_observation.shape[0], 2))
-        interp_uv_readings[:, 0] = self.chosen_math_library.interp(self.interpolated_observation, self.uv_photoreceptor_angles, self.uv_readings[:,0])
-        interp_red_readings[:, 0] = self.chosen_math_library.interp(self.interpolated_observation, self.red_photoreceptor_angles, self.red_readings[:, 0])
-        interp_red_readings[:, 1] = self.chosen_math_library.interp(self.interpolated_observation, self.red_photoreceptor_angles, self.red_readings[:, 1])
+        interp_uv_readings[:, 0] = self.chosen_math_library.interp(self.interpolated_observation,
+                                                                   self.uv_photoreceptor_angles, self.uv_readings[:, 0])
+        interp_red_readings[:, 0] = self.chosen_math_library.interp(self.interpolated_observation,
+                                                                    self.red_photoreceptor_angles,
+                                                                    self.red_readings[:, 0])
+        interp_red_readings[:, 1] = self.chosen_math_library.interp(self.interpolated_observation,
+                                                                    self.red_photoreceptor_angles,
+                                                                    self.red_readings[:, 1])
 
         self.readings = self.chosen_math_library.concatenate(
-             (interp_red_readings[:, 0:1], interp_uv_readings, interp_red_readings[:, 1:]), axis=1)
+            (interp_red_readings[:, 0:1], interp_uv_readings, interp_red_readings[:, 1:]), axis=1)
 
         if self.using_gpu:
             self.readings = self.readings.get()
         else:
             pass
 
-    
     def _read_prey_proj(self, eye_x, eye_y, uv_pr_angles, fish_angle, rf_size, lum_mask, prey_pos):
         """Reads the prey projection for the given eye position and fish angle.
         """
@@ -263,7 +293,6 @@ class Eye:
             abs_uv_pr_angles = uv_pr_angles.get()
         else:
             abs_uv_pr_angles = np.copy(uv_pr_angles)
-
 
         rel_prey_pos = prey_pos - np.array([eye_x, eye_y])
         rho = np.hypot(rel_prey_pos[:, 0], rel_prey_pos[:, 1])
@@ -273,27 +302,26 @@ class Eye:
         rel_prey_pos = rel_prey_pos[within_range, :]
         rho = rho[within_range]
         theta = np.arctan2(rel_prey_pos[:, 1], rel_prey_pos[:, 0]) - fish_angle
-        theta = np.arctan2(np.sin(theta), np.cos(theta)) # wrap to [-pi, pi]
+        theta = np.arctan2(np.sin(theta), np.cos(theta))  # wrap to [-pi, pi]
         p_num = prey_pos_in_range.shape[0]
 
-      
         proj = np.zeros((p_num, len(self.ang)))
         for p in range(p_num):
-            half_angle = np.arctan(self.prey_diam/(2*rho[p]))
+            half_angle = np.arctan(self.prey_diam / (2 * rho[p]))
 
-            l_ind = self._closest_index(self.ang, theta[p]-half_angle)
-            r_ind = self._closest_index(self.ang, theta[p]+half_angle)
+            l_ind = self._closest_index(self.ang, theta[p] - half_angle)
+            r_ind = self._closest_index(self.ang, theta[p] + half_angle)
             prey_brightness = lum_mask[int(np.floor(prey_pos_in_range[p, 1])) - 1,
-                                       int(np.floor(prey_pos_in_range[p, 0])) - 1] # includes absorption
+                                       int(np.floor(prey_pos_in_range[p, 0])) - 1]  # includes absorption
             if self.using_gpu:
                 prey_brightness = prey_brightness.get()
 
             proj[p, l_ind:r_ind] = prey_brightness
             if self.scatter_sigma_0 > 0:
                 scatter_sigma = self.scatter_sigma_0 * np.exp(self.scattering_coef * rho[p])
-                angular_scatter_sigma = 2 * np.arctan(scatter_sigma/(2*rho[p]))
+                angular_scatter_sigma = 2 * np.arctan(scatter_sigma / (2 * rho[p]))
 
-                alpha = (self.filter_bins-1)/(2*angular_scatter_sigma)
+                alpha = (self.filter_bins - 1) / (2 * angular_scatter_sigma)
                 w = signal.windows.gaussian(self.filter_bins, alpha)
                 w /= np.sum(w)
                 proj[p, :] = signal.filtfilt(w, 1, proj[p, :])
@@ -302,10 +330,10 @@ class Eye:
 
         pr_input = np.zeros((len(abs_uv_pr_angles), 1))
         for pr in range(len(abs_uv_pr_angles)):
-            inds = [self._closest_index(self.ang, abs_uv_pr_angles[pr]-rf_size/2),
-                    self._closest_index(self.ang, abs_uv_pr_angles[pr]+rf_size/2)]
-            pr_input[pr,0] = np.sum(total_angular_input[inds[0]:inds[1]], axis=0)
-        
+            inds = [self._closest_index(self.ang, abs_uv_pr_angles[pr] - rf_size / 2),
+                    self._closest_index(self.ang, abs_uv_pr_angles[pr] + rf_size / 2)]
+            pr_input[pr, 0] = np.sum(total_angular_input[inds[0]:inds[1]], axis=0)
+
         return self.chosen_math_library.array(pr_input)
 
     def _closest_index(self, array, value):
@@ -324,7 +352,7 @@ class Eye:
 
         # Make sure angles are in desired range (PR_N x n)
         channel_angles_surrounding_scaling = (channel_angles_surrounding // (
-                    self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
+                self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
         channel_angles_surrounding = channel_angles_surrounding + channel_angles_surrounding_scaling
 
         # Compute m using tan (PR_N x n)
@@ -386,7 +414,8 @@ class Eye:
         same_values = (angles == channel_angles_surrounding) * 1
         selected_intersections = valid_intersection_coordinates[same_values == 1]
         try:
-            selected_intersections = self.chosen_math_library.reshape(selected_intersections, (n_channels, self.n, 1, 2))
+            selected_intersections = self.chosen_math_library.reshape(selected_intersections,
+                                                                      (n_channels, self.n, 1, 2))
         except ValueError:
             print(f"Eye position: {eye_position}")
 
@@ -438,7 +467,8 @@ class Eye:
         #     full_set[:, :, 1], full_set[:, :, 0]]  # NOTE: Inverting x and y to match standard in program.
         # total_sum = masked_arena_pixels.sum(axis=1)
 
-        masked_arena_pixels_uv = masked_arena_pixels_uv[full_set_uv[:, :, 1], full_set_uv[:, :, 0]]  # NOTE: Inverting x and y to match standard in program. TODO: THIS IS WHERE BREAKS.
+        masked_arena_pixels_uv = masked_arena_pixels_uv[full_set_uv[:, :, 1], full_set_uv[:, :,
+                                                                              0]]  # NOTE: Inverting x and y to match standard in program. TODO: THIS IS WHERE BREAKS.
         total_sum_uv = masked_arena_pixels_uv.sum(axis=1)
 
         masked_arena_pixels_red = masked_arena_pixels_red[
@@ -456,7 +486,6 @@ class Eye:
         total_sum_red = total_sum_red * (oversampling_ratio_red[n_channels_uv:] / self.n)
 
         return total_sum_uv, total_sum_red
-
 
     @staticmethod
     def scale_readings(readings, readings_scaling_factor, readings_scaling_factor_2=False,
@@ -480,12 +509,13 @@ class Eye:
         if self.env_variables["shot_noise"]:
             photons = self.chosen_math_library.random.poisson(readings)
             shot_noise_difference = self.chosen_math_library.abs(readings - photons)
-            snr = 1 - self.chosen_math_library.mean(shot_noise_difference/(photons+1), axis=1)
+            snr = 1 - self.chosen_math_library.mean(shot_noise_difference / (photons + 1), axis=1)
         else:
             photons = readings
 
         if self.env_variables['read_noise_sigma'] > 0:
-            noise = self.chosen_math_library.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables['read_noise_sigma']
+            noise = self.chosen_math_library.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables[
+                'read_noise_sigma']
             photons += noise.astype(int)
             photons = self.chosen_math_library.clip(photons, 0, 255)
 
@@ -500,10 +530,9 @@ class Eye:
         #
         #     self.red2_signal_fail.append(snr[1])
 
-
         if self.env_variables["isomerization_frequency"] > 0:
             dark_noise_events = self.chosen_math_library.random.choice([0, 1], size=readings.size,
-                                                                       p=[1-self.isomerization_probability,
+                                                                       p=[1 - self.isomerization_probability,
                                                                           self.isomerization_probability]
                                                                        ).astype(float)
             variability = self.chosen_math_library.random.rand(readings.size)
@@ -518,7 +547,7 @@ class Eye:
         """Uses lines method to return the vertices of all photoreceptor segments."""
         # Make sure is in desired range (PR_N x n)
         channel_angles_surrounding_scaling = (channel_angles_surrounding // (
-                    self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
+                self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
         channel_angles_surrounding = channel_angles_surrounding + channel_angles_surrounding_scaling
 
         # Compute m using tan (PR_N x n)
@@ -651,7 +680,6 @@ class Eye:
         n = (photoreceptor_rf_size / theta_separation)
         return int(n)
 
-
     def get_pr_coverage(self, masked_arena_pixels_uv, masked_arena_pixels_red, eye_x, eye_y, channel_angles_surrounding,
                         n_channels_uv, n_channels_red):
         """For testing purposes"""
@@ -659,7 +687,7 @@ class Eye:
 
         # Make sure angles are in desired range (PR_N x n)
         channel_angles_surrounding_scaling = (channel_angles_surrounding // (
-                    self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
+                self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
         channel_angles_surrounding = channel_angles_surrounding + channel_angles_surrounding_scaling
 
         # Compute m using tan (PR_N x n)
@@ -757,7 +785,7 @@ class Eye:
         """For testing purposes"""
         # Make sure angles are in desired range (PR_N x n)
         channel_angles_surrounding_scaling = (self.uv_photoreceptor_angles // (
-                    self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
+                self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
         channel_angles_surrounding = self.uv_photoreceptor_angles + channel_angles_surrounding_scaling
 
         # Compute m using tan (PR_N x n)
@@ -786,7 +814,9 @@ class Eye:
         intersection_coordinates = self.chosen_math_library.expand_dims(intersection_components, 2)
         intersection_coordinates = self.chosen_math_library.repeat(intersection_coordinates, 2, 2)
         intersection_coordinates = (intersection_coordinates * self.mul_for_hypothetical[
-                                                               :self.uv_photoreceptor_num, 0]) + self.add_for_hypothetical[:self.uv_photoreceptor_num, 0]
+                                                               :self.uv_photoreceptor_num,
+                                                               0]) + self.add_for_hypothetical[
+                                                                     :self.uv_photoreceptor_num, 0]
 
         # Compute possible intersections (PR_N x 2 x 2 x 2)
         valid_points_ls = (intersection_components > 0) * 1
@@ -813,7 +843,8 @@ class Eye:
 
         same_values = (angles == channel_angles_surrounding) * 1
         selected_intersections = valid_intersection_coordinates[same_values == 1]
-        selected_intersections = self.chosen_math_library.reshape(selected_intersections, (self.uv_photoreceptor_num, 1, 2))
+        selected_intersections = self.chosen_math_library.reshape(selected_intersections,
+                                                                  (self.uv_photoreceptor_num, 1, 2))
 
         eye_position_full = self.chosen_math_library.tile(eye_position, (self.uv_photoreceptor_num, 1, 1))
         vertices = self.chosen_math_library.concatenate((eye_position_full, selected_intersections), axis=1)

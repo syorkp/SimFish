@@ -201,7 +201,7 @@ class BaseDQN:
         sv = np.zeros((1, 128))  # Placeholder for the state value stream
 
         # Take the first simulation step, with a capture action. Assigns observation, reward, internal state, done, and
-        o, r, internal_state, d, FOV, o_c = self.simulation.simulation_step(action=3, activations=(sa,))
+        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=3, activations=(sa,))
 
         # For benchmarking each episode.
         all_actions = []
@@ -303,7 +303,7 @@ class BaseDQN:
             chosen_a = chosen_a[0]
 
         # Simulation step
-        o1, given_reward, internal_state, d, FOV, o_c = self.simulation.simulation_step(action=chosen_a,
+        o1, given_reward, internal_state, d, FOV = self.simulation.simulation_step(action=chosen_a,
                                                                                         activations=(sa,))
 
         action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
@@ -354,7 +354,6 @@ class BaseDQN:
 
             # Update buffer
             self.buffer.add_training(observation=o1,
-                                     observation_classic=o_c,
                                      internal_state=internal_state,
                                      # action=chosen_a,
                                      action=action_reafference,
@@ -395,7 +394,7 @@ class BaseDQN:
                            })
 
         chosen_a = chosen_a[0]
-        o1, given_reward, internal_state1, d, FOV, o_c = self.simulation.simulation_step(action=chosen_a,
+        o1, given_reward, internal_state1, d, FOV = self.simulation.simulation_step(action=chosen_a,
                                                                                          activations=(sa,))
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
@@ -404,7 +403,6 @@ class BaseDQN:
 
         # Update buffer
         self.buffer.add_training(observation=o,
-                                 observation_classic=o_c,
                                  internal_state=internal_state,
                                  # action=chosen_a,
                                  action=action_reafference,
@@ -468,7 +466,7 @@ class BaseDQN:
                            })
 
         chosen_a = chosen_a[0]
-        o1, given_reward, internal_state1, d, FOV, o_c = self.simulation.simulation_step(action=chosen_a,
+        o1, given_reward, internal_state1, d, FOV = self.simulation.simulation_step(action=chosen_a,
                                                                                          activations=(sa,))
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
         if self.full_reafference:
@@ -479,7 +477,6 @@ class BaseDQN:
 
         # Update buffer
         self.buffer.add_training(observation=o,
-                                 observation_classic=o_c,
                                  internal_state=internal_state,
                                  action=chosen_a,
                                  reward=given_reward,
