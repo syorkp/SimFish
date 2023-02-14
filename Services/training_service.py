@@ -1,7 +1,6 @@
 import copy
 import json
 import os
-import re
 import time
 import numpy as np
 import pstats
@@ -12,8 +11,6 @@ import tensorflow.compat.v1 as tf
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Services.base_service import BaseService
-from Tools.make_gif import make_gif
-from Tools.make_video import make_video
 from Tools.graph_functions import update_target_graph, update_target
 from Analysis.Behavioural.Exploration.turn_chain_metric import get_normalised_turn_chain_metric_continuous
 from Analysis.Video.behaviour_video_construction import draw_episode

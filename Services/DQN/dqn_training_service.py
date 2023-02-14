@@ -7,7 +7,7 @@ import tensorflow.compat.v1 as tf
 from Analysis.Indexing.data_index_service import DataIndexServiceDiscrete
 from Analysis.Behavioural.Exploration.turn_chain_metric import get_normalised_turn_chain_metric_discrete
 
-from Buffers.DQN.experience_buffer import ExperienceBuffer
+from Buffers.DQN.dqn_training_buffer import DQNTrainingBuffer
 from Buffers.DQN.dqn_assay_buffer import DQNAssayBuffer
 
 from Configurations.Templates.assay_config import naturalistic_assay_config
@@ -108,7 +108,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
         else:
             self.epsilon = self.learning_params["startE"]
 
-        self.experience_buffer = ExperienceBuffer(output_location=self.model_location, buffer_size=self.learning_params["exp_buffer_size"])
+        self.experience_buffer = DQNTrainingBuffer(output_location=self.model_location, buffer_size=self.learning_params["exp_buffer_size"])
         #if self.learning_params["save_gifs"]:
         #    self.episode_buffer = None
         #else:

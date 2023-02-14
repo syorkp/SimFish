@@ -12,6 +12,7 @@ from Tools.graph_functions import update_target
 import matplotlib.pyplot as plt
 from matplotlib.animation import FFMpegWriter
 
+
 class BaseDQN:
 
     def __init__(self):

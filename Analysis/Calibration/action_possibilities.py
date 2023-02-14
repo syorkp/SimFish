@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
 def plot_full_scatter_of_poss_actions():
     with h5py.File('../../Environment/Action_Space/bout_distributions.mat', 'r') as fl:
         p_angle = np.array(fl['p_angle']).T

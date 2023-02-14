@@ -668,10 +668,21 @@ if __name__ == "__main__":  # may be needed to run on windows
         },
 
     ]
+    ppo_gamma_6 = [
+        {
+            "Model Name": "ppo_gamma",
+            "Environment Name": "ppo_gamma",
+            "Trial Number": 6,
+            "Using GPU": True,
+            "Run Mode": "Training",
+            "Learning Algorithm": "PPO",
+        },
+
+    ]
 
 
     if run_config is None:
-        run_config = local_test
+        run_config = ppo_gamma_6
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]

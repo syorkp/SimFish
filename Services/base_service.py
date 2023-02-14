@@ -5,6 +5,7 @@ import shutil
 import numpy as np
 import os
 
+# noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
 
 tf.disable_v2_behavior()

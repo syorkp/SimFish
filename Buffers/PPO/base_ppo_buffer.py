@@ -125,9 +125,6 @@ class BasePPOBuffer:
             self.critic_conv3r_buffer = []
             self.critic_conv4r_buffer = []
 
-
-
-
         self.pointer = 0
 
     def tidy(self):
