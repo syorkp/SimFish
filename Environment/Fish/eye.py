@@ -312,8 +312,14 @@ class Eye:
 
             l_ind = self._closest_index(self.ang, theta[p] - half_angle)
             r_ind = self._closest_index(self.ang, theta[p] + half_angle)
-            prey_brightness = lum_mask[int(np.floor(prey_pos_in_range[p, 1])) - 1,
-                                       int(np.floor(prey_pos_in_range[p, 0])) - 1]  # includes absorption
+            try:
+                prey_brightness = lum_mask[int(np.floor(prey_pos_in_range[p, 1])) - 1,
+                                           int(np.floor(prey_pos_in_range[p, 0])) - 1]  # includes absorption
+            except IndexError:
+                print(f"Prey Position: {[int(np.floor(prey_pos_in_range[p, 1])) - 1, int(np.floor(prey_pos_in_range[p, 0])) - 1]}")
+                print(f"Prey index: {p} of {p_num}")
+                print(f"LMS: {np.array(lum_mask).shape}")
+
             if self.using_gpu:
                 prey_brightness = prey_brightness.get()
 
