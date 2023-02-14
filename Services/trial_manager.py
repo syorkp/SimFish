@@ -6,12 +6,8 @@ import multiprocessing
 import Services.DQN.dqn_training_service as dqn_training_service
 import Services.DQN.dqn_assay_service as dqn_assay_service
 
-import Services.PPO.ppo_training_service_continuous as ppo_training_continuous
-import Services.PPO.ppo_assay_service_continuous as ppo_assay_continuous
-import Services.PPO.ppo_training_service_continuous_sbe as ppo_training_continuous_2
-import Services.PPO.ppo_training_service_discrete as ppo_training_discrete
-import Services.PPO.ppo_assay_service_discrete as ppo_assay_discrete
-import Services.PPO.ppo_training_service_discrete_2 as ppo_training_discrete2
+import Services.PPO.ppo_training_service as ppo_training_continuous
+import Services.PPO.ppo_assay_service as ppo_assay_continuous
 
 from Analysis.Training.get_checkpoints_from_scaffold_points import get_checkpoint
 from Configurations.Utilities.turn_scaffold_point_to_assay_config import transfer_config
@@ -159,12 +155,9 @@ class TrialManager:
         if trial["Run Mode"] == "Training":
             if continuous_actions:
                 if trial["Learning Algorithm"] == "PPO":
-                    if sb_emulator:
-                        new_job = multiprocessing.Process(target=ppo_training_continuous_2.ppo_training_target_continuous_sbe,
+                    new_job = multiprocessing.Process(target=ppo_training_continuous.ppo_training_target_continuous_sbe,
                                                           args=(trial, total_steps, episode_number, memory_fraction, configuration_index))
-                    else:
-                        new_job = multiprocessing.Process(target=ppo_training_continuous.ppo_training_target_continuous,
-                                                      args=(trial, total_steps, episode_number, memory_fraction, configuration_index))
+
                 elif trial["Learning Algorithm"] == "DQN":
                     print('Cannot use DQN with continuous actions (training mode)')
                     new_job = None
@@ -174,13 +167,7 @@ class TrialManager:
 
             else:
                 if trial["Learning Algorithm"] == "PPO":
-                    if sb_emulator:
-                        new_job = multiprocessing.Process(target=ppo_training_discrete2.ppo_training_target_discrete,
-                                                          args=(trial, total_steps, episode_number, memory_fraction,
-                                                                configuration_index))
-                    else:
-                        new_job = multiprocessing.Process(target=ppo_training_discrete.ppo_training_target_discrete,
-                                                          args=(trial, total_steps, episode_number, memory_fraction, configuration_index))
+                    print("PPO Discrete Not Supported.")
                 elif trial["Learning Algorithm"] == "DQN":
                     new_job = multiprocessing.Process(target=dqn_training_service.training_target,
                                                       args=(trial, epsilon, total_steps, episode_number, memory_fraction, configuration_index))

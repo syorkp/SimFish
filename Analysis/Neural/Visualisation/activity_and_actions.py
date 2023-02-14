@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from Analysis.Visualisation.display_many_neurons import plot_traces
+from Analysis.Neural.Visualisation.display_many_neurons import plot_traces
 from Analysis.load_data import load_data
 from Analysis.load_stimuli_data import load_stimulus_data
 

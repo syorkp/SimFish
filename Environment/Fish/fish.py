@@ -236,6 +236,7 @@ class Fish:
             self.head.color = [1, 1, 1]
 
         elif action == 6:  # Do nothing
+            reward = 0
             self.prev_action_impulse = 0
             self.prev_action_angle = 0
 
