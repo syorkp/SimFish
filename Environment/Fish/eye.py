@@ -298,7 +298,7 @@ class Eye:
         rel_prey_pos = prey_pos - np.array([eye_x, eye_y])
         rho = np.hypot(rel_prey_pos[:, 0], rel_prey_pos[:, 1])
 
-        within_range = np.where(rho < self.max_visual_range + 1)[0]
+        within_range = np.where(rho < self.max_visual_range - 1)[0]
         prey_pos_in_range = prey_pos[within_range, :]
         rel_prey_pos = rel_prey_pos[within_range, :]
         rho = rho[within_range]
@@ -318,7 +318,7 @@ class Eye:
             except IndexError:
                 print(f"Prey Position: {[int(np.floor(prey_pos_in_range[p, 1])) - 1, int(np.floor(prey_pos_in_range[p, 0])) - 1]}")
                 print(f"Prey index: {p} of {p_num}")
-                print(f"LMS: {np.array(lum_mask.get()).shape}")
+                print(f"LMS: {lum_mask.shape}")
 
             if self.using_gpu:
                 prey_brightness = prey_brightness.get()
