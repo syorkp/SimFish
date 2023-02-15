@@ -20,15 +20,17 @@ def full_model_prey_count(bkg_scatter, decay_rate, pr_size, width, height, lumin
     fish_orientation = np.pi/4
 
     # Create board and get masked pixels
+    max_visual_distance = np.absolute(np.log(0.001) / env_variables["decay_rate"])
+
     board = DrawingBoard(width, height, decay_rate, pr_size, False, False, 1, light_gain=luminance, visible_scatter=bkg_scatter)
     board.erase(bkg_scatter)
-    masked_pixels = board.get_masked_pixels(fish_position, np.array([]), np.array([]))
+    masked_pixels, lum_mask = board.get_masked_pixels(fish_position, np.array([]), np.array([]))
 
     # Create eye
     verg_angle = 77. * (np.pi / 180)
     retinal_field = 163. * (np.pi / 180)
     dark_col = int(env_variables['width'] * env_variables['dark_light_ratio'])
-    left_eye = Eye(board, verg_angle, retinal_field, True, env_variables, dark_col, False)
+    left_eye = Eye(board, verg_angle, retinal_field, True, env_variables, dark_col, False, max_visual_range=max_visual_distance)
 
     # Create eye positions
 
@@ -64,15 +66,9 @@ def full_model_prey_count(bkg_scatter, decay_rate, pr_size, width, height, lumin
     # field[coords[:, 1], coords[:, 0]] = 1
 
     board.erase(bkg_scatter)
-    px = np.round(np.array([prey_location[0]])).astype(int)
-    py = np.round(np.array([prey_location[1]])).astype(int)
-    rrs, ccs = board.multi_circles(px, py, 1)
-    rrs = np.clip(rrs, 0, 1499)
-    ccs = np.clip(ccs, 0, 1499)
-    board.db[rrs, ccs] = (0, 0, 1)
 
-    masked_pixels = board.get_masked_pixels(fish_position, np.array([prey_location]), np.array([]))
-    left_eye.read(masked_pixels, left_eye_pos[0], left_eye_pos[1], fish_orientation)
+    masked_pixels, lum_mask = board.get_masked_pixels(fish_position, np.array([prey_location]), np.array([]))
+    left_eye.read(masked_pixels, left_eye_pos[0], left_eye_pos[1], fish_orientation, lum_mask, [prey_location], [])
 
     observation = left_eye.readings  # np.dstack((left_eye.readings, right_eye.readings))
     observation = np.floor(observation).astype(int)

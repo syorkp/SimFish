@@ -48,7 +48,8 @@ class Eye:
         self.sigmoid_steepness = 5.0  # TODO: This is a parameter that needs to added to the config file.
 
         self.ang_bin = 0.001  # this is the bin size for the projection
-        self.ang = np.arange(-np.pi, np.pi + self.ang_bin, self.ang_bin)  # this is the angle range for the projection
+        self.ang = self.chosen_math_library.arange(-np.pi, np.pi + self.ang_bin,
+                                                   self.ang_bin)  # this is the angle range for the projection
 
         self.filter_bins = 20  # this is the number of bins for the scattering filter
 
@@ -63,7 +64,7 @@ class Eye:
 
         self.interpolated_observation = self.chosen_math_library.arange(
             self.chosen_math_library.min(self.uv_photoreceptor_angles),
-            self.chosen_math_library.max(self.uv_photoreceptor_angles),
+            self.chosen_math_library.max(self.uv_photoreceptor_angles) + self.sz_rf_spacing / 2,
             self.sz_rf_spacing / 2)
 
         self.observation_size = len(self.interpolated_observation)
@@ -183,7 +184,7 @@ class Eye:
         pr = [0]
         while True:
             spacing = self.sz_rf_spacing + self.density_range / (
-                        1 + np.exp(-self.sigmoid_steepness * (pr[-1] - self.sz_size)))
+                    1 + np.exp(-self.sigmoid_steepness * (pr[-1] - self.sz_size)))
             pr.append(pr[-1] + spacing)
             if pr[-1] > retinal_field:
                 break
@@ -229,26 +230,26 @@ class Eye:
                                                        n_channels_uv=self.uv_photoreceptor_num,
                                                        n_channels_red=self.red_photoreceptor_num)
 
-        if proj:
+        if proj and (len(prey_positions) + len(sand_grain_positions) > 0):
             proj_uv_readings = self._read_prey_proj_parallel(eye_x=eye_x,
-                                                    eye_y=eye_y,
-                                                    uv_pr_angles=self.uv_photoreceptor_angles,
-                                                    fish_angle=fish_angle,
-                                                    rf_size=self.uv_photoreceptor_rf_size,
-                                                    lum_mask=lum_mask,
-                                                    prey_pos=np.array(prey_positions))
+                                                             eye_y=eye_y,
+                                                             uv_pr_angles=self.uv_photoreceptor_angles,
+                                                             fish_angle=fish_angle,
+                                                             rf_size=self.uv_photoreceptor_rf_size,
+                                                             lum_mask=lum_mask,
+                                                             prey_pos=self.chosen_math_library.array(prey_positions))
 
             uv_readings += proj_uv_readings
 
             if len(sand_grain_positions) > 0:
-                proj_readings_sand_grains = self._read_prey_proj(eye_x=eye_x,
-                                                                 eye_y=eye_y,
-                                                                 uv_pr_angles=self.uv_photoreceptor_angles,
-                                                                 fish_angle=fish_angle,
-                                                                 rf_size=self.uv_photoreceptor_rf_size,
-                                                                 lum_mask=lum_mask,
-                                                                 prey_pos=np.array(sand_grain_positions)
-                                                                 )
+                proj_readings_sand_grains = self._read_prey_proj_parallel(eye_x=eye_x,
+                                                                          eye_y=eye_y,
+                                                                          uv_pr_angles=self.uv_photoreceptor_angles,
+                                                                          fish_angle=fish_angle,
+                                                                          rf_size=self.uv_photoreceptor_rf_size,
+                                                                          lum_mask=lum_mask,
+                                                                          prey_pos=np.array(sand_grain_positions)
+                                                                          )
 
                 proj_uv_readings_sand_grains = self.env_variables["sand_grain_colour"][1] * proj_readings_sand_grains
                 uv_readings += proj_uv_readings_sand_grains
@@ -316,7 +317,8 @@ class Eye:
                 prey_brightness = lum_mask[int(np.floor(prey_pos_in_range[p, 1])) - 1,
                                            int(np.floor(prey_pos_in_range[p, 0])) - 1]  # includes absorption
             except IndexError:
-                print(f"Prey Position: {[int(np.floor(prey_pos_in_range[p, 1])) - 1, int(np.floor(prey_pos_in_range[p, 0])) - 1]}")
+                print(
+                    f"Prey Position: {[int(np.floor(prey_pos_in_range[p, 1])) - 1, int(np.floor(prey_pos_in_range[p, 0])) - 1]}")
                 print(f"Prey index: {p} of {p_num}")
                 print(f"LMS: {lum_mask.shape}")
 
@@ -347,8 +349,6 @@ class Eye:
         """Reads the prey projection for the given eye position and fish angle.
         Same as " but performs more computation in parallel for each prey. Also have removed scatter.
         """
-        abs_uv_pr_angles = self.chosen_math_library.copy(uv_pr_angles)
-        prey_pos = self.chosen_math_library.array(prey_pos)
 
         rel_prey_pos = prey_pos - self.chosen_math_library.array([eye_x, eye_y])
         rho = self.chosen_math_library.hypot(rel_prey_pos[:, 0], rel_prey_pos[:, 1])
@@ -364,13 +364,12 @@ class Eye:
 
         half_angle = self.chosen_math_library.arctan(self.prey_diam / (2 * rho))
 
-        l_ind = self._closest_index_parallel(self.chosen_math_library.array(self.ang), theta - half_angle).astype(int)
-        r_ind = self._closest_index_parallel(self.chosen_math_library.array(self.ang), theta + half_angle).astype(int)
+        l_ind = self._closest_index_parallel(self.ang, theta - half_angle).astype(int)
+        r_ind = self._closest_index_parallel(self.ang, theta + half_angle).astype(int)
 
-        prey_brightness = lum_mask[(self.chosen_math_library.floor(prey_pos_in_range[:, 1])- 1).astype(int),
-                                   (self.chosen_math_library.floor(prey_pos_in_range[:, 0]) - 1).astype(int)]  # includes absorption
-
-        # l_ind = self.chosen_math_library.concatenate((self.chosen_math_library.arange(0, p_num), l_ind))
+        prey_brightness = lum_mask[(self.chosen_math_library.floor(prey_pos_in_range[:, 1]) - 1).astype(int),
+                                   (self.chosen_math_library.floor(prey_pos_in_range[:, 0]) - 1).astype(
+                                       int)]  # includes absorption
 
         proj = self.chosen_math_library.zeros((p_num, len(self.ang)))
 
@@ -383,8 +382,8 @@ class Eye:
 
         total_angular_input = self.chosen_math_library.sum(prey_present, axis=0)
 
-        pr_ind_s = self._closest_index_parallel(self.chosen_math_library.array(self.ang), abs_uv_pr_angles - rf_size / 2)
-        pr_ind_e = self._closest_index_parallel(self.chosen_math_library.array(self.ang), abs_uv_pr_angles + rf_size / 2)
+        pr_ind_s = self._closest_index_parallel(self.ang, uv_pr_angles - rf_size / 2)
+        pr_ind_e = self._closest_index_parallel(self.ang, uv_pr_angles + rf_size / 2)
 
         pr_occupation = (pr_ind_s[:, None] <= r) & (pr_ind_e[:, None] >= r)
         pr_occupation = pr_occupation.astype(float)
@@ -402,7 +401,7 @@ class Eye:
     def _closest_index_parallel(self, array, value_array):
         """Find indices of the closest values in array (for each row in axis=0)."""
         value_array = self.chosen_math_library.expand_dims(value_array, axis=1)
-        idxs = (self.chosen_math_library.abs(array-value_array)).argmin(axis=1)
+        idxs = (self.chosen_math_library.abs(array - value_array)).argmin(axis=1)
         return idxs
 
     def _read_stacked(self, masked_arena_pixels_uv, masked_arena_pixels_red, eye_x, eye_y, channel_angles_surrounding,

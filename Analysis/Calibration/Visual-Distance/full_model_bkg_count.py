@@ -13,17 +13,19 @@ def get_max_bkg_scatter(bkg_scatter, decay_rate, pr_size, width, height, luminan
     fish_position = np.array([10, 10])
     fish_orientation = np.pi/4
 
+    max_visual_distance = np.absolute(np.log(0.001) / env_variables["decay_rate"])
+
     # Create board and get masked pixels
     board = DrawingBoard(width, height, decay_rate, pr_size, False, False, 1, light_gain=luminance, visible_scatter=bkg_scatter)
     board.erase(bkg_scatter)
-    masked_pixels = board.get_masked_pixels(fish_position, np.array([]), np.array([]))
+    masked_pixels, lum_mask = board.get_masked_pixels(fish_position, np.array([]), np.array([]))
 
     # Create eye
     verg_angle = 77. * (np.pi / 180)
     retinal_field = 163. * (np.pi / 180)
     dark_col = int(env_variables['width'] * env_variables['dark_light_ratio'])
-    left_eye = Eye(board, verg_angle, retinal_field, True, env_variables, dark_col, False)
-    right_eye = Eye(board, verg_angle, retinal_field, False, env_variables, dark_col, False)
+    left_eye = Eye(board, verg_angle, retinal_field, True, env_variables, dark_col, False, max_visual_range=max_visual_distance)
+    right_eye = Eye(board, verg_angle, retinal_field, False, env_variables, dark_col, False, max_visual_range=max_visual_distance)
 
     # Create eye positions
 
@@ -34,8 +36,11 @@ def get_max_bkg_scatter(bkg_scatter, decay_rate, pr_size, width, height, luminan
         +np.cos(np.pi / 2 - fish_orientation) * env_variables['eyes_biasx'] + fish_position[0],
         -np.sin(np.pi / 2 - fish_orientation) * env_variables['eyes_biasx'] + fish_position[1])
 
-    left_eye.read(masked_pixels, left_eye_pos[0], left_eye_pos[1], fish_orientation)
-    right_eye.read(masked_pixels, right_eye_pos[0], right_eye_pos[1], fish_orientation)
+    prey_locations = []
+    sand_grain_locations = []
+
+    left_eye.read(masked_pixels, left_eye_pos[0], left_eye_pos[1], fish_orientation, lum_mask, prey_locations, sand_grain_locations)
+    right_eye.read(masked_pixels, right_eye_pos[0], right_eye_pos[1], fish_orientation, lum_mask, prey_locations, sand_grain_locations)
 
     observation = np.dstack((left_eye.readings, right_eye.readings))
     observation = np.floor(observation).astype(int)

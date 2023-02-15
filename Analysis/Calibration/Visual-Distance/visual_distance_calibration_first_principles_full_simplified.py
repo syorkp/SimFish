@@ -123,18 +123,25 @@ def plot_distinguishability_against_luminance(visual_distance, max_distance, bkg
     plt.show()
 
 
-def plot_distinguishability_against_luminance_two_distances(visual_distance_full, visual_distance_partial, max_distance,
-                                                            bkg_scatter, scaling_factor, uv_occlusion_gain, min_luminance,
-                                                            max_luminance, rf_size, decay_constant):
-    luminance_vals = np.linspace(min_luminance, max_luminance, 1000)
+def plot_distinguishability_against_luminance_two_distances(model_config, visual_distance_full, visual_distance_partial,
+                                                            min_luminance, max_luminance, total_tests=1000):
+    luminance_vals = np.linspace(min_luminance, max_luminance, total_tests)
 
-    learning_params, env_variables, n, b, c = load_assay_configuration_files("dqn_scaffold_19-1")
-    env_variables["light_gain"] = luminance
+    learning_params, env_variables, n, b, c = load_assay_configuration_files(model_config)
+
+    luminance = env_variables["light_gain"]
+    decay_constant = env_variables['decay_rate']
     env_variables["shot_noise"] = False
     env_variables["dark_light_ratio"] = 0.0
-    env_variables["max_visual_distance"] = 1500
+    env_variables["max_visual_distance"] = np.absolute(np.log(0.001) / env_variables["decay_rate"])
 
-    max_uv_scatter = get_max_bkg_scatter(bkg_scatter, decay_constant, rf_size, 1500, 1500, luminance, env_variables)
+    max_uv_scatter = get_max_bkg_scatter(env_variables["bkg_scatter"],
+                                         decay_constant,
+                                         env_variables["uv_photoreceptor_rf_size"],
+                                         env_variables["width"],
+                                         env_variables["height"],
+                                         luminance,
+                                         env_variables)
 
     env_variables["bkg_scatter"] = 0
 
@@ -147,11 +154,11 @@ def plot_distinguishability_against_luminance_two_distances(visual_distance_full
     for l in luminance_vals:
         print(l)
         # Full visibility
-        uv_prey = full_model_prey_count(0, decay_constant, rf_size, 1500, 1500, l, env_variables, visual_distance_full)
+        uv_prey = full_model_prey_count(0, decay_constant, env_variables["uv_photoreceptor_rf_size"], 1500, 1500, l, env_variables, visual_distance_full)
         uv_prey_full = int(uv_prey + uv_scatter_photons)
 
         # 50% visibility
-        uv_prey = full_model_prey_count(0, decay_constant, rf_size, 1500, 1500, l, env_variables, visual_distance_partial)
+        uv_prey = full_model_prey_count(0, decay_constant, env_variables["uv_photoreceptor_rf_size"], 1500, 1500, l, env_variables, visual_distance_partial)
         uv_prey_partial = int(uv_prey + uv_scatter_photons)
 
         uv_stimulus_photons_full.append(uv_prey_full)
@@ -167,12 +174,12 @@ def plot_distinguishability_against_luminance_two_distances(visual_distance_full
     plt.xlabel("Luminance")
     plt.show()
 
-    plt.plot(luminance_vals, [uv_scatter_photons for i in range(len(luminance_vals))])
-    plt.plot(luminance_vals, uv_stimulus_photons_full, color="r")
-    plt.plot(luminance_vals, uv_stimulus_photons_partial, color="g")
-    plt.legend(["Max Scatter Photons", f"Max Prey Photons {visual_distance_full/10}mm", f"Max Prey Photons {visual_distance_partial/10}mm"])
-    plt.title(f"Photon counts")
-    plt.show()
+    # plt.plot(luminance_vals, [uv_scatter_photons for i in range(len(luminance_vals))])
+    # plt.plot(luminance_vals, uv_stimulus_photons_full, color="r")
+    # plt.plot(luminance_vals, uv_stimulus_photons_partial, color="g")
+    # plt.legend(["Max Scatter Photons", f"Max Prey Photons {visual_distance_full/10}mm", f"Max Prey Photons {visual_distance_partial/10}mm"])
+    # plt.title(f"Photon counts")
+    # plt.show()
 
     with open(
             f"Full-Model-Distinguishability-Scores/distinguishability_scores_partial.npy",
@@ -195,33 +202,18 @@ def plot_distinguishability_against_luminance_two_distances(visual_distance_full
         np.save(f, np.array(uv_stimulus_photons_partial))
 
 
-learning_params, env_variables, n, b, c = load_assay_configuration_files("dqn_scaffold_19-1")
 
 
+if __name__ == "__main__":
+    visual_distance_full = 34
+    visual_distance_partial = 100
+    min_luminance = 120
+    max_luminance = 180
 
-L1 = 200
-max_distance = (1500**2 + 1500**2) ** 0.5
-bkg_scatter = 0.1
-scaling_factor = 1
-uv_occlusion_gain = 1.0
-visual_distance_full = 34
-visual_distance_partial = 100
-min_luminance = 0
-max_luminance = 200
-decay = 0.01
-luminance = 200
-distance = 600
-rf_size = 0.0133# * 3
-
-# plot_distinguishability_against_distance(max_distance, bkg_scatter, L1, scaling_factor, rf_size, decay, max_curve_distance=100)
-plot_distinguishability_against_luminance_two_distances(visual_distance_full, visual_distance_partial, max_distance,
-                                                        bkg_scatter, scaling_factor, uv_occlusion_gain, min_luminance,
-                                                        max_luminance, rf_size, decay)
-
-L2 = 36.63
-
-L3 = 18.81
-
-# plot_distinguishability_against_distance(max_distance, bkg_scatter, L2, scaling_factor, rf_size, decay, max_curve_distance=100)
-# plot_distinguishability_against_distance(max_distance, bkg_scatter, L3, scaling_factor, rf_size, decay, max_curve_distance=100)
-#
+    plot_distinguishability_against_luminance_two_distances(model_config="dqn_epsilon-1",
+                                                            visual_distance_full=visual_distance_full,
+                                                            visual_distance_partial=visual_distance_partial,
+                                                            min_luminance=min_luminance,
+                                                            max_luminance=max_luminance,
+                                                            total_tests=10
+                                                            )
