@@ -230,7 +230,7 @@ class Eye:
                                                        n_channels_red=self.red_photoreceptor_num)
 
         if proj:
-            proj_uv_readings = self._read_prey_proj(eye_x=eye_x,
+            proj_uv_readings = self._read_prey_proj_parallel(eye_x=eye_x,
                                                     eye_y=eye_y,
                                                     uv_pr_angles=self.uv_photoreceptor_angles,
                                                     fish_angle=fish_angle,
@@ -343,10 +343,67 @@ class Eye:
 
         return self.chosen_math_library.array(pr_input)
 
-    def _closest_index(self, array, value):
+    def _read_prey_proj_parallel(self, eye_x, eye_y, uv_pr_angles, fish_angle, rf_size, lum_mask, prey_pos):
+        """Reads the prey projection for the given eye position and fish angle.
+        Same as " but performs more computation in parallel for each prey. Also have removed scatter.
+        """
+        abs_uv_pr_angles = self.chosen_math_library.copy(uv_pr_angles)
+        prey_pos = self.chosen_math_library.array(prey_pos)
+
+        rel_prey_pos = prey_pos - self.chosen_math_library.array([eye_x, eye_y])
+        rho = self.chosen_math_library.hypot(rel_prey_pos[:, 0], rel_prey_pos[:, 1])
+
+        within_range = self.chosen_math_library.where(rho < self.max_visual_range - 1)[0]
+        prey_pos_in_range = prey_pos[within_range, :]
+        rel_prey_pos = rel_prey_pos[within_range, :]
+        rho = rho[within_range]
+        theta = self.chosen_math_library.arctan2(rel_prey_pos[:, 1], rel_prey_pos[:, 0]) - fish_angle
+        theta = self.chosen_math_library.arctan2(self.chosen_math_library.sin(theta),
+                                                 self.chosen_math_library.cos(theta))  # wrap to [-pi, pi]
+        p_num = prey_pos_in_range.shape[0]
+
+        half_angle = self.chosen_math_library.arctan(self.prey_diam / (2 * rho))
+
+        l_ind = self._closest_index_parallel(self.chosen_math_library.array(self.ang), theta - half_angle).astype(int)
+        r_ind = self._closest_index_parallel(self.chosen_math_library.array(self.ang), theta + half_angle).astype(int)
+
+        prey_brightness = lum_mask[(self.chosen_math_library.floor(prey_pos_in_range[:, 1])- 1).astype(int),
+                                   (self.chosen_math_library.floor(prey_pos_in_range[:, 0]) - 1).astype(int)]  # includes absorption
+
+        # l_ind = self.chosen_math_library.concatenate((self.chosen_math_library.arange(0, p_num), l_ind))
+
+        proj = self.chosen_math_library.zeros((p_num, len(self.ang)))
+
+        prey_brightness = self.chosen_math_library.expand_dims(prey_brightness, 1)
+
+        r = self.chosen_math_library.arange(proj.shape[1])
+        prey_present = (l_ind[:, None] <= r) & (r_ind[:, None] >= r)
+        prey_present = prey_present.astype(float)
+        prey_present *= prey_brightness
+
+        total_angular_input = self.chosen_math_library.sum(prey_present, axis=0)
+
+        pr_ind_s = self._closest_index_parallel(self.chosen_math_library.array(self.ang), abs_uv_pr_angles - rf_size / 2)
+        pr_ind_e = self._closest_index_parallel(self.chosen_math_library.array(self.ang), abs_uv_pr_angles + rf_size / 2)
+
+        pr_occupation = (pr_ind_s[:, None] <= r) & (pr_ind_e[:, None] >= r)
+        pr_occupation = pr_occupation.astype(float)
+        pr_input = pr_occupation * self.chosen_math_library.expand_dims(total_angular_input, axis=0)
+        pr_input = self.chosen_math_library.sum(pr_input, axis=1)
+
+        return self.chosen_math_library.expand_dims(pr_input, axis=1)
+
+    @staticmethod
+    def _closest_index(array, value):
         """Find index of closest value in array."""
         idx = (np.abs(array - value)).argmin()
         return idx
+
+    def _closest_index_parallel(self, array, value_array):
+        """Find indices of the closest values in array (for each row in axis=0)."""
+        value_array = self.chosen_math_library.expand_dims(value_array, axis=1)
+        idxs = (self.chosen_math_library.abs(array-value_array)).argmin(axis=1)
+        return idxs
 
     def _read_stacked(self, masked_arena_pixels_uv, masked_arena_pixels_red, eye_x, eye_y, channel_angles_surrounding,
                       n_channels_uv, n_channels_red):
@@ -515,8 +572,8 @@ class Eye:
         """As specified, adds shot, read, and/or dark noise to readings."""
         if self.env_variables["shot_noise"]:
             photons = self.chosen_math_library.random.poisson(readings)
-            shot_noise_difference = self.chosen_math_library.abs(readings - photons)
-            snr = 1 - self.chosen_math_library.mean(shot_noise_difference / (photons + 1), axis=1)
+            # shot_noise_difference = self.chosen_math_library.abs(readings - photons)
+            # snr = 1 - self.chosen_math_library.mean(shot_noise_difference / (photons + 1), axis=1)
         else:
             photons = readings
 

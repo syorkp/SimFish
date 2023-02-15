@@ -1,6 +1,6 @@
 {
-    "width": 3000,
-    "height": 3000,
+    "width": 1000,
+    "height": 1000,
     "drag": 0.7,
     "phys_dt": 0.2,
     "phys_steps_per_sim_step": 100,
