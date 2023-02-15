@@ -9,9 +9,10 @@ from scipy.stats import poisson
 
 from Analysis.load_model_config import load_assay_configuration_files
 
-
-get_max_bkg_scatter = importlib.import_module("Analysis.Calibration.Visual-Distance.full_model_bkg_count").get_max_bkg_scatter
-full_model_prey_count = importlib.import_module("Analysis.Calibration.Visual-Distance.full_model_prey_count").full_model_prey_count
+get_max_bkg_scatter = importlib.import_module(
+    "Analysis.Calibration.Visual-Distance.full_model_bkg_count").get_max_bkg_scatter
+full_model_prey_count = importlib.import_module(
+    "Analysis.Calibration.Visual-Distance.full_model_prey_count").full_model_prey_count
 
 
 def prey_signal(L, d, decay_constant):
@@ -29,7 +30,7 @@ def compute_distinguishability(prey_stimulus, max_noise_stimulus):
             pa += 0.000000001
         if pb == 0:
             pb += 0.000000001
-        distinguishability += pa * (pa/(pa + pb))
+        distinguishability += pa * (pa / (pa + pb))
     return distinguishability
 
 
@@ -75,10 +76,10 @@ def plot_distinguishability_against_distance(max_distance, bkg_scatter, luminanc
     plt.plot(distances, uv_scatter_photons, color="b")
     plt.title(f"Absolute photon values. BKG: {bkg_scatter}, Luminance: {luminance}")
     # plt.vlines(visual_distance, min(distinguishability_scores), max(uv_prey_photons) + max(range_uv_prey), color="green")
-    plt.fill_between(distances, np.array(uv_prey_photons)-range_uv_prey,
-                     np.array(uv_prey_photons)+range_uv_prey, color="r", alpha=0.2)
-    plt.fill_between(distances, np.array(uv_scatter_photons)-range_uv_scatter,
-                     np.array(uv_scatter_photons)+range_uv_scatter, color="b", alpha=0.2)
+    plt.fill_between(distances, np.array(uv_prey_photons) - range_uv_prey,
+                     np.array(uv_prey_photons) + range_uv_prey, color="r", alpha=0.2)
+    plt.fill_between(distances, np.array(uv_scatter_photons) - range_uv_scatter,
+                     np.array(uv_scatter_photons) + range_uv_scatter, color="b", alpha=0.2)
     plt.xlabel("Distance (mm x10^1)")
     plt.ylabel("Photons per stimulus")
     plt.show()
@@ -86,7 +87,6 @@ def plot_distinguishability_against_distance(max_distance, bkg_scatter, luminanc
 
 def plot_distinguishability_against_luminance(visual_distance, max_distance, bkg_scatter, scaling_factor,
                                               rf_size, decay_constant, min_luminance, max_luminance):
-
     luminance_vals = np.linspace(min_luminance, max_luminance, 100)
 
     uv_stimulus_photons = []
@@ -112,14 +112,14 @@ def plot_distinguishability_against_luminance(visual_distance, max_distance, bkg
         distinguishability_scores.append(compute_distinguishability(uv_prey_stimulus, max_uv_scatter))
 
     plt.plot(luminance_vals, distinguishability_scores)
-    plt.title(f"Distinguishability at {visual_distance/10}mm")
+    plt.title(f"Distinguishability at {visual_distance / 10}mm")
     plt.xlabel("Luminance")
     plt.show()
 
     plt.plot(luminance_vals, [max_uv_scatter for i in range(len(luminance_vals))])
     plt.plot(luminance_vals, uv_stimulus_photons, color="r")
     plt.legend(["Max Scatter Photons", "Max Prey Photons"])
-    plt.title(f"Photon counts at {visual_distance/10}mm")
+    plt.title(f"Photon counts at {visual_distance / 10}mm")
     plt.show()
 
 
@@ -154,11 +154,16 @@ def plot_distinguishability_against_luminance_two_distances(model_config, visual
     for l in luminance_vals:
         print(l)
         # Full visibility
-        uv_prey = full_model_prey_count(0, decay_constant, env_variables["uv_photoreceptor_rf_size"], 1500, 1500, l, env_variables, visual_distance_full)
+        uv_prey = full_model_prey_count(0, decay_constant, env_variables["uv_photoreceptor_rf_size"],
+                                        env_variables["width"],
+                                        env_variables["height"], l, env_variables, visual_distance_full)
         uv_prey_full = int(uv_prey + uv_scatter_photons)
+        print(uv_prey)
 
         # 50% visibility
-        uv_prey = full_model_prey_count(0, decay_constant, env_variables["uv_photoreceptor_rf_size"], 1500, 1500, l, env_variables, visual_distance_partial)
+        uv_prey = full_model_prey_count(0, decay_constant, env_variables["uv_photoreceptor_rf_size"],
+                                        env_variables["width"],
+                                        env_variables["height"], l, env_variables, visual_distance_partial)
         uv_prey_partial = int(uv_prey + uv_scatter_photons)
 
         uv_stimulus_photons_full.append(uv_prey_full)
@@ -170,7 +175,8 @@ def plot_distinguishability_against_luminance_two_distances(model_config, visual
     plt.plot(luminance_vals, distinguishability_scores_full)
     plt.plot(luminance_vals, distinguishability_scores_partial)
     plt.title(f"Distinguishability")
-    plt.legend([f"Distinguishability at {visual_distance_full/10}mm", f"Distinguishability at {visual_distance_partial/10}mm"])
+    plt.legend([f"Distinguishability at {visual_distance_full / 10}mm",
+                f"Distinguishability at {visual_distance_partial / 10}mm"])
     plt.xlabel("Luminance")
     plt.show()
 
@@ -200,8 +206,6 @@ def plot_distinguishability_against_luminance_two_distances(model_config, visual
             f"Full-Model-Distinguishability-Scores/uv_stimulus_photons_partial.npy",
             "wb") as f:
         np.save(f, np.array(uv_stimulus_photons_partial))
-
-
 
 
 if __name__ == "__main__":
