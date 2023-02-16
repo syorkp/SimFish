@@ -76,8 +76,12 @@ class NaturalisticEnvironment(BaseEnvironment):
                                    np.random.randint(self.env_variables['fish_mouth_size'] + 40,
                                                      self.env_variables['height'] - (self.env_variables[
                                                                                          'fish_mouth_size'] + 40)))
-
         self.fish.body.angle = np.random.random() * 2 * np.pi
+
+        # TODO: Remove
+        self.fish.body.position = np.array([500, 500])
+        self.fish.body.angle = 0
+
         self.fish.body.velocity = (0, 0)
         if self.env_variables["current_setting"]:
             self.impulse_vector_field *= np.random.choice([-1, 1], size=1, p=[0.5, 0.5]).astype(float)

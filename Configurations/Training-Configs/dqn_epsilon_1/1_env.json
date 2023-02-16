@@ -18,7 +18,7 @@
     "prey_inertia": 40.0,
     "prey_size": 1.0,
     "prey_size_visualisation": 4.0,
-    "prey_num": 100,
+    "prey_num": 1,
     "prey_impulse": 0.0,
     "prey_escape_impulse": 2,
     "prey_sensing_distance": 20,

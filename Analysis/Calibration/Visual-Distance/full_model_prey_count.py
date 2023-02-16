@@ -16,7 +16,7 @@ def find_nearest(array, value):
 
 def full_model_prey_count(bkg_scatter, decay_rate, pr_size, width, height, luminance, env_variables, prey_distance):
     # Set fish position in corner.
-    fish_position = np.array([1500, 1500])
+    fish_position = np.array([width/2, height/2])
     fish_orientation = 0
 
     # Create board and get masked pixels
@@ -60,17 +60,17 @@ def full_model_prey_count(bkg_scatter, decay_rate, pr_size, width, height, lumin
     pr_angle -= fish_orientation
     prey_x = prey_distance * np.sin(pr_angle)
     prey_y = prey_distance * np.cos(pr_angle)
-    prey_location_1 = [prey_y+fish_position[1], prey_x+fish_position[0]]
-    prey_location_2 = [prey_x+fish_position[0], prey_y+fish_position[1], ]
-    prey_location_3 = [prey_y-fish_position[1], prey_x-fish_position[0]]
-    prey_location_4 = [prey_x-fish_position[0], prey_y-fish_position[1]]
+    prey_location_1 = [prey_y+fish_position[1]+1, prey_x+fish_position[0]+1]
+    prey_location_2 = [prey_x+fish_position[0]+1, prey_y+fish_position[1]+1]
+    prey_location_3 = [prey_y-fish_position[1]+1, prey_x-fish_position[0]+1]
+    prey_location_4 = [prey_x-fish_position[0]+1, prey_y-fish_position[1]+1]
     prey_locations = [prey_location_1, prey_location_2, prey_location_3, prey_location_4]
-
+    # prey_locations = [prey_location_1]
     # OLD
-    coords = left_eye.get_pr_line_coordinates_uv(left_eye_pos[0], left_eye_pos[1])
-    coords = np.reshape(coords, (-1, 2))
-    arena = np.zeros((3000, 3000))
-    arena[coords[:, 1], coords[:, 0]] = 1
+    # coords = left_eye.get_pr_line_coordinates_uv(left_eye_pos[0], left_eye_pos[1])
+    # coords = np.reshape(coords, (-1, 2))
+    # arena = np.zeros((3000, 3000))
+    # arena[coords[:, 1], coords[:, 0]] = 1
 
     # coords = coords[-1, :, :]
     # relative_coords = coords - fish_position

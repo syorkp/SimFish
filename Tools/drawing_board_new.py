@@ -140,6 +140,9 @@ class DrawingBoard:
 
         self.FOV = FieldOfView(self.local_dim, self.max_visual_distance, self.width, self.height)
 
+    def get_FOV_size(self):
+        return self.local_dim, self.local_dim
+
     def get_background_grating(self, frequency, linear=False):
         if linear:
             return self.linear_texture(frequency)

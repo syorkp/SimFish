@@ -31,7 +31,7 @@ class Eye:
         self.dark_col = dark_col
         self.dist = None
         self.theta = None
-        self.width, self.height = self.board.get_size()
+        self.width, self.height = self.board.get_FOV_size()
         self.retinal_field_size = retinal_field
         self.env_variables = env_variables
         self.max_visual_range = max_visual_range

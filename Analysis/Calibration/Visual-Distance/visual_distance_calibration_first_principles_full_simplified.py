@@ -130,6 +130,7 @@ def plot_distinguishability_against_luminance_two_distances(model_config, visual
     learning_params, env_variables, n, b, c = load_assay_configuration_files(model_config)
 
     luminance = env_variables["light_gain"]
+    # env_variables['decay_rate'] = 0.008
     decay_constant = env_variables['decay_rate']
     env_variables["shot_noise"] = False
     env_variables["dark_light_ratio"] = 0.0
@@ -158,19 +159,19 @@ def plot_distinguishability_against_luminance_two_distances(model_config, visual
                                         env_variables["width"],
                                         env_variables["height"], l, env_variables, visual_distance_full)
         uv_prey_full = int(uv_prey + uv_scatter_photons)
-        print(uv_prey)
 
         # 50% visibility
-        uv_prey = full_model_prey_count(0, decay_constant, env_variables["uv_photoreceptor_rf_size"],
+        uv_prey_partial = full_model_prey_count(0, decay_constant, env_variables["uv_photoreceptor_rf_size"],
                                         env_variables["width"],
                                         env_variables["height"], l, env_variables, visual_distance_partial)
-        uv_prey_partial = int(uv_prey + uv_scatter_photons)
+        uv_prey_partial_full = int(uv_prey_partial + uv_scatter_photons)
+        print(f"Full: {uv_prey}, Partial: {uv_prey_partial}")
 
         uv_stimulus_photons_full.append(uv_prey_full)
-        uv_stimulus_photons_partial.append(uv_prey_partial)
+        uv_stimulus_photons_partial.append(uv_prey_partial_full)
 
         distinguishability_scores_full.append(compute_distinguishability(uv_prey_full, uv_scatter_photons))
-        distinguishability_scores_partial.append(compute_distinguishability(uv_prey_partial, uv_scatter_photons))
+        distinguishability_scores_partial.append(compute_distinguishability(uv_prey_partial_full, uv_scatter_photons))
 
     plt.plot(luminance_vals, distinguishability_scores_full)
     plt.plot(luminance_vals, distinguishability_scores_partial)
@@ -211,13 +212,13 @@ def plot_distinguishability_against_luminance_two_distances(model_config, visual
 if __name__ == "__main__":
     visual_distance_full = 34
     visual_distance_partial = 100
-    min_luminance = 40
-    max_luminance = 120
+    min_luminance = 1
+    max_luminance = 20
 
     plot_distinguishability_against_luminance_two_distances(model_config="dqn_epsilon-1",
                                                             visual_distance_full=visual_distance_full,
                                                             visual_distance_partial=visual_distance_partial,
                                                             min_luminance=min_luminance,
                                                             max_luminance=max_luminance,
-                                                            total_tests=10
+                                                            total_tests=15
                                                             )
