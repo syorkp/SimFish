@@ -69,12 +69,12 @@ class DiscreteNaturalisticEnvironment(NaturalisticEnvironment):
         self.cs_required = self.env_variables["cs_required"]
         super().reset()
 
-    def simulation_step(self, action, activations=None, impulse=None):
+    def simulation_step(self, action, activations=None, impulse=None, step_number=0):
         if self.cs_required:
             self.fish.making_capture = False
         else:
             self.fish.making_capture = True
-        return super().simulation_step(action, activations, impulse)
+        return super().simulation_step(action, activations, impulse, step_number=step_number)
 
     def load_simulation(self, buffer, background, energy_state):
         self.fish.prev_action_impulse = buffer.efference_copy_buffer[-1][0][1]

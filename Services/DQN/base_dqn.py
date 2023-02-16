@@ -32,7 +32,7 @@ class BaseDQN:
         self.epsilon = None
         self.step_drop = None
 
-        self.debug = False
+        self.debug = True
         # Networks
         self.main_QN = None
         self.target_QN = None
@@ -224,7 +224,7 @@ class BaseDQN:
                                                                                 internal_state=internal_state,
                                                                                 a=action_reafference,
                                                                                 rnn_state=rnn_state,
-                                                                                rnn_state_ref=rnn_state_ref)
+                                                                                rnn_state_ref=rnn_state_ref, step_number=step_number)
             if self.debug:
                 if self.using_gpu:
                     FOV = FOV.get()
@@ -258,7 +258,7 @@ class BaseDQN:
 
         return all_actions, total_episode_reward, experience
 
-    def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
+    def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref, step_number):
         """
         Runs a step, choosing an action given an initial condition using the network/randomly, and running this in the
         environment.
@@ -304,7 +304,7 @@ class BaseDQN:
 
         # Simulation step
         o1, given_reward, internal_state, d, FOV = self.simulation.simulation_step(action=chosen_a,
-                                                                                        activations=(sa,))
+                                                                                        activations=(sa,), step_number=step_number)
 
         action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
                               self.simulation.fish.prev_action_angle]

@@ -70,14 +70,15 @@ class NaturalisticEnvironment(BaseEnvironment):
         # self.mean_observation_vals = [[0, 0, 0]]
         # self.max_observation_vals = [[0, 0, 0]]
         super().reset()
-        self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_size'] + 40,
-                                                     self.env_variables['width'] - (self.env_variables[
-                                                                                        'fish_mouth_size'] + 40)),
-                                   np.random.randint(self.env_variables['fish_mouth_size'] + 40,
-                                                     self.env_variables['height'] - (self.env_variables[
-                                                                                         'fish_mouth_size'] + 40)))
+        self.fish.body.position = (np.round(self.env_variables['width']/2), np.round(self.env_variables['height']/2))
+        # self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_size'] + 40,
+        #                                              self.env_variables['width'] - (self.env_variables[
+        #                                                                                 'fish_mouth_size'] + 40)),
+        #                            np.random.randint(self.env_variables['fish_mouth_size'] + 40,
+        #                                              self.env_variables['height'] - (self.env_variables[
+        #                                                                                  'fish_mouth_size'] + 40)))
 
-        self.fish.body.angle = np.random.random() * 2 * np.pi
+        self.fish.body.angle = 0#np.random.random() * 2 * np.pi
         self.fish.body.velocity = (0, 0)
         if self.env_variables["current_setting"]:
             self.impulse_vector_field *= np.random.choice([-1, 1], size=1, p=[0.5, 0.5]).astype(float)
@@ -280,7 +281,8 @@ Sand grain: {self.sand_grain_associated_reward}
                                         np.clip(self.fish.body.position[1], 6, self.env_variables["height"] - 30))
             self.fish.body.position = new_position
 
-    def simulation_step(self, action, activations, impulse):
+    def simulation_step(self, action, activations, impulse, step_number):
+        action=500
         self.prey_consumed_this_step = False
         self.last_action = action
         self.fish.touched_sand_grain = False
@@ -464,6 +466,11 @@ Sand grain: {self.sand_grain_associated_reward}
                 done = True
                 self.switch_step = self.num_steps
         
+        r = 350
+        prey_angle =  (step_number-1) * 2 * np.pi / 180
+        prey_x = np.cos(prey_angle) * r + 500
+        prey_y = np.sin(prey_angle) * r + 500
+        self.prey_bodies[0].position = (prey_x, prey_y)
         observation, FOV = self.resolve_visual_input()
 
 

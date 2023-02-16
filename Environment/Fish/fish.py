@@ -210,7 +210,7 @@ class Fish:
             self.body.apply_impulse_at_local_point((self.env_variables['forward_swim_impulse'], 0))
             self.head.color = (0, 1, 0)
         else:
-            reward = None
+            reward = 0#None
             print("Invalid action given")
 
         # elif action == 6: #converge eyes. Be sure to update below with fish.[]
@@ -356,7 +356,7 @@ class Fish:
             self.head.color = [1, 1, 1]
 
         else:
-            reward = None
+            reward = 0#None
             print("Invalid action given")
 
         return reward

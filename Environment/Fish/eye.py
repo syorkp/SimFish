@@ -63,7 +63,7 @@ class Eye:
 
         self.interpolated_observation = self.chosen_math_library.arange(
             self.chosen_math_library.min(self.uv_photoreceptor_angles),
-            self.chosen_math_library.max(self.uv_photoreceptor_angles),
+            self.chosen_math_library.max(self.uv_photoreceptor_angles)+self.sz_rf_spacing / 2,
             self.sz_rf_spacing / 2)
 
         self.observation_size = len(self.interpolated_observation)
