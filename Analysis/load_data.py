@@ -45,7 +45,6 @@ if __name__ == "__main__":
     red2 = obs[:, :, 2, :].flatten()
 
     import matplotlib.pyplot as plt
-    plt.hist(red)
-    plt.hist(uv)
     plt.hist(red2)
     plt.show()
+
