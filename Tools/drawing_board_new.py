@@ -778,7 +778,8 @@ class DrawingBoard:
 
     def get_size(self):
         return self.width, self.height
-
+    def get_FOV_size(self):
+        return self.local_dim, self.local_dim
     def _draw_past_actions(self, n_actions_to_show):
         # Select subset of actions to show
         if len(self.action_buffer) > n_actions_to_show:
