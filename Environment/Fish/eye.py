@@ -248,7 +248,7 @@ class Eye:
                                                                           fish_angle=fish_angle,
                                                                           rf_size=self.uv_photoreceptor_rf_size,
                                                                           lum_mask=lum_mask,
-                                                                          prey_pos=np.array(sand_grain_positions)
+                                                                          prey_pos=self.chosen_math_library.array(sand_grain_positions)
                                                                           )
 
                 proj_uv_readings_sand_grains = self.env_variables["sand_grain_colour"][1] * proj_readings_sand_grains
