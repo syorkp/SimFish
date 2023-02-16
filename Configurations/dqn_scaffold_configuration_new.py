@@ -84,20 +84,20 @@ params = {
 env = {
     #                                     Shared
 
-    'width': 4 * 3000,  # arena size
-    'height': 4 * 3000,
+    'width': 3000,  # arena size
+    'height': 3000,
     'drag': 0.7,  # water drag
     'phys_dt': 0.2,  # physics time step
     'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
     'photon_ratio': 100,  # expected number of photons for unit brightness
 
     'fish_mass': 140.,
-    'fish_mouth_size': 8. * 4,  # FINAL VALUE - 0.2mm diameter, so 1.
-    'fish_head_size': 2.5 * 4,  # Old - 10
-    'fish_tail_length': 41.5 * 4,  # Old: 70
+    'fish_mouth_size': 8.,  # FINAL VALUE - 0.2mm diameter, so 1.
+    'fish_head_size': 2.5,  # Old - 10
+    'fish_tail_length': 41.5,  # Old: 70
     'eyes_verg_angle': 77.,  # in deg
     'visual_field': 163.,  # single eye angular visual field
-    'eyes_biasx': 2.5 * 4,  # distance of eyes from midline - interretinal distance of 0.5mm
+    'eyes_biasx': 2.5,  # distance of eyes from midline - interretinal distance of 0.5mm
 
     'distance_penalty_scaling_factor': 1.0,
     # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
@@ -106,12 +106,12 @@ env = {
 
     'prey_mass': 1.,
     'prey_inertia': 40.,
-    'prey_size': 1. * 4,  # FINAL VALUE - 0.1mm diameter, so 1.
+    'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
     'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
     'prey_num': 100,
     'prey_impulse': 0.0,  # impulse each prey receives per step
     'prey_escape_impulse': 2,
-    'prey_sensing_distance': 20 * 4,
+    'prey_sensing_distance': 20,
     'prey_max_turning_angle': 0.25,
     # This is the turn (radians) that happens every step, designed to replicate linear wavy movement.
     'prey_fluid_displacement': False,
@@ -125,29 +125,29 @@ env = {
     'p_escape': 0.5,
     'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
     'p_reorient': 0.04,
-    'slow_speed_paramecia': 4 * 0.0035,  # Impulse to generate 0.5mms-1 for given prey mass
-    'fast_speed_paramecia': 4 * 0.007,  # Impulse to generate 1.0mms-1 for given prey mass
-    'jump_speed_paramecia': 4 * 0.07,  # Impulse to generate 10.0mms-1 for given prey mass
+    'slow_speed_paramecia': 0.0035,  # Impulse to generate 0.5mms-1 for given prey mass
+    'fast_speed_paramecia': 0.007,  # Impulse to generate 1.0mms-1 for given prey mass
+    'jump_speed_paramecia': 0.07,  # Impulse to generate 10.0mms-1 for given prey mass
 
     # Prey reproduction
     'prey_reproduction_mode': True,
     'birth_rate': 0.002,  # Probability per step of new prey appearing at each source.
     'birth_rate_current_pop_scaling': 1,  # Sets scaling of birth rate according to number of prey currently present
-    'birth_rate_region_size': 240 * 4,  # Same square as before for simplicity
+    'birth_rate_region_size': 240,  # Same square as before for simplicity
     'prey_safe_duration': 100,
     'p_prey_death': 0.001,
 
     'predator_mass': 200.,
     'predator_inertia': 0.0001,
-    'predator_size': 32 * 4,  # Radius
-    'predator_impulse': 4 * 5,  # To produce speed of 13.7mms-1, formerly 1.0
+    'predator_size': 32,  # Radius
+    'predator_impulse': 5,  # To produce speed of 13.7mms-1, formerly 1.0
     'immunity_steps': 200,  # number of steps in the beginning of an episode where the fish is immune from predation
-    'distance_from_fish': 181.71216 * 4,  # Distance from the fish at which the predator appears. Formerly 498
+    'distance_from_fish': 181.71216,  # Distance from the fish at which the predator appears. Formerly 498
     'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
 
     'sand_grain_mass': 1.,
     'sand_grain_inertia': 40.,
-    'sand_grain_size': 1. * 4,
+    'sand_grain_size': 1.,
     'sand_grain_num': 0,
     'sand_grain_displacement_impulse_scaling_factor': 0.5,
     'sand_grain_displacement_distance': 20,
@@ -159,7 +159,7 @@ env = {
     'vegetation_effect_distance': 150,
 
     'dark_light_ratio': 0.3,  # fraction of arena in the dark
-    'light_gradient': 200 * 4,
+    'light_gradient': 200,
     'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
     'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001
     'dark_gain': 60.0,  # gain of brightness in the dark side
@@ -207,7 +207,7 @@ env = {
     'salt': True,  # Inclusion of olfactory salt input and salt death.
     'salt_reward_penalty': 1000,  # Scales with salt concentration. Was 10000
     "use_dynamic_network": True,
-    'salt_concentration_decay': 0.0005,  # Scale for exponential salt concentration decay from source.
+    'salt_concentration_decay': 0.002,  # Scale for exponential salt concentration decay from source.
     'salt_recovery': 0.005,  # Amount by which salt health recovers per step
     'max_salt_damage': 0.0,  # Salt damage at centre of source. Before, was 0.02
 
@@ -219,9 +219,9 @@ env = {
     'show_previous_actions': 200,  # False if not, otherwise the number of actions to save.
 
     # Environment
-    'decay_rate': 0.0025,  # Formerly 0.0006
+    'decay_rate': 0.01,  # Formerly 0.0006
     'sim_steps_per_second': 5,  # For converting isomerization frequency.
-    'background_grating_frequency': 50 * 4,  # For extra layer motion:
+    'background_grating_frequency': 50,  # For extra layer motion:
     'displacement_scaling_factor': 0.018,
     # Multiplied by previous impulse size to cause displacement of nearby features.
     'known_max_fish_i': 100,
@@ -247,15 +247,15 @@ env = {
     'uv_occlusion_gain': 0.0,
     'red2_occlusion_gain': 0.0,
 
-    'wall_buffer_distance': 40 * 4,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
+    'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
 
     # Arbitrary fish parameters
 
     # Fish Visual System
     'uv_photoreceptor_rf_size': 0.0133 * 3,  # Radians (0.76 degrees) - Yoshimatsu et al. (2019)
     'red_photoreceptor_rf_size': 0.0133 * 3,  # Kept same
-    'uv_photoreceptor_num': 40,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
-    'red_photoreceptor_num': 40,
+    'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
+    'red_photoreceptor_num': 63,
     'minimum_observation_size': 100,  # Parameter to determine padded observation size (avoids conv layer size bug).
     'shared_photoreceptor_channels': False,  # Whether two channels have the same RF angles (saves computation time)
     'incorporate_uv_strike_zone': True,
@@ -310,7 +310,7 @@ env = {
     'fixed_prey_distribution': False,
 }
 
-scaffold_name = "dqn_epsilon_scaled"
+scaffold_name = "dqn_new"
 
 
 # For predator scaffolding
@@ -333,8 +333,11 @@ scaffold_name = "dqn_epsilon_scaled"
 # Init with predator
 # env["probability_of_predator"] = 0.003
 
+# Even prey
+# env["differential_prey"] = False
+
 # For Sand Grains
-# env["sand_grain_num"] = env["prey_num"]
+env["sand_grain_num"] = env["prey_num"]
 
 
 #     Scaffold Points
@@ -351,20 +354,21 @@ high_pai = 800
 # changes += build_changes_list_gradual("PCI", low_pci, "distance_from_fish", env["distance_from_fish"],
 #                                       env["distance_from_fish"] / 2, 5, discrete=False)
 # For sand grain simplifying
-# changes += [
-#        ["PCI", high_pci, "sand_grain_colour", (0.75, 0, 1)],
-#        ["PCI", high_pci, "sand_grain_colour", (0.5, 0, 1)],
-#        ["PCI", high_pci, "sand_grain_colour", (0.25, 0, 1)],
-#        ["PCI", high_pci, "sand_grain_colour", (0, 0, 1)],
-# ]
+changes += [
+       ["PCI", high_pci, "sand_grain_colour", (0.75, 0, 1)],
+       ["PCI", high_pci, "sand_grain_colour", (0.5, 0, 1)],
+       ["PCI", high_pci, "sand_grain_colour", (0.25, 0, 1)],
+       ["PCI", high_pci, "sand_grain_colour", (0, 0, 1)],
+]
 
 # Predator changes
 
 # Start with shot noise
 env["shot_noise"] = True
-env["bkg_scatter"] = 0.1 / 4
+env["bkg_scatter"] = 0.1
 env["max_salt_damage"] = 0.02
 env["light_gain"] = 125.7
+env["dark_gain"] = 125.7
 
 # 2-10
 changes += [
@@ -443,7 +447,7 @@ high_pci *= 20 / 8
 changes += [["PCI", high_pci, "prey_fluid_displacement", True,
              "prey_jump", True,
              ],
-            ["PCI", high_pci, "fish_mouth_size", 4 * 4],
+            ["PCI", high_pci, "fish_mouth_size", 4],
             ["PCI", high_pci, "fraction_capture_permitted", 0.2],
             ["PCI", high_pci, "capture_angle_deviation_allowance", np.pi / 5],
 

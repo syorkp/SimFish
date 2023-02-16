@@ -173,7 +173,7 @@ if __name__ == "__main__": # may be needed to run on windows
     assay_gathering_test = [
         {
             "Model Name": "dqn_epsilon",
-            "Environment Name": "dqn_epsilon_final",
+            "Environment Name": "dqn_epsilon_final_1",
             "Assay Configuration Name": "Behavioural-Data-Free",
             "Trial Number": 6,
             "Run Mode": "Assay",
@@ -651,6 +651,75 @@ if __name__ == "__main__": # may be needed to run on windows
             "Learning Algorithm": "PPO",
         },
     ]
+
+
+    # NEW VISUAL SYSTEM
+
+    dqn_new_1 = [
+        {
+            "Model Name": "dqn_new",
+            "Environment Name": "dqn_new",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    dqn_new_2 = [
+        {
+            "Model Name": "dqn_new",
+            "Environment Name": "dqn_new",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    dqn_new_3 = [
+        {
+            "Model Name": "dqn_new",
+            "Environment Name": "dqn_new",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    dqn_new_4 = [
+        {
+            "Model Name": "dqn_new",
+            "Environment Name": "dqn_new",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    dqn_new_5 = [
+        {
+            "Model Name": "dqn_new",
+            "Environment Name": "dqn_new",
+            "Trial Number": 5,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    dqn_new_even_1 = [
+        {
+            "Model Name": "dqn_new_even",
+            "Environment Name": "dqn_new_even",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    dqn_new_even_2 = [
+        {
+            "Model Name": "dqn_new_even",
+            "Environment Name": "dqn_new_even",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
     if run_config is None:
         run_config = dqn_epsilon_6
     else:
