@@ -211,8 +211,8 @@ def plot_distinguishability_against_luminance_two_distances(model_config, visual
 if __name__ == "__main__":
     visual_distance_full = 34
     visual_distance_partial = 100
-    min_luminance = 120
-    max_luminance = 180
+    min_luminance = 40
+    max_luminance = 120
 
     plot_distinguishability_against_luminance_two_distances(model_config="dqn_epsilon-1",
                                                             visual_distance_full=visual_distance_full,
