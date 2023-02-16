@@ -39,3 +39,13 @@ if __name__ == "__main__":
     for i in range(1, 11):
         d = load_data("dqn_epsilon-6", "Behavioural-Data-Free", f"Naturalistic-{i}", training_data=False)
         obs.append(d["observation"])
+    obs = np.concatenate(obs)
+    red = obs[:, :, 0, :].flatten()
+    uv = obs[:, :, 1, :].flatten()
+    red2 = obs[:, :, 2, :].flatten()
+
+    import matplotlib.pyplot as plt
+    plt.hist(red)
+    plt.hist(uv)
+    plt.hist(red2)
+    plt.show()
