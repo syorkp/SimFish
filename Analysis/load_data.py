@@ -35,6 +35,7 @@ def load_data(model_name, assay_configuration, assay_id, training_data=False):
 
 if __name__ == "__main__":
     datas = []
-    red_channel = []
-    d = load_data("dqn_epsilon-6", "Episode 1", f"Episode 1", training_data=True)
-
+    obs = []
+    for i in range(1, 11):
+        d = load_data("dqn_epsilon-6", "Behavioural-Data-Free", f"Naturalistic-{i}", training_data=False)
+        obs.append(d["observation"])
