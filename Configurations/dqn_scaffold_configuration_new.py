@@ -151,7 +151,7 @@ env = {
     'sand_grain_num': 0,
     'sand_grain_displacement_impulse_scaling_factor': 0.5,
     'sand_grain_displacement_distance': 20,
-    'sand_grain_colour': (1, 1, 1),
+    'sand_grain_red_component': 2.0,
     'sand_grain_touch_penalty': 20000,
 
     'vegetation_size': 100.,
@@ -240,9 +240,9 @@ env = {
     'duration_of_loom': 10,  # Number of steps for which loom occurs.
 
     # Visual system scaling factors (to set CNN inputs into 0 to 255 range):
-    'red_scaling_factor': 35,  # Pixel counts are multiplied by this
+    'red_scaling_factor': 15,  # Pixel counts are multiplied by this
     'uv_scaling_factor': 200,  # Pixel counts are multiplied by this
-    'red_2_scaling_factor': 20,  # Pixel counts are multiplied by this
+    'red_2_scaling_factor': 10,  # Pixel counts are multiplied by this
     'red_occlusion_gain': 0.0,  # 0 Being complete construction.
     'uv_occlusion_gain': 0.0,
     'red2_occlusion_gain': 0.0,
@@ -355,10 +355,10 @@ high_pai = 800
 #                                       env["distance_from_fish"] / 2, 5, discrete=False)
 # For sand grain simplifying
 changes += [
-       ["PCI", high_pci, "sand_grain_colour", (0.75, 1, 0.75)],
-       ["PCI", high_pci, "sand_grain_colour", (0.5, 1, 0.5)],
-       ["PCI", high_pci, "sand_grain_colour", (0.25, 1, 0.25)],
-       ["PCI", high_pci, "sand_grain_colour", (0, 1, 0)],
+       ["PCI", high_pci, "sand_grain_red_component", 1.5],
+       ["PCI", high_pci, "sand_grain_red_component", 1.0],
+       ["PCI", high_pci, "sand_grain_red_component", 0.5],
+       ["PCI", high_pci, "sand_grain_red_component", 0.0],
 ]
 
 # Predator changes

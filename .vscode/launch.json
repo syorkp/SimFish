@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["local_test_large"]
+            "args": ["dqn_new_even_1"]
         }
     ]
 }

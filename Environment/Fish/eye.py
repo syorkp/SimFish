@@ -229,33 +229,31 @@ class Eye:
                                                        channel_angles_surrounding=channel_angles_surrounding,
                                                        n_channels_uv=self.uv_photoreceptor_num,
                                                        n_channels_red=self.red_photoreceptor_num)
+        
+        uv_items = np.concatenate((prey_positions, sand_grain_positions), axis=0)
 
-        if proj and (len(prey_positions) + len(sand_grain_positions) > 0):
+        if proj and (len(uv_items)) > 0:
             proj_uv_readings = self._read_prey_proj_parallel(eye_x=eye_x,
                                                              eye_y=eye_y,
                                                              uv_pr_angles=self.uv_photoreceptor_angles,
                                                              fish_angle=fish_angle,
                                                              rf_size=self.uv_photoreceptor_rf_size,
                                                              lum_mask=lum_mask,
-                                                             prey_pos=self.chosen_math_library.array(prey_positions))
+                                                             prey_pos=self.chosen_math_library.array(uv_items))
 
             uv_readings += proj_uv_readings
 
             if len(sand_grain_positions) > 0:
-                proj_readings_sand_grains = self._read_prey_proj_parallel(eye_x=eye_x,
+                red_readings_sand_grains = self._read_prey_proj_parallel(eye_x=eye_x,
                                                                           eye_y=eye_y,
-                                                                          uv_pr_angles=self.uv_photoreceptor_angles,
+                                                                          uv_pr_angles=self.red_photoreceptor_angles,
                                                                           fish_angle=fish_angle,
-                                                                          rf_size=self.uv_photoreceptor_rf_size,
+                                                                          rf_size=self.red_photoreceptor_rf_size,
                                                                           lum_mask=lum_mask,
                                                                           prey_pos=self.chosen_math_library.array(sand_grain_positions)
                                                                           )
 
-                proj_uv_readings_sand_grains = self.env_variables["sand_grain_colour"][1] * proj_readings_sand_grains
-                uv_readings += proj_uv_readings_sand_grains
-
-                proj_red_readings_sand_grains = self.env_variables["sand_grain_colour"][0] * proj_readings_sand_grains
-                red_readings += proj_red_readings_sand_grains
+                red_readings += red_readings_sand_grains * self.env_variables["sand_grain_red_component"]
 
         uv_readings_scaled = self.scale_readings(uv_readings,
                                                  self.env_variables['uv_scaling_factor'] * self.env_variables[

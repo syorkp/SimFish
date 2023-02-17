@@ -501,7 +501,7 @@ Sand grain: {self.sand_grain_associated_reward}
         if len(sand_grain_locations) > 0:
             sand_grain_locations_array = np.array(sand_grain_locations) - np.array(self.fish.body.position) + self.board.max_visual_distance
         else:
-            sand_grain_locations_array = np.array([])
+            sand_grain_locations_array = np.empty((0, 2))
 
         self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle, lum_mask,
                                 prey_locations_array, sand_grain_locations_array)

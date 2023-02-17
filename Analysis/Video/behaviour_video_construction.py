@@ -514,7 +514,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             ax6.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
             ax7.clear()
-            ax7.plot(data['rnn_state_actor'][plot_start:step, 0, 30:40])
+            ax7.plot(data['rnn_state_actor'][plot_start:step, 0, 30:40], linewidth=0.5)
             ax7.tick_params(left=False, right=False , labelleft=False, labelbottom=False, bottom=False)
 
             if continuous_actions:

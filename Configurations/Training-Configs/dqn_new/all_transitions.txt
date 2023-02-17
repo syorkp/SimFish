@@ -1,7 +1,7 @@
-1) Metric-PCI: 0.09999999999999999, Variable-sand_grain_colour: (0.75, 1, 0.75)
-2) Metric-PCI: 0.09999999999999999, Variable-sand_grain_colour: (0.5, 1, 0.5)
-3) Metric-PCI: 0.09999999999999999, Variable-sand_grain_colour: (0.25, 1, 0.25)
-4) Metric-PCI: 0.09999999999999999, Variable-sand_grain_colour: (0, 1, 0)
+1) Metric-PCI: 0.09999999999999999, Variable-sand_grain_red_component: 1.5
+2) Metric-PCI: 0.09999999999999999, Variable-sand_grain_red_component: 1.0
+3) Metric-PCI: 0.09999999999999999, Variable-sand_grain_red_component: 0.5
+4) Metric-PCI: 0.09999999999999999, Variable-sand_grain_red_component: 0.0
 5) Metric-PCI: 0.08333333333333333, Multiple changes
 6) Metric-PCI: 0.08333333333333333, Variable-wall_reflection: False
 7) Metric-PCI: 0.08333333333333333, Multiple changes
