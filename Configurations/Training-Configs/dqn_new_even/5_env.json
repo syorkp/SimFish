@@ -56,8 +56,8 @@
     "sand_grain_displacement_distance": 20,
     "sand_grain_colour": [
         0,
-        0,
-        1
+        1,
+        0
     ],
     "sand_grain_touch_penalty": 20000,
     "vegetation_size": 100.0,
@@ -67,8 +67,8 @@
     "light_gradient": 200,
     "read_noise_sigma": 0.0,
     "bkg_scatter": 0.1,
-    "dark_gain": 125.7,
-    "light_gain": 125.7,
+    "dark_gain": 1.2397,
+    "light_gain": 2.7769,
     "rest_cost": 2,
     "capture_swim_extra_cost": 5,
     "capture_basic_reward": 10000,
@@ -122,7 +122,7 @@
     "final_predator_size": 200,
     "duration_of_loom": 10,
     "red_scaling_factor": 35,
-    "uv_scaling_factor": 600,
+    "uv_scaling_factor": 200,
     "red_2_scaling_factor": 20,
     "red_occlusion_gain": 0.0,
     "uv_occlusion_gain": 0.0,

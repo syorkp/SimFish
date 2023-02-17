@@ -151,7 +151,7 @@ env = {
     'sand_grain_num': 0,
     'sand_grain_displacement_impulse_scaling_factor': 0.5,
     'sand_grain_displacement_distance': 20,
-    'sand_grain_colour': (1, 0, 1),
+    'sand_grain_colour': (1, 1, 1),
     'sand_grain_touch_penalty': 20000,
 
     'vegetation_size': 100.,
@@ -241,7 +241,7 @@ env = {
 
     # Visual system scaling factors (to set CNN inputs into 0 to 255 range):
     'red_scaling_factor': 35,  # Pixel counts are multiplied by this
-    'uv_scaling_factor': 600,  # Pixel counts are multiplied by this
+    'uv_scaling_factor': 200,  # Pixel counts are multiplied by this
     'red_2_scaling_factor': 20,  # Pixel counts are multiplied by this
     'red_occlusion_gain': 0.0,  # 0 Being complete construction.
     'uv_occlusion_gain': 0.0,
@@ -310,7 +310,7 @@ env = {
     'fixed_prey_distribution': False,
 }
 
-scaffold_name = "dqn_new_even"
+scaffold_name = "dqn_new"
 
 
 # For predator scaffolding
@@ -334,7 +334,7 @@ scaffold_name = "dqn_new_even"
 # env["probability_of_predator"] = 0.003
 
 # Even prey
-env["differential_prey"] = False
+# env["differential_prey"] = False
 
 # For Sand Grains
 env["sand_grain_num"] = env["prey_num"]
@@ -355,10 +355,10 @@ high_pai = 800
 #                                       env["distance_from_fish"] / 2, 5, discrete=False)
 # For sand grain simplifying
 changes += [
-       ["PCI", high_pci, "sand_grain_colour", (0.75, 0, 1)],
-       ["PCI", high_pci, "sand_grain_colour", (0.5, 0, 1)],
-       ["PCI", high_pci, "sand_grain_colour", (0.25, 0, 1)],
-       ["PCI", high_pci, "sand_grain_colour", (0, 0, 1)],
+       ["PCI", high_pci, "sand_grain_colour", (0.75, 1, 0.75)],
+       ["PCI", high_pci, "sand_grain_colour", (0.5, 1, 0.5)],
+       ["PCI", high_pci, "sand_grain_colour", (0.25, 1, 0.25)],
+       ["PCI", high_pci, "sand_grain_colour", (0, 1, 0)],
 ]
 
 # Predator changes
@@ -367,8 +367,8 @@ changes += [
 env["shot_noise"] = True
 env["bkg_scatter"] = 0.1
 env["max_salt_damage"] = 0.02
-env["light_gain"] = 125.7
-env["dark_gain"] = 125.7
+env["light_gain"] = 2.7769
+env["dark_gain"] = 1.2397
 
 # 2-10
 changes += [
