@@ -281,22 +281,22 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     save_location += save_id
 
     fig = plt.figure(facecolor='0.9', figsize=(4, 3))
-    gs = fig.add_gridspec(nrows=9, ncols=9, left=0.05, right=0.85,
+    gs = fig.add_gridspec(nrows=10, ncols=10, left=0.05, right=0.85,
                       hspace=0.1, wspace=0.05)
     ax0 = fig.add_subplot(gs[:7, 0:6])
     
-    ax1 = fig.add_subplot(gs[7, 0:4])
-    ax2 = fig.add_subplot(gs[7, 4:8])
-    ax11 = fig.add_subplot(gs[8, 0:4])
-    ax22 = fig.add_subplot(gs[8, 4:8])
-    ax3 = fig.add_subplot(gs[0, 6:])
-    ax4 = fig.add_subplot(gs[1, 6:])
-    ax5 = fig.add_subplot(gs[2, 6:])
-    ax6 = fig.add_subplot(gs[3, 6:])
-    ax7 = fig.add_subplot(gs[4, 6:])
-    ax8 = fig.add_subplot(gs[5, 7])
+    ax1 = fig.add_subplot(gs[7, 0:3])
+    ax2 = fig.add_subplot(gs[7, 3:6])
+    ax3 = fig.add_subplot(gs[0, 6:10])
+    ax4 = fig.add_subplot(gs[1, 6:10])
+    ax5 = fig.add_subplot(gs[2, 6:10])
+    ax6 = fig.add_subplot(gs[3, 6:10])
+    ax7 = fig.add_subplot(gs[4, 6:10])
+    ax8 = fig.add_subplot(gs[5, 6])
     if continuous_actions:
         ax9 = fig.add_subplot(gs[5, 8])
+
+    ax10 = fig.add_subplot(gs[6:10, 6:10])
 
     metadata = dict(title='Movie Test', artist='Matplotlib',
                 comment='Movie support!')
@@ -322,6 +322,12 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     #         addon = 0
                 
     #     frames = np.zeros((num_steps, np.int(env_variables["height"]*scale), np.int((env_variables["width"]+addon)*scale), 3))
+    obs_len = data['observation'].shape[1]
+    obs_atom = env_variables['visual_field'] / obs_len
+    remaining = 360 - env_variables['visual_field']
+    pie_sizes = np.ones(obs_len) * obs_atom
+    pie_sizes = np.append(pie_sizes, remaining)
+
     with writer.saving(fig, f"{save_location}.mp4", 500):
 
         for step in range(num_steps):
@@ -377,14 +383,14 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
 
             # Draw sand grains
             if env_variables["sand_grain_num"] > 0:
-                px = np.round(np.array([pr.position[0] for pr in data["sand_grain_positions"]])).astype(int)
-                py = np.round(np.array([pr.position[1] for pr in data["sand_grain_positions"]])).astype(int)
+                px = np.round(np.array([pr[0] for pr in data["sand_grain_positions"][step]])).astype(int)
+                py = np.round(np.array([pr[1] for pr in data["sand_grain_positions"][step]])).astype(int)
                 rrs, ccs = board.multi_circles(px, py, env_variables["prey_size_visualisation"])
 
                 rrs = np.clip(rrs, 0, env_variables["width"] - 1)
                 ccs = np.clip(ccs, 0, env_variables["height"] - 1)
 
-                board.db_visualisation[rrs, ccs] = (0, 0, 1)
+                board.db[rrs, ccs] = (0, 1, 1)
 
 
             if data["predator_presence"][step]:
@@ -451,6 +457,44 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             # ax22.imshow(np.clip(right_obs_c, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
             # ax22.tick_params(left = False, right = False , labelleft = False ,
             #         labelbottom = False, bottom = False)
+
+            ax10.clear()
+
+            left_eye_pos = (+np.cos(np.pi / 2 - data["fish_angle"][step]) * env_variables['eyes_biasx']*0.05,
+                            +np.sin(np.pi / 2 - data["fish_angle"][step]) * env_variables['eyes_biasx']*0.05)
+            right_eye_pos = (-np.cos(np.pi / 2 - data["fish_angle"][step]) * env_variables['eyes_biasx']*0.05,
+                             -np.sin(np.pi / 2 - data["fish_angle"][step]) * env_variables['eyes_biasx']*0.05)
+
+            rad_div = 5
+            left_eye_start_angle = +env_variables['visual_field']/2 + 90 - env_variables['eyes_verg_angle'] / 2 - np.rad2deg(data["fish_angle"][step])
+            left_eye_start_angle = left_eye_start_angle % 360
+            alphas = np.clip(left_obs, 0, 255) / 255
+            colors = np.zeros(alphas.shape)
+            colors = np.concatenate((colors, np.ones((3, 1))), axis=1)
+            alphas = np.concatenate((alphas, np.zeros((3, 1))), axis=1)
+            colors_red = np.array([1-colors[0,:], colors[0,:], colors[0,:], alphas[0,:]]).T
+            colors_uv = np.array([1-colors[1,:], colors[1,:], 1-colors[1,:], alphas[1,:]]).T
+            colors_red2 = np.array([1-colors[2,:], colors[2,:], colors[2,:], alphas[2,:]]).T
+            ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=2.5/rad_div, colors=colors_uv, wedgeprops={"edgecolor": None, "width": 2.4/rad_div}, center = left_eye_pos)
+            ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=3.0/rad_div, colors=colors_red, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = left_eye_pos)
+            ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=3.5/rad_div, colors=colors_red2, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = left_eye_pos)
+            
+            right_eye_start_angle = +env_variables['visual_field']/2 - 90 + env_variables['eyes_verg_angle'] / 2 - np.rad2deg(data["fish_angle"][step])
+            right_eye_start_angle = right_eye_start_angle % 360
+
+            alphas = np.clip(right_obs, 0, 255) / 255
+            colors = np.zeros(alphas.shape)
+            colors = np.concatenate((colors, np.ones((3, 1))), axis=1)
+            alphas = np.concatenate((alphas, np.zeros((3, 1))), axis=1)
+            colors_red = np.array([1-colors[0,:], colors[0,:], colors[0,:], alphas[0,:]]).T
+            colors_uv = np.array([1-colors[1,:], colors[1,:], 1-colors[1,:], alphas[1,:]]).T
+            colors_red2 = np.array([1-colors[2,:], colors[2,:], colors[2,:], alphas[2,:]]).T
+            ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=2.5/rad_div, colors=colors_uv, wedgeprops={"edgecolor": None, "width": 2.4/rad_div}, center = right_eye_pos)
+            ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=3.0/rad_div, colors=colors_red, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = right_eye_pos)
+            ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=3.5/rad_div, colors=colors_red2, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = right_eye_pos)
+
+            ax10.set_xlim(-2, 2)
+            ax10.set_ylim(-2, 2)
 
             plot_start = max(0, step - 100)
             ax3.clear()
@@ -534,11 +578,11 @@ if __name__ == "__main__":
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-5")
-    # data_file = sys.argv[1]
-    # config_file = sys.argv[2]
+    data_file = sys.argv[1]
+    config_file = sys.argv[2]
 
-    data_file = "../../Assay-Output/dqn_gamma-1/Behavioural-Data-Empty.h5"
-    config_file = f"../../Configurations/Assay-Configs/dqn_gamma_final_env.json"
+    #data_file = "../../Assay-Output/dqn_gamma-1/Behavioural-Data-Empty.h5"
+    #config_file = f"../../Configurations/Assay-Configs/dqn_gamma_final_env.json"
 
     with open(config_file, 'r') as f:
         env_variables = json.load(f)
@@ -548,7 +592,7 @@ if __name__ == "__main__":
         for key in datfl[group].keys():
             data[key] = np.array(datfl[group][key])
 
-    draw_episode(data, env_variables, '', continuous_actions=False, show_energy_state=True,
+    draw_episode(data, env_variables, 'test', continuous_actions=False, show_energy_state=True,
                  trim_to_fish=True, showed_region_quad=500, include_background=True)
 
 
