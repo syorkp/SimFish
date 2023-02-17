@@ -493,8 +493,8 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=3.0/rad_div, colors=colors_red, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = right_eye_pos)
             ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=3.5/rad_div, colors=colors_red2, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = right_eye_pos)
 
-            ax10.set_xlim(-2, 2)
-            ax10.set_ylim(-2, 2)
+            ax10.set_xlim(-1, 1)
+            ax10.set_ylim(-1, 1)
 
             plot_start = max(0, step - 100)
             ax3.clear()

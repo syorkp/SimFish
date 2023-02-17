@@ -242,7 +242,7 @@ env = {
     # Visual system scaling factors (to set CNN inputs into 0 to 255 range):
     'red_scaling_factor': 15,  # Pixel counts are multiplied by this
     'uv_scaling_factor': 200,  # Pixel counts are multiplied by this
-    'red_2_scaling_factor': 10,  # Pixel counts are multiplied by this
+    'red_2_scaling_factor': 15,  # Pixel counts are multiplied by this
     'red_occlusion_gain': 0.0,  # 0 Being complete construction.
     'uv_occlusion_gain': 0.0,
     'red2_occlusion_gain': 0.0,
@@ -310,7 +310,7 @@ env = {
     'fixed_prey_distribution': False,
 }
 
-scaffold_name = "dqn_new"
+scaffold_name = "dqn_new_even"
 
 
 # For predator scaffolding
@@ -334,7 +334,7 @@ scaffold_name = "dqn_new"
 # env["probability_of_predator"] = 0.003
 
 # Even prey
-# env["differential_prey"] = False
+env["differential_prey"] = False
 
 # For Sand Grains
 env["sand_grain_num"] = env["prey_num"]

@@ -119,7 +119,7 @@
     "duration_of_loom": 10,
     "red_scaling_factor": 15,
     "uv_scaling_factor": 200,
-    "red_2_scaling_factor": 10,
+    "red_2_scaling_factor": 15,
     "red_occlusion_gain": 0.0,
     "uv_occlusion_gain": 0.0,
     "red2_occlusion_gain": 0.0,
