@@ -51,7 +51,7 @@
     "sand_grain_mass": 1.0,
     "sand_grain_inertia": 40.0,
     "sand_grain_size": 1.0,
-    "sand_grain_num": 100,
+    "sand_grain_num": 0,
     "sand_grain_displacement_impulse_scaling_factor": 0.5,
     "sand_grain_displacement_distance": 20,
     "sand_grain_red_component": 2.0,

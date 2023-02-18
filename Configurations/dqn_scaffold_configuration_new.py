@@ -310,7 +310,7 @@ env = {
     'fixed_prey_distribution': False,
 }
 
-scaffold_name = "dqn_new_even"
+scaffold_name = "dqn_new"
 
 
 # For predator scaffolding
@@ -334,10 +334,10 @@ scaffold_name = "dqn_new_even"
 # env["probability_of_predator"] = 0.003
 
 # Even prey
-env["differential_prey"] = False
+# env["differential_prey"] = False
 
 # For Sand Grains
-env["sand_grain_num"] = env["prey_num"]
+# env["sand_grain_num"] = env["prey_num"]
 
 
 #     Scaffold Points
@@ -354,12 +354,12 @@ high_pai = 800
 # changes += build_changes_list_gradual("PCI", low_pci, "distance_from_fish", env["distance_from_fish"],
 #                                       env["distance_from_fish"] / 2, 5, discrete=False)
 # For sand grain simplifying
-changes += [
-       ["PCI", high_pci, "sand_grain_red_component", 1.5],
-       ["PCI", high_pci, "sand_grain_red_component", 1.0],
-       ["PCI", high_pci, "sand_grain_red_component", 0.5],
-       ["PCI", high_pci, "sand_grain_red_component", 0.0],
-]
+# changes += [
+#        ["PCI", high_pci, "sand_grain_red_component", 1.5],
+#        ["PCI", high_pci, "sand_grain_red_component", 1.0],
+#        ["PCI", high_pci, "sand_grain_red_component", 0.5],
+#        ["PCI", high_pci, "sand_grain_red_component", 0.0],
+# ]
 
 # Predator changes
 

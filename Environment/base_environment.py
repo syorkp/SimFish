@@ -491,7 +491,7 @@ class BaseEnvironment:
         return False
 
     def touch_wall(self, arbiter, space, data):
-        if self.env_variables["wall_reflection"]:
+        if not self.env_variables["wall_reflection"]:
             return self._touch_wall(arbiter, space, data)
         else:
             return self._touch_wall_reflect(arbiter, space, data)
