@@ -277,6 +277,8 @@ class TrainingService(BaseService):
                         print(f"""Stopped improving PCI: Pre: {pre_values} Post: {post_values} Std: {overall_std}""")
 
         if switch_criteria_met:
+            if self.algorithm == "DQN":
+                self.experience_buffer.reset()
             self.configuration_index = int(next_point)
             self.switched_configuration = True
 

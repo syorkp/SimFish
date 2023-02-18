@@ -19,7 +19,9 @@ class ExperienceBuffer:
         # 3 - Internal state
         # 4 - Observation (t+1)
         # 5 - End multiplier (death)
-
+    def reset(self):
+        self.buffer = []
+        
     def add(self, experience):
         if len(self.buffer) + 1 >= self.buffer_size:
             self.buffer[0:(1 + len(self.buffer)) - self.buffer_size] = []
