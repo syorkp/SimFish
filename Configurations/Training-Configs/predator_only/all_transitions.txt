@@ -1,0 +1,2 @@
+1) Metric-PAI: 600, Variable-predator_impulse: 15
+2) Metric-PAI: 800, Variable-predator_impulse: 25

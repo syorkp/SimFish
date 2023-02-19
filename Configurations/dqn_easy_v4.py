@@ -280,7 +280,7 @@ env = {
     # Reward
     'action_reward_scaling': 0,
     # Best working 10000,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
-    'consumption_reward_scaling': 100000,
+    'consumption_reward_scaling': 50000,
     # Arbitrary (practical) hyperparameter for reward for consumption. Was 1000000
 
     'wall_reflection': True,
@@ -310,7 +310,7 @@ env = {
     'fixed_prey_distribution': False,
 }
 
-scaffold_name = "dqn_new_even_expansive_capture"
+scaffold_name = "dqn_easy_v4"
 
 
 # For predator scaffolding
@@ -334,7 +334,7 @@ scaffold_name = "dqn_new_even_expansive_capture"
 # env["probability_of_predator"] = 0.003
 
 # Even prey
-# env["differential_prey"] = False
+env["differential_prey"] = False
 
 # For Sand Grains
 # env["sand_grain_num"] = env["prey_num"]
@@ -364,9 +364,9 @@ high_pai = 800
 # Predator changes
 
 # Start with shot noise
-env["shot_noise"] = True
+env["shot_noise"] = False
 env["bkg_scatter"] = 0.1
-env["max_salt_damage"] = 0.02
+env["max_salt_damage"] = 0.00
 env["light_gain"] = 2.7769
 env["dark_gain"] = 1.2397
 

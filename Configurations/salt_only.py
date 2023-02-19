@@ -99,16 +99,16 @@ env = {
     'visual_field': 163.,  # single eye angular visual field
     'eyes_biasx': 2.5,  # distance of eyes from midline - interretinal distance of 0.5mm
 
-    'distance_penalty_scaling_factor': 1.0,
+    'distance_penalty_scaling_factor': 0.0,
     # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
-    'angle_penalty_scaling_factor': 0.5,
+    'angle_penalty_scaling_factor': 0.0,
     # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
 
     'prey_mass': 1.,
     'prey_inertia': 40.,
     'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
     'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-    'prey_num': 100,
+    'prey_num': 0,
     'prey_impulse': 0.0,  # impulse each prey receives per step
     'prey_escape_impulse': 2,
     'prey_sensing_distance': 20,
@@ -117,7 +117,7 @@ env = {
     'prey_fluid_displacement': False,
     'prey_jump': False,
     'differential_prey': True,
-    'prey_cloud_num': 16,
+    'prey_cloud_num': 0,
 
     # Prey movement
     'p_slow': 1.0,
@@ -205,7 +205,7 @@ env = {
     'energy_state': True,
     'in_light': True,
     'salt': True,  # Inclusion of olfactory salt input and salt death.
-    'salt_reward_penalty': 1000,  # Scales with salt concentration. Was 10000
+    'salt_reward_penalty': 10000,  # Scales with salt concentration. Was 10000
     "use_dynamic_network": True,
     'salt_concentration_decay': 0.002,  # Scale for exponential salt concentration decay from source.
     'salt_recovery': 0.005,  # Amount by which salt health recovers per step
@@ -280,10 +280,10 @@ env = {
     # Reward
     'action_reward_scaling': 0,
     # Best working 10000,  # 1942,  # Arbitrary (practical) hyperparameter for penalty for action
-    'consumption_reward_scaling': 100000,
+    'consumption_reward_scaling': 10000,
     # Arbitrary (practical) hyperparameter for reward for consumption. Was 1000000
 
-    'wall_reflection': True,
+    'wall_reflection': False,
     'wall_touch_penalty': 200,
 
     # Currents
@@ -310,7 +310,7 @@ env = {
     'fixed_prey_distribution': False,
 }
 
-scaffold_name = "dqn_new_even_expansive_capture"
+scaffold_name = "salt_only"
 
 
 # For predator scaffolding
@@ -334,7 +334,7 @@ scaffold_name = "dqn_new_even_expansive_capture"
 # env["probability_of_predator"] = 0.003
 
 # Even prey
-# env["differential_prey"] = False
+env["differential_prey"] = False
 
 # For Sand Grains
 # env["sand_grain_num"] = env["prey_num"]
@@ -364,108 +364,12 @@ high_pai = 800
 # Predator changes
 
 # Start with shot noise
-env["shot_noise"] = True
+env["shot_noise"] = False
 env["bkg_scatter"] = 0.1
-env["max_salt_damage"] = 0.02
+env["max_salt_damage"] = 0.00
 env["light_gain"] = 2.7769
 env["dark_gain"] = 1.2397
 
-# 2-10
-changes += [
-    ["PCI", low_pci, "anneling_steps", 500000,
-     "capture_swim_extra_cost", 200],
-
-    ["PCI", low_pci, "wall_reflection", False],
-
-    # 2) Visual System
-    ["PCI", low_pci, "red_photoreceptor_rf_size", 0.0133,
-     "uv_photoreceptor_rf_size", 0.0133],
-
-    # ["PCI", low_pci, "shot_noise", True],
-
-    # ["PCI", low_pci, "bkg_scatter", 0.1],
-
-    # ["PCI", high_pci, "light_gain", 160.],
-
-    # ["PCI", high_pci, "light_gain", 125.7]
-]
-
-# 2) Exploration 15-18
-original_prey_num = env["prey_num"]
-original_prey_cloud_num = env["prey_cloud_num"]
-
-# Normal
-changes += [
-    ["PCI", high_pci * 12 / 8, "prey_cloud_num", original_prey_cloud_num * 6 / 8,
-     "prey_num", original_prey_num * 6 / 8],
-
-    ["PCI", high_pci * 12 / 8, "prey_cloud_num", original_prey_cloud_num * 4 / 8,
-     "prey_num", original_prey_num * 4 / 8],
-
-    ["PCI", high_pci * 20 / 8, "prey_cloud_num", original_prey_cloud_num * 2 / 8,
-     "prey_num", original_prey_num * 2 / 8],
-
-    ["PCI", high_pci * 20 / 8, "prey_cloud_num", original_prey_cloud_num * 1 / 8,
-     "prey_num", original_prey_num * 1 / 8],
-]
-
-# Sand grains
-# changes += [["PCI", high_pci, "prey_num", original_prey_num * 7/8],
-#             ["PCI", high_pci, "prey_cloud_num", original_prey_cloud_num * 7/8],
-#             ["PCI", high_pci, "sand_grain_num", original_prey_num * 7/8],
-#
-#             ["PCI", high_pci * 10/8, "prey_num", original_prey_num * 6/8],
-#             ["PCI", high_pci * 10/8, "prey_cloud_num", original_prey_cloud_num * 6/8],
-#             ["PCI", high_pci * 10 / 8, "sand_grain_num", original_prey_num * 6 / 8],
-#
-#             ["PCI", high_pci * 12/8, "prey_num", original_prey_num * 5/8],
-#             ["PCI", high_pci * 12/8, "prey_cloud_num", original_prey_cloud_num * 5/8],
-#             ["PCI", high_pci * 12 / 8, "sand_grain_num", original_prey_num * 5 / 8],
-#
-#             ["PCI", high_pci * 14/8, "prey_num", original_prey_num * 4/8],
-#             ["PCI", high_pci * 14/8, "prey_cloud_num", original_prey_cloud_num * 4/8],
-#             ["PCI", high_pci * 14 / 8, "sand_grain_num", original_prey_num * 4 / 8],
-#
-#             ["PCI", high_pci * 16/8, "prey_num", original_prey_num * 3/8],
-#             ["PCI", high_pci * 16/8, "prey_cloud_num", original_prey_cloud_num * 3/8],
-#             ["PCI", high_pci * 16 / 8, "sand_grain_num", original_prey_num * 3 / 8],
-#
-#             ["PCI", high_pci * 18/8, "prey_num", original_prey_num * 2/8],
-#             ["PCI", high_pci * 18/8, "prey_cloud_num", original_prey_cloud_num * 2/8],
-#             ["PCI", high_pci * 18 / 8, "sand_grain_num", original_prey_num * 2 / 8],
-#
-#             ["PCI", high_pci * 20/8, "prey_num", original_prey_num * 1/8],
-#             ["PCI", high_pci * 20/8, "prey_cloud_num", original_prey_cloud_num * 1/8],
-#             ["PCI", high_pci * 20/8, "sand_grain_num", original_prey_num * 1/8],
-#             ]
-
-
-low_pci *= 20 / 8
-high_pci *= 20 / 8
-
-# 3) Fine Prey Capture 19-34
-changes += [["PCI", high_pci, "prey_fluid_displacement", True,
-             "prey_jump", True,
-             ],
-            ["PCI", high_pci, "fish_mouth_size", 4],
-            ["PCI", high_pci, "fraction_capture_permitted", 0.2],
-            ["PCI", high_pci, "capture_angle_deviation_allowance", np.pi / 5],
-
-            ]
-
-changes += [["PCI", high_pci, "capture_swim_extra_cost", 250, "anneling_steps", 1000000]]
-
-# 4) Predator avoidance 35
-changes += [["PCI", high_pci, "probability_of_predator", 0.003]]
-
-changes += [["PAI", low_pai, "predator_impulse", 15]]
-
-changes += [["PAI", high_pai, "predator_impulse", 25]]
-
-# 5) Other Behaviours 36-37
-# changes += [["PCI", high_pci, "max_salt_damage", 0.02]]
-
-changes += [["PCI", high_pci, "current_setting", "Circular"]]
 
 finished_condition = {"PCI": 0.4,
                       "PAI": 800.0}
