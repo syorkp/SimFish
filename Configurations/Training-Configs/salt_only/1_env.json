@@ -97,7 +97,7 @@
     "use_dynamic_network": true,
     "salt_concentration_decay": 0.002,
     "salt_recovery": 0.005,
-    "max_salt_damage": 0.0,
+    "max_salt_damage": 0.02,
     "visualise_mask": false,
     "show_channel_sectors": false,
     "show_fish_body_energy_state": false,
