@@ -120,11 +120,51 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
-    salt_only = [
+    salt_only_1 = [
         {
             "Model Name": "salt_only",
             "Environment Name": "salt_only",
             "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    salt_only_2 = [
+        {
+            "Model Name": "salt_only",
+            "Environment Name": "salt_only",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    salt_only_3 = [
+        {
+            "Model Name": "salt_only",
+            "Environment Name": "salt_only",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    salt_only_4 = [
+        {
+            "Model Name": "salt_only",
+            "Environment Name": "salt_only",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    salt_only_5 = [
+        {
+            "Model Name": "salt_only",
+            "Environment Name": "salt_only",
+            "Trial Number": 5,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
