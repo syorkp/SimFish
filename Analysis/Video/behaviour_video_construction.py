@@ -279,6 +279,10 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     #        env_variables = json.load(f)
 
     save_location += save_id
+    if "Training-Output" in save_location:
+        fast_mode = True
+    else:
+        fast_mode = False
 
     fig = plt.figure(facecolor='0.9', figsize=(4, 3))
     gs = fig.add_gridspec(nrows=10, ncols=10, left=0.05, right=0.85,
@@ -289,14 +293,15 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     ax2 = fig.add_subplot(gs[7, 3:6])
     ax3 = fig.add_subplot(gs[0, 6:10])
     ax4 = fig.add_subplot(gs[1, 6:10])
-    ax5 = fig.add_subplot(gs[2, 6:10])
-    ax6 = fig.add_subplot(gs[3, 6:10])
-    ax7 = fig.add_subplot(gs[4, 6:10])
+ #   ax5 = fig.add_subplot(gs[2, 6:10])
+ #   ax6 = fig.add_subplot(gs[3, 6:10])
+ #   ax7 = fig.add_subplot(gs[4, 6:10])
     ax8 = fig.add_subplot(gs[5, 6])
     if continuous_actions:
         ax9 = fig.add_subplot(gs[5, 8])
 
-    ax10 = fig.add_subplot(gs[6:10, 6:10])
+    if not fast_mode:
+        ax10 = fig.add_subplot(gs[6:10, 6:10])
 
     metadata = dict(title='Movie Test', artist='Matplotlib',
                 comment='Movie support!')
@@ -327,6 +332,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     remaining = 360 - env_variables['visual_field']
     pie_sizes = np.ones(obs_len) * obs_atom
     pie_sizes = np.append(pie_sizes, remaining)
+
 
     with writer.saving(fig, f"{save_location}.mp4", 500):
 
@@ -458,43 +464,44 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             # ax22.tick_params(left = False, right = False , labelleft = False ,
             #         labelbottom = False, bottom = False)
 
-            ax10.clear()
+            if not fast_mode:
+                ax10.clear()
 
-            left_eye_pos = (+np.cos(np.pi / 2 - data["fish_angle"][step]) * env_variables['eyes_biasx']*0.05,
-                            +np.sin(np.pi / 2 - data["fish_angle"][step]) * env_variables['eyes_biasx']*0.05)
-            right_eye_pos = (-np.cos(np.pi / 2 - data["fish_angle"][step]) * env_variables['eyes_biasx']*0.05,
-                             -np.sin(np.pi / 2 - data["fish_angle"][step]) * env_variables['eyes_biasx']*0.05)
+                left_eye_pos = (+np.cos(np.pi / 2 - data["fish_angle"][step]) * env_variables['eyes_biasx']*0.05,
+                                +np.sin(np.pi / 2 - data["fish_angle"][step]) * env_variables['eyes_biasx']*0.05)
+                right_eye_pos = (-np.cos(np.pi / 2 - data["fish_angle"][step]) * env_variables['eyes_biasx']*0.05,
+                                -np.sin(np.pi / 2 - data["fish_angle"][step]) * env_variables['eyes_biasx']*0.05)
 
-            rad_div = 5
-            left_eye_start_angle = +env_variables['visual_field']/2 + 90 - env_variables['eyes_verg_angle'] / 2 - np.rad2deg(data["fish_angle"][step])
-            left_eye_start_angle = left_eye_start_angle % 360
-            alphas = np.clip(left_obs, 0, 255) / 255
-            colors = np.zeros(alphas.shape)
-            colors = np.concatenate((colors, np.ones((3, 1))), axis=1)
-            alphas = np.concatenate((alphas, np.zeros((3, 1))), axis=1)
-            colors_red = np.array([1-colors[0,:], colors[0,:], colors[0,:], alphas[0,:]]).T
-            colors_uv = np.array([1-colors[1,:], colors[1,:], 1-colors[1,:], alphas[1,:]]).T
-            colors_red2 = np.array([1-colors[2,:], colors[2,:], colors[2,:], alphas[2,:]]).T
-            ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=2.5/rad_div, colors=colors_uv, wedgeprops={"edgecolor": None, "width": 2.4/rad_div}, center = left_eye_pos)
-            ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=3.0/rad_div, colors=colors_red, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = left_eye_pos)
-            ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=3.5/rad_div, colors=colors_red2, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = left_eye_pos)
-            
-            right_eye_start_angle = +env_variables['visual_field']/2 - 90 + env_variables['eyes_verg_angle'] / 2 - np.rad2deg(data["fish_angle"][step])
-            right_eye_start_angle = right_eye_start_angle % 360
+                rad_div = 5
+                left_eye_start_angle = +env_variables['visual_field']/2 + 90 - env_variables['eyes_verg_angle'] / 2 - np.rad2deg(data["fish_angle"][step])
+                left_eye_start_angle = left_eye_start_angle % 360
+                alphas = np.clip(left_obs, 0, 255) / 255
+                colors = np.zeros(alphas.shape)
+                colors = np.concatenate((colors, np.ones((3, 1))), axis=1)
+                alphas = np.concatenate((alphas, np.zeros((3, 1))), axis=1)
+                colors_red = np.array([1-colors[0,:], colors[0,:], colors[0,:], alphas[0,:]]).T
+                colors_uv = np.array([1-colors[1,:], colors[1,:], 1-colors[1,:], alphas[1,:]]).T
+                colors_red2 = np.array([1-colors[2,:], colors[2,:], colors[2,:], alphas[2,:]]).T
+                ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=2.5/rad_div, colors=colors_uv, wedgeprops={"edgecolor": None, "width": 2.4/rad_div}, center = left_eye_pos)
+                ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=3.0/rad_div, colors=colors_red, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = left_eye_pos)
+                ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=3.5/rad_div, colors=colors_red2, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = left_eye_pos)
+                
+                right_eye_start_angle = +env_variables['visual_field']/2 - 90 + env_variables['eyes_verg_angle'] / 2 - np.rad2deg(data["fish_angle"][step])
+                right_eye_start_angle = right_eye_start_angle % 360
 
-            alphas = np.clip(right_obs, 0, 255) / 255
-            colors = np.zeros(alphas.shape)
-            colors = np.concatenate((colors, np.ones((3, 1))), axis=1)
-            alphas = np.concatenate((alphas, np.zeros((3, 1))), axis=1)
-            colors_red = np.array([1-colors[0,:], colors[0,:], colors[0,:], alphas[0,:]]).T
-            colors_uv = np.array([1-colors[1,:], colors[1,:], 1-colors[1,:], alphas[1,:]]).T
-            colors_red2 = np.array([1-colors[2,:], colors[2,:], colors[2,:], alphas[2,:]]).T
-            ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=2.5/rad_div, colors=colors_uv, wedgeprops={"edgecolor": None, "width": 2.4/rad_div}, center = right_eye_pos)
-            ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=3.0/rad_div, colors=colors_red, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = right_eye_pos)
-            ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=3.5/rad_div, colors=colors_red2, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = right_eye_pos)
+                alphas = np.clip(right_obs, 0, 255) / 255
+                colors = np.zeros(alphas.shape)
+                colors = np.concatenate((colors, np.ones((3, 1))), axis=1)
+                alphas = np.concatenate((alphas, np.zeros((3, 1))), axis=1)
+                colors_red = np.array([1-colors[0,:], colors[0,:], colors[0,:], alphas[0,:]]).T
+                colors_uv = np.array([1-colors[1,:], colors[1,:], 1-colors[1,:], alphas[1,:]]).T
+                colors_red2 = np.array([1-colors[2,:], colors[2,:], colors[2,:], alphas[2,:]]).T
+                ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=2.5/rad_div, colors=colors_uv, wedgeprops={"edgecolor": None, "width": 2.4/rad_div}, center = right_eye_pos)
+                ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=3.0/rad_div, colors=colors_red, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = right_eye_pos)
+                ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=3.5/rad_div, colors=colors_red2, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = right_eye_pos)
 
-            ax10.set_xlim(-1, 1)
-            ax10.set_ylim(-1, 1)
+                ax10.set_xlim(-1, 1)
+                ax10.set_ylim(-1, 1)
 
             plot_start = max(0, step - 100)
             ax3.clear()
@@ -502,40 +509,41 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             ax3.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
             ax4.clear()
-            ax4.plot(data['rnn_state_actor'][plot_start:step, 0, :10], linewidth=0.5)
+            ax4.plot(data['rnn_state_actor'][plot_start:step, 0, :40], linewidth=0.5)
             ax4.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
-            ax5.clear()
-            ax5.plot(data['rnn_state_actor'][plot_start:step, 0, 10:20], linewidth=0.5)
-            ax5.tick_params(left = False, right = False , labelleft = False ,
-                    labelbottom = False, bottom = False)
-            ax6.clear()
-            ax6.plot(data['rnn_state_actor'][plot_start:step, 0, 20:30], linewidth=0.5)
-            ax6.tick_params(left = False, right = False , labelleft = False ,
-                    labelbottom = False, bottom = False)
-            ax7.clear()
-            ax7.plot(data['rnn_state_actor'][plot_start:step, 0, 30:40], linewidth=0.5)
-            ax7.tick_params(left=False, right=False , labelleft=False, labelbottom=False, bottom=False)
+            # ax5.clear()
+            # ax5.plot(data['rnn_state_actor'][plot_start:step, 0, 10:20], linewidth=0.5)
+            # ax5.tick_params(left = False, right = False , labelleft = False ,
+            #         labelbottom = False, bottom = False)
+            # ax6.clear()
+            # ax6.plot(data['rnn_state_actor'][plot_start:step, 0, 20:30], linewidth=0.5)
+            # ax6.tick_params(left = False, right = False , labelleft = False ,
+            #         labelbottom = False, bottom = False)
+            # ax7.clear()
+            # ax7.plot(data['rnn_state_actor'][plot_start:step, 0, 30:40], linewidth=0.5)
+            # ax7.tick_params(left=False, right=False , labelleft=False, labelbottom=False, bottom=False)
 
-            if continuous_actions:
-                ab = np.array(action_buffer)
+            if step % 10 == 0:
+                if continuous_actions:
+                    ab = np.array(action_buffer)
 
-                ax8.clear()
-                ax8.hist(ab[:, 0], bins=20)
-                ax8.tick_params(axis='both', which='major', labelsize=3, length=1, width=0.1)
-                for _, spine in ax8.spines.items():
-                    spine.set_linewidth(0.1)
+                    ax8.clear()
+                    ax8.hist(ab[:, 0], bins=20)
+                    ax8.tick_params(axis='both', which='major', labelsize=3, length=1, width=0.1)
+                    for _, spine in ax8.spines.items():
+                        spine.set_linewidth(0.1)
 
-                ax9.clear()
-                ax9.hist(ab[:, 1], bins=20)
-                ax9.tick_params(axis='both', which='major', labelsize=3, length=1, width=0.1)
-                for _, spine in ax9.spines.items():
-                    spine.set_linewidth(0.1)
+                    ax9.clear()
+                    ax9.hist(ab[:, 1], bins=20)
+                    ax9.tick_params(axis='both', which='major', labelsize=3, length=1, width=0.1)
+                    for _, spine in ax9.spines.items():
+                        spine.set_linewidth(0.1)
 
-            else:
+                else:
 
-                ax8.clear()
-                ax8.pie(action_hist, labels=actions, textprops={'fontsize': 2})
+                    ax8.clear()
+                    ax8.pie(action_hist, labels=actions, textprops={'fontsize': 2})
 
             #plt.draw()
             #plt.pause(0.001)

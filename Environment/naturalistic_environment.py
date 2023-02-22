@@ -282,6 +282,7 @@ Sand grain: {self.sand_grain_associated_reward}
             self.fish.body.position = new_position
 
     def simulation_step(self, action, activations, impulse):
+        att = 0                                 # attention ofr this step in learning
         self.prey_consumed_this_step = False
         self.last_action = action
         self.fish.touched_sand_grain = False
@@ -350,22 +351,26 @@ Sand grain: {self.sand_grain_associated_reward}
 
  
         if self.fish.touched_predator:
-            print("Fish eaten by predator")
+            print("Fish touched predator")
             reward -= self.env_variables['predator_cost']
-            done = True
-            self.fish.touched_predator = False
-            self.recent_cause_of_death = "Predator"
-            self.survived_attack = False
             self.predator_associated_reward -= self.env_variables["predator_cost"]
-            self.salt_associated_reward = 0
-            self.wall_associated_reward = 0
+            self.survived_attack = False
+            self.fish.touched_predator = False
+            att += 1
+            if self.env_variables["predator_kills"]:
+                done = True
+                self.recent_cause_of_death = "Predator"
+                self.salt_associated_reward = 0
+                self.wall_associated_reward = 0
+            
 
-        if 'predator_avoidance_reward' in self.env_variables:
             if self.survived_attack:
                 print("Survived attack...")
-                reward += self.env_variables["predator_avoidance_reward"]
-                self.predator_associated_reward += self.env_variables["predator_cost"]
                 self.survived_attack = False
+                att += 5
+                if 'predator_avoidance_reward' in self.env_variables:
+                    reward += self.env_variables["predator_avoidance_reward"]
+                    self.predator_associated_reward += self.env_variables["predator_cost"]
 
         if "sand_grain_touch_penalty" in self.env_variables:
             if self.fish.touched_sand_grain:
@@ -378,6 +383,9 @@ Sand grain: {self.sand_grain_associated_reward}
                 self.transport_fish(self.relocate_fish[self.num_steps])
 
         self.bring_fish_in_bounds()
+
+        if self.prey_consumed_this_step:
+            att += 3
 
         # Energy level
         if self.env_variables["energy_state"]:
@@ -392,28 +400,28 @@ Sand grain: {self.sand_grain_associated_reward}
                 self.recent_cause_of_death = "Starvation"
 
         # Salt health
-        if self.env_variables["salt"]:
-            salt_damage = self.salt_gradient[int(self.fish.body.position[0]), int(self.fish.body.position[1])]
-            self.salt_damage_history.append(salt_damage)
-            self.fish.salt_health = self.fish.salt_health + self.env_variables["salt_recovery"] - salt_damage
-            if self.fish.salt_health > 1.0:
-                self.fish.salt_health = 1.0
-            if self.fish.salt_health < 0:
-                print("Fish too salty")
-                done = True
-                self.recent_cause_of_death = "Salt"
+        salt_damage = self.salt_gradient[int(self.fish.body.position[0]), int(self.fish.body.position[1])]
+        self.salt_damage_history.append(salt_damage)
+        self.fish.salt_health = self.fish.salt_health + self.env_variables["salt_recovery"] - salt_damage
+        if self.fish.salt_health > 1.0:
+            self.fish.salt_health = 1.0
+        if self.fish.salt_health < 0 and self.env_variables["salt_kills"]:
+            print("Fish too salty")
+            done = True
+            self.recent_cause_of_death = "Salt"
 
-            if "salt_reward_penalty" in self.env_variables:
-                if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables[
-                    "salt_recovery"]:
-                    reward -= self.env_variables["salt_reward_penalty"] * salt_damage
-                    # print(f"Salt-associated reward: {-self.env_variables['salt_reward_penalty'] * salt_damage}")
-                    self.salt_associated_reward -= self.env_variables['salt_reward_penalty'] * salt_damage
+        if "salt_reward_penalty" in self.env_variables:
+            if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables[
+                "salt_recovery"]:
+                reward -= self.env_variables["salt_reward_penalty"] * salt_damage
+               # print(f"Salt-associated reward: {-self.env_variables['salt_reward_penalty'] * salt_damage}")
+                self.salt_associated_reward -= self.env_variables['salt_reward_penalty'] * salt_damage
 
         if self.predator_body is not None:
             self.total_predator_steps += 1
 
         if self.fish.touched_edge_this_step:
+            att += 1
             reward -= self.env_variables["wall_touch_penalty"]
             self.wall_associated_reward -= self.env_variables["wall_touch_penalty"]
 
@@ -468,7 +476,7 @@ Sand grain: {self.sand_grain_associated_reward}
         observation, FOV = self.resolve_visual_input()
 
 
-        return observation, reward, internal_state, done, FOV
+        return observation, reward, internal_state, done, FOV, att
 
     def init_predator(self):
         if self.predator_location is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \

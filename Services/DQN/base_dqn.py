@@ -193,6 +193,7 @@ class BaseDQN:
         steps in the episode. The relevant values are then saved to the experience buffer.
         """
         experience = []
+        total_episode_attention = 0
 
         rnn_state = copy.copy(self.init_rnn_state)
         rnn_state_ref = copy.copy(self.init_rnn_state_ref)
@@ -201,7 +202,7 @@ class BaseDQN:
         sv = np.zeros((1, 128))  # Placeholder for the state value stream
 
         # Take the first simulation step, with a capture action. Assigns observation, reward, internal state, done, and
-        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=3, activations=(sa,))
+        o, r, internal_state, d, FOV, att = self.simulation.simulation_step(action=3, activations=(sa,))
 
         # For benchmarking each episode.
         all_actions = []
@@ -220,7 +221,7 @@ class BaseDQN:
             moviewriter.setup(fig, 'debug.mp4', dpi=500)
         while step_number < self.learning_params["max_epLength"]:
             step_number += 1
-            o, a, r, i_s, o1, d, rnn_state, rnn_state_ref, FOV = self.step_loop(o=o,
+            o, a, r, i_s, o1, d, rnn_state, rnn_state_ref, FOV, att = self.step_loop(o=o,
                                                                                 internal_state=internal_state,
                                                                                 a=action_reafference,
                                                                                 rnn_state=rnn_state,
@@ -233,7 +234,8 @@ class BaseDQN:
                 moviewriter.grab_frame()
                 ax.clear()
             all_actions.append(a[0])
-            experience.append(np.reshape(np.array([o, np.array(a), r, internal_state, o1, d, i_s]), [1, 7]))
+            experience.append(np.reshape(np.array([o, np.array(a), r, internal_state, o1, d, i_s, att]), [1, 8]))
+            total_episode_attention += att
             total_episode_reward += r
             action_reafference = a
             internal_state = i_s
@@ -256,7 +258,7 @@ class BaseDQN:
             self.debug = False
             fig.clf()
 
-        return all_actions, total_episode_reward, experience
+        return all_actions, total_episode_reward, experience, total_episode_attention
 
     def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         """
@@ -303,7 +305,7 @@ class BaseDQN:
             chosen_a = chosen_a[0]
 
         # Simulation step
-        o1, given_reward, internal_state, d, FOV = self.simulation.simulation_step(action=chosen_a,
+        o1, given_reward, internal_state, d, FOV, att = self.simulation.simulation_step(action=chosen_a,
                                                                                         activations=(sa,))
 
         action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
@@ -363,7 +365,7 @@ class BaseDQN:
                                      )
 
         self.total_steps += 1
-        return o, action_reafference, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, FOV
+        return o, action_reafference, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, FOV, att
 
     # TODO: merge this with the above function
     def assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
@@ -394,7 +396,7 @@ class BaseDQN:
                            })
 
         chosen_a = chosen_a[0]
-        o1, given_reward, internal_state1, d, FOV = self.simulation.simulation_step(action=chosen_a,
+        o1, given_reward, internal_state1, d, FOV, att = self.simulation.simulation_step(action=chosen_a,
                                                                                          activations=(sa,))
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
@@ -466,7 +468,7 @@ class BaseDQN:
                            })
 
         chosen_a = chosen_a[0]
-        o1, given_reward, internal_state1, d, FOV = self.simulation.simulation_step(action=chosen_a,
+        o1, given_reward, internal_state1, d, FOV, att = self.simulation.simulation_step(action=chosen_a,
                                                                                          activations=(sa,))
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
         if self.full_reafference:

@@ -144,11 +144,10 @@ class BaseEnvironment:
         self.mask_buffer = []
         self.using_gpu = using_gpu
 
-        if self.env_variables["salt"]:
-            self.salt_gradient = None
-            self.xp, self.yp = np.arange(self.env_variables['width']), np.arange(self.env_variables['height'])
-            self.salt_damage_history = []
-            self.salt_location = None
+        self.salt_gradient = None
+        self.xp, self.yp = np.arange(self.env_variables['width']), np.arange(self.env_variables['height'])
+        self.salt_damage_history = []
+        self.salt_location = None
 
         if self.env_variables["prey_reproduction_mode"]:
             self.prey_ages = []
@@ -254,10 +253,9 @@ class BaseEnvironment:
         self.fish.energy_level = 1
 
         # Reset salt gradient
-        if self.env_variables["salt"]:
-            self.reset_salt_gradient()
-            self.fish.salt_health = 1.0
-            self.salt_damage_history = []
+        self.reset_salt_gradient()
+        self.fish.salt_health = 1.0
+        self.salt_damage_history = []
 
         self.clear_environmental_features()
         self.board.reset()

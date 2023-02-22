@@ -80,100 +80,50 @@ if __name__ == "__main__": # may be needed to run on windows
    
     # NEW VISUAL SYSTEM
 
-    dqn_easy_v1 = [
+    prey_basic = [
         {
-            "Model Name": "dqn_easy_v1",
-            "Environment Name": "dqn_easy_v1",
+            "Model Name": "prey_basic",
+            "Environment Name": "prey_basic",
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
     ]
  
-    dqn_easy_v2 = [
+    prey_basic_no_bias = [
         {
-            "Model Name": "dqn_easy_v2",
-            "Environment Name": "dqn_easy_v2",
+            "Model Name": "prey_basic_no_bias",
+            "Environment Name": "prey_basic_no_bias",
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
     ]
 
-    dqn_easy_v3 = [
+    predator_basic = [
         {
-            "Model Name": "dqn_easy_v3",
-            "Environment Name": "dqn_easy_v3",
+            "Model Name": "predator_basic",
+            "Environment Name": "predator_basic",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+  
+    salt_basic = [
+        {
+            "Model Name": "salt_basic",
+            "Environment Name": "salt_basic",
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
     ]
 
-    dqn_easy_v4 = [
+    salt_basic_no_input = [
         {
-            "Model Name": "dqn_easy_v4",
-            "Environment Name": "dqn_easy_v4",
-            "Trial Number": 1,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-
-    salt_only_1 = [
-        {
-            "Model Name": "salt_only",
-            "Environment Name": "salt_only",
-            "Trial Number": 1,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-
-    salt_only_2 = [
-        {
-            "Model Name": "salt_only",
-            "Environment Name": "salt_only",
-            "Trial Number": 2,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-
-    salt_only_3 = [
-        {
-            "Model Name": "salt_only",
-            "Environment Name": "salt_only",
-            "Trial Number": 3,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-
-    salt_only_4 = [
-        {
-            "Model Name": "salt_only",
-            "Environment Name": "salt_only",
-            "Trial Number": 4,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-
-    salt_only_5 = [
-        {
-            "Model Name": "salt_only",
-            "Environment Name": "salt_only",
-            "Trial Number": 5,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-
-    predator_only = [
-        {
-            "Model Name": "predator_only",
-            "Environment Name": "predator_only",
+            "Model Name": "salt_basic_no_input",
+            "Environment Name": "salt_basic_no_input",
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",

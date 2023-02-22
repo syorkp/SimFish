@@ -20,7 +20,7 @@ params = {
     'batch_size': 16,  # How many experience traces to use for each training step.
     'trace_length': 64,  # How long each experience trace will be when training
     'num_episodes': 100000,  # How many episodes of game environment to train network with.
-    'max_epLength': 3000,  # The max allowed length of our episode.
+    'max_epLength': 1500,  # The max allowed length of our episode.
     'epsilon_greedy': True,
     'epsilon_greedy_scaffolding': True,
     'startE': 0.2,  # Starting chance of random action
@@ -33,6 +33,7 @@ params = {
     'pre_train_steps': 50000,  # How many steps of random actions before training begins.
     'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
     'tau': 0.001,  # target network update time constant
+    'attention_sampling_bias': 1.5, # How much to bias the attention sampling towards interesting episodes
 
     # Learning (PPO only)
     'n_updates_per_iteration': 4,
@@ -53,7 +54,7 @@ params = {
 
     # Saving and video parameters
     'time_per_step': 0.03,  # Length of each step used in gif creation
-    'summaryLength': 200,  # Number of episodes to periodically save for analysis
+    'summaryLength': 100,  # Number of episodes to periodically save for analysis
     'rnn_dim_shared': 512,  # number of rnn cells. Should no longer be used.
     'extra_rnn': False,
     'save_gifs': True,
@@ -108,7 +109,7 @@ env = {
     'prey_inertia': 40.,
     'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
     'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
-    'prey_num': 100,
+    'prey_num': 0,
     'prey_impulse': 0.0,  # impulse each prey receives per step
     'prey_escape_impulse': 2,
     'prey_sensing_distance': 20,
@@ -117,7 +118,7 @@ env = {
     'prey_fluid_displacement': False,
     'prey_jump': False,
     'differential_prey': True,
-    'prey_cloud_num': 16,
+    'prey_cloud_num': 0,
 
     # Prey movement
     'p_slow': 1.0,
@@ -161,15 +162,16 @@ env = {
     'dark_light_ratio': 0.3,  # fraction of arena in the dark
     'light_gradient': 200,
     'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
-    'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001
-    'dark_gain': 60.0,  # gain of brightness in the dark side
-    'light_gain': 200.0,  # gain of brightness in the bright side
+    'bkg_scatter': 0.1,  # base brightness of the background FORMERLY 0.00001
+    'dark_gain': 1.2397,  # gain of brightness in the dark side
+    'light_gain': 2.7769,  # gain of brightness in the bright side
 
     'rest_cost': 2,
     'capture_swim_extra_cost': 100,
     'capture_basic_reward': 10000,  # Used only when not using energy state.
     'predator_cost': 50000,
     'predator_avoidance_reward': 20000,
+    'predator_kills': False, # If True, predator kills fish. If False, predator just incurrs a penalty.
 
     'hunger': False,
     'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
@@ -204,12 +206,13 @@ env = {
     # Sensory inputs
     'energy_state': True,
     'in_light': True,
-    'salt': True,  # Inclusion of olfactory salt input and salt death.
+    'salt': True,  # Inclusion of olfactory salt input
+    'salt_kills': False,  # Whether salt concentration can kill fish
     'salt_reward_penalty': 1000,  # Scales with salt concentration. Was 10000
     "use_dynamic_network": True,
     'salt_concentration_decay': 0.002,  # Scale for exponential salt concentration decay from source.
     'salt_recovery': 0.005,  # Amount by which salt health recovers per step
-    'max_salt_damage': 0.0,  # Salt damage at centre of source. Before, was 0.02
+    'max_salt_damage': 0.02,  # Salt damage at centre of source. Before, was 0.02
 
     # GIFs and debugging
     'visualise_mask': False,  # For debugging purposes.
@@ -252,15 +255,10 @@ env = {
     # Arbitrary fish parameters
 
     # Fish Visual System
-    'uv_photoreceptor_rf_size': 0.0133 * 3,  # Radians (0.76 degrees) - Yoshimatsu et al. (2019)
-    'red_photoreceptor_rf_size': 0.0133 * 3,  # Kept same
-    'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
-    'red_photoreceptor_num': 63,
-    'minimum_observation_size': 100,  # Parameter to determine padded observation size (avoids conv layer size bug).
+    'uv_photoreceptor_rf_size': 0.0133,  # Radians (0.76 degrees) - Yoshimatsu et al. (2019)
+    'red_photoreceptor_rf_size': 0.0133,  # Kept same
+    
     'shared_photoreceptor_channels': False,  # Whether two channels have the same RF angles (saves computation time)
-    'incorporate_uv_strike_zone': True,
-    'strike_zone_sigma': 1.5,
-    # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
 
     # Shot noise
     'shot_noise': False,  # Whether to model observation of individual photons as a poisson process.
@@ -310,162 +308,13 @@ env = {
     'fixed_prey_distribution': False,
 }
 
-scaffold_name = "dqn_easy_v3"
-
-
-# For predator scaffolding
-# env["distance_from_fish"] *= 2
-
-#                     Network scaffolding example
-# base_network_layers_updated = copy.copy(base_network_layers)
-# base_network_layers_updated["new_dense"] = ["dense", 300]
-# new_connectivity = copy.copy(connectivity)
-# new_connectivity.append(["full", ["rnn", "new_dense"]])
-# changes = [["PCI", 0.35, "base_network_layers", base_network_layers_updated,
-#             "connectivity", new_connectivity, "do_to_params"]]
-
-
-#        Behavioural Variants Init
-
-# Fixed prey distribution
-# env["fixed_prey_distribution"] = True
-
-# Init with predator
-# env["probability_of_predator"] = 0.003
-
-# Even prey
-env["differential_prey"] = False
-
-# For Sand Grains
-# env["sand_grain_num"] = env["prey_num"]
+scaffold_name = "salt_basic"
 
 
 #     Scaffold Points
 
 changes = []
 
-low_pci = 0.25 / 3
-high_pci = 0.3 / 3
-
-low_pai = 600
-high_pai = 800
-
-# Initial predator scaffolding
-# changes += build_changes_list_gradual("PCI", low_pci, "distance_from_fish", env["distance_from_fish"],
-#                                       env["distance_from_fish"] / 2, 5, discrete=False)
-# For sand grain simplifying
-# changes += [
-#        ["PCI", high_pci, "sand_grain_red_component", 1.5],
-#        ["PCI", high_pci, "sand_grain_red_component", 1.0],
-#        ["PCI", high_pci, "sand_grain_red_component", 0.5],
-#        ["PCI", high_pci, "sand_grain_red_component", 0.0],
-# ]
-
-# Predator changes
-
-# Start with shot noise
-env["shot_noise"] = True
-env["bkg_scatter"] = 0.1
-env["max_salt_damage"] = 0.00
-env["light_gain"] = 2.7769
-env["dark_gain"] = 1.2397
-
-# 2-10
-changes += [
-    ["PCI", low_pci, "anneling_steps", 500000,
-     "capture_swim_extra_cost", 200],
-
-    ["PCI", low_pci, "wall_reflection", False],
-
-    # 2) Visual System
-    ["PCI", low_pci, "red_photoreceptor_rf_size", 0.0133,
-     "uv_photoreceptor_rf_size", 0.0133],
-
-    # ["PCI", low_pci, "shot_noise", True],
-
-    # ["PCI", low_pci, "bkg_scatter", 0.1],
-
-    # ["PCI", high_pci, "light_gain", 160.],
-
-    # ["PCI", high_pci, "light_gain", 125.7]
-]
-
-# 2) Exploration 15-18
-original_prey_num = env["prey_num"]
-original_prey_cloud_num = env["prey_cloud_num"]
-
-# Normal
-changes += [
-    ["PCI", high_pci * 12 / 8, "prey_cloud_num", original_prey_cloud_num * 6 / 8,
-     "prey_num", original_prey_num * 6 / 8],
-
-    ["PCI", high_pci * 12 / 8, "prey_cloud_num", original_prey_cloud_num * 4 / 8,
-     "prey_num", original_prey_num * 4 / 8],
-
-    ["PCI", high_pci * 20 / 8, "prey_cloud_num", original_prey_cloud_num * 2 / 8,
-     "prey_num", original_prey_num * 2 / 8],
-
-    ["PCI", high_pci * 20 / 8, "prey_cloud_num", original_prey_cloud_num * 1 / 8,
-     "prey_num", original_prey_num * 1 / 8],
-]
-
-# Sand grains
-# changes += [["PCI", high_pci, "prey_num", original_prey_num * 7/8],
-#             ["PCI", high_pci, "prey_cloud_num", original_prey_cloud_num * 7/8],
-#             ["PCI", high_pci, "sand_grain_num", original_prey_num * 7/8],
-#
-#             ["PCI", high_pci * 10/8, "prey_num", original_prey_num * 6/8],
-#             ["PCI", high_pci * 10/8, "prey_cloud_num", original_prey_cloud_num * 6/8],
-#             ["PCI", high_pci * 10 / 8, "sand_grain_num", original_prey_num * 6 / 8],
-#
-#             ["PCI", high_pci * 12/8, "prey_num", original_prey_num * 5/8],
-#             ["PCI", high_pci * 12/8, "prey_cloud_num", original_prey_cloud_num * 5/8],
-#             ["PCI", high_pci * 12 / 8, "sand_grain_num", original_prey_num * 5 / 8],
-#
-#             ["PCI", high_pci * 14/8, "prey_num", original_prey_num * 4/8],
-#             ["PCI", high_pci * 14/8, "prey_cloud_num", original_prey_cloud_num * 4/8],
-#             ["PCI", high_pci * 14 / 8, "sand_grain_num", original_prey_num * 4 / 8],
-#
-#             ["PCI", high_pci * 16/8, "prey_num", original_prey_num * 3/8],
-#             ["PCI", high_pci * 16/8, "prey_cloud_num", original_prey_cloud_num * 3/8],
-#             ["PCI", high_pci * 16 / 8, "sand_grain_num", original_prey_num * 3 / 8],
-#
-#             ["PCI", high_pci * 18/8, "prey_num", original_prey_num * 2/8],
-#             ["PCI", high_pci * 18/8, "prey_cloud_num", original_prey_cloud_num * 2/8],
-#             ["PCI", high_pci * 18 / 8, "sand_grain_num", original_prey_num * 2 / 8],
-#
-#             ["PCI", high_pci * 20/8, "prey_num", original_prey_num * 1/8],
-#             ["PCI", high_pci * 20/8, "prey_cloud_num", original_prey_cloud_num * 1/8],
-#             ["PCI", high_pci * 20/8, "sand_grain_num", original_prey_num * 1/8],
-#             ]
-
-
-low_pci *= 20 / 8
-high_pci *= 20 / 8
-
-# 3) Fine Prey Capture 19-34
-changes += [["PCI", high_pci, "prey_fluid_displacement", True,
-             "prey_jump", True,
-             ],
-            ["PCI", high_pci, "fish_mouth_size", 4],
-            ["PCI", high_pci, "fraction_capture_permitted", 0.2],
-            ["PCI", high_pci, "capture_angle_deviation_allowance", np.pi / 5],
-
-            ]
-
-changes += [["PCI", high_pci, "capture_swim_extra_cost", 250, "anneling_steps", 1000000]]
-
-# 4) Predator avoidance 35
-changes += [["PCI", high_pci, "probability_of_predator", 0.003]]
-
-changes += [["PAI", low_pai, "predator_impulse", 15]]
-
-changes += [["PAI", high_pai, "predator_impulse", 25]]
-
-# 5) Other Behaviours 36-37
-# changes += [["PCI", high_pci, "max_salt_damage", 0.02]]
-
-changes += [["PCI", high_pci, "current_setting", "Circular"]]
 
 finished_condition = {"PCI": 0.4,
                       "PAI": 800.0}

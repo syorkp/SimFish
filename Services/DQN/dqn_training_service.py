@@ -108,7 +108,8 @@ class DQNTrainingService(TrainingService, BaseDQN):
         else:
             self.epsilon = self.learning_params["startE"]
 
-        self.experience_buffer = ExperienceBuffer(output_location=self.model_location, buffer_size=self.learning_params["exp_buffer_size"])
+        self.experience_buffer = ExperienceBuffer(output_location=self.model_location, buffer_size=self.learning_params["exp_buffer_size"],
+                                                  attention_sampling_bias=self.learning_params["attention_sampling_bias"])
         #if self.learning_params["save_gifs"]:
         #    self.episode_buffer = None
         #else:
@@ -170,7 +171,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
     def episode_loop(self):
         t0 = time()
         self.current_episode_max_duration = self.learning_params["max_epLength"]
-        all_actions, total_episode_reward, experience = BaseDQN.episode_loop(self)
+        all_actions, total_episode_reward, experience, total_episode_attention = BaseDQN.episode_loop(self)
 
         self.save_episode(episode_start_t=t0,
                           all_actions=all_actions,
@@ -179,13 +180,14 @@ class DQNTrainingService(TrainingService, BaseDQN):
                           prey_caught=self.simulation.prey_caught,
                           predators_avoided=self.simulation.predator_attacks_avoided,
                           sand_grains_bumped=self.simulation.sand_grains_bumped,
-                          steps_near_vegetation=self.simulation.steps_near_vegetation
+                          steps_near_vegetation=self.simulation.steps_near_vegetation,
+                          total_episode_attention=total_episode_attention
                           )
         print(f"""{self.model_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}
-Total episode reward: {total_episode_reward}\n""", flush=True)
+Total episode reward: {total_episode_reward}\nTotal episode attention: {total_episode_attention}""", flush=True)
 
     def save_episode(self, episode_start_t, all_actions, total_episode_reward, experience, prey_caught,
-                     predators_avoided, sand_grains_bumped, steps_near_vegetation):
+                     predators_avoided, sand_grains_bumped, steps_near_vegetation, total_episode_attention):
         """
         Saves the episode the the experience buffer.
         :param prey_caught:
@@ -237,5 +239,5 @@ Total episode reward: {total_episode_reward}\n""", flush=True)
 
         buffer_array = np.array(experience)
         experience = list(zip(buffer_array))
-        self.experience_buffer.add(experience)
+        self.experience_buffer.add(experience, total_episode_attention)
         # Periodically save the model.
