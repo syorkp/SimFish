@@ -680,6 +680,56 @@ if __name__ == "__main__":  # may be needed to run on windows
 
     ]
 
+    #                       Testing Robustness of master branch
+    # Last used config (reaffirm base test).
+    dqn_epsilon_6 = [
+        {
+            "Model Name": "dqn_epsilon",
+            "Environment Name": "dqn_epsilon",
+            "Trial Number": 6,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    dqn_epsilon_7 = [
+        {
+            "Model Name": "dqn_epsilon",
+            "Environment Name": "dqn_epsilon",
+            "Trial Number": 7,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    # Different reward balance
+    dqn_epsilon_rb = [
+        {
+            "Model Name": "dqn_epsilon_rb",
+            "Environment Name": "dqn_epsilon_rb",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    # Different reward scale
+    dqn_epsilon_rs = [
+        {
+            "Model Name": "dqn_epsilon_rs",
+            "Environment Name": "dqn_epsilon_rs",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    # Rare predators
+    dqn_epsilon_rp = [
+        {
+            "Model Name": "dqn_epsilon_rp",
+            "Environment Name": "dqn_epsilon_rp",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
 
     if run_config is None:
         run_config = ppo_gamma_6

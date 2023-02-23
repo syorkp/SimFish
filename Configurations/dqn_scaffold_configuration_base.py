@@ -310,8 +310,14 @@ env = {
     'fixed_prey_distribution': False,
 }
 
-scaffold_name = "dqn_epsilon"
+scaffold_name = "dqn_epsilon_ss"
 
+# Testing reward balance changes
+# env['consumption_reward_scaling'] /= 1000
+# env['ci'] /= 1000
+# env['ca'] /= 1000
+# env['predator_avoidance_reward'] /= 1000
+# env['salt_reward_penalty'] /= 1000
 
 # For predator scaffolding
 # env["distance_from_fish"] *= 2
