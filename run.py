@@ -215,7 +215,7 @@ if __name__ == "__main__": # may be needed to run on windows
                     "assay id": "Naturalistic",
                     "stimulus paradigm": "Naturalistic",
                     "repeats": 10,
-                    "duration": 3000,
+                    "duration": 1000,
                     "Tethered": False,
                     "save frames": False,
                     "use_mu": True,
