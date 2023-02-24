@@ -401,7 +401,7 @@ class BaseDQN:
                               self.simulation.fish.prev_action_angle]
 
         # Update buffer
-        self.buffer.add_training(observation=o,
+        self.buffer.add_training(observation=o1,
                                  internal_state=internal_state,
                                  # action=chosen_a,
                                  action=action_reafference,
