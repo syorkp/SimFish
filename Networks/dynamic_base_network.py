@@ -32,7 +32,7 @@ class DynamicBaseNetwork:
             self.prev_chosen_actions = tf.cast(self.prev_chosen_actions, dtype=tf.int32)
             self.prev_actions_one_hot = tf.one_hot(self.prev_chosen_actions, num_actions, dtype=tf.float32)
         else:
-            self.prev_actions = tf.placeholder(shape=[None, action_dim*2], dtype=tf.float32, name='prev_actions')
+            self.prev_actions = tf.placeholder(shape=[None, action_dim * 2], dtype=tf.float32, name='prev_actions')
 
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
         self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='observation')
@@ -122,8 +122,9 @@ class DynamicBaseNetwork:
     def perform_op(self, op, network_graph, reflected):
         if op[0] == "eye_split":
             if reflected:
-                network_graph[op[2][0]] = tf.reverse(self.network_graph[op[2][0]], [1])
-                network_graph[op[2][1]] = tf.reverse(self.network_graph[op[2][1]], [1])
+                # Swap eyes
+                network_graph[op[2][0]] = tf.reverse(self.network_graph[op[2][1]], [1])
+                network_graph[op[2][1]] = tf.reverse(self.network_graph[op[2][0]], [1])
             else:
                 network_graph[op[2][0]] = network_graph[op[1][0]][:, :, :, 0]
                 network_graph[op[2][1]] = network_graph[op[1][0]][:, :, :, 1]
@@ -135,7 +136,7 @@ class DynamicBaseNetwork:
                 network_graph[op[2][0]] = tf.concat([network_graph[op[1][i]] for i in range(len(op[1]))], 1)
             else:
                 network_graph[op[2][0]] = tf.concat([network_graph[op[1][i]] for i in range(len(op[1]))], 1,
-                                                name=op[2][0])
+                                                    name=op[2][0])
         else:
             print(f"Undefined op: {op[0]}")
 
@@ -277,6 +278,7 @@ class DynamicBaseNetwork:
                 rnn_units[layer] = tf.nn.rnn_cell.LSTMCell(num_units=layers[layer][1], state_is_tuple=True)
                 rnn_cell_states[layer] = rnn_units[layer].zero_state(self.train_length, tf.float32)
                 if reflected:
-                    rnn_cell_states[layer + "_ref"] = rnn_units[layer].zero_state(self.train_length, tf.float32)  # TODO: TEST CHANGE HERE
+                    rnn_cell_states[layer + "_ref"] = rnn_units[layer].zero_state(self.train_length,
+                                                                                  tf.float32)  # TODO: TEST CHANGE HERE
                 rnn_dim = layers[layer][1]
         return rnn_units, rnn_cell_states, rnn_dim

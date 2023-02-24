@@ -258,17 +258,18 @@ class Eye:
 
                 red_readings += red_readings_sand_grains * self.env_variables["sand_grain_red_component"]
 
-        uv_readings_scaled = self.scale_readings(uv_readings,
-                                                 self.env_variables['uv_scaling_factor'] * self.env_variables[
-                                                     "light_gain"] / 200)
-        self.uv_readings = self.add_noise_to_readings(uv_readings_scaled)
+        # uv_readings_scaled = self.scale_readings(uv_readings,
+        #                                          self.env_variables['uv_scaling_factor']) * self.env_variables[
+        #                                              "light_gain"] / 200)
 
-        red_readings_scaled = self.scale_readings(red_readings,
-                                                  self.env_variables['red_scaling_factor'] * self.env_variables[
-                                                      "light_gain"] / 200,
-                                                  self.env_variables['red_2_scaling_factor'] * self.env_variables[
-                                                      "light_gain"] / 200)
-        self.red_readings = self.add_noise_to_readings(red_readings_scaled)
+        self.uv_readings = self.add_noise_to_readings(uv_readings)
+
+        # red_readings_scaled = self.scale_readings(red_readings,
+        #                                           self.env_variables['red_scaling_factor'] * self.env_variables[
+        #                                               "light_gain"] / 200,
+        #                                           self.env_variables['red_2_scaling_factor'] * self.env_variables[
+        #                                               "light_gain"] / 200)
+        self.red_readings = self.add_noise_to_readings(red_readings)
 
         interp_uv_readings = self.chosen_math_library.zeros((self.interpolated_observation.shape[0], 1))
         interp_red_readings = self.chosen_math_library.zeros((self.interpolated_observation.shape[0], 2))
@@ -280,6 +281,11 @@ class Eye:
         interp_red_readings[:, 1] = self.chosen_math_library.interp(self.interpolated_observation,
                                                                     self.red_photoreceptor_angles,
                                                                     self.red_readings[:, 1])
+
+        # Scale for appropriate range
+        interp_uv_readings *= self.env_variables["uv_scaling_factor"]
+        interp_red_readings[:, 0] *= self.env_variables["red_scaling_factor"]
+        interp_red_readings[:, 1] *= self.env_variables["red_2_scaling_factor"]
 
         self.readings = self.chosen_math_library.concatenate(
             (interp_red_readings[:, 0:1], interp_uv_readings, interp_red_readings[:, 1:]), axis=1)
