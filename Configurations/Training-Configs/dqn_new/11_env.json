@@ -62,7 +62,7 @@
     "dark_light_ratio": 0.3,
     "light_gradient": 200,
     "read_noise_sigma": 0.0,
-    "bkg_scatter": 0.1,
+    "bkg_scatter": 0.036011379595952325,
     "dark_gain": 1.2397,
     "light_gain": 2.7769,
     "rest_cost": 2,

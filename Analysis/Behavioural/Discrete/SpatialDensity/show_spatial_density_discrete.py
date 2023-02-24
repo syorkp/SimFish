@@ -868,6 +868,9 @@ if __name__ == "__main__":
     # get_all_density_plots_all_subsets(f"dqn_gamma_pm-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
     # get_all_density_plots_all_subsets(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
 
+    # d = load_data("dqn_epsilon-1x", "Episode 10600", "Episode 10600", training_data=True)
+    d = load_data("dqn_gamma_pm-5", "Behavioural-Data-Free", "Naturalistic-1")
+
     save_location = f"../../../../Analysis-Output/Behavioural/Spatial-Density-Plots/dqn_gamma-4/"
 
     create_cstart_overlap_plot(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False,

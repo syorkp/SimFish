@@ -84,7 +84,7 @@ def full_model_prey_count(bkg_scatter, decay_rate, pr_size, width, height, lumin
     board.erase(bkg_scatter)
 
     masked_pixels, lum_mask = board.get_masked_pixels(fish_position, np.array(prey_locations), np.array([]))
-    left_eye.read(masked_pixels, left_eye_pos[0], left_eye_pos[1], fish_orientation, lum_mask, np.array(prey_locations), [])
+    left_eye.read(masked_pixels, left_eye_pos[0], left_eye_pos[1], fish_orientation, lum_mask, np.array(prey_locations), np.array([]))
 
     observation = left_eye.readings  # np.dstack((left_eye.readings, right_eye.readings))
     observation = np.floor(observation).astype(int)

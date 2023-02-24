@@ -200,6 +200,35 @@ if __name__ == "__main__": # may be needed to run on windows
         }
         ]
 
+    assay_gathering_new_test = [
+        {
+            "Model Name": "dqn_new",
+            "Environment Name": "dqn_new_1",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 1,
+            "Run Mode": "Assay",
+            "Learning Algorithm": "DQN",
+            "behavioural recordings": ["environmental positions", "observation"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "stimulus paradigm": "Naturalistic",
+                    "repeats": 10,
+                    "duration": 3000,
+                    "Tethered": False,
+                    "save frames": False,
+                    "use_mu": True,
+                    "save stimuli": False,
+                    "random positions": False,
+                    "reset": False,
+                    "background": None,
+                    "moving": False,
+                    "collisions": True,
+                },
+            ]
+        }
+        ]
 
     # Split timelines assay
 

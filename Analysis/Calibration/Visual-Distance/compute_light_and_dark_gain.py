@@ -20,7 +20,7 @@ def find_nearest(array, value):
 
 
 def compute_light_and_dark_gain(model_config, visual_distance_full, visual_distance_partial,
-                                min_luminance, max_luminance, total_tests=1000):
+                                min_luminance, max_luminance, uv_scaling_factor, total_tests=1000):
     """For a given config, computes appropriate values for light and dark gain parameters.
     The light gain parameter will provide 100% distinguishability at visual_distance_full, and 75% distinguishability
     at visual_distance partial.
@@ -37,7 +37,7 @@ def compute_light_and_dark_gain(model_config, visual_distance_full, visual_dista
     env_variables["dark_light_ratio"] = 0.0
     env_variables["max_visual_distance"] = np.absolute(np.log(0.001) / env_variables["decay_rate"])
 
-    bkg_scatter = env_variables["bkg_scatter"]
+    bkg_scatter = env_variables["bkg_scatter"] / 2
 
     uv_stimulus_photons_full = []
     uv_stimulus_photons_partial = []
@@ -67,7 +67,7 @@ def compute_light_and_dark_gain(model_config, visual_distance_full, visual_dista
                                              env_variables["height"],
                                              l,
                                              env_variables)
-        uv_scatter_photons = int(max_uv_scatter)
+        uv_scatter_photons = int(max_uv_scatter * uv_scaling_factor)
 
         # Set bkg_scatter to zero
         env_variables["bkg_scatter"] = 0
@@ -77,6 +77,7 @@ def compute_light_and_dark_gain(model_config, visual_distance_full, visual_dista
                                         env_variables["height"], l,
                                         env_variables,
                                         visual_distance_full)
+        uv_prey = uv_prey * uv_scaling_factor
         uv_prey_full = int(uv_prey + uv_scatter_photons)
 
         # 50% visibility
@@ -84,8 +85,9 @@ def compute_light_and_dark_gain(model_config, visual_distance_full, visual_dista
                                                 env_variables["width"],
                                                 env_variables["height"], l, env_variables,
                                                 visual_distance_partial)
+        uv_prey_partial = uv_prey_partial * uv_scaling_factor
         uv_prey_partial_full = int(uv_prey_partial + uv_scatter_photons)
-        print(f"Full: {uv_prey}, Partial: {uv_prey_partial}")
+        print(f"Full: {uv_prey}, Partial: {uv_prey_partial}, Scatter: {uv_scatter_photons}")
 
         uv_stimulus_photons_full.append(uv_prey_full)
         uv_stimulus_photons_partial.append(uv_prey_partial_full)
@@ -115,13 +117,16 @@ def compute_light_and_dark_gain(model_config, visual_distance_full, visual_dista
     nearest_light = luminance_vals[nearest_light_i]
     print(f"{nearest_light}-{distinguishability_scores_full[nearest_light_i]}")
 
+    return uv_stimulus_photons_full
+
 
 if __name__ == "__main__":
-    config_name = "dqn_epsilon-1"
+    config_name = "dqn_new-1"
     visual_distance_full = 34
     visual_distance_partial = 100
-    min_luminance = 0.01
-    max_luminance = 12
+    min_luminance = 0.1
+    max_luminance = 3
+    uv_scaling_factor = 1
 
-    compute_light_and_dark_gain(config_name, visual_distance_full, visual_distance_partial, min_luminance,
-                                max_luminance, total_tests=40)
+    uv = compute_light_and_dark_gain(config_name, visual_distance_full, visual_distance_partial, min_luminance,
+                                max_luminance, uv_scaling_factor, total_tests=20)

@@ -718,8 +718,9 @@ class DrawingBoard:
         if bkg == 0:
             db = self.chosen_math_library.zeros((self.local_dim, self.local_dim, 3), dtype=np.double)
         else:
-            db = (self.chosen_math_library.ones((self.local_dim, self.local_dim, 3),
-                                                dtype=np.double) * bkg) / self.light_gain
+            # db = (self.chosen_math_library.ones((self.local_dim, self.local_dim, 3),
+            #                                     dtype=np.double) * bkg) / self.light_gain
+            db = (self.chosen_math_library.ones((self.local_dim, self.local_dim, 3), dtype=np.double) * bkg)
         return db
 
     def circle(self, center, rad, color, visualisation=False):

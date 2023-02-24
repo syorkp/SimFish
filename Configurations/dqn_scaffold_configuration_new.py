@@ -365,7 +365,7 @@ high_pai = 800
 
 # Start with shot noise
 env["shot_noise"] = True
-env["bkg_scatter"] = 0.1
+env["bkg_scatter"] = 0.1 / 2.7769
 env["max_salt_damage"] = 0.02
 env["light_gain"] = 2.7769
 env["dark_gain"] = 1.2397

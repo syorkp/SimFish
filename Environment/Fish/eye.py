@@ -229,8 +229,11 @@ class Eye:
                                                        channel_angles_surrounding=channel_angles_surrounding,
                                                        n_channels_uv=self.uv_photoreceptor_num,
                                                        n_channels_red=self.red_photoreceptor_num)
-        
-        uv_items = np.concatenate((prey_positions, sand_grain_positions), axis=0)
+
+        if len(sand_grain_positions) > 0:
+            uv_items = np.concatenate((prey_positions, sand_grain_positions), axis=0)
+        else:
+            uv_items = prey_positions
 
         if proj and (len(uv_items)) > 0:
             proj_uv_readings = self._read_prey_proj_parallel(eye_x=eye_x,

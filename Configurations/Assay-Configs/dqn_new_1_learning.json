@@ -2,7 +2,7 @@
     "batch_size": 16,
     "trace_length": 64,
     "num_episodes": 100000,
-    "max_epLength": 10000,
+    "max_epLength": 3000,
     "epsilon_greedy": true,
     "epsilon_greedy_scaffolding": true,
     "startE": 0.2,
@@ -197,5 +197,8 @@
     "use_rnd": false,
     "reuse_eyes": true,
     "maintain_state": true,
-    "network_saving_frequency": 20
+    "network_saving_frequency": 20,
+    "network_saving_frequency_steps": 100000,
+    "min_scaffold_interval": 100,
+    "scaffold_stasis_requirement": true
 }
