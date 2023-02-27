@@ -476,7 +476,7 @@ class TrainingService(BaseService):
                 self.writer.add_summary(capture_success_summary, self.episode_number)
 
         if self.environment_params["probability_of_predator"] != 0:
-            predator_avoided_index = predators_avoided / self.environment_params["probability_of_predator"]
+            predator_avoided_index = predators_avoided / predators_avoided + 1
             predators_avoided_summary = tf.Summary(
                 value=[tf.Summary.Value(tag="predator avoidance index (avoided/p_pred)",
                                         simple_value=predator_avoided_index)])
