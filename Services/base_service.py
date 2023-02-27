@@ -138,8 +138,6 @@ class BaseService:
         internal_state_order = []
         if self.environment_params['in_light']:
             internal_state_order.append("in_light")
-        if self.environment_params['hunger']:
-            internal_state_order.append("hunger")
         if self.environment_params['stress']:
             internal_state_order.append("stress")
         if self.environment_params['energy_state']:

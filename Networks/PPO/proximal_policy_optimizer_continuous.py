@@ -9,7 +9,7 @@ tf.disable_v2_behavior()
 class PPONetworkActor(BaseNetwork):
 
     def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, max_impulse, max_angle_change,
-                 clip_param, beta_impulse=False, impose_action_mask=False):
+                 clip_param, beta_impulse=False):
         super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim=2)
 
         self.mu_impulse_stream, self.mu_angle_stream = tf.split(self.rnn_output, 2, 1)

@@ -111,10 +111,7 @@ class Fish:
 
     def take_action(self, action):
         """For discrete fish, overrided by continuous fish class."""
-        if self.realistic_bouts:
-            return self.take_realistic_action(action)
-        else:
-            return self.take_basic_action(action)
+        return self.take_realistic_action(action)
 
     def get_action_colour(self, action, magnitude, base_light):
         """Returns the (R, G, B) for associated actions"""
@@ -159,72 +156,6 @@ class Fish:
             print("Invalid action given")
 
         return action_colour
-
-    def take_basic_action(self, action):
-        """Original version"""
-        if action == 0:  # Swim forward
-            reward = -self.env_variables['forward_swim_cost']
-            self.body.apply_impulse_at_local_point((self.env_variables['forward_swim_impulse'], 0))
-            self.head.color = (0, 1, 0)
-        elif action == 1:  # Turn right
-            reward = -self.env_variables['routine_turn_cost']
-            self.body.angle += self.env_variables['routine_turn_dir_change']
-            self.body.apply_impulse_at_local_point((self.env_variables['routine_turn_impulse'], 0))
-            self.head.color = (0, 1, 0)
-        elif action == 2:  # Turn left
-            reward = -self.env_variables['routine_turn_cost']
-            self.body.angle -= self.env_variables['routine_turn_dir_change']
-            self.body.apply_impulse_at_local_point((self.env_variables['routine_turn_impulse'], 0))
-            self.head.color = (0, 1, 0)
-        elif action == 3:  # Capture
-            reward = -self.env_variables['capture_swim_cost']
-            self.body.apply_impulse_at_local_point((self.env_variables['capture_swim_impulse'], 0))
-            self.head.color = [1, 0, 1]
-            self.making_capture = True
-        elif action == 4:  # j turn right
-            reward = -self.env_variables['j_turn_cost']
-            self.body.angle += self.env_variables['j_turn_dir_change']
-            self.body.apply_impulse_at_local_point((self.env_variables['j_turn_impulse'], 0))
-            self.head.color = [1, 1, 1]
-        elif action == 5:  # j turn left
-            reward = -self.env_variables['j_turn_cost']
-            self.body.angle -= self.env_variables['j_turn_dir_change']
-            self.body.apply_impulse_at_local_point((self.env_variables['j_turn_impulse'], 0))
-            self.head.color = [1, 1, 1]
-        elif action == 6:  # do nothing:
-            reward = -self.env_variables['rest_cost']
-
-        # Note that the following are just copies of J-turns to prevent errors. This function is from old version.
-        elif action == 7:  # c start right
-            reward = -self.env_variables['j_turn_cost']
-            self.body.angle += self.env_variables['j_turn_dir_change']
-            self.body.apply_impulse_at_local_point((self.env_variables['j_turn_impulse'], 0))
-            self.head.color = [1, 1, 1]
-        elif action == 8:  # c start left
-            reward = -self.env_variables['j_turn_cost']
-            self.body.angle -= self.env_variables['j_turn_dir_change']
-            self.body.apply_impulse_at_local_point((self.env_variables['j_turn_impulse'], 0))
-            self.head.color = [1, 1, 1]
-        elif action == 9:  # Approach swim.
-            reward = -self.env_variables['forward_swim_cost']
-            self.body.apply_impulse_at_local_point((self.env_variables['forward_swim_impulse'], 0))
-            self.head.color = (0, 1, 0)
-        else:
-            reward = None
-            print("Invalid action given")
-
-        # elif action == 6: #converge eyes. Be sure to update below with fish.[]
-        #     self.verg_angle = 77 * (np.pi / 180)
-        #     self.left_eye.update_angles(self.verg_angle, self.retinal_field, True)
-        #     self.right_eye.update_angles(self.verg_angle, self.retinal_field, False)
-        #     self.conv_state = 1
-
-        # elif action == 7: #diverge eyes
-        #     self.verg_angle = 25 * (np.pi / 180)
-        #     self.left_eye.update_angles(self.verg_angle, self.retinal_field, True)
-        #     self.right_eye.update_angles(self.verg_angle, self.retinal_field, False)
-        #     self.conv_state = 0
-        return reward
 
     def calculate_impulse(self, distance):
         """
@@ -307,7 +238,6 @@ class Fish:
         elif action == 6:  # Do nothing
             self.prev_action_impulse = 0
             self.prev_action_angle = 0
-            reward = -self.env_variables['rest_cost']
 
         elif action == 7:  # c start right
             angle_change, distance = draw_angle_dist(5)

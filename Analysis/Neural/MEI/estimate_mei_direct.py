@@ -22,7 +22,7 @@ def create_network(simulation, environment_params, learning_params, full_reaffer
     """
     print("Creating networks...")
     internal_states = sum(
-        [1 for x in [environment_params['hunger'], environment_params['stress'],
+        [1 for x in [environment_params['stress'],
                      environment_params['energy_state'], environment_params['in_light'],
                      environment_params['salt']] if x is True])
     internal_states = max(internal_states, 1)

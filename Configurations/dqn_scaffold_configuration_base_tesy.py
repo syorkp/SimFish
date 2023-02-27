@@ -155,20 +155,14 @@ env = {
 
        'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'light_gradient': 20,
-       'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'bkg_scatter': 0.1,  # base brightness of the background FORMERLY 0.00001
        'dark_gain': 60.0,  # gain of brightness in the dark side
        'light_gain': 200.0,  # gain of brightness in the bright side
 
-       'rest_cost': 2,
        'capture_swim_extra_cost': 5,
-       'capture_basic_reward': 10000,  # Used only when not using energy state.
        'predator_cost': 50000,
        'predator_avoidance_reward': 20000,
 
-       'hunger': False,
-       'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
-       'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
        'reafference': True,
        'stress': False,
        'stress_compound': 0.9,
@@ -189,12 +183,8 @@ env = {
        'sigma_mode': "Decreasing",  # Options: Decreasing (linear reduction with reduction time), Static
 
        'clip_param': 0.2,
-       'cs_required': True,
 
        #                                  New Simulation
-
-       # Action mask
-       'impose_action_mask': True,
 
        # Sensory inputs
        'energy_state': True,

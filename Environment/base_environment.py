@@ -224,7 +224,6 @@ class BaseEnvironment:
 
     def reset(self):
         self.num_steps = 0
-        self.fish.hungry = 0
         self.fish.stress = 1
         self.fish.touched_edge_this_step = False
         self.prey_caught = 0

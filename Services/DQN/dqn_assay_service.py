@@ -389,7 +389,6 @@ class DQNAssayService(AssayService, BaseDQN):
             "predator_position": predator_position,
             "sand_grain_positions": sand_grain_positions,
             "fish_angle": fish_angle,
-            "hunger": self.simulation.fish.hungry,
             "stress": self.simulation.fish.stress,
         }
 

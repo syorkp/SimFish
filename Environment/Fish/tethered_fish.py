@@ -31,13 +31,13 @@ class TetheredFish(Fish):
             reward = -self.env_variables['j_turn_cost']
             self.head.color = [1, 1, 1]
         elif action == 6:   # do nothing:
-            reward = -self.env_variables['rest_cost']
+            reward = 0
         elif action == 7:   # c start right
-            reward = -self.env_variables['rest_cost']
+            reward = 0
         elif action == 8:   # c start left
-            reward = -self.env_variables['rest_cost']
+            reward = 0
         elif action == 9:   # approach swim
-            reward = -self.env_variables['rest_cost']
+            reward = 0
         else:
             reward = None
             print("Invalid action given")

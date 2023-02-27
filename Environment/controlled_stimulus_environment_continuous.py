@@ -82,7 +82,6 @@ class ControlledStimulusEnvironmentContinuous(BaseEnvironment):
         self.fish.body.position = (self.env_variables['width'] / 2, self.env_variables['height'] / 2)
         self.fish.body.angle = 0
         self.fish.body.velocity = (0, 0)
-        self.fish.hungry = 0
 
     def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None):
         if self.reset_at_interval and self.num_steps % self.reset_interval == 0:
@@ -94,7 +93,6 @@ class ControlledStimulusEnvironmentContinuous(BaseEnvironment):
 
         done = False
 
-        self.fish.hungry += (1 - self.fish.hungry)*self.env_variables['hunger_inc_tau']
         self.fish.stress = self.fish.stress * self.env_variables['stress_compound']
         if self.predator_body is not None:
             self.fish.stress += 0.5
@@ -137,11 +135,7 @@ class ControlledStimulusEnvironmentContinuous(BaseEnvironment):
 
         in_light = self.fish.body.position[0] > self.dark_col
 
-        if self.env_variables['hunger'] and self.env_variables['stress']:
-            internal_state = np.array([[in_light, self.fish.hungry, self.fish.stress]])
-        elif self.env_variables['hunger']:
-            internal_state = np.array([[in_light, self.fish.hungry]])
-        elif self.env_variables['stress']:
+        if self.env_variables['stress']:
             internal_state = np.array([[in_light, self.fish.stress]])
         else:
             internal_state = np.array([[in_light]])

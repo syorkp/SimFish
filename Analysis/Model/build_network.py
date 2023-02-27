@@ -8,8 +8,6 @@ def get_internal_state_order(environment_params):
     internal_state_order = []
     if environment_params['in_light']:
         internal_state_order.append("in_light")
-    if environment_params['hunger']:
-        internal_state_order.append("hunger")
     if environment_params['stress']:
         internal_state_order.append("stress")
     if environment_params['energy_state']:
@@ -21,7 +19,7 @@ def get_internal_state_order(environment_params):
 
 def build_network_dqn(environment_params, learning_params, simulation, full_reafference=True):
     internal_states = sum(
-        [1 for x in [environment_params['hunger'], environment_params['stress'],
+        [1 for x in [environment_params['stress'],
                      environment_params['energy_state'], environment_params['in_light'],
                      environment_params['salt']] if x is True])
     internal_states = max(internal_states, 1)

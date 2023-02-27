@@ -309,7 +309,6 @@ Sand grain: {self.sand_grain_associated_reward}
         done = False
 
         # Change internal state variables
-        self.fish.hungry += (1 - self.fish.hungry) * self.env_variables['hunger_inc_tau']
         self.fish.stress = self.fish.stress * self.env_variables['stress_compound']
         if self.predator_body is not None:
             self.fish.stress += 0.5
@@ -334,9 +333,6 @@ Sand grain: {self.sand_grain_associated_reward}
             self.space.step(self.env_variables['phys_dt'])
 
             if self.fish.prey_consumed:
-                if not self.env_variables["energy_state"]:
-                    reward += self.env_variables['capture_basic_reward'] * self.fish.hungry
-                self.fish.hungry *= self.env_variables['hunger_dec_tau']
                 if len(self.prey_shapes) == 0:
                     done = True
                     self.recent_cause_of_death = "Prey-All-Eaten"
@@ -441,9 +437,6 @@ Sand grain: {self.sand_grain_associated_reward}
         if self.env_variables['in_light']:
             internal_state.append(self.fish.body.position[0] > self.dark_col)
             internal_state_order.append("in_light")
-        if self.env_variables['hunger']:
-            internal_state.append(self.fish.hungry)
-            internal_state_order.append("hunger")
         if self.env_variables['stress']:
             internal_state.append(self.fish.stress)
             internal_state_order.append("stress")

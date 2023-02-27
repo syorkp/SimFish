@@ -9,7 +9,8 @@ from Analysis.Training.tools import find_nearest
 
 
 def get_available_reward(environment_params, learning_params):
-    prey_reward_available = environment_params["capture_basic_reward"] * environment_params["prey_num"]
+    print("Error. not right reward computation.")
+    # prey_reward_available = environment_params["capture_basic_reward"] * environment_params["prey_num"]
     return prey_reward_available
 
 

@@ -93,13 +93,8 @@ env = {
        'j_turn_cost': 2.5,
        'j_turn_impulse': 0.1,
        'j_turn_dir_change': 0.07,
-       'rest_cost': 2,
 
        'capture_swim_extra_cost': 5,
-       'capture_basic_reward': 10000,  # Used only when not using energy state.
-
-       'hunger_inc_tau': 0.1,  # fractional increase in hunger per step of not cathing prey
-       'hunger_dec_tau': 0.7,  # fractional decrease in hunger when catching prey
 
        'distance_penalty_scaling_factor': 1.0,
        # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
@@ -145,14 +140,12 @@ env = {
 
        'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'light_gradient': 200,
-       'read_noise_sigma': 0.,  # gaussian noise added to photon count. Formerly 5.
        'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001
        'dark_gain': 60.0,  # gain of brightness in the dark side
        'light_gain': 200.0,  # gain of brightness in the bright side
 
        'predator_cost': 1000,
 
-       'hunger': False,
        'reafference': True,
        'stress': False,
        'stress_compound': 0.9,
@@ -173,12 +166,8 @@ env = {
        'sigma_mode': "Decreasing",  # Options: Decreasing (linear reduction with reduction time), Static
 
        'clip_param': 0.2,
-       'cs_required': True,
 
        #                                  New Simulation
-
-       # Action mask
-       'impose_action_mask': True,
 
        # Sensory inputs
        'energy_state': True,

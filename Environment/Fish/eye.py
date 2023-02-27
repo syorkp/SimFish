@@ -583,12 +583,6 @@ class Eye:
         else:
             photons = readings
 
-        if self.env_variables['read_noise_sigma'] > 0:
-            noise = self.chosen_math_library.random.randn(readings.shape[0], readings.shape[1]) * self.env_variables[
-                'read_noise_sigma']
-            photons += noise.astype(int)
-            photons = self.chosen_math_library.clip(photons, 0, 255)
-
         # if photons.shape[1] == 1:
         #     print(f"Max photons: {np.max(readings[:, 0])}")
         #

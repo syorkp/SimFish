@@ -10,7 +10,7 @@ tf.disable_v2_behavior()
 class PPONetworkActorMultivariate2Dynamic(DynamicBaseNetwork):
 
     def __init__(self, simulation, my_scope, internal_states, internal_state_names, max_impulse, max_angle_change,
-                 clip_param, input_sigmas=False, impose_action_mask=False, base_network_layers=None, modular_network_layers=None, ops=None, connectivity=None,
+                 clip_param, input_sigmas=False, base_network_layers=None, modular_network_layers=None, ops=None, connectivity=None,
                  reflected=None, reuse_eyes=False):
         super().__init__(simulation, my_scope, internal_states, internal_state_names, action_dim=2, num_actions=1,
                          base_network_layers=base_network_layers, modular_network_layers=modular_network_layers, ops=ops,
@@ -93,28 +93,16 @@ class PPONetworkActorMultivariate2Dynamic(DynamicBaseNetwork):
 
         #            ----------        Form Distribution Estimations       ---------            #
 
-        if impose_action_mask:
-            self.action_distribution = MaskedMultivariateNormal(loc=self.mu_action, scale_diag=self.sigma_action,
-                                                                impulse_scaling=max_impulse,
-                                                                angle_scaling=max_angle_change)
-            self.action_output = tf.squeeze(self.action_distribution.sample_masked(1), axis=0)
+        self.action_distribution = MaskedMultivariateNormal(loc=self.mu_action, scale_diag=self.sigma_action,
+                                                            impulse_scaling=max_impulse,
+                                                            angle_scaling=max_angle_change)
+        self.action_output = tf.squeeze(self.action_distribution.sample_masked(1), axis=0)
 
-        else:
-            self.action_distribution = tfp.distributions.MultivariateNormalDiag(loc=self.mu_action,
-                                                                                scale_diag=self.sigma_action)
-            self.action_output = tf.squeeze(self.action_distribution.sample(1), axis=0)
 
         self.impulse_output, self.angle_output = tf.split(self.action_output, 2, axis=1)
 
-        if impose_action_mask:
-            self.impulse_output = tf.math.multiply(self.impulse_output, max_impulse, name="impulse_output")
-            self.angle_output = tf.math.multiply(self.angle_output, max_angle_change, name="angle_output")
-        else:
-            self.impulse_output = tf.clip_by_value(self.impulse_output, 0, 1)
-            self.angle_output = tf.clip_by_value(self.angle_output, -1, 1)
-
-            self.impulse_output = tf.math.multiply(self.impulse_output, max_impulse, name="impulse_output")
-            self.angle_output = tf.math.multiply(self.angle_output, max_angle_change, name="angle_output")
+        self.impulse_output = tf.math.multiply(self.impulse_output, max_impulse, name="impulse_output")
+        self.angle_output = tf.math.multiply(self.angle_output, max_angle_change, name="angle_output")
 
         self.neg_log_prob = -self.action_distribution.log_prob(self.action_output)
 
@@ -131,12 +119,8 @@ class PPONetworkActorMultivariate2Dynamic(DynamicBaseNetwork):
         self.action_placeholder = tf.placeholder(shape=[None, 2], dtype=tf.float32, name='action_placeholder')
         self.impulse_placeholder, self.angle_placeholder = tf.split(self.action_placeholder, 2, axis=1)
 
-        if impose_action_mask:
-            self.impulse_placeholder = tf.math.divide(self.impulse_placeholder, max_impulse)
-            self.angle_placeholder = tf.math.divide(self.angle_placeholder, max_angle_change)
-        else:
-            self.impulse_placeholder = tf.math.divide(self.impulse_placeholder, max_impulse)
-            self.angle_placeholder = tf.math.divide(self.angle_placeholder, max_angle_change)
+        self.impulse_placeholder = tf.math.divide(self.impulse_placeholder, max_impulse)
+        self.angle_placeholder = tf.math.divide(self.angle_placeholder, max_angle_change)
 
         self.normalised_action = tf.concat([self.impulse_placeholder, self.angle_placeholder], axis=1)
 

@@ -66,8 +66,6 @@ class ContinuousPPO(BasePPO):
                                                                              'clip_param'],
                                                                          input_sigmas=self.learning_params[
                                                                              'input_sigmas'],
-                                                                         impose_action_mask=self.environment_params[
-                                                                             'impose_action_mask'],
                                                                          base_network_layers=self.learning_params[
                                                                              'base_network_layers'],
                                                                          modular_network_layers=self.learning_params[

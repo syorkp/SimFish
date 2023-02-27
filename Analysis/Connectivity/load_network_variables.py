@@ -21,8 +21,6 @@ def get_internal_state_order(environment_params):
     internal_state_order = []
     if environment_params['in_light']:
         internal_state_order.append("in_light")
-    if environment_params['hunger']:
-        internal_state_order.append("hunger")
     if environment_params['stress']:
         internal_state_order.append("stress")
     if environment_params['energy_state']:
@@ -61,7 +59,7 @@ def load_network_variables_a2c(model_name, conf_name):
 
     with tf.Session() as sess:
         cell = tf.nn.rnn_cell.LSTMCell(num_units=learning["rnn_dim"], state_is_tuple=True)
-        internal_states = sum([1 for x in [env['hunger'], env['stress']] if x is True]) + 1
+        internal_states = sum([1 for x in [env['stress']] if x is True]) + 1
         network = A2CNetwork(simulation=simulation,
                              rnn_dim_shared=learning['rnn_dim'],
                              rnn_dim_critic=learning['rnn_dim'],
@@ -96,7 +94,7 @@ def create_ppo_network(simulation, environment_params, learning_params, multivar
         """
         print("Creating networks...")
         internal_states = sum(
-            [1 for x in [environment_params['hunger'], environment_params['stress'],
+            [1 for x in [environment_params['stress'],
                          environment_params['energy_state'], environment_params['in_light'],
                          environment_params['salt']] if x is True])
         internal_states = max(internal_states, 1)
@@ -124,8 +122,6 @@ def create_ppo_network(simulation, environment_params, learning_params, multivar
                                                                              'clip_param'],
                                                                          input_sigmas=learning_params[
                                                                              'input_sigmas'],
-                                                                         impose_action_mask=environment_params[
-                                                                             'impose_action_mask'],
                                                                          base_network_layers=learning_params[
                                                                              'base_network_layers'],
                                                                          modular_network_layers=learning_params[
@@ -213,7 +209,7 @@ def load_network_variables_dqn(model_name, conf_name, full_reafference=False):
     with tf.Session() as sess:
         cell = tf.nn.rnn_cell.LSTMCell(num_units=learning["rnn_dim_shared"], state_is_tuple=True)
         internal_states = sum(
-            [1 for x in [env['hunger'], env['stress'],
+            [1 for x in [env['stress'],
                          env['energy_state'], env['in_light'],
                          env['salt']] if x is True])
         internal_states = max(internal_states, 1)
