@@ -113,9 +113,6 @@ class BaseEnvironment:
 
         self.last_action = None
 
-        self.vegetation_bodies = []
-        self.vegetation_shapes = []
-
         self.background = None
 
         self.prey_consumed_this_step = False
@@ -123,7 +120,6 @@ class BaseEnvironment:
         self.predator_attacks_avoided = 0
         self.prey_caught = 0
         self.sand_grains_bumped = 0
-        self.steps_near_vegetation = 0
 
         self.stimuli_information = {}
 
@@ -172,14 +168,11 @@ class BaseEnvironment:
         self.switch_step = None
 
     def clear_environmental_features(self):
-        """Removes all prey, predators, vegetation, and sand grains from simulation"""
+        """Removes all prey, predators, and sand grains from simulation"""
         for i, shp in enumerate(self.prey_shapes):
             self.space.remove(shp, shp.body)
 
         for i, shp in enumerate(self.sand_grain_shapes):
-            self.space.remove(shp, shp.body)
-
-        for i, shp in enumerate(self.vegetation_shapes):
             self.space.remove(shp, shp.body)
 
         for i, shp in enumerate(self.prey_cloud_wall_shapes):
@@ -211,9 +204,6 @@ class BaseEnvironment:
         self.sand_grain_shapes = []
         self.sand_grain_bodies = []
 
-        self.vegetation_bodies = []
-        self.vegetation_shapes = []
-
     def draw_walls_and_background(self):
         self.board.erase(bkg=self.env_variables['bkg_scatter'])
         FOV = self.board.get_field_of_view(self.fish.body.position)
@@ -240,7 +230,6 @@ class BaseEnvironment:
         self.prey_caught = 0
         self.predator_attacks_avoided = 0
         self.sand_grains_bumped = 0
-        self.steps_near_vegetation = 0
         self.energy_level_log = []
         self.board.light_gain = self.env_variables["light_gain"]
         # No need for this to be computed each time? When config changes then creates new NaturalisticEnv and
@@ -1221,35 +1210,3 @@ class BaseEnvironment:
 
                 # if "sand_grain_touch_penalty" in self.env_variables:
                 #     penalty -= self.env_variables["sand_grain_touch_penalty"]
-
-    def create_vegetation(self):
-        size = self.env_variables['vegetation_size']
-        vertices = [(0, 0), (0, size), (size / 2, size - size / 3), (size, size), (size, 0), (size / 2, size / 3)]
-        self.vegetation_bodies.append(pymunk.Body(body_type=pymunk.Body.STATIC))
-        self.vegetation_shapes.append(pymunk.Poly(self.vegetation_bodies[-1], vertices))
-        self.vegetation_bodies[-1].position = (
-            np.random.randint(self.env_variables['vegetation_size'] + self.env_variables['fish_mouth_size'],
-                              self.env_variables['width'] - (
-                                      self.env_variables['vegetation_size'] + self.env_variables['fish_mouth_size'])),
-            np.random.randint(self.env_variables['vegetation_size'] + self.env_variables['fish_mouth_size'],
-                              self.env_variables['height'] - (
-                                      self.env_variables['vegetation_size'] + self.env_variables['fish_mouth_size'])))
-        self.vegetation_shapes[-1].color = (0, 1, 0)
-        self.vegetation_shapes[-1].collision_type = 1
-        self.vegetation_shapes[-1].friction = 1
-
-        self.space.add(self.vegetation_bodies[-1], self.vegetation_shapes[-1])
-
-    def check_fish_near_vegetation(self):
-        vegetation_locations = [v.position for v in self.vegetation_bodies]
-        fish_surrounding_area = [[self.fish.body.position[0] - self.env_variables['vegetation_effect_distance'],
-                                  self.fish.body.position[0] + self.env_variables['vegetation_effect_distance']],
-                                 [self.fish.body.position[1] - self.env_variables['vegetation_effect_distance'],
-                                  self.fish.body.position[1] + self.env_variables['vegetation_effect_distance']]]
-        for veg in vegetation_locations:
-            is_in_area = fish_surrounding_area[0][0] <= veg[0] <= fish_surrounding_area[0][1] and \
-                         fish_surrounding_area[1][0] <= veg[1] <= fish_surrounding_area[1][1]
-            if is_in_area:
-                self.steps_near_vegetation += 1
-                return True
-        return False

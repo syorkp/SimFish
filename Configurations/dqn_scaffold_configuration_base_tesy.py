@@ -91,7 +91,6 @@ env = {
        'drag': 0.7,  # water drag
        'phys_dt': 0.2,  # physics time step
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
-       'photon_ratio': 100,  # expected number of photons for unit brightness
 
        'fish_mass': 140.,
        'fish_mouth_size': 8.,  # FINAL VALUE - 0.2mm diameter, so 1.
@@ -111,8 +110,6 @@ env = {
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
        'prey_num': 200,
-       'prey_impulse': 0.0,  # impulse each prey receives per step
-       'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
        'prey_max_turning_angle': 0.25,
         # This is the turn (radians) that happens every step, designed to replicate linear wavy movement.
@@ -155,10 +152,6 @@ env = {
        'sand_grain_displacement_distance': 20,
        'sand_grain_colour': (1, 0, 1),
        'sand_grain_touch_penalty': 200,
-
-       'vegetation_size': 100.,
-       'vegetation_num': 0,
-       'vegetation_effect_distance': 150,
 
        'dark_light_ratio': 0.3,  # fraction of arena in the dark
        'light_gradient': 20,

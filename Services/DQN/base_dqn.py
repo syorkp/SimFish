@@ -314,17 +314,7 @@ class BaseDQN:
             FOV = None
 
         if self.save_environmental_data:
-            # sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
-            # self.episode_buffer.save_environmental_positions(self.simulation.fish.body.position,
-            #                                                  self.simulation.prey_consumed_this_step,
-            #                                                  self.simulation.predator_body,
-            #                                                  prey_positions,
-            #                                                  predator_position,
-            #                                                  sand_grain_positions,
-            #                                                  vegetation_positions,
-            #                                                  self.simulation.fish.body.angle,
-            #                                                  )
-            sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
+            sand_grain_positions, prey_positions, predator_position = self.get_positions()
             prey_orientations = np.array([p.angle for p in self.simulation.prey_bodies]).astype(np.float32)
             try:
                 predator_orientation = self.simulation.predator_body.angle
@@ -340,7 +330,6 @@ class BaseDQN:
                                                      prey_positions,
                                                      predator_position,
                                                      sand_grain_positions,
-                                                     vegetation_positions,
                                                      self.simulation.fish.body.angle,
                                                      self.simulation.fish.salt_health,
                                                      efference_copy=a,
@@ -396,7 +385,7 @@ class BaseDQN:
         chosen_a = chosen_a[0]
         o1, given_reward, internal_state1, d, FOV = self.simulation.simulation_step(action=chosen_a,
                                                                                          activations=(sa,))
-        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
+        sand_grain_positions, prey_positions, predator_position = self.get_positions()
 
         action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
                               self.simulation.fish.prev_action_angle]
@@ -428,7 +417,6 @@ class BaseDQN:
                                                      prey_positions,
                                                      predator_position,
                                                      sand_grain_positions,
-                                                     vegetation_positions,
                                                      self.simulation.fish.body.angle,
                                                      self.simulation.fish.salt_health,
                                                      efference_copy=a,
@@ -468,7 +456,7 @@ class BaseDQN:
         chosen_a = chosen_a[0]
         o1, given_reward, internal_state1, d, FOV = self.simulation.simulation_step(action=chosen_a,
                                                                                          activations=(sa,))
-        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
+        sand_grain_positions, prey_positions, predator_position = self.get_positions()
         if self.full_reafference:
             action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
                                   self.simulation.fish.prev_action_angle]
@@ -501,7 +489,6 @@ class BaseDQN:
                                                      prey_positions,
                                                      predator_position,
                                                      sand_grain_positions,
-                                                     vegetation_positions,
                                                      self.simulation.fish.body.angle,
                                                      self.simulation.fish.salt_health,
                                                      efference_copy=a,

@@ -246,7 +246,6 @@ class AssayService(BaseService):
         self.buffer.salt_health_buffer = data["salt_health"].tolist()
         self.buffer.prey_positions_buffer = data["prey_positions"].tolist()
         self.buffer.sand_grain_position_buffer = data["sand_grain_positions"].tolist()
-        self.buffer.vegetation_position_buffer = data["vegetation_positions"].tolist()
         self.buffer.salt_location = data["salt_location"].tolist()
         self.buffer.prey_consumed_buffer = data["consumed"].tolist()
 
@@ -383,7 +382,6 @@ class AssayService(BaseService):
             "Prey Caught": self.simulation.prey_caught,
             "Predators Avoided": self.simulation.predator_attacks_avoided,
             "Sand Grains Bumped": self.simulation.sand_grains_bumped,
-            "Steps Near Vegetation": self.simulation.steps_near_vegetation
         }
         with open(f"{self.data_save_location}/{self.assay_configuration_id}-summary_data.json", "w") as output_file:
             json.dump(self.episode_summary_data, output_file)

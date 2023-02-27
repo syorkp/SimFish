@@ -177,11 +177,5 @@ class BaseService:
         else:
             predator_position = np.array([10000, 10000])
 
-        if self.simulation.vegetation_bodies is not None:
-            vegetation_positions = [self.simulation.vegetation_bodies[i].position for i, b in
-                                    enumerate(self.simulation.vegetation_bodies)]
-            vegetation_positions = [[i[0], i[1]] for i in vegetation_positions]
-        else:
-            vegetation_positions = [[10000, 10000]]
 
-        return sand_grain_positions, prey_positions, predator_position, vegetation_positions
+        return sand_grain_positions, prey_positions, predator_position

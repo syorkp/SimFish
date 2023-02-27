@@ -28,7 +28,6 @@ class TestEnvironment:
             'prey_inertia': 40.,
             'prey_size': 1,  # FINAL VALUE - 0.2mm diameter, so 1.
             'prey_max_turning_angle': 0.25,
-            'prey_escape_impulse': 2,
             'prey_sensing_distance': 20,
             'prey_jump': True,
             'prey_fluid_displacement': True,

@@ -105,7 +105,7 @@ class DiscretePPO(BasePPO):
                                                                                                      save_frames=True,
                                                                                                      activations=(sa,))
 
-        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
+        sand_grain_positions, prey_positions, predator_position = self.get_positions()
 
         # Update buffer
         self.buffer.add_training(observation=o,
@@ -126,7 +126,6 @@ class DiscretePPO(BasePPO):
                                                      prey_positions,
                                                      predator_position,
                                                      sand_grain_positions,
-                                                     vegetation_positions,
                                                      self.simulation.fish.body.angle,
                                                      )
         if "convolutional layers" in self.buffer.recordings:

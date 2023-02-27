@@ -75,20 +75,12 @@ env = {
        'min_vis_dist': 20,
        'max_vis_dist': 180,
 
-       'prey_impulse_rate': 0.25,  # fraction of prey receiving impulse per step
-
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
        'sand_grain_size': 4.,
        'sand_grain_num': 0,
        'sand_grain_displacement_impulse_scaling_factor': 0.5,
        'sand_grain_displacement_distance': 20,
-
-       'vegetation_size': 100.,
-       'vegetation_num': 0,
-       'vegetation_effect_distance': 150,
-
-       'photon_ratio': 100,  # expected number of photons for unit brightness
 
        'forward_swim_cost': 3,
        'forward_swim_impulse': 10,
@@ -134,8 +126,6 @@ env = {
        'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
        'prey_num': 30,
-       'prey_impulse': 0.0,  # impulse each prey receives per step
-       'prey_escape_impulse': 2,
        'prey_sensing_distance': 20,
        'prey_max_turning_angle': 0.04,
        # This is the turn (radians) that happens every step, designed to replicate linear wavy movement.

@@ -875,9 +875,6 @@ class DrawingBoard:
         # for i, pr in enumerate(self.predator_bodies):
         #     self.board.circle(pr.position, self.env_variables['predator_size'], self.predator_shapes[i].color, visualisation)
 
-        # for i, pr in enumerate(self.vegetation_bodies):
-        #     self.board.vegetation(pr.position, self.env_variables['vegetation_size'], self.vegetation_shapes[i].color, visualisation)
-
         # if self.predator_body is not None:
         #     if self.first_attack:
         #         self.board.circle(self.predator_body.position, self.loom_predator_current_size,

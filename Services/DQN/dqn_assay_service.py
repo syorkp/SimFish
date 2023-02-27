@@ -332,7 +332,6 @@ class DQNAssayService(AssayService, BaseDQN):
             "Prey Caught": self.simulation.prey_caught,
             "Predators Avoided": self.simulation.predator_attacks_avoided,
             "Sand Grains Bumped": self.simulation.sand_grains_bumped,
-            "Steps Near Vegetation": self.simulation.steps_near_vegetation
         }
         with open(f"{self.data_save_location}/{self.assay_configuration_id}-summary_data.json", "w") as output_file:
             json.dump(self.episode_summary_data, output_file)
@@ -341,7 +340,7 @@ class DQNAssayService(AssayService, BaseDQN):
     def package_output_data(self, observation, rev_observation, action, advantage_stream, rnn_state, rnn2_state,
                             position, prey_consumed, predator_body,
                             conv1l, conv2l, conv3l, conv4l, conv1r, conv2r, conv3r, conv4r,
-                            prey_positions, predator_position, sand_grain_positions, vegetation_positions, fish_angle):
+                            prey_positions, predator_position, sand_grain_positions, fish_angle):
         """
 
         :param action:
@@ -361,7 +360,6 @@ class DQNAssayService(AssayService, BaseDQN):
         :param prey_positions:
         :param predator_position:
         :param sand_grain_positions:
-        :param vegetation_positions:
         :return:
         """
         # Make output data JSON serializable
@@ -390,7 +388,6 @@ class DQNAssayService(AssayService, BaseDQN):
             "prey_positions": prey_positions,
             "predator_position": predator_position,
             "sand_grain_positions": sand_grain_positions,
-            "vegetation_positions": vegetation_positions,
             "fish_angle": fish_angle,
             "hunger": self.simulation.fish.hungry,
             "stress": self.simulation.fish.stress,

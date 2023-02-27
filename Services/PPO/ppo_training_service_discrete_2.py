@@ -94,7 +94,6 @@ class PPOTrainingServiceDiscrete2(TrainingService, DiscretePPO):
                           prey_caught=self.simulation.prey_caught,
                           predators_avoided=self.simulation.predator_attacks_avoided,
                           sand_grains_bumped=self.simulation.sand_grains_bumped,
-                          steps_near_vegetation=self.simulation.steps_near_vegetation,
                           )
 
         print(f"""Total episode reward: {self.total_episode_reward}\n""")
@@ -111,13 +110,13 @@ class PPOTrainingServiceDiscrete2(TrainingService, DiscretePPO):
                                                          rnn_state_critic_ref)
 
     def save_episode(self, episode_start_t, total_episode_reward, prey_caught,
-                     predators_avoided, sand_grains_bumped, steps_near_vegetation):
+                     predators_avoided, sand_grains_bumped):
         """
         Saves the episode the the experience buffer. Also creates a gif if at interval.
         """
 
         TrainingService._save_episode(self, episode_start_t, total_episode_reward, prey_caught,
-                                      predators_avoided, sand_grains_bumped, steps_near_vegetation)
+                                      predators_avoided, sand_grains_bumped)
         TrainingService._save_episode_discrete_variables(self)
 
         output_data = {"epsilon": self.e, "episode_number": self.episode_number, "total_steps": self.total_steps, "configuration_index": self.configuration_index}

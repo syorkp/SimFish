@@ -135,9 +135,6 @@ class NaturalisticEnvironment(BaseEnvironment):
         for i in range(self.env_variables['sand_grain_num']):
             self.create_sand_grain()
 
-        for i in range(self.env_variables['vegetation_num']):
-            self.create_vegetation()
-
         self.impulse_against_fish_previous_step = None
         self.recent_cause_of_death = None
         self.available_prey = self.env_variables["prey_num"]
@@ -472,8 +469,7 @@ Sand grain: {self.sand_grain_associated_reward}
 
     def init_predator(self):
         if self.predator_location is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
-                self.num_steps > self.env_variables['immunity_steps'] and not self.check_fish_near_vegetation() \
-                and not self.check_fish_not_near_wall():
+                self.num_steps > self.env_variables['immunity_steps'] and not self.check_fish_not_near_wall():
             self.create_realistic_predator()
 
     def resolve_visual_input(self):

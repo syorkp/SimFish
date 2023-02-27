@@ -39,7 +39,6 @@ class BasePPOBuffer:
         self.prey_positions_buffer = []
         self.predator_position_buffer = []
         self.sand_grain_position_buffer = []
-        self.vegetation_position_buffer = []
         self.fish_angle_buffer = []
         self.salt_health_buffer = []
         self.unit_recordings = {}
@@ -93,7 +92,6 @@ class BasePPOBuffer:
         self.prey_positions_buffer = []
         self.predator_position_buffer = []
         self.sand_grain_position_buffer = []
-        self.vegetation_position_buffer = []
         self.fish_angle_buffer = []
         self.salt_health_buffer = []
         self.unit_recordings = {}
@@ -153,7 +151,7 @@ class BasePPOBuffer:
         self.critic_rnn_state_ref_buffer.append(critic_rnn_state_ref)
 
     def save_environmental_positions(self, fish_position, prey_consumed, predator_present, prey_positions,
-                                     predator_position, sand_grain_positions, vegetation_positions, fish_angle,
+                                     predator_position, sand_grain_positions, fish_angle,
                                      salt_health, efference_copy,
                                      prey_orientation=None, predator_orientation=None, prey_age=None, prey_gait=None):
 
@@ -163,7 +161,6 @@ class BasePPOBuffer:
         self.prey_positions_buffer.append(prey_positions)
         self.predator_position_buffer.append(predator_position)
         self.sand_grain_position_buffer.append(sand_grain_positions)
-        self.vegetation_position_buffer.append(vegetation_positions)
         self.fish_angle_buffer.append(fish_angle)
         self.salt_health_buffer.append(salt_health)
         self.efference_copy_buffer.append(efference_copy)
@@ -462,7 +459,6 @@ class BasePPOBuffer:
 
         self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)
         self.create_data_group("sand_grain_positions", np.array(self.sand_grain_position_buffer), assay_group)
-        self.create_data_group("vegetation_positions", np.array(self.vegetation_position_buffer), assay_group)
 
         self.create_data_group("background", np.array(background), assay_group)
 

@@ -393,8 +393,7 @@ class TrainingService(BaseService):
             json.dump(data, f, indent=4)
 
 
-    def _save_episode(self, episode_start_t, total_episode_reward, prey_caught, predators_avoided, sand_grains_bumped,
-                      steps_near_vegetation):
+    def _save_episode(self, episode_start_t, total_episode_reward, prey_caught, predators_avoided, sand_grains_bumped,):
         """Saves episode data common to all models"""
         # print(f"{self.model_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}",
         #       flush=True)
@@ -458,11 +457,6 @@ class TrainingService(BaseService):
                 value=[tf.Summary.Value(tag="attempted sand grain captures", simple_value=sand_grains_bumped)])
             self.writer.add_summary(sand_grains_bumped_summary, self.episode_number)
 
-        if self.environment_params["vegetation_num"] > 0:
-            steps_near_vegetation_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="steps near vegetation", simple_value=steps_near_vegetation)])
-            self.writer.add_summary(steps_near_vegetation_summary, self.episode_number)
-
         # Normalised Logs
         if self.environment_params["prey_num"] != 0 and self.environment_params["sand_grain_num"] != 0:
             # prey_capture_index = prey_caught / self.environment_params["prey_num"]
@@ -511,14 +505,6 @@ class TrainingService(BaseService):
                 value=[tf.Summary.Value(tag="sand grain capture index (fraction attempted caught)",
                                         simple_value=sand_grain_capture_index)])
             self.writer.add_summary(sand_grains_bumped_summary, self.episode_number)
-
-        if self.environment_params["vegetation_num"] != 0:
-            vegetation_index = (steps_near_vegetation / self.simulation.num_steps) / self.environment_params[
-                "vegetation_num"]
-            use_of_vegetation_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="use of vegetation index (fraction_steps/vegetation_num",
-                                        simple_value=vegetation_index)])
-            self.writer.add_summary(use_of_vegetation_summary, self.episode_number)
 
         if self.environment_params["salt"]:
             mean_salt_damage_per_step = np.mean(self.simulation.salt_damage_history)
