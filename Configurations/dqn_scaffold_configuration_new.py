@@ -100,7 +100,7 @@ env = {
     # This is the turn (radians) that happens every step, designed to replicate linear wavy movement.
     'prey_fluid_displacement': False,
     'prey_jump': False,
-    'differential_prey': True,
+    'differential_prey': False,
     'prey_cloud_num': 16,
 
     # Prey movement
@@ -204,9 +204,9 @@ env = {
     'duration_of_loom': 10,  # Number of steps for which loom occurs.
 
     # Visual system scaling factors (to set CNN inputs into 0 to 255 range):
-    'red_scaling_factor': 15,  # Pixel counts are multiplied by this
-    'uv_scaling_factor': 200,  # Pixel counts are multiplied by this
-    'red_2_scaling_factor': 15,  # Pixel counts are multiplied by this
+    'red_scaling_factor': 1,  # Pixel counts are multiplied by this
+    'uv_scaling_factor': 1,  # Pixel counts are multiplied by this
+    'red_2_scaling_factor': 0.2,  # Pixel counts are multiplied by this
 
     'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
 
@@ -268,7 +268,7 @@ env = {
     "sigmoid_steepness": 5.0
 }
 
-scaffold_name = "dqn_new"
+scaffold_name = "dqn_new_even"
 
 
 # For predator scaffolding
