@@ -109,9 +109,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
             self.epsilon = self.learning_params["startE"]
 
         self.experience_buffer = DQNTrainingBuffer(output_location=self.model_location, buffer_size=self.learning_params["exp_buffer_size"])
-        #if self.learning_params["save_gifs"]:
-        #    self.episode_buffer = None
-        #else:
+
         self.buffer = DQNAssayBuffer()
 
     def run(self):

@@ -49,7 +49,6 @@ params = {
     'time_per_step': 0.03,  # Length of each step used in gif creation
     'summaryLength': 200,  # Number of episodes to periodically save for analysis
     'rnn_dim_shared': 512,  # number of rnn cells. Should no longer be used.
-    'save_gifs': True,
 
     # Dynamic network construction
     'reflected': reflected,
@@ -136,7 +135,6 @@ env = {
     'sand_grain_num': 0,
     'sand_grain_displacement_impulse_scaling_factor': 0.5,
     'sand_grain_displacement_distance': 20,
-    'sand_grain_colour': (1, 0, 1),
     'sand_grain_touch_penalty': 20000,
 
     'dark_light_ratio': 0.3,  # fraction of arena in the dark
@@ -261,6 +259,12 @@ env = {
     'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
 
     'fixed_prey_distribution': False,
+
+    # From visual system changes
+    "sz_rf_spacing": 0.04,  # 2.3 deg
+    "sz_size": 1.047,  # 60 deg
+    "sz_oversampling_factor": 2.5,
+    "sigmoid_steepness": 5.0
 }
 
 scaffold_name = "dqn_epsilon"
@@ -304,12 +308,7 @@ high_pai = 800
 # changes += build_changes_list_gradual("PCI", low_pci, "distance_from_fish", env["distance_from_fish"],
 #                                       env["distance_from_fish"] / 2, 5, discrete=False)
 # For sand grain simplifying
-# changes += [
-#        ["PCI", high_pci, "sand_grain_colour", (0.75, 0, 1)],
-#        ["PCI", high_pci, "sand_grain_colour", (0.5, 0, 1)],
-#        ["PCI", high_pci, "sand_grain_colour", (0.25, 0, 1)],
-#        ["PCI", high_pci, "sand_grain_colour", (0, 0, 1)],
-# ]
+ # use sand_grain_red_component
 
 # Predator changes
 

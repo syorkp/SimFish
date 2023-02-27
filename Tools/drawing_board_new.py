@@ -817,8 +817,7 @@ class DrawingBoard:
         self.local_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
         FOV['local_coordinates_fov'][3] - 1, 0] = 1
 
-    def draw_shapes_environmental(self, visualisation, prey_pos, sand_grain_pos=np.array([]),
-                                  sand_grain_colour=(0, 0, 1)):  # prey/sand positions are fish-centric
+    def draw_shapes_environmental(self, visualisation, prey_pos, sand_grain_pos=np.array([])):  # prey/sand positions are fish-centric
         """Draws prey and sand grains in the local visualisation."""
         # TODO: fix sand grain support (colour etc)    
             
@@ -862,7 +861,7 @@ class DrawingBoard:
 
         if len(sand_grain_pos) > 0:
             rrs, ccs = self.multi_circles(sand_grain_pos[:, 0], sand_grain_pos[:, 1], self.prey_size)
-            self.board.db[rrs, ccs] = sand_grain_colour
+            self.board.db[rrs, ccs] = (0, 0, 1)
 
         # for i, pr in enumerate(self.predator_bodies):
         #     self.board.circle(pr.position, self.env_variables['predator_size'], self.predator_shapes[i].color, visualisation)

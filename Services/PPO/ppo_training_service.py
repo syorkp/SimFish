@@ -105,16 +105,13 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
                                                        )
 
         # IF not saving regular gifs, instead be ready to save the environmental data underlying GIFs.
-        if not self.learning_params["save_gifs"]:
-            self.episode_buffer = PPOBufferContinuousMultivariate2(gamma=self.learning_params["gamma"],
-                                                                   lmbda=self.learning_params["lambda"],
-                                                                   batch_size=self.learning_params["batch_size"],
-                                                                   train_length=self.learning_params["trace_length"],
-                                                                   assay=True,
-                                                                   debug=False,
-                                                                   )
-        else:
-            self.episode_buffer = False
+        self.episode_buffer = PPOBufferContinuousMultivariate2(gamma=self.learning_params["gamma"],
+                                                               lmbda=self.learning_params["lambda"],
+                                                               batch_size=self.learning_params["batch_size"],
+                                                               train_length=self.learning_params["trace_length"],
+                                                               assay=True,
+                                                               debug=False,
+                                                               )
 
         if self.learning_params["epsilon_greedy"]:
             self.epsilon_greedy = True

@@ -55,7 +55,6 @@ params = {
        'time_per_step': 0.03,  # Length of each step used in gif creation
        'summaryLength': 200,  # Number of episodes to periodically save for analysis
        'rnn_dim_shared': 512,  # number of rnn cells
-       'save_gifs': True,
 
        # Dynamic network construction
        'reflected': reflected,
@@ -134,7 +133,6 @@ env = {
        'sand_grain_num': 0,
        'sand_grain_displacement_impulse_scaling_factor': 0.5,
        'sand_grain_displacement_distance': 20,
-       'sand_grain_colour': (1, 0, 1),
        'sand_grain_touch_penalty': 20000,
 
        'predator_mass': 200.,
@@ -267,6 +265,11 @@ env = {
 
        'fixed_prey_distribution': False,
 
+       # From visual system changes
+       "sz_rf_spacing": 0.04,  # 2.3 deg
+       "sz_size": 1.047,  # 60 deg
+       "sz_oversampling_factor": 2.5,
+       "sigmoid_steepness": 5.0
 }
 
 scaffold_name = "ppo_gamma"

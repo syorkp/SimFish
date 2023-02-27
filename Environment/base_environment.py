@@ -218,7 +218,7 @@ class BaseEnvironment:
         sand_pos[:, 0] = np.round(np.array([sg.position[0] for sg in self.sand_grain_bodies]) - self.fish.body.position[0]).astype(int)
         sand_pos[:, 1] = np.round(np.array([sg.position[1] for sg in self.sand_grain_bodies]) - self.fish.body.position[1]).astype(int)
 
-        self.board.draw_shapes_environmental(False, prey_pos, sand_pos, self.env_variables['sand_grain_colour'])
+        self.board.draw_shapes_environmental(False, prey_pos, sand_pos)
 
     def reset(self):
         self.num_steps = 0
@@ -1112,10 +1112,7 @@ class BaseEnvironment:
                                   high=cloud[1] + (self.env_variables["birth_rate_region_size"] / 2))
             )
 
-        if "sand_grain_colour" in self.env_variables:
-            self.sand_grain_shapes[-1].color = self.env_variables["sand_grain_colour"]
-        else:
-            self.sand_grain_shapes[-1].color = (0, 0, 1)
+        self.sand_grain_shapes[-1].color = (0, 0, 1)
 
         self.sand_grain_shapes[-1].collision_type = 4
         self.sand_grain_shapes[-1].filter = pymunk.ShapeFilter(

@@ -49,7 +49,6 @@ params = {
        'time_per_step': 0.03,  # Length of each step used in gif creation
        'summaryLength': 200,  # Number of episodes to periodically save for analysis
        'rnn_dim_shared': 512,  # number of rnn cells
-       'save_gifs': True,
 
        # Dynamic network construction
        'reflected': reflected,
@@ -265,6 +264,12 @@ env = {
        # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
        'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
        'fixed_prey_distribution': False,
+
+       # From visual system changes
+       "sz_rf_spacing": 0.04,  # 2.3 deg
+       "sz_size": 1.047,  # 60 deg
+       "sz_oversampling_factor": 2.5,
+       "sigmoid_steepness": 5.0
 }
 
 # Equal to that given in the file name.

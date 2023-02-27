@@ -35,15 +35,19 @@ class Eye:
         self.max_visual_range = max_visual_range
         self.prey_diam = self.env_variables['prey_size']
 
-        self.scattering_coef = 0.01  # TODO: This is a parameter that needs to added to the config file.
-        self.scatter_sigma_0 = 0  # TODO: This is a parameter that needs to added to the config file.
+        if "sz_rf_spacing" in self.env_variables:
+            self.sz_rf_spacing = self.env_variables["sz_rf_spacing"]
+            self.sz_size = self.env_variables["sz_size"]
+            self.sz_oversampling_factor = self.env_variables["sz_oversampling_factor"]
+            self.sigmoid_steepness = self.env_variables["sigmoid_steepness"]
+        else:  # TODO: KEPT FOR IMMEDIATE COMPATIBILITY, REMOVE LATER
+            self.sz_rf_spacing = 0.04  # 2.3 deg.
+            self.sz_size = 1.047  # 60 deg.
+            self.sz_oversampling_factor = 2.5
+            self.sigmoid_steepness = 5.0
 
-        self.sz_rf_spacing = 0.04  # 2.3 deg. TODO: This is a parameter that needs to added to tdihe config file.
-        self.sz_size = 1.047  # 60 deg. TODO: This is a parameter that needs to added to the config file.
-        self.sz_oversampling_factor = 2.5  # TODO: This is a parameter that needs to added to the config file.
         self.periphery_rf_spacing = self.sz_rf_spacing * self.sz_oversampling_factor
         self.density_range = self.periphery_rf_spacing - self.sz_rf_spacing
-        self.sigmoid_steepness = 5.0  # TODO: This is a parameter that needs to added to the config file.
 
         self.ang_bin = 0.001  # this is the bin size for the projection
         self.ang = self.chosen_math_library.arange(-np.pi, np.pi + self.ang_bin,
@@ -321,14 +325,6 @@ class Eye:
                 prey_brightness = prey_brightness.get()
 
             proj[p, l_ind:r_ind] = prey_brightness
-            if self.scatter_sigma_0 > 0:
-                scatter_sigma = self.scatter_sigma_0 * np.exp(self.scattering_coef * rho[p])
-                angular_scatter_sigma = 2 * np.arctan(scatter_sigma / (2 * rho[p]))
-
-                alpha = (self.filter_bins - 1) / (2 * angular_scatter_sigma)
-                w = signal.windows.gaussian(self.filter_bins, alpha)
-                w /= np.sum(w)
-                proj[p, :] = signal.filtfilt(w, 1, proj[p, :])
 
         total_angular_input = np.sum(proj, axis=0)
 
