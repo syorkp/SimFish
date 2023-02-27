@@ -144,8 +144,6 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                                                       train_length=self.learning_params["trace_length"],
                                                       assay=True,
                                                       debug=False,
-                                                      use_dynamic_network=self.environment_params[
-                                                          "use_dynamic_network"],
                                                       )
 
 

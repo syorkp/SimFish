@@ -103,81 +103,35 @@ def create_ppo_network(simulation, environment_params, learning_params, multivar
         actor_cell = tf.nn.rnn_cell.LSTMCell(num_units=learning_params['rnn_dim_shared'], state_is_tuple=True)
 
         if multivariate:
-            if environment_params["use_dynamic_network"]:
-                if "reuse_eyes" in learning_params:
-                    reuse_eyes = learning_params['reuse_eyes']
-                else:
-                    reuse_eyes = False
-                actor_network = PPONetworkActorMultivariate2Dynamic(simulation=simulation,
-                                                                         # rnn_dim=learning_params['rnn_dim_shared'],
-                                                                         # rnn_cell=actor_cell,
-                                                                         my_scope='actor',
-                                                                         internal_states=internal_states,
-                                                                         internal_state_names=internal_state_names,
-                                                                         max_impulse=environment_params[
-                                                                             'max_impulse'],
-                                                                         max_angle_change=environment_params[
-                                                                             'max_angle_change'],
-                                                                         clip_param=environment_params[
-                                                                             'clip_param'],
-                                                                         input_sigmas=learning_params[
-                                                                             'input_sigmas'],
-                                                                         base_network_layers=learning_params[
-                                                                             'base_network_layers'],
-                                                                         modular_network_layers=learning_params[
-                                                                             'modular_network_layers'],
-                                                                         ops=learning_params['ops'],
-                                                                         connectivity=learning_params[
-                                                                             'connectivity'],
-                                                                         reflected=learning_params['reflected'],
-                                                                         reuse_eyes=reuse_eyes,
-                                                                         )
+            if "reuse_eyes" in learning_params:
+                reuse_eyes = learning_params['reuse_eyes']
             else:
-                if learning_params["beta_distribution"]:
-                    actor_network = PPONetworkActorMultivariateBetaNormal2(simulation=simulation,
-                                                                           rnn_dim=learning_params[
-                                                                               'rnn_dim_shared'],
-                                                                           rnn_cell=actor_cell,
-                                                                           my_scope='actor',
-                                                                           internal_states=internal_states,
-                                                                           max_impulse=environment_params[
-                                                                               'max_impulse'],
-                                                                           max_angle_change=
-                                                                           environment_params[
-                                                                               'max_angle_change'],
-                                                                           clip_param=environment_params[
-                                                                               'clip_param'],
-                                                                           input_sigmas=learning_params[
-                                                                               'input_sigmas'],
-                                                                           impose_action_mask=
-                                                                           environment_params[
-                                                                               'impose_action_mask'],
-                                                                           )
+                reuse_eyes = False
+            actor_network = PPONetworkActorMultivariate2Dynamic(simulation=simulation,
+                                                                     # rnn_dim=learning_params['rnn_dim_shared'],
+                                                                     # rnn_cell=actor_cell,
+                                                                     my_scope='actor',
+                                                                     internal_states=internal_states,
+                                                                     internal_state_names=internal_state_names,
+                                                                     max_impulse=environment_params[
+                                                                         'max_impulse'],
+                                                                     max_angle_change=environment_params[
+                                                                         'max_angle_change'],
+                                                                     clip_param=environment_params[
+                                                                         'clip_param'],
+                                                                     input_sigmas=learning_params[
+                                                                         'input_sigmas'],
+                                                                     base_network_layers=learning_params[
+                                                                         'base_network_layers'],
+                                                                     modular_network_layers=learning_params[
+                                                                         'modular_network_layers'],
+                                                                     ops=learning_params['ops'],
+                                                                     connectivity=learning_params[
+                                                                         'connectivity'],
+                                                                     reflected=learning_params['reflected'],
+                                                                     reuse_eyes=reuse_eyes,
+                                                                     )
 
-                else:
-                    if "value_coefficient" in learning_params:
-                        value_coefficient = learning_params["value_coefficient"]
-                    else:
-                        value_coefficient = 0.5
-
-                    actor_network = PPONetworkActorMultivariate2(simulation=simulation,
-                                                                      rnn_dim=learning_params[
-                                                                          'rnn_dim_shared'],
-                                                                      rnn_cell=actor_cell,
-                                                                      my_scope='actor',
-                                                                      internal_states=internal_states,
-                                                                      max_impulse=environment_params[
-                                                                          'max_impulse'],
-                                                                      max_angle_change=environment_params[
-                                                                          'max_angle_change'],
-                                                                      clip_param=environment_params[
-                                                                          'clip_param'],
-                                                                      input_sigmas=learning_params[
-                                                                          'input_sigmas'],
-                                                                      impose_action_mask=environment_params[
-                                                                          'impose_action_mask'],
-                                                                      value_coefficient=value_coefficient,
-                                                                      )
         print("Created network")
         return actor_network
 
@@ -215,31 +169,20 @@ def load_network_variables_dqn(model_name, conf_name, full_reafference=False):
         internal_states = max(internal_states, 1)
         internal_state_names = get_internal_state_order(env)
 
-        if env["use_dynamic_network"]:
-            network = QNetworkDynamic(simulation=simulation,
-                                      my_scope='main',
-                                      internal_states=internal_states,
-                                      internal_state_names=internal_state_names,
-                                      num_actions=learning['num_actions'],
-                                      base_network_layers=learning[
-                                          'base_network_layers'],
-                                      modular_network_layers=learning[
-                                          'modular_network_layers'],
-                                      ops=learning['ops'],
-                                      connectivity=learning[
-                                          'connectivity'],
-                                      reflected=learning['reflected'],
-                                      )
-        else:
-            network = QNetwork(simulation=simulation,
-                               rnn_dim=learning['rnn_dim_shared'],
-                               rnn_cell=cell,
-                               my_scope='main',
-                               num_actions=learning['num_actions'],
-                               internal_states=internal_states,
-                               learning_rate=learning['learning_rate'],
-                               extra_layer=learning['extra_rnn'],
-                               full_reafference=full_reafference)
+        network = QNetworkDynamic(simulation=simulation,
+                                  my_scope='main',
+                                  internal_states=internal_states,
+                                  internal_state_names=internal_state_names,
+                                  num_actions=learning['num_actions'],
+                                  base_network_layers=learning[
+                                      'base_network_layers'],
+                                  modular_network_layers=learning[
+                                      'modular_network_layers'],
+                                  ops=learning['ops'],
+                                  connectivity=learning[
+                                      'connectivity'],
+                                  reflected=learning['reflected'],
+                                  )
 
         saver = tf.train.Saver(max_to_keep=5)
         init = tf.global_variables_initializer()

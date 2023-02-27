@@ -139,7 +139,7 @@ class DQNAssayService(AssayService, BaseDQN):
         self.stimuli_data = []
         self.output_data = {}
 
-        self.buffer = DQNAssayBuffer(use_dynamic_network=self.environment_params["use_dynamic_network"])
+        self.buffer = DQNAssayBuffer()
 
         self.use_rnd = self.learning_params["use_rnd"]
         self.full_reafference = full_reafference

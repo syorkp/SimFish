@@ -78,28 +78,19 @@ class BaseDQN:
             if self.learning_params["maintain_state"]:
                 # IF SAVE PRESENT
                 if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
-                    if self.environment_params["use_dynamic_network"]:
-                        with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
-                            print("Successfully loaded previous state.")
-                            data = json.load(f)
-                            num_rnns = len(data.keys()) / 4
-                            self.init_rnn_state = tuple(
-                                (np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for
-                                shape in range(int(num_rnns)))
-                            self.init_rnn_state_ref = tuple(
-                                (np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"]))
-                                for shape in range(int(num_rnns)))
+                    with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
+                        print("Successfully loaded previous state.")
+                        data = json.load(f)
+                        num_rnns = len(data.keys()) / 4
+                        self.init_rnn_state = tuple(
+                            (np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for
+                            shape in range(int(num_rnns)))
+                        self.init_rnn_state_ref = tuple(
+                            (np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"]))
+                            for shape in range(int(num_rnns)))
 
-                        return
-                    else:
-                        with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
-                            print("Successfully loaded previous state.")
-                            data = json.load(f)
-                            self.init_rnn_state = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
-                            self.init_rnn_state_ref = (
-                                np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
+                    return
 
-                        return
 
         if self.environment_params["use_dynamic_network"]:
             rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
@@ -131,61 +122,41 @@ class BaseDQN:
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
         cell_t = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
 
-        if self.environment_params["use_dynamic_network"]:
-            if "reuse_eyes" in self.learning_params:
-                reuse_eyes = self.learning_params['reuse_eyes']
-            else:
-                reuse_eyes = False
-            self.main_QN = QNetworkDynamic(simulation=self.simulation,
-                                           my_scope='main',
-                                           internal_states=internal_states,
-                                           internal_state_names=internal_state_names,
-                                           num_actions=self.learning_params['num_actions'],
-                                           base_network_layers=self.learning_params[
-                                               'base_network_layers'],
-                                           modular_network_layers=self.learning_params[
-                                               'modular_network_layers'],
-                                           ops=self.learning_params['ops'],
-                                           connectivity=self.learning_params[
-                                               'connectivity'],
-                                           reflected=self.learning_params['reflected'],
-                                           reuse_eyes=reuse_eyes,
-                                           )
-            self.target_QN = QNetworkDynamic(simulation=self.simulation,
-
-                                             my_scope='target',
-                                             internal_states=internal_states,
-                                             internal_state_names=internal_state_names,
-                                             num_actions=self.learning_params['num_actions'],
-                                             base_network_layers=self.learning_params[
-                                                 'base_network_layers'],
-                                             modular_network_layers=self.learning_params[
-                                                 'modular_network_layers'],
-                                             ops=self.learning_params['ops'],
-                                             connectivity=self.learning_params[
-                                                 'connectivity'],
-                                             reflected=self.learning_params['reflected'],
-                                             reuse_eyes=reuse_eyes,
-                                             )
+        if "reuse_eyes" in self.learning_params:
+            reuse_eyes = self.learning_params['reuse_eyes']
         else:
-            self.main_QN = QNetwork(simulation=self.simulation,
-                                    rnn_dim=self.learning_params['rnn_dim_shared'],
-                                    rnn_cell=cell,
-                                    my_scope='main',
-                                    num_actions=self.learning_params['num_actions'],
-                                    internal_states=internal_states,
-                                    learning_rate=self.learning_params['learning_rate'],
-                                    extra_layer=self.learning_params['extra_rnn'],
-                                    full_reafference=self.full_reafference)
-            self.target_QN = QNetwork(simulation=self.simulation,
-                                      rnn_dim=self.learning_params['rnn_dim_shared'],
-                                      rnn_cell=cell_t,
-                                      my_scope='target',
-                                      num_actions=self.learning_params['num_actions'],
-                                      internal_states=internal_states,
-                                      learning_rate=self.learning_params['learning_rate'],
-                                      extra_layer=self.learning_params['extra_rnn'],
-                                      full_reafference=self.full_reafference)
+            reuse_eyes = False
+        self.main_QN = QNetworkDynamic(simulation=self.simulation,
+                                       my_scope='main',
+                                       internal_states=internal_states,
+                                       internal_state_names=internal_state_names,
+                                       num_actions=self.learning_params['num_actions'],
+                                       base_network_layers=self.learning_params[
+                                           'base_network_layers'],
+                                       modular_network_layers=self.learning_params[
+                                           'modular_network_layers'],
+                                       ops=self.learning_params['ops'],
+                                       connectivity=self.learning_params[
+                                           'connectivity'],
+                                       reflected=self.learning_params['reflected'],
+                                       reuse_eyes=reuse_eyes,
+                                       )
+        self.target_QN = QNetworkDynamic(simulation=self.simulation,
+
+                                         my_scope='target',
+                                         internal_states=internal_states,
+                                         internal_state_names=internal_state_names,
+                                         num_actions=self.learning_params['num_actions'],
+                                         base_network_layers=self.learning_params[
+                                             'base_network_layers'],
+                                         modular_network_layers=self.learning_params[
+                                             'modular_network_layers'],
+                                         ops=self.learning_params['ops'],
+                                         connectivity=self.learning_params[
+                                             'connectivity'],
+                                         reflected=self.learning_params['reflected'],
+                                         reuse_eyes=reuse_eyes,
+                                         )
 
     def episode_loop(self):
         """
@@ -356,10 +327,7 @@ class BaseDQN:
 
     # TODO: merge this with the above function
     def assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
-        if self.environment_params["use_dynamic_network"]:
-            return self._assay_step_loop_new_dynamic(o, internal_state, a, rnn_state, rnn_state_ref)
-        else:
-            return self._assay_step_loop_new_static(o, internal_state, a, rnn_state, rnn_state_ref)
+        return self._assay_step_loop_new_dynamic(o, internal_state, a, rnn_state, rnn_state_ref)
 
     def _assay_step_loop_new_dynamic(self, o, internal_state, a, rnn_state, rnn_state_ref):
         chosen_a, updated_rnn_state, rnn2_state, network_layers, sa, sv = \
@@ -529,19 +497,14 @@ class BaseDQN:
 
         else:
 
-            if self.environment_params["use_dynamic_network"]:
-                rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
-                state_train = tuple(
-                    (np.zeros([self.learning_params['batch_size'], shape]),
-                     np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
-                # state_train_ref = tuple(
-                #     (np.zeros([self.learning_params['batch_size'], shape]),
-                #      np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
-            else:
-                state_train = (np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]),
-                               np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
-                # state_train_ref = (np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]),
-                #                np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))
+            rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
+            state_train = tuple(
+                (np.zeros([self.learning_params['batch_size'], shape]),
+                 np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
+            # state_train_ref = tuple(
+            #     (np.zeros([self.learning_params['batch_size'], shape]),
+            #      np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
+
         # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
         train_batch = self.experience_buffer.sample(self.learning_params['batch_size'],
                                                     self.learning_params['trace_length'])

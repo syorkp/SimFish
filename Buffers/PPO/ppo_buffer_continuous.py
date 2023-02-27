@@ -5,9 +5,9 @@ import numpy as np
 class PPOBufferContinuousMultivariate2(BasePPOBuffer):
     """Buffer for full episode for PPO training, and logging."""
 
-    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False, use_dynamic_network=False,
+    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False,
                  use_rnd=False):
-        super().__init__(gamma, lmbda, batch_size, train_length, assay, debug, use_dynamic_network)
+        super().__init__(gamma, lmbda, batch_size, train_length, assay, debug)
 
         # Buffer for training
         self.log_action_probability_buffer = []
@@ -261,28 +261,19 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
                 actor_rnn_state_batch.append(self.actor_rnn_state_buffer[point])
                 actor_rnn_state_batch_ref.append(self.actor_rnn_state_ref_buffer[point])
 
-        if self.use_dynamic_network:
-            n_rnns = np.array(actor_rnn_state_batch).shape[1]
-            n_units = np.array(actor_rnn_state_batch).shape[-1]
+        n_rnns = np.array(actor_rnn_state_batch).shape[1]
+        n_units = np.array(actor_rnn_state_batch).shape[-1]
 
-            actor_rnn_state_batch = np.reshape(np.array(actor_rnn_state_batch), (n_rnns, batch_size, 2, n_units))
-            actor_rnn_state_batch_ref = np.reshape(np.array(actor_rnn_state_batch_ref),
-                                                   (n_rnns, batch_size, 2, n_units))
+        actor_rnn_state_batch = np.reshape(np.array(actor_rnn_state_batch), (n_rnns, batch_size, 2, n_units))
+        actor_rnn_state_batch_ref = np.reshape(np.array(actor_rnn_state_batch_ref),
+                                               (n_rnns, batch_size, 2, n_units))
 
-            actor_rnn_state_batch = tuple(
-                (np.array(actor_rnn_state_batch[i, :, 0, :]), np.array(actor_rnn_state_batch[i, :, 1, :])) for i in
-                range(n_rnns))
-            actor_rnn_state_batch_ref = tuple(
-                (np.array(actor_rnn_state_batch_ref[i, :, 0, :]), np.array(actor_rnn_state_batch_ref[i, :, 1, :])) for i
-                in range(n_rnns))
-        else:
-            actor_rnn_state_batch = np.array(actor_rnn_state_batch)
-            actor_rnn_state_batch = np.swapaxes(actor_rnn_state_batch, 0, 2)
-            actor_rnn_state_batch = tuple(actor_rnn_state_batch[0])
-
-            actor_rnn_state_batch_ref = np.array(actor_rnn_state_batch_ref)
-            actor_rnn_state_batch_ref = np.swapaxes(actor_rnn_state_batch_ref, 0, 2)
-            actor_rnn_state_batch_ref = tuple(actor_rnn_state_batch_ref[0])
+        actor_rnn_state_batch = tuple(
+            (np.array(actor_rnn_state_batch[i, :, 0, :]), np.array(actor_rnn_state_batch[i, :, 1, :])) for i in
+            range(n_rnns))
+        actor_rnn_state_batch_ref = tuple(
+            (np.array(actor_rnn_state_batch_ref[i, :, 0, :]), np.array(actor_rnn_state_batch_ref[i, :, 1, :])) for i
+            in range(n_rnns))
 
         return actor_rnn_state_batch, actor_rnn_state_batch_ref
 

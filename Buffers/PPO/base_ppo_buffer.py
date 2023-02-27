@@ -5,7 +5,7 @@ import numpy as np
 
 class BasePPOBuffer:
 
-    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False, use_dynamic_network=False):
+    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False):
         self.gamma = gamma
         self.lmbda = lmbda
         self.batch_size = batch_size
@@ -15,7 +15,6 @@ class BasePPOBuffer:
         self.assay = assay
         self.recordings = None
         self.multivariate = None
-        self.use_dynamic_network = use_dynamic_network
 
         # Buffer for training
         self.action_buffer = []
@@ -382,65 +381,34 @@ class BasePPOBuffer:
         #     self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
 
 
-        if self.use_dynamic_network:
-            for layer in self.unit_recordings.keys():
-                self.create_data_group(layer, np.array(self.unit_recordings[layer]).squeeze(), assay_group)
+        for layer in self.unit_recordings.keys():
+            self.create_data_group(layer, np.array(self.unit_recordings[layer]).squeeze(), assay_group)
 
-            # for i, r in enumerate(self.rnn_state_buffer):
-            #     print(f"{i}-{np.array(r[0]).shape}")
+        # for i, r in enumerate(self.rnn_state_buffer):
+        #     print(f"{i}-{np.array(r[0]).shape}")
 
-            # print(self.rnn_state_buffer)
-            self.rnn_state_buffer = np.array(self.actor_rnn_state_buffer).squeeze()
-            self.rnn_state_ref_buffer = np.array(self.actor_rnn_state_ref_buffer).squeeze()
+        # print(self.rnn_state_buffer)
+        self.rnn_state_buffer = np.array(self.actor_rnn_state_buffer).squeeze()
+        self.rnn_state_ref_buffer = np.array(self.actor_rnn_state_ref_buffer).squeeze()
 
-            self.create_data_group("rnn_state_actor", self.rnn_state_buffer, assay_group)
-            self.create_data_group("rnn_state_actor_ref", self.rnn_state_ref_buffer, assay_group)
+        self.create_data_group("rnn_state_actor", self.rnn_state_buffer, assay_group)
+        self.create_data_group("rnn_state_actor_ref", self.rnn_state_ref_buffer, assay_group)
 
-            self.internal_state_buffer = np.array(self.internal_state_buffer)
+        self.internal_state_buffer = np.array(self.internal_state_buffer)
 
-            self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
-            # Get internal state names and save each.
-            for i, state in enumerate(internal_state_order):
-                self.create_data_group(state, np.array(self.internal_state_buffer[:, i]), assay_group)
-                if state == "salt":
-                    if salt_location is None:
-                        salt_location = [150000, 150000]
-                    self.create_data_group("salt_location", np.array(salt_location), assay_group)
-                    self.create_data_group("salt_health", np.array(self.salt_health_buffer), assay_group)
+        self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
+        # Get internal state names and save each.
+        for i, state in enumerate(internal_state_order):
+            self.create_data_group(state, np.array(self.internal_state_buffer[:, i]), assay_group)
+            if state == "salt":
+                if salt_location is None:
+                    salt_location = [150000, 150000]
+                self.create_data_group("salt_location", np.array(salt_location), assay_group)
+                self.create_data_group("salt_health", np.array(self.salt_health_buffer), assay_group)
 
-            self.efference_copy_buffer = np.array(self.efference_copy_buffer)
-            self.create_data_group("efference_copy", self.efference_copy_buffer, assay_group)
+        self.efference_copy_buffer = np.array(self.efference_copy_buffer)
+        self.create_data_group("efference_copy", self.efference_copy_buffer, assay_group)
 
-        else:
-            if "rnn state" in self.unit_recordings:
-                self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer).squeeze(), assay_group)
-                self.create_data_group("rnn_state_actor_ref", np.array(self.actor_rnn_state_ref_buffer).squeeze(), assay_group)
-
-            if "internal state" in self.unit_recordings:
-                self.internal_state_buffer = np.array(self.internal_state_buffer)
-                self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
-                # Get internal state names and save each.
-                for i, state in enumerate(internal_state_order):
-                    self.create_data_group(state, np.array(self.internal_state_buffer[:, i]), assay_group)
-                    if state == "salt":
-                        if salt_location is None:
-                            salt_location = [150000, 150000]
-                        self.create_data_group("salt_location", np.array(salt_location), assay_group)
-                        self.create_data_group("salt_health", np.array(self.salt_health_buffer), assay_group)
-
-                self.efference_copy_buffer = np.array(self.efference_copy_buffer)
-                self.create_data_group("efference_copy", self.efference_copy_buffer, assay_group)
-
-            if "convolutional layers" in self.unit_recordings:
-                self.organise_conv_recordings()
-                self.create_data_group("conv1l", np.array(self.conv_layer_buffer[0]).squeeze(), assay_group)
-                self.create_data_group("conv2l", np.array(self.conv_layer_buffer[1]).squeeze(), assay_group)
-                self.create_data_group("conv3l", np.array(self.conv_layer_buffer[2]).squeeze(), assay_group)
-                self.create_data_group("conv4l", np.array(self.conv_layer_buffer[3]).squeeze(), assay_group)
-                self.create_data_group("conv1r", np.array(self.conv_layer_buffer[4]).squeeze(), assay_group)
-                self.create_data_group("conv2r", np.array(self.conv_layer_buffer[5]).squeeze(), assay_group)
-                self.create_data_group("conv3r", np.array(self.conv_layer_buffer[6]).squeeze(), assay_group)
-                self.create_data_group("conv4r", np.array(self.conv_layer_buffer[7]).squeeze(), assay_group)
 
 
         self.create_data_group("impulse", np.array(self.action_buffer)[:, 0], assay_group)

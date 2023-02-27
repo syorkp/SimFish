@@ -144,11 +144,11 @@ class AssayService(BaseService):
             self.interruptions = True
         else:
             self.interruptions = False
-        if self.environment_params["use_dynamic_network"]:
-            if self.ppo_version is not None:
-                self.buffer.rnn_layer_names = self.actor_network.rnn_layer_names
-            else:
-                self.buffer.rnn_layer_names = self.main_QN.rnn_layer_names
+
+        if self.ppo_version is not None:
+            self.buffer.rnn_layer_names = self.actor_network.rnn_layer_names
+        else:
+            self.buffer.rnn_layer_names = self.main_QN.rnn_layer_names
 
         for assay in self.assays:
 

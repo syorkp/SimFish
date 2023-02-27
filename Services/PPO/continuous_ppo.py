@@ -759,45 +759,21 @@ class ContinuousPPO:
             if self.learning_params["maintain_state"]:
                 # IF SAVE PRESENT
                 if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
-                    if self.environment_params["use_dynamic_network"]:
-                        with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
-                            print("Successfully loaded previous state.")
-                            data = json.load(f)
-                            num_rnns = len(data.keys())/4
-                            self.init_rnn_state = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
-                            self.init_rnn_state_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
+                    with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
+                        print("Successfully loaded previous state.")
+                        data = json.load(f)
+                        num_rnns = len(data.keys())/4
+                        self.init_rnn_state = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
+                        self.init_rnn_state_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
 
-                        return
-                    else:
-                        with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
-                            print("Successfully loaded previous state.")
-                            data = json.load(f)
-                            self.init_rnn_state = (np.array(data["rnn_state_1"]), np.array(data["rnn_state_2"]))
-                            self.init_rnn_state_ref = (np.array(data["rnn_state_ref_1"]), np.array(data["rnn_state_ref_2"]))
-
-                        return
+                    return
 
         # Init states for RNN - For steps, not training.
-        if self.environment_params["use_dynamic_network"]:
-            rnn_state_shapes = self.actor_network.get_rnn_state_shapes()
-            self.init_rnn_state = tuple(
-                (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
-            self.init_rnn_state_ref = tuple(
-                (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
-        else:
-            self.init_rnn_state = (
-                np.zeros([1, self.actor_network.rnn_dim]),
-                np.zeros([1, self.actor_network.rnn_dim]))
-            self.init_rnn_state_ref = (
-                np.zeros([1, self.actor_network.rnn_dim]),
-                np.zeros([1, self.actor_network.rnn_dim]))
-            if not self.sb_emulator or self.separate_networks:
-                self.init_rnn_state_critic = (
-                    np.zeros([1, self.critic_network.rnn_dim]),
-                    np.zeros([1, self.critic_network.rnn_dim]))
-                self.init_rnn_state_critic_ref = (
-                    np.zeros([1, self.critic_network.rnn_dim]),
-                    np.zeros([1, self.critic_network.rnn_dim]))
+        rnn_state_shapes = self.actor_network.get_rnn_state_shapes()
+        self.init_rnn_state = tuple(
+            (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
+        self.init_rnn_state_ref = tuple(
+            (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
 
     def _episode_loop(self, a=None):
         self.update_sigmas()

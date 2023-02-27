@@ -30,38 +30,27 @@ def create_network(simulation, environment_params, learning_params, full_reaffer
 
     cell = tf.nn.rnn_cell.LSTMCell(num_units=learning_params['rnn_dim_shared'], state_is_tuple=True)
 
-    if environment_params["use_dynamic_network"]:
-        if "reuse_eyes" in learning_params:
-            reuse_eyes = learning_params['reuse_eyes']
-        else:
-            reuse_eyes = False
-        main_QN = QNetworkDynamic(simulation=simulation,
-                                  my_scope='main',
-                                  internal_states=internal_states,
-                                  internal_state_names=internal_state_names,
-                                  num_actions=learning_params['num_actions'],
-                                  base_network_layers=learning_params[
-                                      'base_network_layers'],
-                                  modular_network_layers=learning_params[
-                                      'modular_network_layers'],
-                                  ops=learning_params['ops'],
-                                  connectivity=learning_params[
-                                      'connectivity'],
-                                  reflected=learning_params['reflected'],
-                                  reuse_eyes=reuse_eyes,
-                                  )
-
+    if "reuse_eyes" in learning_params:
+        reuse_eyes = learning_params['reuse_eyes']
     else:
-        main_QN = QNetwork(simulation=simulation,
-                           rnn_dim=learning_params['rnn_dim_shared'],
-                           rnn_cell=cell,
-                           my_scope='main',
-                           num_actions=learning_params['num_actions'],
-                           internal_states=internal_states,
-                           learning_rate=learning_params['learning_rate'],
-                           extra_layer=learning_params['extra_rnn'],
-                           full_reafference=full_reafference
-                           )
+        reuse_eyes = False
+    main_QN = QNetworkDynamic(simulation=simulation,
+                              my_scope='main',
+                              internal_states=internal_states,
+                              internal_state_names=internal_state_names,
+                              num_actions=learning_params['num_actions'],
+                              base_network_layers=learning_params[
+                                  'base_network_layers'],
+                              modular_network_layers=learning_params[
+                                  'modular_network_layers'],
+                              ops=learning_params['ops'],
+                              connectivity=learning_params[
+                                  'connectivity'],
+                              reflected=learning_params['reflected'],
+                              reuse_eyes=reuse_eyes,
+                              )
+
+
     return main_QN, internal_states
 
 
