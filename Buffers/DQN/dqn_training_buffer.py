@@ -19,6 +19,8 @@ class DQNTrainingBuffer:
         # 3 - Internal state
         # 4 - Observation (t+1)
         # 5 - End multiplier (death)
+        # 6 - Internal state (t+1)
+
     def reset(self):
         self.buffer = []
         
@@ -34,7 +36,7 @@ class DQNTrainingBuffer:
             point = np.random.randint(0, len(episode) + 1 - trace_length)
             sampled_traces.append(episode[point:point + trace_length])
         sampled_traces = np.array(sampled_traces)
-        return np.reshape(sampled_traces, [batch_size * trace_length, 6])
+        return np.reshape(sampled_traces, [batch_size * trace_length, 7])
 
     def save(self):
         # hdf5_file = h5py.File(f"{self.output_location}/training_buffer.h5", "w")
