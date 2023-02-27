@@ -19,7 +19,6 @@ params = {
        'num_episodes': 50000,  # How many episodes of game environment to train network with.
        'max_epLength': 1000,  # The max allowed length of our episode.
        'epsilon_greedy': True,
-       'epsilon_greedy_scaffolding': True,
        'startE': 0.2,  # Starting chance of random action
        'endE': 0.01,  # Final chance of random action
 
@@ -33,17 +32,12 @@ params = {
 
        # Learning (PPO only)
        'n_updates_per_iteration': 4,
-       'rnn_state_computation': False,
        'learning_rate': 0.0001,
        'lambda_entropy': 0.01,
 
        # Learning (PPO Continuous Only)
-       'multivariate': False,
-       'beta_distribution': False,
        'gamma': 0.99,
        'lambda': 0.9,
-       'input_sigmas': True,
-       'sigma_scaffolding': False,  # Reset sigma progression if move along configuration scaffold.
 
        # Discrete Action Space
        'num_actions': 10,  # size of action space
@@ -52,7 +46,6 @@ params = {
        'time_per_step': 0.03,  # Length of each step used in gif creation
        'summaryLength': 200,  # Number of episodes to periodically save for analysis
        'rnn_dim_shared': 512,  # number of rnn cells. Should no longer be used.
-       'extra_rnn': False,
        'save_gifs': True,
 
        # Dynamic network construction
@@ -63,7 +56,6 @@ params = {
        'connectivity': connectivity,
 
        # For RND
-       'use_rnd': False,  # Whether to use RND.
        'reuse_eyes': False,
 }
 
@@ -173,21 +165,15 @@ env = {
        'energy_state': True,
        'in_light': True,
        'salt': True,  # Inclusion of olfactory salt input and salt death.
-       "use_dynamic_network": True,
        'salt_concentration_decay': 0.01,  # Scale for exponential salt concentration decay from source.
        'salt_recovery': 0.01,  # Amount by which salt health recovers per step
        'max_salt_damage': 0.02,  # Salt damage at centre of source.
 
        # GIFs and debugging
-       'visualise_mask': False,  # For debugging purposes.
-       'show_channel_sectors': False,
-       'show_fish_body_energy_state': False,
-       'show_action_space_usage': True,
        'show_previous_actions': 200,  # False if not, otherwise the number of actions to save.
 
        # Environment
        'decay_rate': 0.01,  # Formerly 0.0006
-       'sim_steps_per_second': 5,  # For converting isomerization frequency.
        'background_grating_frequency': 50,  # For extra layer motion:
        'displacement_scaling_factor': 0.018,
        # Multiplied by previous impulse size to cause displacement of nearby features.
@@ -228,9 +214,6 @@ env = {
        'red_scaling_factor': 1/5,  # Pixel counts are multiplied by this
        'uv_scaling_factor': 1,  # Pixel counts are multiplied by this
        'red_2_scaling_factor': 1/500.0,  # Pixel counts are multiplied by this
-       'red_occlusion_gain': 0.0,  # 0 Being complete construction.
-       'uv_occlusion_gain': 1.0,
-       'red2_occlusion_gain': 0.0,
 
        'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
 
@@ -241,18 +224,10 @@ env = {
        'red_photoreceptor_rf_size': 0.0133 * 3,  # Kept same
        'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
        'red_photoreceptor_num': 63,
-       'minimum_observation_size': 100,  # Parameter to determine padded observation size (avoids conv layer size bug).
-       'shared_photoreceptor_channels': False,  # Whether two channels have the same RF angles (saves computation time)
-       'incorporate_uv_strike_zone': True,
-       'strike_zone_sigma': 1.5,
        # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
 
        # Shot noise
        'shot_noise': False,  # Whether to model observation of individual photons as a poisson process.
-
-       # For dark noise:
-       'isomerization_frequency': 0.0,  # Average frequency of photoisomerization per second per photoreceptor
-       'max_isomerization_size': 0.0,
 
        # Energy state and hunger-based rewards
        'ci': 0.00002,
@@ -287,7 +262,6 @@ env = {
        'capture_angle_deviation_allowance': np.pi,
        # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
        'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
-       'max_visual_range': False,
        'fixed_prey_distribution': False,
 }
 

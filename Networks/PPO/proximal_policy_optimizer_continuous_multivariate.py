@@ -11,17 +11,13 @@ tf.disable_v2_behavior()
 class PPONetworkActorMultivariate(BaseNetwork):
 
     def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, internal_states, max_impulse, max_angle_change,
-                 clip_param, input_sigmas=False, impose_action_mask=False, impulse_scaling=None, angle_scaling=None):
+                 clip_param, impose_action_mask=False, impulse_scaling=None, angle_scaling=None):
         super().__init__(simulation, rnn_dim, rnn_cell, my_scope, internal_states, action_dim=2)
 
         #            ----------        Stream Splitting       ---------            #
 
-        if input_sigmas:
-            self.mu_impulse_stream, self.mu_angle_stream = tf.split(self.rnn_output, 2, 1)
-            self.mu_impulse_stream_ref, self.mu_angle_stream_ref = tf.split(self.rnn_output_ref, 2, 1)
-        else:
-            self.mu_impulse_stream, self.sigma_impulse_stream, self.mu_angle_stream, self.sigma_angle_stream = tf.split(self.rnn_output, 4, 1)
-            self.mu_impulse_stream_ref, self.sigma_impulse_stream_ref, self.mu_angle_stream_ref, self.sigma_angle_stream_ref = tf.split(self.rnn_output_ref, 4, 1)
+        self.mu_impulse_stream, self.mu_angle_stream = tf.split(self.rnn_output, 2, 1)
+        self.mu_impulse_stream_ref, self.mu_angle_stream_ref = tf.split(self.rnn_output_ref, 2, 1)
 
         #            ----------        Mu Estimations       ---------            #
 
@@ -55,35 +51,8 @@ class PPONetworkActorMultivariate(BaseNetwork):
                                                            name='sigma_impulse_combined')
         self.sigma_angle_combined_proto = tf.placeholder(shape=[None], dtype=tf.float32, name='sigma_angle_combined')
 
-        if input_sigmas:
-            self.sigma_impulse_combined = tf.expand_dims(self.sigma_impulse_combined_proto, 1)
-            self.sigma_angle_combined = tf.expand_dims(self.sigma_angle_combined_proto, 1)
-
-        else:
-            self.sigma_impulse = tf.layers.dense(self.sigma_impulse_stream, 1,
-                                                 kernel_initializer=tf.orthogonal_initializer,
-                                                 name=my_scope + '_sigma_impulse', trainable=True)
-            self.sigma_impulse = self.bounded_output(self.sigma_impulse, 0, 1)
-
-            self.sigma_impulse_ref = tf.layers.dense(self.sigma_impulse_stream_ref, 1,
-                                                     kernel_initializer=tf.orthogonal_initializer,
-                                                     name=my_scope + '_sigma_impulse', reuse=True, trainable=True)
-            self.sigma_impulse_ref = self.bounded_output(self.sigma_impulse_ref, 0, 1)
-
-            self.sigma_angle = tf.layers.dense(self.sigma_angle_stream, 1,
-                                               kernel_initializer=tf.orthogonal_initializer,
-                                               name=my_scope + '_sigma_angle', trainable=True)
-            self.sigma_angle = self.bounded_output(self.sigma_angle, 0, 1)
-
-            self.sigma_angle_ref = tf.layers.dense(self.sigma_angle_stream_ref, 1,
-                                                   kernel_initializer=tf.orthogonal_initializer,
-                                                   name=my_scope + '_sigma_angle', reuse=True, trainable=True)
-            self.sigma_angle_ref = self.bounded_output(self.sigma_angle_ref, 0, 1)
-
-            self.sigma_impulse_combined = tf.math.divide(tf.math.add(self.sigma_impulse, self.sigma_impulse_ref), 2.0,
-                                                         name="sigma_impulse_combined")
-            self.sigma_angle_combined = tf.math.divide(tf.math.add(self.sigma_angle, self.sigma_angle_ref), 2.0,
-                                                       name="sigma_angle_combined")
+        self.sigma_impulse_combined = tf.expand_dims(self.sigma_impulse_combined_proto, 1)
+        self.sigma_angle_combined = tf.expand_dims(self.sigma_angle_combined_proto, 1)
 
         self.sigma_action = tf.concat([self.sigma_impulse_combined, self.sigma_angle_combined], axis=1)
 

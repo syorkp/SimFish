@@ -39,7 +39,7 @@ class BaseEnvironment:
                                         uv_decay_rate=self.env_variables['decay_rate'],
                                         red_decay_rate=self.env_variables['decay_rate'],
                                         photoreceptor_rf_size=max_photoreceptor_rf_size,
-                                        using_gpu=using_gpu, visualise_mask=self.env_variables['visualise_mask'],
+                                        using_gpu=using_gpu,
                                         prey_size=self.env_variables['prey_size'],
                                         predator_size=self.env_variables['predator_size'],
                                         visible_scatter=self.env_variables['bkg_scatter'],
@@ -48,7 +48,6 @@ class BaseEnvironment:
                                         dark_light_ratio=self.env_variables['dark_light_ratio'],
                                         dark_gain=self.env_variables['dark_gain'],
                                         light_gain=self.env_variables['light_gain'],
-                                        occlusion_gain=(self.env_variables['red_occlusion_gain'], self.env_variables['uv_occlusion_gain'], self.env_variables['red2_occlusion_gain']),
                                         light_gradient=light_gradient,
                                         max_visual_distance=max_visual_distance
                                         )
@@ -136,7 +135,6 @@ class BaseEnvironment:
         self.paramecia_gaits = None
 
         # For debugging purposes
-        self.visualise_mask = self.env_variables['visualise_mask']
         self.mask_buffer = []
         self.using_gpu = using_gpu
 
@@ -360,66 +358,6 @@ class BaseEnvironment:
             current_h += bin_height
 
         return extra_area
-
-# TODO: FIX THIS
-    # def output_frame(self, activations, internal_state, scale=0.25):
-    #     # Adjust scale for larger environments
-
-    #     # Saving mask frames (for debugging)
-    #     if self.visualise_mask:
-    #         frame = self.board.mask_buffer_time_point * 255.0
-    #         frame = rescale(frame, scale, multichannel=True, anti_aliasing=True)
-    #         self.mask_buffer.append(frame)
-    #         self.board.mask_buffer_point = None
-
-    #     if self.using_gpu:
-    #         arena = copy.copy(self.board.db_visualisation.get() * 255.0)
-    #     else:
-    #         arena = copy.copy(self.board.db_visualisation * 255.0)
-
-    #     arena[0, :, 0] = np.ones(self.env_variables['width']) * 255
-    #     arena[self.env_variables['height'] - 1, :, 0] = np.ones(self.env_variables['width']) * 255
-    #     arena[:, 0, 0] = np.ones(self.env_variables['height']) * 255
-    #     arena[:, self.env_variables['width'] - 1, 0] = np.ones(self.env_variables['height']) * 255
-
-    #     empty_green_eyes = np.zeros((20, self.env_variables["width"], 1))
-    #     eyes = self.fish.get_visual_inputs_new()
-    #     eyes = np.concatenate((eyes[:, :, :1], empty_green_eyes, eyes[:, :, 1:2]),
-    #                             axis=2)  # Note removes second red channel.
-
-    #     frame = np.vstack((arena, np.zeros((50, self.env_variables['width'], 3)), eyes))
-
-    #     this_ac = np.zeros((20, self.env_variables['width'], 3))
-    #     this_ac[:, :, 0] = resize(internal_state, (20, self.env_variables['width']), anti_aliasing=False, order=0) * 255
-    #     this_ac[:, :, 1] = resize(internal_state, (20, self.env_variables['width']), anti_aliasing=False, order=0) * 255
-    #     this_ac[:, :, 2] = resize(internal_state, (20, self.env_variables['width']), anti_aliasing=False, order=0) * 255
-
-    #     frame = np.vstack((frame, np.zeros((20, self.env_variables['width'], 3)), this_ac))
-
-    #     if activations is not None:
-
-    #         adr = [-1, 1]
-    #         for ac in range(len(activations)):
-    #             this_ac = np.zeros((20, self.env_variables['width'], 3))
-    #             pos = (activations[ac] - adr[0]) / (adr[1] - adr[0])
-
-    #             pos[pos < 0] = 0
-    #             pos[pos > 1] = 1
-
-    #             this_ac[:, :, 0] = resize(pos, (20, self.env_variables['width'])) * 255
-    #             this_ac[:, :, 1] = resize(pos, (20, self.env_variables['width'])) * 255
-    #             this_ac[:, :, 2] = resize(pos, (20, self.env_variables['width'])) * 255
-
-    #             frame = np.vstack((frame, np.zeros((20, self.env_variables['width'], 3)), this_ac))
-
-    #     if self.env_variables["show_action_space_usage"]:
-    #         action_display = self.get_action_space_usage_display(frame.shape)
-    #         frame = np.hstack((frame, np.zeros((frame.shape[0], 20, 3)), action_display))
-
-    #     frame = rescale(frame, scale, multichannel=True, anti_aliasing=True)
-
-    #     return frame
-
 
     def build_prey_cloud_walls(self):
         for i in self.prey_cloud_locations:

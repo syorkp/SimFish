@@ -5,8 +5,7 @@ import numpy as np
 class PPOBufferContinuousMultivariate2(BasePPOBuffer):
     """Buffer for full episode for PPO training, and logging."""
 
-    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False,
-                 use_rnd=False):
+    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False):
         super().__init__(gamma, lmbda, batch_size, train_length, assay, debug)
 
         # Buffer for training
@@ -35,7 +34,6 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         # For assay saving
         self.multivariate = True
 
-        self.use_rnd = use_rnd
         self.efference_copy_buffer = []
 
     def reset(self):
@@ -81,10 +79,6 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
             self.critic_rnn_state_buffer.append(critic_rnn_state)
             self.critic_rnn_state_ref_buffer.append(critic_rnn_state_ref)
 
-        if self.use_rnd:  # If using RND
-            self.target_output_buffer.append(target_output[0])
-            self.prediction_error_buffer.append(prediction_error)
-
     def add_logging(self, mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref):
         self.mu_i_buffer.append(mu_i)
         self.si_i_buffer.append(si_i)
@@ -119,28 +113,16 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         advantage_batch = []
         return_batch = []
         value_batch = []
-        if self.use_rnd:
-            target_outputs_batch = []
 
         for slice in slice_steps:
-            if self.use_rnd:
-                if slice == slice_steps[-1]:
-                    observation_slice, internal_state_slice, action_slice, previous_action_slice, \
-                    log_action_probability_slice, advantage_slice, return_slice, value_slice, target_outputs_slice = self.get_batch(
-                        final_batch=True)
-                else:
-                    observation_slice, internal_state_slice, action_slice, previous_action_slice, \
-                    log_action_probability_slice, advantage_slice, return_slice, value_slice, target_outputs_slice = self.get_batch(
-                        final_batch=False)
+            if slice == slice_steps[-1]:
+                observation_slice, internal_state_slice, action_slice, previous_action_slice, \
+                log_action_probability_slice, advantage_slice, return_slice, value_slice = self.get_batch(
+                    final_batch=True)
             else:
-                if slice == slice_steps[-1]:
-                    observation_slice, internal_state_slice, action_slice, previous_action_slice, \
-                    log_action_probability_slice, advantage_slice, return_slice, value_slice = self.get_batch(
-                        final_batch=True)
-                else:
-                    observation_slice, internal_state_slice, action_slice, previous_action_slice, \
-                    log_action_probability_slice, advantage_slice, return_slice, value_slice = self.get_batch(
-                        final_batch=False)
+                observation_slice, internal_state_slice, action_slice, previous_action_slice, \
+                log_action_probability_slice, advantage_slice, return_slice, value_slice = self.get_batch(
+                    final_batch=False)
 
             observation_batch.append(observation_slice)
             internal_state_batch.append(internal_state_slice)
@@ -150,19 +132,10 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
             advantage_batch.append(advantage_slice)
             return_batch.append(return_slice)
             value_batch.append(value_slice)
-            if self.use_rnd:
-                target_outputs_batch.append(target_outputs_slice)
 
-        if self.use_rnd:
-            return np.array(observation_batch), np.array(internal_state_batch), np.array(action_batch), \
-                   np.array(previous_action_batch), np.array(log_action_probability_batch), \
-                   np.array(advantage_batch), np.array(return_batch), np.array(value_batch), np.array(
-                target_outputs_batch), \
-                   slice_steps
-        else:
-            return np.array(observation_batch), np.array(internal_state_batch), np.array(action_batch), \
-                   np.array(previous_action_batch), np.array(log_action_probability_batch), \
-                   np.array(advantage_batch), np.array(return_batch), np.array(value_batch), slice_steps
+        return np.array(observation_batch), np.array(internal_state_batch), np.array(action_batch), \
+               np.array(previous_action_batch), np.array(log_action_probability_batch), \
+               np.array(advantage_batch), np.array(return_batch), np.array(value_batch), slice_steps
 
     def get_batch(self, final_batch):
         """Gets a trace worth of data (or batch, as used previously)"""
@@ -179,9 +152,6 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
             # actor_rnn_state_ref_slice = self.actor_rnn_state_ref_buffer[self.pointer:-1]
             # critic_rnn_state_slice = self.critic_rnn_state_buffer[self.pointer:-1]
             # critic_rnn_state_ref_slice = self.critic_rnn_state_ref_buffer[self.pointer:-1]
-            if self.use_rnd:
-                target_output_slice = np.array(self.pad_slice(np.array(self.target_output_buffer[self.pointer:self.pointer + 50]), self.trace_length))
-
 
         else:
             observation_slice = self.observation_buffer[self.pointer:self.pointer + self.trace_length, :]
@@ -209,19 +179,13 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
             # critic_rnn_state_slice = self.critic_rnn_state_buffer[self.pointer:self.pointer + self.trace_length]
             # critic_rnn_state_ref_slice = self.critic_rnn_state_ref_buffer[self.pointer:self.pointer + self.trace_length]
 
-            if self.use_rnd:
-                target_output_slice = np.array(self.target_output_buffer[self.pointer:self.pointer + self.trace_length])
+            target_output_slice = np.array(self.target_output_buffer[self.pointer:self.pointer + self.trace_length])
 
         self.pointer += self.trace_length
 
-        if self.use_rnd:
-            return observation_slice, internal_state_slice, action_slice, previous_action_slice, \
-                   log_action_probability_slice, advantage_slice, return_slice, value_slice, target_output_slice
-            # actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice
-        else:
-            return observation_slice, internal_state_slice, action_slice, previous_action_slice, \
-                   log_action_probability_slice, advantage_slice, return_slice, value_slice
-            # actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice
+        return observation_slice, internal_state_slice, action_slice, previous_action_slice, \
+               log_action_probability_slice, advantage_slice, return_slice, value_slice
+        # actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice
 
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, background, internal_state_order=None, salt_location=None):
         hdf5_file, assay_group = BasePPOBuffer.save_assay_data(self, assay_id=assay_id, data_save_location=data_save_location,

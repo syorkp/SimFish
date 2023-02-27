@@ -68,9 +68,9 @@ class FieldOfView:
 class DrawingBoard:
 
     def __init__(self, arena_width, arena_height, uv_decay_rate, red_decay_rate, photoreceptor_rf_size, using_gpu,
-                 visualise_mask, prey_size=4,
+                 prey_size=4,
                  predator_size=100, visible_scatter=0.3, background_grating_frequency=50, dark_light_ratio=0.0,
-                 dark_gain=0.01, light_gain=1.0, occlusion_gain=(1.0, 1.0, 1.0),
+                 dark_gain=0.01, light_gain=1.0,
                  light_gradient=0, max_visual_distance=1500, show_background=True):
 
         self.using_gpu = using_gpu
@@ -107,13 +107,6 @@ class DrawingBoard:
         self.predator_size = predator_size * 2
         self.predator_radius = predator_size
 
-        self.occlusion_gain = occlusion_gain
-
-        # if self.red_occlusion_gain != self.uv_occlusion_gain or self.uv_occlusion_gain != self.red2_occlusion_gain:
-        #     self.differential_occlusion_gain = True
-        # else:
-        #     self.differential_occlusion_gain = False
-
         # self.xp, self.yp = self.chosen_math_library.arange(self.width), self.chosen_math_library.arange(self.height)
 
         if self.using_gpu:
@@ -130,7 +123,6 @@ class DrawingBoard:
         self.compute_repeated_computations()
 
         # For debugging purposes
-        self.visualise_mask = visualise_mask
         self.mask_buffer_time_point = None
 
         # For obstruction mask (reset each time is called).
@@ -562,9 +554,9 @@ class DrawingBoard:
         occluded = (self.empty_mask[:, :, 0] == 0.0)
         O = self.chosen_math_library.repeat(self.empty_mask, 3, 2)
         # O = self.chosen_math_library.concatenate((self.empty_mask, self.empty_mask, self.empty_mask), axis=2)
-        O[:, :, 0] += occluded * self.occlusion_gain[0]
-        O[:, :, 1] += occluded * self.occlusion_gain[1]
-        O[:, :, 2] += occluded * self.occlusion_gain[2]
+        O[:, :, 0] += occluded
+        O[:, :, 1] += occluded
+        O[:, :, 2] += occluded
 
         return O
 

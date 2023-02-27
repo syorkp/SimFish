@@ -74,37 +74,24 @@ class BaseDQN:
     def init_states(self):
         # Init states for RNN
         print("Loading states")
-        if "maintain_state" in self.learning_params:
-            if self.learning_params["maintain_state"]:
-                # IF SAVE PRESENT
-                if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
-                    with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
-                        print("Successfully loaded previous state.")
-                        data = json.load(f)
-                        num_rnns = len(data.keys()) / 4
-                        self.init_rnn_state = tuple(
-                            (np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for
-                            shape in range(int(num_rnns)))
-                        self.init_rnn_state_ref = tuple(
-                            (np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"]))
-                            for shape in range(int(num_rnns)))
-
-                    return
-
-
-        if self.environment_params["use_dynamic_network"]:
+        # IF SAVE PRESENT
+        if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
+            with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
+                print("Successfully loaded previous state.")
+                data = json.load(f)
+                num_rnns = len(data.keys()) / 4
+                self.init_rnn_state = tuple(
+                    (np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for
+                    shape in range(int(num_rnns)))
+                self.init_rnn_state_ref = tuple(
+                    (np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"]))
+                    for shape in range(int(num_rnns)))
+        else:
             rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
             self.init_rnn_state = tuple(
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
             self.init_rnn_state_ref = tuple(
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
-        else:
-            self.init_rnn_state = (
-                np.zeros([1, self.main_QN.rnn_dim]),
-                np.zeros([1, self.main_QN.rnn_dim]))
-            self.init_rnn_state_ref = (
-                np.zeros([1, self.main_QN.rnn_dim]),
-                np.zeros([1, self.main_QN.rnn_dim]))
 
     def create_network(self):
         """
@@ -217,9 +204,8 @@ class BaseDQN:
                         len(self.experience_buffer.buffer) > self.batch_size:
                     self.train_networks()
             if d:
-                if self.learning_params["maintain_state"]:
-                    self.init_rnn_state = rnn_state
-                    self.init_rnn_state_ref = rnn_state_ref
+                self.init_rnn_state = rnn_state
+                self.init_rnn_state_ref = rnn_state_ref
                 break
         # Add the episode to the experience buffer
         if self.debug:
@@ -477,33 +463,20 @@ class BaseDQN:
         """
         update_target(self.target_ops, self.sess)
         # Reset the recurrent layer's hidden state
-        if self.learning_params["maintain_state"]:
-            rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
+        rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
 
-            # Load the latest saved states... Note is technically incorrect.
-            state_train = copy.copy(self.init_rnn_state)
-            state_train = tuple(
-                (np.tile(state_train[i][0], (self.learning_params['batch_size'], 1)),
-                 np.tile(state_train[i][1], (self.learning_params['batch_size'], 1)))
-                for i, shape in enumerate(rnn_state_shapes))
+        # Load the latest saved states... Note is technically incorrect.
+        state_train = copy.copy(self.init_rnn_state)
+        state_train = tuple(
+            (np.tile(state_train[i][0], (self.learning_params['batch_size'], 1)),
+             np.tile(state_train[i][1], (self.learning_params['batch_size'], 1)))
+            for i, shape in enumerate(rnn_state_shapes))
 
-            # TODO: TEST CHANGE HERE:
-            state_train_ref = copy.copy(self.init_rnn_state_ref)
-            state_train_ref = tuple(
-                (np.tile(state_train_ref[i][0], (self.learning_params['batch_size'], 1)),
-                 np.tile(state_train_ref[i][1], (self.learning_params['batch_size'], 1)))
-                for i, shape in enumerate(rnn_state_shapes))
-            # TODO: END
-
-        else:
-
-            rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
-            state_train = tuple(
-                (np.zeros([self.learning_params['batch_size'], shape]),
-                 np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
-            # state_train_ref = tuple(
-            #     (np.zeros([self.learning_params['batch_size'], shape]),
-            #      np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
+        state_train_ref = copy.copy(self.init_rnn_state_ref)
+        state_train_ref = tuple(
+            (np.tile(state_train_ref[i][0], (self.learning_params['batch_size'], 1)),
+             np.tile(state_train_ref[i][1], (self.learning_params['batch_size'], 1)))
+            for i, shape in enumerate(rnn_state_shapes))
 
         # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
         train_batch = self.experience_buffer.sample(self.learning_params['batch_size'],

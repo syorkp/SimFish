@@ -54,8 +54,6 @@ class Fish:
         self.verg_angle = env_variables['eyes_verg_angle'] * (np.pi / 180)
         self.retinal_field = env_variables['visual_field'] * (np.pi / 180)
         self.conv_state = 0
-        self.isomerization_probability = self.env_variables['isomerization_frequency'] / self.env_variables[
-            'sim_steps_per_second']
 
         max_visual_distance = np.absolute(np.log(0.001)/self.env_variables["decay_rate"])
 

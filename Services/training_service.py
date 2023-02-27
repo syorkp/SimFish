@@ -77,9 +77,6 @@ class TrainingService(BaseService):
         self.last_episodes_predators_avoided = []
         self.last_episodes_sand_grains_bumped = []
 
-        # For debugging show mask
-        self.visualise_mask = self.environment_params['visualise_mask']
-
         # Determining whether RNN exists in network
         rnns = [layer for layer in self.learning_params["base_network_layers"].keys() if
                 self.learning_params["base_network_layers"][layer][0] == "dynamic_rnn"] + \
@@ -279,9 +276,7 @@ class TrainingService(BaseService):
             self.configuration_index = int(next_point)
             self.switched_configuration = True
 
-            if "maintain_state" in self.learning_params:
-                if self.learning_params["maintain_state"]:
-                    self.save_rnn_state()
+            self.save_rnn_state()
             # Save the model
             self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
             self.checkpoint_steps = self.total_steps
@@ -324,7 +319,7 @@ class TrainingService(BaseService):
                 self.removed_layers = removed_layers
 
             # Reset sigma progression
-            if self.continuous_actions and self.environment_params["sigma_scaffolding"]:
+            if self.continuous_actions:
                 self.sigma_total_steps = 0
 
             if self.learning_params["epsilon_greedy"]:
@@ -568,17 +563,6 @@ class TrainingService(BaseService):
             )
             self.writer.add_summary(episode_duration_summary, self.episode_number)
 
-        # Periodically save the model.
-        # if self.episode_number % self.learning_params['network_saving_frequency'] == 0:
-        # checkpoint = tf.train.get_checkpoint_state(self.model_location)
-        # if hasattr(checkpoint, "model_checkpoint_path"):
-        #     checkpoint_path = checkpoint.model_checkpoint_path
-        #     checkpoint_steps = re.sub('\D', '', checkpoint_path)
-        # else:
-        #     checkpoint_steps = self.learning_params['network_saving_frequency_steps']
-
-        # print(f"CHK: {checkpoint_steps}")
-        # print(f"Total steps: {self.total_steps}")
 
         if "network_saving_frequency_steps" in self.learning_params:
             if self.total_steps - int(self.checkpoint_steps) >= self.learning_params['network_saving_frequency_steps']:
@@ -586,16 +570,18 @@ class TrainingService(BaseService):
                 # IF the steps interval is sufficient, will save the network according to episode number, so matches rnn
                 # state and episode number initialisation
                 # print(f"mean time: {np.mean(self.training_times)}")
-                if self.learning_params["maintain_state"]:
-                    self.save_rnn_state()
+                self.save_rnn_state()
                 # Save the model
                 self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
                 self.checkpoint_steps = self.total_steps
+                output_data = {"epsilon": self.epsilon, "episode_number": self.episode_number,
+                               "total_steps": self.total_steps, "configuration_index": self.configuration_index}
+                with open(f"{self.model_location}/saved_parameters.json", "w") as file:
+                    json.dump(output_data, file)
                 print("Saved Model")
         else:
             if self.episode_number % self.learning_params["summaryLength"] == 0 and self.episode_number != 0:
-                # if self.learning_params["maintain_state"]:
-                #     self.save_rnn_state()
+
                 # Save the model
                 self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
 

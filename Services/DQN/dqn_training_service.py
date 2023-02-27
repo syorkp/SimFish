@@ -227,12 +227,6 @@ Total episode reward: {total_episode_reward}\n""", flush=True)
                                                                 simple_value=get_normalised_turn_chain_metric_discrete(all_actions))])
         self.writer.add_summary(turn_chain_summary, self.episode_number)
 
-        # Save the parameters to be carried over.
-        if self.episode_number % self.learning_params['network_saving_frequency'] == 0:
-            output_data = {"epsilon": self.epsilon, "episode_number": self.episode_number, "total_steps": self.total_steps, "configuration_index": self.configuration_index}
-            with open(f"{self.model_location}/saved_parameters.json", "w") as file:
-                json.dump(output_data, file)
-
         buffer_array = np.array(experience)
         experience = list(zip(buffer_array))
         self.experience_buffer.add(experience)

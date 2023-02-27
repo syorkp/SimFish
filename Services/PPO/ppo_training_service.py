@@ -92,7 +92,7 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
         self.batch_size = self.learning_params["batch_size"]
         self.trace_length = self.learning_params["trace_length"]
 
-        self.multivariate = self.learning_params["multivariate"]
+        self.multivariate = True
 
         self.sb_emulator = True
 
@@ -102,7 +102,6 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
                                                        train_length=self.learning_params["trace_length"],
                                                        assay=False,
                                                        debug=False,
-                                                       use_rnd=self.learning_params["use_rnd"]
                                                        )
 
         # IF not saving regular gifs, instead be ready to save the environmental data underlying GIFs.
@@ -126,7 +125,6 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
         self.step_drop = (self.learning_params['startE'] - self.learning_params['endE']) / self.learning_params[
             'anneling_steps']
 
-        self.use_rnd = self.learning_params["use_rnd"]
 
         # Whether or not to split the networks
         if "separate_networks" in self.learning_params:
@@ -204,9 +202,6 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
         # Train the network on the episode buffer
         self.buffer.calculate_advantages_and_returns()
 
-        if self.use_rnd:
-            self.buffer.update_rewards_rnd()
-
         # if self.multivariate:
         #     if self.separate_networks:
         #         ContinuousPPO.train_network_multivariate2_split_networks(self)
@@ -232,45 +227,6 @@ Total episode reward: {self.total_episode_reward}\n""", flush=True)
 
     def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
                   rnn_state_critic_ref):
-        # if self.multivariate:
-        #     if self.learning_params["beta_distribution"]:
-        #         if self.full_logs:
-        #             return self._step_loop_multivariate_beta_sbe_full_logs(o, internal_state, a, rnn_state_actor,
-        #                                                               rnn_state_actor_ref, rnn_state_critic,
-        #                                                               rnn_state_critic_ref)
-        #         else:
-        #             return self._step_loop_multivariate_beta_sbe_reduced_logs(o, internal_state, a, rnn_state_actor,
-        #                                                                  rnn_state_actor_ref, rnn_state_critic,
-        #                                                                  rnn_state_critic_ref)
-        #     else:
-        #         if self.separate_networks:
-        #             if self.full_logs:
-        #                 return self._step_loop_multivariate_sbe_sn_full_logs(o, internal_state, a, rnn_state_actor,
-        #                                                                   rnn_state_actor_ref, rnn_state_critic,
-        #                                                                   rnn_state_critic_ref)
-        #             else:
-        #                 return self._step_loop_multivariate_sbe_sn_reduced_logs(o, internal_state, a, rnn_state_actor,
-        #                                                                      rnn_state_actor_ref, rnn_state_critic,
-        #                                                                      rnn_state_critic_ref)
-        #         else:
-        #             if self.full_logs:
-        #                 return self._step_loop_multivariate_sbe_full_logs(o, internal_state, a, rnn_state_actor,
-        #                                                                   rnn_state_actor_ref, rnn_state_critic,
-        #                                                                   rnn_state_critic_ref)
-        #             else:
-        #                 return self._step_loop_multivariate_sbe_reduced_logs(o, internal_state, a, rnn_state_actor,
-        #                                                                      rnn_state_actor_ref, rnn_state_critic,
-        #                                                                      rnn_state_critic_ref)
-        # else:
-        #     if self.full_logs:
-        #         return self._step_loop_full_logs(o, internal_state, a, rnn_state_actor,
-        #                                                   rnn_state_actor_ref, rnn_state_critic,
-        #                                                   rnn_state_critic_ref)
-        #     else:
-        #         return self._step_loop_reduced_logs(o, internal_state, a, rnn_state_actor,
-        #                                                      rnn_state_actor_ref, rnn_state_critic,
-        #                                                      rnn_state_critic_ref)
-
         if self.full_logs:
             return self._step_loop_full_logs(o, internal_state, a, rnn_state_actor,
                                              rnn_state_actor_ref, rnn_state_critic,

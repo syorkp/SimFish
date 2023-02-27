@@ -135,7 +135,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                          modification=modification
                          )
 
-        self.multivariate = self.learning_params["multivariate"]
+        self.multivariate = True
 
         # Buffer for saving results of assay
         self.buffer = PPOBufferContinuousMultivariate2(gamma=0.99,
@@ -148,7 +148,6 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
 
         self.ppo_version = ContinuousPPO
-        self.use_rnd = self.learning_params["use_rnd"]
         self.sb_emulator = sb_emulator
         self.e = self.learning_params["startE"] / 2
         self.epsilon_greedy = self.learning_params["epsilon_greedy"]

@@ -26,8 +26,6 @@ class Eye:
         self.dark_gain = env_variables['dark_gain']
         self.light_gain = env_variables['light_gain']
         self.bkg_scatter = env_variables['bkg_scatter']
-        self.isomerization_probability = env_variables['isomerization_frequency'] / env_variables[
-            'sim_steps_per_second']
         self.dark_col = dark_col
         self.dist = None
         self.theta = None
@@ -40,7 +38,7 @@ class Eye:
         self.scattering_coef = 0.01  # TODO: This is a parameter that needs to added to the config file.
         self.scatter_sigma_0 = 0  # TODO: This is a parameter that needs to added to the config file.
 
-        self.sz_rf_spacing = 0.04  # 2.3 deg. TODO: This is a parameter that needs to added to the config file.
+        self.sz_rf_spacing = 0.04  # 2.3 deg. TODO: This is a parameter that needs to added to tdihe config file.
         self.sz_size = 1.047  # 60 deg. TODO: This is a parameter that needs to added to the config file.
         self.sz_oversampling_factor = 2.5  # TODO: This is a parameter that needs to added to the config file.
         self.periphery_rf_spacing = self.sz_rf_spacing * self.sz_oversampling_factor
@@ -52,8 +50,6 @@ class Eye:
                                                    self.ang_bin)  # this is the angle range for the projection
 
         self.filter_bins = 20  # this is the number of bins for the scattering filter
-
-        self.shared_photoreceptor_channels = False
 
         self.uv_photoreceptor_rf_size = env_variables['uv_photoreceptor_rf_size']
         self.red_photoreceptor_rf_size = env_variables['red_photoreceptor_rf_size']
@@ -128,30 +124,22 @@ class Eye:
         # plt.ion()
 
     def get_repeated_computations(self):
-        if self.shared_photoreceptor_channels:
-            channel_angles_surrounding = self.chosen_math_library.expand_dims(self.photoreceptor_angles, 1)
-            channel_angles_surrounding = self.chosen_math_library.repeat(channel_angles_surrounding, self.n, 1)
-            rf_offsets = self.chosen_math_library.linspace(-self.photoreceptor_rf_size / 2,
-                                                           self.photoreceptor_rf_size / 2, num=self.n)
-            self.channel_angles_surrounding = channel_angles_surrounding + rf_offsets
 
-            n_channels_in_computation_axis_0 = self.max_photoreceptor_num
-        else:
-            # UV
-            channel_angles_surrounding = self.chosen_math_library.expand_dims(self.uv_photoreceptor_angles, 1)
-            channel_angles_surrounding = self.chosen_math_library.repeat(channel_angles_surrounding, self.n, 1)
-            rf_offsets = self.chosen_math_library.linspace(-self.uv_photoreceptor_rf_size / 2,
-                                                           self.uv_photoreceptor_rf_size / 2, num=self.n)
-            self.channel_angles_surrounding = channel_angles_surrounding + rf_offsets
+        # UV
+        channel_angles_surrounding = self.chosen_math_library.expand_dims(self.uv_photoreceptor_angles, 1)
+        channel_angles_surrounding = self.chosen_math_library.repeat(channel_angles_surrounding, self.n, 1)
+        rf_offsets = self.chosen_math_library.linspace(-self.uv_photoreceptor_rf_size / 2,
+                                                       self.uv_photoreceptor_rf_size / 2, num=self.n)
+        self.channel_angles_surrounding = channel_angles_surrounding + rf_offsets
 
-            # Red
-            channel_angles_surrounding_2 = self.chosen_math_library.expand_dims(self.red_photoreceptor_angles, 1)
-            channel_angles_surrounding_2 = self.chosen_math_library.repeat(channel_angles_surrounding_2, self.n, 1)
-            rf_offsets_2 = self.chosen_math_library.linspace(-self.red_photoreceptor_rf_size / 2,
-                                                             self.red_photoreceptor_rf_size / 2, num=self.n)
-            self.channel_angles_surrounding_red = channel_angles_surrounding_2 + rf_offsets_2
+        # Red
+        channel_angles_surrounding_2 = self.chosen_math_library.expand_dims(self.red_photoreceptor_angles, 1)
+        channel_angles_surrounding_2 = self.chosen_math_library.repeat(channel_angles_surrounding_2, self.n, 1)
+        rf_offsets_2 = self.chosen_math_library.linspace(-self.red_photoreceptor_rf_size / 2,
+                                                         self.red_photoreceptor_rf_size / 2, num=self.n)
+        self.channel_angles_surrounding_red = channel_angles_surrounding_2 + rf_offsets_2
 
-            n_channels_in_computation_axis_0 = self.total_photoreceptor_num
+        n_channels_in_computation_axis_0 = self.total_photoreceptor_num
 
         # Same for both, just requires different dimensions
         mul_for_hypothetical = self.chosen_math_library.array([[1, 0], [0, 1], [1, 0], [0, 1]])
@@ -593,17 +581,6 @@ class Eye:
         #
         #
         #     self.red2_signal_fail.append(snr[1])
-
-        if self.env_variables["isomerization_frequency"] > 0:
-            dark_noise_events = self.chosen_math_library.random.choice([0, 1], size=readings.size,
-                                                                       p=[1 - self.isomerization_probability,
-                                                                          self.isomerization_probability]
-                                                                       ).astype(float)
-            variability = self.chosen_math_library.random.rand(readings.size)
-            dark_noise_events *= variability
-            dark_noise_events = dark_noise_events * self.env_variables['max_isomerization_size']
-            dark_noise_events = self.chosen_math_library.reshape(dark_noise_events, readings.shape)
-            photons += dark_noise_events
 
         return photons
 

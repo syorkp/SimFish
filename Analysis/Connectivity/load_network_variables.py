@@ -4,14 +4,8 @@ import json
 
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
-from Networks.PPO.proximal_policy_optimizer_continuous import PPONetworkActor
-from Networks.PPO.proximal_policy_optimizer_continuous_multivariate import PPONetworkActorMultivariate
-from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator import PPONetworkActorMultivariate2
-from Networks.PPO.proximal_policy_optimizer_continuous_beta_sb_emulator import PPONetworkActorMultivariateBetaNormal2
 from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator_dynamic import PPONetworkActorMultivariate2Dynamic
-from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator_split_networks import PPONetworkActorMultivariate2A, \
-    PPONetworkActorMultivariate2V
-from Networks.DQN.q_network import QNetwork
+
 from Networks.DQN.q_network_dynamic import QNetworkDynamic
 
 tf.disable_v2_behavior()
@@ -119,8 +113,6 @@ def create_ppo_network(simulation, environment_params, learning_params, multivar
                                                                          'max_angle_change'],
                                                                      clip_param=environment_params[
                                                                          'clip_param'],
-                                                                     input_sigmas=learning_params[
-                                                                         'input_sigmas'],
                                                                      base_network_layers=learning_params[
                                                                          'base_network_layers'],
                                                                      modular_network_layers=learning_params[

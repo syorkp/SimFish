@@ -141,7 +141,6 @@ class DQNAssayService(AssayService, BaseDQN):
 
         self.buffer = DQNAssayBuffer()
 
-        self.use_rnd = self.learning_params["use_rnd"]
         self.full_reafference = full_reafference
 
     def run(self):

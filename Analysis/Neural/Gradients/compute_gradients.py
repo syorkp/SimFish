@@ -166,18 +166,16 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
 
         num_target_units = get_num_target_units(params, network, target_layer)
 
-        if environment_params["use_dynamic_network"]:
-            print("Error, dynamic version not built")
-        else:
-            for i in range(num_target_units):
-                particular_unit = get_target_unit(network, target_layer, i)
+        print("Error, dynamic version not built")
+        for i in range(num_target_units):
+            particular_unit = get_target_unit(network, target_layer, i)
 
-                unit_gradients_obs[f"Unit {i}"] = tf.gradients(particular_unit, network.observation)
-                unit_gradients_internal_state[f"Unit {i}"] = tf.gradients(particular_unit, network.internal_state)
-                unit_gradients_efference[f"Unit {i}"] = tf.gradients(particular_unit, network.prev_actions_one_hot)
-                if full_reafference:
-                    unit_gradients_efference_cons[f"Unit {i}"] = tf.gradients(particular_unit, network.prev_action_consequences)
-                unit_gradients_rnn_state[f"Unit {i}"] = tf.gradients(particular_unit, network.rnn_state_in)
+            unit_gradients_obs[f"Unit {i}"] = tf.gradients(particular_unit, network.observation)
+            unit_gradients_internal_state[f"Unit {i}"] = tf.gradients(particular_unit, network.internal_state)
+            unit_gradients_efference[f"Unit {i}"] = tf.gradients(particular_unit, network.prev_actions_one_hot)
+            if full_reafference:
+                unit_gradients_efference_cons[f"Unit {i}"] = tf.gradients(particular_unit, network.prev_action_consequences)
+            unit_gradients_rnn_state[f"Unit {i}"] = tf.gradients(particular_unit, network.rnn_state_in)
 
         unit_gradients_obs_vals = [unit_gradients_obs[key][0] for key in unit_gradients_obs.keys()]
         unit_gradients_internal_state_vals = [unit_gradients_internal_state[key][0] for key in
@@ -316,18 +314,16 @@ def compute_average_gradient_many_inputs(model_name, observation, energy_state, 
 
         num_target_units = get_num_target_units(params, network, target_layer)
 
-        if environment_params["use_dynamic_network"]:
-            print("Error, dynamic version not built")
-        else:
-            for i in range(num_target_units):
-                particular_unit = get_target_unit(network, target_layer, i)
+        print("Error, dynamic version not built")
+        for i in range(num_target_units):
+            particular_unit = get_target_unit(network, target_layer, i)
 
-                unit_gradients_obs[f"Unit {i}"] = tf.gradients(particular_unit, network.observation)
-                unit_gradients_internal_state[f"Unit {i}"] = tf.gradients(particular_unit, network.internal_state)
-                unit_gradients_efference[f"Unit {i}"] = tf.gradients(particular_unit, network.prev_actions_one_hot)
-                if full_reafference:
-                    unit_gradients_efference_cons[f"Unit {i}"] = tf.gradients(particular_unit, network.prev_action_consequences)
-                unit_gradients_rnn_state[f"Unit {i}"] = tf.gradients(particular_unit, network.rnn_state_in)
+            unit_gradients_obs[f"Unit {i}"] = tf.gradients(particular_unit, network.observation)
+            unit_gradients_internal_state[f"Unit {i}"] = tf.gradients(particular_unit, network.internal_state)
+            unit_gradients_efference[f"Unit {i}"] = tf.gradients(particular_unit, network.prev_actions_one_hot)
+            if full_reafference:
+                unit_gradients_efference_cons[f"Unit {i}"] = tf.gradients(particular_unit, network.prev_action_consequences)
+            unit_gradients_rnn_state[f"Unit {i}"] = tf.gradients(particular_unit, network.rnn_state_in)
 
         unit_gradients_obs_vals = [unit_gradients_obs[key][0] for key in unit_gradients_obs.keys()]
         unit_gradients_internal_state_vals = [unit_gradients_internal_state[key][0] for key in

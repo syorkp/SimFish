@@ -18,7 +18,7 @@ def display_pr_coverage(model_name):
                                  uv_decay_rate=env_variables['decay_rate'],
                          red_decay_rate=env_variables['decay_rate'],
                          photoreceptor_rf_size=max_photoreceptor_rf_size,
-                                 using_gpu=False, visualise_mask=env_variables['visualise_mask'],
+                                 using_gpu=False,
                                  prey_size=env_variables['prey_size'],
                                  predator_size=env_variables['predator_size'],
                                  visible_scatter=env_variables['bkg_scatter'],
@@ -27,7 +27,6 @@ def display_pr_coverage(model_name):
                                  dark_light_ratio=env_variables['dark_light_ratio'],
                                  dark_gain=env_variables['dark_gain'],
                                  light_gain=env_variables['light_gain'],
-                                 occlusion_gain=[env_variables['red_occlusion_gain'], env_variables['uv_occlusion_gain'], env_variables['red2_occlusion_gain']]
                                  )
 
     dark_col = int(env_variables['width'] * env_variables['dark_light_ratio'])
