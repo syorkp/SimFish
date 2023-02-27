@@ -75,14 +75,14 @@ class DynamicBaseNetwork:
             if algorithm == "dqn":
                 self.reflected_network_graph = {"observation": self.reshaped_observation,
                                                 "internal_state": self.internal_state,
-                                                "prev_actions": self.prev_actions_one_hot,
+                                                "prev_actions": tf.reverse(self.prev_actions_one_hot, [1]),
                                                 "prev_action_impulse": self.prev_action_impulse,
                                                 "prev_action_angle": self.prev_action_angle,
                                                 }
             else:
                 self.reflected_network_graph = {"observation": self.reshaped_observation,
                                                 "internal_state": self.internal_state,
-                                                "prev_actions": self.prev_actions}
+                                                "prev_actions": tf.reverse(self.prev_actions, [1])}
             self.initialize_network(copy.copy(base_network_layers), copy.copy(modular_network_layers), copy.copy(ops),
                                     connectivity, self.reflected_network_graph, reflected=True, reuse_eyes=reuse_eyes)
 
