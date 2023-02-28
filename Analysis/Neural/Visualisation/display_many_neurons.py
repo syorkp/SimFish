@@ -424,7 +424,7 @@ if __name__ == "__main__":
 # #                      ["Prey-Towards", "Prey-Away", "Predator-Towards", "Predator-Away"])
 #
 #
-# # No vs red background
+# # No vs red sediment
 # # plot_multiple_traces([unit_activity1a, unit_activity1],
 # #                      [stimulus_data1a, stimulus_data1],
 # #                      ["No Background", "Red Background"])

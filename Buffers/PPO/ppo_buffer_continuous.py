@@ -187,9 +187,9 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
                log_action_probability_slice, advantage_slice, return_slice, value_slice
         # actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice
 
-    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, background, internal_state_order=None, salt_location=None):
+    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, sediment, internal_state_order=None, salt_location=None):
         hdf5_file, assay_group = BasePPOBuffer.save_assay_data(self, assay_id=assay_id, data_save_location=data_save_location,
-                                                               assay_configuration_id=assay_configuration_id, background=background,
+                                                               assay_configuration_id=assay_configuration_id, sediment=sediment,
                                                                internal_state_order=internal_state_order,
                                                                salt_location=salt_location)
 

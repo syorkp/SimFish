@@ -15,7 +15,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     """
 
     def __init__(self, env_variables, stimuli, realistic_bouts, using_gpu, tethered=True, set_positions=False, moving=False,
-                 random=False, reset_each_step=False, reset_interval=1, background=None, draw_screen=False, assay_all_details=None):
+                 random=False, reset_each_step=False, reset_interval=1, sediment=None, draw_screen=False, assay_all_details=None):
         super().__init__(env_variables, draw_screen, using_gpu)
 
         if tethered:
@@ -59,7 +59,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
 
         self.edge_col = self.space.add_collision_handler(1, 3)
         self.edge_col.begin = self.touch_wall
-        self.background = background
+        self.sediment = sediment
         self.pred_fish_col = self.space.add_collision_handler(3, 5)
         self.pred_fish_col.begin = self.no_collision
         self.prey_fish_col = self.space.add_collision_handler(3, 2)

@@ -69,9 +69,9 @@ class DrawingBoard:
 
     def __init__(self, arena_width, arena_height, uv_decay_rate, red_decay_rate, photoreceptor_rf_size, using_gpu,
                  prey_size=4,
-                 predator_size=100, visible_scatter=0.3, background_grating_frequency=50, dark_light_ratio=0.0,
+                 predator_size=100, visible_scatter=0.3, sediment_grating_frequency=50, dark_light_ratio=0.0,
                  dark_gain=0.01, light_gain=1.0,
-                 light_gradient=0, max_visual_distance=1500, show_background=True):
+                 light_gradient=0, max_visual_distance=1500, show_sediment=True):
 
         self.using_gpu = using_gpu
 
@@ -98,7 +98,7 @@ class DrawingBoard:
         self.erase(visible_scatter)
         #        self.local_db = self.chosen_math_library.zeros((self.local_dim, self.local_dim, 3))
 
-        self.global_background_grating = self.get_background_grating(background_grating_frequency)
+        self.global_sediment_grating = self.get_sediment(sediment_grating_frequency)
         self.global_luminance_mask = self.get_luminance_mask(dark_light_ratio, dark_gain)
         self.local_scatter, self.local_scatter_base = self.get_local_scatter()
         
@@ -128,14 +128,14 @@ class DrawingBoard:
         # For obstruction mask (reset each time is called).
         self.empty_mask = self.chosen_math_library.ones((self.local_dim, self.local_dim, 1), dtype=np.float64)
 
-        self.show_background = show_background
+        self.show_sediment = show_sediment
 
         self.FOV = FieldOfView(self.local_dim, self.max_visual_distance, self.width, self.height)
 
     def get_FOV_size(self):
         return self.local_dim, self.local_dim
 
-    def get_background_grating(self, frequency, linear=False):
+    def get_sediment(self, frequency, linear=False):
         if linear:
             return self.linear_texture(frequency)
         else:
@@ -693,7 +693,7 @@ class DrawingBoard:
 
     def reset(self):
         """To be called at start of episode"""
-        self.global_background_grating = self.get_background_grating(0)
+        self.global_sediment_grating = self.get_sediment(0)
 
         # Dont need to call each ep?
         # self.local_scatter = self.get_local_scatter()
@@ -832,71 +832,23 @@ class DrawingBoard:
                                                 np.all(sand_grain_pos >= 0, axis=1)), axis=0)]
 
         if len(prey_pos) > 0:
-            # px = np.round(np.array([pr.position[0] for pr in self.prey_bodies])).astype(int)
-            # py = np.round(np.array([pr.position[1] for pr in self.prey_bodies])).astype(int)
             rrs, ccs = self.multi_circles(prey_pos[:, 0], prey_pos[:, 1], self.prey_size)
             rrs = np.clip(rrs, 0, self.local_dim - 1)
             ccs = np.clip(ccs, 0, self.local_dim - 1)
 
-            #            try:
-            #                if visualisation:
-            #                    self.board.db_visualisation[rrs, ccs] = self.prey_shapes[0].color
-            #                else:
-            #                    self.board.db[rrs, ccs] = self.prey_shapes[0].color
-
             self.local_db[rrs, ccs, 1] = 1
-
-            # except IndexError:
-            #     print(f"Index Error for: PX: {max(rrs.flatten())}, PY: {max(ccs.flatten())}")
-            #     if max(rrs.flatten()) > self.env_variables['height']:
-            #         lost_index = np.argmax(py)
-            #     elif max(ccs.flatten()) > self.env_variables['width']:
-            #         lost_index = np.argmax(px)
-            #     else:
-            #         lost_index = 0
-            #         print(f"Fix needs to be tuned: PX: {max(px)}, PY: {max(py)}")
-            #     self.prey_bodies.pop(lost_index)
-            #     self.prey_shapes.pop(lost_index)
-            #     self.draw_shapes(visualisation=visualisation)
 
         if len(sand_grain_pos) > 0:
             rrs, ccs = self.multi_circles(sand_grain_pos[:, 0], sand_grain_pos[:, 1], self.prey_size)
             self.board.db[rrs, ccs] = (0, 0, 1)
 
-        # for i, pr in enumerate(self.predator_bodies):
-        #     self.board.circle(pr.position, self.env_variables['predator_size'], self.predator_shapes[i].color, visualisation)
+    def draw_sediment(self, FOV):  # slice the global sediment for current field of view
 
-        # if self.predator_body is not None:
-        #     if self.first_attack:
-        #         self.board.circle(self.predator_body.position, self.loom_predator_current_size,
-        #                           self.predator_shape.color, visualisation)
-        #     else:
-        #         self.board.circle(self.predator_body.position, self.env_variables['predator_size'],
-        #                           self.predator_shape.color, visualisation)
-
-        # # For displaying location of salt source
-        # if visualisation:
-        #     if self.env_variables["salt"] and self.env_variables["max_salt_damage"] > 0:
-        #         self.board.show_salt_location(self.salt_location)
-
-        # # For creating a screen around prey to test.
-        # if self.background:
-        #     if self.background == "Green":
-        #         colour = (0, 1, 0)
-        #     elif self.background == "Red":
-        #         colour = (1, 0, 0)
-        #     else:
-        #         print("Invalid Background Colour")
-        #         return
-        #     self.board.create_screen(self.fish.body.position, self.env_variables["max_vis_dist"], colour)
-
-    def draw_background(self, FOV):  # slice the global background for current field of view
-
-        background_slice = self.global_background_grating[FOV['enclosed_fov'][0]:FOV['enclosed_fov'][1],
+        sediment_slice = self.global_sediment_grating[FOV['enclosed_fov'][0]:FOV['enclosed_fov'][1],
                            FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], 0]
 
         self.local_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
-        FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], 2] = background_slice
+        FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], 2] = sediment_slice
 
     def get_field_of_view(self, fish_location):  # use field location to get field of view
         # top bottom left right
@@ -906,21 +858,21 @@ class DrawingBoard:
                     fish_location[0] - self.max_visual_distance,
                     fish_location[0] + self.max_visual_distance + 1]
 
-        # check if field of view is within bounds of global background
+        # check if field of view is within bounds of global sediment_slice
         local_coordinates_fov = [0, self.local_dim, 0, self.local_dim]
         enclosed_fov = full_fov.copy()
         if full_fov[0] < 0:
             enclosed_fov[0] = 0
             local_coordinates_fov[0] = -full_fov[0]
-        if full_fov[1] > self.global_background_grating.shape[0]:
-            enclosed_fov[1] = self.global_background_grating.shape[0]
-            local_coordinates_fov[1] = self.local_dim - (full_fov[1] - self.global_background_grating.shape[0])
+        if full_fov[1] > self.global_sediment_grating.shape[0]:
+            enclosed_fov[1] = self.global_sediment_grating.shape[0]
+            local_coordinates_fov[1] = self.local_dim - (full_fov[1] - self.global_sediment_grating.shape[0])
         if full_fov[2] < 0:
             enclosed_fov[2] = 0
             local_coordinates_fov[2] = -full_fov[2]
-        if full_fov[3] > self.global_background_grating.shape[1]:
-            enclosed_fov[3] = self.global_background_grating.shape[1]
-            local_coordinates_fov[3] = self.local_dim - (full_fov[3] - self.global_background_grating.shape[1])
+        if full_fov[3] > self.global_sediment_grating.shape[1]:
+            enclosed_fov[3] = self.global_sediment_grating.shape[1]
+            local_coordinates_fov[3] = self.local_dim - (full_fov[3] - self.global_sediment_grating.shape[1])
 
         return {'full_fov': full_fov, 'enclosed_fov': enclosed_fov, 'local_coordinates_fov': local_coordinates_fov}
 

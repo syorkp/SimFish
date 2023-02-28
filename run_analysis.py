@@ -51,7 +51,7 @@ elif run_config == "draw_ep":
                     env_variables = json.load(f)
 
             draw_episode(data, env_variables, save_location, continuous_actions=False, show_energy_state=False,
-                         trim_to_fish=True, showed_region_quad=750, save_id=f"{i}", include_background=True,
+                         trim_to_fish=True, showed_region_quad=750, save_id=f"{i}", include_sediment=True,
                          as_gif=False, s_per_frame=0.1, scale=0.5)
             # draw_episode(data, assay_config_name, model, continuous_actions=False, show_energy_state=False,
             #              trim_to_fish=True, showed_region_quad=750, save_id=f"{i}", include_background=True,

@@ -587,9 +587,9 @@ class TrainingService(BaseService):
 
         if self.episode_number % self.learning_params['summaryLength'] == 0 and self.episode_number != 0:
             if self.using_gpu:
-                background = self.simulation.board.global_background_grating.get()[:, :, 0]
+                sediment = self.simulation.board.global_sediment_grating.get()[:, :, 0]
             else:
-                background = self.simulation.board.global_background_grating[:, :, 0]
+                sediment = self.simulation.board.global_sediment_grating[:, :, 0]
             if self.environment_params["salt"]:
                 salt_location = self.simulation.salt_location
             else:
@@ -600,7 +600,7 @@ class TrainingService(BaseService):
                                         self.model_location + "/episodes",
                                         f"Episode {self.episode_number}",
                                         internal_state_order=internal_state_order,
-                                        background=background,
+                                        sediment=sediment,
                                         salt_location=salt_location)
             episode_data = load_data(f"{self.model_name}-{self.model_number}", f"Episode {self.episode_number}",
                                      f"Episode {self.episode_number}", training_data=True)

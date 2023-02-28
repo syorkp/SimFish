@@ -275,11 +275,11 @@ class DQNAssayService(AssayService, BaseDQN):
             salt_location = None
 
         if self.using_gpu:
-            background = self.simulation.board.global_background_grating.get()[:, :, 0]
+            background = self.simulation.board.global_sediment_grating.get()[:, :, 0]
         else:
-            background = self.simulation.board.global_background_grating[:, :, 0]
+            background = self.simulation.board.global_sediment_grating[:, :, 0]
         self.buffer.save_assay_data(assay['assay id'], self.data_save_location, self.assay_configuration_id,
-                                    self.internal_state_order, background=background,
+                                    self.internal_state_order, sediment=background,
                                     salt_location=salt_location)
         self.log_stimuli()
         self.buffer.reset()

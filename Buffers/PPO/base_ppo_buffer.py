@@ -345,7 +345,7 @@ class BasePPOBuffer:
         new_prey_position_array = np.delete(overly_large_position_array, to_delete, axis=1)
         self.prey_positions_buffer = new_prey_position_array
 
-    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, background, internal_state_order=None,
+    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, sediment, internal_state_order=None,
                         salt_location=None):
         hdf5_file = h5py.File(f"{data_save_location}/{assay_configuration_id}.h5", "a")
 
@@ -427,7 +427,7 @@ class BasePPOBuffer:
         self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)
         self.create_data_group("sand_grain_positions", np.array(self.sand_grain_position_buffer), assay_group)
 
-        self.create_data_group("background", np.array(background), assay_group)
+        self.create_data_group("sediment", np.array(sediment), assay_group)
 
         if self.switch_step != None:
             self.create_data_group("switch_step", np.array([self.switch_step]), assay_group)

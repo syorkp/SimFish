@@ -157,10 +157,10 @@ Sand grain: {self.sand_grain_associated_reward}
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
 
-    def load_simulation(self, buffer, background, energy_state):
+    def load_simulation(self, buffer, sediment, energy_state):
         self.num_steps = len(buffer.fish_position_buffer)
 
-        self.board.background_grating = self.chosen_math_library.array(np.expand_dims(background, 2))
+        self.board.global_sediment_grating = self.chosen_math_library.array(np.expand_dims(sediment, 2))
 
         self.salt_location = buffer.salt_location
         self.reset_salt_gradient(buffer.salt_location)
@@ -429,7 +429,7 @@ Sand grain: {self.sand_grain_associated_reward}
         self.num_steps += 1
 
         # Drawing the features visible at this step:
-        self.draw_walls_and_background()
+        self.draw_walls_and_sediment()
 
         # Calculate internal state
         internal_state = []

@@ -36,21 +36,21 @@ class BaseEnvironment:
         max_visual_distance = np.absolute(np.log(0.001)/self.env_variables["decay_rate"])
 
         self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'],
-                                        uv_decay_rate=self.env_variables['decay_rate'],
-                                        red_decay_rate=self.env_variables['decay_rate'],
-                                        photoreceptor_rf_size=max_photoreceptor_rf_size,
-                                        using_gpu=using_gpu,
-                                        prey_size=self.env_variables['prey_size'],
-                                        predator_size=self.env_variables['predator_size'],
-                                        visible_scatter=self.env_variables['bkg_scatter'],
-                                        background_grating_frequency=self.env_variables[
-                                            'background_grating_frequency'],
-                                        dark_light_ratio=self.env_variables['dark_light_ratio'],
-                                        dark_gain=self.env_variables['dark_gain'],
-                                        light_gain=self.env_variables['light_gain'],
-                                        light_gradient=light_gradient,
-                                        max_visual_distance=max_visual_distance
-                                        )
+                                  uv_decay_rate=self.env_variables['decay_rate'],
+                                  red_decay_rate=self.env_variables['decay_rate'],
+                                  photoreceptor_rf_size=max_photoreceptor_rf_size,
+                                  using_gpu=using_gpu,
+                                  prey_size=self.env_variables['prey_size'],
+                                  predator_size=self.env_variables['predator_size'],
+                                  visible_scatter=self.env_variables['bkg_scatter'],
+                                  sediment_grating_frequency=self.env_variables[
+                                            'sediment_grating_frequency'],
+                                  dark_light_ratio=self.env_variables['dark_light_ratio'],
+                                  dark_gain=self.env_variables['dark_gain'],
+                                  light_gain=self.env_variables['light_gain'],
+                                  light_gradient=light_gradient,
+                                  max_visual_distance=max_visual_distance
+                                  )
         self.draw_screen = draw_screen
         self.show_all = False
         self.num_steps = 0
@@ -111,8 +111,6 @@ class BaseEnvironment:
         self.sand_grain_bodies = []
 
         self.last_action = None
-
-        self.background = None
 
         self.prey_consumed_this_step = False
 
@@ -202,11 +200,11 @@ class BaseEnvironment:
         self.sand_grain_shapes = []
         self.sand_grain_bodies = []
 
-    def draw_walls_and_background(self):
+    def draw_walls_and_sediment(self):
         self.board.erase(bkg=self.env_variables['bkg_scatter'])
         FOV = self.board.get_field_of_view(self.fish.body.position)
         self.board.draw_walls(FOV)
-        self.board.draw_background(FOV)
+        self.board.draw_sediment(FOV)
 
     def draw_uv_shapes(self):
         #TODO: remove items outside visual range

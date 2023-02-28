@@ -248,7 +248,7 @@ class DQNAssayBuffer:
         return buffer
 
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order,
-                        background, salt_location=None):
+                        sediment, salt_location=None):
         hdf5_file = h5py.File(f"{data_save_location}/{assay_configuration_id}.h5", "a")
 
         try:
@@ -313,7 +313,7 @@ class DQNAssayBuffer:
         self.create_data_group("sand_grain_positions", np.array(self.sand_grain_position_buffer), assay_group)
 
         # Features needed for state reloading
-        self.create_data_group("background", np.array(background), assay_group)
+        self.create_data_group("sediment", np.array(sediment), assay_group)
 
         if self.switch_step != None:
             self.create_data_group("switch_step", np.array([self.switch_step]), assay_group)

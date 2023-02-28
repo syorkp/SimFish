@@ -186,7 +186,7 @@ env = {
 
        # Environment
        'decay_rate': 0.01,  # Formerly 0.0006
-       'background_grating_frequency': 50,  # For extra layer motion:
+       'sediment_grating_frequency': 50,  # For extra layer motion:
        'displacement_scaling_factor': 0.018,
        # Multiplied by previous impulse size to cause displacement of nearby features.
        'known_max_fish_i': 100,

@@ -173,16 +173,16 @@ class AssayService(BaseService):
             self.create_testing_environment(assay)
 
             if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
-                background, energy_state = self.load_assay_buffer(assay)
+                sediment, energy_state = self.load_assay_buffer(assay)
 
                 # End in the event first trial had no end.
-                if background is False:
+                if sediment is False:
                     return
             else:
-                background, energy_state = None, None
+                sediment, energy_state = None, None
 
             while True:
-                complete = self.perform_assay(assay, background=background, energy_state=energy_state)
+                complete = self.perform_assay(assay, sediment=sediment, energy_state=energy_state)
                 if complete:
                     break
 
@@ -272,8 +272,8 @@ class AssayService(BaseService):
              np.array(data["rnn_state_actor_ref"][-2:-1, shape])) for shape in
             range(0, int(num_rnns), 2))
 
-        # Impose background.
-        return data["background"], energy_state
+        # Impose sediment (red2 channel).
+        return data["sediment"], energy_state
 
     def log_stimuli(self):
         stimuli = self.simulation.stimuli_information
@@ -303,7 +303,7 @@ class AssayService(BaseService):
                                                                           moving=assay["moving"],
                                                                           reset_each_step=assay["reset"],
                                                                           reset_interval=assay["reset interval"],
-                                                                          background=assay["background"],
+                                                                          sediment=assay["sediment"],
                                                                           assay_all_details=assay,
                                                                           )
             else:
@@ -316,7 +316,7 @@ class AssayService(BaseService):
                                                                 moving=assay["moving"],
                                                                 reset_each_step=assay["reset"],
                                                                 reset_interval=assay["reset interval"],
-                                                                background=assay["background"],
+                                                                sediment=assay["sediment"],
                                                                 assay_all_details=assay,
                                                                 )
         elif assay["stimulus paradigm"] == "Naturalistic":

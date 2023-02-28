@@ -20,16 +20,16 @@ from matplotlib.animation import FFMpegWriter
 
 class DrawingBoard:
 
-    def __init__(self, width, height, data, include_background):
+    def __init__(self, width, height, data, include_sediment):
         self.width = width
         self.height = height
-        self.include_background = include_background
-        if include_background:
-            self.background = data["background"][:, :,]
-            self.background = np.expand_dims(self.background/10, 2)
-            self.background = np.concatenate((self.background,
-                                              self.background,
-                                              np.zeros(self.background.shape)), axis=2)
+        self.include_sediment = include_sediment
+        if include_sediment:
+            self.sediment = data["sediment"][:, :, ]
+            self.sediment = np.expand_dims(self.sediment / 10, 2)
+            self.sediment = np.concatenate((self.sediment,
+                                            self.sediment,
+                                            np.zeros(self.sediment.shape)), axis=2)
 
         self.db = self.get_base_arena(0.3)
 
@@ -40,8 +40,8 @@ class DrawingBoard:
         db[self.width - 2:self.width - 1, :] = np.array([1, 0, 0])
         db[:, 1:2] = np.array([1, 0, 0])
         db[:, self.height - 2:self.height - 1] = np.array([1, 0, 0])
-        if self.include_background:
-            db += self.background
+        if self.include_sediment:
+            db += self.sediment
         return db
 
     def circle(self, center, rad, color):
@@ -270,7 +270,7 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 def draw_episode(data, env_variables, save_location, continuous_actions, draw_past_actions=True, show_energy_state=True,
                  scale=1.0, draw_action_space_usage=True, trim_to_fish=True, save_id="", showed_region_quad=500, n_actions_to_show=500,
-                 s_per_frame=0.03, include_background=True, as_gif=False):
+                 s_per_frame=0.03, include_sediment=True, as_gif=False):
     #try:
     #    with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
     #        env_variables = json.load(f)
@@ -302,7 +302,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
                 comment='Movie support!')
     writer = FFMpegWriter(fps=15, metadata=metadata, codec='mpeg4', bitrate=1000000)
 
-    board = DrawingBoard(env_variables["width"], env_variables["height"], data, include_background)
+    board = DrawingBoard(env_variables["width"], env_variables["height"], data, include_sediment)
     if show_energy_state:
         energy_levels = data["energy_state"]
     fish_positions = data["fish_position"]
@@ -593,7 +593,7 @@ if __name__ == "__main__":
             data[key] = np.array(datfl[group][key])
 
     draw_episode(data, env_variables, 'test', continuous_actions=False, show_energy_state=True,
-                 trim_to_fish=True, showed_region_quad=500, include_background=True)
+                 trim_to_fish=True, showed_region_quad=500, include_sediment=True)
 
 
 
