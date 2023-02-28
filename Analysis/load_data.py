@@ -36,16 +36,17 @@ def load_data(model_name, assay_configuration, assay_id, training_data=False):
 
 
 if __name__ == "__main__":
-    datas = []
-    obs = []
-    for i in range(1, 11):
-        d = load_data("dqn_new-1", "Behavioural-Data-Free", f"Naturalistic-{i}", training_data=False)
-        obs.append(d["observation"])
-    obs = np.concatenate(obs)
-    red = obs[:, :, 0, :].flatten()
-    uv = obs[:, :, 1, :].flatten()
-    red2 = obs[:, :, 2, :].flatten()
-
-    plt.hist(red)
-    plt.show()
-
+    d = load_data("dqn_new-1", "Episode 200", f"Episode 200", training_data=True)
+    # datas = []
+    # obs = []
+    # for i in range(1, 11):
+    #     d = load_data("dqn_new-1", "Behavioural-Data-Free", f"Naturalistic-{i}", training_data=False)
+    #     obs.append(d["observation"])
+    # obs = np.concatenate(obs)
+    # red = obs[:, :, 0, :].flatten()
+    # uv = obs[:, :, 1, :].flatten()
+    # red2 = obs[:, :, 2, :].flatten()
+    #
+    # plt.hist(red)
+    # plt.show()
+    #

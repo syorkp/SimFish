@@ -100,7 +100,7 @@ env = {
     # This is the turn (radians) that happens every step, designed to replicate linear wavy movement.
     'prey_fluid_displacement': False,
     'prey_jump': False,
-    'differential_prey': False,
+    'differential_prey': True,
     'prey_cloud_num': 16,
 
     # Prey movement
@@ -268,7 +268,7 @@ env = {
     "sigmoid_steepness": 5.0
 }
 
-scaffold_name = "dqn_new_even"
+scaffold_name = "dqn_new"
 
 
 # For predator scaffolding
@@ -323,9 +323,9 @@ high_pai = 800
 
 # Start with shot noise
 env["shot_noise"] = True
-env["bkg_scatter"] = 0.1 / 2.7769
+env["bkg_scatter"] = 0.1 / (2.7769 * 10)
 env["max_salt_damage"] = 0.02
-env["light_gain"] = 2.7769
+env["light_gain"] = 2.7769 * 10
 env["dark_gain"] = 1.2397
 
 # 2-10
