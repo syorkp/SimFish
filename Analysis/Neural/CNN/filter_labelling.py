@@ -154,7 +154,7 @@ def order_filters_by_label(kernels, labels, length=5):
 
 
 if __name__ == "__main__":
-    params = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", full_reafference=True)
+    params = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", full_efference_copy=True)
     k, b = get_conv_weights_and_biases(params, left=True)
     compiled_labels = label_all_filters(k[0])
     ordered_k0 = order_filters_by_label(k[0], compiled_labels, length=4)

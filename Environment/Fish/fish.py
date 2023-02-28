@@ -2,7 +2,6 @@ import numpy as np
 import pymunk
 from skimage.transform import resize, rescale
 
-from Environment.Fish.vis_fan import VisFan
 from Environment.Fish.eye import Eye
 # from Environment.Action_Space.draw_angle_dist import draw_angle_dist
 from Environment.Action_Space.draw_angle_dist_new import draw_angle_dist_new as draw_angle_dist
@@ -13,8 +12,7 @@ class Fish:
     Created to simplify the SimState class, while making it easier to have environments with multiple agents in future.
     """
 
-    def __init__(self, board, env_variables, dark_col, realistic_bouts, using_gpu,
-                 fish_mass=None):
+    def __init__(self, board, env_variables, dark_col, using_gpu, fish_mass=None):
 
         # For the purpose of producing a calibration curve.
         if fish_mass is None:
@@ -24,8 +22,6 @@ class Fish:
 
         self.env_variables = env_variables
         self.body = pymunk.Body(1, inertia)
-
-        self.realistic_bouts = realistic_bouts
 
         # Mouth
         self.mouth = pymunk.Circle(self.body, env_variables['fish_mouth_size'], offset=(0, 0))
@@ -55,12 +51,12 @@ class Fish:
         self.retinal_field = env_variables['visual_field'] * (np.pi / 180)
         self.conv_state = 0
 
-        max_visual_distance = np.absolute(np.log(0.001)/self.env_variables["decay_rate"])
+        max_visual_range = np.absolute(np.log(0.001) / self.env_variables["decay_rate"])
 
         self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True, env_variables, dark_col, using_gpu,
-                            max_visual_range=max_visual_distance)
+                            max_visual_range=max_visual_range)
         self.right_eye = Eye(board, self.verg_angle, self.retinal_field, False, env_variables, dark_col, using_gpu,
-                                max_visual_range=max_visual_distance)
+                             max_visual_range=max_visual_range)
 
         self.hungry = 0
         self.stress = 1
@@ -109,73 +105,6 @@ class Fish:
 
     def take_action(self, action):
         """For discrete fish, overrided by continuous fish class."""
-        return self.take_realistic_action(action)
-
-    def get_action_colour(self, action, magnitude, base_light):
-        """Returns the (R, G, B) for associated actions"""
-        if action == 0:  # Slow2
-            action_colour = (base_light, magnitude, base_light)
-
-        elif action == 1:  # RT right
-            action_colour = (base_light, magnitude, base_light)
-
-        elif action == 2:  # RT left
-            action_colour = (base_light, magnitude, base_light)
-
-        elif action == 3:  # Short capture swim
-            action_colour = (magnitude, base_light, magnitude)
-
-        elif action == 4:  # j turn right
-            action_colour = (magnitude, magnitude, magnitude)
-
-        elif action == 5:  # j turn left
-            action_colour = (magnitude, magnitude, magnitude)
-
-        elif action == 6:  # Do nothing
-            action_colour = (0, 0, 0)
-
-        elif action == 7:  # c start right
-            action_colour = (magnitude, base_light, base_light)
-
-        elif action == 8:  # c start left
-            action_colour = (magnitude, base_light, base_light)
-
-        elif action == 9:  # Approach swim.
-            action_colour = (base_light, magnitude, base_light)
-
-        elif action == 10:
-            action_colour = (magnitude, magnitude, magnitude)
-
-        elif action == 11:
-            action_colour = (magnitude, magnitude, magnitude)
-
-        else:
-            action_colour = (0, 0, 0)
-            print("Invalid action given")
-
-        return action_colour
-
-    def calculate_impulse(self, distance):
-        """
-        Uses the derived distance-mass-impulse relationship to convert an input distance (in mm) to impulse
-        (arbitrary units).
-        :param distance:
-        :return:
-        """
-        # return (distance * 10 - (0.004644 * self.env_variables['fish_mass'] + 0.081417)) / 1.771548
-        # return (distance * 10) * 0.360574383  # From mm
-        return (distance * 10) * 0.34452532909386484  # From mm
-
-    def calculate_action_cost(self, angle, distance):
-        """
-        So far, a fairly arbitrary equation to calculate action cost from distance moved and angle changed.
-        cost = 0.05(angle change) + 1.5(distance moved)
-        :return:
-        """
-        return abs(angle) * self.env_variables['angle_penalty_scaling_factor'] + (distance ** 2) * self.env_variables[
-            'distance_penalty_scaling_factor']
-
-    def take_realistic_action(self, action):
         if action == 0:  # Slow2
             angle_change, distance = draw_angle_dist(8)
             reward = -self.calculate_action_cost(angle_change, distance)
@@ -290,6 +219,70 @@ class Fish:
 
         return reward
 
+    def get_action_colour(self, action, magnitude, base_light):
+        """Returns the (R, G, B) for associated actions"""
+        if action == 0:  # Slow2
+            action_colour = (base_light, magnitude, base_light)
+
+        elif action == 1:  # RT right
+            action_colour = (base_light, magnitude, base_light)
+
+        elif action == 2:  # RT left
+            action_colour = (base_light, magnitude, base_light)
+
+        elif action == 3:  # Short capture swim
+            action_colour = (magnitude, base_light, magnitude)
+
+        elif action == 4:  # j turn right
+            action_colour = (magnitude, magnitude, magnitude)
+
+        elif action == 5:  # j turn left
+            action_colour = (magnitude, magnitude, magnitude)
+
+        elif action == 6:  # Do nothing
+            action_colour = (0, 0, 0)
+
+        elif action == 7:  # c start right
+            action_colour = (magnitude, base_light, base_light)
+
+        elif action == 8:  # c start left
+            action_colour = (magnitude, base_light, base_light)
+
+        elif action == 9:  # Approach swim.
+            action_colour = (base_light, magnitude, base_light)
+
+        elif action == 10:
+            action_colour = (magnitude, magnitude, magnitude)
+
+        elif action == 11:
+            action_colour = (magnitude, magnitude, magnitude)
+
+        else:
+            action_colour = (0, 0, 0)
+            print("Invalid action given")
+
+        return action_colour
+
+    def calculate_impulse(self, distance):
+        """
+        Uses the derived distance-mass-impulse relationship to convert an input distance (in mm) to impulse
+        (arbitrary units).
+        :param distance:
+        :return:
+        """
+        # return (distance * 10 - (0.004644 * self.env_variables['fish_mass'] + 0.081417)) / 1.771548
+        # return (distance * 10) * 0.360574383  # From mm
+        return (distance * 10) * 0.34452532909386484  # From mm
+
+    def calculate_action_cost(self, angle, distance):
+        """
+        So far, a fairly arbitrary equation to calculate action cost from distance moved and angle changed.
+        cost = 0.05(angle change) + 1.5(distance moved)
+        :return:
+        """
+        return abs(angle) * self.env_variables['angle_penalty_scaling_factor'] + (distance ** 2) * self.env_variables[
+            'distance_penalty_scaling_factor']
+
     def try_impulse(self, impulse):
         # Used to produce calibration curve.
         self.body.apply_impulse_at_local_point((impulse, 0))
@@ -297,47 +290,10 @@ class Fish:
 
     def readings_to_photons(self, readings):
         """Rounds down observations to form array of discrete photon events."""
-        # No longer need below as is removed from GPU earlier (before observation padding).
-        # if self.using_gpu:
-        #     readings = readings.get()
-
-        # print(f"""
-        # Max Red: {np.max(readings[:, 0])}
-        # Max UV: {np.max(readings[:, 1])}
-        # Max Red2: {np.max(readings[:, 2])}
-        #             """)
-
         photons = np.floor(readings).astype(int)
         photons = photons.clip(0, 255)
 
         return photons
-
-    def get_visual_inputs_new(self):
-        # if self.using_gpu:
-        #     left_photons = self.readings_to_photons(self.left_eye.readings).get()
-        #     right_photons = self.readings_to_photons(self.right_eye.readings).get()
-        # else:
-        left_photons = self.readings_to_photons(self.left_eye.readings)
-        right_photons = self.readings_to_photons(self.right_eye.readings)
-
-        left_eye = resize(np.reshape(left_photons, (1, self.left_eye.observation_size, 3)) * (
-                255 / 100), (20, self.env_variables['width'] / 2 - 50))
-        right_eye = resize(np.reshape(right_photons, (1, self.right_eye.observation_size, 3)) * (
-                255 / 100), (20, self.env_variables['width'] / 2 - 50))
-        eyes = np.hstack((left_eye, np.zeros((20, 100, 3)), right_eye))
-        eyes[eyes < 0] = 0
-        eyes[eyes > 255] = 255
-        return eyes
-
-    def get_all_sectors(self, fish_position_l, fish_position_r, fish_orientation):
-        """To show all channel sectors"""
-        left_sector_vertices = self.left_eye.get_sector_vertices(fish_position_l[0], fish_position_l[1],
-                                                                 fish_orientation)
-        right_sector_vertices = self.right_eye.get_sector_vertices(fish_position_r[0], fish_position_r[1],
-                                                                   fish_orientation)
-        # left_sector_vertices = self.left_eye.get_all_sectors(fish_position_l, fish_orientation)
-        # right_sector_vertices = self.right_eye.get_all_sectors(fish_position_r, fish_orientation)
-        return left_sector_vertices, right_sector_vertices
 
     def intake_scale(self, energy_level):
         """Provides nonlinear scaling for consumption reward and energy level change for new simulation"""
@@ -355,13 +311,17 @@ class Fish:
         unscaled_consumption = 1.0 * consumption
 
         if self.action_energy_use_scaling == "Nonlinear":
-            unscaled_energy_use = self.ci * (abs(self.prev_action_impulse) ** 2) + self.ca * (abs(self.prev_action_angle) ** 2) + self.baseline_decrease
+            unscaled_energy_use = self.ci * (abs(self.prev_action_impulse) ** 2) + self.ca * (
+                        abs(self.prev_action_angle) ** 2) + self.baseline_decrease
         elif self.action_energy_use_scaling == "Linear":
-            unscaled_energy_use = self.ci * (abs(self.prev_action_impulse)) + self.ca * (abs(self.prev_action_angle)) + self.baseline_decrease
+            unscaled_energy_use = self.ci * (abs(self.prev_action_impulse)) + self.ca * (
+                abs(self.prev_action_angle)) + self.baseline_decrease
         elif self.action_energy_use_scaling == "Sublinear":
-            unscaled_energy_use = self.ci * (abs(self.prev_action_impulse) ** 0.5) + self.ca * (abs(self.prev_action_angle) ** 0.5) + self.baseline_decrease
+            unscaled_energy_use = self.ci * (abs(self.prev_action_impulse) ** 0.5) + self.ca * (
+                        abs(self.prev_action_angle) ** 0.5) + self.baseline_decrease
         else:
-            unscaled_energy_use = self.ci * (abs(self.prev_action_impulse) ** 0.5) + self.ca * (abs(self.prev_action_angle) ** 0.5) + self.baseline_decrease
+            unscaled_energy_use = self.ci * (abs(self.prev_action_impulse) ** 0.5) + self.ca * (
+                        abs(self.prev_action_angle) ** 0.5) + self.baseline_decrease
 
         # Nonlinear reward scaling
         intake_s = self.intake_scale(self.energy_level)

@@ -173,7 +173,7 @@ def compute_filters2(kernels, biases, observation, activation="relu"):
 
 
 if __name__ == "__main__":
-    params = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", full_reafference=True)
+    params = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", full_efference_copy=True)
     k, b = get_conv_weights_and_biases(params, left=True)
     for i in range(1):
         random_observation = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic-1")["observation"][100+i, :, :, 0]

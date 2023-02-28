@@ -1,5 +1,3 @@
-import copy
-
 import numpy as np
 import math
 import sys
@@ -7,13 +5,8 @@ import h5py
 import json
 import matplotlib.pyplot as plt
 import skimage.draw as draw
-from skimage import io
 
-from Analysis.load_data import load_data
-from Configurations.Networks.original_network import base_network_layers, ops, connectivity
-from Tools.make_video import make_video
-from skimage.transform import resize, rescale
-from Tools.make_gif import make_gif
+from skimage.transform import rescale
 from matplotlib.animation import FFMpegWriter
 
 

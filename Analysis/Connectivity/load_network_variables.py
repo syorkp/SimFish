@@ -148,7 +148,7 @@ def load_network_variables_ppo(model_name, conf_name):
         return sorted_vars
 
 
-def load_network_variables_dqn(model_name, conf_name, full_reafference=False):
+def load_network_variables_dqn(model_name, conf_name, full_efference_copy=False):
     learning, env = load_configuration_files(f"{conf_name}")
     simulation = DiscreteNaturalisticEnvironment(env, False, True, False)
 
@@ -208,7 +208,7 @@ def load_network_variables_dqn(model_name, conf_name, full_reafference=False):
 
 if __name__ == "__main__":
     # v = load_network_variables_ppo("updated_ppo-4", "1")
-    # v = load_network_variables_dqn("dqn_scaffold_26-2", "dqn_26_2", full_reafference=True)
+    # v = load_network_variables_dqn("dqn_scaffold_26-2", "dqn_26_2", full_efference_copy=True)
     # rnn = v["main_rnn/lstm_cell/kernel:0"]
     # with open('dqn26_2_rnn.npy', 'wb') as f:
     #     np.save(f, rnn)

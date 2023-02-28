@@ -44,7 +44,7 @@ if __name__ == "__main__": # may be needed to run on windows
 
     # Loading VRV configs
 
-    with open("./Run-Configurations/VRV_CONFIG.json", "r") as file:
+    with open("Configurations/Run-Configurations/VRV_CONFIG.json", "r") as file:
         vrv_config = json.load(file)
 
     vrv_config = vrv_config[0]
@@ -749,7 +749,7 @@ if __name__ == "__main__": # may be needed to run on windows
     ]
 
     if run_config is None:
-        run_config = local_test
+        run_config = dqn_free_config_large_gamma_1
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]

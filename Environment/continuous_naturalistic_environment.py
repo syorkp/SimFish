@@ -8,20 +8,34 @@ from Environment.Fish.continuous_fish import ContinuousFish
 
 class ContinuousNaturalisticEnvironment(NaturalisticEnvironment):
 
-    def __init__(self, env_variables, realistic_bouts, using_gpu, draw_screen=False, fish_mass=None,
-                 collisions=True, relocate_fish=None, num_actions=10, run_version=None, split_event=None,
+    def __init__(self, env_variables, using_gpu, fish_mass=None,
+                 relocate_fish=None, num_actions=10, run_version=None, split_event=None,
                  modification=None):
 
-        super().__init__(env_variables, realistic_bouts, using_gpu, draw_screen, fish_mass, collisions,
-                         relocate_fish, num_actions=num_actions, run_version=run_version, split_event=split_event,
-                         modification=modification)
+        super().__init__(env_variables=env_variables,
+                         using_gpu=using_gpu,
+                         relocate_fish=relocate_fish,
+                         num_actions=num_actions,
+                         run_version=run_version,
+                         split_event=split_event,
+                         modification=modification
+                         )
 
         # Create the fish class instance and add to the space.
         if fish_mass is None:
-            self.fish = ContinuousFish(self.board, env_variables, self.dark_col, realistic_bouts, using_gpu)
+            self.fish = ContinuousFish(board=self.board,
+                                       env_variables=env_variables,
+                                       dark_col=self.dark_col,
+                                       using_gpu=using_gpu
+                                       )
         else:
             # In the event that I am producing a calibration curve for distance moved.
-            self.fish = ContinuousFish(self.board, env_variables, self.dark_col, realistic_bouts, using_gpu, fish_mass=fish_mass)
+            self.fish = ContinuousFish(board=self.board,
+                                       env_variables=env_variables,
+                                       dark_col=self.dark_col,
+                                       using_gpu=using_gpu,
+                                       fish_mass=fish_mass
+                                       )
 
         self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 
@@ -41,11 +55,10 @@ class ContinuousNaturalisticEnvironment(NaturalisticEnvironment):
         self.col = self.space.add_collision_handler(2, 3)
         self.col.begin = self.touch_prey
 
-        if collisions:
-            self.pred_col = self.space.add_collision_handler(5, 3)
-            self.pred_col.begin = self.touch_predator
-            self.pred_col2 = self.space.add_collision_handler(5, 6)
-            self.pred_col2.begin = self.touch_predator
+        self.pred_col = self.space.add_collision_handler(5, 3)
+        self.pred_col.begin = self.touch_predator
+        self.pred_col2 = self.space.add_collision_handler(5, 6)
+        self.pred_col2.begin = self.touch_predator
 
         self.edge_col = self.space.add_collision_handler(1, 3)
         self.edge_col.begin = self.touch_wall

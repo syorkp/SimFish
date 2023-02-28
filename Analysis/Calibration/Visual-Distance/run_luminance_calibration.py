@@ -42,14 +42,10 @@ env4 = copy.deepcopy(env3)
 env4["bkg_scatter"] = 0
 env4["shot_noise"] = False
 
-sim_state_1 = ContinuousNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=False,
-                                                using_gpu=False)
-sim_state_2 = ContinuousNaturalisticEnvironment(env2, realistic_bouts=True, draw_screen=False,
-                                                using_gpu=False)
-sim_state_3 = ContinuousNaturalisticEnvironment(env3, realistic_bouts=True, draw_screen=False,
-                                                using_gpu=False)
-sim_state_4 = ContinuousNaturalisticEnvironment(env4, realistic_bouts=True, draw_screen=False,
-                                                using_gpu=False)
+sim_state_1 = ContinuousNaturalisticEnvironment(env, using_gpu=False)
+sim_state_2 = ContinuousNaturalisticEnvironment(env2, using_gpu=False)
+sim_state_3 = ContinuousNaturalisticEnvironment(env3, using_gpu=False)
+sim_state_4 = ContinuousNaturalisticEnvironment(env4, using_gpu=False)
 q = False
 d = False
 

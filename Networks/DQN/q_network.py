@@ -6,7 +6,7 @@ tf.disable_v2_behavior()
 class QNetwork:
 
     def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, num_actions, internal_states=2, learning_rate=0.0001,
-                 extra_layer=False, full_reafference=True):
+                 extra_layer=False, full_efference_copy=True):
         """The network receives the observation from both eyes, processes it
         #through convolutional layers, concatenates it with the internal state
         #and feeds it to the RNN."""
@@ -17,7 +17,7 @@ class QNetwork:
         self.actions = tf.placeholder(shape=[None], dtype=tf.int32, name='actions')
         self.actions_one_hot = tf.one_hot(self.actions, num_actions, dtype=tf.float32)
 
-        if full_reafference:
+        if full_efference_copy:
             self.prev_actions = tf.placeholder(shape=[None, 3], dtype=tf.float32, name='prev_actions')
             self.prev_action_consequences = self.prev_actions[:, 1:]
             self.prev_action_impulse = self.prev_action_consequences[:, :1]
@@ -70,7 +70,7 @@ class QNetwork:
         self.conv4l_flat = tf.layers.flatten(self.conv4l)
         self.conv4r_flat = tf.layers.flatten(self.conv4r)
 
-        if full_reafference:
+        if full_efference_copy:
             self.conv_with_states = tf.concat(
                 [self.conv4l_flat, self.conv4r_flat, self.prev_actions_one_hot, self.prev_action_impulse,
                  self.prev_action_angle, self.internal_state], 1)
@@ -143,7 +143,7 @@ class QNetwork:
         self.prev_actions_one_hot_rev = tf.reverse(self.prev_actions_one_hot, [1])
         self.internal_state_rev = tf.reverse(self.internal_state, [1])
 
-        if full_reafference:
+        if full_efference_copy:
             self.prev_action_impulse_rev = tf.reverse(self.prev_action_impulse, [1])
             self.prev_action_angle_rev = tf.reverse(self.prev_action_angle, [1])
             self.conv_with_states_ref = tf.concat(

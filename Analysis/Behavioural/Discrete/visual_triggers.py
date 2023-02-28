@@ -9,7 +9,7 @@ from Analysis.load_data import load_data
 from Analysis.Processing.remove_near_wall_data import remove_near_wall_data
 
 """
-Tools to display the average visual input received when: A) A specific bout is chosen, B) A specific behavioural sequence is initiated.
+Board to display the average visual input received when: A) A specific bout is chosen, B) A specific behavioural sequence is initiated.
 """
 
 

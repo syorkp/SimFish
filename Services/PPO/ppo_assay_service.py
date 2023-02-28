@@ -28,11 +28,6 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
     else:
         continuous_actions = True
 
-    if "Realistic Bouts" in trial:
-        realistic_bouts = trial["Realistic Bouts"]
-    else:
-        realistic_bouts = True
-
     if "SB Emulator" in trial:
         sb_emulator = trial["SB Emulator"]
     else:
@@ -84,12 +79,10 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
                                         using_gpu=using_gpu,
                                         memory_fraction=memory_fraction,
                                         config_name=trial["Environment Name"],
-                                        realistic_bouts=realistic_bouts,
                                         continuous_environment=continuous_actions,
                                         assays=trial["Assays"],
                                         set_random_seed=set_random_seed,
                                         assay_config_name=trial["Assay Configuration Name"],
-
                                         sb_emulator=sb_emulator,
                                         checkpoint=checkpoint,
                                         behavioural_recordings=behavioural_recordings,
@@ -105,7 +98,7 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
 class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_environment, assays, set_random_seed,
+                 config_name, continuous_environment, assays, set_random_seed,
                  assay_config_name, sb_emulator, checkpoint, behavioural_recordings, network_recordings, interventions,
                  run_version, split_event, modification):
         """
@@ -121,7 +114,6 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                          using_gpu=using_gpu,
                          memory_fraction=memory_fraction,
                          config_name=config_name,
-                         realistic_bouts=realistic_bouts,
                          continuous_environment=continuous_environment,
                          assays=assays,
                          set_random_seed=set_random_seed,
@@ -241,9 +233,9 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                         o[:, 0, :] = 4
                         o[:, 1, :] = 11
                         o[:, 2, :] = 16
-                if self.reafference_interruptions is not None:
-                    if self.reafference_interruptions[self.step_number] is not False:
-                        a = [self.reafference_interruptions[self.step_number]]
+                if self.efference_copy_interruptions is not None:
+                    if self.efference_copy_interruptions[self.step_number] is not False:
+                        a = [self.efference_copy_interruptions[self.step_number]]
                 if self.preset_energy_state is not None:
                     if self.preset_energy_state[self.step_number] is not False:
                         self.simulation.fish.energy_level = self.preset_energy_state[self.step_number]

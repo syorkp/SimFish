@@ -6,72 +6,14 @@ from time import time
 import skimage.draw as draw
 from skimage import io
 
-
-class FieldOfView:
-
-    def __init__(self, local_dim, max_visual_distance, env_width, env_height):
-        self.local_dim = local_dim
-        self.max_visual_distance = max_visual_distance
-        self.env_width = env_width
-        self.env_height = env_height
-
-        self.full_fov_top = None
-        self.full_fov_bottom = None
-        self.full_fov_left = None
-        self.full_fov_right = None
-
-        self.local_fov_top = None
-        self.local_fov_bottom = None
-        self.local_fov_left = None
-        self.local_fov_right = None
-
-        self.enclosed_fov_top = None
-        self.enclosed_fov_bottom = None
-        self.enclosed_fov_left = None
-        self.enclosed_fov_right = None
-
-    def update_field_of_view(self, fish_position):
-        fish_position = np.round(fish_position).astype(int)
-
-        self.full_fov_top = fish_position[1] - self.max_visual_distance
-        self.full_fov_bottom = fish_position[1] + self.max_visual_distance + 1
-        self.full_fov_left = fish_position[0] - self.max_visual_distance
-        self.full_fov_right = fish_position[0] + self.max_visual_distance + 1
-
-        self.local_fov_top = 0
-        self.local_fov_bottom = self.local_dim
-        self.local_fov_left = 0
-        self.local_fov_right = self.local_dim
-
-        self.enclosed_fov_top = self.full_fov_top
-        self.enclosed_fov_bottom = self.full_fov_bottom
-        self.enclosed_fov_left = self.full_fov_left
-        self.enclosed_fov_right = self.full_fov_right
-
-        if self.full_fov_top < 0:
-            self.enclosed_fov_top = 0
-            self.local_fov_top = -self.full_fov_top
-
-        if self.full_fov_bottom > self.env_width:
-            self.enclosed_fov_bottom = self.env_width
-            self.local_fov_bottom = self.local_dim - (self.full_fov_bottom - self.env_width)
-
-        if self.full_fov_left < 0:
-            self.enclosed_fov_left = 0
-            self.local_fov_left = -self.full_fov_left
-
-        if self.full_fov_right > self.env_height:
-            self.enclosed_fov_right = self.env_height
-            self.local_fov_right = self.local_dim - (self.full_fov_right - self.env_height)
+from Environment.Board.field_of_view import FieldOfView
 
 
 class DrawingBoard:
 
     def __init__(self, arena_width, arena_height, uv_decay_rate, red_decay_rate, photoreceptor_rf_size, using_gpu,
-                 prey_size=4,
-                 predator_size=100, visible_scatter=0.3, sediment_grating_frequency=50, dark_light_ratio=0.0,
-                 dark_gain=0.01, light_gain=1.0,
-                 light_gradient=0, max_visual_distance=1500, show_sediment=True):
+                 prey_size=4, predator_size=100, visible_scatter=0.3, dark_light_ratio=0.0, dark_gain=0.01,
+                 light_gain=1.0, light_gradient=0, max_visual_distance=1500):
 
         self.using_gpu = using_gpu
 
@@ -88,17 +30,15 @@ class DrawingBoard:
         self.light_gain = light_gain
         self.light_gradient = light_gradient
         self.photoreceptor_rf_size = photoreceptor_rf_size
-        # self.db = None
-        # self.db_visualisation = None
+
         max_visual_distance = np.round(max_visual_distance).astype(np.int32)
         self.local_dim = max_visual_distance * 2 + 1
         self.max_visual_distance = max_visual_distance
         self.base_db = self.get_base_arena()
         self.base_db_illuminated = self.get_base_arena(visible_scatter)
         self.erase(visible_scatter)
-        #        self.local_db = self.chosen_math_library.zeros((self.local_dim, self.local_dim, 3))
 
-        self.global_sediment_grating = self.get_sediment(sediment_grating_frequency)
+        self.global_sediment_grating = self.get_sediment()
         self.global_luminance_mask = self.get_luminance_mask(dark_light_ratio, dark_gain)
         self.local_scatter, self.local_scatter_base = self.get_local_scatter()
         
@@ -107,13 +47,13 @@ class DrawingBoard:
         self.predator_size = predator_size * 2
         self.predator_radius = predator_size
 
-        # self.xp, self.yp = self.chosen_math_library.arange(self.width), self.chosen_math_library.arange(self.height)
-
         if self.using_gpu:
             self.max_lines_num = 50000
         else:
             self.max_lines_num = 20000
 
+        # Placeholders
+        self.local_db = None
         self.multiplication_matrix = None
         self.addition_matrix = None
         self.mul1_full = None
@@ -128,32 +68,12 @@ class DrawingBoard:
         # For obstruction mask (reset each time is called).
         self.empty_mask = self.chosen_math_library.ones((self.local_dim, self.local_dim, 1), dtype=np.float64)
 
-        self.show_sediment = show_sediment
-
         self.FOV = FieldOfView(self.local_dim, self.max_visual_distance, self.width, self.height)
 
     def get_FOV_size(self):
         return self.local_dim, self.local_dim
 
-    def get_sediment(self, frequency, linear=False):
-        if linear:
-            return self.linear_texture(frequency)
-        else:
-            return self.marble_texture()
-
-    def linear_texture(self, frequency):
-        """Simple linear repeating grating"""
-        base_unit = self.chosen_math_library.concatenate((self.chosen_math_library.ones((1, frequency)),
-                                                          self.chosen_math_library.zeros((1, frequency))), axis=1)
-        number_required = int(self.width / frequency)
-        full_width = self.chosen_math_library.tile(base_unit, number_required)[:, :self.width]
-        full_arena = self.chosen_math_library.repeat(full_width, self.height, axis=0)
-        full_arena = self.chosen_math_library.expand_dims(full_arena, 2)
-        return full_arena
-
-    def marble_texture(self):
-        # TODO: Can be made much more efficient through none repeating computations.
-        # Generate these randomly so grid can have any orientation.
+    def get_sediment(self):
         xPeriod = self.chosen_math_library.random.uniform(0.0, 10.0)
         yPeriod = self.chosen_math_library.random.uniform(0.0, 10.0)
 
@@ -693,14 +613,12 @@ class DrawingBoard:
 
     def reset(self):
         """To be called at start of episode"""
-        self.global_sediment_grating = self.get_sediment(0)
+        self.global_sediment_grating = self.get_sediment()
 
         # Dont need to call each ep?
         # self.local_scatter = self.get_local_scatter()
 
     def erase(self, bkg=0):
-        # self.local_db = self.chosen_math_library.zeros((self.local_dim, self.local_dim, 3))
-
         if bkg == 0:
             self.local_db = self.chosen_math_library.copy(self.base_db)
         else:

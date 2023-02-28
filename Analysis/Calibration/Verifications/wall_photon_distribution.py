@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.eye import Eye
-from Tools.drawing_board_new import DrawingBoard
+from Tools.drawing_board import DrawingBoard
 
 
 def get_orientation_to_closest_wall(width, height, x, y):

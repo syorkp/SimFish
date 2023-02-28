@@ -17,7 +17,7 @@ def get_internal_state_order(environment_params):
     return internal_state_order
 
 
-def build_network_dqn(environment_params, learning_params, simulation, full_reafference=True):
+def build_network_dqn(environment_params, learning_params, simulation, full_efference_copy=True):
     internal_states = sum(
         [1 for x in [environment_params['stress'],
                      environment_params['energy_state'], environment_params['in_light'],

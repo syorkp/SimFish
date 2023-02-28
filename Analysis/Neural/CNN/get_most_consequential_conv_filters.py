@@ -73,7 +73,7 @@ def get_most_consequential_conv_filters_for_rnn(target_conv_layer, rnn_index, le
 
 
 if __name__ == "__main__":
-    params = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", full_reafference=True)
+    params = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", full_efference_copy=True)
     k_l, b_l = get_conv_weights_and_biases(params, left=True)
     k_r, b_r = get_conv_weights_and_biases(params, left=False)
     for i in range(1):

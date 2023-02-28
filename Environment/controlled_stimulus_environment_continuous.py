@@ -16,14 +16,14 @@ class ControlledStimulusEnvironmentContinuous(BaseEnvironment):
     For this environment, the following stimuli are available: prey, predators.
     """
 
-    def __init__(self, env_variables, stimuli, realistic_bouts, using_gpu, tethered=True, set_positions=False, moving=False,
+    def __init__(self, env_variables, stimuli, using_gpu, tethered=True, set_positions=False, moving=False,
                  random=False, reset_each_step=False, reset_interval=1, sediment=None, draw_screen=False):
         super().__init__(env_variables, draw_screen, using_gpu)
 
         if tethered:
-            self.fish = ContinuousTetheredFish(self.board, env_variables, self.dark_col, realistic_bouts)
+            self.fish = ContinuousTetheredFish(self.board, env_variables, self.dark_col)
         else:
-            self.fish = ContinuousFish(self.board, env_variables, self.dark_col, realistic_bouts)
+            self.fish = ContinuousFish(self.board, env_variables, self.dark_col)
         self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 
         # TODO: Unify in future with other stimuli
@@ -139,18 +139,6 @@ class ControlledStimulusEnvironmentContinuous(BaseEnvironment):
             internal_state = np.array([[in_light, self.fish.stress]])
         else:
             internal_state = np.array([[in_light]])
-
-        if save_frames or self.draw_screen:
-            self.board.erase(bkg=self.env_variables['bkg_scatter'])
-            self.draw_shapes(visualisation=True)
-            self.board.apply_light(self.dark_col, 0.7, 1)
-            self.fish.left_eye.show_points(left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
-            self.fish.right_eye.show_points(right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
-            if save_frames:
-                frame_buffer.append(self.output_frame(activations, internal_state, scale=0.25))
-            if self.draw_screen:
-                self.board_image.set_data(self.output_frame(activations, internal_state, scale=0.5) / 255.)
-                plt.pause(0.000001)
 
         observation = np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
                                  self.fish.readings_to_photons(self.fish.right_eye.readings)))

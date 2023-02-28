@@ -154,7 +154,6 @@ env = {
        'predator_avoidance_reward': 20000,
 
        # Old internal state variables
-       'reafference': True,
        'stress': False,
        'stress_compound': 0.9,
 
@@ -192,7 +191,6 @@ env = {
 
        # Environment
        'decay_rate': 0.01,  # Formerly 0.0006
-       'sediment_grating_frequency': 50,  # For extra layer motion:
        'displacement_scaling_factor': 0.018,
        # Multiplied by previous impulse size to cause displacement of nearby features.
        'known_max_fish_i': 100,
@@ -214,8 +212,6 @@ env = {
        'red_scaling_factor': 0.01,  # Pixel counts are multiplied by this
        'uv_scaling_factor': 1,  # Pixel counts are multiplied by this
        'red_2_scaling_factor': 1/500.0,  # Pixel counts are multiplied by this
-
-       'wall_buffer_distance': 40,  # Parameter to avoid visual system errors and prey cloud spawning close to walls.
 
        # Arbitrary fish parameters
 

@@ -3881,7 +3881,7 @@ def build_vrv_configuration(model_names, background=False, name="vrv_config", co
                 assay["background"] = "Red"
                 pred_config["Assays"][i] = assay
         configuration.append(prey_config.copy())
-        # configuration.append(pred_config.copy())  TODO: Switch back when using predators
+        configuration.append(pred_config.copy())
     with open(f"{name}.json", 'w') as f:
         json.dump(configuration, f, indent=4)
 

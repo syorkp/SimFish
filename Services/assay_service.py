@@ -21,14 +21,12 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 class AssayService(BaseService):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_environment, assays, set_random_seed,
+                 config_name, continuous_environment, assays, set_random_seed,
                  assay_config_name, checkpoint, behavioural_recordings, network_recordings, interventions,
                  run_version, split_event, modification):
 
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                         config_name, realistic_bouts, continuous_environment)
-
-        print("AssayService Constructor called")
+                         config_name, continuous_environment)
 
         # Assay configuration and save location
         self.data_save_location = f"./Assay-Output/{self.model_id}"
@@ -67,17 +65,19 @@ class AssayService(BaseService):
 
         # Create environment so that network has access
         if self.continuous_actions:
-            self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                using_gpu,
+            self.simulation = ContinuousNaturalisticEnvironment(env_variables=self.environment_params,
+                                                                using_gpu=using_gpu,
                                                                 run_version=run_version,
                                                                 split_event=split_event,
-                                                                modification=modification)
+                                                                modification=modification
+                                                                )
         else:
-            self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                              using_gpu,
+            self.simulation = DiscreteNaturalisticEnvironment(env_variables=self.environment_params,
+                                                              using_gpu=using_gpu,
                                                               run_version=run_version,
                                                               split_event=split_event,
-                                                              modification=modification)
+                                                              modification=modification
+                                                              )
 
         # Metadata
         self.episode_number = episode_number
@@ -101,7 +101,7 @@ class AssayService(BaseService):
         self.internal_state_order = self.get_internal_state_order()
 
         self.preset_energy_state = None
-        self.reafference_interruptions = None
+        self.efference_copy_interruptions = None
         self.visual_interruptions = None
         self.previous_action = None
         self.relocate_fish = None
@@ -114,21 +114,12 @@ class AssayService(BaseService):
         self.network_recordings = network_recordings
         self.interventions = interventions
 
-    def _run(self):
-        self.saver = tf.train.Saver(max_to_keep=5)
-        self.init = tf.global_variables_initializer()
-        checkpoint = tf.train.get_checkpoint_state(self.model_location)
-        checkpoint_path = checkpoint.model_checkpoint_path
-        if self.checkpoint is not None:
-            checkpoint_path = self.model_location + f"/model-{self.checkpoint}.cptk"
-        self.saver.restore(self.sess, checkpoint_path)
-        print("Model loaded")
-
+    def implement_interventions(self):
         if self.interventions is not None:
             if "visual_interruptions" in self.interventions.keys():
                 self.visual_interruptions = self.interventions["visual_interruptions"]
-            if "reafference_interruptions" in self.interventions.keys():
-                self.reafference_interruptions = self.interventions["reafference_interruptions"]
+            if "efference_copy_interruptions" in self.interventions.keys():
+                self.efference_copy_interruptions = self.interventions["efference_copy_interruptions"]
             if "preset_energy_state" in self.interventions.keys():
                 self.preset_energy_state = self.interventions["preset_energy_state"]
             if "relocate_fish" in self.interventions.keys():
@@ -145,6 +136,18 @@ class AssayService(BaseService):
         else:
             self.interruptions = False
 
+    def _run(self):
+        self.saver = tf.train.Saver(max_to_keep=5)
+        self.init = tf.global_variables_initializer()
+        checkpoint = tf.train.get_checkpoint_state(self.model_location)
+        checkpoint_path = checkpoint.model_checkpoint_path
+        if self.checkpoint is not None:
+            checkpoint_path = self.model_location + f"/model-{self.checkpoint}.cptk"
+        self.saver.restore(self.sess, checkpoint_path)
+        print("Model loaded")
+
+        self.implement_interventions()
+
         if self.ppo_version is not None:
             self.buffer.rnn_layer_names = self.actor_network.rnn_layer_names
         else:
@@ -156,16 +159,6 @@ class AssayService(BaseService):
             self.create_output_data_storage(self.behavioural_recordings, self.network_recordings)
             self.buffer.init_assay_recordings(self.behavioural_recordings, self.network_recordings)
 
-            # Reset all interventions to None so doesnt carry between assays
-            # self.preset_energy_state = None
-            # self.reafference_interruptions = None
-            # self.visual_interruptions = None
-            # self.previous_action = None
-            # self.relocate_fish = None
-            # self.salt_interruptions = None
-            # self.in_light_interruptions = None
-            # self.interruptions = False
-            # self.rnn_input = None
             self.learning_params, self.environment_params = self.load_configuration_files()
 
             self.save_frames = assay["save frames"]
@@ -190,7 +183,7 @@ class AssayService(BaseService):
                 self.save_stimuli_data(assay)
 
             self.visual_interruptions = None
-            self.reafference_interruptions = None
+            self.efference_copy_interruptions = None
             self.preset_energy_state = None
             self.relocate_fish = None
 
@@ -294,9 +287,9 @@ class AssayService(BaseService):
 
         if assay["stimulus paradigm"] == "Projection":
             if self.continuous_actions:
-                self.simulation = ControlledStimulusEnvironmentContinuous(self.environment_params, assay["stimuli"],
-                                                                          self.realistic_bouts,
-                                                                          self.using_gpu,
+                self.simulation = ControlledStimulusEnvironmentContinuous(env_variables=self.environment_params,
+                                                                          stimuli=assay["stimuli"],
+                                                                          using_gpu=self.using_gpu,
                                                                           tethered=assay["Tethered"],
                                                                           set_positions=assay["set positions"],
                                                                           random=assay["random positions"],
@@ -307,9 +300,9 @@ class AssayService(BaseService):
                                                                           assay_all_details=assay,
                                                                           )
             else:
-                self.simulation = ControlledStimulusEnvironment(self.environment_params, assay["stimuli"],
-                                                                self.realistic_bouts,
-                                                                self.using_gpu,
+                self.simulation = ControlledStimulusEnvironment(env_variables=self.environment_params,
+                                                                stimuli=assay["stimuli"],
+                                                                using_gpu=self.using_gpu,
                                                                 tethered=assay["Tethered"],
                                                                 set_positions=assay["set positions"],
                                                                 random=assay["random positions"],
@@ -321,30 +314,33 @@ class AssayService(BaseService):
                                                                 )
         elif assay["stimulus paradigm"] == "Naturalistic":
             if self.continuous_actions:
-                self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                    self.using_gpu,
-                                                                    collisions=assay["collisions"],
+                self.simulation = ContinuousNaturalisticEnvironment(env_variables=self.environment_params,
+                                                                    using_gpu=self.using_gpu,
                                                                     relocate_fish=self.relocate_fish,
                                                                     run_version=self.run_version,
                                                                     split_event=self.split_event,
-                                                                    modification=self.modification)
+                                                                    modification=self.modification
+                                                                    )
             else:
-                self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                  self.using_gpu,
+                self.simulation = DiscreteNaturalisticEnvironment(env_variables=self.environment_params,
+                                                                  using_gpu=self.using_gpu,
                                                                   relocate_fish=self.relocate_fish,
                                                                   run_version=self.run_version,
                                                                   split_event=self.split_event,
-                                                                  modification=self.modification)
+                                                                  modification=self.modification
+                                                                  )
 
         else:
             if self.continuous_actions:
-                self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                    self.using_gpu,
-                                                                    relocate_fish=self.relocate_fish)
+                self.simulation = ContinuousNaturalisticEnvironment(env_variables=self.environment_params,
+                                                                    using_gpu=self.using_gpu,
+                                                                    relocate_fish=self.relocate_fish
+                                                                    )
             else:
-                self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
-                                                                  self.using_gpu,
-                                                                  relocate_fish=self.relocate_fish)
+                self.simulation = DiscreteNaturalisticEnvironment(env_variables=self.environment_params,
+                                                                  using_gpu=self.using_gpu,
+                                                                  relocate_fish=self.relocate_fish
+                                                                  )
 
     def ablate_units(self, ablated_layers):
 
@@ -401,18 +397,3 @@ class AssayService(BaseService):
         }
         with open(f"{self.data_save_location}/{self.assay_configuration_id}.json", "w") as output_file:
             json.dump(metadata, output_file)
-
-    def save_assay_results(self, assay):
-        """No longer used - saves data in JSON"""
-        # Saves all the information from the assays in JSON format.
-        # if assay["save frames"]:
-        #     make_video(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.mp4",
-        #              duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
-        #              true_image=True)
-        #     # make_gif(self.frame_buffer, f"{self.data_save_location}/{assay['assay id']}.gif",
-        #     #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'],
-        #     #          true_image=True)
-        #
-        # self.frame_buffer = []
-        with open(f"{self.data_save_location}/{assay['assay id']}.json", "w") as output_file:
-            json.dump(self.assay_output_data, output_file)

@@ -130,11 +130,11 @@ def save_all_gradients(model_name, target_layer, context_name, dy_dobs, dy_deff,
 
 
 def compute_gradient_for_input(model_name, observation, energy_state, salt_input, action, in_light, rnn_state,
-                               context_name, dqn=True, full_reafference=True, target_layer="rnn", save_gradients=True):
+                               context_name, dqn=True, full_efference_copy=True, target_layer="rnn", save_gradients=True):
     model_location = f"../../../Training-Output/{model_name}"
     params, environment_params, _, _, _ = load_assay_configuration_files(model_name)
 
-    if full_reafference:
+    if full_efference_copy:
         i, a = get_modal_impulse_and_angle(action)
         efference = [action, i, a]
     else:
@@ -144,7 +144,7 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
     with sess as sess:
         if dqn:
             simulation = DiscreteNaturalisticEnvironment(environment_params, True, True, False)
-            network = build_network_dqn(environment_params, params, simulation, full_reafference=full_reafference)
+            network = build_network_dqn(environment_params, params, simulation, full_efference_copy=full_efference_copy)
         else:
             print("Error, not built for PPO yet")
 
@@ -173,7 +173,7 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
             unit_gradients_obs[f"Unit {i}"] = tf.gradients(particular_unit, network.observation)
             unit_gradients_internal_state[f"Unit {i}"] = tf.gradients(particular_unit, network.internal_state)
             unit_gradients_efference[f"Unit {i}"] = tf.gradients(particular_unit, network.prev_actions_one_hot)
-            if full_reafference:
+            if full_efference_copy:
                 unit_gradients_efference_cons[f"Unit {i}"] = tf.gradients(particular_unit, network.prev_action_consequences)
             unit_gradients_rnn_state[f"Unit {i}"] = tf.gradients(particular_unit, network.rnn_state_in)
 
@@ -271,7 +271,7 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
 
 
 def compute_average_gradient_many_inputs(model_name, observation, energy_state, salt_input, action, in_light, rnn_state,
-                                         context_name, dqn=True, full_reafference=True, target_layer="rnn",
+                                         context_name, dqn=True, full_efference_copy=True, target_layer="rnn",
                                          save_gradients=True):
     n_gradients_to_compute = observation.shape[0]
     model_location = f"../../../Training-Output/{model_name}"
@@ -280,7 +280,7 @@ def compute_average_gradient_many_inputs(model_name, observation, energy_state, 
     dy_dobs_compiled, dy_deff_compiled, dy_deff2_compiled, dy_dlight_compiled, dy_denergy_compiled, dy_dsalt_compiled, \
     dy_drnns_compiled = [], [], [], [], [], [], []
 
-    if full_reafference:
+    if full_efference_copy:
         efference =[]
         for ac in action:
             i, a = get_modal_impulse_and_angle(ac)
@@ -292,7 +292,7 @@ def compute_average_gradient_many_inputs(model_name, observation, energy_state, 
     with sess as sess:
         if dqn:
             simulation = DiscreteNaturalisticEnvironment(environment_params, True, True, False)
-            network = build_network_dqn(environment_params, params, simulation, full_reafference=full_reafference)
+            network = build_network_dqn(environment_params, params, simulation, full_efference_copy=full_efference_copy)
         else:
             print("Error, not built for PPO yet")
 
@@ -321,7 +321,7 @@ def compute_average_gradient_many_inputs(model_name, observation, energy_state, 
             unit_gradients_obs[f"Unit {i}"] = tf.gradients(particular_unit, network.observation)
             unit_gradients_internal_state[f"Unit {i}"] = tf.gradients(particular_unit, network.internal_state)
             unit_gradients_efference[f"Unit {i}"] = tf.gradients(particular_unit, network.prev_actions_one_hot)
-            if full_reafference:
+            if full_efference_copy:
                 unit_gradients_efference_cons[f"Unit {i}"] = tf.gradients(particular_unit, network.prev_action_consequences)
             unit_gradients_rnn_state[f"Unit {i}"] = tf.gradients(particular_unit, network.rnn_state_in)
 
@@ -457,17 +457,17 @@ if __name__ == "__main__":
     d = load_data(model_name, "Behavioural-Data-CNN", "Naturalistic-1")
     observation, rnn_state, energy_state, salt, action, in_light = get_inputs_prior_to_capture(d)
     dy_dobs, dy_deff, dy_deff2, dy_dlight, dy_denergy, dy_dsalt, dy_drnn = compute_gradient_for_input(model_name, observation,
-                                                                                            energy_state,
-                                                                                            salt,
-                                                                                            action,
-                                                                                            in_light,
-                                                                                            rnn_state,
-                                                                                            context_name="Random",
-                                                                                            full_reafference=True,
-                                                                                            target_layer="Advantage",
+                                                                                                      energy_state,
+                                                                                                      salt,
+                                                                                                      action,
+                                                                                                      in_light,
+                                                                                                      rnn_state,
+                                                                                                      context_name="Random",
+                                                                                                      full_efference_copy=True,
+                                                                                                      target_layer="Advantage",
 
 
-                                                                                            )
+                                                                                                      )
 
     # plt.imshow(dy_dobs[:, :, :, 0]/np.absolute(np.min(dy_dobs[:, :, :, 0])))
     # plt.savefig("dyObs-stim-left.png")
@@ -485,7 +485,7 @@ if __name__ == "__main__":
     #                                                          compiled_in_light,
     #                                                          compiled_rnn_state,
     #                                                          context_name="Prey Capture",
-    #                                                          full_reafference=True,
+    #                                                          full_efference_copy=True,
     #                                                          target_layer="Advantage",)
 
     # DOING VIA MEAN INPUTS
@@ -500,7 +500,7 @@ if __name__ == "__main__":
     #                                                                                         inputted_in_light,
     #                                                                                         mean_rnn_state,
     #                                                                                         context_name="Prey Capture",
-    #                                                                                         full_reafference=True,
+    #                                                                                         full_efference_copy=True,
     #                                                                                         target_layer="Advantage",
     #                                                                                         )
     #
@@ -515,7 +515,7 @@ if __name__ == "__main__":
     #                                                                                         inputted_in_light,
     #                                                                                         mean_rnn_state,
     #                                                                                         context_name="Exploration",
-    #                                                                                         full_reafference=True,
+    #                                                                                         full_efference_copy=True,
     #                                                                                         target_layer="Advantage",
     #                                                                                         )
     #
@@ -530,7 +530,7 @@ if __name__ == "__main__":
     #                                                                                         inputted_in_light,
     #                                                                                         mean_rnn_state,
     #                                                                                         context_name="Wall Interaction",
-    #                                                                                         full_reafference=True,
+    #                                                                                         full_efference_copy=True,
     #                                                                                         target_layer="Advantage",
     #                                                                                         )
     #
@@ -545,7 +545,7 @@ if __name__ == "__main__":
     #                                                                                         inputted_in_light,
     #                                                                                         mean_rnn_state,
     #                                                                                         context_name="Starving",
-    #                                                                                         full_reafference=True,
+    #                                                                                         full_efference_copy=True,
     #                                                                                         target_layer="Advantage",
     #                                                                                         )
 

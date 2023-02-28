@@ -33,7 +33,7 @@ elif run_config == "3l":
 elif run_config == "4l":
     produce_meis("dqn_scaffold_26-2", "conv4l", True, 1000)
 elif run_config == "dense":
-    produce_meis("dqn_scaffold_26-2", "rnn_in", full_reafference=True, iterations=100, conv=False)
+    produce_meis("dqn_scaffold_26-2", "rnn_in", full_efference_copy=True, iterations=100, conv=False)
 elif run_config == "draw_ep":
     models = ["dqn_gamma_pm-2", "dqn_gamma_pm-3", "dqn_gamma_pm-4", "dqn_gamma_pm-5"]
     models = ["dqn_gamma-1"]

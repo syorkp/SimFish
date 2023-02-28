@@ -1,13 +1,10 @@
 import copy
 import numpy as np
-import matplotlib.pyplot as plt
-from skimage.transform import resize, rescale
+from skimage.transform import rescale
 
 from Analysis.load_data import load_data
 from Analysis.load_model_config import load_assay_configuration_files
-from Tools.make_gif import make_gif
-from Configurations.Networks.original_network import base_network_layers, ops, connectivity
-from Tools.make_video import make_video
+from Analysis.Video.make_video import make_video
 
 
 def get_num_layers_upstream(layer, connectivity_graph):

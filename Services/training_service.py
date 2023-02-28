@@ -8,31 +8,30 @@ import cProfile
 
 import tensorflow.compat.v1 as tf
 
-from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
-from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
-from Services.base_service import BaseService
-from Tools.graph_functions import update_target_graph, update_target
 from Analysis.Behavioural.Exploration.turn_chain_metric import get_normalised_turn_chain_metric_continuous
 from Analysis.Video.behaviour_video_construction import draw_episode
 from Analysis.load_data import load_data
 
+from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
+from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
+
+from Networks.DQN.graph_functions import update_target_graph, update_target
+
+from Services.base_service import BaseService
+
+
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
 
-# from tensorflow.python.client import device_lib
-# device_lib.list_local_devices()
-# print(device_lib.list_local_devices())
 
 class TrainingService(BaseService):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_actions, model_exists, configuration_index,
+                 config_name, continuous_actions, model_exists, configuration_index,
                  full_logs, profile_speed):
 
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                         config_name, realistic_bouts, continuous_actions, profile_speed)
-
-        print("TrainingService Constructor called")
+                         config_name, continuous_actions, profile_speed)
 
         # Configurations
         self.total_configurations = None
@@ -192,11 +191,11 @@ class TrainingService(BaseService):
 
     def create_environment(self):
         if self.continuous_actions:
-            self.simulation = ContinuousNaturalisticEnvironment(self.environment_params, self.realistic_bouts,
+            self.simulation = ContinuousNaturalisticEnvironment(self.environment_params,
                                                                 self.using_gpu,
                                                                 num_actions=self.learning_params["num_actions"])
         else:
-            self.simulation = DiscreteNaturalisticEnvironment(self.environment_params, self.realistic_bouts, 
+            self.simulation = DiscreteNaturalisticEnvironment(self.environment_params,
                                                               self.using_gpu, num_actions=self.learning_params["num_actions"])
 
     def check_update_configuration(self):

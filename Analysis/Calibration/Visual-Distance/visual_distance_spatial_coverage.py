@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.eye import Eye
-from Tools.drawing_board_new import DrawingBoard
+from Tools.drawing_board import DrawingBoard
 
 
 def display_pr_coverage(model_name):
@@ -22,8 +22,6 @@ def display_pr_coverage(model_name):
                          prey_size=env_variables['prey_size'],
                          predator_size=env_variables['predator_size'],
                          visible_scatter=env_variables['bkg_scatter'],
-                         sediment_grating_frequency=env_variables[
-                                     'background_grating_frequency'],
                          dark_light_ratio=env_variables['dark_light_ratio'],
                          dark_gain=env_variables['dark_gain'],
                          light_gain=env_variables['light_gain'],
@@ -53,33 +51,33 @@ def display_pr_coverage(model_name):
                                                      )
 
     # Left eye
-    channel_angles_surrounding = test_eye_l.channel_angles_surrounding_stacked + 0
+    channel_angles_surrounding = test_eye_l.photoreceptor_angles_surrounding_stacked + 0
     uv_arena_pixels = full_masked_image[:, :, 1:2]
     red_arena_pixels = np.concatenate(
          (full_masked_image[:, :, 0:1], full_masked_image[:, :, 2:]), axis=2)
     uv_points, red_points = test_eye_l.get_pr_coverage(masked_arena_pixels_uv=uv_arena_pixels,
-                                                           masked_arena_pixels_red=red_arena_pixels,
-                                                           eye_x=left_eye_pos[0],
-                                                           eye_y=left_eye_pos[1],
-                                                           channel_angles_surrounding=channel_angles_surrounding,
-                                                           n_channels_uv=test_eye_l.uv_photoreceptor_num,
-                                                           n_channels_red=test_eye_l.red_photoreceptor_num)
+                                                       masked_arena_pixels_red=red_arena_pixels,
+                                                       eye_x=left_eye_pos[0],
+                                                       eye_y=left_eye_pos[1],
+                                                       photoreceptor_angles_surrounding=channel_angles_surrounding,
+                                                       n_photoreceptors_uv=test_eye_l.uv_photoreceptor_num,
+                                                       n_photoreceptors_red=test_eye_l.red_photoreceptor_num)
 
     uv_points = np.unique(np.reshape(uv_points, (-1, 2)), axis=0)
     arena[uv_points[:, 0], uv_points[:, 1]] = 1
 
     # Right eye
-    channel_angles_surrounding = test_eye_r.channel_angles_surrounding_stacked + 0
+    channel_angles_surrounding = test_eye_r.photoreceptor_angles_surrounding_stacked + 0
     uv_arena_pixels = full_masked_image[:, :, 1:2]
     red_arena_pixels = np.concatenate(
          (full_masked_image[:, :, 0:1], full_masked_image[:, :, 2:]), axis=2)
     uv_points, red_points = test_eye_r.get_pr_coverage(masked_arena_pixels_uv=uv_arena_pixels,
-                                                           masked_arena_pixels_red=red_arena_pixels,
-                                                           eye_x=right_eye_pos[0],
-                                                           eye_y=right_eye_pos[1],
-                                                           channel_angles_surrounding=channel_angles_surrounding,
-                                                           n_channels_uv=test_eye_r.uv_photoreceptor_num,
-                                                           n_channels_red=test_eye_r.red_photoreceptor_num)
+                                                       masked_arena_pixels_red=red_arena_pixels,
+                                                       eye_x=right_eye_pos[0],
+                                                       eye_y=right_eye_pos[1],
+                                                       photoreceptor_angles_surrounding=channel_angles_surrounding,
+                                                       n_photoreceptors_uv=test_eye_r.uv_photoreceptor_num,
+                                                       n_photoreceptors_red=test_eye_r.red_photoreceptor_num)
 
     uv_points = np.unique(np.reshape(uv_points, (-1, 2)), axis=0)
     arena[uv_points[:, 0], uv_points[:, 1]] = 1

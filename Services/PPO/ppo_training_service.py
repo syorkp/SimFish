@@ -35,11 +35,6 @@ def ppo_training_target_continuous_sbe(trial, total_steps, episode_number, memor
     else:
         continuous_actions = True
 
-    if "Realistic Bouts" in trial:
-        realistic_bouts = trial["Realistic Bouts"]
-    else:
-        realistic_bouts = True
-
     if "Full Logs" in trial:
         full_logs = trial["Full Logs"]
     else:
@@ -59,7 +54,6 @@ def ppo_training_target_continuous_sbe(trial, total_steps, episode_number, memor
                                                using_gpu=using_gpu,
                                                memory_fraction=memory_fraction,
                                                config_name=trial["Environment Name"],
-                                               realistic_bouts=realistic_bouts,
                                                continuous_actions=continuous_actions,
                                                model_exists=trial["Model Exists"],
                                                configuration_index=configuration_index,
@@ -73,13 +67,12 @@ def ppo_training_target_continuous_sbe(trial, total_steps, episode_number, memor
 class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_actions, model_exists, configuration_index,
+                 config_name, continuous_actions, model_exists, configuration_index,
                  full_logs, profile_speed):
         super().__init__(model_name=model_name, trial_number=trial_number,
                          total_steps=total_steps, episode_number=episode_number,
                          monitor_gpu=monitor_gpu, using_gpu=using_gpu,
                          memory_fraction=memory_fraction, config_name=config_name,
-                         realistic_bouts=realistic_bouts,
                          continuous_actions=continuous_actions,
                          model_exists=model_exists,
                          configuration_index=configuration_index,
@@ -155,7 +148,7 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
                 new_output_layer = self.actor_network.processing_network_output
 
                 if new_output_layer != self.original_output_layer:  # If altered shape of final output layer
-                    self.additional_layers += []  # TODO: Consider may need to remove final layers if changing processing_network_output.
+                    self.additional_layers += []
 
                 self.original_output_layer = None
                 self.init_states()
@@ -180,7 +173,6 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
 
         # Run data gathering
         ppo_assay_target_continuous(trial, self.total_steps, self.episode_number, self.memory_fraction)
-        # TODO: might need to clear data.
 
         # Perform cursory analysis on data
         data_index_service = DataIndexServiceContinuous(self.model_id)

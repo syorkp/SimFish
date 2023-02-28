@@ -2,13 +2,11 @@ import numpy as np
 import copy
 import os
 import json
-import re
 
 import tensorflow.compat.v1 as tf
 
-from Networks.DQN.q_network import QNetwork
 from Networks.DQN.q_network_dynamic import QNetworkDynamic
-from Tools.graph_functions import update_target
+from Networks.DQN.graph_functions import update_target
 import matplotlib.pyplot as plt
 from matplotlib.animation import FFMpegWriter
 
@@ -69,7 +67,7 @@ class BaseDQN:
         if not hasattr(self, "package_output_data"):
             self.package_output_data = None
         if not self.assay:
-            self.full_reafference = True
+            self.full_efference_copy = True
 
     def init_states(self):
         # Init states for RNN
@@ -168,10 +166,10 @@ class BaseDQN:
         step_number = 0  # To allow exit after maximum steps.
         a = 3  # Initialise action for episode.
 
-        if self.full_reafference:
-            action_reafference = [a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+        if self.full_efference_copy:
+            efference_copy = [a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
         else:
-            action_reafference = a
+            efference_copy = a
         if self.debug:
             fig, ax = plt.subplots(figsize=(4, 3))
             moviewriter = FFMpegWriter(fps=15)
@@ -180,7 +178,7 @@ class BaseDQN:
             step_number += 1
             o, a, r, i_s, o1, d, rnn_state, rnn_state_ref, FOV = self.step_loop(o=o,
                                                                                 internal_state=internal_state,
-                                                                                a=action_reafference,
+                                                                                a=efference_copy,
                                                                                 rnn_state=rnn_state,
                                                                                 rnn_state_ref=rnn_state_ref)
             if self.debug:
@@ -193,7 +191,7 @@ class BaseDQN:
             all_actions.append(a[0])
             experience.append(np.reshape(np.array([o, np.array(a), r, internal_state, o1, d, i_s]), [1, 7]))
             total_episode_reward += r
-            action_reafference = a
+            efference_copy = a
             internal_state = i_s
 
             o = o1
@@ -263,7 +261,7 @@ class BaseDQN:
         o1, given_reward, internal_state, d, FOV = self.simulation.simulation_step(action=chosen_a,
                                                                                         activations=(sa,))
 
-        action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
+        efference_copy = [chosen_a, self.simulation.fish.prev_action_impulse,
                               self.simulation.fish.prev_action_angle]
         if self.debug:
             pass
@@ -295,27 +293,24 @@ class BaseDQN:
                                                      prey_age=prey_ages,
                                                      prey_gait=prey_gait
                                                      )
-            action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
+            efference_copy = [chosen_a, self.simulation.fish.prev_action_impulse,
                                   self.simulation.fish.prev_action_angle]
 
             # Update buffer
             self.buffer.add_training(observation=o1,
                                      internal_state=internal_state,
                                      # action=chosen_a,
-                                     action=action_reafference,
+                                     action=efference_copy,
                                      reward=given_reward,
                                      rnn_state=updated_rnn_state,
                                      rnn_state_ref=updated_rnn_state_ref,
                                      )
 
         self.total_steps += 1
-        return o, action_reafference, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, FOV
+        return o, efference_copy, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, FOV
 
     # TODO: merge this with the above function
     def assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
-        return self._assay_step_loop_new_dynamic(o, internal_state, a, rnn_state, rnn_state_ref)
-
-    def _assay_step_loop_new_dynamic(self, o, internal_state, a, rnn_state, rnn_state_ref):
         chosen_a, updated_rnn_state, rnn2_state, network_layers, sa, sv = \
             self.sess.run(
                 [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
@@ -341,14 +336,14 @@ class BaseDQN:
                                                                                          activations=(sa,))
         sand_grain_positions, prey_positions, predator_position = self.get_positions()
 
-        action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
+        efference_copy = [chosen_a, self.simulation.fish.prev_action_impulse,
                               self.simulation.fish.prev_action_angle]
 
         # Update buffer
         self.buffer.add_training(observation=o1,
                                  internal_state=internal_state,
                                  # action=chosen_a,
-                                 action=action_reafference,
+                                 action=efference_copy,
                                  reward=given_reward,
                                  rnn_state=updated_rnn_state,
                                  rnn_state_ref=rnn2_state,
@@ -382,7 +377,7 @@ class BaseDQN:
         self.buffer.make_desired_recordings(network_layers)
 
         # return o, chosen_a, given_reward, internal_state, o1, d, updated_rnn_state
-        return o, action_reafference, given_reward, internal_state1, o1, d, updated_rnn_state
+        return o, efference_copy, given_reward, internal_state1, o1, d, updated_rnn_state
 
     def _assay_step_loop_new_static(self, o, internal_state, a, rnn_state, rnn_state_ref):
         chosen_a, updated_rnn_state, rnn2_state, sa, sv, o2, conv_layers = \
@@ -411,11 +406,11 @@ class BaseDQN:
         o1, given_reward, internal_state1, d, FOV = self.simulation.simulation_step(action=chosen_a,
                                                                                          activations=(sa,))
         sand_grain_positions, prey_positions, predator_position = self.get_positions()
-        if self.full_reafference:
-            action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
+        if self.full_efference_copy:
+            efference_copy = [chosen_a, self.simulation.fish.prev_action_impulse,
                                   self.simulation.fish.prev_action_angle]
         else:
-            action_reafference = chosen_a
+            efference_copy = chosen_a
 
         # Update buffer
         self.buffer.add_training(observation=o,
@@ -454,7 +449,7 @@ class BaseDQN:
         if "convolutional layers" in self.buffer.unit_recordings:
             self.buffer.save_cnn_data(conv_layers)
 
-        return o, action_reafference, given_reward, internal_state1, o1, d, updated_rnn_state
+        return o, efference_copy, given_reward, internal_state1, o1, d, updated_rnn_state
 
     def train_networks(self):
         """

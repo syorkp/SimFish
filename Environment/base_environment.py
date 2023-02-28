@@ -6,14 +6,14 @@ import matplotlib.pyplot as plt
 from skimage.transform import resize, rescale
 import pymunk
 
-from Tools.drawing_board_new import DrawingBoard
+from Environment.Board.drawing_board import DrawingBoard
 
 
 class BaseEnvironment:
     """A base class to represent environments, for extension to ProjectionEnvironment, VVR and Naturalistic
     environment classes."""
 
-    def __init__(self, env_variables, draw_screen, using_gpu, num_actions):
+    def __init__(self, env_variables, using_gpu, num_actions):
         self.num_actions = num_actions
 
         self.env_variables = env_variables
@@ -35,7 +35,8 @@ class BaseEnvironment:
         # Set max visual distance to the point at which 99.9% of photons have been lost to absorption mask.
         max_visual_distance = np.absolute(np.log(0.001)/self.env_variables["decay_rate"])
 
-        self.board = DrawingBoard(self.env_variables['width'], self.env_variables['height'],
+        self.board = DrawingBoard(arena_width=self.env_variables['width'],
+                                  arena_height=self.env_variables['height'],
                                   uv_decay_rate=self.env_variables['decay_rate'],
                                   red_decay_rate=self.env_variables['decay_rate'],
                                   photoreceptor_rf_size=max_photoreceptor_rf_size,
@@ -43,15 +44,13 @@ class BaseEnvironment:
                                   prey_size=self.env_variables['prey_size'],
                                   predator_size=self.env_variables['predator_size'],
                                   visible_scatter=self.env_variables['bkg_scatter'],
-                                  sediment_grating_frequency=self.env_variables[
-                                            'sediment_grating_frequency'],
                                   dark_light_ratio=self.env_variables['dark_light_ratio'],
                                   dark_gain=self.env_variables['dark_gain'],
                                   light_gain=self.env_variables['light_gain'],
                                   light_gradient=light_gradient,
                                   max_visual_distance=max_visual_distance
                                   )
-        self.draw_screen = draw_screen
+
         self.show_all = False
         self.num_steps = 0
         self.fish = None
@@ -425,19 +424,19 @@ class BaseEnvironment:
         new_position_x = self.fish.body.position[0]
         new_position_y = self.fish.body.position[1]
 
-        if new_position_x < self.env_variables['wall_buffer_distance']:  # Wall d
-            new_position_x = self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] + \
+        if new_position_x < 40:  # Wall d
+            new_position_x = 40 + self.env_variables["fish_head_size"] + \
                              self.env_variables["fish_tail_length"]
-        elif new_position_x > self.env_variables['width'] - self.env_variables['wall_buffer_distance']:  # wall b
+        elif new_position_x > self.env_variables['width'] - 40:  # wall b
             new_position_x = self.env_variables['width'] - (
-                    self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] +
+                    40 + self.env_variables["fish_head_size"] +
                     self.env_variables["fish_tail_length"])
-        if new_position_y < self.env_variables['wall_buffer_distance']:  # wall a
-            new_position_y = self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] + \
+        if new_position_y < 40:  # wall a
+            new_position_y = 40 + self.env_variables["fish_head_size"] + \
                              self.env_variables["fish_tail_length"]
-        elif new_position_y > self.env_variables['height'] - self.env_variables['wall_buffer_distance']:  # wall c
+        elif new_position_y > self.env_variables['height'] - 40:  # wall c
             new_position_y = self.env_variables['height'] - (
-                    self.env_variables['wall_buffer_distance'] + self.env_variables["fish_head_size"] +
+                    40 + self.env_variables["fish_head_size"] +
                     self.env_variables["fish_tail_length"])
 
         new_position = pymunk.Vec2d(new_position_x, new_position_y)
@@ -488,17 +487,15 @@ class BaseEnvironment:
             if not self.env_variables["differential_prey"]:
                 self.prey_bodies[-1].position = (
                     np.random.randint(
-                        self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables[
-                            'wall_buffer_distance'],
+                        self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + 40,
                         self.env_variables['width'] - (
                                 self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] +
-                                self.env_variables['wall_buffer_distance'])),
+                                40)),
                     np.random.randint(
-                        self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + self.env_variables[
-                            'wall_buffer_distance'],
+                        self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + 40,
                         self.env_variables['height'] - (
                                 self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] +
-                                self.env_variables['wall_buffer_distance'])))
+                                40)))
             else:
                 cloud = random.choice(self.prey_cloud_locations)
                 self.prey_bodies[-1].position = (

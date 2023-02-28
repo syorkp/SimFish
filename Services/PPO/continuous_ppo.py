@@ -15,7 +15,6 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 class ContinuousPPO:
 
     def __init__(self, **kwargs):
-        print("PPO Constructor called")
 
         # Placeholders present in service base classes (overwritten by MRO)
         self.learning_params = None
@@ -76,8 +75,8 @@ class ContinuousPPO:
             self.separate_networks = None
         if not hasattr(self, "visual_interruptions"):
             self.visual_interruptions = None
-        if not hasattr(self, "reafference_interruptions"):
-            self.reafference_interruptions = None
+        if not hasattr(self, "efference_copy_interruptions"):
+            self.efference_copy_interruptions = None
         if not hasattr(self, "preset_energy_state"):
             self.preset_energy_state = None
 
@@ -215,12 +214,12 @@ class ContinuousPPO:
 
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
-        action_reafference = action + [self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+        efference_copy = action + [self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
 
         # Update buffer
         self.buffer.add_training(observation=o,
                                  internal_state=internal_state,
-                                 action=action_reafference,
+                                 action=efference_copy,
                                  reward=given_reward,
                                  value=V,
                                  l_p_action=0,
@@ -704,9 +703,9 @@ class ContinuousPPO:
                         o[:, 0, :] = 4
                         o[:, 1, :] = 11
                         o[:, 2, :] = 16
-                if self.reafference_interruptions is not None:
-                    if self.reafference_interruptions[self.step_number] is not False:
-                        a = [self.reafference_interruptions[self.step_number]]
+                if self.efference_copy_interruptions is not None:
+                    if self.efference_copy_interruptions[self.step_number] is not False:
+                        a = [self.efference_copy_interruptions[self.step_number]]
                 if self.preset_energy_state is not None:
                     if self.preset_energy_state[self.step_number] is not False:
                         self.simulation.fish.energy_level = self.preset_energy_state[self.step_number]

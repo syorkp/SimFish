@@ -6,9 +6,6 @@ import scipy.signal as signal
 import matplotlib.pyplot as plt
 
 
-# from Tools.resize import resize as myresize
-
-
 class Eye:
 
     def __init__(self, board, verg_angle, retinal_field, is_left, env_variables, dark_col, using_gpu, max_visual_range,
@@ -82,8 +79,8 @@ class Eye:
             self.plot_photoreceptors(self.uv_photoreceptor_angles.get(), self.red_photoreceptor_angles.get(),
                                      self.uv_photoreceptor_rf_size, self.red_photoreceptor_rf_size, is_left)
         # Compute repeated measures:
-        self.channel_angles_surrounding = None
-        self.channel_angles_surrounding_red = None
+        self.photoreceptor_angles_surrounding = None
+        self.photoreceptor_angles_surrounding_red = None
         self.mul_for_hypothetical = None
         self.add_for_hypothetical = None
         self.mul1_full = None
@@ -92,14 +89,9 @@ class Eye:
         self.multiplication_matrix = None
         self.get_repeated_computations()
 
-        self.channel_angles_surrounding_stacked = self.chosen_math_library.concatenate((self.channel_angles_surrounding,
-                                                                                        self.channel_angles_surrounding_red),
-                                                                                       axis=0)
-
-        self.snr = []
-        self.red_signal_fail = []
-        self.uv_signal_fail = []
-        self.red2_signal_fail = []
+        self.photoreceptor_angles_surrounding_stacked = self.chosen_math_library.concatenate((self.photoreceptor_angles_surrounding,
+                                                                                              self.photoreceptor_angles_surrounding_red),
+                                                                                             axis=0)
 
     def plot_photoreceptors(self, uv_photoreceptor_angles, red_photoreceptor_angles, uv_photoreceptor_rf_size,
                             red_photoreceptor_rf_size, is_left):
@@ -130,45 +122,45 @@ class Eye:
     def get_repeated_computations(self):
 
         # UV
-        channel_angles_surrounding = self.chosen_math_library.expand_dims(self.uv_photoreceptor_angles, 1)
-        channel_angles_surrounding = self.chosen_math_library.repeat(channel_angles_surrounding, self.n, 1)
+        photoreceptor_angles_surrounding = self.chosen_math_library.expand_dims(self.uv_photoreceptor_angles, 1)
+        photoreceptor_angles_surrounding = self.chosen_math_library.repeat(photoreceptor_angles_surrounding, self.n, 1)
         rf_offsets = self.chosen_math_library.linspace(-self.uv_photoreceptor_rf_size / 2,
                                                        self.uv_photoreceptor_rf_size / 2, num=self.n)
-        self.channel_angles_surrounding = channel_angles_surrounding + rf_offsets
+        self.photoreceptor_angles_surrounding = photoreceptor_angles_surrounding + rf_offsets
 
         # Red
-        channel_angles_surrounding_2 = self.chosen_math_library.expand_dims(self.red_photoreceptor_angles, 1)
-        channel_angles_surrounding_2 = self.chosen_math_library.repeat(channel_angles_surrounding_2, self.n, 1)
+        photoreceptor_angles_surrounding_2 = self.chosen_math_library.expand_dims(self.red_photoreceptor_angles, 1)
+        photoreceptor_angles_surrounding_2 = self.chosen_math_library.repeat(photoreceptor_angles_surrounding_2, self.n, 1)
         rf_offsets_2 = self.chosen_math_library.linspace(-self.red_photoreceptor_rf_size / 2,
                                                          self.red_photoreceptor_rf_size / 2, num=self.n)
-        self.channel_angles_surrounding_red = channel_angles_surrounding_2 + rf_offsets_2
+        self.photoreceptor_angles_surrounding_red = photoreceptor_angles_surrounding_2 + rf_offsets_2
 
-        n_channels_in_computation_axis_0 = self.total_photoreceptor_num
+        n_photoreceptors_in_computation_axis_0 = self.total_photoreceptor_num
 
         # Same for both, just requires different dimensions
         mul_for_hypothetical = self.chosen_math_library.array([[1, 0], [0, 1], [1, 0], [0, 1]])
         self.mul_for_hypothetical = self.chosen_math_library.tile(mul_for_hypothetical,
-                                                                  (n_channels_in_computation_axis_0, self.n, 1, 1))
+                                                                  (n_photoreceptors_in_computation_axis_0, self.n, 1, 1))
         add_for_hypothetical = self.chosen_math_library.array(
             [[0, 0], [0, 0], [0, self.width - 1], [self.height - 1, 0]])
         self.add_for_hypothetical = self.chosen_math_library.tile(add_for_hypothetical,
-                                                                  (n_channels_in_computation_axis_0, self.n, 1, 1))
+                                                                  (n_photoreceptors_in_computation_axis_0, self.n, 1, 1))
 
         mul1 = self.chosen_math_library.array([0, 0, 0, 1])
-        self.mul1_full = self.chosen_math_library.tile(mul1, (n_channels_in_computation_axis_0, self.n, 1))
+        self.mul1_full = self.chosen_math_library.tile(mul1, (n_photoreceptors_in_computation_axis_0, self.n, 1))
 
         addition_matrix_unit = self.chosen_math_library.array([0, 0, self.height - 1, self.width - 1])
         self.addition_matrix = self.chosen_math_library.tile(addition_matrix_unit,
-                                                             (n_channels_in_computation_axis_0, self.n, 1))
+                                                             (n_photoreceptors_in_computation_axis_0, self.n, 1))
 
         conditional_tiled = self.chosen_math_library.array(
             [self.width - 1, self.height - 1, self.width - 1, self.height - 1])
         self.conditional_tiled = self.chosen_math_library.tile(conditional_tiled,
-                                                               (n_channels_in_computation_axis_0, self.n, 1))
+                                                               (n_photoreceptors_in_computation_axis_0, self.n, 1))
 
         multiplication_matrix_unit = self.chosen_math_library.array([-1, 1, -1, 1])
         self.multiplication_matrix = self.chosen_math_library.tile(multiplication_matrix_unit,
-                                                                   (n_channels_in_computation_axis_0, self.n, 1))
+                                                                   (n_photoreceptors_in_computation_axis_0, self.n, 1))
 
     def update_angles_sigmoid(self, verg_angle, retinal_field, is_left):
         """Set the eyes visual angles to be an even distribution."""
@@ -205,12 +197,10 @@ class Eye:
              proj=True):
         """
         Resolve RF coordinates for each photoreceptor, and use those to sum the relevant pixels.
-
-        Does all in parallel if channels have same angles and sizes, otherwise runs them separately.
         """
         # UV Angles with respect to fish (doubled) (PR_N x n)
 
-        channel_angles_surrounding = self.channel_angles_surrounding_stacked + fish_angle
+        photoreceptor_angles_surrounding = self.photoreceptor_angles_surrounding_stacked + fish_angle
         uv_arena_pixels = masked_arena_pixels[:, :, 1:2]
         red_arena_pixels = self.chosen_math_library.concatenate(
             (masked_arena_pixels[:, :, 0:1], masked_arena_pixels[:, :, 2:]), axis=2)
@@ -218,9 +208,9 @@ class Eye:
                                                        masked_arena_pixels_red=red_arena_pixels,
                                                        eye_x=eye_x,
                                                        eye_y=eye_y,
-                                                       channel_angles_surrounding=channel_angles_surrounding,
-                                                       n_channels_uv=self.uv_photoreceptor_num,
-                                                       n_channels_red=self.red_photoreceptor_num)
+                                                       photoreceptor_angles_surrounding=photoreceptor_angles_surrounding,
+                                                       n_photoreceptors_uv=self.uv_photoreceptor_num,
+                                                       n_photoreceptors_red=self.red_photoreceptor_num)
 
         if len(sand_grain_positions) > 0:
             uv_items = np.concatenate((prey_positions, sand_grain_positions), axis=0)
@@ -395,22 +385,21 @@ class Eye:
         idxs = (self.chosen_math_library.abs(array - value_array)).argmin(axis=1)
         return idxs
 
-    def _read_stacked(self, masked_arena_pixels_uv, masked_arena_pixels_red, eye_x, eye_y, channel_angles_surrounding,
-                      n_channels_uv, n_channels_red):
+    def _read_stacked(self, masked_arena_pixels_uv, masked_arena_pixels_red, eye_x, eye_y, photoreceptor_angles_surrounding,
+                      n_photoreceptors_uv, n_photoreceptors_red):
         """
         Lines method to return pixel sum for all points for each photoreceptor, over its segment.
-        Desired performance improvement from stacking the channels along 0th axis so one call required rather than two.
-        Takes channel_angles_surrounding with UV then Red
+        Takes photoreceptor_angles_surrounding with UV then Red
         """
-        n_channels = n_channels_uv + n_channels_red
+        n_photoreceptors = n_photoreceptors_uv + n_photoreceptors_red
 
         # Make sure angles are in desired range (PR_N x n)
-        channel_angles_surrounding_scaling = (channel_angles_surrounding // (
+        photoreceptor_angles_surrounding_scaling = (photoreceptor_angles_surrounding // (
                 self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
-        channel_angles_surrounding = channel_angles_surrounding + channel_angles_surrounding_scaling
+        photoreceptor_angles_surrounding = photoreceptor_angles_surrounding + photoreceptor_angles_surrounding_scaling
 
         # Compute m using tan (PR_N x n)
-        m = self.chosen_math_library.tan(channel_angles_surrounding)
+        m = self.chosen_math_library.tan(photoreceptor_angles_surrounding)
 
         # Compute c (PR_N x n)
         c = -m * eye_x
@@ -422,29 +411,29 @@ class Eye:
 
         m_mul = self.chosen_math_library.expand_dims(m, 2)
         full_m = self.chosen_math_library.repeat(m_mul, 4, 2)
-        m_mul = full_m * self.mul1_full[:n_channels]
+        m_mul = full_m * self.mul1_full[:n_photoreceptors]
         m_mul[:, :, :3] = 1
-        addition_matrix = self.addition_matrix[:n_channels] * m_mul
+        addition_matrix = self.addition_matrix[:n_photoreceptors] * m_mul
         division_matrix = full_m
         division_matrix[:, :, 1] = 1
         division_matrix[:, :, 3] = 1
 
         intersection_components = ((c_exp * self.multiplication_matrix[
-                                            :n_channels]) + addition_matrix) / division_matrix
+                                            :n_photoreceptors]) + addition_matrix) / division_matrix
 
         intersection_coordinates = self.chosen_math_library.expand_dims(intersection_components, 3)
         intersection_coordinates = self.chosen_math_library.repeat(intersection_coordinates, 2, 3)
         intersection_coordinates = (intersection_coordinates * self.mul_for_hypothetical[
-                                                               :n_channels]) + self.add_for_hypothetical[:n_channels]
+                                                               :n_photoreceptors]) + self.add_for_hypothetical[:n_photoreceptors]
 
         # Compute possible intersections (PR_N x 2 x 2 x 2)
         valid_points_ls = (intersection_components > 0) * 1
-        valid_points_more = (intersection_components < self.conditional_tiled[:n_channels]) * 1
+        valid_points_more = (intersection_components < self.conditional_tiled[:n_photoreceptors]) * 1
         valid_points = valid_points_more * valid_points_ls
         valid_intersection_coordinates = intersection_coordinates[valid_points == 1]
         try:
             valid_intersection_coordinates = self.chosen_math_library.reshape(valid_intersection_coordinates,
-                                                                              (n_channels, self.n, 2, 2))
+                                                                              (n_photoreceptors, self.n, 2, 2))
         except ValueError:
             print("ValueError")
             print(f"Eye position: {[eye_x, eye_y]}")
@@ -460,20 +449,20 @@ class Eye:
         angles = angles + angle_scaling
 
         angles = self.chosen_math_library.round(angles, 3)
-        channel_angles_surrounding = self.chosen_math_library.round(channel_angles_surrounding, 3)
+        photoreceptor_angles_surrounding = self.chosen_math_library.round(photoreceptor_angles_surrounding, 3)
 
-        channel_angles_surrounding = self.chosen_math_library.expand_dims(channel_angles_surrounding, 2)
-        channel_angles_surrounding = self.chosen_math_library.repeat(channel_angles_surrounding, 2, 2)
+        photoreceptor_angles_surrounding = self.chosen_math_library.expand_dims(photoreceptor_angles_surrounding, 2)
+        photoreceptor_angles_surrounding = self.chosen_math_library.repeat(photoreceptor_angles_surrounding, 2, 2)
 
-        same_values = (angles == channel_angles_surrounding) * 1
+        same_values = (angles == photoreceptor_angles_surrounding) * 1
         selected_intersections = valid_intersection_coordinates[same_values == 1]
         try:
             selected_intersections = self.chosen_math_library.reshape(selected_intersections,
-                                                                      (n_channels, self.n, 1, 2))
+                                                                      (n_photoreceptors, self.n, 1, 2))
         except ValueError:
             print(f"Eye position: {eye_position}")
 
-        eye_position_full = self.chosen_math_library.tile(eye_position, (n_channels, self.n, 1, 1))
+        eye_position_full = self.chosen_math_library.tile(eye_position, (n_photoreceptors, self.n, 1, 1))
         vertices = self.chosen_math_library.concatenate((eye_position_full, selected_intersections), axis=2)
         vertices_xvals = vertices[:, :, :, 0]
         vertices_yvals = vertices[:, :, :, 1]
@@ -512,10 +501,10 @@ class Eye:
         full_set = self.chosen_math_library.vstack((set_1, set_2)).astype(int)
 
         full_set = full_set.swapaxes(0, 1)
-        full_set = full_set.reshape(n_channels, -1, 2)
+        full_set = full_set.reshape(n_photoreceptors, -1, 2)
 
-        full_set_uv = full_set[:n_channels_uv, :]
-        full_set_red = full_set[n_channels_uv:, :]
+        full_set_uv = full_set[:n_photoreceptors_uv, :]
+        full_set_red = full_set[n_photoreceptors_uv:, :]
 
         # masked_arena_pixels = masked_arena_pixels[
         #     full_set[:, :, 1], full_set[:, :, 0]]  # NOTE: Inverting x and y to match standard in program.
@@ -536,27 +525,10 @@ class Eye:
         oversampling_ratio = self.chosen_math_library.expand_dims(oversampling_ratio, 1)
         oversampling_ratio_red = self.chosen_math_library.repeat(oversampling_ratio, total_sum_red.shape[1], 1)
 
-        total_sum_uv = total_sum_uv * (oversampling_ratio[:n_channels_uv] / self.n)
-        total_sum_red = total_sum_red * (oversampling_ratio_red[n_channels_uv:] / self.n)
+        total_sum_uv = total_sum_uv * (oversampling_ratio[:n_photoreceptors_uv] / self.n)
+        total_sum_red = total_sum_red * (oversampling_ratio_red[n_photoreceptors_uv:] / self.n)
 
         return total_sum_uv, total_sum_red
-
-    @staticmethod
-    def scale_readings(readings, readings_scaling_factor, readings_scaling_factor_2=False,
-                       readings_scaling_factor_3=False):
-        """
-        Takes all readings, and scales them by the appropriate scaling factor (which is a result of distance
-        calibration to set values between 0 and 1.
-        """
-        readings[:, 0] *= readings_scaling_factor
-        if readings_scaling_factor_2:
-            readings[:, 1] *= readings_scaling_factor_2
-            if readings_scaling_factor_3:
-                readings[:, 2] *= readings_scaling_factor_3
-        # print(np.max(readings, axis=0))
-
-        # readings[readings > 1] = 1
-        return readings
 
     def add_noise_to_readings(self, readings):
         """As specified, adds shot, read, and/or dark noise to readings."""
@@ -580,155 +552,23 @@ class Eye:
 
         return photons
 
-    def get_sector_vertices(self, eye_x, eye_y, channel_angles_surrounding, n_channels):
-        """Uses lines method to return the vertices of all photoreceptor segments."""
-        # Make sure is in desired range (PR_N x n)
-        channel_angles_surrounding_scaling = (channel_angles_surrounding // (
-                self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
-        channel_angles_surrounding = channel_angles_surrounding + channel_angles_surrounding_scaling
-
-        # Compute m using tan (PR_N x n)
-        m = self.chosen_math_library.tan(channel_angles_surrounding)
-
-        # Compute c (PR_N x n)
-        c = -m * eye_x
-        c = c + eye_y
-
-        # Compute components of intersections (PR_N x n x 4)
-        c_exp = self.chosen_math_library.expand_dims(c, 2)
-        c_exp = self.chosen_math_library.repeat(c_exp, 4, 2)
-
-        m_mul = self.chosen_math_library.expand_dims(m, 2)
-        full_m = self.chosen_math_library.repeat(m_mul, 4, 2)
-        m_mul = full_m * self.mul1_full[:n_channels]
-        m_mul[:, :, :3] = 1
-        addition_matrix = self.addition_matrix[:n_channels] * m_mul
-        division_matrix = full_m
-        division_matrix[:, :, 1] = 1
-        division_matrix[:, :, 3] = 1
-
-        intersection_components = ((c_exp * self.multiplication_matrix[
-                                            :n_channels]) + addition_matrix) / division_matrix
-
-        intersection_coordinates = self.chosen_math_library.expand_dims(intersection_components, 3)
-        intersection_coordinates = self.chosen_math_library.repeat(intersection_coordinates, 2, 3)
-        intersection_coordinates = (intersection_coordinates * self.mul_for_hypothetical[
-                                                               :n_channels]) + self.add_for_hypothetical[:n_channels]
-
-        # Compute possible intersections (PR_N x 2 x 2 x 2)
-        valid_points_ls = (intersection_components > 0) * 1
-        valid_points_more = (intersection_components < self.conditional_tiled[:n_channels]) * 1
-        valid_points = valid_points_more * valid_points_ls
-        valid_intersection_coordinates = intersection_coordinates[valid_points == 1]
-        valid_intersection_coordinates = self.chosen_math_library.reshape(valid_intersection_coordinates,
-                                                                          (n_channels, self.n, 2, 2))
-
-        # Get intersections (PR_N x 2)
-        eye_position = self.chosen_math_library.array([eye_x, eye_y])
-        possible_vectors = valid_intersection_coordinates - eye_position
-
-        angles = self.chosen_math_library.arctan2(possible_vectors[:, :, :, 1], possible_vectors[:, :, :, 0])
-
-        # Make sure is in desired range (PR_N x n)
-        angles_scaling = (angles // (self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
-        angles = angles + angles_scaling
-
-        angles = self.chosen_math_library.round(angles, 2)
-        channel_angles_surrounding = self.chosen_math_library.round(channel_angles_surrounding, 2)
-
-        channel_angles_surrounding = self.chosen_math_library.expand_dims(channel_angles_surrounding, 2)
-        channel_angles_surrounding = self.chosen_math_library.repeat(channel_angles_surrounding, 2, 2)
-
-        same_values = (angles == channel_angles_surrounding) * 1
-        selected_intersections = valid_intersection_coordinates[same_values == 1]
-        selected_intersections = self.chosen_math_library.reshape(selected_intersections,
-                                                                  (n_channels, self.n, 1, 2))
-        # try:
-        #     selected_intersections = self.chosen_math_library.reshape(selected_intersections,
-        #                                                               (n_channels, self.n, 1, 2))
-        # except ValueError:
-        #     print(f"Angles: {angles}")
-        #     print(f"Channel angles durrounding: {channel_angles_surrounding}")
-        #     print(f"Eye position: {eye_position}")
-        #     print(f"Fish angle: {fish_angle}")
-        #     print(f"Number of channels: {n_channels}")
-
-        relevant_intersections_1 = selected_intersections[:, 0, :, :]
-        relevant_intersections_2 = selected_intersections[:, self.n - 1, :, :]
-
-        eye_position_full = self.chosen_math_library.tile(eye_position, (n_channels, 1, 1))
-        vertices = self.chosen_math_library.concatenate(
-            (eye_position_full, relevant_intersections_1, relevant_intersections_2), axis=1)
-
-        if self.using_gpu:
-            return vertices.get()
-        else:
-            return vertices
-
-    def show_points(self, bx, by, fish_angle):
-        """Displays relevant parts of visual system, including (optional):
-        * Channel sectors
-        * Obstruction mask
-        * Scatter mask
-        * Light mask
-        """
-        # UV
-        channel_angles_surrounding = self.channel_angles_surrounding + fish_angle
-        sector_vertices = self.get_sector_vertices(bx, by, channel_angles_surrounding, self.uv_photoreceptor_num)
-        sector_vertices = sector_vertices.astype(int)
-
-        for sector in sector_vertices:
-            [rr, cc] = line(sector[0][1], sector[0][0], sector[1][1], sector[1][0])
-            self.board.db[rr, cc] = (0, 0, 0.5)
-
-            [rr, cc] = line(sector[1][1], sector[1][0], sector[2][1], sector[2][0])
-            self.board.db[rr, cc] = (0, 0, 0.5)
-
-            if len(sector) > 3:
-                [rr, cc] = line(sector[2][1], sector[2][0], sector[3][1], sector[3][0])
-                self.board.db[rr, cc] = (0, 0, 0.5)
-                [rr, cc] = line(sector[3][1], sector[3][0], sector[0][1], sector[0][0])
-            else:
-                [rr, cc] = line(sector[2][1], sector[2][0], sector[0][1], sector[0][0])
-            self.board.db[rr, cc] = (0, 0, 0.5)
-
-        # Red
-        channel_angles_surrounding = self.channel_angles_surrounding_red + fish_angle
-        sector_vertices = self.get_sector_vertices(bx, by, channel_angles_surrounding, self.red_photoreceptor_num)
-        sector_vertices = sector_vertices.astype(int)
-
-        for sector in sector_vertices:
-            [rr, cc] = line(sector[0][1], sector[0][0], sector[1][1], sector[1][0])
-            self.board.db[rr, cc] = (0.5, 0, 0)
-
-            [rr, cc] = line(sector[1][1], sector[1][0], sector[2][1], sector[2][0])
-            self.board.db[rr, cc] = (0.5, 0, 0)
-
-            if len(sector) > 3:
-                [rr, cc] = line(sector[2][1], sector[2][0], sector[3][1], sector[3][0])
-                self.board.db[rr, cc] = (0.5, 0, 0)
-                [rr, cc] = line(sector[3][1], sector[3][0], sector[0][1], sector[0][0])
-            else:
-                [rr, cc] = line(sector[2][1], sector[2][0], sector[0][1], sector[0][0])
-            self.board.db[rr, cc] = (0.5, 0, 0)
-
     def compute_n(self, photoreceptor_rf_size, max_separation=1):
         theta_separation = math.asin(max_separation / self.max_visual_range)
         n = (photoreceptor_rf_size / theta_separation)
         return int(n)
 
-    def get_pr_coverage(self, masked_arena_pixels_uv, masked_arena_pixels_red, eye_x, eye_y, channel_angles_surrounding,
-                        n_channels_uv, n_channels_red):
+    def get_pr_coverage(self, masked_arena_pixels_uv, masked_arena_pixels_red, eye_x, eye_y, photoreceptor_angles_surrounding,
+                        n_photoreceptors_uv, n_photoreceptors_red):
         """For testing purposes"""
-        n_channels = n_channels_uv + n_channels_red
+        n_photoreceptors = n_photoreceptors_uv + n_photoreceptors_red
 
         # Make sure angles are in desired range (PR_N x n)
-        channel_angles_surrounding_scaling = (channel_angles_surrounding // (
+        photoreceptor_angles_surrounding_scaling = (photoreceptor_angles_surrounding // (
                 self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
-        channel_angles_surrounding = channel_angles_surrounding + channel_angles_surrounding_scaling
+        photoreceptor_angles_surrounding = photoreceptor_angles_surrounding + photoreceptor_angles_surrounding_scaling
 
         # Compute m using tan (PR_N x n)
-        m = self.chosen_math_library.tan(channel_angles_surrounding)
+        m = self.chosen_math_library.tan(photoreceptor_angles_surrounding)
 
         # Compute c (PR_N x n)
         c = -m * eye_x
@@ -740,28 +580,28 @@ class Eye:
 
         m_mul = self.chosen_math_library.expand_dims(m, 2)
         full_m = self.chosen_math_library.repeat(m_mul, 4, 2)
-        m_mul = full_m * self.mul1_full[:n_channels]
+        m_mul = full_m * self.mul1_full[:n_photoreceptors]
         m_mul[:, :, :3] = 1
-        addition_matrix = self.addition_matrix[:n_channels] * m_mul
+        addition_matrix = self.addition_matrix[:n_photoreceptors] * m_mul
         division_matrix = full_m
         division_matrix[:, :, 1] = 1
         division_matrix[:, :, 3] = 1
 
         intersection_components = ((c_exp * self.multiplication_matrix[
-                                            :n_channels]) + addition_matrix) / division_matrix
+                                            :n_photoreceptors]) + addition_matrix) / division_matrix
 
         intersection_coordinates = self.chosen_math_library.expand_dims(intersection_components, 3)
         intersection_coordinates = self.chosen_math_library.repeat(intersection_coordinates, 2, 3)
         intersection_coordinates = (intersection_coordinates * self.mul_for_hypothetical[
-                                                               :n_channels]) + self.add_for_hypothetical[:n_channels]
+                                                               :n_photoreceptors]) + self.add_for_hypothetical[:n_photoreceptors]
 
         # Compute possible intersections (PR_N x 2 x 2 x 2)
         valid_points_ls = (intersection_components > 0) * 1
-        valid_points_more = (intersection_components < self.conditional_tiled[:n_channels]) * 1
+        valid_points_more = (intersection_components < self.conditional_tiled[:n_photoreceptors]) * 1
         valid_points = valid_points_more * valid_points_ls
         valid_intersection_coordinates = intersection_coordinates[valid_points == 1]
         valid_intersection_coordinates = self.chosen_math_library.reshape(valid_intersection_coordinates,
-                                                                          (n_channels, self.n, 2, 2))
+                                                                          (n_photoreceptors, self.n, 2, 2))
         # Get intersections (PR_N x 2)
         eye_position = self.chosen_math_library.array([eye_x, eye_y])
         possible_vectors = valid_intersection_coordinates - eye_position
@@ -773,16 +613,16 @@ class Eye:
         angles = angles + angle_scaling
 
         angles = self.chosen_math_library.round(angles, 3)
-        channel_angles_surrounding = self.chosen_math_library.round(channel_angles_surrounding, 3)
+        photoreceptor_angles_surrounding = self.chosen_math_library.round(photoreceptor_angles_surrounding, 3)
 
-        channel_angles_surrounding = self.chosen_math_library.expand_dims(channel_angles_surrounding, 2)
-        channel_angles_surrounding = self.chosen_math_library.repeat(channel_angles_surrounding, 2, 2)
+        photoreceptor_angles_surrounding = self.chosen_math_library.expand_dims(photoreceptor_angles_surrounding, 2)
+        photoreceptor_angles_surrounding = self.chosen_math_library.repeat(photoreceptor_angles_surrounding, 2, 2)
 
-        same_values = (angles == channel_angles_surrounding) * 1
+        same_values = (angles == photoreceptor_angles_surrounding) * 1
         selected_intersections = valid_intersection_coordinates[same_values == 1]
-        selected_intersections = self.chosen_math_library.reshape(selected_intersections, (n_channels, self.n, 1, 2))
+        selected_intersections = self.chosen_math_library.reshape(selected_intersections, (n_photoreceptors, self.n, 1, 2))
 
-        eye_position_full = self.chosen_math_library.tile(eye_position, (n_channels, self.n, 1, 1))
+        eye_position_full = self.chosen_math_library.tile(eye_position, (n_photoreceptors, self.n, 1, 1))
         vertices = self.chosen_math_library.concatenate((eye_position_full, selected_intersections), axis=2)
         vertices_xvals = vertices[:, :, :, 0]
         vertices_yvals = vertices[:, :, :, 1]
@@ -811,22 +651,22 @@ class Eye:
         full_set = self.chosen_math_library.vstack((set_1, set_2)).astype(int)
 
         full_set = full_set.swapaxes(0, 1)
-        full_set = full_set.reshape(n_channels, -1, 2)
+        full_set = full_set.reshape(n_photoreceptors, -1, 2)
 
-        full_set_uv = full_set[:n_channels_uv, :]
-        full_set_red = full_set[n_channels_uv:, :]
+        full_set_uv = full_set[:n_photoreceptors_uv, :]
+        full_set_red = full_set[n_photoreceptors_uv:, :]
 
         return full_set_uv, full_set_red
 
     def get_pr_line_coordinates_uv(self, eye_x, eye_y):
         """For testing purposes"""
         # Make sure angles are in desired range (PR_N x n)
-        channel_angles_surrounding_scaling = (self.uv_photoreceptor_angles // (
+        photoreceptor_angles_surrounding_scaling = (self.uv_photoreceptor_angles // (
                 self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
-        channel_angles_surrounding = self.uv_photoreceptor_angles + channel_angles_surrounding_scaling
+        photoreceptor_angles_surrounding = self.uv_photoreceptor_angles + photoreceptor_angles_surrounding_scaling
 
         # Compute m using tan (PR_N x n)
-        m = self.chosen_math_library.tan(channel_angles_surrounding)
+        m = self.chosen_math_library.tan(photoreceptor_angles_surrounding)
 
         # Compute c (PR_N x n)
         c = -m * eye_x
@@ -873,12 +713,12 @@ class Eye:
         angles = angles + angle_scaling
 
         angles = self.chosen_math_library.round(angles, 3)
-        channel_angles_surrounding = self.chosen_math_library.round(channel_angles_surrounding, 3)
+        photoreceptor_angles_surrounding = self.chosen_math_library.round(photoreceptor_angles_surrounding, 3)
 
-        channel_angles_surrounding = self.chosen_math_library.expand_dims(channel_angles_surrounding, 1)
-        channel_angles_surrounding = self.chosen_math_library.repeat(channel_angles_surrounding, 2, 1)
+        photoreceptor_angles_surrounding = self.chosen_math_library.expand_dims(photoreceptor_angles_surrounding, 1)
+        photoreceptor_angles_surrounding = self.chosen_math_library.repeat(photoreceptor_angles_surrounding, 2, 1)
 
-        same_values = (angles == channel_angles_surrounding) * 1
+        same_values = (angles == photoreceptor_angles_surrounding) * 1
         selected_intersections = valid_intersection_coordinates[same_values == 1]
         selected_intersections = self.chosen_math_library.reshape(selected_intersections,
                                                                   (self.uv_photoreceptor_num, 1, 2))

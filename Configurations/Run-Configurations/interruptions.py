@@ -43,7 +43,7 @@ dqn_18_full_long_term_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": long_term_interruption_profile,
+                                  "efference_copy_interruptions": long_term_interruption_profile,
                                   }
             },
             {
@@ -66,7 +66,7 @@ dqn_18_full_long_term_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": long_term_interruption_profile,
+                                  "efference_copy_interruptions": long_term_interruption_profile,
                                   }
             },
             {
@@ -89,7 +89,7 @@ dqn_18_full_long_term_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": long_term_interruption_profile,
+                                  "efference_copy_interruptions": long_term_interruption_profile,
                                   }
             },
         ],
@@ -137,7 +137,7 @@ dqn_14_full_long_term_interruptions = [
             #     "salt_control": False,
             #     "interventions": {"visual_interruptions": long_term_interruption_profile,
             #                       "preset_energy_state": energy_state_profile_long_term,
-            #                       "reafference_interruptions": long_term_interruption_profile,
+            #                       "efference_copy_interruptions": long_term_interruption_profile,
             #                       "salt_interruptions": long_term_interruption_profile,
             #                       "in_light_interruptions": long_term_interruption_profile,
             #                       }
@@ -162,7 +162,7 @@ dqn_14_full_long_term_interruptions = [
             #     "salt_control": False,
             #     "interventions": {"visual_interruptions": long_term_interruption_profile,
             #                       "preset_energy_state": energy_state_profile_long_term,
-            #                       "reafference_interruptions": long_term_interruption_profile,
+            #                       "efference_copy_interruptions": long_term_interruption_profile,
             #                       "salt_interruptions": long_term_interruption_profile,
             #                       "in_light_interruptions": long_term_interruption_profile,
             #                       }
@@ -187,7 +187,7 @@ dqn_14_full_long_term_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": long_term_interruption_profile,
+                                  "efference_copy_interruptions": long_term_interruption_profile,
                                   "salt_interruptions": long_term_interruption_profile,
                                   "in_light_interruptions": long_term_interruption_profile,
                                   }
@@ -234,7 +234,7 @@ dqn_14_full_long_term_interruptions = [
     #             "salt_control": False,
     #             "interventions": {"visual_interruptions": long_term_interruption_profile,
     #                               "preset_energy_state": energy_state_profile_long_term,
-    #                               "reafference_interruptions": long_term_interruption_profile,
+    #                               "efference_copy_interruptions": long_term_interruption_profile,
     #                               "salt_interruptions": long_term_interruption_profile,
     #                               "in_light_interruptions": long_term_interruption_profile,
     #                               }
@@ -259,7 +259,7 @@ dqn_14_full_long_term_interruptions = [
     #             "salt_control": False,
     #             "interventions": {"visual_interruptions": long_term_interruption_profile,
     #                               "preset_energy_state": energy_state_profile_long_term,
-    #                               "reafference_interruptions": long_term_interruption_profile,
+    #                               "efference_copy_interruptions": long_term_interruption_profile,
     #                               "salt_interruptions": long_term_interruption_profile,
     #                               "in_light_interruptions": long_term_interruption_profile,
     #                               }
@@ -284,7 +284,7 @@ dqn_14_full_long_term_interruptions = [
     #             "salt_control": False,
     #             "interventions": {"visual_interruptions": long_term_interruption_profile,
     #                               "preset_energy_state": energy_state_profile_long_term,
-    #                               "reafference_interruptions": long_term_interruption_profile,
+    #                               "efference_copy_interruptions": long_term_interruption_profile,
     #                               "salt_interruptions": long_term_interruption_profile,
     #                               "in_light_interruptions": long_term_interruption_profile,
     #                               }
@@ -334,7 +334,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_A,
+                                  "efference_copy_interruptions": efference_A,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -359,7 +359,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_A,
+                                  "efference_copy_interruptions": efference_A,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -384,7 +384,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_A,
+                                  "efference_copy_interruptions": efference_A,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -409,7 +409,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_A,
+                                  "efference_copy_interruptions": efference_A,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -434,7 +434,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_A,
+                                  "efference_copy_interruptions": efference_A,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -482,7 +482,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_B,
+                                  "efference_copy_interruptions": efference_B,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -507,7 +507,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_B,
+                                  "efference_copy_interruptions": efference_B,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -532,7 +532,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_B,
+                                  "efference_copy_interruptions": efference_B,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -557,7 +557,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_B,
+                                  "efference_copy_interruptions": efference_B,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -582,7 +582,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_B,
+                                  "efference_copy_interruptions": efference_B,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -630,7 +630,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_C,
+                                  "efference_copy_interruptions": efference_C,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -655,7 +655,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_C,
+                                  "efference_copy_interruptions": efference_C,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -680,7 +680,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_C,
+                                  "efference_copy_interruptions": efference_C,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -705,7 +705,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_C,
+                                  "efference_copy_interruptions": efference_C,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -730,7 +730,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_C,
+                                  "efference_copy_interruptions": efference_C,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -777,7 +777,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_D,
+                                  "efference_copy_interruptions": efference_D,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -802,7 +802,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_D,
+                                  "efference_copy_interruptions": efference_D,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -827,7 +827,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_D,
+                                  "efference_copy_interruptions": efference_D,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -852,7 +852,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_D,
+                                  "efference_copy_interruptions": efference_D,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -877,7 +877,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_D,
+                                  "efference_copy_interruptions": efference_D,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -925,7 +925,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_E,
+                                  "efference_copy_interruptions": efference_E,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -950,7 +950,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_E,
+                                  "efference_copy_interruptions": efference_E,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -975,7 +975,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_E,
+                                  "efference_copy_interruptions": efference_E,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1000,7 +1000,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_E,
+                                  "efference_copy_interruptions": efference_E,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1025,7 +1025,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_E,
+                                  "efference_copy_interruptions": efference_E,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1072,7 +1072,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_F,
+                                  "efference_copy_interruptions": efference_F,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1097,7 +1097,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_F,
+                                  "efference_copy_interruptions": efference_F,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1122,7 +1122,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_F,
+                                  "efference_copy_interruptions": efference_F,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1147,7 +1147,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_F,
+                                  "efference_copy_interruptions": efference_F,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1172,7 +1172,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_F,
+                                  "efference_copy_interruptions": efference_F,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1219,7 +1219,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_G,
+                                  "efference_copy_interruptions": efference_G,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1244,7 +1244,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_G,
+                                  "efference_copy_interruptions": efference_G,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1269,7 +1269,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_G,
+                                  "efference_copy_interruptions": efference_G,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1294,7 +1294,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_G,
+                                  "efference_copy_interruptions": efference_G,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1319,7 +1319,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_G,
+                                  "efference_copy_interruptions": efference_G,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1366,7 +1366,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_H,
+                                  "efference_copy_interruptions": efference_H,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1391,7 +1391,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_H,
+                                  "efference_copy_interruptions": efference_H,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1416,7 +1416,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_H,
+                                  "efference_copy_interruptions": efference_H,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1441,7 +1441,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_H,
+                                  "efference_copy_interruptions": efference_H,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }
@@ -1466,7 +1466,7 @@ dqn_18_1_complete_interruptions = [
                 "salt_control": False,
                 "interventions": {"visual_interruptions": long_term_visual_interruption_profile,
                                   "preset_energy_state": energy_state_profile_long_term,
-                                  "reafference_interruptions": efference_H,
+                                  "efference_copy_interruptions": efference_H,
                                   "in_light_interruptions": in_light_profile_long_term,
                                   "salt_interruptions": salt_profile_long_term,
                                   }

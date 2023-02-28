@@ -11,7 +11,7 @@ from Analysis.Neural.Tools.normalise_activity import normalise_within_neuron_mul
 def remove_those_with_no_output_advantage_only(rnn_data, model_name, conf_name, dqn=True, proportion_to_remove=0.1):
     # Load weights
     if dqn:
-        all_weights = load_network_variables_dqn(model_name, conf_name, full_reafference=True)
+        all_weights = load_network_variables_dqn(model_name, conf_name, full_efference_copy=True)
     else:
         all_weights = load_network_variables_ppo(model_name, conf_name)
 
@@ -56,7 +56,7 @@ def remove_those_with_no_output_advantage_only(rnn_data, model_name, conf_name, 
 def remove_those_with_no_output(rnn_data, model_name, conf_name, dqn=True, proportion_to_remove=0.1):
     # Load weights
     if dqn:
-        all_weights = load_network_variables_dqn(model_name, conf_name, full_reafference=True)
+        all_weights = load_network_variables_dqn(model_name, conf_name, full_efference_copy=True)
     else:
         all_weights = load_network_variables_ppo(model_name, conf_name)
 

@@ -37,11 +37,6 @@ def training_target(trial, epsilon, total_steps, episode_number, memory_fraction
     else:
         continuous_actions = False
 
-    if "Realistic Bouts" in trial:
-        realistic_bouts = trial["Realistic Bouts"]
-    else:
-        realistic_bouts = True
-
     if "Full Logs" in trial:
         full_logs = trial["Full Logs"]
     else:
@@ -61,7 +56,6 @@ def training_target(trial, epsilon, total_steps, episode_number, memory_fraction
                                   using_gpu=using_gpu,
                                   memory_fraction=memory_fraction,
                                   config_name=trial["Environment Name"],
-                                  realistic_bouts=realistic_bouts,
                                   continuous_actions=continuous_actions,
                                   epsilon=epsilon,
                                   model_exists=trial["Model Exists"],
@@ -75,13 +69,12 @@ def training_target(trial, epsilon, total_steps, episode_number, memory_fraction
 class DQNTrainingService(TrainingService, BaseDQN):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_actions, epsilon, model_exists,
+                 config_name, continuous_actions, epsilon, model_exists,
                  configuration_index, full_logs, profile_speed):
         super().__init__(model_name=model_name, trial_number=trial_number,
                          total_steps=total_steps, episode_number=episode_number,
                          monitor_gpu=monitor_gpu, using_gpu=using_gpu,
                          memory_fraction=memory_fraction, config_name=config_name,
-                         realistic_bouts=realistic_bouts,
                          continuous_actions=continuous_actions,
                          model_exists=model_exists,
                          configuration_index=configuration_index,
@@ -159,7 +152,6 @@ class DQNTrainingService(TrainingService, BaseDQN):
 
         # Run data gathering
         assay_target(trial, self.total_steps, self.episode_number, self.memory_fraction)
-        # TODO: might need to clear data.
 
         # Perform cursory analysis on data
         data_index_service = DataIndexServiceDiscrete(self.model_id)

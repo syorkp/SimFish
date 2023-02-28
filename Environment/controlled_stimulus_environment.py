@@ -14,14 +14,14 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     For this environment, the following stimuli are available: prey, predators.
     """
 
-    def __init__(self, env_variables, stimuli, realistic_bouts, using_gpu, tethered=True, set_positions=False, moving=False,
+    def __init__(self, env_variables, stimuli, using_gpu, tethered=True, set_positions=False, moving=False,
                  random=False, reset_each_step=False, reset_interval=1, sediment=None, draw_screen=False, assay_all_details=None):
         super().__init__(env_variables, draw_screen, using_gpu)
 
         if tethered:
-            self.fish = TetheredFish(self.board, env_variables, self.dark_col, realistic_bouts, using_gpu)
+            self.fish = TetheredFish(self.board, env_variables, self.dark_col, using_gpu)
         else:
-            self.fish = Fish(self.board, env_variables, self.dark_col, realistic_bouts, using_gpu)
+            self.fish = Fish(self.board, env_variables, self.dark_col, using_gpu)
         self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 
         self.prey_positions = {}

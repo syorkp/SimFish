@@ -6,7 +6,7 @@ from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.eye import Eye
 
 # from Analysis.Video.behaviour_video_construction import DrawingBoard
-from Tools.drawing_board_new import DrawingBoard
+from Tools.drawing_board import DrawingBoard
 from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.anchored_scale_bar import AnchoredHScaleBar
 
@@ -138,7 +138,7 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
                                                 )
 
     # Left eye
-    channel_angles_surrounding = test_eye_l.channel_angles_surrounding_stacked + fish_angle
+    channel_angles_surrounding = test_eye_l.photoreceptor_angles_surrounding_stacked + fish_angle
     uv_arena_pixels = full_masked_image[:, :, 1:2]
     red_arena_pixels = np.concatenate(
          (full_masked_image[:, :, 0:1], full_masked_image[:, :, 2:]), axis=2)
@@ -146,16 +146,16 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
                                                        masked_arena_pixels_red=red_arena_pixels,
                                                        eye_x=left_eye_pos[0],
                                                        eye_y=left_eye_pos[1],
-                                                       channel_angles_surrounding=channel_angles_surrounding,
-                                                       n_channels_uv=test_eye_l.uv_photoreceptor_num,
-                                                       n_channels_red=test_eye_l.red_photoreceptor_num)
+                                                       photoreceptor_angles_surrounding=channel_angles_surrounding,
+                                                       n_photoreceptors_uv=test_eye_l.uv_photoreceptor_num,
+                                                       n_photoreceptors_red=test_eye_l.red_photoreceptor_num)
 
     uv_points = np.unique(np.reshape(uv_points, (-1, 2)), axis=0)
     arena[uv_points[:, 1], uv_points[:, 0]] = 1
     board.db_visualisation[uv_points[:, 1], uv_points[:, 0], 0:2] += 0.5
 
     # Right eye
-    channel_angles_surrounding = test_eye_r.channel_angles_surrounding_stacked + fish_angle
+    channel_angles_surrounding = test_eye_r.photoreceptor_angles_surrounding_stacked + fish_angle
     uv_arena_pixels = full_masked_image[:, :, 1:2]
     red_arena_pixels = np.concatenate(
          (full_masked_image[:, :, 0:1], full_masked_image[:, :, 2:]), axis=2)
@@ -163,9 +163,9 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
                                                        masked_arena_pixels_red=red_arena_pixels,
                                                        eye_x=right_eye_pos[0],
                                                        eye_y=right_eye_pos[1],
-                                                       channel_angles_surrounding=channel_angles_surrounding,
-                                                       n_channels_uv=test_eye_r.uv_photoreceptor_num,
-                                                       n_channels_red=test_eye_r.red_photoreceptor_num)
+                                                       photoreceptor_angles_surrounding=channel_angles_surrounding,
+                                                       n_photoreceptors_uv=test_eye_r.uv_photoreceptor_num,
+                                                       n_photoreceptors_red=test_eye_r.red_photoreceptor_num)
 
     uv_points = np.unique(np.reshape(uv_points, (-1, 2)), axis=0)
     arena[uv_points[:, 1], uv_points[:, 0]] = 1

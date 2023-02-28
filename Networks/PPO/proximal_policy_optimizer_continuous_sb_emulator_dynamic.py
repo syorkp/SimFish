@@ -1,8 +1,7 @@
 import tensorflow.compat.v1 as tf
-import tensorflow_probability as tfp
 
 from Networks.dynamic_base_network import DynamicBaseNetwork
-from Networks.Distributions.masked_multivariate_normal import MaskedMultivariateNormal
+from Networks.PPO.masked_multivariate_normal import MaskedMultivariateNormal
 
 tf.disable_v2_behavior()
 
@@ -116,7 +115,7 @@ class PPONetworkActorMultivariate2Dynamic(DynamicBaseNetwork):
         self.value_loss = .5 * tf.reduce_mean(tf.maximum(self.critic_loss_1, self.critic_loss_2))
 
         # Entropy
-        self.entropy = tf.reduce_mean(self.action_distribution.entropy())  # TODO: works with new distribution?
+        self.entropy = tf.reduce_mean(self.action_distribution.entropy())
 
         # Combined loss
         self.entropy_coefficient = tf.placeholder(dtype=tf.float32, name="entropy_coefficient")  # 0.01
@@ -136,10 +135,6 @@ class PPONetworkActorMultivariate2Dynamic(DynamicBaseNetwork):
 
         self.trainer = tf.train.AdamOptimizer(learning_rate=self.learning_rate, epsilon=1e-5)
         self.train = self.trainer.apply_gradients(self.model_gradients)
-
-        # TODO: Probably not meant to be there, but changed since main tests.
-        # self.train = tf.train.AdamOptimizer(self.learning_rate, name='optimizer').minimize(
-        #     self.total_loss)  # Two trains?
 
     @staticmethod
     def bounded_output(x, lower, upper):

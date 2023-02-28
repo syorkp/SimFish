@@ -37,7 +37,7 @@ def delete_nv_folder():
 class BaseService:
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_actions, monitor_performance=False):
+                 config_name, continuous_actions, monitor_performance=False):
 
         self.monitor_performance = monitor_performance
         if self.monitor_performance:
@@ -70,7 +70,6 @@ class BaseService:
         self.simulation = None
         self.step_number = 0
         self.continuous_actions = continuous_actions
-        self.realistic_bouts = realistic_bouts
 
         # Maintain trial variables
         if episode_number is not None:
