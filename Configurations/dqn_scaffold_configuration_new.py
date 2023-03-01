@@ -222,8 +222,6 @@ env = {
     'ci': 1.5e-04,  # Final for sublinear PPO: 0.0003
     'ca': 1.5e-04,  # Final for sublinear PPO: 0.0003
     'baseline_decrease': 0.0002,  # Final for sublinear PPO: 0.0015
-    'trajectory_A': False,  # Normally 5.0,
-    'trajectory_B': 0,  # 0 results in linear reward scaling. Previously 2.5
     'consumption_energy_gain': 1.0,
 
     # Reward

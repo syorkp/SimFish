@@ -253,16 +253,24 @@ class Eye:
         #                                               "light_gain"] / 200)
         self.red_readings = self.add_noise_to_readings(red_readings)
 
+        # TODO: Bring back after test...
+        # interp_uv_readings = self.chosen_math_library.zeros((self.interpolated_observation.shape[0], 1))
+        # interp_red_readings = self.chosen_math_library.zeros((self.interpolated_observation.shape[0], 2))
+        # interp_uv_readings[:, 0] = self.chosen_math_library.interp(self.interpolated_observation,
+        #                                                            self.uv_photoreceptor_angles, self.uv_readings[:, 0])
+        # interp_red_readings[:, 0] = self.chosen_math_library.interp(self.interpolated_observation,
+        #                                                             self.red_photoreceptor_angles,
+        #                                                             self.red_readings[:, 0])
+        # interp_red_readings[:, 1] = self.chosen_math_library.interp(self.interpolated_observation,
+        #                                                             self.red_photoreceptor_angles,
+        #                                                             self.red_readings[:, 1])
+
+        # TODO: Remove after test
         interp_uv_readings = self.chosen_math_library.zeros((self.interpolated_observation.shape[0], 1))
         interp_red_readings = self.chosen_math_library.zeros((self.interpolated_observation.shape[0], 2))
-        interp_uv_readings[:, 0] = self.chosen_math_library.interp(self.interpolated_observation,
-                                                                   self.uv_photoreceptor_angles, self.uv_readings[:, 0])
-        interp_red_readings[:, 0] = self.chosen_math_library.interp(self.interpolated_observation,
-                                                                    self.red_photoreceptor_angles,
-                                                                    self.red_readings[:, 0])
-        interp_red_readings[:, 1] = self.chosen_math_library.interp(self.interpolated_observation,
-                                                                    self.red_photoreceptor_angles,
-                                                                    self.red_readings[:, 1])
+        interp_red_readings[:, 0] = np.array(resize(self.red_readings[:, 0], (100, 1), ))
+        interp_uv_readings[:, 0] = np.array(resize(self.uv_readings[:, 0], (100, 1)))
+        interp_red_readings[:, 1] = np.array(resize(self.red_readings[:, 1], (100, 1)))
 
         # Scale for appropriate range
         interp_uv_readings *= self.env_variables["uv_scaling_factor"]

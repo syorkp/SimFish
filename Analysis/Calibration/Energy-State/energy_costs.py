@@ -2,6 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+# TODO: NEED TO UPDATE WITH REMOVAL OF TRAJECTORY SYSTEM - is now purely linear scaling
+
+
 def intake_scale(energy_level, trajectory_B, trajectory_B2):
     """Provides nonlinear scaling for consumption reward and energy level change for new simulation"""
     return trajectory_B2 * np.exp(-trajectory_B * energy_level)

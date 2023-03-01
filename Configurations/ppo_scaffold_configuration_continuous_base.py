@@ -229,8 +229,6 @@ env = {
        'ci': 1.5e-04,  # 0.0004 in previous best.
        'ca': 1.5e-04,  # 0.0004 in previous best.
        'baseline_decrease': 0.0002,
-       'trajectory_A': 5.0,
-       'trajectory_B': 2.5,
        'consumption_energy_gain': 1.0,
 
        # Reward

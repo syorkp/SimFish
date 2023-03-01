@@ -74,10 +74,6 @@ class Fish:
         self.ci = self.env_variables['ci']
         self.ca = self.env_variables['ca']
         self.baseline_decrease = self.env_variables['baseline_decrease']
-        self.trajectory_A = self.env_variables['trajectory_A']
-        self.trajectory_A2 = 1 / np.exp(self.trajectory_A)
-        self.trajectory_B = self.env_variables['trajectory_B']
-        self.trajectory_B2 = 1 / np.exp(self.trajectory_B)
 
         self.action_reward_scaling = self.env_variables['action_reward_scaling']
         self.consumption_reward_scaling = self.env_variables['consumption_reward_scaling']
@@ -295,39 +291,23 @@ class Fish:
 
         return photons
 
-    def intake_scale(self, energy_level):
-        """Provides nonlinear scaling for consumption reward and energy level change for new simulation"""
-        return self.trajectory_B2 * np.exp(-self.trajectory_B * energy_level)
-
-    def action_scale(self, energy_level):
-        """Provides nonlinear scaling for action penalty and energy level change for new simulation"""
-        if self.trajectory_A:
-            return self.trajectory_A2 * np.exp(self.trajectory_A * energy_level)
-        else:
-            return 1
-
     def update_energy_level(self, reward, consumption):
         """Updates the current energy state for continuous and discrete fish."""
-        unscaled_consumption = 1.0 * consumption
+        energy_intake = 1.0 * consumption
 
         if self.action_energy_use_scaling == "Nonlinear":
-            unscaled_energy_use = self.ci * (abs(self.prev_action_impulse) ** 2) + self.ca * (
+            energy_use = self.ci * (abs(self.prev_action_impulse) ** 2) + self.ca * (
                         abs(self.prev_action_angle) ** 2) + self.baseline_decrease
         elif self.action_energy_use_scaling == "Linear":
-            unscaled_energy_use = self.ci * (abs(self.prev_action_impulse)) + self.ca * (
+            energy_use = self.ci * (abs(self.prev_action_impulse)) + self.ca * (
                 abs(self.prev_action_angle)) + self.baseline_decrease
         elif self.action_energy_use_scaling == "Sublinear":
-            unscaled_energy_use = self.ci * (abs(self.prev_action_impulse) ** 0.5) + self.ca * (
+            energy_use = self.ci * (abs(self.prev_action_impulse) ** 0.5) + self.ca * (
                         abs(self.prev_action_angle) ** 0.5) + self.baseline_decrease
         else:
-            unscaled_energy_use = self.ci * (abs(self.prev_action_impulse) ** 0.5) + self.ca * (
+            energy_use = self.ci * (abs(self.prev_action_impulse) ** 0.5) + self.ca * (
                         abs(self.prev_action_angle) ** 0.5) + self.baseline_decrease
 
-        # Nonlinear reward scaling
-        intake_s = self.intake_scale(self.energy_level)
-        action_s = self.action_scale(self.energy_level)
-        energy_intake = (intake_s * unscaled_consumption)
-        energy_use = (action_s * unscaled_energy_use)
         reward += (energy_intake * self.consumption_reward_scaling) - (energy_use * self.action_reward_scaling)
 
         self.energy_level += unscaled_consumption - unscaled_energy_use

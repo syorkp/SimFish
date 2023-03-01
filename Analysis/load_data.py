@@ -36,7 +36,14 @@ def load_data(model_name, assay_configuration, assay_id, training_data=False):
 
 
 if __name__ == "__main__":
-    d = load_data("dqn_new-1", "Episode 200", f"Episode 200", training_data=True)
+    d = load_data("dqn_new_even-1", "Episode 200", f"Episode 200", training_data=True)
+
+    fish_prey_vectors = np.expand_dims(d["fish_position"], 1) - d["prey_positions"]
+    fish_prey_distances = (fish_prey_vectors[:, :, 0] ** 2 + fish_prey_vectors[:, :, 1] ** 2) ** 0.5
+    min_distance = np.min(fish_prey_distances, axis=1)
+    max_uv = np.max(d["observation"][:, :, 1, :], axis=(1, 2))
+    comb = np.concatenate((np.expand_dims(min_distance, 1), np.expand_dims(max_uv, 1)), axis=1)
+
     # datas = []
     # obs = []
     # for i in range(1, 11):
