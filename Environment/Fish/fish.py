@@ -310,7 +310,7 @@ class Fish:
 
         reward += (energy_intake * self.consumption_reward_scaling) - (energy_use * self.action_reward_scaling)
 
-        self.energy_level += unscaled_consumption - unscaled_energy_use
+        self.energy_level += energy_intake - energy_use
         if self.energy_level > 1.0:
             self.energy_level = 1.0
 
