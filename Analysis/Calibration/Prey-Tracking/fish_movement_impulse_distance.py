@@ -19,9 +19,9 @@ class TestEnvironment:
             'p_fast': 0.1,
             'p_escape': 0.5,
             'p_switch': 0.0,  # Corresponds to 1/average duration of movement type.
-            'slow_speed_paramecia': 0.01,
-            'fast_speed_paramecia': 0.02,
-            'jump_speed_paramecia': 0.03,
+            'slow_impulse_paramecia': 0.01,
+            'fast_impulse_paramecia': 0.02,
+            'jump_impulse_paramecia': 0.03,
             'prey_fluid_displacement': True,
 
             'predator_mass': 10.,
@@ -73,7 +73,7 @@ class TestEnvironment:
             #                         enumerate(self.paramecia_gaits)]
 
             # Generate impulses
-            impulse_types = [0, self.env_variables["slow_speed_paramecia"], self.env_variables["fast_speed_paramecia"]]
+            impulse_types = [0, self.env_variables["slow_impulse_paramecia"], self.env_variables["fast_impulse_paramecia"]]
             impulses = [impulse_types[gait] for gait in self.paramecia_gaits]
 
             # Angles of change - can generate as same for all.
@@ -95,7 +95,7 @@ class TestEnvironment:
                 #     if self.env_variables["prey_jump"] and np.random.choice(1, [0, 1],
                 #                                                             p=[1 - self.env_variables["p_escape"],
                 #                                                                self.env_variables["p_escape"]])[0] == 1:
-                #         prey_body.apply_impulse_at_local_point((self.env_variables["jump_speed_paramecia"], 0))
+                #         prey_body.apply_impulse_at_local_point((self.env_variables["jump_impulse_paramecia"], 0))
                 #
                 # else:
                 #     prey_body.angle = prey_body.angle + angle_changes[i]

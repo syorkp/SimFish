@@ -61,7 +61,7 @@ def plot_strike_zone(fraction_capture_permitted, angle_deviation_allowed, n_repe
 
     # Display fish.
     x, y = 10, 16
-    mouth_size, head_size, tail_length = env.env_variables['fish_mouth_size'], env.env_variables['fish_head_size'], \
+    mouth_size, head_size, tail_length = env.env_variables['fish_mouth_radius'], env.env_variables['fish_head_radius'], \
                                          env.env_variables['fish_tail_length']
     mouth_size *= resolution/10
     head_size *= resolution/10

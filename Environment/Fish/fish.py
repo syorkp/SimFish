@@ -16,31 +16,31 @@ class Fish:
 
         # For the purpose of producing a calibration curve.
         if fish_mass is None:
-            inertia = pymunk.moment_for_circle(env_variables['fish_mass'], 0, env_variables['fish_head_size'], (0, 0))
+            inertia = pymunk.moment_for_circle(env_variables['fish_mass'], 0, env_variables['fish_head_radius'], (0, 0))
         else:
-            inertia = pymunk.moment_for_circle(fish_mass, 0, env_variables['fish_mouth_size'], (0, 0))
+            inertia = pymunk.moment_for_circle(fish_mass, 0, env_variables['fish_mouth_radius'], (0, 0))
 
         self.env_variables = env_variables
         self.body = pymunk.Body(1, inertia)
 
         # Mouth
-        self.mouth = pymunk.Circle(self.body, env_variables['fish_mouth_size'], offset=(0, 0))
+        self.mouth = pymunk.Circle(self.body, env_variables['fish_mouth_radius'], offset=(0, 0))
         self.mouth.color = (0, 1, 0)
         self.mouth.elasticity = 1.0
         self.mouth.collision_type = 3
 
         # Head
-        self.head = pymunk.Circle(self.body, env_variables['fish_head_size'],
-                                  offset=(-env_variables['fish_head_size'], 0))
+        self.head = pymunk.Circle(self.body, env_variables['fish_head_radius'],
+                                  offset=(-env_variables['fish_head_radius'], 0))
         self.head.color = (0, 1, 0)
         self.head.elasticity = 1.0
         self.head.collision_type = 6
 
         # # Tail
-        tail_coordinates = ((-env_variables['fish_head_size'], 0),
-                            (-env_variables['fish_head_size'], - env_variables['fish_head_size']),
-                            (-env_variables['fish_head_size'] - env_variables['fish_tail_length'], 0),
-                            (-env_variables['fish_head_size'], env_variables['fish_head_size']))
+        tail_coordinates = ((-env_variables['fish_head_radius'], 0),
+                            (-env_variables['fish_head_radius'], - env_variables['fish_head_radius']),
+                            (-env_variables['fish_head_radius'] - env_variables['fish_tail_length'], 0),
+                            (-env_variables['fish_head_radius'], env_variables['fish_head_radius']))
         self.tail = pymunk.Poly(self.body, tail_coordinates)
         self.tail.color = (0, 1, 0)
         self.tail.elasticity = 1.0
@@ -51,7 +51,7 @@ class Fish:
         self.retinal_field = env_variables['visual_field'] * (np.pi / 180)
         self.conv_state = 0
 
-        max_visual_range = np.absolute(np.log(0.001) / self.env_variables["decay_rate"])
+        max_visual_range = np.absolute(np.log(0.001) / self.env_variables["light_decay_rate"])
 
         self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True, env_variables, dark_col, using_gpu,
                             max_visual_range=max_visual_range)
@@ -73,7 +73,7 @@ class Fish:
         self.energy_level = 1.0
         self.ci = self.env_variables['ci']
         self.ca = self.env_variables['ca']
-        self.baseline_decrease = self.env_variables['baseline_decrease']
+        self.baseline_energy_use = self.env_variables['baseline_energy_use']
 
         self.action_reward_scaling = self.env_variables['action_reward_scaling']
         self.consumption_reward_scaling = self.env_variables['consumption_reward_scaling']
@@ -297,16 +297,16 @@ class Fish:
 
         if self.action_energy_use_scaling == "Nonlinear":
             energy_use = self.ci * (abs(self.prev_action_impulse) ** 2) + self.ca * (
-                        abs(self.prev_action_angle) ** 2) + self.baseline_decrease
+                        abs(self.prev_action_angle) ** 2) + self.baseline_energy_use
         elif self.action_energy_use_scaling == "Linear":
             energy_use = self.ci * (abs(self.prev_action_impulse)) + self.ca * (
-                abs(self.prev_action_angle)) + self.baseline_decrease
+                abs(self.prev_action_angle)) + self.baseline_energy_use
         elif self.action_energy_use_scaling == "Sublinear":
             energy_use = self.ci * (abs(self.prev_action_impulse) ** 0.5) + self.ca * (
-                        abs(self.prev_action_angle) ** 0.5) + self.baseline_decrease
+                        abs(self.prev_action_angle) ** 0.5) + self.baseline_energy_use
         else:
             energy_use = self.ci * (abs(self.prev_action_impulse) ** 0.5) + self.ca * (
-                        abs(self.prev_action_angle) ** 0.5) + self.baseline_decrease
+                        abs(self.prev_action_angle) ** 0.5) + self.baseline_energy_use
 
         reward += (energy_intake * self.consumption_reward_scaling) - (energy_use * self.action_reward_scaling)
 

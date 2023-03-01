@@ -11,7 +11,7 @@ def build_fish_model(env_variables, continuous):
 
     db = DrawingBoard(env_variables["width"],
                          env_variables["height"],
-                         env_variables["decay_rate"],
+                         env_variables["light_decay_rate"],
                          env_variables["uv_photoreceptor_rf_size"],
                          False,
                          False)
@@ -43,7 +43,7 @@ def run_simulation(fish, actions, captures, duration=2000):
 
 if __name__ == "__main__":
     learning_params, env_variables, n, b, c = load_assay_configuration_files("dqn_predator-1")
-    env_variables["baseline_decrease"] = 0.0002
+    env_variables["baseline_energy_use"] = 0.0002
     env_variables["ca"] = 1.5e-04
     env_variables["ci"] = 1.5e-04
     # env_variables["action_energy_use_scaling"] = "Nonlinear"

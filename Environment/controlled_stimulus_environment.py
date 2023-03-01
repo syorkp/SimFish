@@ -138,7 +138,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
             if self.fish.touched_edge:
                 self.fish.touched_edge = False
             if self.show_all:
-                self.board.erase(bkg=self.env_variables['bkg_scatter'])
+                self.board.erase(bkg=self.env_variables['background_brightness'])
                 self.draw_shapes(visualisation=True)
                 if self.draw_screen:
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5)/255.)
@@ -152,7 +152,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.in_light_history.append(self.fish.body.position[0] > self.dark_col)
 
         self.num_steps += 1
-        self.board.erase(bkg=self.env_variables['bkg_scatter'])
+        self.board.erase(bkg=self.env_variables['background_brightness'])
         self.draw_shapes(visualisation=False)
 
         # Calculate internal state

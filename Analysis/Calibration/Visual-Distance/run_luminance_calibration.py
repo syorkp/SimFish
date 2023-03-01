@@ -29,17 +29,17 @@ n_steps = 2000
 with open(file_path, 'r') as f:
     env = json.load(f)
 env["light_gain"] = 1.0
-env["bkg_scatter"] = 0.0008
+env["background_brightness"] = 0.0008
 
 env2 = copy.deepcopy(env)
-env2["bkg_scatter"] = 0
+env2["background_brightness"] = 0
 env2["shot_noise"] = False
 
 env3 = copy.deepcopy(env)
 env3["light_gain"] = 0.2
 
 env4 = copy.deepcopy(env3)
-env4["bkg_scatter"] = 0
+env4["background_brightness"] = 0
 env4["shot_noise"] = False
 
 sim_state_1 = ContinuousNaturalisticEnvironment(env, using_gpu=False)
@@ -150,38 +150,38 @@ for t in range(n_steps):
 # plt.plot(distances, p(distances), color="r")
 # plt.show()
 
-with open(f"Analysis/Calibration/LuminanceCalibration/UVSNR-L{env['light_gain']}-S{env['decay_rate']}-W{env['width']}-BK{env['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/UVSNR-L{env['light_gain']}-S{env['light_decay_rate']}-W{env['width']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(uv_snr))
 
-with open(f"Analysis/Calibration/LuminanceCalibration/UVDistance-L{env['light_gain']}-S{env['decay_rate']}-W{env['width']}-BK{env['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/UVDistance-L{env['light_gain']}-S{env['light_decay_rate']}-W{env['width']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(uv_distances))
 
-with open(f"Analysis/Calibration/LuminanceCalibration/RedSNR-L{env['light_gain']}-S{env['decay_rate']}-W{env['width']}-BK{env['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/RedSNR-L{env['light_gain']}-S{env['light_decay_rate']}-W{env['width']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(red_snr))
 
-with open(f"Analysis/Calibration/LuminanceCalibration/Red2SNR-L{env['light_gain']}-S{env['decay_rate']}-W{env['width']}-BK{env['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/Red2SNR-L{env['light_gain']}-S{env['light_decay_rate']}-W{env['width']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(red2_snr))
 
 
-with open(f"Analysis/Calibration/LuminanceCalibration/Dist-L{env['light_gain']}-S{env['decay_rate']}-W{env['width']}-BK{env['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/Dist-L{env['light_gain']}-S{env['light_decay_rate']}-W{env['width']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(distinguishability_score))
 
 
 
-with open(f"Analysis/Calibration/LuminanceCalibration/UVSNR-L{env3['light_gain']}-S{env3['decay_rate']}-W{env3['width']}-BK{env3['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/UVSNR-L{env3['light_gain']}-S{env3['light_decay_rate']}-W{env3['width']}-BK{env3['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(second_uv_snr))
 
-with open(f"Analysis/Calibration/LuminanceCalibration/UVDistance-L{env3['light_gain']}-S{env3['decay_rate']}-W{env3['width']}-BK{env3['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/UVDistance-L{env3['light_gain']}-S{env3['light_decay_rate']}-W{env3['width']}-BK{env3['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(second_uv_distances))
 
-with open(f"Analysis/Calibration/LuminanceCalibration/RedSNR-L{env3['light_gain']}-S{env3['decay_rate']}-W{env3['width']}-BK{env3['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/RedSNR-L{env3['light_gain']}-S{env3['light_decay_rate']}-W{env3['width']}-BK{env3['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(second_red_snr))
 
-with open(f"Analysis/Calibration/LuminanceCalibration/Red2SNR-L{env3['light_gain']}-S{env3['decay_rate']}-W{env3['width']}-BK{env3['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/Red2SNR-L{env3['light_gain']}-S{env3['light_decay_rate']}-W{env3['width']}-BK{env3['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(second_red2_snr))
 
 
 
 
-with open(f"Analysis/Calibration/LuminanceCalibration/Dist-L{env3['light_gain']}-S{env3['decay_rate']}-W{env3['width']}-BK{env3['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/Dist-L{env3['light_gain']}-S{env3['light_decay_rate']}-W{env3['width']}-BK{env3['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(second_distinguishability_score))

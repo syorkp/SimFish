@@ -11,7 +11,7 @@ from Environment.Board.field_of_view import FieldOfView
 
 class DrawingBoard:
 
-    def __init__(self, arena_width, arena_height, uv_decay_rate, red_decay_rate, photoreceptor_rf_size, using_gpu,
+    def __init__(self, arena_width, arena_height, uv_light_decay_rate, red_light_decay_rate, photoreceptor_rf_size, using_gpu,
                  prey_size=4, predator_size=100, visible_scatter=0.3, dark_light_ratio=0.0, dark_gain=0.01,
                  light_gain=1.0, light_gradient=0, max_visual_distance=1500):
 
@@ -25,8 +25,8 @@ class DrawingBoard:
 
         self.width = arena_width
         self.height = arena_height
-        self.uv_decay_rate = uv_decay_rate
-        self.red_decay_rate = red_decay_rate
+        self.uv_light_decay_rate = uv_light_decay_rate
+        self.red_light_decay_rate = red_light_decay_rate
         self.light_gain = light_gain
         self.light_gradient = light_gradient
         self.photoreceptor_rf_size = photoreceptor_rf_size
@@ -176,8 +176,8 @@ class DrawingBoard:
         y = self.chosen_math_library.expand_dims(y, 1)
         j = self.max_visual_distance + 1
         positional_mask = (((x - j) ** 2 + (y - j) ** 2) ** 0.5)  # Measure of distance from centre to every pixel
-        desired_uv_scatter = self.chosen_math_library.exp(-self.uv_decay_rate * positional_mask)
-        desired_red_scatter = self.chosen_math_library.exp(-self.red_decay_rate * positional_mask)
+        desired_uv_scatter = self.chosen_math_library.exp(-self.uv_light_decay_rate * positional_mask)
+        desired_red_scatter = self.chosen_math_library.exp(-self.red_light_decay_rate * positional_mask)
         # To offset the effect of reduced sampling further away from fish (an unwanted effect that yielded massive
         # performance improvements). Should counter them exactly.
         implicit_scatter = self.chosen_math_library.sin(self.photoreceptor_rf_size) * positional_mask
@@ -705,21 +705,21 @@ class DrawingBoard:
             fish_angles_to_show = self.fish_angle_buffer
 
         for i, a in enumerate(actions_to_show):
-            adjusted_colour_index = ((1 - self.env_variables["bkg_scatter"]) * (i + 1) / len(actions_to_show)) + \
-                                    self.env_variables["bkg_scatter"]
+            adjusted_colour_index = ((1 - self.env_variables["background_brightness"]) * (i + 1) / len(actions_to_show)) + \
+                                    self.env_variables["background_brightness"]
             if self.continuous_actions:
                 # action_colour = (1 * ((i+1)/len(actions_to_show)), 0, 0)
                 if a[1] < 0:
                     action_colour = (
-                    adjusted_colour_index, self.env_variables["bkg_scatter"], self.env_variables["bkg_scatter"])
+                    adjusted_colour_index, self.env_variables["background_brightness"], self.env_variables["background_brightness"])
                 else:
-                    action_colour = (self.env_variables["bkg_scatter"], adjusted_colour_index, adjusted_colour_index)
+                    action_colour = (self.env_variables["background_brightness"], adjusted_colour_index, adjusted_colour_index)
 
                 self.board.show_action_continuous(a[0], a[1], fish_angles_to_show[i], positions_to_show[i][0],
                                                   positions_to_show[i][1], action_colour)
             else:
                 action_colour = self.fish.get_action_colour(actions_to_show[i], adjusted_colour_index,
-                                                            self.env_variables["bkg_scatter"])
+                                                            self.env_variables["background_brightness"])
                 self.board.show_action_discrete(fish_angles_to_show[i], positions_to_show[i][0],
                                                 positions_to_show[i][1], action_colour)
 

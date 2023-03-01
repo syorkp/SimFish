@@ -9,8 +9,8 @@ from scipy.stats import poisson
 
 from Analysis.load_model_config import load_assay_configuration_files
 
-get_max_bkg_scatter = importlib.import_module(
-    "Analysis.Calibration.Visual-Distance.full_model_bkg_count").get_max_bkg_scatter
+get_max_background_brightness = importlib.import_module(
+    "Analysis.Calibration.Visual-Distance.full_model_bkg_count").get_max_background_brightness
 full_model_prey_count = importlib.import_module(
     "Analysis.Calibration.Visual-Distance.full_model_prey_count").full_model_prey_count
 
@@ -34,7 +34,7 @@ def compute_distinguishability(prey_stimulus, max_noise_stimulus):
     return distinguishability
 
 
-def plot_distinguishability_against_distance(max_distance, bkg_scatter, luminance, scaling_factor,
+def plot_distinguishability_against_distance(max_distance, background_brightness, luminance, scaling_factor,
                                              rf_size, decay_constant, max_curve_distance=1000):
     distinguishability_scores = []
     distances = np.linspace(10, max_curve_distance, 10)
@@ -47,10 +47,10 @@ def plot_distinguishability_against_distance(max_distance, bkg_scatter, luminanc
     env_variables["shot_noise"] = False
     env_variables["dark_light_ratio"] = 0.0
 
-    max_uv_scatter = get_max_bkg_scatter(bkg_scatter, decay_constant, rf_size, 1500, 1500, luminance, env_variables)
+    max_uv_scatter = get_max_background_brightness(background_brightness, decay_constant, rf_size, 1500, 1500, luminance, env_variables)
     max_uv_scatter *= scaling_factor
 
-    env_variables["bkg_scatter"] = 0
+    env_variables["background_brightness"] = 0
 
     for distance in distances:
         uv_prey = full_model_prey_count(0, decay_constant, rf_size, 1500, 1500, luminance, env_variables, distance)
@@ -64,7 +64,7 @@ def plot_distinguishability_against_distance(max_distance, bkg_scatter, luminanc
         uv_scatter_photons.append(max_uv_scatter)
 
     plt.plot(distances, distinguishability_scores)
-    plt.title(f"BKG: {bkg_scatter}, Luminance: {luminance}")
+    plt.title(f"BKG: {background_brightness}, Luminance: {luminance}")
     plt.xlabel("Distance (mm x10^1)")
     plt.ylabel("Percentage Easily Discriminable")
     plt.show()
@@ -74,7 +74,7 @@ def plot_distinguishability_against_distance(max_distance, bkg_scatter, luminanc
     range_uv_scatter = 1.96 * np.sqrt(np.abs(np.array(uv_scatter_photons)))
     plt.plot(distances, uv_prey_photons, color="r")
     plt.plot(distances, uv_scatter_photons, color="b")
-    plt.title(f"Absolute photon values. BKG: {bkg_scatter}, Luminance: {luminance}")
+    plt.title(f"Absolute photon values. BKG: {background_brightness}, Luminance: {luminance}")
     # plt.vlines(visual_distance, min(distinguishability_scores), max(uv_prey_photons) + max(range_uv_prey), color="green")
     plt.fill_between(distances, np.array(uv_prey_photons) - range_uv_prey,
                      np.array(uv_prey_photons) + range_uv_prey, color="r", alpha=0.2)
@@ -85,7 +85,7 @@ def plot_distinguishability_against_distance(max_distance, bkg_scatter, luminanc
     plt.show()
 
 
-def plot_distinguishability_against_luminance(visual_distance, max_distance, bkg_scatter, scaling_factor,
+def plot_distinguishability_against_luminance(visual_distance, max_distance, background_brightness, scaling_factor,
                                               rf_size, decay_constant, min_luminance, max_luminance):
     luminance_vals = np.linspace(min_luminance, max_luminance, 100)
 
@@ -96,10 +96,10 @@ def plot_distinguishability_against_luminance(visual_distance, max_distance, bkg
     env_variables["shot_noise"] = False
     env_variables["dark_light_ratio"] = 0.0
 
-    max_uv_scatter = get_max_bkg_scatter(bkg_scatter, decay_constant, rf_size, 1500, 1500, luminance, env_variables)
+    max_uv_scatter = get_max_background_brightness(background_brightness, decay_constant, rf_size, 1500, 1500, luminance, env_variables)
     max_uv_scatter *= scaling_factor
 
-    env_variables["bkg_scatter"] = 0
+    env_variables["background_brightness"] = 0
 
     for l in luminance_vals:
         uv_prey = full_model_prey_count(0, decay_constant, rf_size, 1500, 1500, l, env_variables, distance)
@@ -130,13 +130,13 @@ def plot_distinguishability_against_luminance_two_distances(model_config, visual
     learning_params, env_variables, n, b, c = load_assay_configuration_files(model_config)
 
     luminance = env_variables["light_gain"]
-    # env_variables['decay_rate'] = 0.008
-    decay_constant = env_variables['decay_rate']
+    # env_variables['light_decay_rate'] = 0.008
+    decay_constant = env_variables['light_decay_rate']
     env_variables["shot_noise"] = False
     env_variables["dark_light_ratio"] = 0.0
-    env_variables["max_visual_distance"] = np.absolute(np.log(0.001) / env_variables["decay_rate"])
+    env_variables["max_visual_distance"] = np.absolute(np.log(0.001) / env_variables["light_decay_rate"])
 
-    max_uv_scatter = get_max_bkg_scatter(env_variables["bkg_scatter"],
+    max_uv_scatter = get_max_background_brightness(env_variables["background_brightness"],
                                          decay_constant,
                                          env_variables["uv_photoreceptor_rf_size"],
                                          env_variables["width"],
@@ -144,7 +144,7 @@ def plot_distinguishability_against_luminance_two_distances(model_config, visual
                                          luminance,
                                          env_variables)
 
-    env_variables["bkg_scatter"] = 0
+    env_variables["background_brightness"] = 0
 
     uv_scatter_photons = int(max_uv_scatter)
     uv_stimulus_photons_full = []

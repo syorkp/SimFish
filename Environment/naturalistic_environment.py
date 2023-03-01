@@ -69,12 +69,12 @@ class NaturalisticEnvironment(BaseEnvironment):
         # self.mean_observation_vals = [[0, 0, 0]]
         # self.max_observation_vals = [[0, 0, 0]]
         super().reset()
-        self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_size'] + 40,
+        self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_radius'] + 40,
                                                      self.env_variables['width'] - (self.env_variables[
-                                                                                        'fish_mouth_size'] + 40)),
-                                   np.random.randint(self.env_variables['fish_mouth_size'] + 40,
+                                                                                        'fish_mouth_radius'] + 40)),
+                                   np.random.randint(self.env_variables['fish_mouth_radius'] + 40,
                                                      self.env_variables['height'] - (self.env_variables[
-                                                                                         'fish_mouth_size'] + 40)))
+                                                                                         'fish_mouth_radius'] + 40)))
         self.fish.body.angle = np.random.random() * 2 * np.pi
 
         
@@ -85,40 +85,40 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         if self.env_variables["differential_prey"]:
             self.prey_cloud_locations = [
-                [np.random.randint(low=120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
+                [np.random.randint(low=120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_radius'],
                                    high=self.env_variables['width'] - (
                                            self.env_variables['prey_size'] + self.env_variables[
-                                       'fish_mouth_size']) - 120),
-                 np.random.randint(low=120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
+                                       'fish_mouth_radius']) - 120),
+                 np.random.randint(low=120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_radius'],
                                    high=self.env_variables['height'] - (
                                            self.env_variables['prey_size'] + self.env_variables[
-                                       'fish_mouth_size']) - 120)]
+                                       'fish_mouth_radius']) - 120)]
                 for cloud in range(int(self.env_variables["prey_cloud_num"]))]
 
             self.sand_grain_cloud_locations = [
                 [np.random.randint(
-                    low=120 + self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
+                    low=120 + self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_radius'],
                     high=self.env_variables['width'] - (
                             self.env_variables['sand_grain_size'] + self.env_variables[
-                        'fish_mouth_size']) - 120),
+                        'fish_mouth_radius']) - 120),
                     np.random.randint(
-                        low=120 + self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
+                        low=120 + self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_radius'],
                         high=self.env_variables['height'] - (
                                 self.env_variables['sand_grain_size'] + self.env_variables[
-                            'fish_mouth_size']) - 120)]
+                            'fish_mouth_radius']) - 120)]
                 for cloud in range(int(self.env_variables["sand_grain_num"]))]
 
             if "fixed_prey_distribution" in self.env_variables:
                 if self.env_variables["fixed_prey_distribution"]:
                     x_locations = np.linspace(
-                        120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
+                        120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_radius'],
                         self.env_variables['width'] - (
-                                self.env_variables['prey_size'] + self.env_variables['fish_mouth_size']) - 120,
+                                self.env_variables['prey_size'] + self.env_variables['fish_mouth_radius']) - 120,
                         math.ceil(self.env_variables["prey_cloud_num"] ** 0.5))
                     y_locations = np.linspace(
-                        120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'],
+                        120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_radius'],
                         self.env_variables['width'] - (
-                                self.env_variables['prey_size'] + self.env_variables['fish_mouth_size']) - 120,
+                                self.env_variables['prey_size'] + self.env_variables['fish_mouth_radius']) - 120,
                         math.ceil(self.env_variables["prey_cloud_num"] ** 0.5))
 
                     self.prey_cloud_locations = np.concatenate((np.expand_dims(x_locations, 1),

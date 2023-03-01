@@ -29,17 +29,17 @@ n_steps = 3000
 with open(file_path, 'r') as f:
     env = json.load(f)
 env["light_gain"] = 1.0
-env["bkg_scatter"] = 0.00051
+env["background_brightness"] = 0.00051
 
 env2 = copy.deepcopy(env)
-env2["bkg_scatter"] = 0
+env2["background_brightness"] = 0
 env2["shot_noise"] = False
 
 env3 = copy.deepcopy(env)
 env3["light_gain"] = 1.0
 
 env4 = copy.deepcopy(env3)
-env4["bkg_scatter"] = 0
+env4["background_brightness"] = 0
 env4["shot_noise"] = False
 
 sim_state_1 = ContinuousNaturalisticEnvironment(env, using_gpu=False)
@@ -142,29 +142,29 @@ for t in range(n_steps):
 # distances_stimulus_absent_2 = np.array(distances_stimulus_absent_2)
 
 # Note is percentage of stimulus that is signal, rather than the SNR.
-with open(f"Analysis/Calibration/LuminanceCalibration2/stimulus_present-L{env['light_gain']}-BK{env['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration2/stimulus_present-L{env['light_gain']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(stimulus_present_1))
 
-with open(f"Analysis/Calibration/LuminanceCalibration2/stimulus_present-L{env3['light_gain']}-BK{env['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration2/stimulus_present-L{env3['light_gain']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(stimulus_present_2))
 
-with open(f"Analysis/Calibration/LuminanceCalibration2/stimulus_absent-L{env['light_gain']}-BK{env['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration2/stimulus_absent-L{env['light_gain']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(stimulus_absent_1))
 
-with open(f"Analysis/Calibration/LuminanceCalibration2/stimulus_absent-L{env3['light_gain']}-BK{env['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration2/stimulus_absent-L{env3['light_gain']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(stimulus_absent_2))
 
 
-with open(f"Analysis/Calibration/LuminanceCalibration2/distances_stimulus_present_1-L{env['light_gain']}-BK{env['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration2/distances_stimulus_present_1-L{env['light_gain']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(distances_stimulus_present_1))
 
-with open(f"Analysis/Calibration/LuminanceCalibration2/distances_stimulus_present_2-L{env['light_gain']}-BK{env['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration2/distances_stimulus_present_2-L{env['light_gain']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(distances_stimulus_present_2))
 
-with open(f"Analysis/Calibration/LuminanceCalibration2/distances_stimulus_absent_1-L{env['light_gain']}-BK{env['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration2/distances_stimulus_absent_1-L{env['light_gain']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(distances_stimulus_absent_1))
 
-with open(f"Analysis/Calibration/LuminanceCalibration2/distances_stimulus_absent_2-L{env['light_gain']}-BK{env['bkg_scatter']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration2/distances_stimulus_absent_2-L{env['light_gain']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(distances_stimulus_absent_2))
 
 

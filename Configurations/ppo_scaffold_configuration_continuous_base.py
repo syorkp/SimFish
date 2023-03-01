@@ -84,8 +84,8 @@ env = {
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
 
        'fish_mass': 140.,
-       'fish_mouth_size': 8.,  # FINAL VALUE - 0.2mm diameter, so 1.
-       'fish_head_size': 2.5,  # Old - 10
+       'fish_mouth_radius': 8.,  # FINAL VALUE - 0.2mm diameter, so 1.
+       'fish_head_radius': 2.5,  # Old - 10
        'fish_tail_length': 41.5,  # Old: 70
        'eyes_verg_angle': 77.,  # in deg
        'visual_field': 163.,  # single eye angular visual field
@@ -115,9 +115,9 @@ env = {
        'p_escape': 0.5,
        'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
        'p_reorient': 0.04,
-       'slow_speed_paramecia': 0.0035,  # Impulse to generate 0.5mms-1 for given prey mass
-       'fast_speed_paramecia': 0.007,  # Impulse to generate 1.0mms-1 for given prey mass
-       'jump_speed_paramecia': 0.07,  # Impulse to generate 10.0mms-1 for given prey mass
+       'slow_impulse_paramecia': 0.0035,  # Impulse to generate 0.5mms-1 for given prey mass
+       'fast_impulse_paramecia': 0.007,  # Impulse to generate 1.0mms-1 for given prey mass
+       'jump_impulse_paramecia': 0.07,  # Impulse to generate 10.0mms-1 for given prey mass
 
        # Prey reproduction
        'prey_reproduction_mode': True,
@@ -145,7 +145,7 @@ env = {
 
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
        'light_gradient': 0,
-       'bkg_scatter': 0.0,  # base brightness of the background FORMERLY 0.00001; 0.01
+       'background_brightness': 0.0,  # base brightness of the background FORMERLY 0.00001; 0.01
        'dark_gain': 60.0,  # gain of brightness in the dark side
        'light_gain': 200.0,  # gain of brightness in the bright side
 
@@ -190,7 +190,7 @@ env = {
        'show_previous_actions': 200,  # False if not, otherwise the number of actions to save.
 
        # Environment
-       'decay_rate': 0.01,  # Formerly 0.0006
+       'light_decay_rate': 0.01,  # Formerly 0.0006
        'displacement_scaling_factor': 0.018,
        # Multiplied by previous impulse size to cause displacement of nearby features.
        'known_max_fish_i': 100,
@@ -228,7 +228,7 @@ env = {
        # Energy state and hunger-based rewards
        'ci': 1.5e-04,  # 0.0004 in previous best.
        'ca': 1.5e-04,  # 0.0004 in previous best.
-       'baseline_decrease': 0.0002,
+       'baseline_energy_use': 0.0002,
        'consumption_energy_gain': 1.0,
 
        # Reward
@@ -292,7 +292,7 @@ changes += [
        ["PCI", 0.3, "red_photoreceptor_rf_size", 0.0133 * 1],
        ["PCI", 0.3, "uv_photoreceptor_rf_size", 0.0133 * 1],
        ["PCI", 0.3, "shot_noise", True],
-       ["PCI", 0.3, "bkg_scatter", 0.1],
+       ["PCI", 0.3, "background_brightness", 0.1],
 ]
 
 
@@ -301,7 +301,7 @@ changes += build_changes_list_gradual("PCI", 0.3, "light_gain", env["light_gain"
 
 # 4) Prey Capture
 changes += [["PCI", 0.3, "prey_fluid_displacement", True]]
-changes += build_changes_list_gradual("PCI", 0.3, "fish_mouth_size", env["fish_mouth_size"], 4, 4, discrete=False)
+changes += build_changes_list_gradual("PCI", 0.3, "fish_mouth_radius", env["fish_mouth_radius"], 4, 4, discrete=False)
 changes += build_changes_list_gradual("PCI", 0.3, "capture_angle_deviation_allowance", env["capture_angle_deviation_allowance"],
                                       np.pi/5, 8, discrete=False)
 

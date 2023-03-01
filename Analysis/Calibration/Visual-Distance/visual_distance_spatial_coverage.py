@@ -15,13 +15,13 @@ def display_pr_coverage(model_name):
                                      env_variables['red_photoreceptor_rf_size']])
 
     board = DrawingBoard(env_variables['width'], env_variables['height'],
-                         uv_decay_rate=env_variables['decay_rate'],
-                         red_decay_rate=env_variables['decay_rate'],
+                         uv_light_decay_rate=env_variables['light_decay_rate'],
+                         red_light_decay_rate=env_variables['light_decay_rate'],
                          photoreceptor_rf_size=max_photoreceptor_rf_size,
                          using_gpu=False,
                          prey_size=env_variables['prey_size'],
                          predator_size=env_variables['predator_size'],
-                         visible_scatter=env_variables['bkg_scatter'],
+                         visible_scatter=env_variables['background_brightness'],
                          dark_light_ratio=env_variables['dark_light_ratio'],
                          dark_gain=env_variables['dark_gain'],
                          light_gain=env_variables['light_gain'],

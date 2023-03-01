@@ -164,7 +164,7 @@ class DrawingBoard:
 
 
 def draw_previous_actions(board, past_actions, past_positions, fish_angles, adjusted_colour_index,
-                          continuous_actions, n_actions_to_show, bkg_scatter, consumption_buffer=None):
+                          continuous_actions, n_actions_to_show, background_brightness, consumption_buffer=None):
     while len(past_actions) > n_actions_to_show:
         past_actions.pop(0)
     while len(past_positions) > n_actions_to_show:
@@ -178,9 +178,9 @@ def draw_previous_actions(board, past_actions, past_positions, fish_angles, adju
         if continuous_actions:
             if a[1] < 0:
                 action_colour = (
-                adjusted_colour_index, bkg_scatter, bkg_scatter)
+                adjusted_colour_index, background_brightness, background_brightness)
             else:
-                action_colour = (bkg_scatter, adjusted_colour_index, adjusted_colour_index)
+                action_colour = (background_brightness, adjusted_colour_index, adjusted_colour_index)
 
             board.show_action_continuous(a[0], a[1], fish_angles[i], past_positions[i][0],
                                               past_positions[i][1], action_colour)
@@ -341,16 +341,16 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             consumption_buffer.append(data["consumed"][step])
 
             if draw_past_actions:
-                # adjusted_colour_index = ((1 - env_variables["bkg_scatter"]) * (step + 1) / n_actions_to_show) + \
-                #                         env_variables["bkg_scatter"]
-                # adjusted_colour_index = (1 - env_variables["bkg_scatter"]) + env_variables["bkg_scatter"]
+                # adjusted_colour_index = ((1 - env_variables["background_brightness"]) * (step + 1) / n_actions_to_show) + \
+                #                         env_variables["background_brightness"]
+                # adjusted_colour_index = (1 - env_variables["background_brightness"]) + env_variables["background_brightness"]
                 adjusted_colour_index = 1
                 board, action_buffer, position_buffer, orientation_buffer = draw_previous_actions(board, action_buffer,
                                                                                                   position_buffer, orientation_buffer,
                                                                                                   adjusted_colour_index=adjusted_colour_index,
                                                                                                   continuous_actions=continuous_actions,
                                                                                                   n_actions_to_show=n_actions_to_show,
-                                                                                                  bkg_scatter=env_variables["bkg_scatter"],
+                                                                                                  background_brightness=env_variables["background_brightness"],
                                                                                                   consumption_buffer=consumption_buffer)
 
 
@@ -360,8 +360,8 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             else:
                 fish_body_colour = (0, 1, 0)
 
-            board.fish_shape(fish_positions[step], env_variables['fish_mouth_size'],
-                                env_variables['fish_head_size'], env_variables['fish_tail_length'],
+            board.fish_shape(fish_positions[step], env_variables['fish_mouth_radius'],
+                                env_variables['fish_head_radius'], env_variables['fish_tail_length'],
                             (0, 1, 0), fish_body_colour, data["fish_angle"][step])
 
             # Draw prey

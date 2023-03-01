@@ -14,7 +14,7 @@ def get_prey_stimulus(x, y, sim_state):
     y += 750
 
     sim_state.prey_bodies[0].position = [x, y]
-    sim_state.board.erase(bkg=sim_state.env_variables['bkg_scatter'])
+    sim_state.board.erase(bkg=sim_state.env_variables['background_brightness'])
     sim_state.draw_shapes(visualisation=False)
     observation = sim_state.resolve_visual_input_new(save_frames=True, activations=[],
                                                                    internal_state=np.array([[0]]))

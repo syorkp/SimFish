@@ -25,9 +25,9 @@ class TestEnvironment:
             'p_escape': 0.0,
             'p_switch': 0.0,  # Corresponds to 1/average duration of movement type.
             'p_reorient': 0.001,
-            'slow_speed_paramecia': 0.0037,  # Impulse to generate 0.5mms-1 for given prey mass
-            'fast_speed_paramecia': 0.0074,  # Impulse to generate 1.0mms-1 for given prey mass
-            'jump_speed_paramecia': 0.074,  # Impulse to generate 10.0mms-1 for given prey mass
+            'slow_impulse_paramecia': 0.0037,  # Impulse to generate 0.5mms-1 for given prey mass
+            'fast_impulse_paramecia': 0.0074,  # Impulse to generate 1.0mms-1 for given prey mass
+            'jump_impulse_paramecia': 0.074,  # Impulse to generate 10.0mms-1 for given prey mass
             'prey_fluid_displacement': True,
 
             'predator_mass': 10.,
@@ -77,7 +77,7 @@ class TestEnvironment:
             #                         enumerate(self.paramecia_gaits)]
 
             # Generate impulses
-            impulse_types = [0, self.env_variables["slow_speed_paramecia"], self.env_variables["fast_speed_paramecia"]]
+            impulse_types = [0, self.env_variables["slow_impulse_paramecia"], self.env_variables["fast_impulse_paramecia"]]
             impulses = [impulse_types[gait] for gait in self.paramecia_gaits]
 
             # Angles of change - can generate as same for all.
@@ -109,7 +109,7 @@ class TestEnvironment:
                 #     if self.env_variables["prey_jump"] and np.random.choice(1, [0, 1],
                 #                                                             p=[1 - self.env_variables["p_escape"],
                 #                                                                self.env_variables["p_escape"]])[0] == 1:
-                #         prey_body.apply_impulse_at_local_point((self.env_variables["jump_speed_paramecia"], 0))
+                #         prey_body.apply_impulse_at_local_point((self.env_variables["jump_impulse_paramecia"], 0))
                 #
                 # else:
                 #     prey_body.angle = prey_body.angle + angle_changes[i]

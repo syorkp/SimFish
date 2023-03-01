@@ -17,7 +17,7 @@ def action_scale(energy_level, trajectory_A, trajectory_A2):
 
 def calculate_reward_and_cost(energy_level, consumption=True, impulse=5.0, angle=1.0):
     # Constants
-    baseline_decrease = 0.0005
+    baseline_energy_use = 0.0005
     ca = 0.0001
     ci = 0.0001
     trajectory_A = 5.0
@@ -28,7 +28,7 @@ def calculate_reward_and_cost(energy_level, consumption=True, impulse=5.0, angle
     consumption_reward_scaling = 10000000
 
     unscaled_consumption = 1.0 * consumption
-    unscaled_energy_use = ci * (impulse ** 2) + ca * (angle ** 2) + baseline_decrease
+    unscaled_energy_use = ci * (impulse ** 2) + ca * (angle ** 2) + baseline_energy_use
     energy_level += unscaled_consumption - unscaled_energy_use
 
     # Nonlinear reward scaling
@@ -41,7 +41,7 @@ def calculate_reward_and_cost(energy_level, consumption=True, impulse=5.0, angle
     return reward_1, reward_2
 
 
-def get_trajectory(consumptions, impulses, angles, ci, ca, consumption_energy_gain, baseline_decrease, trajectory_A,
+def get_trajectory(consumptions, impulses, angles, ci, ca, consumption_energy_gain, baseline_energy_use, trajectory_A,
                    trajectory_B, action_reward_scaling, consumption_reward_scaling,  num_steps=1000):
 
     energy_level = 1.0
@@ -57,7 +57,7 @@ def get_trajectory(consumptions, impulses, angles, ci, ca, consumption_energy_ga
     for step in range(num_steps):
         # Energy
         unscaled_consumption = consumption_energy_gain * consumptions[step]
-        unscaled_energy_use = ci * (impulses[step] ** 2) + ca * (angles[step] ** 2) + baseline_decrease
+        unscaled_energy_use = ci * (impulses[step] ** 2) + ca * (angles[step] ** 2) + baseline_energy_use
         energy_level += unscaled_consumption - unscaled_energy_use
         if energy_level > 1.0:
             energy_level = 1.0
@@ -114,7 +114,7 @@ def get_trajectory(consumptions, impulses, angles, ci, ca, consumption_energy_ga
     plt.show()
 
 
-def get_returns_from_investment(ci, ca, baseline_decrease, trajectory_A, trajectory_B, consumption_energy_gain,
+def get_returns_from_investment(ci, ca, baseline_energy_use, trajectory_A, trajectory_B, consumption_energy_gain,
                                 action_reward_scaling, consumption_reward_scaling, impulses, angles):
     """Compute action reward penalties, and consumption returns to find level where worth it."""
     energy_level = 1.0
@@ -131,7 +131,7 @@ def get_returns_from_investment(ci, ca, baseline_decrease, trajectory_A, traject
             unscaled_consumption = consumption_energy_gain * 1
         else:
             unscaled_consumption = 0
-        unscaled_energy_use = ci * (impulses[step] ** 2) + ca * (angles[step] ** 2) + baseline_decrease
+        unscaled_energy_use = ci * (impulses[step] ** 2) + ca * (angles[step] ** 2) + baseline_energy_use
         energy_level += unscaled_consumption - unscaled_energy_use
         if energy_level > 1.0:
             energy_level = 1.0
@@ -179,7 +179,7 @@ if __name__ == "__main__":
     # Chosen parameters
     ci = 8e-07
     ca = 8e-07
-    baseline_decrease = 0.00075
+    baseline_energy_use = 0.00075
     trajectory_A = 5.0
     trajectory_B = 2.5
     consumption_energy_gain = 1.0
@@ -191,7 +191,7 @@ if __name__ == "__main__":
     steps = 500
     impulses = np.random.uniform(0, 20, steps)
     angles = np.random.uniform(-1, 1, steps)
-    get_returns_from_investment(ci, ca, baseline_decrease, trajectory_A, trajectory_B, consumption_energy_gain,
+    get_returns_from_investment(ci, ca, baseline_energy_use, trajectory_A, trajectory_B, consumption_energy_gain,
                                     action_reward_scaling, consumption_reward_scaling, impulses, angles)
 
 
@@ -203,7 +203,7 @@ if __name__ == "__main__":
     impulses = np.random.uniform(0, 20, steps)
     angles = np.random.uniform(-1, 1, steps)
 
-    get_trajectory(consumptions, impulses, angles, ci, ca, consumption_energy_gain, baseline_decrease, trajectory_A,
+    get_trajectory(consumptions, impulses, angles, ci, ca, consumption_energy_gain, baseline_energy_use, trajectory_A,
                        trajectory_B, action_reward_scaling, consumption_reward_scaling,  num_steps=steps)
 
     rewards_vs_energy_state(trajectory_A, trajectory_B)

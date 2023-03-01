@@ -5,38 +5,38 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def load_data(bkg_scatter=0.0005, luminance=[1.0, 0.33]):
+def load_data(background_brightness=0.0005, luminance=[1.0, 0.33]):
     with open(
-            f"LuminanceCalibration2/stimulus_present-L{luminance[0]}-BK{bkg_scatter}.npy",
+            f"LuminanceCalibration2/stimulus_present-L{luminance[0]}-BK{background_brightness}.npy",
             "rb") as f:
         stimulus_present_1 = np.load(f)
     with open(
-            f"LuminanceCalibration2/stimulus_present-L{luminance[1]}-BK{bkg_scatter}.npy",
+            f"LuminanceCalibration2/stimulus_present-L{luminance[1]}-BK{background_brightness}.npy",
             "rb") as f:
         stimulus_present_2 = np.load(f)
     with open(
-            f"LuminanceCalibration2/stimulus_absent-L{luminance[0]}-BK{bkg_scatter}.npy",
+            f"LuminanceCalibration2/stimulus_absent-L{luminance[0]}-BK{background_brightness}.npy",
             "rb") as f:
         stimulus_absent_1 = np.load(f)
 
     with open(
-            f"LuminanceCalibration2/stimulus_absent-L{luminance[1]}-BK{bkg_scatter}.npy",
+            f"LuminanceCalibration2/stimulus_absent-L{luminance[1]}-BK{background_brightness}.npy",
             "rb") as f:
         stimulus_absent_2 = np.load(f)
 
-    with open(f"LuminanceCalibration2/distances_stimulus_present_1-L{luminance[0]}-BK{bkg_scatter}.npy",
+    with open(f"LuminanceCalibration2/distances_stimulus_present_1-L{luminance[0]}-BK{background_brightness}.npy",
               "rb") as f:
         distances_stimulus_present_1 = np.load(f)
 
-    with open(f"LuminanceCalibration2/distances_stimulus_present_2-L{luminance[0]}-BK{bkg_scatter}.npy",
+    with open(f"LuminanceCalibration2/distances_stimulus_present_2-L{luminance[0]}-BK{background_brightness}.npy",
               "rb") as f:
         distances_stimulus_present_2 = np.load(f)
 
-    with open(f"LuminanceCalibration2/distances_stimulus_absent_1-L{luminance[0]}-BK{bkg_scatter}.npy",
+    with open(f"LuminanceCalibration2/distances_stimulus_absent_1-L{luminance[0]}-BK{background_brightness}.npy",
               "rb") as f:
         distances_stimulus_absent_1 = np.load(f)
 
-    with open(f"LuminanceCalibration2/distances_stimulus_absent_2-L{luminance[0]}-BK{bkg_scatter}.npy",
+    with open(f"LuminanceCalibration2/distances_stimulus_absent_2-L{luminance[0]}-BK{background_brightness}.npy",
               "rb") as f:
         distances_stimulus_absent_2 = np.load(f)
 

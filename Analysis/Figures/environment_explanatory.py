@@ -21,10 +21,10 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
 
     env_variables["light_gradient"] = int(env_variables["light_gradient"]/reduction)
     fish_body_colour = (0, 1, 0)
-    board = DrawingBoard(env_variables["width"], env_variables["height"], env_variables["decay_rate"],
+    board = DrawingBoard(env_variables["width"], env_variables["height"], env_variables["light_decay_rate"],
                             env_variables["uv_photoreceptor_rf_size"],
                             using_gpu=False, prey_size=1,
-                            light_gain=env_variables["light_gain"], visible_scatter=env_variables["bkg_scatter"],
+                            light_gain=env_variables["light_gain"], visible_scatter=env_variables["background_brightness"],
                             light_gradient=env_variables["light_gradient"],
                             dark_light_ratio=env_variables['dark_light_ratio'],
 )
@@ -36,8 +36,8 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
 
     # Draw shapes for visualisation
     board.erase_visualisation(0.3)
-    board.fish_shape(fish_position, env_variables['fish_mouth_size'],
-                     env_variables['fish_head_size'], env_variables['fish_tail_length'],
+    board.fish_shape(fish_position, env_variables['fish_mouth_radius'],
+                     env_variables['fish_head_radius'], env_variables['fish_tail_length'],
                      (0, 1, 0), fish_body_colour, data["fish_angle"][step_to_draw])
 
     px = np.round(np.array([pr[0]/reduction for pr in data["prey_positions"][step_to_draw]])).astype(int)
@@ -60,9 +60,9 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
     board.circle(predator_bodies[0], env_variables['predator_size'], (0, 1, 0), visualisation=True)
 
     # Draw shapes for image
-    board.erase(env_variables['bkg_scatter'])
-    board.fish_shape(fish_position, env_variables['fish_mouth_size'],
-                     env_variables['fish_head_size'], env_variables['fish_tail_length'],
+    board.erase(env_variables['background_brightness'])
+    board.fish_shape(fish_position, env_variables['fish_mouth_radius'],
+                     env_variables['fish_head_radius'], env_variables['fish_tail_length'],
                      (0, 1, 0), fish_body_colour, data["fish_angle"][step_to_draw])
 
     px = np.round(np.array([pr[0]/reduction for pr in data["prey_positions"][step_to_draw]])).astype(int)
@@ -295,8 +295,8 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
 
     # Get observation for the given step without any shot noise
     board.erase(0)
-    board.fish_shape(fish_position, env_variables['fish_mouth_size'],
-                     env_variables['fish_head_size'], env_variables['fish_tail_length'],
+    board.fish_shape(fish_position, env_variables['fish_mouth_radius'],
+                     env_variables['fish_head_radius'], env_variables['fish_tail_length'],
                      (0, 1, 0), fish_body_colour, data["fish_angle"][step_to_draw])
 
     px = np.round(np.array([pr[0]/reduction for pr in data["prey_positions"][step_to_draw]])).astype(int)

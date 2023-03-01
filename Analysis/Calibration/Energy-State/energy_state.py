@@ -38,7 +38,7 @@ def model_episode(consumptions, impulses, angles, ca, ci, cc, baseline, duration
 ca = 0.000002
 ci = 0.000002
 cc = 1.0
-baseline_decrease = 0.003
+baseline_energy_use = 0.003
 B = np.linspace(0, 10, 10)  # GO with 5 for now.
 C = np.linspace(0, 10, 10)  # GO with 5 for now.
 
@@ -49,7 +49,7 @@ captures = np.random.choice([0, 1], size=1000, p=[1-0.01, 0.01]).astype(float)
 i = np.random.random(1000) * 10.0
 a = np.random.random(1000) * (np.pi/5)
 
-model_episode(captures, i, a, ca, ci, cc, baseline_decrease, 1000)
+model_episode(captures, i, a, ca, ci, cc, baseline_energy_use, 1000)
 
 
 

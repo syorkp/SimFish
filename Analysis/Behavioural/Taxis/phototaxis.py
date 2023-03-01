@@ -167,7 +167,7 @@ def plot_all_phototaxis_analysis(model_name, assay_config, assay_id, n):
     plot_light_dark_occupancy_kdf(fish_position_data, env_variables, model_name)
 
     # Light gradient direction against turn laterality. NOTE: there are correlated factors such as presence of walls
-    # and bkg_scatter dropoff towards edges
+    # and background_brightness dropoff towards edges
     action_data = get_parameter_across_trials(model_name, assay_config, assay_id, n, "action")
     observation_data = get_parameter_across_trials(model_name, assay_config, assay_id, n, "observation")
 
@@ -207,7 +207,7 @@ def plot_all_phototaxis_analysis_multiple_models(model_names, assay_config, assa
         plot_light_dark_occupancy_kdf(fish_position_data, env_variables)
 
         # Light gradient direction against turn laterality. NOTE: there are correlated factors such as presence of walls
-        # and bkg_scatter dropoff towards edges
+        # and background_brightness dropoff towards edges
         action_data = get_parameter_across_trials(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic", 20,
                                                   "action")
         observation_data = get_parameter_across_trials(f"dqn_scaffold_14-{i}", "Behavioural-Data-Free", "Naturalistic",

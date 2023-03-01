@@ -19,8 +19,8 @@ class TestEnvironment:
             'drag': 0.7,  # water drag
 
             'fish_mass': 140.,
-            'fish_mouth_size': 4.,  # FINAL VALUE - 0.2mm diameter, so 1.
-            'fish_head_size': 2.5,  # Old - 10
+            'fish_mouth_radius': 4.,  # FINAL VALUE - 0.2mm diameter, so 1.
+            'fish_head_radius': 2.5,  # Old - 10
             'fish_tail_length': 41.5,  # Old: 70
             'eyes_verg_angle': 77.,  # in deg
 
@@ -39,12 +39,9 @@ class TestEnvironment:
             'p_escape': 0.5,
             'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
             'p_reorient': 0.04,
-            'slow_speed_paramecia': 0.0035,
-            # Actual values should be 0.0035,  # Impulse to generate 0.5mms-1 for given prey mass
-            'fast_speed_paramecia': 0.007,
-            # Actual values should be 0.07,  # Impulse to generate 1.0mms-1 for given prey mass
-            'jump_speed_paramecia': 0.1,
-            # Actual values should be 0.7,  # Impulse to generate 10.0mms-1 for given prey mass
+            'slow_impulse_paramecia': 0.0035, # Actual values should be 0.0035,  # Impulse to generate 0.5mms-1 for given prey mass
+            'fast_impulse_paramecia': 0.007, # Actual values should be 0.07,  # Impulse to generate 1.0mms-1 for given prey mass
+            'jump_impulse_paramecia': 0.1, # Actual values should be 0.7,  # Impulse to generate 10.0mms-1 for given prey mass
 
             'displacement_scaling_factor': 0.018,
             # Multiplied by previous impulse size to cause displacement of nearby features.
@@ -66,27 +63,27 @@ class TestEnvironment:
         }
 
         # Fish params
-        inertia = pymunk.moment_for_circle(self.env_variables['fish_mass'], 0, self.env_variables['fish_head_size'],
+        inertia = pymunk.moment_for_circle(self.env_variables['fish_mass'], 0, self.env_variables['fish_head_radius'],
                                            (0, 0))
         self.body = pymunk.Body(1, inertia)
         # Mouth
-        self.mouth = pymunk.Circle(self.body, self.env_variables['fish_mouth_size'], offset=(0, 0))
+        self.mouth = pymunk.Circle(self.body, self.env_variables['fish_mouth_radius'], offset=(0, 0))
         self.mouth.color = (0, 1, 0)
         self.mouth.elasticity = 1.0
         self.mouth.collision_type = 3
 
         # Head
-        self.head = pymunk.Circle(self.body, self.env_variables['fish_head_size'],
-                                  offset=(-self.env_variables['fish_head_size'], 0))
+        self.head = pymunk.Circle(self.body, self.env_variables['fish_head_radius'],
+                                  offset=(-self.env_variables['fish_head_radius'], 0))
         self.head.color = (0, 1, 0)
         self.head.elasticity = 1.0
         self.head.collision_type = 6
 
         # # Tail
-        tail_coordinates = ((-self.env_variables['fish_head_size'], 0),
-                            (-self.env_variables['fish_head_size'], - self.env_variables['fish_head_size']),
-                            (-self.env_variables['fish_head_size'] - self.env_variables['fish_tail_length'], 0),
-                            (-self.env_variables['fish_head_size'], self.env_variables['fish_head_size']))
+        tail_coordinates = ((-self.env_variables['fish_head_radius'], 0),
+                            (-self.env_variables['fish_head_radius'], - self.env_variables['fish_head_radius']),
+                            (-self.env_variables['fish_head_radius'] - self.env_variables['fish_tail_length'], 0),
+                            (-self.env_variables['fish_head_radius'], self.env_variables['fish_head_radius']))
         self.tail = pymunk.Poly(self.body, tail_coordinates)
         self.tail.color = (0, 1, 0)
         self.tail.elasticity = 1.0
@@ -243,7 +240,7 @@ class TestEnvironment:
             return
 
         # Generate impulses
-        impulse_types = [0, self.env_variables["slow_speed_paramecia"], self.env_variables["fast_speed_paramecia"]]
+        impulse_types = [0, self.env_variables["slow_impulse_paramecia"], self.env_variables["fast_impulse_paramecia"]]
         impulses = [impulse_types[gait] for gait in self.paramecia_gaits]
 
         # Do once per step.
@@ -289,7 +286,7 @@ class TestEnvironment:
                 if self.env_variables["prey_jump"] and np.random.choice([0, 1], size=1,
                                                                         p=[1 - self.env_variables["p_escape"],
                                                                            self.env_variables["p_escape"]])[0] == 1:
-                    prey_body.apply_impulse_at_local_point((self.env_variables["jump_speed_paramecia"], 0))
+                    prey_body.apply_impulse_at_local_point((self.env_variables["jump_impulse_paramecia"], 0))
 
             else:
                 if micro_step == 0:

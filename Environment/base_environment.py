@@ -17,13 +17,13 @@ class BaseEnvironment:
         self.num_actions = num_actions
 
         self.env_variables = env_variables
-        # Rescale bkg_scatter to avoid disruption for larger fields
+        # Rescale background_brightness to avoid disruption for larger fields
         model = np.poly1d([1.32283913e-18, -4.10522256e-14, 4.92470049e-10, -2.86744090e-06, 8.22376164e-03,
                             4.07923942e-01])  # TODO: Keep parameters updated
-        print(f"Original bkg scatter: {self.env_variables['bkg_scatter']}")
-        self.env_variables["bkg_scatter"] = self.env_variables["bkg_scatter"] / (
+        print(f"Original bkg scatter: {self.env_variables['background_brightness']}")
+        self.env_variables["background_brightness"] = self.env_variables["background_brightness"] / (
                     model(self.env_variables["width"]) / model(1500))
-        print(f"New bkg scatter: {self.env_variables['bkg_scatter']}")
+        print(f"New bkg scatter: {self.env_variables['background_brightness']}")
 
         max_photoreceptor_rf_size = max([self.env_variables['uv_photoreceptor_rf_size'],
                                             self.env_variables['red_photoreceptor_rf_size']])
@@ -33,17 +33,17 @@ class BaseEnvironment:
             light_gradient = 0
 
         # Set max visual distance to the point at which 99.9% of photons have been lost to absorption mask.
-        max_visual_distance = np.absolute(np.log(0.001)/self.env_variables["decay_rate"])
+        max_visual_distance = np.absolute(np.log(0.001)/self.env_variables["light_decay_rate"])
 
         self.board = DrawingBoard(arena_width=self.env_variables['width'],
                                   arena_height=self.env_variables['height'],
-                                  uv_decay_rate=self.env_variables['decay_rate'],
-                                  red_decay_rate=self.env_variables['decay_rate'],
+                                  uv_light_decay_rate=self.env_variables['light_decay_rate'],
+                                  red_light_decay_rate=self.env_variables['light_decay_rate'],
                                   photoreceptor_rf_size=max_photoreceptor_rf_size,
                                   using_gpu=using_gpu,
                                   prey_size=self.env_variables['prey_size'],
                                   predator_size=self.env_variables['predator_size'],
-                                  visible_scatter=self.env_variables['bkg_scatter'],
+                                  visible_scatter=self.env_variables['background_brightness'],
                                   dark_light_ratio=self.env_variables['dark_light_ratio'],
                                   dark_gain=self.env_variables['dark_gain'],
                                   light_gain=self.env_variables['light_gain'],
@@ -71,32 +71,32 @@ class BaseEnvironment:
             self.prey_cloud_locations = [
                 [np.random.randint(
                     low=(self.env_variables['birth_rate_region_size'] / 2) + self.env_variables['prey_size'] +
-                        self.env_variables['fish_mouth_size'],
+                        self.env_variables['fish_mouth_radius'],
                     high=self.env_variables['width'] - ((
                                                                 self.env_variables['prey_size'] + self.env_variables[
-                                                            'fish_mouth_size']) + (
+                                                            'fish_mouth_radius']) + (
                                                                 self.env_variables['birth_rate_region_size'] / 2))),
                     np.random.randint(
                         low=(self.env_variables['birth_rate_region_size'] / 2) + self.env_variables['prey_size'] +
-                            self.env_variables['fish_mouth_size'],
+                            self.env_variables['fish_mouth_radius'],
                         high=self.env_variables['height'] - ((
                                                                      self.env_variables['prey_size'] +
                                                                      self.env_variables[
-                                                                         'fish_mouth_size']) + (self.env_variables[
+                                                                         'fish_mouth_radius']) + (self.env_variables[
                                                                                                     'birth_rate_region_size'] / 2)))]
                 for cloud in range(int(self.env_variables["prey_cloud_num"]))]
 
             self.sand_grain_cloud_locations = [
                 [np.random.randint(
-                    low=120 + self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
+                    low=120 + self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_radius'],
                     high=self.env_variables['width'] - (
                             self.env_variables['sand_grain_size'] + self.env_variables[
-                        'fish_mouth_size']) - 120),
+                        'fish_mouth_radius']) - 120),
                     np.random.randint(
-                        low=120 + self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
+                        low=120 + self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_radius'],
                         high=self.env_variables['height'] - (
                                 self.env_variables['sand_grain_size'] + self.env_variables[
-                            'fish_mouth_size']) - 120)]
+                            'fish_mouth_radius']) - 120)]
                 for cloud in range(int(self.env_variables["sand_grain_num"]))]
 
         self.predator_bodies = []
@@ -200,7 +200,7 @@ class BaseEnvironment:
         self.sand_grain_bodies = []
 
     def draw_walls_and_sediment(self):
-        self.board.erase(bkg=self.env_variables['bkg_scatter'])
+        self.board.erase(bkg=self.env_variables['background_brightness'])
         FOV = self.board.get_field_of_view(self.fish.body.position)
         self.board.draw_walls(FOV)
         self.board.draw_sediment(FOV)
@@ -425,18 +425,18 @@ class BaseEnvironment:
         new_position_y = self.fish.body.position[1]
 
         if new_position_x < 40:  # Wall d
-            new_position_x = 40 + self.env_variables["fish_head_size"] + \
+            new_position_x = 40 + self.env_variables["fish_head_radius"] + \
                              self.env_variables["fish_tail_length"]
         elif new_position_x > self.env_variables['width'] - 40:  # wall b
             new_position_x = self.env_variables['width'] - (
-                    40 + self.env_variables["fish_head_size"] +
+                    40 + self.env_variables["fish_head_radius"] +
                     self.env_variables["fish_tail_length"])
         if new_position_y < 40:  # wall a
-            new_position_y = 40 + self.env_variables["fish_head_size"] + \
+            new_position_y = 40 + self.env_variables["fish_head_radius"] + \
                              self.env_variables["fish_tail_length"]
         elif new_position_y > self.env_variables['height'] - 40:  # wall c
             new_position_y = self.env_variables['height'] - (
-                    40 + self.env_variables["fish_head_size"] +
+                    40 + self.env_variables["fish_head_radius"] +
                     self.env_variables["fish_tail_length"])
 
         new_position = pymunk.Vec2d(new_position_x, new_position_y)
@@ -487,14 +487,14 @@ class BaseEnvironment:
             if not self.env_variables["differential_prey"]:
                 self.prey_bodies[-1].position = (
                     np.random.randint(
-                        self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + 40,
+                        self.env_variables['prey_size'] + self.env_variables['fish_mouth_radius'] + 40,
                         self.env_variables['width'] - (
-                                self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] +
+                                self.env_variables['prey_size'] + self.env_variables['fish_mouth_radius'] +
                                 40)),
                     np.random.randint(
-                        self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] + 40,
+                        self.env_variables['prey_size'] + self.env_variables['fish_mouth_radius'] + 40,
                         self.env_variables['height'] - (
-                                self.env_variables['prey_size'] + self.env_variables['fish_mouth_size'] +
+                                self.env_variables['prey_size'] + self.env_variables['fish_mouth_radius'] +
                                 40)))
             else:
                 cloud = random.choice(self.prey_cloud_locations)
@@ -593,7 +593,7 @@ class BaseEnvironment:
             return
 
         # Generate impulses
-        impulse_types = [0, self.env_variables["slow_speed_paramecia"], self.env_variables["fast_speed_paramecia"]]
+        impulse_types = [0, self.env_variables["slow_impulse_paramecia"], self.env_variables["fast_impulse_paramecia"]]
         impulses = [impulse_types[gait] for gait in self.paramecia_gaits]
 
         # Do once per step.
@@ -639,7 +639,7 @@ class BaseEnvironment:
                 if self.env_variables["prey_jump"] and np.random.choice([0, 1], size=1,
                                                                         p=[1 - self.env_variables["p_escape"]/self.env_variables["phys_steps_per_sim_step"],
                                                                            self.env_variables["p_escape"]/self.env_variables["phys_steps_per_sim_step"]])[0] == 1:
-                    prey_body.apply_impulse_at_local_point((self.env_variables["jump_speed_paramecia"], 0))
+                    prey_body.apply_impulse_at_local_point((self.env_variables["jump_impulse_paramecia"], 0))
 
             else:
                 if micro_step == 0:
@@ -726,12 +726,12 @@ class BaseEnvironment:
         self.predator_shapes.append(pymunk.Circle(self.predator_bodies[-1], self.env_variables['predator_size']))
         self.predator_shapes[-1].elasticity = 1.0
         self.predator_bodies[-1].position = (
-            np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'],
+            np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_mouth_radius'],
                               self.env_variables['width'] - (
-                                      self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'])),
-            np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'],
+                                      self.env_variables['predator_size'] + self.env_variables['fish_mouth_radius'])),
+            np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_mouth_radius'],
                               self.env_variables['height'] - (
-                                      self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'])))
+                                      self.env_variables['predator_size'] + self.env_variables['fish_mouth_radius'])))
         self.predator_shapes[-1].color = (0, 1, 0)
         # Made green so still visible to us but not to fish.
         self.predator_shapes[-1].collision_type = 5
@@ -1090,14 +1090,14 @@ class BaseEnvironment:
 
         if not self.env_variables["differential_prey"]:
             self.sand_grain_bodies[-1].position = (
-                np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
+                np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_radius'],
                                   self.env_variables['width'] - (
                                           self.env_variables['sand_grain_size'] + self.env_variables[
-                                      'fish_mouth_size'])),
-                np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_size'],
+                                      'fish_mouth_radius'])),
+                np.random.randint(self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_radius'],
                                   self.env_variables['height'] - (
                                           self.env_variables['sand_grain_size'] + self.env_variables[
-                                      'fish_mouth_size'])))
+                                      'fish_mouth_radius'])))
         else:
             cloud = random.choice(self.sand_grain_cloud_locations)
             self.sand_grain_bodies[-1].position = (

@@ -54,11 +54,11 @@ def display_distinguishability_score(luminance, bk):
     plt.show()
 
 
-def display_parameter_relationships(bkg_scatter_values, luminance_values):
-    m_values = np.zeros((len(bkg_scatter_values), len(luminance_values)))
-    c_values = np.zeros((len(bkg_scatter_values), len(luminance_values)))
+def display_parameter_relationships(background_brightness_values, luminance_values):
+    m_values = np.zeros((len(background_brightness_values), len(luminance_values)))
+    c_values = np.zeros((len(background_brightness_values), len(luminance_values)))
 
-    for b, bkg in enumerate(bkg_scatter_values):
+    for b, bkg in enumerate(background_brightness_values):
         for l, lum in enumerate(luminance_values):
             with open(f"LuminanceCalibration/UVDistance-L{lum}-S0.0006-W1500-BK{bkg}.npy", "rb") as f:
                 distances = np.load(f)
@@ -76,28 +76,28 @@ def display_parameter_relationships(bkg_scatter_values, luminance_values):
             m_values[b, l] = model[0]
             c_values[b, l] = model[1]
 
-    plt.plot(bkg_scatter_values, m_values[:, 0])
+    plt.plot(background_brightness_values, m_values[:, 0])
     plt.show()
 
-    plt.plot(bkg_scatter_values, c_values[:, 0])
+    plt.plot(background_brightness_values, c_values[:, 0])
     plt.show()
 
-    plt.plot(bkg_scatter_values, m_values[:, 1])
+    plt.plot(background_brightness_values, m_values[:, 1])
     plt.show()
 
-    plt.plot(bkg_scatter_values, c_values[:, 1])
+    plt.plot(background_brightness_values, c_values[:, 1])
     plt.show()
 
-    plt.plot(bkg_scatter_values, m_values[:, 2])
+    plt.plot(background_brightness_values, m_values[:, 2])
     plt.show()
 
-    plt.plot(bkg_scatter_values, c_values[:, 2])
+    plt.plot(background_brightness_values, c_values[:, 2])
     plt.show()
 
-    plt.plot(bkg_scatter_values, m_values[:, 3])
+    plt.plot(background_brightness_values, m_values[:, 3])
     plt.show()
 
-    plt.plot(bkg_scatter_values, c_values[:, 3])
+    plt.plot(background_brightness_values, c_values[:, 3])
     plt.show()
 
 display_parameter_relationships([0.0008, 0.0015, 0.002], [1.0, 0.8, 0.4, 0.2])

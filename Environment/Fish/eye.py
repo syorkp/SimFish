@@ -22,7 +22,7 @@ class Eye:
         self.board = board
         self.dark_gain = env_variables['dark_gain']
         self.light_gain = env_variables['light_gain']
-        self.bkg_scatter = env_variables['bkg_scatter']
+        self.background_brightness = env_variables['background_brightness']
         self.dark_col = dark_col
         self.dist = None
         self.theta = None

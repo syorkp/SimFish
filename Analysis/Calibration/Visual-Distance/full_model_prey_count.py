@@ -1,5 +1,5 @@
 """
-Script to directly compute photons from bkg_scatter given all bkg_scatter, decay, arena dims, luminance.
+Script to directly compute photons from background_brightness given all background_brightness, decay, arena dims, luminance.
 """
 
 import numpy as np
@@ -14,19 +14,19 @@ def find_nearest(array, value):
     return idx
 
 
-def full_model_prey_count(bkg_scatter, decay_rate, pr_size, width, height, luminance, env_variables, prey_distance):
+def full_model_prey_count(background_brightness, light_decay_rate, pr_size, width, height, luminance, env_variables, prey_distance):
     # Set fish position in corner.
     fish_position = np.array([width/2, height/2])
     fish_position = np.array([1500, 1500])
     fish_orientation = 0
 
     # Create board and get masked pixels
-    max_visual_distance = np.absolute(np.log(0.001) / env_variables["decay_rate"])
+    max_visual_distance = np.absolute(np.log(0.001) / env_variables["light_decay_rate"])
 
-    board = DrawingBoard(width, height, decay_rate, decay_rate, pr_size, False, False, prey_size=1,
+    board = DrawingBoard(width, height, light_decay_rate, light_decay_rate, pr_size, False, False, prey_size=1,
                          light_gain=luminance,
-                         visible_scatter=bkg_scatter)
-    board.erase(bkg_scatter)
+                         visible_scatter=background_brightness)
+    board.erase(background_brightness)
 
     # Create eye
     verg_angle = 77. * (np.pi / 180)
@@ -81,7 +81,7 @@ def full_model_prey_count(bkg_scatter, decay_rate, pr_size, width, height, lumin
     # field = np.zeros((1500, 1500))
     # field[coords[:, 1], coords[:, 0]] = 1
 
-    board.erase(bkg_scatter)
+    board.erase(background_brightness)
 
     masked_pixels, lum_mask = board.get_masked_pixels(fish_position, np.array(prey_locations), np.array([]))
     left_eye.read(masked_pixels, left_eye_pos[0], left_eye_pos[1], fish_orientation, lum_mask, np.array(prey_locations), np.array([]))
@@ -97,9 +97,9 @@ def full_model_prey_count(bkg_scatter, decay_rate, pr_size, width, height, lumin
 # max_distance_s = (1500**2 + 1500**2) ** 0.5
 # luminance = 200
 # distance = 600
-# bkg_scatter = 0.1
+# background_brightness = 0.1
 # rf_size = 0.0133 * 3
 # learning_params, env_variables, n, b, c = load_configuration_files("dqn_scaffold_10-1")
 # prey_distance = 100
 #
-# print(full_model_prey_count(bkg_scatter, decay, rf_size, 1500, 1500, luminance, env_variables, prey_distance))
+# print(full_model_prey_count(background_brightness, decay, rf_size, 1500, 1500, luminance, env_variables, prey_distance))

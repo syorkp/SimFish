@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 
 from Analysis.load_model_config import load_assay_configuration_files
 
-get_max_bkg_scatter = importlib.import_module(
-    "Analysis.Calibration.Visual-Distance.full_model_bkg_count").get_max_bkg_scatter
+get_max_background_brightness = importlib.import_module(
+    "Analysis.Calibration.Visual-Distance.full_model_bkg_count").get_max_background_brightness
 full_model_prey_count = importlib.import_module(
     "Analysis.Calibration.Visual-Distance.full_model_prey_count").full_model_prey_count
 compute_distinguishability = importlib.import_module(
@@ -31,14 +31,14 @@ def compute_light_and_dark_gain(model_config, visual_distance_full, visual_dista
 
     learning_params, env_variables, n, b, c = load_assay_configuration_files(model_config)
 
-    # env_variables['decay_rate'] = 0.008
-    decay_constant = env_variables['decay_rate']
+    # env_variables['light_decay_rate'] = 0.008
+    decay_constant = env_variables['light_decay_rate']
     env_variables["shot_noise"] = False
     env_variables["dark_light_ratio"] = 0.0
-    env_variables["max_visual_distance"] = np.absolute(np.log(0.001) / env_variables["decay_rate"])
+    env_variables["max_visual_distance"] = np.absolute(np.log(0.001) / env_variables["light_decay_rate"])
     env_variables["uv_scaling_factor"] = 100
 
-    bkg_scatter = env_variables["bkg_scatter"]
+    background_brightness = env_variables["background_brightness"]
 
     uv_stimulus_photons_full = []
     uv_stimulus_photons_partial = []
@@ -46,8 +46,8 @@ def compute_light_and_dark_gain(model_config, visual_distance_full, visual_dista
     distinguishability_scores_partial = []
 
     # Baseline for zero distinguishability
-    env_variables["bkg_scatter"] = bkg_scatter
-    max_uv_scatter = get_max_bkg_scatter(env_variables["bkg_scatter"],
+    env_variables["background_brightness"] = background_brightness
+    max_uv_scatter = get_max_background_brightness(env_variables["background_brightness"],
                                          decay_constant,
                                          env_variables["uv_photoreceptor_rf_size"],
                                          env_variables["width"],
@@ -59,9 +59,9 @@ def compute_light_and_dark_gain(model_config, visual_distance_full, visual_dista
 
     for l in luminance_vals:
         print(l)
-        # No stimulus, but bkg_scatter present
-        env_variables["bkg_scatter"] = bkg_scatter
-        max_uv_scatter = get_max_bkg_scatter(env_variables["bkg_scatter"],
+        # No stimulus, but background_brightness present
+        env_variables["background_brightness"] = background_brightness
+        max_uv_scatter = get_max_background_brightness(env_variables["background_brightness"],
                                              decay_constant,
                                              env_variables["uv_photoreceptor_rf_size"],
                                              env_variables["width"],
@@ -70,8 +70,8 @@ def compute_light_and_dark_gain(model_config, visual_distance_full, visual_dista
                                              env_variables)
         uv_scatter_photons = int(max_uv_scatter)
 
-        # Set bkg_scatter to zero
-        env_variables["bkg_scatter"] = 0
+        # Set background_brightness to zero
+        env_variables["background_brightness"] = 0
         # Full visibility
         uv_prey = full_model_prey_count(0, decay_constant, env_variables["uv_photoreceptor_rf_size"],
                                         env_variables["width"],

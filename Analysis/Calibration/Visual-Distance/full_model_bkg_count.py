@@ -1,5 +1,5 @@
 """
-Script to directly compute photons from bkg_scatter given all bkg_scatter, decay, arena dims, luminance.
+Script to directly compute photons from background_brightness given all background_brightness, decay, arena dims, luminance.
 """
 
 import numpy as np
@@ -8,17 +8,17 @@ from Environment.Fish.eye import Eye
 from Analysis.load_model_config import load_assay_configuration_files
 
 
-def get_max_bkg_scatter(bkg_scatter, decay_rate, pr_size, width, height, luminance, env_variables):
+def get_max_background_brightness(background_brightness, light_decay_rate, pr_size, width, height, luminance, env_variables):
     # Set fish position in corner.
     fish_position = np.array([width/2, height/2])
     fish_orientation = 0
 
-    max_visual_distance = np.absolute(np.log(0.001) / env_variables["decay_rate"])
+    max_visual_distance = np.absolute(np.log(0.001) / env_variables["light_decay_rate"])
 
     # Create board and get masked pixels
-    board = DrawingBoard(width, height, decay_rate, decay_rate, pr_size, False, False, prey_size=1,
-                         light_gain=luminance, visible_scatter=bkg_scatter)
-    board.erase(bkg_scatter)
+    board = DrawingBoard(width, height, light_decay_rate, light_decay_rate, pr_size, False, False, prey_size=1,
+                         light_gain=luminance, visible_scatter=background_brightness)
+    board.erase(background_brightness)
     masked_pixels, lum_mask = board.get_masked_pixels(fish_position, np.array([]), np.array([]))
 
     # Create eye
@@ -48,8 +48,8 @@ def get_max_bkg_scatter(bkg_scatter, decay_rate, pr_size, width, height, luminan
 # max_distance_s = (1500**2 + 1500**2) ** 0.5
 # luminance = 200
 # distance = 600
-# bkg_scatter = 0.1
+# background_brightness = 0.1
 # rf_size = 0.0133 * 3
 # learning_params, env_variables, n, b, c = load_configuration_files("dqn_scaffold_10-1")
 #
-# print(get_max_bkg_scatter(bkg_scatter, decay, rf_size, 1500, 1500, luminance, env_variables))
+# print(get_max_background_brightness(background_brightness, decay, rf_size, 1500, 1500, luminance, env_variables))

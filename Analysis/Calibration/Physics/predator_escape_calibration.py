@@ -62,7 +62,7 @@ def plot_escape_success(n_repeats=1, use_action_means=True,
 
     # Display fish.
     x, y = 10, 10
-    mouth_size, head_size, tail_length = env.env_variables['fish_mouth_size'], env.env_variables['fish_head_size'], \
+    mouth_size, head_size, tail_length = env.env_variables['fish_mouth_radius'], env.env_variables['fish_head_radius'], \
                                          env.env_variables['fish_tail_length']
     mouth_size *= resolution/10
     head_size *= resolution/10
