@@ -94,8 +94,8 @@ env = {
 
        'prey_mass': 1.,
        'prey_inertia': 40.,
-       'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
-       'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
+       'prey_radius': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
+       'prey_radius_visualisation': 4.,  # Prey size for visualisation purposes
        'prey_num': 200,
        'prey_sensing_distance': 20,
        'prey_max_turning_angle': 0.25,
@@ -119,13 +119,13 @@ env = {
        'prey_reproduction_mode': True,
        'birth_rate': 0.002,  # Probability per step of new prey appearing at each source.
        'birth_rate_current_pop_scaling': 1,  # Sets scaling of birth rate according to number of prey currently present
-       'birth_rate_region_size': 240,  # Same square as before for simplicity
+       'prey_cloud_region_size': 240,  # Same square as before for simplicity
        'prey_safe_duration': 100,
        'p_prey_death': 0.001,
 
        'predator_mass': 200.,
        'predator_inertia': 0.0001,
-       'predator_size': 32,  # Radius
+       'predator_radius': 32,  # Radius
        'predator_impulse': 5,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 200,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 181.71216,  # Distance from the fish at which the predator appears. Formerly 498
@@ -133,7 +133,7 @@ env = {
 
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
-       'sand_grain_size': 1.,
+       'sand_grain_radius': 1.,
        'sand_grain_num': 0,
        'sand_grain_displacement_impulse_scaling_factor': 0.5,
        'sand_grain_displacement_distance': 20,
@@ -222,8 +222,8 @@ env = {
 
 
        # Energy state and hunger-based rewards
-       'ci': 1.5e-04,  # Final for sublinear PPO: 0.0003
-       'ca': 1.5e-04,  # Final for sublinear PPO: 0.0003
+       'i_scaling_energy_cost': 1.5e-04,  # Final for sublinear PPO: 0.0003
+       'a_scaling_energy_cost': 1.5e-04,  # Final for sublinear PPO: 0.0003
        'baseline_energy_use': 0.0002,  # Final for sublinear PPO: 0.0015
        'consumption_energy_gain': 1.0,
 

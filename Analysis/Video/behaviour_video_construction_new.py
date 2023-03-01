@@ -349,7 +349,7 @@ def draw_episode(data_file, config_file, continuous_actions=False,  draw_past_ac
             # Draw prey
             px = np.round(np.array([pr[0] for pr in data["prey_positions"][step]])).astype(int)
             py = np.round(np.array([pr[1] for pr in data["prey_positions"][step]])).astype(int)
-            rrs, ccs = board.multi_circles(px, py, env_variables["prey_size_visualisation"])
+            rrs, ccs = board.multi_circles(px, py, env_variables["prey_radius_visualisation"])
 
             rrs = np.clip(rrs, 0, env_variables["width"]-1)
             ccs = np.clip(ccs, 0, env_variables["height"]-1)
@@ -360,7 +360,7 @@ def draw_episode(data_file, config_file, continuous_actions=False,  draw_past_ac
             if env_variables["sand_grain_num"] > 0:
                 px = np.round(np.array([pr.position[0] for pr in data["sand_grain_positions"]])).astype(int)
                 py = np.round(np.array([pr.position[1] for pr in data["sand_grain_positions"]])).astype(int)
-                rrs, ccs = board.multi_circles(px, py, env_variables["prey_size_visualisation"])
+                rrs, ccs = board.multi_circles(px, py, env_variables["prey_radius_visualisation"])
 
                 rrs = np.clip(rrs, 0, env_variables["width"] - 1)
                 ccs = np.clip(ccs, 0, env_variables["height"] - 1)
@@ -368,7 +368,7 @@ def draw_episode(data_file, config_file, continuous_actions=False,  draw_past_ac
                 board.db_visualisation[rrs, ccs] = (0, 0, 1)
 
             if data["predator_presence"][step]:
-                board.circle(data["predator_positions"][step], env_variables['predator_size'], (0, 1, 0))
+                board.circle(data["predator_positions"][step], env_variables['predator_radius'], (0, 1, 0))
 
             if draw_action_space_usage:
                 if continuous_actions:

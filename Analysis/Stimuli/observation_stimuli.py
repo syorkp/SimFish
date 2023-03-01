@@ -71,7 +71,7 @@ def get_prey_stimuli_across_visual_field(prey_distance, intervals, model_name):
     sim_state = DiscreteNaturalisticEnvironment(env, using_gpu=False)
     sim_state.reset()
 
-    sim_state.fish.body.position = [env["width"]/2, env["height"]/2]
+    sim_state.fish.body.position = [env["arena_width"]/2, env["arena_height"]/2]
     sim_state.fish.body.angle = 0
 
     orientation_values = np.linspace(-env["visual_field"]+env["eyes_verg_angle"]/2,

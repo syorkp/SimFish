@@ -25,7 +25,7 @@ class TestEnvironment:
 
             'prey_mass': 140.,
             'prey_inertia': 40.,
-            'prey_size': 2.5,  # FINAL VALUE - 0.2mm diameter, so 1.
+            'prey_radius': 2.5,  # FINAL VALUE - 0.2mm diameter, so 1.
             'prey_max_turning_angle': 0.04,
 
             'p_slow': 1.0,
@@ -40,7 +40,7 @@ class TestEnvironment:
 
             'predator_mass': 10.,
             'predator_inertia': 40.,
-            'predator_size': 87.,  # To be 8.7mm in diameter, formerly 100
+            'predator_radius': 87.,  # To be 8.7mm in diameter, formerly 100
             'predator_impulse': 1.0,
         }
 

@@ -14,16 +14,16 @@ from Analysis.Behavioural.Tools.anchored_scale_bar import AnchoredHScaleBar
 def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_draw, reduction=2.5):
     data = load_data(model_name, assay_config, assay_id)
     learning_params, env_variables, n, b, c = load_assay_configuration_files(model_name="dqn_scaffold_18-1")
-    env_variables["width"] = int(env_variables["width"]/reduction)
-    env_variables["height"] = int(env_variables["height"]/reduction)
+    env_variables["arena_width"] = int(env_variables["arena_width"]/reduction)
+    env_variables["arena_height"] = int(env_variables["arena_height"]/reduction)
     env_variables["red_photoreceptor_num"] = int(env_variables["red_photoreceptor_num"]/reduction)
     env_variables["uv_photoreceptor_num"] = int(env_variables["uv_photoreceptor_num"]/reduction)
 
     env_variables["light_gradient"] = int(env_variables["light_gradient"]/reduction)
     fish_body_colour = (0, 1, 0)
-    board = DrawingBoard(env_variables["width"], env_variables["height"], env_variables["light_decay_rate"],
+    board = DrawingBoard(env_variables["arena_width"], env_variables["arena_height"], env_variables["light_decay_rate"],
                             env_variables["uv_photoreceptor_rf_size"],
-                            using_gpu=False, prey_size=1,
+                            using_gpu=False, prey_radius=1,
                             light_gain=env_variables["light_gain"], visible_scatter=env_variables["background_brightness"],
                             light_gradient=env_variables["light_gradient"],
                             dark_light_ratio=env_variables['dark_light_ratio'],
@@ -42,22 +42,22 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
 
     px = np.round(np.array([pr[0]/reduction for pr in data["prey_positions"][step_to_draw]])).astype(int)
     py = np.round(np.array([pr[1]/reduction for pr in data["prey_positions"][step_to_draw]])).astype(int)
-    rrs, ccs = board.multi_circles(px, py, env_variables["prey_size_visualisation"])
+    rrs, ccs = board.multi_circles(px, py, env_variables["prey_radius_visualisation"])
 
-    rrs = np.clip(rrs, 0, env_variables["width"]-1)
-    ccs = np.clip(ccs, 0, env_variables["height"]-1)
+    rrs = np.clip(rrs, 0, env_variables["arena_width"]-1)
+    ccs = np.clip(ccs, 0, env_variables["arena_height"]-1)
 
     board.db_visualisation[rrs, ccs] = (0, 0, 1)
 
     relative_dark_gain = env_variables["dark_gain"] / env_variables["light_gain"]
-    board.apply_light(int(env_variables['width'] * env_variables['dark_light_ratio']), relative_dark_gain, 1, visualisation=True)
+    board.apply_light(int(env_variables['arena_width'] * env_variables['dark_light_ratio']), relative_dark_gain, 1, visualisation=True)
 
     # Make red walls thicker and more visible.
     board.db_visualisation[0:10, :] = [1, 0, 0]
-    board.db_visualisation[env_variables["width"] - 10:, :] = [1, 0, 0]
+    board.db_visualisation[env_variables["arena_width"] - 10:, :] = [1, 0, 0]
     board.db_visualisation[:, :10] = [1, 0, 0]
-    board.db_visualisation[:, env_variables["height"] - 10:] = [1, 0, 0]
-    board.circle(predator_bodies[0], env_variables['predator_size'], (0, 1, 0), visualisation=True)
+    board.db_visualisation[:, env_variables["arena_height"] - 10:] = [1, 0, 0]
+    board.circle(predator_bodies[0], env_variables['predator_radius'], (0, 1, 0), visualisation=True)
 
     # Draw shapes for image
     board.erase(env_variables['background_brightness'])
@@ -67,10 +67,10 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
 
     px = np.round(np.array([pr[0]/reduction for pr in data["prey_positions"][step_to_draw]])).astype(int)
     py = np.round(np.array([pr[1]/reduction for pr in data["prey_positions"][step_to_draw]])).astype(int)
-    rrs, ccs = board.multi_circles(px, py, env_variables["prey_size"])
+    rrs, ccs = board.multi_circles(px, py, env_variables["prey_radius"])
 
-    rrs = np.clip(rrs, 0, env_variables["width"]-1)
-    ccs = np.clip(ccs, 0, env_variables["height"]-1)
+    rrs = np.clip(rrs, 0, env_variables["arena_width"]-1)
+    ccs = np.clip(ccs, 0, env_variables["arena_height"]-1)
 
     board.db[rrs, ccs] = (0, 0, 1)
 
@@ -117,7 +117,7 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
 
 
     # Print version with PR occupancy also shown.
-    dark_col = int(env_variables['width'] * env_variables['dark_light_ratio'])
+    dark_col = int(env_variables['arena_width'] * env_variables['dark_light_ratio'])
     verg_angle = env_variables['eyes_verg_angle'] * (np.pi / 180)
     retinal_field = env_variables['visual_field'] * (np.pi / 180)
     test_eye_l = Eye(board, verg_angle, retinal_field, True, env_variables, dark_col, False)
@@ -130,7 +130,7 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
         +np.cos(np.pi / 2 - fish_angle) * env_variables['eyes_biasx'] + fish_position[0],
         -np.sin(np.pi / 2 - fish_angle) * env_variables['eyes_biasx'] + fish_position[1])
 
-    arena = np.zeros((env_variables["width"], env_variables["height"]))
+    arena = np.zeros((env_variables["arena_width"], env_variables["arena_height"]))
 
     full_masked_image = board.get_masked_pixels(np.array([fish_position[0], fish_position[1]]),
                                                 data["prey_positions"][step_to_draw]/reduction,
@@ -301,10 +301,10 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
 
     px = np.round(np.array([pr[0]/reduction for pr in data["prey_positions"][step_to_draw]])).astype(int)
     py = np.round(np.array([pr[1]/reduction for pr in data["prey_positions"][step_to_draw]])).astype(int)
-    rrs, ccs = board.multi_circles(px, py, env_variables["prey_size"])
+    rrs, ccs = board.multi_circles(px, py, env_variables["prey_radius"])
 
-    rrs = np.clip(rrs, 0, env_variables["width"]-1)
-    ccs = np.clip(ccs, 0, env_variables["height"]-1)
+    rrs = np.clip(rrs, 0, env_variables["arena_width"]-1)
+    ccs = np.clip(ccs, 0, env_variables["arena_height"]-1)
 
     board.db[rrs, ccs] = (0, 0, 1)
 

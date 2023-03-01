@@ -12,7 +12,7 @@ from Environment.Board.field_of_view import FieldOfView
 class DrawingBoard:
 
     def __init__(self, arena_width, arena_height, uv_light_decay_rate, red_light_decay_rate, photoreceptor_rf_size, using_gpu,
-                 prey_size=4, predator_size=100, visible_scatter=0.3, dark_light_ratio=0.0, dark_gain=0.01,
+                 prey_radius=4, predator_radius=100, visible_scatter=0.3, dark_light_ratio=0.0, dark_gain=0.01,
                  light_gain=1.0, light_gradient=0, max_visual_distance=1500):
 
         self.using_gpu = using_gpu
@@ -23,8 +23,8 @@ class DrawingBoard:
         else:
             self.chosen_math_library = np
 
-        self.width = arena_width
-        self.height = arena_height
+        self.arena_width = arena_width
+        self.arena_height = arena_height
         self.uv_light_decay_rate = uv_light_decay_rate
         self.red_light_decay_rate = red_light_decay_rate
         self.light_gain = light_gain
@@ -42,10 +42,10 @@ class DrawingBoard:
         self.global_luminance_mask = self.get_luminance_mask(dark_light_ratio, dark_gain)
         self.local_scatter, self.local_scatter_base = self.get_local_scatter()
         
-        self.prey_size = prey_size * 2
-        self.prey_radius = prey_size
-        self.predator_size = predator_size * 2
-        self.predator_radius = predator_size
+        self.prey_diameter = prey_radius * 2
+        self.prey_radius = prey_radius
+        self.predator_size = predator_radius * 2
+        self.predator_radius = predator_radius
 
         if self.using_gpu:
             self.max_lines_num = 50000
@@ -68,7 +68,7 @@ class DrawingBoard:
         # For obstruction mask (reset each time is called).
         self.empty_mask = self.chosen_math_library.ones((self.local_dim, self.local_dim, 1), dtype=np.float64)
 
-        self.FOV = FieldOfView(self.local_dim, self.max_visual_distance, self.width, self.height)
+        self.FOV = FieldOfView(self.local_dim, self.max_visual_distance, self.arena_width, self.arena_height)
 
     def get_FOV_size(self):
         return self.local_dim, self.local_dim
@@ -80,20 +80,20 @@ class DrawingBoard:
         turbPower = 1.0
         turbSize = 162.0
 
-        noise = self.chosen_math_library.absolute(self.chosen_math_library.random.randn(self.width, self.height))
+        noise = self.chosen_math_library.absolute(self.chosen_math_library.random.randn(self.arena_width, self.arena_height))
 
         # TODO: Stop repeating the following:
-        xp, yp = self.chosen_math_library.arange(self.width), self.chosen_math_library.arange(self.height)
+        xp, yp = self.chosen_math_library.arange(self.arena_width), self.chosen_math_library.arange(self.arena_height)
         xy, py = self.chosen_math_library.meshgrid(xp, yp)
         xy = self.chosen_math_library.expand_dims(xy, 2)
         py = self.chosen_math_library.expand_dims(py, 2)
         coords = self.chosen_math_library.concatenate((xy, py), axis=2)
 
-        xy_values = (coords[:, :, 0] * xPeriod / self.width) + (coords[:, :, 1] * yPeriod / self.height)
+        xy_values = (coords[:, :, 0] * xPeriod / self.arena_width) + (coords[:, :, 1] * yPeriod / self.arena_height)
         size = turbSize
 
         # TODO: Stop repeating the following:
-        turbulence = self.chosen_math_library.zeros((self.width, self.height))
+        turbulence = self.chosen_math_library.zeros((self.arena_width, self.arena_height))
 
         # TODO: Stop repeating the following:
         while size >= 1:
@@ -102,13 +102,13 @@ class DrawingBoard:
             fractX = reduced_coords[:, :, 0] - reduced_coords[:, :, 0].astype(int)
             fractY = reduced_coords[:, :, 1] - reduced_coords[:, :, 1].astype(int)
 
-            x1 = (reduced_coords[:, :, 0].astype(int) + self.width) % self.width
-            y1 = (reduced_coords[:, :, 1].astype(int) + self.height) % self.height
+            x1 = (reduced_coords[:, :, 0].astype(int) + self.arena_width) % self.arena_width
+            y1 = (reduced_coords[:, :, 1].astype(int) + self.arena_height) % self.arena_height
 
-            x2 = (x1 + self.width - 1) % self.width
-            y2 = (y1 + self.height - 1) % self.height
+            x2 = (x1 + self.arena_width - 1) % self.arena_width
+            y2 = (y1 + self.arena_height - 1) % self.arena_height
 
-            value = self.chosen_math_library.zeros((self.width, self.height))
+            value = self.chosen_math_library.zeros((self.arena_width, self.arena_height))
             value += fractX * fractY * noise[y1, x1]
             value += (1 - fractX) * fractY * noise[y1, x2]
             value += fractX * (1 - fractY) * noise[y2, x1]
@@ -226,7 +226,7 @@ class DrawingBoard:
             prey_rf_offsets = prey_rf_offsets * self.chosen_math_library.array([-1, 1])
             prey_extremities = prey_angles + prey_rf_offsets
 
-            # Number of lines to project through prey or predators, determined by width, height, and size of features. (1)
+            # Number of lines to project through prey or predators, determined by arena_width, arena_height, and size of features. (1)
             n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2,
                                           len(prey_locations_FOV), p=prey_half_angular_size)
 
@@ -269,7 +269,7 @@ class DrawingBoard:
             predator_rf_offsets = predator_rf_offsets * self.chosen_math_library.array([-1, 1])
             predator_extremities = predator_angles_expanded + predator_rf_offsets
 
-            # Number of lines to project through prey or predators, determined by width, height, and size of features.
+            # Number of lines to project through prey or predators, determined by arena_width, arena_height, and size of features.
             n_lines_predator = self.compute_n(self.chosen_math_library.max(predator_half_angular_size) * 2, 1)
             predator_interpolated_line_angles = self.chosen_math_library.linspace(predator_extremities[:, 0],
                                                                                   predator_extremities[:, 1],
@@ -750,14 +750,14 @@ class DrawingBoard:
                                                 np.all(sand_grain_pos >= 0, axis=1)), axis=0)]
 
         if len(prey_pos) > 0:
-            rrs, ccs = self.multi_circles(prey_pos[:, 0], prey_pos[:, 1], self.prey_size)
+            rrs, ccs = self.multi_circles(prey_pos[:, 0], prey_pos[:, 1], self.prey_radius)
             rrs = np.clip(rrs, 0, self.local_dim - 1)
             ccs = np.clip(ccs, 0, self.local_dim - 1)
 
             self.local_db[rrs, ccs, 1] = 1
 
         if len(sand_grain_pos) > 0:
-            rrs, ccs = self.multi_circles(sand_grain_pos[:, 0], sand_grain_pos[:, 1], self.prey_size)
+            rrs, ccs = self.multi_circles(sand_grain_pos[:, 0], sand_grain_pos[:, 1], self.prey_diameter)
             self.board.db[rrs, ccs] = (0, 0, 1)
 
     def draw_sediment(self, FOV):  # slice the global sediment for current field of view

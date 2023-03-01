@@ -15,13 +15,17 @@ from Environment.Action_Space.Bout_classification.action_masking import produce_
 def calculate_energy_cost(env_variables, impulse, angle):
     """Updates the current energy state for continuous and discrete fish."""
     if env_variables["action_energy_use_scaling"] == "Nonlinear":
-        unscaled_energy_use = env_variables["ci"] * (abs(impulse) ** 2) + env_variables["ca"] * (abs(angle) ** 2)
+        unscaled_energy_use = env_variables["i_scaling_energy_cost"] * (abs(impulse) ** 2) + \
+                              env_variables["a_scaling_energy_cost"] * (abs(angle) ** 2)
     elif env_variables["action_energy_use_scaling"] == "Linear":
-        unscaled_energy_use = env_variables["ci"] * (abs(impulse)) + env_variables["ca"] * (abs(angle))
+        unscaled_energy_use = env_variables["i_scaling_energy_cost"] * (abs(impulse)) + \
+                              env_variables["a_scaling_energy_cost"] * (abs(angle))
     elif env_variables["action_energy_use_scaling"] == "Sublinear":
-        unscaled_energy_use = env_variables["ci"] * (abs(impulse) ** 0.5) + env_variables["ca"] * (abs(angle) ** 0.5)
+        unscaled_energy_use = env_variables["i_scaling_energy_cost"] * (abs(impulse) ** 0.5) + \
+                              env_variables["a_scaling_energy_cost"] * (abs(angle) ** 0.5)
     else:
-        unscaled_energy_use = env_variables["ci"] * (abs(impulse) ** 0.5) + env_variables["ca"] * (abs(angle) ** 0.5)
+        unscaled_energy_use = env_variables["i_scaling_energy_cost"] * (abs(impulse) ** 0.5) + \
+                              env_variables["a_scaling_energy_cost"] * (abs(angle) ** 0.5)
     return unscaled_energy_use
 
 

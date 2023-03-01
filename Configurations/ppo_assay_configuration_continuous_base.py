@@ -69,7 +69,7 @@ env = {
 
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
-       'sand_grain_size': 4.,
+       'sand_grain_radius': 4.,
        'sand_grain_num': 0,
        'sand_grain_displacement_impulse_scaling_factor': 0.5,
        'sand_grain_displacement_distance': 20,
@@ -110,8 +110,8 @@ env = {
 
        'prey_mass': 1.,
        'prey_inertia': 40.,
-       'prey_size': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
-       'prey_size_visualisation': 4.,  # Prey size for visualisation purposes
+       'prey_radius': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
+       'prey_radius_visualisation': 4.,  # Prey size for visualisation purposes
        'prey_num': 30,
        'prey_sensing_distance': 20,
        'prey_max_turning_angle': 0.04,
@@ -123,7 +123,7 @@ env = {
 
        'predator_mass': 10.,
        'predator_inertia': 40.,
-       'predator_size': 43.5,  # To be 8.7mm in diameter, formerly 100
+       'predator_radius': 43.5,  # To be 8.7mm in diameter, formerly 100
        'predator_impulse': 0.39,  # To produce speed of 13.7mms-1, formerly 1.0
        'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
        'distance_from_fish': 498,  # Distance from the fish at which the predator appears. Formerly 300
@@ -192,7 +192,7 @@ env = {
        'prey_reproduction_mode': False,
        'birth_rate': 0.1,  # Probability per step of new prey appearing at each source.
        'birth_rate_current_pop_scaling': 1,  # Sets scaling of birth rate according to number of prey currently present
-       'birth_rate_region_size': 240,  # Same square as before for simplicity
+       'prey_cloud_region_size': 240,  # Same square as before for simplicity
        'prey_safe_duration': 100,
        'p_prey_death': 0.1,
 
@@ -227,7 +227,7 @@ env = {
        'shot_noise': False,  # Whether to model observation of individual photons as a poisson process.
 
        # Energy state and hunger-based rewards
-       'ci': 0.00002,
+       'i_scaling_energy_cost': 0.00002,
        'ca': 0.00002,
        'baseline_energy_use': 0.003,
        'consumption_energy_gain': 1.0,

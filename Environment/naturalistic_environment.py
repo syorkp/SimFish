@@ -70,10 +70,10 @@ class NaturalisticEnvironment(BaseEnvironment):
         # self.max_observation_vals = [[0, 0, 0]]
         super().reset()
         self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_radius'] + 40,
-                                                     self.env_variables['width'] - (self.env_variables[
+                                                     self.env_variables['arena_width'] - (self.env_variables[
                                                                                         'fish_mouth_radius'] + 40)),
                                    np.random.randint(self.env_variables['fish_mouth_radius'] + 40,
-                                                     self.env_variables['height'] - (self.env_variables[
+                                                     self.env_variables['arena_height'] - (self.env_variables[
                                                                                          'fish_mouth_radius'] + 40)))
         self.fish.body.angle = np.random.random() * 2 * np.pi
 
@@ -85,40 +85,40 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         if self.env_variables["differential_prey"]:
             self.prey_cloud_locations = [
-                [np.random.randint(low=120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_radius'],
-                                   high=self.env_variables['width'] - (
-                                           self.env_variables['prey_size'] + self.env_variables[
+                [np.random.randint(low=120 + self.env_variables['prey_radius'] + self.env_variables['fish_mouth_radius'],
+                                   high=self.env_variables['arena_width'] - (
+                                           self.env_variables['prey_radius'] + self.env_variables[
                                        'fish_mouth_radius']) - 120),
-                 np.random.randint(low=120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_radius'],
-                                   high=self.env_variables['height'] - (
-                                           self.env_variables['prey_size'] + self.env_variables[
+                 np.random.randint(low=120 + self.env_variables['prey_radius'] + self.env_variables['fish_mouth_radius'],
+                                   high=self.env_variables['arena_height'] - (
+                                           self.env_variables['prey_radius'] + self.env_variables[
                                        'fish_mouth_radius']) - 120)]
                 for cloud in range(int(self.env_variables["prey_cloud_num"]))]
 
             self.sand_grain_cloud_locations = [
                 [np.random.randint(
-                    low=120 + self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_radius'],
-                    high=self.env_variables['width'] - (
-                            self.env_variables['sand_grain_size'] + self.env_variables[
+                    low=120 + self.env_variables['sand_grain_radius'] + self.env_variables['fish_mouth_radius'],
+                    high=self.env_variables['arena_width'] - (
+                            self.env_variables['sand_grain_radius'] + self.env_variables[
                         'fish_mouth_radius']) - 120),
                     np.random.randint(
-                        low=120 + self.env_variables['sand_grain_size'] + self.env_variables['fish_mouth_radius'],
-                        high=self.env_variables['height'] - (
-                                self.env_variables['sand_grain_size'] + self.env_variables[
+                        low=120 + self.env_variables['sand_grain_radius'] + self.env_variables['fish_mouth_radius'],
+                        high=self.env_variables['arena_height'] - (
+                                self.env_variables['sand_grain_radius'] + self.env_variables[
                             'fish_mouth_radius']) - 120)]
                 for cloud in range(int(self.env_variables["sand_grain_num"]))]
 
             if "fixed_prey_distribution" in self.env_variables:
                 if self.env_variables["fixed_prey_distribution"]:
                     x_locations = np.linspace(
-                        120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_radius'],
-                        self.env_variables['width'] - (
-                                self.env_variables['prey_size'] + self.env_variables['fish_mouth_radius']) - 120,
+                        120 + self.env_variables['prey_radius'] + self.env_variables['fish_mouth_radius'],
+                        self.env_variables['arena_width'] - (
+                                self.env_variables['prey_radius'] + self.env_variables['fish_mouth_radius']) - 120,
                         math.ceil(self.env_variables["prey_cloud_num"] ** 0.5))
                     y_locations = np.linspace(
-                        120 + self.env_variables['prey_size'] + self.env_variables['fish_mouth_radius'],
-                        self.env_variables['width'] - (
-                                self.env_variables['prey_size'] + self.env_variables['fish_mouth_radius']) - 120,
+                        120 + self.env_variables['prey_radius'] + self.env_variables['fish_mouth_radius'],
+                        self.env_variables['arena_width'] - (
+                                self.env_variables['prey_radius'] + self.env_variables['fish_mouth_radius']) - 120,
                         math.ceil(self.env_variables["prey_cloud_num"] ** 0.5))
 
                     self.prey_cloud_locations = np.concatenate((np.expand_dims(x_locations, 1),
@@ -249,10 +249,10 @@ Sand grain: {self.sand_grain_associated_reward}
     def bring_fish_in_bounds(self):
         # Resolve if fish falls out of bounds.
         if self.fish.body.position[0] < 4 or self.fish.body.position[1] < 4 or \
-                self.fish.body.position[0] > self.env_variables["width"] - 4 or \
-                self.fish.body.position[1] > self.env_variables["height"] - 4:
-            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 6, self.env_variables["width"] - 30),
-                                        np.clip(self.fish.body.position[1], 6, self.env_variables["height"] - 30))
+                self.fish.body.position[0] > self.env_variables["arena_width"] - 4 or \
+                self.fish.body.position[1] > self.env_variables["arena_height"] - 4:
+            new_position = pymunk.Vec2d(np.clip(self.fish.body.position[0], 6, self.env_variables["arena_width"] - 30),
+                                        np.clip(self.fish.body.position[1], 6, self.env_variables["arena_height"] - 30))
             self.fish.body.position = new_position
 
     def simulation_step(self, action, activations, impulse):
@@ -522,7 +522,7 @@ Sand grain: {self.sand_grain_associated_reward}
         #     self.create_diagonal_current()
         else:
             print("No current specified.")
-            # self.impulse_vector_field = np.zeros((self.env_variables["width"], self.env_variables["height"], 2))
+            # self.impulse_vector_field = np.zeros((self.env_variables["arena_width"], self.env_variables["arena_height"], 2))
 
     def create_circular_current(self):
         unit_circle_radius = self.env_variables["unit_circle_diameter"] / 2
@@ -530,10 +530,10 @@ Sand grain: {self.sand_grain_associated_reward}
         circle_variance = self.env_variables['current_strength_variance']
         max_current_strength = self.env_variables['max_current_strength']
 
-        arena_center = np.array([self.env_variables["width"] / 2, self.env_variables["height"] / 2])
+        arena_center = np.array([self.env_variables["arena_width"] / 2, self.env_variables["arena_height"] / 2])
 
         # All coordinates:
-        xp, yp = np.arange(self.env_variables["width"]), np.arange(self.env_variables["height"])
+        xp, yp = np.arange(self.env_variables["arena_width"]), np.arange(self.env_variables["arena_height"])
         xy, yp = np.meshgrid(xp, yp)
         xy = np.expand_dims(xy, 2)
         yp = np.expand_dims(yp, 2)
@@ -579,7 +579,7 @@ Sand grain: {self.sand_grain_associated_reward}
         vector_field = current_strength * vector_field
 
         # Prevent middle index being Nan, which causes error.
-        vector_field[int(self.env_variables["width"] / 2), int(self.env_variables["height"] / 2)] = 0
+        vector_field[int(self.env_variables["arena_width"] / 2), int(self.env_variables["arena_height"] / 2)] = 0
 
         self.impulse_vector_field = vector_field
 
@@ -590,17 +590,17 @@ Sand grain: {self.sand_grain_associated_reward}
         ...
 
     def create_linear_current(self):
-        current_width = self.env_variables['current_width'] * self.env_variables["height"]
+        current_width = self.env_variables['current_width'] * self.env_variables["arena_height"]
         current_variance = self.env_variables['current_strength_variance']
         max_current_strength = self.env_variables['max_current_strength']
 
         # Create vector field of same vectors moving in x direction
         vector = np.array([1, 0])
-        vector_field = np.tile(vector, (self.env_variables["width"], self.env_variables["height"], 1))
+        vector_field = np.tile(vector, (self.env_variables["arena_width"], self.env_variables["arena_height"], 1))
 
         # Scale as distance from y=h/2
-        centre = self.env_variables["height"] / 2
-        xp, yp = np.arange(self.env_variables["width"]), np.arange(self.env_variables["height"])
+        centre = self.env_variables["arena_height"] / 2
+        xp, yp = np.arange(self.env_variables["arena_width"]), np.arange(self.env_variables["arena_height"])
         xy, yp = np.meshgrid(xp, yp)
         # all_coordinates = np.concatenate((xy, yp), axis=2)
         relative_y_coordinates = yp - centre

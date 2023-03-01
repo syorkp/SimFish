@@ -538,7 +538,7 @@ class TrainingService(BaseService):
         # Exploration index
         fish_positions = np.array(self.simulation.position_buffer) / 100
         fish_positions = np.around(fish_positions).astype(int)
-        grid = np.zeros((int(self.environment_params["width"]/100)+1, int(self.environment_params["height"]/100)+1))
+        grid = np.zeros((int(self.environment_params["arena_width"]/100)+1, int(self.environment_params["arena_height"]/100)+1))
         for p in fish_positions:
             grid[p] += 1
         vals = grid[(grid > 0)]

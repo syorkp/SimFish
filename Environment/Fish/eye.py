@@ -30,7 +30,7 @@ class Eye:
         self.retinal_field_size = retinal_field
         self.env_variables = env_variables
         self.max_visual_range = max_visual_range
-        self.prey_diam = self.env_variables['prey_size']
+        self.prey_diameter = self.env_variables['prey_radius'] * 2
 
         if "sz_rf_spacing" in self.env_variables:
             self.sz_rf_spacing = self.env_variables["sz_rf_spacing"]
@@ -306,7 +306,7 @@ class Eye:
 
         proj = np.zeros((p_num, len(self.ang)))
         for p in range(p_num):
-            half_angle = np.arctan(self.prey_diam / (2 * rho[p]))
+            half_angle = np.arctan(self.prey_diameter / (2 * rho[p]))
 
             l_ind = self._closest_index(self.ang, theta[p] - half_angle)
             r_ind = self._closest_index(self.ang, theta[p] + half_angle)
@@ -351,7 +351,7 @@ class Eye:
                                                  self.chosen_math_library.cos(theta))  # wrap to [-pi, pi]
         p_num = prey_pos_in_range.shape[0]
 
-        half_angle = self.chosen_math_library.arctan(self.prey_diam / (2 * rho))
+        half_angle = self.chosen_math_library.arctan(self.prey_diameter / (2 * rho))
 
         l_ind = self._closest_index_parallel(self.ang, theta - half_angle).astype(int)
         r_ind = self._closest_index_parallel(self.ang, theta + half_angle).astype(int)

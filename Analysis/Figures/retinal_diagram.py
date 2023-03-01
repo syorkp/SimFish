@@ -15,7 +15,7 @@ learning_params, env_variables, n, b, c = load_assay_configuration_files(model_n
 fish_body_colour = (0, 1, 0)
 board = DrawingBoard(env_variables["width"], env_variables["height"], env_variables["light_decay_rate"],
                         env_variables["uv_photoreceptor_rf_size"],
-                        using_gpu=False, prey_size=1,
+                        using_gpu=False, prey_radius=1,
                         light_gain=env_variables["light_gain"], visible_scatter=env_variables["background_brightness"],
                         light_gradient=env_variables["light_gradient"],
                         dark_light_ratio=env_variables['dark_light_ratio'],

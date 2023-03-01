@@ -13,9 +13,9 @@ from matplotlib.animation import FFMpegWriter
 
 class DrawingBoard:
 
-    def __init__(self, width, height, data, include_sediment):
-        self.width = width
-        self.height = height
+    def __init__(self, arena_width, arena_height, data, include_sediment):
+        self.arena_width = arena_width
+        self.arena_height = arena_height
         self.include_sediment = include_sediment
         if include_sediment:
             self.sediment = data["sediment"][:, :, ]
@@ -28,11 +28,11 @@ class DrawingBoard:
 
 
     def get_base_arena(self, bkg=0.3):
-        db = (np.ones((self.height, self.width, 3), dtype=np.double) * bkg)
+        db = (np.ones((self.arena_height, self.arena_width, 3), dtype=np.double) * bkg)
         db[1:2, :] = np.array([1, 0, 0])
-        db[self.width - 2:self.width - 1, :] = np.array([1, 0, 0])
+        db[self.arena_width - 2:self.arena_width - 1, :] = np.array([1, 0, 0])
         db[:, 1:2] = np.array([1, 0, 0])
-        db[:, self.height - 2:self.height - 1] = np.array([1, 0, 0])
+        db[:, self.arena_height - 2:self.arena_height - 1] = np.array([1, 0, 0])
         if self.include_sediment:
             db += self.sediment
         return db
@@ -140,7 +140,7 @@ class DrawingBoard:
             if self.light_gradient > 0 and dark_col > 0:
                 gradient = self.chosen_math_library.linspace(dark_gain, light_gain, self.light_gradient)
                 gradient = self.chosen_math_library.expand_dims(gradient, 0)
-                gradient = self.chosen_math_library.repeat(gradient, self.height, 0)
+                gradient = self.chosen_math_library.repeat(gradient, self.arena_height, 0)
                 gradient = self.chosen_math_library.expand_dims(gradient, 2)
                 self.db_visualisation[:, int(dark_col-(self.light_gradient/2)):int(dark_col+(self.light_gradient/2))] *= gradient
                 self.db_visualisation[:, :int(dark_col-(self.light_gradient/2))] *= dark_gain
@@ -153,7 +153,7 @@ class DrawingBoard:
             if self.light_gradient > 0 and dark_col > 0:
                 gradient = self.chosen_math_library.linspace(dark_gain, light_gain, self.light_gradient)
                 gradient = self.chosen_math_library.expand_dims(gradient, 0)
-                gradient = self.chosen_math_library.repeat(gradient, self.height, 0)
+                gradient = self.chosen_math_library.repeat(gradient, self.arena_height, 0)
                 gradient = self.chosen_math_library.expand_dims(gradient, 2)
                 self.db[:, int(dark_col-(self.light_gradient/2)):int(dark_col+(self.light_gradient/2))] *= gradient
                 self.db[:, :int(dark_col-(self.light_gradient/2))] *= dark_gain
@@ -295,7 +295,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
                 comment='Movie support!')
     writer = FFMpegWriter(fps=15, metadata=metadata, codec='mpeg4', bitrate=1000000)
 
-    board = DrawingBoard(env_variables["width"], env_variables["height"], data, include_sediment)
+    board = DrawingBoard(env_variables["arena_width"], env_variables["height"], data, include_sediment)
     if show_energy_state:
         energy_levels = data["energy_state"]
     fish_positions = data["fish_position"]
@@ -314,7 +314,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     #     else:
     #         addon = 0
                 
-    #     frames = np.zeros((num_steps, np.int(env_variables["height"]*scale), np.int((env_variables["width"]+addon)*scale), 3))
+    #     frames = np.zeros((num_steps, np.int(env_variables["height"]*scale), np.int((env_variables["arena_width"]+addon)*scale), 3))
     obs_len = data['observation'].shape[1]
     obs_atom = env_variables['visual_field'] / obs_len
     remaining = 360 - env_variables['visual_field']
@@ -367,9 +367,9 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             # Draw prey
             px = np.round(np.array([pr[0] for pr in data["prey_positions"][step]])).astype(int)
             py = np.round(np.array([pr[1] for pr in data["prey_positions"][step]])).astype(int)
-            rrs, ccs = board.multi_circles(px, py, env_variables["prey_size_visualisation"])
+            rrs, ccs = board.multi_circles(px, py, env_variables["prey_radius_visualisation"])
 
-            rrs = np.clip(rrs, 0, env_variables["width"]-1)
+            rrs = np.clip(rrs, 0, env_variables["arena_width"]-1)
             ccs = np.clip(ccs, 0, env_variables["height"]-1)
 
             board.db[rrs, ccs] = (0, 0, 1)
@@ -378,16 +378,16 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             if env_variables["sand_grain_num"] > 0:
                 px = np.round(np.array([pr[0] for pr in data["sand_grain_positions"][step]])).astype(int)
                 py = np.round(np.array([pr[1] for pr in data["sand_grain_positions"][step]])).astype(int)
-                rrs, ccs = board.multi_circles(px, py, env_variables["prey_size_visualisation"])
+                rrs, ccs = board.multi_circles(px, py, env_variables["prey_radius_visualisation"])
 
-                rrs = np.clip(rrs, 0, env_variables["width"] - 1)
+                rrs = np.clip(rrs, 0, env_variables["arena_width"] - 1)
                 ccs = np.clip(ccs, 0, env_variables["height"] - 1)
 
                 board.db[rrs, ccs] = (0, 1, 1)
 
 
             if data["predator_presence"][step]:
-                board.circle(data["predator_positions"][step], env_variables['predator_size'], (0, 1, 0))
+                board.circle(data["predator_positions"][step], env_variables['predator_radius'], (0, 1, 0))
 
             # if draw_action_space_usage:
             #     if continuous_actions:
@@ -403,7 +403,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
                 centre_y, centre_x = fish_positions[step][0], fish_positions[step][1]
                 # print(centre_x, centre_y)
                 dist_x1 = centre_x
-                dist_x2 = env_variables["width"] - centre_x
+                dist_x2 = env_variables["arena_width"] - centre_x
                 dist_y1 = centre_y
                 dist_y2 = env_variables["height"] - centre_y
                 # print(dist_x1, dist_x2, dist_y1, dist_y2)

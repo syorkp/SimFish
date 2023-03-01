@@ -34,7 +34,7 @@ def plot_log_bout_energy_costs(model_config):
     actions = [9, 3, 4, 10, 7, 0, 1]
     action_names = ["AS", "sCS", "J-turn", "J-turn 2", "C-start", "Slow2", "RT"]
     costs = []
-    # env["ci"] = 1.0e-04
+    # env["i_scaling_energy_cost"] = 1.0e-04
     env["action_energy_use_scaling"] = "Nonlinear"
 
     for i, a in enumerate(actions):

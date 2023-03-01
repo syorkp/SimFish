@@ -71,8 +71,8 @@ class Fish:
 
         # Energy system (new simulation)
         self.energy_level = 1.0
-        self.ci = self.env_variables['ci']
-        self.ca = self.env_variables['ca']
+        self.i_scaling_energy_cost = self.env_variables['i_scaling_energy_cost']
+        self.a_scaling_energy_cost = self.env_variables['a_scaling_energy_cost']
         self.baseline_energy_use = self.env_variables['baseline_energy_use']
 
         self.action_reward_scaling = self.env_variables['action_reward_scaling']
@@ -296,17 +296,21 @@ class Fish:
         energy_intake = 1.0 * consumption
 
         if self.action_energy_use_scaling == "Nonlinear":
-            energy_use = self.ci * (abs(self.prev_action_impulse) ** 2) + self.ca * (
-                        abs(self.prev_action_angle) ** 2) + self.baseline_energy_use
+            energy_use = self.i_scaling_energy_cost * (abs(self.prev_action_impulse) ** 2) + \
+                         self.a_scaling_energy_cost * (abs(self.prev_action_angle) ** 2) + \
+                         self.baseline_energy_use
         elif self.action_energy_use_scaling == "Linear":
-            energy_use = self.ci * (abs(self.prev_action_impulse)) + self.ca * (
-                abs(self.prev_action_angle)) + self.baseline_energy_use
+            energy_use = self.i_scaling_energy_cost * (abs(self.prev_action_impulse)) + \
+                         self.a_scaling_energy_cost * (abs(self.prev_action_angle)) + \
+                         self.baseline_energy_use
         elif self.action_energy_use_scaling == "Sublinear":
-            energy_use = self.ci * (abs(self.prev_action_impulse) ** 0.5) + self.ca * (
-                        abs(self.prev_action_angle) ** 0.5) + self.baseline_energy_use
+            energy_use = self.i_scaling_energy_cost * (abs(self.prev_action_impulse) ** 0.5) + \
+                         self.a_scaling_energy_cost * (abs(self.prev_action_angle) ** 0.5) + \
+                         self.baseline_energy_use
         else:
-            energy_use = self.ci * (abs(self.prev_action_impulse) ** 0.5) + self.ca * (
-                        abs(self.prev_action_angle) ** 0.5) + self.baseline_energy_use
+            energy_use = self.i_scaling_energy_cost * (abs(self.prev_action_impulse) ** 0.5) + \
+                         self.a_scaling_energy_cost * (abs(self.prev_action_angle) ** 0.5) + \
+                         self.baseline_energy_use
 
         reward += (energy_intake * self.consumption_reward_scaling) - (energy_use * self.action_reward_scaling)
 

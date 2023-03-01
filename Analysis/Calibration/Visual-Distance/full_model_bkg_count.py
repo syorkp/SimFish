@@ -16,7 +16,7 @@ def get_max_background_brightness(background_brightness, light_decay_rate, pr_si
     max_visual_distance = np.absolute(np.log(0.001) / env_variables["light_decay_rate"])
 
     # Create board and get masked pixels
-    board = DrawingBoard(width, height, light_decay_rate, light_decay_rate, pr_size, False, False, prey_size=1,
+    board = DrawingBoard(width, height, light_decay_rate, light_decay_rate, pr_size, False, False, prey_radius=1,
                          light_gain=luminance, visible_scatter=background_brightness)
     board.erase(background_brightness)
     masked_pixels, lum_mask = board.get_masked_pixels(fish_position, np.array([]), np.array([]))

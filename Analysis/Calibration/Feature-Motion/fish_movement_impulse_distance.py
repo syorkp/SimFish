@@ -22,7 +22,7 @@ class TestEnvironment:
 
             'prey_mass': 1.,
             'prey_inertia': 40.,
-            'prey_size': 2.5,  # FINAL VALUE - 0.2mm diameter, so 1.
+            'prey_radius': 2.5,  # FINAL VALUE - 0.2mm diameter, so 1.
             'prey_max_turning_angle': 0.04,
 
             'p_slow': 1.0,
@@ -37,7 +37,7 @@ class TestEnvironment:
 
             'predator_mass': 10.,
             'predator_inertia': 40.,
-            'predator_size': 87.,  # To be 8.7mm in diameter, formerly 100
+            'predator_radius': 87.,  # To be 8.7mm in diameter, formerly 100
             'predator_impulse': 1.0,
         }
 
@@ -85,7 +85,7 @@ class TestEnvironment:
 
     def create_prey(self, prey_position=None):
         self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
-        self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_size']))
+        self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_radius']))
         self.prey_shapes[-1].elasticity = 1.0
         self.prey_bodies[-1].position = prey_position
         self.prey_shapes[-1].color = (0, 0, 1)
@@ -148,7 +148,7 @@ class TestEnvironment:
 
     def create_predator(self, prey_position=None):
         self.predator_bodies.append(pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia']))
-        self.predator_shapes.append(pymunk.Circle(self.predator_bodies[-1], self.env_variables['predator_size']))
+        self.predator_shapes.append(pymunk.Circle(self.predator_bodies[-1], self.env_variables['predator_radius']))
         self.predator_shapes[-1].elasticity = 1.0
         self.predator_bodies[-1].position = prey_position
         self.predator_shapes[-1].color = (0, 0, 1)

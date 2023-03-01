@@ -44,8 +44,8 @@ def run_simulation(fish, actions, captures, duration=2000):
 if __name__ == "__main__":
     learning_params, env_variables, n, b, c = load_assay_configuration_files("dqn_predator-1")
     env_variables["baseline_energy_use"] = 0.0002
-    env_variables["ca"] = 1.5e-04
-    env_variables["ci"] = 1.5e-04
+    env_variables["a_scaling_energy_cost"] = 1.5e-04
+    env_variables["i_scaling_energy_cost"] = 1.5e-04
     # env_variables["action_energy_use_scaling"] = "Nonlinear"
     # Modify env variables here.
     model = build_fish_model(env_variables, continuous=False)

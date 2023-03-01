@@ -37,10 +37,10 @@ def get_max_scatter_photons(background_brightness, distance, rf_size, decay_cons
     return photons
 
 
-def get_max_scatter_photons_occluded(background_brightness, rf_size, prey_distance, prey_size, max_distance, decay_constant, uv_occlusion_gain):
+def get_max_scatter_photons_occluded(background_brightness, rf_size, prey_distance, prey_radius, max_distance, decay_constant, uv_occlusion_gain):
     photons = 0
 
-    prey_angular_size = 2 * np.arctan((prey_size/2)/prey_distance)
+    prey_angular_size = 2 * np.arctan((prey_radius/2)/prey_distance)
     fraction_occluded = prey_angular_size/rf_size
     if fraction_occluded > 1.0:
         fraction_occluded = 1.0
@@ -90,7 +90,7 @@ def compute_distinguishability_old(prey_stimulus, max_noise_stimulus):
 
 
 def plot_distinguishability_against_distance(max_distance, background_brightness, luminance, scaling_factor, uv_occlusion_gain, rf_size, decay_constant, max_curve_distance=1000):
-    prey_size = 1
+    prey_radius = 1
 
     distinguishability_scores = []
     distances = np.linspace(10, max_curve_distance, 10)
@@ -101,7 +101,7 @@ def plot_distinguishability_against_distance(max_distance, background_brightness
     for distance in distances:
         max_uv_scatter = get_max_scatter_photons(background_brightness, max_distance, rf_size, decay_constant)
         uv_scatter_before_prey = get_max_scatter_photons(background_brightness, distance, rf_size, decay_constant)
-        uv_scatter_after_prey = get_max_scatter_photons_occluded(background_brightness, rf_size, distance, prey_size, max_distance, decay_constant, uv_occlusion_gain)
+        uv_scatter_after_prey = get_max_scatter_photons_occluded(background_brightness, rf_size, distance, prey_radius, max_distance, decay_constant, uv_occlusion_gain)
         uv_prey = get_max_prey_photons(distance, rf_size, decay_constant, luminance)
         uv_prey_stimulus = uv_prey + uv_scatter_after_prey + uv_scatter_before_prey
 
@@ -140,7 +140,7 @@ def plot_distinguishability_against_distance(max_distance, background_brightness
 def plot_distinguishability_against_luminance(visual_distance, max_distance, background_brightness, scaling_factor, uv_occlusion_gain, min_luminance, max_luminance):
     rf_size = 0.0128
     decay_constant = 0.0006
-    prey_size = 1
+    prey_radius = 1
 
     luminance_vals = np.linspace(min_luminance, max_luminance, 100)
     uv_scatter_photons = get_max_scatter_photons(background_brightness, max_distance, rf_size, decay_constant) * scaling_factor
@@ -150,7 +150,7 @@ def plot_distinguishability_against_luminance(visual_distance, max_distance, bac
 
     for l in luminance_vals:
         uv_scatter_before_prey = get_max_scatter_photons(background_brightness, visual_distance, rf_size, decay_constant)
-        uv_scatter_after_prey = get_max_scatter_photons_occluded(background_brightness, rf_size, visual_distance, prey_size, max_distance, decay_constant, uv_occlusion_gain)
+        uv_scatter_after_prey = get_max_scatter_photons_occluded(background_brightness, rf_size, visual_distance, prey_radius, max_distance, decay_constant, uv_occlusion_gain)
         uv_prey = get_max_prey_photons(visual_distance, rf_size, decay_constant, l)
         uv_prey_stimulus = uv_prey + uv_scatter_after_prey + uv_scatter_before_prey
 
@@ -176,7 +176,7 @@ def plot_distinguishability_against_luminance_two_distances(visual_distance_full
                                                             max_luminance):
     rf_size = 0.0128
     decay_constant = 0.0006
-    prey_size = 1
+    prey_radius = 1
 
     luminance_vals = np.linspace(min_luminance, max_luminance, 100)
     uv_scatter_photons = get_max_scatter_photons(background_brightness, max_distance, rf_size, decay_constant) * scaling_factor
@@ -189,13 +189,13 @@ def plot_distinguishability_against_luminance_two_distances(visual_distance_full
     for l in luminance_vals:
         # Full visibility
         uv_scatter_before_prey = get_max_scatter_photons(background_brightness, visual_distance_full, rf_size, decay_constant)
-        uv_scatter_after_prey = get_max_scatter_photons_occluded(background_brightness, rf_size, visual_distance_full, prey_size, max_distance, decay_constant, uv_occlusion_gain)
+        uv_scatter_after_prey = get_max_scatter_photons_occluded(background_brightness, rf_size, visual_distance_full, prey_radius, max_distance, decay_constant, uv_occlusion_gain)
         uv_prey = get_max_prey_photons(visual_distance_full, rf_size, decay_constant, l)
         uv_prey_stimulus_full = uv_prey + uv_scatter_after_prey + uv_scatter_before_prey
 
         # 50% visibility
         uv_scatter_before_prey = get_max_scatter_photons(background_brightness, visual_distance_partial, rf_size, decay_constant)
-        uv_scatter_after_prey = get_max_scatter_photons_occluded(background_brightness, rf_size, visual_distance_partial, prey_size, max_distance, decay_constant, uv_occlusion_gain)
+        uv_scatter_after_prey = get_max_scatter_photons_occluded(background_brightness, rf_size, visual_distance_partial, prey_radius, max_distance, decay_constant, uv_occlusion_gain)
         uv_prey = get_max_prey_photons(visual_distance_partial, rf_size, decay_constant, l)
         uv_prey_stimulus_partial = uv_prey + uv_scatter_after_prey + uv_scatter_before_prey
 

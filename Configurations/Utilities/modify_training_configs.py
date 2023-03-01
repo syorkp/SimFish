@@ -25,8 +25,8 @@ if __name__ == "__main__":
     # modify_training_configs("dqn_scaffold_34", "num_episodes", 100000, 47, prefix="learning")
     # modify_training_configs("ppo_scaffold_21", "num_episodes", 100000, 96, prefix="learning")
 
-    # modify_training_configs("dqn_scaffold_26", "ci", 4e-07, 43, prefix="env")
-    # modify_training_configs("dqn_scaffold_30", "ci", 4e-07, 43, prefix="env")
+    # modify_training_configs("dqn_scaffold_26", "i_scaling_energy_cost", 4e-07, 43, prefix="env")
+    # modify_training_configs("dqn_scaffold_30", "i_scaling_energy_cost", 4e-07, 43, prefix="env")
     #
     # modify_training_configs("dqn_scaffold_26", "ca", 4e-07, 43, prefix="env")
     # modify_training_configs("dqn_scaffold_30", "ca", 4e-07, 43, prefix="env")
