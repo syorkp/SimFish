@@ -15,9 +15,9 @@ from Analysis.Neural.Tools.normalise_activity import normalise_within_neuron_mul
 def plot_pca_trajectory_with_contexts_multiple_trials(datas, remove_value_stream=False):
     behavioural_labels = label_behavioural_context_multiple_trials(datas, environment_size=1500)
     if remove_value_stream:
-        all_activity_data = [np.swapaxes(data["rnn_state_actor"][:, 0, 0, :256], 0, 1) for data in datas]
+        all_activity_data = [np.swapaxes(data["rnn_state"][:, 0, 0, :256], 0, 1) for data in datas]
     else:
-        all_activity_data = [np.swapaxes(data["rnn_state_actor"][:, 0, 0, :], 0, 1) for data in datas]
+        all_activity_data = [np.swapaxes(data["rnn_state"][:, 0, 0, :], 0, 1) for data in datas]
     plot_pca_trajectory_with_context(all_activity_data, behavioural_labels)
 
 
@@ -80,13 +80,13 @@ def plot_pca_with_all_behavioural_periods_multiple_trials(datas, model_name, dis
     for data in datas:
         if selected_neurons is None:
             if remove_value_stream:
-                rnn_data = data["rnn_state_actor"][:, 0, 0, :256]
+                rnn_data = data["rnn_state"][:, 0, 0, :256]
             else:
-                rnn_data = data["rnn_state_actor"][:, 0, 0, :]
+                rnn_data = data["rnn_state"][:, 0, 0, :]
         else:
             if remove_value_stream:
                 selected_neurons = [i for i in selected_neurons if i < 256]
-            rnn_data = data["rnn_state_actor"][:, 0, 0, selected_neurons]
+            rnn_data = data["rnn_state"][:, 0, 0, selected_neurons]
 
         rnn_data = np.swapaxes(rnn_data, 0, 1)
         consumption_points.append([i for i in range(len(data["consumed"][:])) if data["consumed"][i]])
@@ -111,13 +111,13 @@ def plot_pca_with_all_behavioural_periods_multiple_trials_2(datas, model_name, d
     for data in datas:
         if selected_neurons is None:
             if remove_value_stream:
-                rnn_data = data["rnn_state_actor"][:, 0, 0, 0, :256] # TODO: Get rid of...
+                rnn_data = data["rnn_state"][:, 0, 0, 0, :256] # TODO: Get rid of...
             else:
-                rnn_data = data["rnn_state_actor"][:, 0, 0, :]
+                rnn_data = data["rnn_state"][:, 0, 0, :]
         else:
             if remove_value_stream:
                 selected_neurons = [i for i in selected_neurons if i < 256]
-            rnn_data = data["rnn_state_actor"][:, 0, 0, selected_neurons]
+            rnn_data = data["rnn_state"][:, 0, 0, selected_neurons]
 
         rnn_data = np.swapaxes(rnn_data, 0, 1)
         consumption_points.append([i for i in range(len(data["consumed"][:])) if data["consumed"][i]])

@@ -46,25 +46,25 @@ def ppo_training_target_continuous_sbe(trial, total_steps, episode_number, memor
         profile_speed = False
 
 
-    services = PPOTrainingServiceContinuousSBE(model_name=trial["Model Name"],
-                                               trial_number=trial["Trial Number"],
-                                               total_steps=total_steps,
-                                               episode_number=episode_number,
-                                               monitor_gpu=monitor_gpu,
-                                               using_gpu=using_gpu,
-                                               memory_fraction=memory_fraction,
-                                               config_name=trial["Environment Name"],
-                                               continuous_actions=continuous_actions,
-                                               model_exists=trial["Model Exists"],
-                                               configuration_index=configuration_index,
-                                               full_logs=full_logs,
-                                               profile_speed=profile_speed,
-                                               )
+    services = PPOTrainingService(model_name=trial["Model Name"],
+                                  trial_number=trial["Trial Number"],
+                                  total_steps=total_steps,
+                                  episode_number=episode_number,
+                                  monitor_gpu=monitor_gpu,
+                                  using_gpu=using_gpu,
+                                  memory_fraction=memory_fraction,
+                                  config_name=trial["Environment Name"],
+                                  continuous_actions=continuous_actions,
+                                  model_exists=trial["Model Exists"],
+                                  configuration_index=configuration_index,
+                                  full_logs=full_logs,
+                                  profile_speed=profile_speed,
+                                  )
     print("Created service...", flush=True)
     services.run()
 
 
-class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
+class PPOTrainingService(TrainingService, ContinuousPPO):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, continuous_actions, model_exists, configuration_index,
@@ -145,7 +145,7 @@ class PPOTrainingServiceContinuousSBE(TrainingService, ContinuousPPO):
             print("Switching network configuration...")
             with sess as self.sess:
                 self.create_network()
-                new_output_layer = self.actor_network.processing_network_output
+                new_output_layer = self.network.processing_network_output
 
                 if new_output_layer != self.original_output_layer:  # If altered shape of final output layer
                     self.additional_layers += []
@@ -214,16 +214,11 @@ Mean Impulse: {np.mean([i[0] for i in self.buffer.action_buffer])}
 Mean Angle {np.mean([i[1] for i in self.buffer.action_buffer])}
 Total episode reward: {self.total_episode_reward}\n""", flush=True)
 
-    def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
-                  rnn_state_critic_ref):
+    def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         if self.full_logs:
-            return self._step_loop_full_logs(o, internal_state, a, rnn_state_actor,
-                                             rnn_state_actor_ref, rnn_state_critic,
-                                             rnn_state_critic_ref)
+            return self._step_loop_full_logs(o, internal_state, a, rnn_state, rnn_state_ref)
         else:
-            return self._step_loop_reduced_logs(o, internal_state, a, rnn_state_actor,
-                                                rnn_state_actor_ref, rnn_state_critic,
-                                                rnn_state_critic_ref)
+            return self._step_loop_reduced_logs(o, internal_state, a, rnn_state, rnn_state_ref)
 
     def save_episode(self, episode_start_t, total_episode_reward, prey_caught,
                      predators_avoided, sand_grains_bumped):

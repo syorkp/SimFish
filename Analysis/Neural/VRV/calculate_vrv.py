@@ -152,14 +152,14 @@ def create_full_response_vector(model_name, background=False):
                 aid = "Prey-Static-5"
                 stimulus_data = load_stimulus_data(model_name, f"{file_p}-Full-Response-Vector", aid)
                 # stimulus_data = new_load_stimulus_data(model_name, f"{file_p}-Full-Response-Vector", aid)
-                new_vector_section = get_all_neuron_vectors(data, "prey 1", stimulus_data, "rnn_state_actor")
+                new_vector_section = get_all_neuron_vectors(data, "prey 1", stimulus_data, "rnn_state")
                 for i, n in enumerate(response_vectors):
                     response_vectors[i] = n + new_vector_section[i]
         elif "Predator" in file_p:
             for aid in predator_assay_ids:
                 data = load_data(model_name, f"{file_p}-Full-Response-Vector", aid)
                 stimulus_data = load_stimulus_data(model_name, f"{file_p}-Full-Response-Vector", aid)
-                new_vector_section = get_all_neuron_vectors(data, "predator 1", stimulus_data, "rnn_state_actor")
+                new_vector_section = get_all_neuron_vectors(data, "predator 1", stimulus_data, "rnn_state")
                 for i, n in enumerate(response_vectors):
                     response_vectors[i] = n + new_vector_section[i]
     return response_vectors

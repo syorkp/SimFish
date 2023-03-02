@@ -442,7 +442,7 @@ def get_inputs_prior_to_capture(data):
     t_chosen = 3
 
     observation = data["observation"][t_chosen]
-    rnn_state = data["rnn_state_actor"][t_chosen]
+    rnn_state = data["rnn_state"][t_chosen]
     energy_state = data["energy_state"][t_chosen]
     salt = data["salt"][t_chosen]
     action = data["action"][t_chosen]

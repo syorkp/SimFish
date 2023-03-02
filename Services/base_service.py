@@ -98,8 +98,8 @@ class BaseService:
             self.buffer = None
         if not hasattr(self, "episode_loop"):
             self.episode_loop = None
-        if not hasattr(self, "actor_network"):
-            self.actor_network = None
+        if not hasattr(self, "network"):
+            self.network = None
         if not hasattr(self, "main_QN"):
             self.main_QN = None
         if not hasattr(self, "_episode_loop"):

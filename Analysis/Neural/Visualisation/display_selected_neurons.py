@@ -24,7 +24,7 @@ def display_neurons_with_selectivities(model_name, naturalistic, selectivity=Fal
 
         data = load_data(model_name, "Prey-Full-Response-Vector", selectivity_prefix)
         stimulus_data = load_stimulus_data(model_name, "Prey-Full-Response-Vector", selectivity_prefix)
-    rnn_data = data["rnn_state_actor"][:, 0, 0, :]
+    rnn_data = data["rnn_state"][:, 0, 0, :]
 
     if action_association:
         action_associations = [i for i, key in enumerate(categories.keys()) if str(action_association) in categories[key]["action_associations"]]

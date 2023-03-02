@@ -305,7 +305,7 @@ class TrainingService(BaseService):
             removed_layers = [layer for layer in original_layers if layer not in new_layers]
 
             if self.algorithm == "PPO":
-                self.original_output_layer = self.actor_network.processing_network_output
+                self.original_output_layer = self.network.processing_network_output
             elif self.algorithm == "DQN":
                 self.original_output_layer = self.main_QN.processing_network_output
             else:

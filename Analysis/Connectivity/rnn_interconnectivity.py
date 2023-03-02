@@ -112,7 +112,7 @@ Mean squared error - random neuron connections: {np.mean(squared_inter_differenc
 
 
 def get_activity_profiles_by_indices_pairs(data, indices_pairs):
-    activity = [[data["rnn_state_actor"][:, 0, 0, indices[0]], data["rnn_state_actor"][:, 0, 0, indices[1]]]
+    activity = [[data["rnn_state"][:, 0, 0, indices[0]], data["rnn_state"][:, 0, 0, indices[1]]]
                 for indices in indices_pairs]
     return np.array(activity)
 

@@ -6,7 +6,7 @@ import json
 
 import tensorflow.compat.v1 as tf
 
-from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator_dynamic import PPONetworkActorMultivariate2Dynamic
+from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator_dynamic import PPONetworkMultivariate2Dynamic
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -32,8 +32,7 @@ class ContinuousPPO:
         self.save_frames = None
 
         # Networks
-        self.actor_network = None
-        self.critic_network = None
+        self.network = None
 
         # To check if is assay or training
         self.assay = None
@@ -42,13 +41,8 @@ class ContinuousPPO:
         self.current_episode_max_duration = None
         self.total_episode_reward = 0  # Total reward over episode
 
-        # self.init_rnn_state_actor = None  # Reset RNN hidden state
-        # self.init_rnn_state_actor_ref = None
-        self.init_rnn_state_critic = None
-        self.init_rnn_state_critic_ref = None
-
-        self.init_rnn_state = None # self.init_rnn_state_actor  # Reset RNN hidden state
-        self.init_rnn_state_ref = None  # self.init_rnn_state_actor_ref
+        self.init_rnn_state = None  # Reset RNN hidden state
+        self.init_rnn_state_ref = None
 
         # Add attributes only if don't exist yet (prevents errors thrown).
         if not hasattr(self, "get_internal_state_order"):
@@ -113,28 +107,27 @@ class ContinuousPPO:
             reuse_eyes = self.learning_params['reuse_eyes']
         else:
             reuse_eyes = False
-        self.actor_network = PPONetworkActorMultivariate2Dynamic(simulation=self.simulation,
-                                                                 # rnn_dim=self.learning_params['rnn_dim_shared'],
-                                                                 # rnn_cell=actor_cell,
-                                                                 my_scope='actor',
-                                                                 internal_states=internal_states,
-                                                                 internal_state_names=internal_state_names,
-                                                                 max_impulse=self.environment_params[
+        self.network = PPONetworkMultivariate2Dynamic(simulation=self.simulation,
+                                                      # rnn_dim=self.learning_params['rnn_dim_shared'],
+                                                      my_scope='PPO',
+                                                      internal_states=internal_states,
+                                                      internal_state_names=internal_state_names,
+                                                      max_impulse=self.environment_params[
                                                                      'max_impulse'],
-                                                                 max_angle_change=self.environment_params[
+                                                      max_angle_change=self.environment_params[
                                                                      'max_angle_change'],
-                                                                 clip_param=self.environment_params[
+                                                      clip_param=self.environment_params[
                                                                      'clip_param'],
-                                                                 base_network_layers=self.learning_params[
+                                                      base_network_layers=self.learning_params[
                                                                      'base_network_layers'],
-                                                                 modular_network_layers=self.learning_params[
+                                                      modular_network_layers=self.learning_params[
                                                                      'modular_network_layers'],
-                                                                 ops=self.learning_params['ops'],
-                                                                 connectivity=self.learning_params[
+                                                      ops=self.learning_params['ops'],
+                                                      connectivity=self.learning_params[
                                                                      'connectivity'],
-                                                                 reflected=self.learning_params['reflected'],
-                                                                 reuse_eyes=reuse_eyes,
-                                                                 )
+                                                      reflected=self.learning_params['reflected'],
+                                                      reuse_eyes=reuse_eyes,
+                                                      )
 
 
 
@@ -162,8 +155,7 @@ class ContinuousPPO:
             if math.isnan(self.angle_sigma[0]):
                 self.angle_sigma = np.array([self.environment_params["min_sigma_angle"]])
 
-    def _assay_step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                         rnn_state_critic, rnn_state_critic_ref):
+    def _assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0],
              a[1],
@@ -171,28 +163,28 @@ class ContinuousPPO:
              self.simulation.fish.prev_action_angle,
              ]# Set impulse to scale to be inputted to network
 
-        impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, network_layers, \
+        impulse, angle, V, updated_rnn_state, updated_rnn_state_ref, network_layers, \
         mu_i, mu_a, mu1, mu1_ref, mu_a1, mu_a_ref, si_i, si_a = self.sess.run(
-            [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.value_output,
-             self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
-             self.actor_network.network_graph,
-             self.actor_network.mu_impulse_combined,
-             self.actor_network.mu_angle_combined,
-             self.actor_network.mu_impulse,
-             self.actor_network.mu_impulse_ref,
-             self.actor_network.mu_angle, self.actor_network.mu_angle_ref,
-             self.actor_network.sigma_impulse_combined, self.actor_network.sigma_angle_combined,
+            [self.network.impulse_output, self.network.angle_output, self.network.value_output,
+             self.network.rnn_state_shared, self.network.rnn_state_ref,
+             self.network.network_graph,
+             self.network.mu_impulse_combined,
+             self.network.mu_angle_combined,
+             self.network.mu_impulse,
+             self.network.mu_impulse_ref,
+             self.network.mu_angle, self.network.mu_angle_ref,
+             self.network.sigma_impulse_combined, self.network.sigma_angle_combined,
              ],
-            feed_dict={self.actor_network.observation: o,
-                       self.actor_network.internal_state: internal_state,
-                       self.actor_network.prev_actions: np.reshape(a, (1, 4)),
-                       self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
-                       self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
-                       self.actor_network.rnn_state_in: rnn_state_actor,
-                       self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
-                       self.actor_network.batch_size: 1,
-                       self.actor_network.train_length: 1,
-                       self.actor_network.entropy_coefficient: self.learning_params["lambda_entropy"],
+            feed_dict={self.network.observation: o,
+                       self.network.internal_state: internal_state,
+                       self.network.prev_actions: np.reshape(a, (1, 4)),
+                       self.network.sigma_impulse_combined_proto: self.impulse_sigma,
+                       self.network.sigma_angle_combined_proto: self.angle_sigma,
+                       self.network.rnn_state_in: rnn_state,
+                       self.network.rnn_state_in_ref: rnn_state_ref,
+                       self.network.batch_size: 1,
+                       self.network.train_length: 1,
+                       self.network.entropy_coefficient: self.learning_params["lambda_entropy"],
                        }
         )
 
@@ -223,10 +215,8 @@ class ContinuousPPO:
                                  reward=given_reward,
                                  value=V,
                                  l_p_action=0,
-                                 actor_rnn_state=rnn_state_actor,
-                                 actor_rnn_state_ref=rnn_state_actor_ref,
-                                 critic_rnn_state=rnn_state_critic,
-                                 critic_rnn_state_ref=rnn_state_critic_ref,
+                                 rnn_state=rnn_state,
+                                 rnn_state_ref=rnn_state_ref,
                                  )
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
 
@@ -257,12 +247,9 @@ class ContinuousPPO:
 
         self.buffer.make_desired_recordings(network_layers)
 
-        return given_reward, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, \
-               0, 0, action
+        return given_reward, new_internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, action
 
-    def _step_loop_full_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                             rnn_state_critic,
-                             rnn_state_critic_ref):
+    def _step_loop_full_logs(self, o, internal_state, a, rnn_state, rnn_state_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0],
              a[1],
@@ -270,25 +257,25 @@ class ContinuousPPO:
              self.simulation.fish.prev_action_angle,
              ]# Set impulse to scale to be inputted to network
 
-        impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, neg_log_action_probability, mu_i, mu_a, \
+        impulse, angle, V, updated_rnn_state, updated_rnn_state_ref, neg_log_action_probability, mu_i, mu_a, \
         si = self.sess.run(
-            [self.actor_network.impulse_output, self.actor_network.angle_output, self.actor_network.value_output,
-             self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
-             self.actor_network.neg_log_prob,
-             self.actor_network.mu_impulse_combined,
-             self.actor_network.mu_angle_combined,
-             self.actor_network.sigma_action, ],
+            [self.network.impulse_output, self.network.angle_output, self.network.value_output,
+             self.network.rnn_state_shared, self.network.rnn_state_ref,
+             self.network.neg_log_prob,
+             self.network.mu_impulse_combined,
+             self.network.mu_angle_combined,
+             self.network.sigma_action, ],
 
-            feed_dict={self.actor_network.observation: o,
-                       self.actor_network.internal_state: internal_state,
-                       self.actor_network.prev_actions: np.reshape(a, (1, 4)),
-                       self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
-                       self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
-                       self.actor_network.rnn_state_in: rnn_state_actor,
-                       # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
-                       self.actor_network.batch_size: 1,
-                       self.actor_network.train_length: 1,
-                       self.actor_network.entropy_coefficient: self.learning_params["lambda_entropy"],
+            feed_dict={self.network.observation: o,
+                       self.network.internal_state: internal_state,
+                       self.network.prev_actions: np.reshape(a, (1, 4)),
+                       self.network.sigma_impulse_combined_proto: self.impulse_sigma,
+                       self.network.sigma_angle_combined_proto: self.angle_sigma,
+                       self.network.rnn_state_in: rnn_state,
+                       # self.network.rnn_state_in_ref: rnn_state_ref,
+                       self.network.batch_size: 1,
+                       self.network.train_length: 1,
+                       self.network.entropy_coefficient: self.learning_params["lambda_entropy"],
                        }
         )
 
@@ -301,19 +288,19 @@ class ContinuousPPO:
 
                 # And get updated neg_log_prob
                 neg_log_action_probability = self.sess.run(
-                    [self.actor_network.new_neg_log_prob],
+                    [self.network.new_neg_log_prob],
 
-                    feed_dict={self.actor_network.observation: o,
-                               self.actor_network.internal_state: internal_state,
-                               self.actor_network.prev_actions: np.reshape(a, (1, 4)),
-                               self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
-                               self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
-                               self.actor_network.rnn_state_in: rnn_state_actor,
-                               # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
-                               self.actor_network.batch_size: 1,
-                               self.actor_network.train_length: 1,
+                    feed_dict={self.network.observation: o,
+                               self.network.internal_state: internal_state,
+                               self.network.prev_actions: np.reshape(a, (1, 4)),
+                               self.network.sigma_impulse_combined_proto: self.impulse_sigma,
+                               self.network.sigma_angle_combined_proto: self.angle_sigma,
+                               self.network.rnn_state_in: rnn_state,
+                               # self.network.rnn_state_in_ref: rnn_state_ref,
+                               self.network.batch_size: 1,
+                               self.network.train_length: 1,
 
-                               self.actor_network.action_placeholder: np.reshape(action, (1, 2)),
+                               self.network.action_placeholder: np.reshape(action, (1, 2)),
                                }
                 )
 
@@ -338,8 +325,8 @@ class ContinuousPPO:
                                  reward=r,
                                  value=V,
                                  l_p_action=neg_log_action_probability,
-                                 actor_rnn_state=rnn_state_actor,
-                                 actor_rnn_state_ref=rnn_state_actor_ref,
+                                 rnn_state=rnn_state,
+                                 rnn_state_ref=rnn_state_ref,
                                  )
 
         if self.save_environmental_data:
@@ -375,11 +362,9 @@ class ContinuousPPO:
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, 0, 0, 0, 0)
 
         self.total_steps += 1
-        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0, action
+        return r, new_internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, action
 
-    def _step_loop_reduced_logs(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                rnn_state_critic,
-                                rnn_state_critic_ref):
+    def _step_loop_reduced_logs(self, o, internal_state, a, rnn_state, rnn_state_ref):
 
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         # a = [a[0] / self.environment_params['max_impulse'],
@@ -392,24 +377,24 @@ class ContinuousPPO:
              ]# Set impulse to scale to be inputted to network
 
 
-        impulse, angle, V, updated_rnn_state_actor, updated_rnn_state_actor_ref, mu_i, mu_a, neg_log_action_probability = self.sess.run(
-            [self.actor_network.impulse_output, self.actor_network.angle_output,
-             self.actor_network.value_output,
-             self.actor_network.rnn_state_shared, self.actor_network.rnn_state_ref,
-             self.actor_network.mu_impulse_combined,
-             self.actor_network.mu_angle_combined,
-             self.actor_network.neg_log_prob],
+        impulse, angle, V, updated_rnn_state, updated_rnn_state_ref, mu_i, mu_a, neg_log_action_probability = self.sess.run(
+            [self.network.impulse_output, self.network.angle_output,
+             self.network.value_output,
+             self.network.rnn_state_shared, self.network.rnn_state_ref,
+             self.network.mu_impulse_combined,
+             self.network.mu_angle_combined,
+             self.network.neg_log_prob],
 
-            feed_dict={self.actor_network.observation: o,
-                       self.actor_network.internal_state: internal_state,
-                       self.actor_network.prev_actions: np.reshape(a, (1, 2)),
-                       self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
-                       self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
-                       self.actor_network.rnn_state_in: rnn_state_actor,
-                       # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
-                       self.actor_network.batch_size: 1,
-                       self.actor_network.train_length: 1,
-                       self.actor_network.entropy_coefficient: self.learning_params["lambda_entropy"],
+            feed_dict={self.network.observation: o,
+                       self.network.internal_state: internal_state,
+                       self.network.prev_actions: np.reshape(a, (1, 2)),
+                       self.network.sigma_impulse_combined_proto: self.impulse_sigma,
+                       self.network.sigma_angle_combined_proto: self.angle_sigma,
+                       self.network.rnn_state_in: rnn_state,
+                       # self.network.rnn_state_in_ref: rnn_state_ref,
+                       self.network.batch_size: 1,
+                       self.network.train_length: 1,
+                       self.network.entropy_coefficient: self.learning_params["lambda_entropy"],
                        }
         )
         if self.epsilon_greedy:
@@ -421,19 +406,19 @@ class ContinuousPPO:
 
                 # And get updated neg_log_prob
                 neg_log_action_probability = self.sess.run(
-                    [self.actor_network.new_neg_log_prob],
+                    [self.network.new_neg_log_prob],
 
-                    feed_dict={self.actor_network.observation: o,
-                               self.actor_network.internal_state: internal_state,
-                               self.actor_network.prev_actions: np.reshape(a, (1, 2)),
-                               self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
-                               self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
-                               self.actor_network.rnn_state_in: rnn_state_actor,
-                               # self.actor_network.rnn_state_in_ref: rnn_state_actor_ref,
-                               self.actor_network.batch_size: 1,
-                               self.actor_network.train_length: 1,
+                    feed_dict={self.network.observation: o,
+                               self.network.internal_state: internal_state,
+                               self.network.prev_actions: np.reshape(a, (1, 2)),
+                               self.network.sigma_impulse_combined_proto: self.impulse_sigma,
+                               self.network.sigma_angle_combined_proto: self.angle_sigma,
+                               self.network.rnn_state_in: rnn_state,
+                               # self.network.rnn_state_in_ref: rnn_state_ref,
+                               self.network.batch_size: 1,
+                               self.network.train_length: 1,
 
-                               self.actor_network.action_placeholder: action,
+                               self.network.action_placeholder: action,
                                }
                 )
 
@@ -457,8 +442,8 @@ class ContinuousPPO:
                                  reward=r,
                                  value=V,
                                  l_p_action=neg_log_action_probability,
-                                 actor_rnn_state=rnn_state_actor,
-                                 actor_rnn_state_ref=rnn_state_actor_ref,
+                                 rnn_state=rnn_state,
+                                 rnn_state_ref=rnn_state_ref,
                                  )
 
         if self.save_environmental_data:
@@ -474,7 +459,7 @@ class ContinuousPPO:
                                                              )
 
         self.total_steps += 1
-        return r, new_internal_state, o1, d, updated_rnn_state_actor, updated_rnn_state_actor_ref, 0, 0, action
+        return r, new_internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, action
 
     def get_batch(self, batch, observation_buffer, internal_state_buffer, action_buffer,
                   previous_action_buffer,
@@ -593,56 +578,42 @@ class ContinuousPPO:
             # """)
 
             for i in range(self.learning_params["n_updates_per_iteration"]):
-                # Compute RNN states for start of each trace.
-                actor_rnn_state_slice, actor_rnn_state_ref_slice = self.compute_rnn_states2(batch_key_points,
-                                                                                            observation_buffer[
-                                                                                            :(batch + 1) *
-                                                                                             self.learning_params[
-                                                                                                 "batch_size"]],
-                                                                                            internal_state_buffer[
-                                                                                            :(batch + 1) *
-                                                                                             self.learning_params[
-                                                                                                 "batch_size"]],
-                                                                                            previous_action_buffer[
-                                                                                            :(batch + 1) *
-                                                                                             self.learning_params[
-                                                                                                 "batch_size"]])
-                # print(f"RNN state: {actor_rnn_state_ref_slice}")
-                # print(f"RNN state shape: {actor_rnn_state_ref_slice[0].shape}")
-                # Optimise actor
+                # Get RNN states for start of each trace.
+                rnn_state_slice, rnn_state_ref_slice = self.get_rnn_states(batch_key_points)
+
+                # Optimise
                 loss_actor_val, loss_critic_val, loss_entropy, total_loss, _, log_action_probability_batch_new, scaled_actions = self.sess.run(
-                    [self.actor_network.policy_loss, self.actor_network.value_loss, self.actor_network.entropy,
-                     self.actor_network.total_loss, self.actor_network.train, self.actor_network.new_neg_log_prob,
-                     self.actor_network.normalised_action],
+                    [self.network.policy_loss, self.network.value_loss, self.network.entropy,
+                     self.network.total_loss, self.network.train, self.network.new_neg_log_prob,
+                     self.network.normalised_action],
 
-                    feed_dict={self.actor_network.observation: observation_batch,
-                               self.actor_network.prev_actions: previous_action_batch,
-                               self.actor_network.internal_state: internal_state_batch,
-                               self.actor_network.rnn_state_in: actor_rnn_state_slice,
-                               # self.actor_network.rnn_state_in_ref: actor_rnn_state_ref_slice,
+                    feed_dict={self.network.observation: observation_batch,
+                               self.network.prev_actions: previous_action_batch,
+                               self.network.internal_state: internal_state_batch,
+                               self.network.rnn_state_in: rnn_state_slice,
+                               # self.network.rnn_state_in_ref: rnn_state_ref_slice,
 
-                               self.actor_network.sigma_impulse_combined_proto: self.impulse_sigma,
-                               self.actor_network.sigma_angle_combined_proto: self.angle_sigma,
+                               self.network.sigma_impulse_combined_proto: self.impulse_sigma,
+                               self.network.sigma_angle_combined_proto: self.angle_sigma,
 
-                               self.actor_network.action_placeholder: action_batch,
-                               self.actor_network.old_neg_log_prob: log_action_probability_batch,
-                               self.actor_network.scaled_advantage_placeholder: advantage_batch,
-                               self.actor_network.returns_placeholder: return_batch,
+                               self.network.action_placeholder: action_batch,
+                               self.network.old_neg_log_prob: log_action_probability_batch,
+                               self.network.scaled_advantage_placeholder: advantage_batch,
+                               self.network.returns_placeholder: return_batch,
 
-                               self.actor_network.old_value_placeholder: previous_value_batch,
+                               self.network.old_value_placeholder: previous_value_batch,
 
-                               self.actor_network.train_length: self.learning_params["trace_length"],
-                               self.actor_network.batch_size: current_batch_size,
-                               self.actor_network.learning_rate: self.learning_params[
-                                                                     "learning_rate_actor"] * current_batch_size,
-                               self.actor_network.entropy_coefficient: self.learning_params["lambda_entropy"]
+                               self.network.train_length: self.learning_params["trace_length"],
+                               self.network.batch_size: current_batch_size,
+                               self.network.learning_rate: self.learning_params[
+                                                                     "learning_rate"] * current_batch_size,
+                               self.network.entropy_coefficient: self.learning_params["lambda_entropy"]
                                })
 
                 average_loss_impulse += np.mean(loss_actor_val)
                 average_loss_angle += np.mean(loss_actor_val)
                 average_loss_value += np.abs(loss_critic_val)
                 average_loss_entropy += np.mean(loss_entropy)
-
 
             self.buffer.add_loss(average_loss_impulse / self.learning_params["n_updates_per_iteration"],
                                  average_loss_angle / self.learning_params["n_updates_per_iteration"],
@@ -662,7 +633,7 @@ class ContinuousPPO:
                 self.init_rnn_state_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
         else:
             # Init states for RNN - For steps, not training.
-            rnn_state_shapes = self.actor_network.get_rnn_state_shapes()
+            rnn_state_shapes = self.network.get_rnn_state_shapes()
             self.init_rnn_state = tuple(
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
             self.init_rnn_state_ref = tuple(
@@ -673,10 +644,8 @@ class ContinuousPPO:
         if a is None:
             a = [4.0, 0.0]
 
-        rnn_state_actor = copy.copy(self.init_rnn_state)
-        rnn_state_actor_ref = copy.copy(self.init_rnn_state_ref)
-        rnn_state_critic = copy.copy(self.init_rnn_state_critic)
-        rnn_state_critic_ref = copy.copy(self.init_rnn_state_critic_ref)
+        rnn_state = copy.copy(self.init_rnn_state)
+        rnn_state_ref = copy.copy(self.init_rnn_state_ref)
 
         if self.assay or self.just_trained:
             self.buffer.reset()
@@ -727,42 +696,29 @@ class ContinuousPPO:
 
             self.step_number += 1
 
-            r, internal_state, o, d, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic, rnn_state_critic_ref, a = self.step_loop(
+            r, internal_state, o, d, rnn_state, rnn_state_ref, a = self.step_loop(
                 o=o,
                 internal_state=internal_state,
                 a=a,
-                rnn_state_actor=rnn_state_actor,
-                rnn_state_actor_ref=rnn_state_actor_ref,
-                rnn_state_critic=rnn_state_critic,
-                rnn_state_critic_ref=rnn_state_critic_ref
+                rnn_state=rnn_state,
+                rnn_state_ref=rnn_state_ref,
             )
 
             self.total_episode_reward += r
             if d:
-                self.init_rnn_state = rnn_state_actor
-                self.init_rnn_state_ref = rnn_state_actor_ref
+                self.init_rnn_state = rnn_state
+                self.init_rnn_state_ref = rnn_state_ref
                 break
 
-    def compute_rnn_states(self, rnn_key_points, observation_buffer, internal_state_buffer, previous_action_buffer):
-        num_actions = self.output_dimensions
-        batch_size = len(rnn_key_points)
-        actor_rnn_state_buffer, actor_rnn_state_ref_buffer, critic_rnn_state_buffer, critic_rnn_state_ref_buffer = \
-            self.buffer.get_rnn_batch(rnn_key_points, batch_size)
-
-        return actor_rnn_state_buffer, actor_rnn_state_ref_buffer, critic_rnn_state_buffer, critic_rnn_state_ref_buffer
-
-    def compute_rnn_states2(self, rnn_key_points, observation_buffer, internal_state_buffer, previous_action_buffer, critic=False):
-        num_actions = self.output_dimensions
+    def get_rnn_states(self, rnn_key_points):
         batch_size = len(rnn_key_points)
         if self.rnn_in_network:
 
-            actor_rnn_state_buffer, actor_rnn_state_ref_buffer = \
-                self.buffer.get_rnn_batch(rnn_key_points, batch_size, critic=critic)
+            rnn_state_buffer, rnn_state_ref_buffer = self.buffer.get_rnn_batch(rnn_key_points, batch_size)
 
         else:
-            actor_rnn_state_buffer = ()
-            actor_rnn_state_ref_buffer = ()
+            rnn_state_buffer = ()
+            rnn_state_ref_buffer = ()
 
-
-        return actor_rnn_state_buffer, actor_rnn_state_ref_buffer
+        return rnn_state_buffer, rnn_state_ref_buffer
 

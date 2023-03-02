@@ -24,7 +24,7 @@ def get_most_common_network_inputs(observations, rnn_state, energy_state, salt, 
 def get_most_common_network_inputs_from_data(data):
     # TODO: make this work for multiple datas
     mean_observation = np.mean(data["observation"], axis=(0))
-    mean_rnn_state = np.mean(data["rnn_state_actor"], axis=(0))
+    mean_rnn_state = np.mean(data["rnn_state"], axis=(0))
     mean_rnn_state = (mean_rnn_state[0], mean_rnn_state[1])
     mean_energy_state = np.mean(data["energy_state"])
     mean_salt_input = np.mean(data["salt"])
@@ -43,7 +43,7 @@ def get_average_input_during_context(data, labels):
     labels = np.array(labels)
 
     observations = data["observation"][labels == 1]
-    rnn_state = data["rnn_state_actor"][labels == 1]
+    rnn_state = data["rnn_state"][labels == 1]
     salt = data["salt"][labels == 1]
     energy_state = data["energy_state"][labels == 1]
     actions = data["action"][labels == 1]
@@ -61,8 +61,8 @@ def get_average_input_during_context_multiple_trials(datas, labels_compiled):
 
     compiled_observations = np.zeros((0, datas[0]["observation"].shape[1], datas[0]["observation"].shape[2],
                                       datas[0]["observation"].shape[3]))
-    compiled_rnn_state = np.zeros((0, datas[0]["rnn_state_actor"].shape[1], datas[0]["rnn_state_actor"].shape[2],
-                                   datas[0]["rnn_state_actor"].shape[3]))
+    compiled_rnn_state = np.zeros((0, datas[0]["rnn_state"].shape[1], datas[0]["rnn_state"].shape[2],
+                                   datas[0]["rnn_state"].shape[3]))
     compiled_salt = np.zeros((0))
     compiled_energy_state = np.zeros((0))
     compiled_actions = np.zeros((0))
@@ -70,7 +70,7 @@ def get_average_input_during_context_multiple_trials(datas, labels_compiled):
 
     for data, labels in zip(datas, labels_compiled):
         observations = data["observation"][labels == 1]
-        rnn_state = data["rnn_state_actor"][labels == 1]
+        rnn_state = data["rnn_state"][labels == 1]
         salt = data["salt"][labels == 1]
         energy_state = data["energy_state"][labels == 1]
         actions = data["action"][labels == 1]
@@ -123,8 +123,8 @@ def get_all_inputs_for_context(model_name, assay_config, assay_id, n, context):
 
     compiled_observations = np.zeros((0, datas_compiled[0]["observation"].shape[1], datas_compiled[0]["observation"].shape[2],
                                       datas_compiled[0]["observation"].shape[3]))
-    compiled_rnn_state = np.zeros((0, datas_compiled[0]["rnn_state_actor"].shape[1], datas_compiled[0]["rnn_state_actor"].shape[2],
-                                   datas_compiled[0]["rnn_state_actor"].shape[3]))
+    compiled_rnn_state = np.zeros((0, datas_compiled[0]["rnn_state"].shape[1], datas_compiled[0]["rnn_state"].shape[2],
+                                   datas_compiled[0]["rnn_state"].shape[3]))
     compiled_salt = np.zeros((0))
     compiled_energy_state = np.zeros((0))
     compiled_actions = np.zeros((0))
@@ -132,7 +132,7 @@ def get_all_inputs_for_context(model_name, assay_config, assay_id, n, context):
 
     for data, labels in zip(datas_compiled, labels_compiled):
         observations = data["observation"][labels == 1]
-        rnn_state = data["rnn_state_actor"][labels == 1]
+        rnn_state = data["rnn_state"][labels == 1]
         salt = data["salt"][labels == 1]
         energy_state = data["energy_state"][labels == 1]
         actions = data["action"][labels == 1]

@@ -495,19 +495,19 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             ax3.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
             ax4.clear()
-            ax4.plot(data['rnn_state_actor'][plot_start:step, 0, :10], linewidth=0.5)
+            ax4.plot(data['rnn_state'][plot_start:step, 0, :10], linewidth=0.5)
             ax4.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
             ax5.clear()
-            ax5.plot(data['rnn_state_actor'][plot_start:step, 0, 10:20], linewidth=0.5)
+            ax5.plot(data['rnn_state'][plot_start:step, 0, 10:20], linewidth=0.5)
             ax5.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
             ax6.clear()
-            ax6.plot(data['rnn_state_actor'][plot_start:step, 0, 20:30], linewidth=0.5)
+            ax6.plot(data['rnn_state'][plot_start:step, 0, 20:30], linewidth=0.5)
             ax6.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
             ax7.clear()
-            ax7.plot(data['rnn_state_actor'][plot_start:step, 0, 30:40], linewidth=0.5)
+            ax7.plot(data['rnn_state'][plot_start:step, 0, 30:40], linewidth=0.5)
             ax7.tick_params(left=False, right=False , labelleft=False, labelbottom=False, bottom=False)
 
             if continuous_actions:

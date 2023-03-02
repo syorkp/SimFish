@@ -39,7 +39,7 @@ if __name__ == "__main__":
     for i in range(1, 2):
         data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-{i}")
         # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic-1")
-        rnn_data = data["rnn_state_actor"][:, 0, 0, :]
+        rnn_data = data["rnn_state"][:, 0, 0, :]
         rnn_data = np.swapaxes(rnn_data, 0, 1)
         consumption_points.append([i for i in range(len(data["consumed"])) if data["consumed"][i]])
         rnn_data_full.append(rnn_data)
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # plot_pca_trajectory(rnn_data_full, timepoints_to_label=consumption_points)
     plot_xxx_trajectory_multiple_trials(rnn_data_full, Isomap, consumption_points)
     # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-1")
-    # rnn_data = np.swapaxes(data["rnn_state_actor"][:, 0, 0, :], 0, 1)
+    # rnn_data = np.swapaxes(data["rnn_state"][:, 0, 0, :], 0, 1)
     # # reduced_rnn_data = remove_those_with_no_output(rnn_data, "dqn_scaffold_18-2", "dqn_18_2", proportion_to_remove=0.2)
     # reduced_rnn_data = rnn_data[:256]
     # # reduced_rnn_data = rnn_data[256:]

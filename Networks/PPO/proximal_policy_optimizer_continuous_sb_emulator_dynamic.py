@@ -6,7 +6,7 @@ from Networks.PPO.masked_multivariate_normal import MaskedMultivariateNormal
 tf.disable_v2_behavior()
 
 
-class PPONetworkActorMultivariate2Dynamic(DynamicBaseNetwork):
+class PPONetworkMultivariate2Dynamic(DynamicBaseNetwork):
 
     def __init__(self, simulation, my_scope, internal_states, internal_state_names, max_impulse, max_angle_change,
                  clip_param, base_network_layers=None, modular_network_layers=None, ops=None, connectivity=None,

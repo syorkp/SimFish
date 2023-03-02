@@ -62,22 +62,17 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         self.action_consequences_buffer = []
         self.efference_copy_buffer = []
 
-    def add_training(self, observation, internal_state, action, reward, value, l_p_action, actor_rnn_state,
-                     actor_rnn_state_ref, critic_rnn_state=None, critic_rnn_state_ref=None, prediction_error=None,
-                     target_output=None):
+    def add_training(self, observation, internal_state, action, reward, value, l_p_action, rnn_state,
+                     rnn_state_ref, prediction_error=None, target_output=None):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
         self.reward_buffer.append(reward)
         self.value_buffer.append(value)
 
-        self.actor_rnn_state_buffer.append(actor_rnn_state)
-        self.actor_rnn_state_ref_buffer.append(actor_rnn_state_ref)
+        self.rnn_state_buffer.append(rnn_state)
+        self.rnn_state_ref_buffer.append(rnn_state_ref)
         self.log_action_probability_buffer.append(l_p_action)
         self.action_buffer.append(action)
-
-        if critic_rnn_state is not None:
-            self.critic_rnn_state_buffer.append(critic_rnn_state)
-            self.critic_rnn_state_ref_buffer.append(critic_rnn_state_ref)
 
     def add_logging(self, mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref):
         self.mu_i_buffer.append(mu_i)
@@ -148,10 +143,6 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
             log_action_probability_slice = self.pad_slice(self.log_action_probability_buffer[self.pointer:-1], self.trace_length, "la")
             advantage_slice = self.pad_slice(self.advantage_buffer[self.pointer:self.pointer + 50], self.trace_length, "ad")
             return_slice = self.pad_slice(self.return_buffer[self.pointer:self.pointer + 50], self.trace_length, "re")
-            # actor_rnn_state_slice = self.actor_rnn_state_buffer[self.pointer:-1]
-            # actor_rnn_state_ref_slice = self.actor_rnn_state_ref_buffer[self.pointer:-1]
-            # critic_rnn_state_slice = self.critic_rnn_state_buffer[self.pointer:-1]
-            # critic_rnn_state_ref_slice = self.critic_rnn_state_ref_buffer[self.pointer:-1]
 
         else:
             observation_slice = self.observation_buffer[self.pointer:self.pointer + self.trace_length, :]
@@ -174,10 +165,6 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
 
             advantage_slice = self.advantage_buffer[self.pointer:self.pointer + self.trace_length]
             return_slice = self.return_buffer[self.pointer:self.pointer + self.trace_length]
-            # actor_rnn_state_slice = self.actor_rnn_state_buffer[self.pointer:self.pointer + self.trace_length]
-            # actor_rnn_state_ref_slice = self.actor_rnn_state_ref_buffer[self.pointer:self.pointer + self.trace_length]
-            # critic_rnn_state_slice = self.critic_rnn_state_buffer[self.pointer:self.pointer + self.trace_length]
-            # critic_rnn_state_ref_slice = self.critic_rnn_state_ref_buffer[self.pointer:self.pointer + self.trace_length]
 
             target_output_slice = np.array(self.target_output_buffer[self.pointer:self.pointer + self.trace_length])
 
@@ -185,18 +172,12 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
 
         return observation_slice, internal_state_slice, action_slice, previous_action_slice, \
                log_action_probability_slice, advantage_slice, return_slice, value_slice
-        # actor_rnn_state_slice, actor_rnn_state_ref_slice, critic_rnn_state_slice, critic_rnn_state_ref_slice
 
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, sediment, internal_state_order=None, salt_location=None):
         hdf5_file, assay_group = BasePPOBuffer.save_assay_data(self, assay_id=assay_id, data_save_location=data_save_location,
                                                                assay_configuration_id=assay_configuration_id, sediment=sediment,
                                                                internal_state_order=internal_state_order,
                                                                salt_location=salt_location)
-
-        # self.create_data_group("mu_impulse", np.array(self.mu_i_buffer)[:, 0], assay_group)
-        # self.create_data_group("mu_angle", np.array(self.mu_a_buffer)[:, 0], assay_group)
-        # self.create_data_group("sigma_impulse", np.array(self.si_i_buffer)[:, 0], assay_group)
-        # self.create_data_group("sigma_angle", np.array(self.si_a_buffer)[:, 0], assay_group)
 
         print(f"{assay_id} Data Saved")
         hdf5_file.close()
@@ -213,33 +194,29 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
 
         # TODO: Add methods for detecting values outside of range.
 
-    def get_rnn_batch(self, key_points, batch_size, critic=False):
-        actor_rnn_state_batch = []
-        actor_rnn_state_batch_ref = []
+    def get_rnn_batch(self, key_points, batch_size):
+        rnn_state_batch = []
+        rnn_state_batch_ref = []
 
         for point in key_points:
-            if critic:
-                actor_rnn_state_batch.append(self.critic_rnn_state_buffer[point])
-                actor_rnn_state_batch_ref.append(self.critic_rnn_state_ref_buffer[point])
-            else:
-                actor_rnn_state_batch.append(self.actor_rnn_state_buffer[point])
-                actor_rnn_state_batch_ref.append(self.actor_rnn_state_ref_buffer[point])
+            rnn_state_batch.append(self.rnn_state_buffer[point])
+            rnn_state_batch_ref.append(self.rnn_state_ref_buffer[point])
 
-        n_rnns = np.array(actor_rnn_state_batch).shape[1]
-        n_units = np.array(actor_rnn_state_batch).shape[-1]
+        n_rnns = np.array(rnn_state_batch).shape[1]
+        n_units = np.array(rnn_state_batch).shape[-1]
 
-        actor_rnn_state_batch = np.reshape(np.array(actor_rnn_state_batch), (n_rnns, batch_size, 2, n_units))
-        actor_rnn_state_batch_ref = np.reshape(np.array(actor_rnn_state_batch_ref),
+        rnn_state_batch = np.reshape(np.array(rnn_state_batch), (n_rnns, batch_size, 2, n_units))
+        rnn_state_batch_ref = np.reshape(np.array(rnn_state_batch_ref),
                                                (n_rnns, batch_size, 2, n_units))
 
-        actor_rnn_state_batch = tuple(
-            (np.array(actor_rnn_state_batch[i, :, 0, :]), np.array(actor_rnn_state_batch[i, :, 1, :])) for i in
+        rnn_state_batch = tuple(
+            (np.array(rnn_state_batch[i, :, 0, :]), np.array(rnn_state_batch[i, :, 1, :])) for i in
             range(n_rnns))
-        actor_rnn_state_batch_ref = tuple(
-            (np.array(actor_rnn_state_batch_ref[i, :, 0, :]), np.array(actor_rnn_state_batch_ref[i, :, 1, :])) for i
+        rnn_state_batch_ref = tuple(
+            (np.array(rnn_state_batch_ref[i, :, 0, :]), np.array(rnn_state_batch_ref[i, :, 1, :])) for i
             in range(n_rnns))
 
-        return actor_rnn_state_batch, actor_rnn_state_batch_ref
+        return rnn_state_batch, rnn_state_batch_ref
 
     def update_rewards_rnd(self):
         # reward_std = np.std(self.return_buffer)

@@ -103,6 +103,6 @@ def remove_those_with_no_output(rnn_data, model_name, conf_name, dqn=True, propo
 
 if __name__ == "__main__":
     data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", f"Naturalistic-1")
-    rnn_data = np.swapaxes(data["rnn_state_actor"][:, 0, 0, :], 0, 1)
+    rnn_data = np.swapaxes(data["rnn_state"][:, 0, 0, :], 0, 1)
     reduced_rnn_data = remove_those_with_no_output(rnn_data, "dqn_scaffold_18-1", "dqn_18_1")
 

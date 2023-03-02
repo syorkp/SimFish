@@ -271,8 +271,8 @@ class DQNAssayBuffer:
         self.rnn_state_buffer = np.array(self.rnn_state_buffer).squeeze()
         self.rnn_state_ref_buffer = np.array(self.rnn_state_ref_buffer).squeeze()
 
-        self.create_data_group("rnn_state_actor", self.rnn_state_buffer, assay_group)
-        self.create_data_group("rnn_state_actor_ref", self.rnn_state_ref_buffer, assay_group)
+        self.create_data_group("rnn_state", self.rnn_state_buffer, assay_group)
+        self.create_data_group("rnn_state_ref", self.rnn_state_ref_buffer, assay_group)
 
         self.internal_state_buffer = np.array(self.internal_state_buffer)
 

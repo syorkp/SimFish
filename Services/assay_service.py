@@ -149,7 +149,7 @@ class AssayService(BaseService):
         self.implement_interventions()
 
         if self.ppo_version is not None:
-            self.buffer.rnn_layer_names = self.actor_network.rnn_layer_names
+            self.buffer.rnn_layer_names = self.network.rnn_layer_names
         else:
             self.buffer.rnn_layer_names = self.main_QN.rnn_layer_names
 
@@ -230,8 +230,8 @@ class AssayService(BaseService):
         self.buffer.internal_state_buffer = [np.array([internal_state]) for internal_state in data["internal_state"].tolist()]
         self.buffer.efference_copy_buffer = data["efference_copy"].tolist()
 
-        self.buffer.rnn_state_buffer = [np.array([([timepoint[0]], [timepoint[1]])]) for timepoint in data["rnn_state_actor"]]
-        self.buffer.rnn_state_ref_buffer = [np.array([([timepoint[0]], [timepoint[1]])]) for timepoint in data["rnn_state_actor_ref"]]
+        self.buffer.rnn_state_buffer = [np.array([([timepoint[0]], [timepoint[1]])]) for timepoint in data["rnn_state"]]
+        self.buffer.rnn_state_ref_buffer = [np.array([([timepoint[0]], [timepoint[1]])]) for timepoint in data["rnn_state_ref"]]
 
         self.buffer.fish_position_buffer = data["fish_position"].tolist()
         self.buffer.fish_angle_buffer = data["angle"].tolist()
@@ -257,12 +257,12 @@ class AssayService(BaseService):
         # Load RNN states to model.
         num_rnns = np.array(self.buffer.rnn_state_buffer).shape[2] / 2
         self.init_rnn_state = tuple(
-            (np.array(data["rnn_state_actor"][-2:-1, shape]),
-             np.array(data["rnn_state_actor"][-2:-1, shape])) for shape in
+            (np.array(data["rnn_state"][-2:-1, shape]),
+             np.array(data["rnn_state"][-2:-1, shape])) for shape in
             range(0, int(num_rnns), 2))
         self.init_rnn_state_ref = tuple(
-            (np.array(data["rnn_state_actor_ref"][-2:-1, shape]),
-             np.array(data["rnn_state_actor_ref"][-2:-1, shape])) for shape in
+            (np.array(data["rnn_state_ref"][-2:-1, shape]),
+             np.array(data["rnn_state_ref"][-2:-1, shape])) for shape in
             range(0, int(num_rnns), 2))
 
         # Impose sediment (red2 channel).

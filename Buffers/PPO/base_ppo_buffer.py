@@ -24,10 +24,8 @@ class BasePPOBuffer:
         self.value_buffer = []
         self.advantage_buffer = []
         self.return_buffer = []
-        self.actor_rnn_state_buffer = []
-        self.actor_rnn_state_ref_buffer = []
-        self.critic_rnn_state_buffer = []
-        self.critic_rnn_state_ref_buffer = []
+        self.rnn_state_buffer = []
+        self.rnn_state_ref_buffer = []
 
         self.critic_loss_buffer = []
         self.efference_copy_buffer = []
@@ -51,26 +49,7 @@ class BasePPOBuffer:
         self.switch_step = None
 
         if assay:
-            self.actor_conv1l_buffer = []
-            self.actor_conv2l_buffer = []
-            self.actor_conv3l_buffer = []
-            self.actor_conv4l_buffer = []
-            self.actor_conv1r_buffer = []
-            self.actor_conv2r_buffer = []
-            self.actor_conv3r_buffer = []
-            self.actor_conv4r_buffer = []
-
-            self.critic_conv1l_buffer = []
-            self.critic_conv2l_buffer = []
-            self.critic_conv3l_buffer = []
-            self.critic_conv4l_buffer = []
-            self.critic_conv1r_buffer = []
-            self.critic_conv2r_buffer = []
-            self.critic_conv3r_buffer = []
-            self.critic_conv4r_buffer = []
-
             self.rnn_layer_names = []
-
 
     def reset(self):
         self.action_buffer = []
@@ -78,10 +57,8 @@ class BasePPOBuffer:
         self.reward_buffer = []
         self.internal_state_buffer = []
         self.value_buffer = []
-        self.actor_rnn_state_buffer = []
-        self.actor_rnn_state_ref_buffer = []
-        self.critic_rnn_state_buffer = []
-        self.critic_rnn_state_ref_buffer = []
+        self.rnn_state_buffer = []
+        self.rnn_state_ref_buffer = []
 
         self.critic_loss_buffer = []
         self.efference_copy_buffer = []
@@ -102,26 +79,6 @@ class BasePPOBuffer:
         self.prey_age_buffer = []
         self.prey_gait_buffer = []
 
-        if self.assay:
-            # Old method
-            self.actor_conv1l_buffer = []
-            self.actor_conv2l_buffer = []
-            self.actor_conv3l_buffer = []
-            self.actor_conv4l_buffer = []
-            self.actor_conv1r_buffer = []
-            self.actor_conv2r_buffer = []
-            self.actor_conv3r_buffer = []
-            self.actor_conv4r_buffer = []
-
-            self.critic_conv1l_buffer = []
-            self.critic_conv2l_buffer = []
-            self.critic_conv3l_buffer = []
-            self.critic_conv4l_buffer = []
-            self.critic_conv1r_buffer = []
-            self.critic_conv2r_buffer = []
-            self.critic_conv3r_buffer = []
-            self.critic_conv4r_buffer = []
-
         self.pointer = 0
 
     def tidy(self):
@@ -132,22 +89,17 @@ class BasePPOBuffer:
         self.value_buffer = np.array(self.value_buffer).flatten()
         self.internal_state_buffer = np.array(self.internal_state_buffer)
 
-        self.actor_rnn_state_buffer = np.array(self.actor_rnn_state_buffer)
-        self.actor_rnn_state_ref_buffer = np.array(self.actor_rnn_state_ref_buffer)
-        self.critic_rnn_state_buffer = np.array(self.critic_rnn_state_buffer)
-        self.critic_rnn_state_ref_buffer = np.array(self.critic_rnn_state_ref_buffer)
+        self.rnn_state_buffer = np.array(self.rnn_state_buffer)
+        self.rnn_state_ref_buffer = np.array(self.rnn_state_ref_buffer)
 
-    def add_training(self, observation, internal_state, reward, action, value, actor_rnn_state,
-                     actor_rnn_state_ref, critic_rnn_state, critic_rnn_state_ref):
+    def add_training(self, observation, internal_state, reward, action, value, rnn_state, rnn_state_ref):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
         self.reward_buffer.append(reward)
         self.value_buffer.append(value)
 
-        self.actor_rnn_state_buffer.append(actor_rnn_state)
-        self.actor_rnn_state_ref_buffer.append(actor_rnn_state_ref)
-        self.critic_rnn_state_buffer.append(critic_rnn_state)
-        self.critic_rnn_state_ref_buffer.append(critic_rnn_state_ref)
+        self.rnn_state_buffer.append(rnn_state)
+        self.rnn_state_ref_buffer.append(rnn_state_ref)
 
     def save_environmental_positions(self, fish_position, prey_consumed, predator_present, prey_positions,
                                      predator_position, sand_grain_positions, fish_angle,
@@ -171,51 +123,21 @@ class BasePPOBuffer:
             self.prey_age_buffer.append(prey_age)
             self.prey_gait_buffer.append(prey_gait)
 
-    def save_conv_states(self, actor_conv1l, actor_conv2l, actor_conv3l, actor_conv4l, actor_conv1r, actor_conv2r,
-                         actor_conv3r, actor_conv4r,
-                         critic_conv1l, critic_conv2l, critic_conv3l, critic_conv4l, critic_conv1r, critic_conv2r,
-                         critic_conv3r, critic_conv4r):
-        self.actor_conv1l_buffer.append(actor_conv1l)
-        self.actor_conv2l_buffer.append(actor_conv2l)
-        self.actor_conv3l_buffer.append(actor_conv3l)
-        self.actor_conv4l_buffer.append(actor_conv4l)
-        self.actor_conv1r_buffer.append(actor_conv1r)
-        self.actor_conv2r_buffer.append(actor_conv2r)
-        self.actor_conv3r_buffer.append(actor_conv3r)
-        self.actor_conv4r_buffer.append(actor_conv4r)
-        self.critic_conv1l_buffer.append(critic_conv1l)
-        self.critic_conv2l_buffer.append(critic_conv2l)
-        self.critic_conv3l_buffer.append(critic_conv3l)
-        self.critic_conv4l_buffer.append(critic_conv4l)
-        self.critic_conv1r_buffer.append(critic_conv1r)
-        self.critic_conv2r_buffer.append(critic_conv2r)
-        self.critic_conv3r_buffer.append(critic_conv3r)
-        self.critic_conv4r_buffer.append(critic_conv4r)
-
     def get_rnn_batch(self, key_points, batch_size):
-        actor_rnn_state_batch = []
-        actor_rnn_state_batch_ref = []
-        critic_rnn_state_batch = []
-        critic_rnn_state_batch_ref = []
+        rnn_state_batch = []
+        rnn_state_batch_ref = []
 
         for point in key_points:
-            actor_rnn_state_batch.append(self.actor_rnn_state_buffer[point])
-            actor_rnn_state_batch_ref.append(self.actor_rnn_state_ref_buffer[point])
-            critic_rnn_state_batch.append(self.critic_rnn_state_buffer[point])
-            critic_rnn_state_batch_ref.append(self.critic_rnn_state_ref_buffer[point])
+            rnn_state_batch.append(self.rnn_state_buffer[point])
+            rnn_state_batch_ref.append(self.rnn_state_ref_buffer[point])
 
-        actor_rnn_state_batch = np.reshape(np.array(actor_rnn_state_batch), (batch_size, 2, 512))
-        actor_rnn_state_batch_ref = np.reshape(np.array(actor_rnn_state_batch_ref), (batch_size, 2, 512))
-        critic_rnn_state_batch = np.reshape(np.array(critic_rnn_state_batch), (batch_size, 2, 512))
-        critic_rnn_state_batch_ref = np.reshape(np.array(critic_rnn_state_batch_ref), (batch_size, 2, 512))
+        rnn_state_batch = np.reshape(np.array(rnn_state_batch), (batch_size, 2, 512))
+        rnn_state_batch_ref = np.reshape(np.array(rnn_state_batch_ref), (batch_size, 2, 512))
 
-        actor_rnn_state_batch = (np.array(actor_rnn_state_batch[:, 0, :]), np.array(actor_rnn_state_batch[:, 1, :]))
-        actor_rnn_state_batch_ref = (np.array(actor_rnn_state_batch_ref[:, 0, :]), np.array(actor_rnn_state_batch_ref[:, 1, :]))
-        critic_rnn_state_batch = (np.array(critic_rnn_state_batch[:, 0, :]), np.array(critic_rnn_state_batch[:, 1, :]))
-        critic_rnn_state_batch_ref = (
-            np.array(critic_rnn_state_batch_ref[:, 0, :]), np.array(critic_rnn_state_batch_ref[:, 1, :]))
+        rnn_state_batch = (np.array(rnn_state_batch[:, 0, :]), np.array(rnn_state_batch[:, 1, :]))
+        rnn_state_batch_ref = (np.array(rnn_state_batch_ref[:, 0, :]), np.array(rnn_state_batch_ref[:, 1, :]))
 
-        return actor_rnn_state_batch, actor_rnn_state_batch_ref, critic_rnn_state_batch, critic_rnn_state_batch_ref
+        return rnn_state_batch, rnn_state_batch_ref
 
     @staticmethod
     def pad_slice(buffer, desired_length, identity=None):
@@ -356,42 +278,14 @@ class BasePPOBuffer:
 
         self.create_data_group("observation", np.array(self.observation_buffer), assay_group)
 
-        # if "internal state" in self.unit_recordings:
-        #     self.internal_state_buffer = np.array(self.internal_state_buffer)
-        #     self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
-        #     # Get internal state names and save each.
-        #     for i, state in enumerate(internal_state_order):
-        #         self.create_data_group(state, np.array(self.internal_state_buffer[:, i]), assay_group)
-        #         if state == "salt":
-        #             if salt_location is None:
-        #                 salt_location = [150000, 150000]
-        #             self.create_data_group("salt_location", np.array(salt_location), assay_group)
-        #             self.create_data_group("salt_health", np.array(self.salt_health_buffer), assay_group)
-        #
-        #     # Save efference copy
-        #     self.efference_copy_buffer = np.array(self.efference_copy_buffer)
-        #     self.create_data_group("efference_copy", self.efference_copy_buffer, assay_group)
-        #
-        # if "rnn state" in self.unit_recordings:
-        #     self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
-        #
-        # for layer in self.unit_recordings.keys():
-        #     self.create_data_group(layer, np.array(self.unit_recordings[layer]), assay_group)
-        # self.create_data_group("rnn_state_actor", np.array(self.actor_rnn_state_buffer), assay_group)
-
-
         for layer in self.unit_recordings.keys():
             self.create_data_group(layer, np.array(self.unit_recordings[layer]).squeeze(), assay_group)
 
-        # for i, r in enumerate(self.rnn_state_buffer):
-        #     print(f"{i}-{np.array(r[0]).shape}")
+        self.rnn_state_buffer = np.array(self.rnn_state_buffer).squeeze()
+        self.rnn_state_ref_buffer = np.array(self.rnn_state_ref_buffer).squeeze()
 
-        # print(self.rnn_state_buffer)
-        self.rnn_state_buffer = np.array(self.actor_rnn_state_buffer).squeeze()
-        self.rnn_state_ref_buffer = np.array(self.actor_rnn_state_ref_buffer).squeeze()
-
-        self.create_data_group("rnn_state_actor", self.rnn_state_buffer, assay_group)
-        self.create_data_group("rnn_state_actor_ref", self.rnn_state_ref_buffer, assay_group)
+        self.create_data_group("rnn_state", self.rnn_state_buffer, assay_group)
+        self.create_data_group("rnn_state_ref", self.rnn_state_ref_buffer, assay_group)
 
         self.internal_state_buffer = np.array(self.internal_state_buffer)
 

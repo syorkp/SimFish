@@ -257,14 +257,12 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
             self.step_number += 1
 
-            r, internal_state, o, d, rnn_state, rnn_state_ref, _, __, a = self.step_loop(
+            r, internal_state, o, d, rnn_state, rnn_state_ref, a = self.step_loop(
                 o=o,
                 internal_state=internal_state,
                 a=a,
-                rnn_state_actor=rnn_state,
-                rnn_state_actor_ref=rnn_state_ref,
-                rnn_state_critic=rnn_state,
-                rnn_state_critic_ref=rnn_state_ref
+                rnn_state=rnn_state,
+                rnn_state_ref=rnn_state_ref,
             )
 
             self.total_episode_reward += r
@@ -320,20 +318,5 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
         print("")
         return True
 
-    def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
-                  rnn_state_critic_ref):
-        # if self.multivariate:
-        #     if self.sb_emulator:
-        #         return self._assay_step_loop_multivariate2(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-        #                                                    rnn_state_critic,
-        #                                                    rnn_state_critic_ref)
-        #     else:
-        #         return self._assay_step_loop_multivariate(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-        #                                                   rnn_state_critic,
-        #                                                   rnn_state_critic_ref)
-        # else:
-        #     return self._assay_step_loop(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
-        #                                  rnn_state_critic_ref)
-        return self._assay_step_loop(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                     rnn_state_critic,
-                                     rnn_state_critic_ref)
+    def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
+        return self._assay_step_loop(o, internal_state, a, rnn_state, rnn_state_ref)

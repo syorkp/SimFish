@@ -33,11 +33,11 @@ def get_event_triggered_average(data, event_name):
 
 
 def get_action_triggered_average(data):
-    x = [0 for i in range(len(data["rnn_state_actor"][0][0][0]))]
-    action_triggered_averages = {str(i): [0 for i in range(len(data["rnn_state_actor"][0][0][0]))] for i in range(10)}
+    x = [0 for i in range(len(data["rnn_state"][0][0][0]))]
+    action_triggered_averages = {str(i): [0 for i in range(len(data["rnn_state"][0][0][0]))] for i in range(10)}
     action_counts = {str(i): 0 for i in range(10)}
-    neuron_baseline = [np.mean(data["rnn_state_actor"][:, :, :, i]) for i in range(len(data["rnn_state_actor"][0][0][0]))]
-    for a, n in zip(data["action"], np.squeeze(data["rnn_state_actor"])[:, 0, :]):
+    neuron_baseline = [np.mean(data["rnn_state"][:, :, :, i]) for i in range(len(data["rnn_state"][0][0][0]))]
+    for a, n in zip(data["action"], np.squeeze(data["rnn_state"])[:, 0, :]):
         for i, nn in enumerate(n):
             action_triggered_averages[str(a)][i] += nn
         action_counts[str(a)] += 1
