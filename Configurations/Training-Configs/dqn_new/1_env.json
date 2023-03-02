@@ -1,6 +1,6 @@
 {
-    "width": 3000,
-    "height": 3000,
+    "arena_width": 3000,
+    "arena_height": 3000,
     "drag": 0.7,
     "phys_dt": 0.2,
     "phys_steps_per_sim_step": 100,
@@ -104,7 +104,7 @@
     "red_photoreceptor_num": 63,
     "shot_noise": true,
     "i_scaling_energy_cost": 0.00015,
-    "ca": 0.00015,
+    "a_scaling_energy_cost": 0.00015,
     "baseline_energy_use": 0.0002,
     "consumption_energy_gain": 1.0,
     "action_reward_scaling": 0,
