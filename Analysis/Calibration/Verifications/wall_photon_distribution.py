@@ -59,7 +59,7 @@ def build_board_and_eye(env_variables):
 
     verg_angle = 77. * (np.pi / 180)
     retinal_field = 163. * (np.pi / 180)
-    dark_col = int(env_variables['width'] * env_variables['dark_light_ratio'])
+    dark_col = int(env_variables['arena_width'] * env_variables['dark_light_ratio'])
     eye = Eye(board, verg_angle, retinal_field, True, env_variables, dark_col, False)
     board.erase(env_variables["background_brightness"])
     return eye, board

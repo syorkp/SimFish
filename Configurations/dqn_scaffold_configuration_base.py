@@ -71,8 +71,8 @@ params = {
 env = {
     #                                     Shared
 
-    'width': 3000,  # arena size
-    'height': 3000,
+    'arena_width': 3000,  # arena size
+    'arena_height': 3000,
     'drag': 0.7,  # water drag
     'phys_dt': 0.2,  # physics time step
     'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
@@ -219,7 +219,7 @@ env = {
 
     # Energy state and hunger-based rewards
     'i_scaling_energy_cost': 1.5e-04,  # Final for sublinear PPO: 0.0003
-    'ca': 1.5e-04,  # Final for sublinear PPO: 0.0003
+    'a_scaling_energy_cost': 1.5e-04,  # Final for sublinear PPO: 0.0003
     'baseline_energy_use': 0.0002,  # Final for sublinear PPO: 0.0015
     'consumption_energy_gain': 1.0,
 

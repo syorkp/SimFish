@@ -73,13 +73,13 @@ class ControlledStimulusEnvironmentContinuous(BaseEnvironment):
 
     def reset(self):
         super().reset()
-        self.fish.body.position = (self.env_variables['width']/2, self.env_variables['height']/2)
+        self.fish.body.position = (self.env_variables['arena_width']/2, self.env_variables['arena_height']/2)
         self.fish.body.angle = 0
         self.fish.body.velocity = (0, 0)
         self.create_stimuli(self.stimuli)
 
     def special_reset(self):
-        self.fish.body.position = (self.env_variables['width'] / 2, self.env_variables['height'] / 2)
+        self.fish.body.position = (self.env_variables['arena_width'] / 2, self.env_variables['arena_height'] / 2)
         self.fish.body.angle = 0
         self.fish.body.velocity = (0, 0)
 
@@ -117,7 +117,7 @@ class ControlledStimulusEnvironmentContinuous(BaseEnvironment):
                     self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5)/255.)
                     plt.pause(0.0001)
 
-        self.fish.body.position = (self.env_variables['width'] / 2, self.env_variables['height'] / 2)
+        self.fish.body.position = (self.env_variables['arena_width'] / 2, self.env_variables['arena_height'] / 2)
         self.fish.body.angle = 0
         self.fish.body.velocity = (0, 0)
 

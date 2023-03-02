@@ -150,38 +150,38 @@ for t in range(n_steps):
 # plt.plot(distances, p(distances), color="r")
 # plt.show()
 
-with open(f"Analysis/Calibration/LuminanceCalibration/UVSNR-L{env['light_gain']}-S{env['light_decay_rate']}-W{env['width']}-BK{env['background_brightness']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/UVSNR-L{env['light_gain']}-S{env['light_decay_rate']}-W{env['arena_width']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(uv_snr))
 
-with open(f"Analysis/Calibration/LuminanceCalibration/UVDistance-L{env['light_gain']}-S{env['light_decay_rate']}-W{env['width']}-BK{env['background_brightness']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/UVDistance-L{env['light_gain']}-S{env['light_decay_rate']}-W{env['arena_width']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(uv_distances))
 
-with open(f"Analysis/Calibration/LuminanceCalibration/RedSNR-L{env['light_gain']}-S{env['light_decay_rate']}-W{env['width']}-BK{env['background_brightness']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/RedSNR-L{env['light_gain']}-S{env['light_decay_rate']}-W{env['arena_width']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(red_snr))
 
-with open(f"Analysis/Calibration/LuminanceCalibration/Red2SNR-L{env['light_gain']}-S{env['light_decay_rate']}-W{env['width']}-BK{env['background_brightness']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/Red2SNR-L{env['light_gain']}-S{env['light_decay_rate']}-W{env['arena_width']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(red2_snr))
 
 
-with open(f"Analysis/Calibration/LuminanceCalibration/Dist-L{env['light_gain']}-S{env['light_decay_rate']}-W{env['width']}-BK{env['background_brightness']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/Dist-L{env['light_gain']}-S{env['light_decay_rate']}-W{env['arena_width']}-BK{env['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(distinguishability_score))
 
 
 
-with open(f"Analysis/Calibration/LuminanceCalibration/UVSNR-L{env3['light_gain']}-S{env3['light_decay_rate']}-W{env3['width']}-BK{env3['background_brightness']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/UVSNR-L{env3['light_gain']}-S{env3['light_decay_rate']}-W{env3['arena_width']}-BK{env3['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(second_uv_snr))
 
-with open(f"Analysis/Calibration/LuminanceCalibration/UVDistance-L{env3['light_gain']}-S{env3['light_decay_rate']}-W{env3['width']}-BK{env3['background_brightness']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/UVDistance-L{env3['light_gain']}-S{env3['light_decay_rate']}-W{env3['arena_width']}-BK{env3['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(second_uv_distances))
 
-with open(f"Analysis/Calibration/LuminanceCalibration/RedSNR-L{env3['light_gain']}-S{env3['light_decay_rate']}-W{env3['width']}-BK{env3['background_brightness']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/RedSNR-L{env3['light_gain']}-S{env3['light_decay_rate']}-W{env3['arena_width']}-BK{env3['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(second_red_snr))
 
-with open(f"Analysis/Calibration/LuminanceCalibration/Red2SNR-L{env3['light_gain']}-S{env3['light_decay_rate']}-W{env3['width']}-BK{env3['background_brightness']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/Red2SNR-L{env3['light_gain']}-S{env3['light_decay_rate']}-W{env3['arena_width']}-BK{env3['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(second_red2_snr))
 
 
 
 
-with open(f"Analysis/Calibration/LuminanceCalibration/Dist-L{env3['light_gain']}-S{env3['light_decay_rate']}-W{env3['width']}-BK{env3['background_brightness']}.npy", "wb") as f:
+with open(f"Analysis/Calibration/LuminanceCalibration/Dist-L{env3['light_gain']}-S{env3['light_decay_rate']}-W{env3['arena_width']}-BK{env3['background_brightness']}.npy", "wb") as f:
     np.save(f, np.array(second_distinguishability_score))

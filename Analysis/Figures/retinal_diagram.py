@@ -22,7 +22,7 @@ board = DrawingBoard(env_variables["width"], env_variables["height"], env_variab
 )
 
 # Build eyes
-dark_col = int(env_variables['width'] * env_variables['dark_light_ratio'])
+dark_col = int(env_variables['arena_width'] * env_variables['dark_light_ratio'])
 verg_angle = env_variables['eyes_verg_angle'] * (np.pi / 180)
 retinal_field = env_variables['visual_field'] * (np.pi / 180)
 test_eye_l = Eye(board, verg_angle, retinal_field, True, env_variables, dark_col, False)

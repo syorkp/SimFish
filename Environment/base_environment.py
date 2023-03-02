@@ -386,19 +386,19 @@ class BaseEnvironment:
         static = [
             pymunk.Segment(
                 self.space.static_body,
-                (0, wall_width), (0, self.env_variables['height']), wall_width),
+                (0, wall_width), (0, self.env_variables['arena_height']), wall_width),
             pymunk.Segment(
                 self.space.static_body,
-                (wall_width, self.env_variables['height']), (self.env_variables['width'], self.env_variables['height']),
+                (wall_width, self.env_variables['arena_height']), (self.env_variables['arena_width'], self.env_variables['arena_height']),
                 wall_width),
             pymunk.Segment(
                 self.space.static_body,
-                (self.env_variables['width'] - wall_width, self.env_variables['height']),
-                (self.env_variables['width'] - wall_width, wall_width),
+                (self.env_variables['arena_width'] - wall_width, self.env_variables['arena_height']),
+                (self.env_variables['arena_width'] - wall_width, wall_width),
                 wall_width),
             pymunk.Segment(
                 self.space.static_body,
-                (wall_width, wall_width), (self.env_variables['width'], wall_width), wall_width)
+                (wall_width, wall_width), (self.env_variables['arena_width'], wall_width), wall_width)
         ]
         for s in static:
             s.friction = 1.
@@ -427,15 +427,15 @@ class BaseEnvironment:
         if new_position_x < 40:  # Wall d
             new_position_x = 40 + self.env_variables["fish_head_radius"] + \
                              self.env_variables["fish_tail_length"]
-        elif new_position_x > self.env_variables['width'] - 40:  # wall b
-            new_position_x = self.env_variables['width'] - (
+        elif new_position_x > self.env_variables['arena_width'] - 40:  # wall b
+            new_position_x = self.env_variables['arena_width'] - (
                     40 + self.env_variables["fish_head_radius"] +
                     self.env_variables["fish_tail_length"])
         if new_position_y < 40:  # wall a
             new_position_y = 40 + self.env_variables["fish_head_radius"] + \
                              self.env_variables["fish_tail_length"]
-        elif new_position_y > self.env_variables['height'] - 40:  # wall c
-            new_position_y = self.env_variables['height'] - (
+        elif new_position_y > self.env_variables['arena_height'] - 40:  # wall c
+            new_position_y = self.env_variables['arena_height'] - (
                     40 + self.env_variables["fish_head_radius"] +
                     self.env_variables["fish_tail_length"])
 
@@ -488,12 +488,12 @@ class BaseEnvironment:
                 self.prey_bodies[-1].position = (
                     np.random.randint(
                         self.env_variables['prey_radius'] + self.env_variables['fish_mouth_radius'] + 40,
-                        self.env_variables['width'] - (
+                        self.env_variables['arena_width'] - (
                                 self.env_variables['prey_radius'] + self.env_variables['fish_mouth_radius'] +
                                 40)),
                     np.random.randint(
                         self.env_variables['prey_radius'] + self.env_variables['fish_mouth_radius'] + 40,
-                        self.env_variables['height'] - (
+                        self.env_variables['arena_height'] - (
                                 self.env_variables['prey_radius'] + self.env_variables['fish_mouth_radius'] +
                                 40)))
             else:
@@ -727,10 +727,10 @@ class BaseEnvironment:
         self.predator_shapes[-1].elasticity = 1.0
         self.predator_bodies[-1].position = (
             np.random.randint(self.env_variables['predator_radius'] + self.env_variables['fish_mouth_radius'],
-                              self.env_variables['width'] - (
+                              self.env_variables['arena_width'] - (
                                       self.env_variables['predator_radius'] + self.env_variables['fish_mouth_radius'])),
             np.random.randint(self.env_variables['predator_radius'] + self.env_variables['fish_mouth_radius'],
-                              self.env_variables['height'] - (
+                              self.env_variables['arena_height'] - (
                                       self.env_variables['predator_radius'] + self.env_variables['fish_mouth_radius'])))
         self.predator_shapes[-1].color = (0, 1, 0)
         # Made green so still visible to us but not to fish.
@@ -1091,11 +1091,11 @@ class BaseEnvironment:
         if not self.env_variables["differential_prey"]:
             self.sand_grain_bodies[-1].position = (
                 np.random.randint(self.env_variables['sand_grain_radius'] + self.env_variables['fish_mouth_radius'],
-                                  self.env_variables['width'] - (
+                                  self.env_variables['arena_width'] - (
                                           self.env_variables['sand_grain_radius'] + self.env_variables[
                                       'fish_mouth_radius'])),
                 np.random.randint(self.env_variables['sand_grain_radius'] + self.env_variables['fish_mouth_radius'],
-                                  self.env_variables['height'] - (
+                                  self.env_variables['arena_height'] - (
                                           self.env_variables['sand_grain_radius'] + self.env_variables[
                                       'fish_mouth_radius'])))
         else:

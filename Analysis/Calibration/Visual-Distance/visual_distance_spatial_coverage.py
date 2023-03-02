@@ -14,7 +14,7 @@ def display_pr_coverage(model_name):
     max_photoreceptor_rf_size = max([env_variables['uv_photoreceptor_rf_size'],
                                      env_variables['red_photoreceptor_rf_size']])
 
-    board = DrawingBoard(env_variables['width'], env_variables['height'],
+    board = DrawingBoard(env_variables['arena_width'], env_variables['arena_height'],
                          uv_light_decay_rate=env_variables['light_decay_rate'],
                          red_light_decay_rate=env_variables['light_decay_rate'],
                          photoreceptor_rf_size=max_photoreceptor_rf_size,
@@ -27,7 +27,7 @@ def display_pr_coverage(model_name):
                          light_gain=env_variables['light_gain'],
                          )
 
-    dark_col = int(env_variables['width'] * env_variables['dark_light_ratio'])
+    dark_col = int(env_variables['arena_width'] * env_variables['dark_light_ratio'])
     verg_angle = env_variables['eyes_verg_angle'] * (np.pi / 180)
     retinal_field = env_variables['visual_field'] * (np.pi / 180)
     test_eye_l = Eye(board, verg_angle, retinal_field, True, env_variables, dark_col, False, 700)

@@ -31,7 +31,7 @@ def full_model_prey_count(background_brightness, light_decay_rate, pr_size, widt
     # Create eye
     verg_angle = 77. * (np.pi / 180)
     retinal_field = 163. * (np.pi / 180)
-    dark_col = int(env_variables['width'] * env_variables['dark_light_ratio'])
+    dark_col = int(env_variables['arena_width'] * env_variables['dark_light_ratio'])
     left_eye = Eye(board, verg_angle, retinal_field, True, env_variables, dark_col, False, max_visual_range=max_visual_distance)
 
     # Create eye positions
