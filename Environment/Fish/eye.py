@@ -266,11 +266,14 @@ class Eye:
         #                                                             self.red_readings[:, 1])
 
         # TODO: Remove after test
-        interp_uv_readings = self.chosen_math_library.zeros((self.interpolated_observation.shape[0], 1))
-        interp_red_readings = self.chosen_math_library.zeros((self.interpolated_observation.shape[0], 2))
-        interp_red_readings[:, 0] = np.array(resize(self.red_readings[:, 0], (100, 1), ))
-        interp_uv_readings[:, 0] = np.array(resize(self.uv_readings[:, 0], (100, 1)))
-        interp_red_readings[:, 1] = np.array(resize(self.red_readings[:, 1], (100, 1)))
+        interp_uv_readings = np.zeros((self.interpolated_observation.get().shape[0], 1))
+        interp_red_readings = np.zeros((self.interpolated_observation.get().shape[0], 2))
+        interp_red_readings[:, 0] = np.array(resize(self.red_readings[:, 0].get(), (100, 1), ))
+        interp_uv_readings[:, 0] = np.array(resize(self.uv_readings[:, 0].get(), (100, 1)))
+        interp_red_readings[:, 1] = np.array(resize(self.red_readings[:, 1].get(), (100, 1)))
+
+        interp_red_readings = self.chosen_math_library.array(interp_red_readings)
+        interp_uv_readings = self.chosen_math_library.array(interp_uv_readings)
 
         # Scale for appropriate range
         interp_uv_readings *= self.env_variables["uv_scaling_factor"]
