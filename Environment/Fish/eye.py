@@ -266,8 +266,8 @@ class Eye:
         #                                                             self.red_readings[:, 1])
 
         # TODO: Remove after test
-        interp_uv_readings = np.zeros((self.interpolated_observation.get().shape[0], 1))
-        interp_red_readings = np.zeros((self.interpolated_observation.get().shape[0], 2))
+        interp_uv_readings = np.zeros((100, 1))
+        interp_red_readings = np.zeros((100, 2))
         interp_red_readings[:, 0] = np.array(resize(self.red_readings[:, 0].get(), (100, 1), ))
         interp_uv_readings[:, 0] = np.array(resize(self.uv_readings[:, 0].get(), (100, 1)))
         interp_red_readings[:, 1] = np.array(resize(self.red_readings[:, 1].get(), (100, 1)))
