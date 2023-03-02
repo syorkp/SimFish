@@ -65,8 +65,6 @@ class ContinuousPPO:
             self.target_rdn = None
         if not hasattr(self, "predictor_rdn"):
             self.predictor_rdn = None
-        if not hasattr(self, "separate_networks"):
-            self.separate_networks = None
         if not hasattr(self, "visual_interruptions"):
             self.visual_interruptions = None
         if not hasattr(self, "efference_copy_interruptions"):
@@ -74,12 +72,10 @@ class ContinuousPPO:
         if not hasattr(self, "preset_energy_state"):
             self.preset_energy_state = None
 
-
         self.continuous = True
 
         self.impulse_sigma = None
         self.angle_sigma = None
-        self.multivariate = None
         self.sigma_total_steps = 0
 
         # Placeholders

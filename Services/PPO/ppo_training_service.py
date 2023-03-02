@@ -6,7 +6,7 @@ import tensorflow.compat.v1 as tf
 
 from Analysis.Indexing.data_index_service import DataIndexServiceContinuous
 
-from Buffers.PPO.ppo_buffer_continuous import PPOBufferContinuousMultivariate2
+from Buffers.PPO.ppo_buffer_continuous import PPOBufferContinuous
 
 from Configurations.Templates.assay_config import naturalistic_assay_config
 from Configurations.Utilities.turn_model_configs_into_assay_configs import transfer_config
@@ -85,26 +85,24 @@ class PPOTrainingService(TrainingService, ContinuousPPO):
         self.batch_size = self.learning_params["batch_size"]
         self.trace_length = self.learning_params["trace_length"]
 
-        self.multivariate = True
-
         self.sb_emulator = True
 
-        self.buffer = PPOBufferContinuousMultivariate2(gamma=self.learning_params["gamma"],
-                                                       lmbda=self.learning_params["lambda"],
-                                                       batch_size=self.learning_params["batch_size"],
-                                                       train_length=self.learning_params["trace_length"],
-                                                       assay=False,
-                                                       debug=False,
-                                                       )
+        self.buffer = PPOBufferContinuous(gamma=self.learning_params["gamma"],
+                                          lmbda=self.learning_params["lambda"],
+                                          batch_size=self.learning_params["batch_size"],
+                                          train_length=self.learning_params["trace_length"],
+                                          assay=False,
+                                          debug=False,
+                                          )
 
         # IF not saving regular gifs, instead be ready to save the environmental data underlying GIFs.
-        self.episode_buffer = PPOBufferContinuousMultivariate2(gamma=self.learning_params["gamma"],
-                                                               lmbda=self.learning_params["lambda"],
-                                                               batch_size=self.learning_params["batch_size"],
-                                                               train_length=self.learning_params["trace_length"],
-                                                               assay=True,
-                                                               debug=False,
-                                                               )
+        self.episode_buffer = PPOBufferContinuous(gamma=self.learning_params["gamma"],
+                                                  lmbda=self.learning_params["lambda"],
+                                                  batch_size=self.learning_params["batch_size"],
+                                                  train_length=self.learning_params["trace_length"],
+                                                  assay=True,
+                                                  debug=False,
+                                                  )
 
         if self.learning_params["epsilon_greedy"]:
             self.epsilon_greedy = True
@@ -114,14 +112,6 @@ class PPOTrainingService(TrainingService, ContinuousPPO):
 
         self.step_drop = (self.learning_params['startE'] - self.learning_params['endE']) / self.learning_params[
             'anneling_steps']
-
-
-        # Whether or not to split the networks
-        if "separate_networks" in self.learning_params:
-            self.separate_networks = self.learning_params["separate_networks"]
-        else:
-            self.separate_networks = False
-
 
         self.last_position_dim = self.environment_params["prey_num"]
 
@@ -190,15 +180,6 @@ class PPOTrainingService(TrainingService, ContinuousPPO):
 
         # Train the network on the episode buffer
         self.buffer.calculate_advantages_and_returns()
-
-        # if self.multivariate:
-        #     if self.separate_networks:
-        #         ContinuousPPO.train_network_multivariate2_split_networks(self)
-        #     else:
-        #         ContinuousPPO.train_network_multivariate2(self)
-        #
-        # else:
-        #     ContinuousPPO.train_network(self)
 
         ContinuousPPO.train_network(self)
 

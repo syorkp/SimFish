@@ -2,7 +2,7 @@ from Buffers.PPO.base_ppo_buffer import BasePPOBuffer
 import numpy as np
 
 
-class PPOBufferContinuousMultivariate2(BasePPOBuffer):
+class PPOBufferContinuous(BasePPOBuffer):
     """Buffer for full episode for PPO training, and logging."""
 
     def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False):
@@ -30,9 +30,6 @@ class PPOBufferContinuousMultivariate2(BasePPOBuffer):
         self.target_output_buffer = []
 
         self.action_consequences_buffer = []
-
-        # For assay saving
-        self.multivariate = True
 
         self.efference_copy_buffer = []
 

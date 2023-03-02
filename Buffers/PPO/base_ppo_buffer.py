@@ -14,7 +14,6 @@ class BasePPOBuffer:
         self.debug = debug
         self.assay = assay
         self.recordings = None
-        self.multivariate = None
 
         # Buffer for training
         self.action_buffer = []

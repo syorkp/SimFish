@@ -46,7 +46,7 @@ def load_configuration_files(environment_name):
     return params, env
 
 
-def create_ppo_network(simulation, environment_params, learning_params, multivariate=True):
+def create_ppo_network(simulation, environment_params, learning_params):
         """
         Create the main and target Q networks, according to the configuration parameters.
         :return: The main network and the target network graphs.
@@ -59,32 +59,31 @@ def create_ppo_network(simulation, environment_params, learning_params, multivar
         internal_states = max(internal_states, 1)
         internal_state_names = get_internal_state_order(environment_params)
 
-        if multivariate:
-            if "reuse_eyes" in learning_params:
-                reuse_eyes = learning_params['reuse_eyes']
-            else:
-                reuse_eyes = False
-            network = PPONetworkMultivariate2Dynamic(simulation=simulation,
-                                                     # rnn_dim=learning_params['rnn_dim_shared'],
-                                                     my_scope='PPO',
-                                                     internal_states=internal_states,
-                                                     internal_state_names=internal_state_names,
-                                                     max_impulse=environment_params[
-                                                                         'max_impulse'],
-                                                     max_angle_change=environment_params[
-                                                                         'max_angle_change'],
-                                                     clip_param=environment_params[
-                                                                         'clip_param'],
-                                                     base_network_layers=learning_params[
-                                                                         'base_network_layers'],
-                                                     modular_network_layers=learning_params[
-                                                                         'modular_network_layers'],
-                                                     ops=learning_params['ops'],
-                                                     connectivity=learning_params[
-                                                                         'connectivity'],
-                                                     reflected=learning_params['reflected'],
-                                                     reuse_eyes=reuse_eyes,
-                                                     )
+        if "reuse_eyes" in learning_params:
+            reuse_eyes = learning_params['reuse_eyes']
+        else:
+            reuse_eyes = False
+        network = PPONetworkMultivariate2Dynamic(simulation=simulation,
+                                                 # rnn_dim=learning_params['rnn_dim_shared'],
+                                                 my_scope='PPO',
+                                                 internal_states=internal_states,
+                                                 internal_state_names=internal_state_names,
+                                                 max_impulse=environment_params[
+                                                                     'max_impulse'],
+                                                 max_angle_change=environment_params[
+                                                                     'max_angle_change'],
+                                                 clip_param=environment_params[
+                                                                     'clip_param'],
+                                                 base_network_layers=learning_params[
+                                                                     'base_network_layers'],
+                                                 modular_network_layers=learning_params[
+                                                                     'modular_network_layers'],
+                                                 ops=learning_params['ops'],
+                                                 connectivity=learning_params[
+                                                                     'connectivity'],
+                                                 reflected=learning_params['reflected'],
+                                                 reuse_eyes=reuse_eyes,
+                                                 )
 
         print("Created network")
         return network

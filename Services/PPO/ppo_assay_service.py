@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 import copy
 
-from Buffers.PPO.ppo_buffer_continuous import PPOBufferContinuousMultivariate2
+from Buffers.PPO.ppo_buffer_continuous import PPOBufferContinuous
 
 from Services.PPO.continuous_ppo import ContinuousPPO
 from Services.assay_service import AssayService
@@ -127,16 +127,14 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                          modification=modification
                          )
 
-        self.multivariate = True
-
         # Buffer for saving results of assay
-        self.buffer = PPOBufferContinuousMultivariate2(gamma=0.99,
-                                                      lmbda=0.9,
-                                                      batch_size=self.learning_params["batch_size"],
-                                                      train_length=self.learning_params["trace_length"],
-                                                      assay=True,
-                                                      debug=False,
-                                                      )
+        self.buffer = PPOBufferContinuous(gamma=0.99,
+                                          lmbda=0.9,
+                                          batch_size=self.learning_params["batch_size"],
+                                          train_length=self.learning_params["trace_length"],
+                                          assay=True,
+                                          debug=False,
+                                          )
 
 
         self.ppo_version = ContinuousPPO

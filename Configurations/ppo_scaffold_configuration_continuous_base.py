@@ -39,11 +39,8 @@ params = {
        'n_updates_per_iteration': 4,
        'learning_rate': 0.000001,  # Formerly 0.000001
        'lambda_entropy': 0.00,
-       'value_coefficient': 0.5,  # 0.0002 Should bring value and policy loss within same range.
-       'separate_networks': False,
 
        # Learning (PPO Continuous Only)
-       'multivariate': True,
        'gamma': 0.99,
        'lambda': 0.9,
 

@@ -35,7 +35,6 @@ params = {
        'n_updates_per_iteration': 4,
        'learning_rate': 0.000001,  # Formerly 0.000001
        'lambda_entropy': 0.00,
-       'separate_networks': False,
 
        # Learning (PPO Continuous Only)
        'gamma': 0.99,
