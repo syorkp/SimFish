@@ -14,7 +14,15 @@ class DynamicBaseNetwork:
     def __init__(self, simulation, my_scope, internal_states, internal_state_names, action_dim, num_actions,
                  base_network_layers, modular_network_layers, ops, connectivity, reflected, algorithm, reuse_eyes):
 
+        # Check the network spec produces a valid graph
         self.resolve_connectivity(base_network_layers, modular_network_layers, ops, connectivity)
+
+        # Record of processing step layers
+        self.base_network_layers = base_network_layers
+        self.modular_network_layers = modular_network_layers
+        self.ops = ops
+        self.connectivity = connectivity
+        self.internal_state_names = internal_state_names
 
         # Network parameters
         self.photoreceptor_num = simulation.fish.left_eye.observation_size  # Photoreceptor num per channel in each eye
@@ -23,6 +31,10 @@ class DynamicBaseNetwork:
         self.scope = my_scope
 
         # Network inputs
+        self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='observation')
+        self.reshaped_observation = tf.reshape(self.observation, shape=[-1, self.photoreceptor_num, 3, 2],
+                                               name="reshaped_observation")
+        self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
         if algorithm == "dqn":
             self.prev_actions = tf.placeholder(shape=[None, 3], dtype=tf.float32, name='prev_actions')
             self.prev_action_consequences = self.prev_actions[:, 1:]
@@ -34,28 +46,17 @@ class DynamicBaseNetwork:
         else:
             self.prev_actions = tf.placeholder(shape=[None, action_dim * 2], dtype=tf.float32, name='prev_actions')
 
-        self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
-        self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='observation')
-        self.reshaped_observation = tf.reshape(self.observation, shape=[-1, self.photoreceptor_num, 3, 2],
-                                               name="reshaped_observation")
+        # If re-using weights from one eye to the other, reflect the observation reaching the right eye.
         if reuse_eyes:
-            # If re-using weights from one eye to the other, reflect the observation reaching the right eye.
             left_eye = self.reshaped_observation[:, :, :, 0:1]
             right_eye = self.reshaped_observation[:, :, :, 1:2]
             right_eye = tf.reverse(right_eye, axis=[1])
             self.reshaped_observation = tf.concat((left_eye, right_eye), axis=3)
 
-        # Record of processing step layers
-        self.base_network_layers = base_network_layers
-        self.modular_network_layers = modular_network_layers
-        self.ops = ops
-        self.connectivity = connectivity
-        self.internal_state_names = internal_state_names
+        # Create the RNN layers, and associated states.
+        self.rnn_cells, self.rnn_cell_states = self.create_rnns(base_network_layers, modular_network_layers, reflected)
 
-        self.rnn_cells, self.rnn_cell_states, self.rnn_dim = self.create_rnns(base_network_layers,
-                                                                              modular_network_layers, reflected)
-
-        # Contains all layers to be referenced.
+        # Outline the inputs to the network
         if algorithm == "dqn":
             self.network_graph = {"observation": self.reshaped_observation,
                                   "internal_state": self.internal_state,
@@ -67,9 +68,12 @@ class DynamicBaseNetwork:
             self.network_graph = {"observation": self.reshaped_observation,
                                   "internal_state": self.internal_state,
                                   "prev_actions": self.prev_actions}
+
+        # Create the network from the specification
         self.initialize_network(copy.copy(base_network_layers), copy.copy(modular_network_layers), copy.copy(ops),
                                 connectivity, self.network_graph, reuse_eyes=reuse_eyes)
 
+        # Do the same steps for the reflected graph
         if reflected:
             print("Building reflected graph")
             if algorithm == "dqn":
@@ -91,6 +95,16 @@ class DynamicBaseNetwork:
 
         if reflected:
             self.processing_network_output_ref = self.reflected_network_graph["output_layer"]
+
+        # Initialise all the RNN states
+        self.rnn_layer_names = None
+        self.rnn_state_shared = None
+        self.rnn_state_in = None
+
+        if reflected:
+            self.rnn_state_ref = None
+            self.rnn_state_in_ref = None
+
 
         self.initialize_rnn_states(reflected)
 
@@ -268,9 +282,10 @@ class DynamicBaseNetwork:
                 raise Exception(f"Error, connectivity requirements dont match given layers: {con} not defined")
 
     def create_rnns(self, base_network_layers, modular_network_layers, reflected):
+        """Create the specified RNN unit objects, as well as the input states."""
+
         rnn_units = {}
         rnn_cell_states = {}
-        rnn_dim = None  # TODO: allow multiple of these to exist...
         layers = {**base_network_layers, **modular_network_layers}
 
         for layer in layers.keys():
@@ -278,7 +293,5 @@ class DynamicBaseNetwork:
                 rnn_units[layer] = tf.nn.rnn_cell.LSTMCell(num_units=layers[layer][1], state_is_tuple=True)
                 rnn_cell_states[layer] = rnn_units[layer].zero_state(self.train_length, tf.float32)
                 if reflected:
-                    rnn_cell_states[layer + "_ref"] = rnn_units[layer].zero_state(self.train_length,
-                                                                                  tf.float32)  # TODO: TEST CHANGE HERE
-                rnn_dim = layers[layer][1]
-        return rnn_units, rnn_cell_states, rnn_dim
+                    rnn_cell_states[layer + "_ref"] = rnn_units[layer].zero_state(self.train_length, tf.float32)
+        return rnn_units, rnn_cell_states

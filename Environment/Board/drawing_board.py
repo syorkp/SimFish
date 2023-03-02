@@ -481,14 +481,14 @@ class DrawingBoard:
         return O
 
     def get_luminance_mask(self, dark_light_ratio, dark_gain):
-        dark_field_length = int(self.width * dark_light_ratio)
-        luminance_mask = self.chosen_math_library.ones((self.width, self.height, 1))
+        dark_field_length = int(self.arena_width * dark_light_ratio)
+        luminance_mask = self.chosen_math_library.ones((self.arena_width, self.arena_height, 1))
         if self.light_gradient > 0 and dark_field_length > 0:
             luminance_mask[:dark_field_length, :, :] *= dark_gain
             luminance_mask[dark_field_length:, :, :] *= self.light_gain
             gradient = self.chosen_math_library.linspace(dark_gain, self.light_gain, self.light_gradient)
             gradient = self.chosen_math_library.expand_dims(gradient, 1)
-            gradient = self.chosen_math_library.repeat(gradient, self.height, 1)
+            gradient = self.chosen_math_library.repeat(gradient, self.arena_height, 1)
             gradient = self.chosen_math_library.expand_dims(gradient, 2)
             luminance_mask[int(dark_field_length-(self.light_gradient/2)):int(dark_field_length+(self.light_gradient/2)), :, :] = gradient
 
@@ -502,24 +502,6 @@ class DrawingBoard:
         """Extends the arena pixels (red1 channel), by stretching the values computed at the wall points along the
         whole FOV in that direction"""
 
-        # if FOV["full_fov"][0] < 0:
-        #     low_dim_top = abs(FOV["full_fov"][0])
-        # else:
-        #     low_dim_top = 0
-        # if FOV["full_fov"][2] < 0:
-        #     low_dim_left = abs(FOV["full_fov"][2])
-        # else:
-        #     low_dim_left = 0
-        #
-        # if FOV["full_fov"][1] > self.height:
-        #     high_dim_bottom = abs(FOV["full_fov"][1]) - (self.height - 1)
-        # else:
-        #     high_dim_bottom = 0
-        # if FOV["full_fov"][3] > self.width:
-        #     high_dim_right = abs(FOV["full_fov"][3]) - (self.width - 1)
-        # else:
-        #     high_dim_right = 0
-
         if self.FOV.full_fov_top < 0:
             low_dim_top = abs(self.FOV.full_fov_top)
         else:
@@ -529,12 +511,12 @@ class DrawingBoard:
         else:
             low_dim_left = 0
 
-        if self.FOV.full_fov_bottom > self.height:
-            high_dim_bottom = abs(self.FOV.full_fov_bottom) - (self.height - 1)
+        if self.FOV.full_fov_bottom > self.arena_height:
+            high_dim_bottom = abs(self.FOV.full_fov_bottom) - (self.arena_height - 1)
         else:
             high_dim_bottom = 0
-        if self.FOV.full_fov_right > self.width:
-            high_dim_right = abs(self.FOV.full_fov_right) - (self.width - 1)
+        if self.FOV.full_fov_right > self.arena_width:
+            high_dim_right = abs(self.FOV.full_fov_right) - (self.arena_width - 1)
         else:
             high_dim_right = 0
 
@@ -691,7 +673,7 @@ class DrawingBoard:
         self.db[rr, cc, :] = color
 
     def get_size(self):
-        return self.width, self.height
+        return self.arena_width, self.arena_height
 
     def _draw_past_actions(self, n_actions_to_show):
         # Select subset of actions to show
