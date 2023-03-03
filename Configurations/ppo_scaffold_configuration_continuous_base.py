@@ -73,12 +73,23 @@ params = {
 env = {
        #                                     Shared
 
+       # Arena and physical parameters
        'arena_width': 1500,  # arena size
        'arena_height': 1500,
        'drag': 0.7,  # water drag
        'phys_dt': 0.2,  # physics time step
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
 
+       # Illumination Parameters
+       'dark_light_ratio': 0.0,  # fraction of arena in the dark
+       'light_gradient': 0,
+       'background_brightness': 0.0,  # base brightness of the background FORMERLY 0.00001; 0.01
+       'dark_gain': 60.0,  # gain of brightness in the dark side
+       'light_gain': 200.0,  # gain of brightness in the bright side
+       'light_decay_rate': 0.01,  # Formerly 0.0006
+       'shot_noise': False,  # Whether to model observation of individual photons as a poisson process.
+
+       # Fish specification
        'fish_mass': 140.,
        'fish_mouth_radius': 8.,  # FINAL VALUE - 0.2mm diameter, so 1.
        'fish_head_radius': 2.5,  # Old - 10
@@ -87,25 +98,19 @@ env = {
        'visual_field': 163.,  # single eye angular visual field
        'eyes_biasx': 2.5,  # distance of eyes from midline - interretinal distance of 0.5mm
 
-       'distance_penalty_scaling_factor': 1.0,
-       # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
-       'angle_penalty_scaling_factor': 0.5,
-       # NOTE: THESE ARE IGNORED IN NEW SIMULATION, where penalties are set by energy system.
-
+       # Paramecia Specification
        'prey_mass': 1.,
        'prey_inertia': 40.,
        'prey_radius': 1.,  # FINAL VALUE - 0.1mm diameter, so 1.
        'prey_radius_visualisation': 4.,  # Prey size for visualisation purposes
        'prey_num': 30,
        'prey_sensing_distance': 20,
-       'prey_max_turning_angle': 0.25,
-       # This is the turn (radians) that happens every step, designed to replicate linear wavy movement.
+       'prey_max_turning_angle': 0.25,  # Max turn (radians) that happens every step, to replicate linear wavy movement.
        'prey_fluid_displacement': False,
        'prey_jump': False,
        'differential_prey': True,
+       'fixed_prey_distribution': False,
        'prey_cloud_num': 7,
-
-       # Prey movement
        'p_slow': 1.0,
        'p_fast': 0.0,
        'p_escape': 0.5,
@@ -114,8 +119,6 @@ env = {
        'slow_impulse_paramecia': 0.0035,  # Impulse to generate 0.5mms-1 for given prey mass
        'fast_impulse_paramecia': 0.007,  # Impulse to generate 1.0mms-1 for given prey mass
        'jump_impulse_paramecia': 0.07,  # Impulse to generate 10.0mms-1 for given prey mass
-
-       # Prey reproduction
        'prey_reproduction_mode': True,
        'birth_rate': 0.002,  # Probability per step of new prey appearing at each source.
        'birth_rate_current_pop_scaling': 1,  # Sets scaling of birth rate according to number of prey currently present
@@ -123,43 +126,50 @@ env = {
        'prey_safe_duration': 100,
        'p_prey_death': 0.001,
 
+       # Predator Specification
+       'predator_mass': 200.,
+       'predator_inertia': 0.0001,
+       'predator_radius': 32,
+       'predator_impulse': 25,  # To produce speed of 13.7mms-1, formerly 1.0
+       'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
+       'distance_from_fish': 181.71216,  # Distance from the fish at which the predator appears. Formerly 498
+       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
+
+       # Sand Grain Specification
        'sand_grain_mass': 1.,
        'sand_grain_inertia': 40.,
        'sand_grain_radius': 4.,
        'sand_grain_num': 0,
        'sand_grain_displacement_impulse_scaling_factor': 0.5,
        'sand_grain_displacement_distance': 20,
+       'sand_grain_red_component': 2.0,
        'sand_grain_touch_penalty': 20000,
 
-       'predator_mass': 200.,
-       'predator_inertia': 0.0001,
-       'predator_radius': 32,  # Radius
-       'predator_impulse': 25,  # To produce speed of 13.7mms-1, formerly 1.0
-       'immunity_steps': 65,  # number of steps in the beginning of an episode where the fish is immune from predation
-       'distance_from_fish': 181.71216,  # Distance from the fish at which the predator appears. Formerly 498
-       'probability_of_predator': 0.0,  # Probability with which the predator appears at each step.
-
-       'dark_light_ratio': 0.0,  # fraction of arena in the dark
-       'light_gradient': 0,
-       'background_brightness': 0.0,  # base brightness of the background FORMERLY 0.00001; 0.01
-       'dark_gain': 60.0,  # gain of brightness in the dark side
-       'light_gain': 200.0,  # gain of brightness in the bright side
-
+       # Reward and Penalties
        'capture_swim_extra_cost': 0,
        'predator_cost': 50000,
        'predator_avoidance_reward': 20000,
+       'baseline_penalty': 0.002,
+       'reward_distance': 100,
+       'proximity_reward': 0.002,
+       'salt_reward_penalty': 0,  # Scales with salt concentration.
+       'action_reward_scaling': 0,  # Arbitrary (practical) hyperparameter for penalty for action
+       'consumption_reward_scaling': 1000000,  # Arbitrary (practical) hyperparameter for reward for consumption
+       'wall_touch_penalty': 0.2,
 
-       # Old internal state variables
+       # Internal State Variables
        'stress': False,
        'stress_compound': 0.9,
+       'energy_state': True,
+       'in_light': False,
+       'salt': True,  # Inclusion of olfactory salt input and salt death.
+       'salt_concentration_decay': 0.002,  # Scale for exponential salt concentration decay from source.
+       'salt_recovery': 0.005,  # Amount by which salt health recovers per step
+       'max_salt_damage': 0.0,  # Salt damage at centre of source.
 
        # For continuous Actions space:
        'max_angle_change': 1,  # Final 4, Formerly np.pi / 5,
        'max_impulse': 5.0,  # Final 100
-
-       'baseline_penalty': 0.002,
-       'reward_distance': 100,
-       'proximity_reward': 0.002,
 
        # For inputting std. values - note these must not be the same number.
        'max_sigma_impulse': 0.7,  # Formerly 0.4/0.3. Note in the case of static sigma, this is the static value.
@@ -173,20 +183,10 @@ env = {
 
        #                                  New Simulation
 
-       # Sensory inputs
-       'energy_state': True,
-       'in_light': False,
-       'salt': True,  # Inclusion of olfactory salt input and salt death.
-       'salt_reward_penalty': 0,  # Scales with salt concentration.
-       'salt_concentration_decay': 0.002,  # Scale for exponential salt concentration decay from source.
-       'salt_recovery': 0.005,  # Amount by which salt health recovers per step
-       'max_salt_damage': 0.0,  # Salt damage at centre of source.
-
        # GIFs and debugging
        'show_previous_actions': 200,  # False if not, otherwise the number of actions to save.
 
        # Environment
-       'light_decay_rate': 0.01,  # Formerly 0.0006
        'displacement_scaling_factor': 0.018,
        # Multiplied by previous impulse size to cause displacement of nearby features.
        'known_max_fish_i': 100,
@@ -204,35 +204,27 @@ env = {
        'final_predator_size': 200,  # "
        'duration_of_loom': 10,  # Number of steps for which loom occurs.
 
-       # Visual system scaling factors (to set CNN inputs into 0 to 255 range):
-       'red_scaling_factor': 0.01,  # Pixel counts are multiplied by this
-       'uv_scaling_factor': 1,  # Pixel counts are multiplied by this
-       'red_2_scaling_factor': 1/500.0,  # Pixel counts are multiplied by this
-
-       # Arbitrary fish parameters
-
        # Fish Visual System
        'uv_photoreceptor_rf_size': 0.0133 * 3,  # Radians (0.76 degrees) - Yoshimatsu et al. (2019)
        'red_photoreceptor_rf_size': 0.0133 * 3,  # Kept same
        'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
        'red_photoreceptor_num': 63,
-       # If there is a strike zone, is standard deviation of normal distribution formed by photoreceptor density.
+       "sz_rf_spacing": 0.04,  # 2.3 deg
+       "sz_size": 1.047,  # 60 deg
+       "sz_oversampling_factor": 2.5,
+       "sigmoid_steepness": 5.0,
+       'red_scaling_factor': 1,  # Pixel counts are multiplied by this
+       'uv_scaling_factor': 1,  # Pixel counts are multiplied by this
+       'red_2_scaling_factor': 0.2,  # Pixel counts are multiplied by this
 
-       # Shot noise
-       'shot_noise': False,  # Whether to model observation of individual photons as a poisson process.
-
-       # Energy state and hunger-based rewards
+       # Energy state
+       'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
        'i_scaling_energy_cost': 1.5e-04,  # 0.0004 in previous best.
        'a_scaling_energy_cost': 1.5e-04,  # 0.0004 in previous best.
        'baseline_energy_use': 0.0002,
        'consumption_energy_gain': 1.0,
 
-       # Reward
-       'action_reward_scaling': 0,  # Arbitrary (practical) hyperparameter for penalty for action
-       'consumption_reward_scaling': 1000000,  # Arbitrary (practical) hyperparameter for reward for consumption
-
        'wall_reflection': True,
-       'wall_touch_penalty': 0.2,
 
        # Currents
        'current_setting': False,  # Current setting. If none, should be False. Current options: Circular, Linear
@@ -247,19 +239,12 @@ env = {
        'angle_effect_noise_sd_x': 0.6,  # 0.86155083,
        'angle_effect_noise_sd_c': 0.02,  # 0.0010472,
 
-       # Complex capture swim dynamics
+       # Capture restrictions
        'fraction_capture_permitted': 1.0,  # Should be 1.0 if no temporal restriction imposed.
-       'capture_angle_deviation_allowance': np.pi,
-       # The possible deviation from 0 angular distance of collision between prey and fish, where pi would be allowing capture from any angle.
-       'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
+       'capture_angle_deviation_allowance': np.pi,  # The possible deviation from 0 angular distance of collision
+       # between prey and fish, where pi would be allowing capture from any angle.
 
-       'fixed_prey_distribution': False,
 
-       # From visual system changes
-       "sz_rf_spacing": 0.04,  # 2.3 deg
-       "sz_size": 1.047,  # 60 deg
-       "sz_oversampling_factor": 2.5,
-       "sigmoid_steepness": 5.0
 }
 
 scaffold_name = "ppo_gamma"

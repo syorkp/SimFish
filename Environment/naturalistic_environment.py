@@ -266,11 +266,7 @@ Sand grain: {self.sand_grain_associated_reward}
             self.fish_angle_buffer.append(self.fish.body.angle)
         self.position_buffer.append(np.array(self.fish.body.position))
 
-        if impulse is not None:
-            # To calculate calibration curve.
-            reward = self.fish.try_impulse(impulse)
-        else:
-            reward = self.fish.take_action(action)
+        reward = self.fish.take_action(action)
         # For Reward tracking (debugging)
         self.action_associated_reward += reward
 

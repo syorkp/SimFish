@@ -916,7 +916,6 @@ class BaseEnvironment:
 
         self.space.add(self.predator_body, self.predator_shape)
 
-
     def create_realistic_predator(self, predator_position=None, predator_orientation=None, predator_target=None):
         if predator_position is not None:
             return self.create_realistic_predator_existing(predator_position, predator_orientation, predator_target)

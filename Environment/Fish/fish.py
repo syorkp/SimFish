@@ -100,12 +100,12 @@ class Fish:
             self.chosen_math_library = np
 
     def take_action(self, action):
+        reward = 0
+
         """For discrete fish, overrided by continuous fish class."""
         if action == 0:  # Slow2
             angle_change, distance = draw_angle_dist(8)
-            reward = -self.calculate_action_cost(angle_change, distance)
             self.prev_action_angle = angle_change
-            # self.prev_action_angle = np.random.choice([-angle_change, angle_change])
             self.body.angle += self.prev_action_angle
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -113,7 +113,6 @@ class Fish:
 
         elif action == 1:  # RT right
             angle_change, distance = draw_angle_dist(7)
-            reward = -self.calculate_action_cost(angle_change, distance)
             self.prev_action_angle = angle_change
             self.body.angle += angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -122,7 +121,6 @@ class Fish:
 
         elif action == 2:  # RT left
             angle_change, distance = draw_angle_dist(7)
-            reward = -self.calculate_action_cost(angle_change, distance)
             self.prev_action_angle = -angle_change
             self.body.angle -= angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -131,9 +129,8 @@ class Fish:
 
         elif action == 3:  # Short capture swim
             angle_change, distance = draw_angle_dist(0)
-            reward = -self.calculate_action_cost(angle_change, distance) - self.env_variables['capture_swim_extra_cost']
+            reward -= self.env_variables['capture_swim_extra_cost']
             self.prev_action_angle = angle_change
-            # self.prev_action_angle = np.random.choice([-angle_change, angle_change])
             self.body.angle += self.prev_action_angle
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -142,7 +139,6 @@ class Fish:
 
         elif action == 4:  # j turn right
             angle_change, distance = draw_angle_dist(4)
-            reward = -self.calculate_action_cost(angle_change, distance)
             self.prev_action_angle = angle_change
             self.body.angle += angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -151,7 +147,6 @@ class Fish:
 
         elif action == 5:  # j turn left
             angle_change, distance = draw_angle_dist(4)
-            reward = -self.calculate_action_cost(angle_change, distance)
             self.prev_action_angle = -angle_change
             self.body.angle -= angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -165,7 +160,6 @@ class Fish:
 
         elif action == 7:  # c start right
             angle_change, distance = draw_angle_dist(5)
-            reward = -self.calculate_action_cost(angle_change, distance)
             self.prev_action_angle = angle_change
             self.body.angle += angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -174,7 +168,6 @@ class Fish:
 
         elif action == 8:  # c start left
             angle_change, distance = draw_angle_dist(5)
-            reward = -self.calculate_action_cost(angle_change, distance)
             self.prev_action_angle = -angle_change
             self.body.angle -= angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -183,9 +176,7 @@ class Fish:
 
         elif action == 9:  # Approach swim.
             angle_change, distance = draw_angle_dist(10)
-            reward = -self.calculate_action_cost(angle_change, distance)
             self.prev_action_angle = angle_change
-            # self.prev_action_angle = np.random.choice([-angle_change, angle_change])
             self.body.angle += self.prev_action_angle
             self.prev_action_impulse = self.calculate_impulse(distance)
             self.body.apply_impulse_at_local_point((self.prev_action_impulse, 0))
@@ -193,7 +184,6 @@ class Fish:
 
         elif action == 10:  # j turn 1 right
             angle_change, distance = draw_angle_dist(44)
-            reward = -self.calculate_action_cost(angle_change, distance)
             self.prev_action_angle = angle_change
             self.body.angle += angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -202,7 +192,6 @@ class Fish:
 
         elif action == 11:  # j turn 2 left
             angle_change, distance = draw_angle_dist(44)
-            reward = -self.calculate_action_cost(angle_change, distance)
             self.prev_action_angle = -angle_change
             self.body.angle -= angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -269,20 +258,6 @@ class Fish:
         # return (distance * 10 - (0.004644 * self.env_variables['fish_mass'] + 0.081417)) / 1.771548
         # return (distance * 10) * 0.360574383  # From mm
         return (distance * 10) * 0.34452532909386484  # From mm
-
-    def calculate_action_cost(self, angle, distance):
-        """
-        So far, a fairly arbitrary equation to calculate action cost from distance moved and angle changed.
-        cost = 0.05(angle change) + 1.5(distance moved)
-        :return:
-        """
-        return abs(angle) * self.env_variables['angle_penalty_scaling_factor'] + (distance ** 2) * self.env_variables[
-            'distance_penalty_scaling_factor']
-
-    def try_impulse(self, impulse):
-        # Used to produce calibration curve.
-        self.body.apply_impulse_at_local_point((impulse, 0))
-        return -self.env_variables['j_turn_cost']
 
     def readings_to_photons(self, readings):
         """Rounds down observations to form array of discrete photon events."""

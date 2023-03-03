@@ -268,9 +268,9 @@ class Eye:
         # TODO: Remove after test
         interp_uv_readings = np.zeros((100, 1))
         interp_red_readings = np.zeros((100, 2))
-        interp_red_readings[:, 0] = np.array(resize(self.red_readings[:, 0].get(), (100)))
-        interp_red_readings[:, 1] = np.array(resize(self.red_readings[:, 1].get(), (100)))
-        interp_uv_readings[:, 0] = np.array(resize(self.uv_readings[:, 0].get(), (100)))
+        interp_red_readings[:, 0:1] = np.array(resize(self.red_readings[:, 0].get(), (100, 1)))
+        interp_red_readings[:, 1:2] = np.array(resize(self.red_readings[:, 1].get(), (100, 1)))
+        interp_uv_readings[:, 0:1] = np.array(resize(self.uv_readings[:, 0].get(), (100, 1)))
 
         interp_red_readings = self.chosen_math_library.array(interp_red_readings)
         interp_uv_readings = self.chosen_math_library.array(interp_uv_readings)
