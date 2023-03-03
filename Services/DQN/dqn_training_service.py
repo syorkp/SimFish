@@ -6,13 +6,10 @@ import tensorflow.compat.v1 as tf
 
 from Analysis.Indexing.data_index_service import DataIndexServiceDiscrete
 from Analysis.Behavioural.Exploration.turn_chain_metric import get_normalised_turn_chain_metric_discrete
-
 from Buffers.DQN.dqn_training_buffer import DQNTrainingBuffer
 from Buffers.DQN.dqn_assay_buffer import DQNAssayBuffer
-
 from Configurations.Templates.assay_config import naturalistic_assay_config
 from Configurations.Utilities.turn_model_configs_into_assay_configs import transfer_config
-
 from Services.training_service import TrainingService
 from Services.DQN.dqn_assay_service import assay_target
 from Services.DQN.base_dqn import BaseDQN
@@ -101,7 +98,8 @@ class DQNTrainingService(TrainingService, BaseDQN):
         else:
             self.epsilon = self.learning_params["startE"]
 
-        self.experience_buffer = DQNTrainingBuffer(output_location=self.model_location, buffer_size=self.learning_params["exp_buffer_size"])
+        self.experience_buffer = DQNTrainingBuffer(output_location=self.model_location,
+                                                   buffer_size=self.learning_params["exp_buffer_size"])
 
         self.buffer = DQNAssayBuffer()
 
@@ -113,8 +111,11 @@ class DQNTrainingService(TrainingService, BaseDQN):
             TrainingService._run(self)
             self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
             # Save the parameters to be carried over.
-            output_data = {"epsilon": self.epsilon, "episode_number": self.episode_number,
-                           "total_steps": self.total_steps, "configuration_index": self.configuration_index}
+            output_data = {"epsilon": self.epsilon,
+                           "episode_number": self.episode_number,
+                           "total_steps": self.total_steps,
+                           "configuration_index": self.configuration_index
+                           }
             with open(f"{self.model_location}/saved_parameters.json", "w") as file:
                 json.dump(output_data, file)
 
@@ -176,7 +177,7 @@ Total episode reward: {total_episode_reward}\n""", flush=True)
     def save_episode(self, episode_start_t, all_actions, total_episode_reward, experience, prey_caught,
                      predators_avoided, sand_grains_bumped):
         """
-        Saves the episode the the experience buffer.
+        Saves the episode the experience buffer.
         :param prey_caught:
         :param sand_grains_bumped:
         :param predators_avoided:
@@ -220,4 +221,3 @@ Total episode reward: {total_episode_reward}\n""", flush=True)
         buffer_array = np.array(experience)
         experience = list(zip(buffer_array))
         self.experience_buffer.add(experience)
-        # Periodically save the model.

@@ -78,9 +78,9 @@ class DiscreteNaturalisticEnvironment(NaturalisticEnvironment):
     def reset(self):
         super().reset()
 
-    def simulation_step(self, action, activations=None, impulse=None):
+    def simulation_step(self, action, impulse=None):
         self.fish.making_capture = False
-        return super().simulation_step(action, activations, impulse)
+        return super().simulation_step(action, impulse)
 
     def load_simulation(self, buffer, sediment, energy_state):
         self.fish.prev_action_impulse = buffer.efference_copy_buffer[-1][0][1]

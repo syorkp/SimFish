@@ -11,8 +11,4 @@ class ContinuousTetheredFish(ContinuousFish):
         super().__init__(board, env_variables, dark_col)
 
     def take_action(self, action):
-        impulse = action[0]
-        angle = action[1]
-        distance = self.calculate_distance(impulse)
-        reward = - self.calculate_action_cost(angle, distance) - self.env_variables['baseline_penalty']
-        return reward
+        return 0

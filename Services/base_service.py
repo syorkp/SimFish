@@ -109,13 +109,7 @@ class BaseService:
         print("Creating Session..")
 
         if self.using_gpu:
-            # options = tf.GPUOptions(per_process_gpu_memory_fraction=self.memory_fraction)
-            # config = tf.ConfigProto(gpu_options=options)
             print("Using GPU")
-            # try:
-            #     delete_nv_folder()
-            # except FileNotFoundError:
-            #     pass
             config = tf.ConfigProto()
             config.gpu_options.allow_growth = True
         else:
@@ -174,6 +168,5 @@ class BaseService:
             predator_position = np.array([predator_position[0], predator_position[1]])
         else:
             predator_position = np.array([10000, 10000])
-
 
         return sand_grain_positions, prey_positions, predator_position

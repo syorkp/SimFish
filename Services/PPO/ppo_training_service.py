@@ -45,7 +45,6 @@ def ppo_training_target_continuous_sbe(trial, total_steps, episode_number, memor
     else:
         profile_speed = False
 
-
     services = PPOTrainingService(model_name=trial["Model Name"],
                                   trial_number=trial["Trial Number"],
                                   total_steps=total_steps,
@@ -67,8 +66,7 @@ def ppo_training_target_continuous_sbe(trial, total_steps, episode_number, memor
 class PPOTrainingService(TrainingService, ContinuousPPO):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, continuous_actions, model_exists, configuration_index,
-                 full_logs, profile_speed):
+                 config_name, continuous_actions, model_exists, configuration_index, full_logs, profile_speed):
         super().__init__(model_name=model_name, trial_number=trial_number,
                          total_steps=total_steps, episode_number=episode_number,
                          monitor_gpu=monitor_gpu, using_gpu=using_gpu,
@@ -95,7 +93,7 @@ class PPOTrainingService(TrainingService, ContinuousPPO):
                                           debug=False,
                                           )
 
-        # IF not saving regular gifs, instead be ready to save the environmental data underlying GIFs.
+        # Save data from episode for video creation.
         self.episode_buffer = PPOBufferContinuous(gamma=self.learning_params["gamma"],
                                                   lmbda=self.learning_params["lambda"],
                                                   batch_size=self.learning_params["batch_size"],
@@ -204,20 +202,14 @@ Total episode reward: {self.total_episode_reward}\n""", flush=True)
     def save_episode(self, episode_start_t, total_episode_reward, prey_caught,
                      predators_avoided, sand_grains_bumped):
         """
-        Saves the episode the the experience buffer. Also creates a gif if at interval.
+        Saves the episode the experience buffer. Also creates a gif if at interval.
         """
         TrainingService._save_episode_continuous_variables(self)
         TrainingService._save_episode(self, episode_start_t, total_episode_reward, prey_caught,
                                       predators_avoided, sand_grains_bumped)
 
-
-        output_data = {"episode_number": self.episode_number, "total_steps": self.total_steps, "configuration_index": self.configuration_index}
+        output_data = {"episode_number": self.episode_number,
+                       "total_steps": self.total_steps,
+                       "configuration_index": self.configuration_index}
         with open(f"{self.model_location}/saved_parameters.json", "w") as file:
             json.dump(output_data, file)
-
-        # # Value Summary
-        # for step in range(0, len(self.buffer.value_buffer)):
-        #     value_summary = tf.Summary(
-        #         value=[tf.Summary.Value(tag="value_predictions", simple_value=self.buffer.value_buffer[step])])
-        #     self.writer.add_summary(value_summary, self.total_steps - len(self.buffer.value_buffer) + step)
-

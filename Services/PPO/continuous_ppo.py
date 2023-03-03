@@ -109,23 +109,21 @@ class ContinuousPPO:
                                                       internal_states=internal_states,
                                                       internal_state_names=internal_state_names,
                                                       max_impulse=self.environment_params[
-                                                                     'max_impulse'],
+                                                          'max_impulse'],
                                                       max_angle_change=self.environment_params[
-                                                                     'max_angle_change'],
+                                                          'max_angle_change'],
                                                       clip_param=self.learning_params[
-                                                                     'clip_param'],
+                                                          'clip_param'],
                                                       base_network_layers=self.learning_params[
-                                                                     'base_network_layers'],
+                                                          'base_network_layers'],
                                                       modular_network_layers=self.learning_params[
-                                                                     'modular_network_layers'],
+                                                          'modular_network_layers'],
                                                       ops=self.learning_params['ops'],
                                                       connectivity=self.learning_params[
-                                                                     'connectivity'],
+                                                          'connectivity'],
                                                       reflected=self.learning_params['reflected'],
                                                       reuse_eyes=reuse_eyes,
                                                       )
-
-
 
         print("Created network")
 
@@ -157,7 +155,7 @@ class ContinuousPPO:
              a[1],
              self.simulation.fish.prev_action_impulse,
              self.simulation.fish.prev_action_angle,
-             ]# Set impulse to scale to be inputted to network
+             ]  # Set impulse to scale to be inputted to network
 
         impulse, angle, V, updated_rnn_state, updated_rnn_state_ref, network_layers, \
         mu_i, mu_a, mu1, mu1_ref, mu_a1, mu_a_ref, si_i, si_a = self.sess.run(
@@ -197,8 +195,7 @@ class ContinuousPPO:
             else:
                 action = [impulse[0][0], angle[0][0]]
 
-        o1, given_reward, new_internal_state, d, FOV = self.simulation.simulation_step(action=action,
-                                                                                       activations=(sa,))
+        o1, given_reward, new_internal_state, d, FOV = self.simulation.simulation_step(action=action)
 
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
@@ -251,7 +248,7 @@ class ContinuousPPO:
              a[1],
              self.simulation.fish.prev_action_impulse,
              self.simulation.fish.prev_action_angle,
-             ]# Set impulse to scale to be inputted to network
+             ]  # Set impulse to scale to be inputted to network
 
         impulse, angle, V, updated_rnn_state, updated_rnn_state_ref, neg_log_action_probability, mu_i, mu_a, \
         si = self.sess.run(
@@ -306,9 +303,7 @@ class ContinuousPPO:
             action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(
-            action=action,
-            activations=sa)
+        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(action=action)
 
         # Changing action to include final action consequences.
         action_consequences = [self.simulation.fish.prev_action_impulse / self.environment_params["max_impulse"],
@@ -351,8 +346,6 @@ class ContinuousPPO:
                                                      prey_gait=prey_gait
                                                      )
 
-
-
         si_i = si[0][0]
         si_a = si[0][1]
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, 0, 0, 0, 0)
@@ -370,8 +363,7 @@ class ContinuousPPO:
              a[1],
              self.simulation.fish.prev_action_impulse,
              self.simulation.fish.prev_action_angle,
-             ]# Set impulse to scale to be inputted to network
-
+             ]  # Set impulse to scale to be inputted to network
 
         impulse, angle, V, updated_rnn_state, updated_rnn_state_ref, mu_i, mu_a, neg_log_action_probability = self.sess.run(
             [self.network.impulse_output, self.network.angle_output,
@@ -424,9 +416,7 @@ class ContinuousPPO:
             action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(
-            action=action,
-            activations=sa)
+        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(action=action)
 
         action_consequences = [self.simulation.fish.prev_action_impulse / self.environment_params["max_impulse"],
                                self.simulation.fish.prev_action_angle / self.environment_params["max_angle_change"]]
@@ -494,7 +484,8 @@ class ContinuousPPO:
         try:
             action_batch = np.concatenate(np.array(action_batch))
             # print(action_batch.shape)
-            action_batch = np.reshape(np.array(action_batch), (self.learning_params["trace_length"] * current_batch_size, 2))
+            action_batch = np.reshape(np.array(action_batch),
+                                      (self.learning_params["trace_length"] * current_batch_size, 2))
         except:
             action_batch = np.concatenate(np.array(action_batch))
 
@@ -509,33 +500,22 @@ class ContinuousPPO:
         advantage_batch = np.vstack(advantage_batch).flatten()
         return_batch = np.vstack(np.vstack(return_batch)).flatten()
         value_batch = value_batch.flatten()
-        if target_outputs_buffer is not None:
-            target_outputs_batch = np.vstack(target_outputs_batch)
 
         return observation_batch, internal_state_batch, action_batch, previous_action_batch, \
                log_action_probability_batch, advantage_batch, return_batch, value_batch, \
                current_batch_size
 
     def train_network(self):
-        if (self.learning_params["batch_size"] * self.learning_params["trace_length"]) * 2 > len(self.buffer.reward_buffer):
-            # print(f"Buffer too small: {len(self.buffer.reward_buffer)}")
+        if (self.learning_params["batch_size"] * self.learning_params["trace_length"]) * 2 > len(
+                self.buffer.reward_buffer):
             return
         else:
             self.buffer.tidy()
-            # print(f"Buffer large enough: {len(self.buffer.reward_buffer)}")
 
-        observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, \
-        log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer, \
-        key_rnn_points = self.buffer.get_episode_buffer()
-
-        # if self.learning_params["batch_size"] == 1:
-        #     number_of_batches = int(math.ceil(observation_buffer.shape[0] / self.learning_params["batch_size"]))
-        # else:
-        #     number_of_batches = int(math.ceil(observation_buffer.shape[0] / (self.learning_params["batch_size"] * self.learning_params["trace_length"])))
+        observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer, log_action_probability_buffer, \
+        advantage_buffer, return_buffer, value_buffer, key_rnn_points = self.buffer.get_episode_buffer()
 
         number_of_batches = int(math.ceil(observation_buffer.shape[0] / self.learning_params["batch_size"]))
-
-        # print(f"Number of batches: {number_of_batches}")
 
         for batch in range(number_of_batches):
             # Find steps at start of each trace to compute RNN states
@@ -543,35 +523,18 @@ class ContinuousPPO:
                                 batch * self.learning_params["batch_size"] * self.learning_params[
                                     "trace_length"] <= i < (batch + 1) *
                                 self.learning_params["batch_size"] * self.learning_params["trace_length"]]
-            # print(f"Batch key points: {batch_key_points}")
 
             # Get the current batch
-            observation_batch, internal_state_batch, action_batch, previous_action_batch, \
-            log_action_probability_batch, advantage_batch, \
-            return_batch, previous_value_batch, current_batch_size = self.get_batch(
-                batch, observation_buffer,
-                internal_state_buffer,
-                action_buffer, previous_action_buffer,
-                log_action_probability_buffer,
-                advantage_buffer,
-                return_buffer, value_buffer)
+            observation_batch, internal_state_batch, action_batch, previous_action_batch, log_action_probability_batch, \
+                advantage_batch, return_batch, previous_value_batch, current_batch_size = self.get_batch(
+                    batch, observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer,
+                    log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer)
 
             # Loss value logging
             average_loss_value = 0
             average_loss_impulse = 0
             average_loss_angle = 0
             average_loss_entropy = 0
-
-            # print(f"""
-            # o: {np.array(observation_batch).shape}
-            # is: {np.array(internal_state_batch).shape}
-            # a: {np.array(action_batch).shape}
-            # pa: {np.array(previous_action_batch).shape}
-            # ad: {np.array(advantage_batch).shape}
-            # re: {np.array(return_batch).shape}
-            # pv: {np.array(previous_value_batch).shape}
-            # cbs: {current_batch_size}
-            # """)
 
             for i in range(self.learning_params["n_updates_per_iteration"]):
                 # Get RNN states for start of each trace.
@@ -602,7 +565,7 @@ class ContinuousPPO:
                                self.network.train_length: self.learning_params["trace_length"],
                                self.network.batch_size: current_batch_size,
                                self.network.learning_rate: self.learning_params[
-                                                                     "learning_rate"] * current_batch_size,
+                                                               "learning_rate"] * current_batch_size,
                                self.network.entropy_coefficient: self.learning_params["lambda_entropy"]
                                })
 
@@ -618,15 +581,19 @@ class ContinuousPPO:
         self.just_trained = True
 
     def init_states(self):
-        # Init states for RNN
-        # IF SAVE PRESENT
+        """Init states for RNN"""
+
         if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
             with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
                 print("Successfully loaded previous state.")
                 data = json.load(f)
-                num_rnns = len(data.keys())/4
-                self.init_rnn_state = tuple((np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in range(int(num_rnns)))
-                self.init_rnn_state_ref = tuple((np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape in range(int(num_rnns)))
+                num_rnns = len(data.keys()) / 4
+                self.init_rnn_state = tuple(
+                    (np.array(data[f"rnn_state_{shape}_1"]), np.array(data[f"rnn_state_{shape}_2"])) for shape in
+                    range(int(num_rnns)))
+                self.init_rnn_state_ref = tuple(
+                    (np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"])) for shape
+                    in range(int(num_rnns)))
         else:
             # Init states for RNN - For steps, not training.
             rnn_state_shapes = self.network.get_rnn_state_shapes()
@@ -647,9 +614,8 @@ class ContinuousPPO:
             self.buffer.reset()
             self.just_trained = False
         self.simulation.reset()
-        sa = np.zeros((1, 128))  # Kept for GIFs.
 
-        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=a, activations=(sa,))
+        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=a)
 
         self.total_episode_reward = 0  # Total reward over episode
 
@@ -659,7 +625,6 @@ class ContinuousPPO:
 
         self.step_number = 0
         while self.step_number < self.current_episode_max_duration:
-            # print(self.step_number)
             if self.assay is not None:
                 # Deal with interventions
                 if self.visual_interruptions is not None:
@@ -709,12 +674,9 @@ class ContinuousPPO:
     def get_rnn_states(self, rnn_key_points):
         batch_size = len(rnn_key_points)
         if self.rnn_in_network:
-
             rnn_state_buffer, rnn_state_ref_buffer = self.buffer.get_rnn_batch(rnn_key_points, batch_size)
-
         else:
             rnn_state_buffer = ()
             rnn_state_ref_buffer = ()
 
         return rnn_state_buffer, rnn_state_ref_buffer
-

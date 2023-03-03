@@ -64,7 +64,7 @@ class Eye:
             self.chosen_math_library.max(self.uv_photoreceptor_angles) + self.sz_rf_spacing / 2,
             self.sz_rf_spacing / 2)
 
-        self.observation_size = 100  #TODO: REmove  len(self.interpolated_observation)
+        self.observation_size = 100  # TODO: REmove  len(self.interpolated_observation)
 
         self.red_photoreceptor_angles = self.update_angles(verg_angle, retinal_field, is_left,
                                                            self.red_photoreceptor_num)
@@ -545,21 +545,8 @@ class Eye:
         """As specified, adds shot, read, and/or dark noise to readings."""
         if self.env_variables["shot_noise"]:
             photons = self.chosen_math_library.random.poisson(readings)
-            # shot_noise_difference = self.chosen_math_library.abs(readings - photons)
-            # snr = 1 - self.chosen_math_library.mean(shot_noise_difference / (photons + 1), axis=1)
         else:
             photons = readings
-
-        # if photons.shape[1] == 1:
-        #     print(f"Max photons: {np.max(readings[:, 0])}")
-        #
-        #     self.uv_signal_fail.append(snr)
-        # else:
-        #
-        #     self.red_signal_fail.append(snr[0])
-        #
-        #
-        #     self.red2_signal_fail.append(snr[1])
 
         return photons
 

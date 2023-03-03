@@ -1,6 +1,5 @@
 import os
 import json
-import shutil
 import multiprocessing
 
 import Services.DQN.dqn_training_service as dqn_training_service
@@ -11,8 +10,6 @@ import Services.PPO.ppo_assay_service as ppo_assay_continuous
 
 from Analysis.Training.get_checkpoints_from_scaffold_points import get_checkpoint
 from Configurations.Utilities.turn_scaffold_point_to_assay_config import transfer_config
-
-# multiprocessing.set_start_method('spawn', force=True)
 
 
 class TrialManager:
@@ -83,7 +80,6 @@ class TrialManager:
                 self.priority_ordered_trials[index]["Model Exists"] = True
                 if not os.path.exists(assay_directory_location):
                     os.makedirs(assay_directory_location)
-        # print(self.priority_ordered_trials)
 
     @staticmethod
     def check_model_exists(output_directory_location):
@@ -146,11 +142,6 @@ class TrialManager:
                 continuous_actions = True
             else:
                 continuous_actions = False
-
-        if "SB Emulator" in trial:
-            sb_emulator = trial["SB Emulator"]
-        else:
-            sb_emulator = True
 
         if trial["Run Mode"] == "Training":
             if continuous_actions:

@@ -255,7 +255,7 @@ Sand grain: {self.sand_grain_associated_reward}
                                         np.clip(self.fish.body.position[1], 6, self.env_variables["arena_height"] - 30))
             self.fish.body.position = new_position
 
-    def simulation_step(self, action, activations, impulse):
+    def simulation_step(self, action, impulse):
         self.prey_consumed_this_step = False
         self.last_action = action
         self.fish.touched_sand_grain = False
@@ -300,7 +300,7 @@ Sand grain: {self.sand_grain_associated_reward}
                 self.fish.capture_possible = False
 
             if self.predator_body is not None:
-                self.move_predator(micro_step)
+                self.move_predator()
 
             self.space.step(self.env_variables['phys_dt'])
 
@@ -313,7 +313,6 @@ Sand grain: {self.sand_grain_associated_reward}
             if self.fish.touched_edge:
                 self.fish.touched_edge = False
 
- 
         if self.fish.touched_predator:
             print("Fish eaten by predator")
             reward -= self.env_variables['predator_cost']
@@ -369,10 +368,8 @@ Sand grain: {self.sand_grain_associated_reward}
                 self.recent_cause_of_death = "Salt"
 
             if "salt_reward_penalty" in self.env_variables:
-                if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables[
-                    "salt_recovery"]:
+                if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables["salt_recovery"]:
                     reward -= self.env_variables["salt_reward_penalty"] * salt_damage
-                    # print(f"Salt-associated reward: {-self.env_variables['salt_reward_penalty'] * salt_damage}")
                     self.salt_associated_reward -= self.env_variables['salt_reward_penalty'] * salt_damage
 
         if self.predator_body is not None:
@@ -428,7 +425,6 @@ Sand grain: {self.sand_grain_associated_reward}
                 self.switch_step = self.num_steps
         
         observation, FOV = self.resolve_visual_input()
-
 
         return observation, reward, internal_state, done, FOV
 
@@ -513,11 +509,8 @@ Sand grain: {self.sand_grain_associated_reward}
         elif self.env_variables["current_setting"] == "Linear":
             print("Creating linear current")
             self.create_linear_current()
-        # elif self.env_variables["current_setting"] == "Diagonal":
-        #     self.create_diagonal_current()
         else:
             print("No current specified.")
-            # self.impulse_vector_field = np.zeros((self.env_variables["arena_width"], self.env_variables["arena_height"], 2))
 
     def create_circular_current(self):
         unit_circle_radius = self.env_variables["unit_circle_diameter"] / 2
@@ -580,9 +573,6 @@ Sand grain: {self.sand_grain_associated_reward}
 
         # plt.streamplot(xy[:, :, 0], yp[:, :, 0], vector_field[:, :, 0], vector_field[:, :, 1])
         # plt.show()
-
-    def create_diagonal_current(self):
-        ...
 
     def create_linear_current(self):
         current_width = self.env_variables['current_width'] * self.env_variables["arena_height"]

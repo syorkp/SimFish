@@ -11,8 +11,7 @@ from Environment.controlled_stimulus_environment import ControlledStimulusEnviro
 from Environment.controlled_stimulus_environment_continuous import ControlledStimulusEnvironmentContinuous
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Services.base_service import BaseService
-from Analysis.Video.behaviour_video_construction import draw_episode
-from Analysis.load_data import load_data
+
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -21,9 +20,8 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 class AssayService(BaseService):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, continuous_environment, assays, set_random_seed,
-                 assay_config_name, checkpoint, behavioural_recordings, network_recordings, interventions,
-                 run_version, split_event, modification):
+                 config_name, continuous_environment, assays, set_random_seed, assay_config_name, checkpoint,
+                 behavioural_recordings, network_recordings, interventions, run_version, split_event, modification):
 
         super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                          config_name, continuous_environment)
@@ -48,7 +46,7 @@ class AssayService(BaseService):
                 assay["assay id"] += "-Mod"
         elif run_version == "Original":
             print("Running for pre-split original")
-        elif run_version == None:
+        elif run_version is None:
             pass
         else:
             print("Incorrectly specified.")
@@ -209,7 +207,6 @@ class AssayService(BaseService):
         g = file.get(assay_id)
 
         data = {key: np.array(g.get(key)) for key in g.keys()}
-        # TODO: Make sure its the same for ppo assay buffer.
 
         try:
             self.buffer.switch_step = data["switch_step"]
@@ -218,12 +215,10 @@ class AssayService(BaseService):
             return False, False
 
         # Impose buffer
-        # Do differentially for DQN and PPO
         if self.continuous_actions:
             self.buffer.action_buffer = np.concatenate((np.expand_dims(data["impulse"], 1), np.expand_dims(data["angle"], 1)), axis=1).tolist()
         else:
             self.buffer.action_buffer = data["action"].tolist()
-
 
         self.buffer.observation_buffer = data["observation"].tolist()
         self.buffer.reward_buffer = data["reward"].tolist()
@@ -356,20 +351,7 @@ class AssayService(BaseService):
             self.sess.run(tf.assign(original_matrix, ablated_layers[layer]))
             print(f"Ablated {layer}")
 
-        # for unit in unit_indexes:
-        #     if unit < 256:
-        #         output = self.sess.graph.get_tensor_by_name('mainaw:0')
-        #         new_tensor = output.eval()
-        #         new_tensor[unit] = np.array([0 for i in range(10)])
-        #         self.sess.run(tf.assign(output, new_tensor))
-        #     else:
-        #         output = self.sess.graph.get_tensor_by_name('mainvw:0')
-        #         new_tensor = output.eval()
-        #         new_tensor[unit - 256] = np.array([0])
-        #         self.sess.run(tf.assign(output, new_tensor))
-
     def create_output_data_storage(self, behavioural_recordings, network_recordings):
-        # self.output_data = {key: [] for key in assay["behavioural recordings"] + assay["network recordings"]}
         self.output_data = {key: [] for key in behavioural_recordings + network_recordings}
         self.output_data["step"] = []
 

@@ -88,10 +88,10 @@ class ContinuousNaturalisticEnvironment(NaturalisticEnvironment):
     def reset(self):
         super().reset()
 
-    def simulation_step(self, action, activations=None, impulse=None):
+    def simulation_step(self, action, impulse=None):
         self.fish.making_capture = True
         # print(f"{self.num_steps}: {np.array(self.fish.body.position)}")
-        return super().simulation_step(action, activations, impulse)
+        return super().simulation_step(action, impulse)
 
     def load_simulation(self, buffer, sediment, energy_state):
         self.fish.prev_action_impulse = buffer.efference_copy_buffer[-1][2]

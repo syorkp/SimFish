@@ -1,18 +1,16 @@
-import json
-import h5py
-from datetime import datetime
 import copy
 
 import numpy as np
-# noinspection PyUnresolvedReferences
+
 import tensorflow.compat.v1 as tf
 
+from Analysis.Video.behaviour_video_construction import draw_episode
+from Analysis.load_data import load_data
 from Buffers.DQN.dqn_assay_buffer import DQNAssayBuffer
 from Environment.Action_Space.draw_angle_dist import get_modal_impulse_and_angle
 from Services.assay_service import AssayService
 from Services.DQN.base_dqn import BaseDQN
-from Analysis.Video.behaviour_video_construction import draw_episode
-from Analysis.load_data import load_data
+
 
 tf.logging.set_verbosity(tf.logging.ERROR)
 
@@ -144,9 +142,6 @@ class DQNAssayService(AssayService, BaseDQN):
             AssayService._run(self)
 
     def perform_assay(self, assay, background=None, energy_state=None):
-        # self.assay_output_data_format = {key: None for key in assay["recordings"]}
-        # self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
-
         if self.rnn_input is not None:
             rnn_state = copy.copy(self.rnn_input[0])
             rnn_state_ref = copy.copy(self.rnn_input[1])
@@ -165,14 +160,10 @@ class DQNAssayService(AssayService, BaseDQN):
             if self.run_version == "Modified-Completion":
                 self.simulation.make_modification()
 
-            a, updated_rnn_state, rnn2_state, network_layers, sa, sv = \
+            a, updated_rnn_state, rnn2_state, network_layers = \
                 self.sess.run(
                     [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
-                     self.main_QN.network_graph,
-
-                     self.main_QN.streamA,
-                     self.main_QN.streamV,
-                     ],
+                     self.main_QN.network_graph],
                     feed_dict={self.main_QN.observation: o,
                                self.main_QN.internal_state: internal_state,
                                self.main_QN.prev_actions: np.expand_dims(a, 0),
@@ -182,7 +173,6 @@ class DQNAssayService(AssayService, BaseDQN):
 
                                self.main_QN.batch_size: 1,
                                self.main_QN.exp_keep: 1.0,
-                               # self.main_QN.learning_rate: self.learning_params["learning_rate"],
                                })
 
             a = a[0]
@@ -192,9 +182,7 @@ class DQNAssayService(AssayService, BaseDQN):
             a = 0
             self.step_number = 0
 
-        sa = np.zeros((1, 128))
-
-        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=a, activations=(sa,))
+        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=a)
 
         if self.full_efference_copy:
             efference_copy = [[a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]]
@@ -202,16 +190,13 @@ class DQNAssayService(AssayService, BaseDQN):
             efference_copy = [a]
 
         while self.step_number < assay["duration"]:
-            # if assay["reset"] and self.step_number % assay["reset interval"] == 0:
-            #     rnn_state = (
-            #         np.zeros([1, self.main_QN.rnn_dim]), np.zeros([1, self.main_QN.rnn_dim]))  # Reset RNN hidden state
             self.step_number += 1
 
             # Deal with interventions
             if self.interruptions:
                 if self.visual_interruptions is not None:
                     if self.visual_interruptions[self.step_number] == 1:
-                        # mean values over all data
+                        # mean values over all data  TODO: Will need updating in line with new visual system
                         o[:, 0, :] = 4
                         o[:, 1, :] = 11
                         o[:, 2, :] = 16
@@ -248,7 +233,7 @@ class DQNAssayService(AssayService, BaseDQN):
 
             if d:
                 if self.run_version == "Original":
-                    if self.simulation.switch_step != None:
+                    if self.simulation.switch_step is not None:
                         self.buffer.switch_step = self.simulation.switch_step
                     else:
                         # If no split occurs, return without saving data.
@@ -288,24 +273,3 @@ class DQNAssayService(AssayService, BaseDQN):
 
     def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         return BaseDQN.assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref)
-
-    def save_hdf5_data(self, assay):
-        hdf5_file = h5py.File(f"{self.data_save_location}/{self.assay_configuration_id}.h5", "a")
-
-        try:
-            assay_group = hdf5_file.create_group(assay['assay id'])
-        except ValueError:
-            assay_group = hdf5_file.get(assay['assay id'])
-
-        if "prey_positions" in self.assay_output_data_format.keys():
-            self.output_data["prey_positions"] = np.stack(self.output_data["prey_positions"])
-
-        for key in self.output_data:
-            try:
-                # print(self.output_data[key])
-                assay_group.create_dataset(key, data=np.array(self.output_data[key]))
-            except RuntimeError:
-                del assay_group[key]
-                assay_group.create_dataset(key, data=np.array(self.output_data[key]))
-        hdf5_file.close()
-

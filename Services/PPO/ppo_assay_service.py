@@ -98,13 +98,12 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
 class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, continuous_environment, assays, set_random_seed,
-                 assay_config_name, sb_emulator, checkpoint, behavioural_recordings, network_recordings, interventions,
-                 run_version, split_event, modification):
+                 config_name, continuous_environment, assays, set_random_seed, assay_config_name, sb_emulator,
+                 checkpoint, behavioural_recordings, network_recordings, interventions, run_version, split_event,
+                 modification):
         """
         Runs a set of assays provided by the run configuraiton.
         """
-        print(f"H: {split_event}")
         # Set random seed
         super().__init__(model_name=model_name,
                          trial_number=trial_number,
@@ -136,7 +135,6 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                                           debug=False,
                                           )
 
-
         self.ppo_version = ContinuousPPO
         self.sb_emulator = sb_emulator
         self.e = self.learning_params["startE"] / 2
@@ -151,10 +149,6 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
             AssayService._run(self)
 
     def perform_assay(self, assay, background=None, energy_state=None):
-        # self.assay_output_data_format = {key: None for key in
-        #                                  assay["behavioural recordings"] + assay["network recordings"]}
-        # self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
-
         self.update_sigmas()
 
         if self.rnn_input is not None:
@@ -168,9 +162,6 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
         if assay["use_mu"]:
             self.use_mu = True
 
-        # TODO: implement environment loading etc as in dqn_assay_service. Will require modification of
-        #  self._episode_loop() for RNN state, env reset, step num,
-
         if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
             print("Loading Simulation")
             o = self.simulation.load_simulation(self.buffer, background, energy_state)
@@ -182,14 +173,10 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
             if self.run_version == "Modified-Completion":
                 self.simulation.make_modification()
 
-            a, updated_rnn_state, rnn2_state, network_layers, sa, sv = \
+            a, updated_rnn_state, rnn2_state, network_layers = \
                 self.sess.run(
                     [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
-                     self.main_QN.network_graph,
-
-                     self.main_QN.streamA,
-                     self.main_QN.streamV,
-                     ],
+                     self.main_QN.network_graph],
                     feed_dict={self.main_QN.observation: o,
                                self.main_QN.internal_state: internal_state,
                                self.main_QN.prev_actions: np.expand_dims(a, 0),
@@ -199,7 +186,6 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
                                self.main_QN.batch_size: 1,
                                self.main_QN.exp_keep: 1.0,
-                               # self.main_QN.learning_rate: self.learning_params["learning_rate"],
                                })
 
             self.step_number = len(self.buffer.internal_state_buffer)
@@ -215,14 +201,12 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
         action = a + [self.simulation.fish.prev_action_impulse,
                       self.simulation.fish.prev_action_angle]
 
-        sa = np.zeros((1, 128))
-        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=a, activations=(sa,))
+        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=a)
 
         self.buffer.action_buffer.append(action)  # Add to buffer for loading of previous actions
 
         self.step_number = 0
         while self.step_number < self.current_episode_max_duration:
-            # print(self.step_number)
             if self.assay is not None:
                 # Deal with interventions
                 if self.visual_interruptions is not None:
@@ -276,14 +260,6 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                 break
 
         self.log_stimuli()
-
-        #     # make_gif(self.frame_buffer,
-        #     #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
-        #     #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-        #     make_video(self.frame_buffer,
-        #              f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
-        #              duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-        # self.frame_buffer = []
 
         if "reward assessments" in self.buffer.recordings:
             self.buffer.calculate_advantages_and_returns()
