@@ -127,7 +127,6 @@ class TestEnvironment:
 
         # New complex predators
         self.predator_location = None
-        self.remaining_predator_attacks = None
         self.total_predator_steps = None
         self.new_attack_due = False
 
@@ -357,10 +356,6 @@ class TestEnvironment:
 
         self.predator_shape.color = (0, 1, 0)
         self.predator_location = (x_position, y_position)
-        self.remaining_predator_attacks = 1 + np.sum(
-            np.random.choice([0, 1], self.env_variables["max_predator_attacks"] - 1,
-                             p=[1.0 - self.env_variables["further_attack_probability"],
-                                self.env_variables["further_attack_probability"]]))
 
         self.predator_shape.collision_type = 5
         self.predator_shape.filter = pymunk.ShapeFilter(

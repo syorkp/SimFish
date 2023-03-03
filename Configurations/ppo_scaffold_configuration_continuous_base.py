@@ -79,6 +79,8 @@ env = {
        'drag': 0.7,  # water drag
        'phys_dt': 0.2,  # physics time step
        'phys_steps_per_sim_step': 100,  # number of physics time steps per simulation step. each time step is 2ms
+       'displacement_scaling_factor': 0.018,  # Multiplied by previous impulse to displace nearby features.
+       'known_max_fish_i': 100,
 
        # Illumination Parameters
        'dark_light_ratio': 0.0,  # fraction of arena in the dark
@@ -181,15 +183,8 @@ env = {
 
        'clip_param': 0.2,
 
-       #                                  New Simulation
-
        # GIFs and debugging
        'show_previous_actions': 200,  # False if not, otherwise the number of actions to save.
-
-       # Environment
-       'displacement_scaling_factor': 0.018,
-       # Multiplied by previous impulse size to cause displacement of nearby features.
-       'known_max_fish_i': 100,
 
        # Predators - Repeated attacks in localised region. Note, can make some of these arbitrarily high so predator keeps attacking when fish enters a certain region for whole episode.
        'max_predator_attacks': 5,
@@ -197,12 +192,6 @@ env = {
        'max_predator_attack_range': 2000,
        'max_predator_reorient_distance': 400,
        'predator_presence_duration_steps': 100,
-
-       # Predator - Expanding disc (no longer used)
-       'predator_first_attack_loom': False,
-       'initial_predator_size': 20,  # Size in degrees
-       'final_predator_size': 200,  # "
-       'duration_of_loom': 10,  # Number of steps for which loom occurs.
 
        # Fish Visual System
        'uv_photoreceptor_rf_size': 0.0133 * 3,  # Radians (0.76 degrees) - Yoshimatsu et al. (2019)

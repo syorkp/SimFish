@@ -182,7 +182,7 @@ class BaseEnvironment:
 
 
         if self.predator_shape is not None:
-            self.remove_realistic_predator()
+            self.remove_predator()
         self.predator_location = None
         self.remaining_predator_attacks = None
         self.total_predator_steps = None
@@ -720,94 +720,14 @@ class BaseEnvironment:
         del self.prey_ages[prey_index]
         del self.paramecia_gaits[prey_index]
 
-    def create_predator(self):
-        self.predator_bodies.append(
-            pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia']))
-        self.predator_shapes.append(pymunk.Circle(self.predator_bodies[-1], self.env_variables['predator_radius']))
-        self.predator_shapes[-1].elasticity = 1.0
-        self.predator_bodies[-1].position = (
-            np.random.randint(self.env_variables['predator_radius'] + self.env_variables['fish_mouth_radius'],
-                              self.env_variables['arena_width'] - (
-                                      self.env_variables['predator_radius'] + self.env_variables['fish_mouth_radius'])),
-            np.random.randint(self.env_variables['predator_radius'] + self.env_variables['fish_mouth_radius'],
-                              self.env_variables['arena_height'] - (
-                                      self.env_variables['predator_radius'] + self.env_variables['fish_mouth_radius'])))
-        self.predator_shapes[-1].color = (0, 1, 0)
-        # Made green so still visible to us but not to fish.
-        self.predator_shapes[-1].collision_type = 5
-
-        self.space.add(self.predator_bodies[-1], self.predator_shapes[-1])
-
     def move_predator(self, micro_step):
-        # OLD:
-        # for pr in self.predator_bodies:
-        #     dist_to_fish = np.sqrt(
-        #         (pr.position[0] - self.fish.body.position[0]) ** 2 + (pr.position[1] - self.fish.body.position[1]) ** 2)
-        #
-        #     if dist_to_fish < self.env_variables['predator_sensing_dist']:
-        #         pr.angle = np.pi / 2 - np.arctan2(self.fish.body.position[0] - pr.position[0],
-        #                                           self.fish.body.position[1] - pr.position[1])
-        #         pr.apply_impulse_at_local_point((self.env_variables['predator_chase_impulse'], 0))
-        #
-        #     elif np.random.rand(1) < self.env_variables['predator_impulse_rate']:
-        #         pr.angle = np.random.rand(1) * 2 * np.pi
-        #         pr.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
-        if self.first_attack:
-            # If the first attack is to be a loom attack (specified by selecting loom stimulus in env config)
-            if self.loom_predator_current_size < self.env_variables["final_predator_radius"]:
-                if micro_step == 0:
-                    self.grow_loom_predator()
-            else:
-                self.remaining_predator_attacks -= 1
-                self.predator_attacks_avoided += 1
-                self.new_attack_due = True
-                self.first_attack = False
+        if self.check_predator_at_target() or self.check_predator_outside_walls():
+            self.remove_predator()
 
-                # Remove the loom predator
-                self.space.remove(self.predator_shape, self.predator_shape.body)
-
-                # Create new predator
-                self.predator_body = pymunk.Body(self.env_variables['predator_mass'],
-                                                 self.env_variables['predator_inertia'])
-                self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_radius'])
-                self.predator_shape.elasticity = 1.0
-                self.predator_body.position = self.predator_location
-                self.predator_shape.color = (0, 1, 0)
-                self.predator_shape.collision_type = 5
-                self.predator_shape.filter = pymunk.ShapeFilter(
-                    mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # Category 2 objects cant collide with predator
-                self.space.add(self.predator_body, self.predator_shape)
-        else:
-            if self.check_predator_at_target():
-                self.remaining_predator_attacks -= 1
-                self.predator_attacks_avoided += 1
-                self.new_attack_due = True
-
-            if self.check_predator_outside_walls():
-                self.remaining_predator_attacks -= 1
-
-            # If predator out of strike range.
-            if self.predator_base_distance_to_fish() > self.env_variables["max_predator_attack_range"]:
-                self.predator_body.position = self.predator_location
-                return
-
-            if self.remaining_predator_attacks <= 0 or \
-                    self.total_predator_steps > self.env_variables["predator_presence_duration_steps"]:
-                self.remove_realistic_predator()
-                return
-            else:
-                if self.new_attack_due and self.check_fish_not_near_wall():
-                    self.new_attack_due = False
-                    self.initiate_repeated_predator_attack()
-
-            # Update predator target
-            # if self.predator_distance_to_fish() > self.env_variables["max_predator_reorient_distance"]:
-            #     self.predator_target = np.array(self.fish.body.position)
-
-            self.predator_body.angle = np.pi / 2 - np.arctan2(
-                self.predator_target[0] - self.predator_body.position[0],
-                self.predator_target[1] - self.predator_body.position[1])
-            self.predator_body.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
+        self.predator_body.angle = np.pi / 2 - np.arctan2(
+            self.predator_target[0] - self.predator_body.position[0],
+            self.predator_target[1] - self.predator_body.position[1])
+        self.predator_body.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
 
     def touch_predator(self, arbiter, space, data):
         if self.num_steps > self.env_variables['immunity_steps']:
@@ -885,7 +805,7 @@ class BaseEnvironment:
         elif y_position > self.env_variables["height"] - buffer_region:
             return True
 
-    def create_realistic_predator_existing(self, predator_position, predator_orientation, predator_target):
+    def load_predator(self, predator_position, predator_orientation, predator_target):
 
         self.predator_body = pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia'])
         self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_radius'])
@@ -898,28 +818,13 @@ class BaseEnvironment:
 
         self.predator_shape.color = (0, 1, 0)
         self.predator_location = (predator_position[0], predator_position[1])
-        self.remaining_predator_attacks = 1 + np.sum(
-            np.random.choice([0, 1], self.env_variables["max_predator_attacks"] - 1,
-                                p=[1.0 - self.env_variables["further_attack_probability"],
-                                self.env_variables["further_attack_probability"]]))
-        if self.env_variables["predator_first_attack_loom"]:
-            # Set fish position based on final predator size
-            self.predator_location = (predator_position[0], predator_position[1])
-
-            self.predator_body.position = self.predator_location
-            self.loom_predator_current_size = self.env_variables['initial_predator_size']
-            self.first_attack = True
-
         self.predator_shape.collision_type = 5
         self.predator_shape.filter = pymunk.ShapeFilter(
             mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # Category 2 objects cant collide with predator
 
         self.space.add(self.predator_body, self.predator_shape)
 
-    def create_realistic_predator(self, predator_position=None, predator_orientation=None, predator_target=None):
-        if predator_position is not None:
-            return self.create_realistic_predator_existing(predator_position, predator_orientation, predator_target)
-
+    def create_predator(self):
         self.predator_body = pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia'])
         self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_radius'])
         self.predator_shape.elasticity = 1.0
@@ -939,41 +844,11 @@ class BaseEnvironment:
 
         self.predator_shape.color = (0, 1, 0)
         self.predator_location = (x_position, y_position)
-        self.remaining_predator_attacks = 1 + np.sum(
-            np.random.choice([0, 1], self.env_variables["max_predator_attacks"] - 1,
-                                p=[1.0 - self.env_variables["further_attack_probability"],
-                                self.env_variables["further_attack_probability"]]))
-        if self.env_variables["predator_first_attack_loom"]:
-            # Set fish position based on final predator size
-            dx = (self.env_variables["final_predator_size"] * 0.8) * np.sin(angle_from_fish)
-            dy = (self.env_variables["final_predator_size"] * 0.8) * np.cos(angle_from_fish)
-            self.predator_location = (fish_position[0] + dx, fish_position[1] + dy)
-
-            self.predator_body.position = self.predator_location
-            self.loom_predator_current_size = self.env_variables['initial_predator_size']
-            self.first_attack = True
 
         self.predator_shape.collision_type = 5
         self.predator_shape.filter = pymunk.ShapeFilter(
             mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # Category 2 objects cant collide with predator
 
-        self.space.add(self.predator_body, self.predator_shape)
-
-    def grow_loom_predator(self):
-        self.loom_predator_current_size += (self.env_variables["final_predator_size"] - self.env_variables[
-            "initial_predator_size"]) / self.env_variables["duration_of_loom"]
-        # Remove the predator as it appears
-        self.space.remove(self.predator_shape, self.predator_shape.body)
-
-        # Create new predator:
-        self.predator_body = pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia'])
-        self.predator_shape = pymunk.Circle(self.predator_body, self.loom_predator_current_size)
-        self.predator_shape.elasticity = 1.0
-        self.predator_body.position = self.predator_location
-        self.predator_shape.color = (0, 1, 0)
-        self.predator_shape.collision_type = 5
-        self.predator_shape.filter = pymunk.ShapeFilter(
-            mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # Category 2 objects cant collide with predator
         self.space.add(self.predator_body, self.predator_shape)
 
     def check_predator_outside_walls(self):
@@ -1002,65 +877,7 @@ class BaseEnvironment:
         return ((self.predator_body.position[0] - self.fish.body.position[0]) ** 2 +
                 (self.predator_body.position[1] - self.fish.body.position[1]) ** 2) ** 0.5
 
-    def move_realistic_predator(self, micro_step):
-        if self.first_attack:
-            # If the first attack is to be a loom attack (specified by selecting loom stimulus in env config)
-            if self.loom_predator_current_size < self.env_variables["final_predator_size"]:
-                if micro_step == 0:
-                    self.grow_loom_predator()
-            else:
-                self.remaining_predator_attacks -= 1
-                self.predator_attacks_avoided += 1
-                self.new_attack_due = True
-                self.first_attack = False
-
-                # Remove the loom predator
-                self.space.remove(self.predator_shape, self.predator_shape.body)
-
-                # Create new predator
-                self.predator_body = pymunk.Body(self.env_variables['predator_mass'],
-                                                 self.env_variables['predator_inertia'])
-                self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_radius'])
-                self.predator_shape.elasticity = 1.0
-                self.predator_body.position = self.predator_location
-                self.predator_shape.color = (0, 1, 0)
-                self.predator_shape.collision_type = 5
-                self.predator_shape.filter = pymunk.ShapeFilter(
-                    mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # Category 2 objects cant collide with predator
-                self.space.add(self.predator_body, self.predator_shape)
-        else:
-            if self.check_predator_at_target():
-                self.remaining_predator_attacks -= 1
-                self.predator_attacks_avoided += 1
-                self.new_attack_due = True
-
-            if self.check_predator_outside_walls():
-                self.remaining_predator_attacks -= 1
-
-            # If predator out of strike range.
-            if self.predator_base_distance_to_fish() > self.env_variables["max_predator_attack_range"]:
-                self.predator_body.position = self.predator_location
-                return
-
-            if self.remaining_predator_attacks <= 0 or \
-                    self.total_predator_steps > self.env_variables["predator_presence_duration_steps"]:
-                self.remove_realistic_predator()
-                return
-            else:
-                if self.new_attack_due and self.check_fish_not_near_wall():
-                    self.new_attack_due = False
-                    self.initiate_repeated_predator_attack()
-
-            # Update predator target
-            # if self.predator_distance_to_fish() > self.env_variables["max_predator_reorient_distance"]:
-            #     self.predator_target = np.array(self.fish.body.position)
-
-            self.predator_body.angle = np.pi / 2 - np.arctan2(
-                self.predator_target[0] - self.predator_body.position[0],
-                self.predator_target[1] - self.predator_body.position[1])
-            self.predator_body.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
-
-    def remove_realistic_predator(self, arbiter=None, space=None, data=None):
+    def remove_predator(self, arbiter=None, space=None, data=None):
         if self.predator_body is not None:
             self.space.remove(self.predator_shape, self.predator_shape.body)
             self.predator_shape = None
@@ -1072,14 +889,6 @@ class BaseEnvironment:
             self.survived_attack = True
         else:
             pass
-
-    def initiate_repeated_predator_attack(self):
-        self.space.remove(self.predator_shape, self.predator_shape.body)
-        self.predator_body.position = self.predator_location
-
-        fish_position = self.fish.body.position
-        self.predator_target = fish_position
-        self.space.add(self.predator_body, self.predator_shape)
 
     def create_sand_grain(self):
         self.sand_grain_bodies.append(

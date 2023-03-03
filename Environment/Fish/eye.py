@@ -64,7 +64,7 @@ class Eye:
             self.chosen_math_library.max(self.uv_photoreceptor_angles) + self.sz_rf_spacing / 2,
             self.sz_rf_spacing / 2)
 
-        self.observation_size = len(self.interpolated_observation)
+        self.observation_size = 100  #TODO: REmove  len(self.interpolated_observation)
 
         self.red_photoreceptor_angles = self.update_angles(verg_angle, retinal_field, is_left,
                                                            self.red_photoreceptor_num)

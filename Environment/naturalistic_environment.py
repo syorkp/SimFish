@@ -190,9 +190,9 @@ Sand grain: {self.sand_grain_associated_reward}
                     break
             predator_target = buffer.fish_position_buffer[-predator_lifespan]
 
-            self.create_realistic_predator(predator_position=final_step_predator_position,
-                                           predator_orientation=final_step_predator_orientation,
-                                           predator_target=predator_target)
+            self.load_predator(predator_position=final_step_predator_position,
+                               predator_orientation=final_step_predator_orientation,
+                               predator_target=predator_target)
 
         self.fish.body.position = np.array(buffer.fish_position_buffer[-1])
         self.fish.body.angle = np.array(buffer.fish_angle_buffer[-1])
@@ -436,7 +436,7 @@ Sand grain: {self.sand_grain_associated_reward}
     def init_predator(self):
         if self.predator_location is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
                 self.num_steps > self.env_variables['immunity_steps'] and not self.check_fish_not_near_wall():
-            self.create_realistic_predator()
+            self.create_predator()
 
     def resolve_visual_input(self):
         # eye positions within FOV - Relative eye positions to FOV
