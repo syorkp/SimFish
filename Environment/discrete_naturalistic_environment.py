@@ -17,7 +17,7 @@ class DiscreteNaturalisticEnvironment(NaturalisticEnvironment):
                          num_actions=num_actions,
                          run_version=run_version,
                          split_event=split_event,
-                         modification=modification
+                         modification=modification,
                          )
 
         # Create the fish class instance and add to the space.

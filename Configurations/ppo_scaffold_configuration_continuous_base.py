@@ -35,14 +35,19 @@ params = {
        'exp_buffer_size': 500,  # Number of episodes to keep in the experience buffer
        'tau': 0.001,  # target network update time constant
 
-       # Learning (PPO only; both continuous and discrete)
+       # Learning (PPO only)
        'n_updates_per_iteration': 4,
        'learning_rate': 0.000001,  # Formerly 0.000001
        'lambda_entropy': 0.00,
-
-       # Learning (PPO Continuous Only)
        'gamma': 0.99,
        'lambda': 0.9,
+       'clip_param': 0.2,
+       'max_sigma_impulse': 0.7,  # Formerly 0.4/0.3. Note in the case of static sigma, this is the static value.
+       'max_sigma_angle': 0.7,  # Formerly 0.4/0.3. Note in the case of static sigma, this is the static value.
+       'min_sigma_impulse': 0.4,  # Formerly 0.1
+       'min_sigma_angle': 0.4,  # Formerly 0.1
+       'sigma_reduction_time': 5000000,  # Number of steps to complete sigma trajectory.
+       'sigma_mode': "Static",  # Options: Decreasing (linear reduction with reduction time), Static
 
        # Discrete Action Space
        'num_actions': 10,  # size of action space
@@ -59,7 +64,6 @@ params = {
        'ops': ops,
        'connectivity': connectivity,
 
-       # For RND
        'reuse_eyes': True,
 
        # Specify how often to save network parameters
@@ -99,6 +103,34 @@ env = {
        'eyes_verg_angle': 77.,  # in deg
        'visual_field': 163.,  # single eye angular visual field
        'eyes_biasx': 2.5,  # distance of eyes from midline - interretinal distance of 0.5mm
+
+       # Fish Visual System
+       'uv_photoreceptor_rf_size': 0.0133 * 3,  # Radians (0.76 degrees) - Yoshimatsu et al. (2019)
+       'red_photoreceptor_rf_size': 0.0133 * 3,  # Kept same
+       'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
+       'red_photoreceptor_num': 63,
+       "sz_rf_spacing": 0.04,  # 2.3 deg
+       "sz_size": 1.047,  # 60 deg
+       "sz_oversampling_factor": 2.5,
+       "sigmoid_steepness": 5.0,
+       'red_scaling_factor': 1,  # Pixel counts are multiplied by this
+       'uv_scaling_factor': 1,  # Pixel counts are multiplied by this
+       'red_2_scaling_factor': 0.2,  # Pixel counts are multiplied by this
+
+       # Fish-Paramecium Capture restrictions
+       'fraction_capture_permitted': 1.0,  # Should be 1.0 if no temporal restriction imposed.
+       'capture_angle_deviation_allowance': np.pi,  # The possible deviation from 0 angular distance of collision
+       # between prey and fish, where pi would be allowing capture from any angle.
+
+       # Max Impulse and Angle (for continuous action space)
+       'max_angle_change': 1,  # Final 4, Formerly np.pi / 5,
+       'max_impulse': 5.0,  # Final 100
+
+       # Fish Motor effect noise (for continuous action space)
+       'impulse_effect_noise_sd_x': 0.1,  # 0.98512558,
+       'impulse_effect_noise_sd_c': 0.5,  # 0.06,
+       'angle_effect_noise_sd_x': 0.6,  # 0.86155083,
+       'angle_effect_noise_sd_c': 0.02,  # 0.0010472,
 
        # Paramecia Specification
        'prey_mass': 1.,
@@ -169,43 +201,6 @@ env = {
        'salt_recovery': 0.005,  # Amount by which salt health recovers per step
        'max_salt_damage': 0.0,  # Salt damage at centre of source.
 
-       # For continuous Actions space:
-       'max_angle_change': 1,  # Final 4, Formerly np.pi / 5,
-       'max_impulse': 5.0,  # Final 100
-
-       # For inputting std. values - note these must not be the same number.
-       'max_sigma_impulse': 0.7,  # Formerly 0.4/0.3. Note in the case of static sigma, this is the static value.
-       'max_sigma_angle': 0.7,  # Formerly 0.4/0.3. Note in the case of static sigma, this is the static value.
-       'min_sigma_impulse': 0.4,  # Formerly 0.1
-       'min_sigma_angle': 0.4,  # Formerly 0.1
-       'sigma_reduction_time': 5000000,  # Number of steps to complete sigma trajectory.
-       'sigma_mode': "Static",  # Options: Decreasing (linear reduction with reduction time), Static
-
-       'clip_param': 0.2,
-
-       # GIFs and debugging
-       'show_previous_actions': 200,  # False if not, otherwise the number of actions to save.
-
-       # Predators - Repeated attacks in localised region. Note, can make some of these arbitrarily high so predator keeps attacking when fish enters a certain region for whole episode.
-       'max_predator_attacks': 5,
-       'further_attack_probability': 0.4,
-       'max_predator_attack_range': 2000,
-       'max_predator_reorient_distance': 400,
-       'predator_presence_duration_steps': 100,
-
-       # Fish Visual System
-       'uv_photoreceptor_rf_size': 0.0133 * 3,  # Radians (0.76 degrees) - Yoshimatsu et al. (2019)
-       'red_photoreceptor_rf_size': 0.0133 * 3,  # Kept same
-       'uv_photoreceptor_num': 55,  # Computed using density from 2400 in full 2D retina. Yoshimatsu et al. (2020)
-       'red_photoreceptor_num': 63,
-       "sz_rf_spacing": 0.04,  # 2.3 deg
-       "sz_size": 1.047,  # 60 deg
-       "sz_oversampling_factor": 2.5,
-       "sigmoid_steepness": 5.0,
-       'red_scaling_factor': 1,  # Pixel counts are multiplied by this
-       'uv_scaling_factor': 1,  # Pixel counts are multiplied by this
-       'red_2_scaling_factor': 0.2,  # Pixel counts are multiplied by this
-
        # Energy state
        'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
        'i_scaling_energy_cost': 1.5e-04,  # 0.0004 in previous best.
@@ -213,6 +208,7 @@ env = {
        'baseline_energy_use': 0.0002,
        'consumption_energy_gain': 1.0,
 
+       # Wall Interaction
        'wall_reflection': True,
 
        # Currents
@@ -221,19 +217,6 @@ env = {
        'current_width': 0.2,
        'current_strength_variance': 1,
        'unit_circle_diameter': 0.7,  # Circular current options
-
-       # Motor effect noise (for continuous)
-       'impulse_effect_noise_sd_x': 0.1,  # 0.98512558,
-       'impulse_effect_noise_sd_c': 0.5,  # 0.06,
-       'angle_effect_noise_sd_x': 0.6,  # 0.86155083,
-       'angle_effect_noise_sd_c': 0.02,  # 0.0010472,
-
-       # Capture restrictions
-       'fraction_capture_permitted': 1.0,  # Should be 1.0 if no temporal restriction imposed.
-       'capture_angle_deviation_allowance': np.pi,  # The possible deviation from 0 angular distance of collision
-       # between prey and fish, where pi would be allowing capture from any angle.
-
-
 }
 
 scaffold_name = "ppo_gamma"

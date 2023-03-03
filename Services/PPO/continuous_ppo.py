@@ -112,7 +112,7 @@ class ContinuousPPO:
                                                                      'max_impulse'],
                                                       max_angle_change=self.environment_params[
                                                                      'max_angle_change'],
-                                                      clip_param=self.environment_params[
+                                                      clip_param=self.learning_params[
                                                                      'clip_param'],
                                                       base_network_layers=self.learning_params[
                                                                      'base_network_layers'],
@@ -132,24 +132,24 @@ class ContinuousPPO:
     def update_sigmas(self):
         self.sigma_total_steps += self.simulation.num_steps
 
-        if self.environment_params["sigma_mode"] != "Decreasing":
-            self.impulse_sigma = np.array([self.environment_params["max_sigma_impulse"]])
-            self.angle_sigma = np.array([self.environment_params["max_sigma_angle"]])
+        if self.learning_params["sigma_mode"] != "Decreasing":
+            self.impulse_sigma = np.array([self.learning_params["max_sigma_impulse"]])
+            self.angle_sigma = np.array([self.learning_params["max_sigma_angle"]])
         else:
             # Linear scale
-            self.impulse_sigma = np.array([self.environment_params["max_sigma_impulse"] - (
-                    self.environment_params["max_sigma_impulse"] - self.environment_params["min_sigma_impulse"]) * (
-                                                   self.sigma_total_steps / self.environment_params[
+            self.impulse_sigma = np.array([self.learning_params["max_sigma_impulse"] - (
+                    self.learning_params["max_sigma_impulse"] - self.learning_params["min_sigma_impulse"]) * (
+                                                   self.sigma_total_steps / self.learning_params[
                                                "sigma_reduction_time"])])
-            self.angle_sigma = np.array([self.environment_params["max_sigma_angle"] - (
-                    self.environment_params["max_sigma_angle"] - self.environment_params["min_sigma_angle"]) * (
-                                                 self.sigma_total_steps / self.environment_params[
+            self.angle_sigma = np.array([self.learning_params["max_sigma_angle"] - (
+                    self.learning_params["max_sigma_angle"] - self.learning_params["min_sigma_angle"]) * (
+                                                 self.sigma_total_steps / self.learning_params[
                                              "sigma_reduction_time"])])
             # To prevent ever returning NaN
             if math.isnan(self.impulse_sigma[0]):
-                self.impulse_sigma = np.array([self.environment_params["min_sigma_impulse"]])
+                self.impulse_sigma = np.array([self.learning_params["min_sigma_impulse"]])
             if math.isnan(self.angle_sigma[0]):
-                self.angle_sigma = np.array([self.environment_params["min_sigma_angle"]])
+                self.angle_sigma = np.array([self.learning_params["min_sigma_angle"]])
 
     def _assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.

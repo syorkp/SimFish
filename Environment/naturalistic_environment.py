@@ -261,9 +261,8 @@ Sand grain: {self.sand_grain_associated_reward}
         self.fish.touched_sand_grain = False
 
         # Visualisation
-        if self.env_variables["show_previous_actions"]:
-            self.action_buffer.append(action)
-            self.fish_angle_buffer.append(self.fish.body.angle)
+        self.action_buffer.append(action)
+        self.fish_angle_buffer.append(self.fish.body.angle)
         self.position_buffer.append(np.array(self.fish.body.position))
 
         reward = self.fish.take_action(action)

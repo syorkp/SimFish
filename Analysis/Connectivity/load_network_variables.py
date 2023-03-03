@@ -72,7 +72,7 @@ def create_ppo_network(simulation, environment_params, learning_params):
                                                                      'max_impulse'],
                                                  max_angle_change=environment_params[
                                                                      'max_angle_change'],
-                                                 clip_param=environment_params[
+                                                 clip_param=learning_params[
                                                                      'clip_param'],
                                                  base_network_layers=learning_params[
                                                                      'base_network_layers'],

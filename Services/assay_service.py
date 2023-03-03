@@ -69,14 +69,14 @@ class AssayService(BaseService):
                                                                 using_gpu=using_gpu,
                                                                 run_version=run_version,
                                                                 split_event=split_event,
-                                                                modification=modification
+                                                                modification=modification,
                                                                 )
         else:
             self.simulation = DiscreteNaturalisticEnvironment(env_variables=self.environment_params,
                                                               using_gpu=using_gpu,
                                                               run_version=run_version,
                                                               split_event=split_event,
-                                                              modification=modification
+                                                              modification=modification,
                                                               )
 
         # Metadata
@@ -297,7 +297,7 @@ class AssayService(BaseService):
                                                                           reset_each_step=assay["reset"],
                                                                           reset_interval=assay["reset interval"],
                                                                           sediment=assay["sediment"],
-                                                                          assay_all_details=assay,
+                                                                          assay_all_details=assay
                                                                           )
             else:
                 self.simulation = ControlledStimulusEnvironment(env_variables=self.environment_params,
@@ -319,7 +319,7 @@ class AssayService(BaseService):
                                                                     relocate_fish=self.relocate_fish,
                                                                     run_version=self.run_version,
                                                                     split_event=self.split_event,
-                                                                    modification=self.modification
+                                                                    modification=self.modification,
                                                                     )
             else:
                 self.simulation = DiscreteNaturalisticEnvironment(env_variables=self.environment_params,
@@ -327,19 +327,19 @@ class AssayService(BaseService):
                                                                   relocate_fish=self.relocate_fish,
                                                                   run_version=self.run_version,
                                                                   split_event=self.split_event,
-                                                                  modification=self.modification
+                                                                  modification=self.modification,
                                                                   )
 
         else:
             if self.continuous_actions:
                 self.simulation = ContinuousNaturalisticEnvironment(env_variables=self.environment_params,
                                                                     using_gpu=self.using_gpu,
-                                                                    relocate_fish=self.relocate_fish
+                                                                    relocate_fish=self.relocate_fish,
                                                                     )
             else:
                 self.simulation = DiscreteNaturalisticEnvironment(env_variables=self.environment_params,
                                                                   using_gpu=self.using_gpu,
-                                                                  relocate_fish=self.relocate_fish
+                                                                  relocate_fish=self.relocate_fish,
                                                                   )
 
     def ablate_units(self, ablated_layers):
