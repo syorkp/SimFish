@@ -32,16 +32,10 @@ class Eye:
         self.max_visual_range = max_visual_range
         self.prey_diameter = self.env_variables['prey_radius'] * 2
 
-        if "sz_rf_spacing" in self.env_variables:
-            self.sz_rf_spacing = self.env_variables["sz_rf_spacing"]
-            self.sz_size = self.env_variables["sz_size"]
-            self.sz_oversampling_factor = self.env_variables["sz_oversampling_factor"]
-            self.sigmoid_steepness = self.env_variables["sigmoid_steepness"]
-        else:  # TODO: KEPT FOR IMMEDIATE COMPATIBILITY, REMOVE LATER
-            self.sz_rf_spacing = 0.04  # 2.3 deg.
-            self.sz_size = 1.047  # 60 deg.
-            self.sz_oversampling_factor = 2.5
-            self.sigmoid_steepness = 5.0
+        self.sz_rf_spacing = self.env_variables["sz_rf_spacing"]
+        self.sz_size = self.env_variables["sz_size"]
+        self.sz_oversampling_factor = self.env_variables["sz_oversampling_factor"]
+        self.sigmoid_steepness = self.env_variables["sigmoid_steepness"]
 
         self.periphery_rf_spacing = self.sz_rf_spacing * self.sz_oversampling_factor
         self.density_range = self.periphery_rf_spacing - self.sz_rf_spacing
@@ -64,7 +58,7 @@ class Eye:
             self.chosen_math_library.max(self.uv_photoreceptor_angles) + self.sz_rf_spacing / 2,
             self.sz_rf_spacing / 2)
 
-        self.observation_size = 100  # TODO: REmove  len(self.interpolated_observation)
+        self.observation_size = len(self.interpolated_observation)
 
         self.red_photoreceptor_angles = self.update_angles(verg_angle, retinal_field, is_left,
                                                            self.red_photoreceptor_num)
@@ -253,27 +247,16 @@ class Eye:
         #                                               "light_gain"] / 200)
         self.red_readings = self.add_noise_to_readings(red_readings)
 
-        # TODO: Bring back after test...
-        # interp_uv_readings = self.chosen_math_library.zeros((self.interpolated_observation.shape[0], 1))
-        # interp_red_readings = self.chosen_math_library.zeros((self.interpolated_observation.shape[0], 2))
-        # interp_uv_readings[:, 0] = self.chosen_math_library.interp(self.interpolated_observation,
-        #                                                            self.uv_photoreceptor_angles, self.uv_readings[:, 0])
-        # interp_red_readings[:, 0] = self.chosen_math_library.interp(self.interpolated_observation,
-        #                                                             self.red_photoreceptor_angles,
-        #                                                             self.red_readings[:, 0])
-        # interp_red_readings[:, 1] = self.chosen_math_library.interp(self.interpolated_observation,
-        #                                                             self.red_photoreceptor_angles,
-        #                                                             self.red_readings[:, 1])
-
-        # TODO: Remove after test
-        interp_uv_readings = np.zeros((100, 1))
-        interp_red_readings = np.zeros((100, 2))
-        interp_red_readings[:, 0:1] = np.array(resize(self.red_readings[:, 0].get(), (100, 1)))
-        interp_red_readings[:, 1:2] = np.array(resize(self.red_readings[:, 1].get(), (100, 1)))
-        interp_uv_readings[:, 0:1] = np.array(resize(self.uv_readings[:, 0].get(), (100, 1)))
-
-        interp_red_readings = self.chosen_math_library.array(interp_red_readings)
-        interp_uv_readings = self.chosen_math_library.array(interp_uv_readings)
+        interp_uv_readings = self.chosen_math_library.zeros((self.interpolated_observation.shape[0], 1))
+        interp_red_readings = self.chosen_math_library.zeros((self.interpolated_observation.shape[0], 2))
+        interp_uv_readings[:, 0] = self.chosen_math_library.interp(self.interpolated_observation,
+                                                                   self.uv_photoreceptor_angles, self.uv_readings[:, 0])
+        interp_red_readings[:, 0] = self.chosen_math_library.interp(self.interpolated_observation,
+                                                                    self.red_photoreceptor_angles,
+                                                                    self.red_readings[:, 0])
+        interp_red_readings[:, 1] = self.chosen_math_library.interp(self.interpolated_observation,
+                                                                    self.red_photoreceptor_angles,
+                                                                    self.red_readings[:, 1])
 
         # Scale for appropriate range
         interp_uv_readings *= self.env_variables["uv_scaling_factor"]
@@ -522,7 +505,7 @@ class Eye:
         # total_sum = masked_arena_pixels.sum(axis=1)
 
         masked_arena_pixels_uv = masked_arena_pixels_uv[full_set_uv[:, :, 1], full_set_uv[:, :,
-                                                                              0]]  # NOTE: Inverting x and y to match standard in program. TODO: THIS IS WHERE BREAKS.
+                                                                              0]]  # NOTE: Inverting x and y to match standard in program.
         total_sum_uv = masked_arena_pixels_uv.sum(axis=1)
 
         masked_arena_pixels_red = masked_arena_pixels_red[

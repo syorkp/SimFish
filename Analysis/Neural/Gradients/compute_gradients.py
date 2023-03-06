@@ -192,7 +192,7 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
                                           network.prev_actions: [efference],
                                           network.internal_state: [[in_light, energy_state, salt_input]],
                                           network.batch_size: 1,
-                                          network.trainLength: 1,
+                                          network.train_length: 1,
                                           network.rnn_state_in: (rnn_state[0], rnn_state[1])
                                           }
                                )
@@ -205,7 +205,7 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
                                      network.prev_actions: [efference],
                                      network.internal_state: [[in_light, energy_state, salt_input]],
                                      network.batch_size: 1,
-                                     network.trainLength: 1,
+                                     network.train_length: 1,
                                      network.rnn_state_in: (rnn_state[0], rnn_state[1])
                                      }
                           )
@@ -218,7 +218,7 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
                                       network.prev_actions: [efference],
                                       network.internal_state: [[in_light, energy_state, salt_input]],
                                       network.batch_size: 1,
-                                      network.trainLength: 1,
+                                      network.train_length: 1,
                                       network.rnn_state_in: (rnn_state[0], rnn_state[1])
                                       }
                            )
@@ -230,7 +230,7 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
                                       network.prev_actions: [efference],
                                       network.internal_state: [[in_light, energy_state, salt_input]],
                                       network.batch_size: 1,
-                                      network.trainLength: 1,
+                                      network.train_length: 1,
                                       network.rnn_state_in: (rnn_state[0], rnn_state[1])
                                       }
                            )
@@ -242,7 +242,7 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
                                       network.prev_actions: [efference],
                                       network.internal_state: [[in_light, energy_state, salt_input]],
                                       network.batch_size: 1,
-                                      network.trainLength: 1,
+                                      network.train_length: 1,
                                       network.rnn_state_in: (rnn_state[0], rnn_state[1])
                                       }
                            )
@@ -341,7 +341,7 @@ def compute_average_gradient_many_inputs(model_name, observation, energy_state, 
                                               network.prev_actions: [efference[n]],
                                               network.internal_state: [[in_light[n], energy_state[n], salt_input[n]]],
                                               network.batch_size: 1,
-                                              network.trainLength: 1,
+                                              network.train_length: 1,
                                               network.rnn_state_in: (rnn_state[n, 0], rnn_state[n, 1])
                                               }
                                    )
@@ -354,7 +354,7 @@ def compute_average_gradient_many_inputs(model_name, observation, energy_state, 
                                          network.prev_actions: [efference[n]],
                                          network.internal_state: [[in_light[n], energy_state[n], salt_input[n]]],
                                          network.batch_size: 1,
-                                         network.trainLength: 1,
+                                         network.train_length: 1,
                                          network.rnn_state_in: (rnn_state[n, 0], rnn_state[n, 1])
                                          }
                               )
@@ -367,7 +367,7 @@ def compute_average_gradient_many_inputs(model_name, observation, energy_state, 
                                           network.prev_actions: [efference[n]],
                                           network.internal_state: [[in_light[n], energy_state[n], salt_input[n]]],
                                           network.batch_size: 1,
-                                          network.trainLength: 1,
+                                          network.train_length: 1,
                                           network.rnn_state_in: (rnn_state[n, 0], rnn_state[n, 1])
                                           }
                                )
@@ -379,7 +379,7 @@ def compute_average_gradient_many_inputs(model_name, observation, energy_state, 
                                           network.prev_actions: [efference[n]],
                                           network.internal_state: [[in_light[n], energy_state[n], salt_input[n]]],
                                           network.batch_size: 1,
-                                          network.trainLength: 1,
+                                          network.train_length: 1,
                                           network.rnn_state_in: (rnn_state[n, 0], rnn_state[n, 1])
                                           }
                                )
@@ -391,7 +391,7 @@ def compute_average_gradient_many_inputs(model_name, observation, energy_state, 
                                           network.prev_actions: [efference[n]],
                                           network.internal_state: [[in_light[n], energy_state[n], salt_input[n]]],
                                           network.batch_size: 1,
-                                          network.trainLength: 1,
+                                          network.train_length: 1,
                                           network.rnn_state_in: (rnn_state[n, 0], rnn_state[n, 1])
                                           }
                                )

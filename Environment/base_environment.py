@@ -208,22 +208,6 @@ class BaseEnvironment:
         self.board.draw_walls(FOV)
         self.board.draw_sediment(FOV)
 
-    def draw_uv_shapes(self):
-        # TODO: remove items outside visual range
-        prey_pos = np.zeros((len(self.prey_bodies), 2), dtype=int)
-        prey_pos[:, 0] = np.round(
-            np.array([pr.position[0] for pr in self.prey_bodies]) - self.fish.body.position[0]).astype(int)
-        prey_pos[:, 1] = np.round(
-            np.array([pr.position[1] for pr in self.prey_bodies]) - self.fish.body.position[1]).astype(int)
-
-        sand_pos = np.zeros((len(self.sand_grain_bodies), 2), dtype=int)
-        sand_pos[:, 0] = np.round(
-            np.array([sg.position[0] for sg in self.sand_grain_bodies]) - self.fish.body.position[0]).astype(int)
-        sand_pos[:, 1] = np.round(
-            np.array([sg.position[1] for sg in self.sand_grain_bodies]) - self.fish.body.position[1]).astype(int)
-
-        self.board.draw_shapes_environmental(False, prey_pos, sand_pos)
-
     def reset(self):
         self.num_steps = 0
         self.fish.stress = 1

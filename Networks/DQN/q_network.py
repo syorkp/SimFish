@@ -16,6 +16,7 @@ class QNetwork:
         self.rnn_output_size = self.rnn_dim
         self.actions = tf.placeholder(shape=[None], dtype=tf.int32, name='actions')
         self.actions_one_hot = tf.one_hot(self.actions, num_actions, dtype=tf.float32)
+        self.learning_rate = tf.placeholder(shape=None, dtype=tf.float32)
 
         if full_efference_copy:
             self.prev_actions = tf.placeholder(shape=[None, 3], dtype=tf.float32, name='prev_actions')
@@ -40,9 +41,10 @@ class QNetwork:
 
         self.exp_keep = tf.placeholder(shape=None, dtype=tf.float32)
         self.Temp = tf.placeholder(shape=None, dtype=tf.float32)
-        self.trainLength = tf.placeholder(dtype=tf.int32)
+        self.train_length = tf.placeholder(dtype=tf.int32)
         self.batch_size = tf.placeholder(dtype=tf.int32, shape=[])
         self.rnn_state_in = rnn_cell.zero_state(self.batch_size, tf.float32)
+        self.rnn_state_in_ref = rnn_cell.zero_state(self.batch_size, tf.float32)
 
         #                ------------ Normal network ------------                   #
 
@@ -81,10 +83,10 @@ class QNetwork:
         self.rnn_in = tf.layers.dense(self.conv_with_states, self.rnn_dim, activation=tf.nn.relu,
                                       kernel_initializer=tf.orthogonal_initializer,
                                       trainable=True, name=my_scope + '_rnn_in')
-        self.convFlat = tf.reshape(self.rnn_in, [self.batch_size, self.trainLength, self.rnn_dim])
+        self.convFlat = tf.reshape(self.rnn_in, [self.batch_size, self.train_length, self.rnn_dim])
 
-        self.rnn, self.rnn_state = tf.nn.dynamic_rnn(inputs=self.convFlat, cell=rnn_cell, dtype=tf.float32,
-                                                     initial_state=self.rnn_state_in, scope=my_scope + '_rnn', )
+        self.rnn, self.rnn_state_shared = tf.nn.dynamic_rnn(inputs=self.convFlat, cell=rnn_cell, dtype=tf.float32,
+                                                            initial_state=self.rnn_state_in, scope=my_scope + '_rnn', )
         self.rnn = tf.reshape(self.rnn, shape=[-1, self.rnn_dim])
         self.rnn_output = self.rnn
 
@@ -92,7 +94,7 @@ class QNetwork:
             self.rnn_in2 = tf.layers.dense(self.rnn_output, self.rnn_dim, activation=tf.nn.relu,
                                            kernel_initializer=tf.orthogonal_initializer,
                                            trainable=True, name=my_scope + "_rnn_in_2")
-            self.rnnFlat = tf.reshape(self.rnn_in2, [self.batch_size, self.trainLength, self.rnn_dim])
+            self.rnnFlat = tf.reshape(self.rnn_in2, [self.batch_size, self.train_length, self.rnn_dim])
 
             self.rnn2, self.rnn_state2 = tf.nn.dynamic_rnn(inputs=self.rnnFlat, cell=rnn_cell, dtype=tf.float32,
                                                            initial_state=self.rnn_state_in, scope=my_scope + '_rnn2',
@@ -103,7 +105,7 @@ class QNetwork:
             self.streamA, self.streamV = tf.split(self.rnn2_output, 2, 1)
 
         else:
-            self.rnn_state2 = self.rnn_state
+            self.rnn_state2 = self.rnn_state_shared
             self.streamA, self.streamV = tf.split(self.rnn_output, 2, 1)
         self.AW = tf.Variable(tf.random_normal([self.rnn_output_size // 2, num_actions]), name=my_scope+"aw")
         self.VW = tf.Variable(tf.random_normal([self.rnn_output_size // 2, 1]), name=my_scope+"vw")
@@ -155,10 +157,10 @@ class QNetwork:
         self.rnn_in_ref = tf.layers.dense(self.conv_with_states_ref, self.rnn_dim, activation=tf.nn.relu,
                                           kernel_initializer=tf.orthogonal_initializer,
                                           trainable=True, name=my_scope + '_rnn_in', reuse=True)
-        self.convFlat_ref = tf.reshape(self.rnn_in_ref, [self.batch_size, self.trainLength, self.rnn_dim])
+        self.convFlat_ref = tf.reshape(self.rnn_in_ref, [self.batch_size, self.train_length, self.rnn_dim])
 
         self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell, dtype=tf.float32,
-                                                             initial_state=self.rnn_state_in, scope=my_scope + '_rnn')
+                                                             initial_state=self.rnn_state_in_ref, scope=my_scope + '_rnn')
         self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim])
         self.rnn_output_ref = self.rnn_ref
 
@@ -166,7 +168,7 @@ class QNetwork:
             self.rnn_in2_ref = tf.layers.dense(self.rnn_output_ref, self.rnn_dim, activation=tf.nn.relu,
                                                kernel_initializer=tf.orthogonal_initializer,
                                                trainable=True, name=my_scope + "_rnn_in_2", reuse=True)
-            self.rnnFlat_ref = tf.reshape(self.rnn_in2_ref, [self.batch_size, self.trainLength, self.rnn_dim])
+            self.rnnFlat_ref = tf.reshape(self.rnn_in2_ref, [self.batch_size, self.train_length, self.rnn_dim])
 
             self.rnn2_ref, self.rnn_state2_ref = tf.nn.dynamic_rnn(inputs=self.rnnFlat_ref, cell=rnn_cell,
                                                                    dtype=tf.float32,
@@ -231,8 +233,8 @@ class QNetwork:
 
         # In order to only propagate accurate gradients through the network, we will mask the first
         # half of the losses for each trace as per Lample & Chatlot 2016
-        self.maskA = tf.zeros([self.batch_size, self.trainLength // 2])
-        self.maskB = tf.ones([self.batch_size, self.trainLength // 2])
+        self.maskA = tf.zeros([self.batch_size, self.train_length // 2])
+        self.maskB = tf.ones([self.batch_size, self.train_length // 2])
         self.mask = tf.concat([self.maskA, self.maskB], 1)
         self.mask = tf.reshape(self.mask, [-1])
         self.loss = tf.reduce_mean(self.td_error * self.mask)

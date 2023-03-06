@@ -2,13 +2,14 @@ import numpy as np
 import copy
 import os
 import json
+import matplotlib.pyplot as plt
+from matplotlib.animation import FFMpegWriter
 
 import tensorflow.compat.v1 as tf
 
 from Networks.DQN.q_network_dynamic import QNetworkDynamic
 from Networks.DQN.graph_functions import update_target
-import matplotlib.pyplot as plt
-from matplotlib.animation import FFMpegWriter
+from Networks.DQN.q_network import QNetwork
 
 
 class BaseDQN:
@@ -44,6 +45,7 @@ class BaseDQN:
 
         self.init_rnn_state = None  # Reset RNN hidden state
         self.init_rnn_state_ref = None
+        self.use_static = True  # TODO: REMOVE TEST HERE
 
         # Add attributes only if don't exist yet (prevents errors thrown).
         if not hasattr(self, "get_positions"):
@@ -87,7 +89,11 @@ class BaseDQN:
                     (np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"]))
                     for shape in range(int(num_rnns)))
         else:
-            rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
+            if self.use_static:
+                rnn_state_shapes = [512]
+            else:
+                rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
+
             self.init_rnn_state = tuple(
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
             self.init_rnn_state_ref = tuple(
@@ -113,37 +119,56 @@ class BaseDQN:
             reuse_eyes = self.learning_params['reuse_eyes']
         else:
             reuse_eyes = False
-        self.main_QN = QNetworkDynamic(simulation=self.simulation,
-                                       my_scope='main',
-                                       internal_states=internal_states,
-                                       internal_state_names=internal_state_names,
-                                       num_actions=self.learning_params['num_actions'],
-                                       base_network_layers=self.learning_params[
-                                           'base_network_layers'],
-                                       modular_network_layers=self.learning_params[
-                                           'modular_network_layers'],
-                                       ops=self.learning_params['ops'],
-                                       connectivity=self.learning_params[
-                                           'connectivity'],
-                                       reflected=self.learning_params['reflected'],
-                                       reuse_eyes=reuse_eyes,
-                                       )
-        self.target_QN = QNetworkDynamic(simulation=self.simulation,
 
-                                         my_scope='target',
-                                         internal_states=internal_states,
-                                         internal_state_names=internal_state_names,
-                                         num_actions=self.learning_params['num_actions'],
-                                         base_network_layers=self.learning_params[
-                                             'base_network_layers'],
-                                         modular_network_layers=self.learning_params[
-                                             'modular_network_layers'],
-                                         ops=self.learning_params['ops'],
-                                         connectivity=self.learning_params[
-                                             'connectivity'],
-                                         reflected=self.learning_params['reflected'],
-                                         reuse_eyes=reuse_eyes,
-                                         )
+        if self.use_static:
+            self.main_QN = QNetwork(simulation=self.simulation,
+                                    rnn_dim=512,
+                                    rnn_cell=cell,
+                                    my_scope="main",
+                                    num_actions=10,
+                                    internal_states=internal_states,
+                                    learning_rate=self.learning_params["learning_rate"]
+                                    )
+            self.target_QN = QNetwork(simulation=self.simulation,
+                                      rnn_dim=512,
+                                      rnn_cell=cell_t,
+                                      my_scope="target",
+                                      num_actions=10,
+                                      internal_states=internal_states,
+                                      learning_rate=self.learning_params["learning_rate"]
+                                      )
+        else:
+            self.main_QN = QNetworkDynamic(simulation=self.simulation,
+                                           my_scope='main',
+                                           internal_states=internal_states,
+                                           internal_state_names=internal_state_names,
+                                           num_actions=self.learning_params['num_actions'],
+                                           base_network_layers=self.learning_params[
+                                               'base_network_layers'],
+                                           modular_network_layers=self.learning_params[
+                                               'modular_network_layers'],
+                                           ops=self.learning_params['ops'],
+                                           connectivity=self.learning_params[
+                                               'connectivity'],
+                                           reflected=self.learning_params['reflected'],
+                                           reuse_eyes=reuse_eyes,
+                                           )
+            self.target_QN = QNetworkDynamic(simulation=self.simulation,
+
+                                             my_scope='target',
+                                             internal_states=internal_states,
+                                             internal_state_names=internal_state_names,
+                                             num_actions=self.learning_params['num_actions'],
+                                             base_network_layers=self.learning_params[
+                                                 'base_network_layers'],
+                                             modular_network_layers=self.learning_params[
+                                                 'modular_network_layers'],
+                                             ops=self.learning_params['ops'],
+                                             connectivity=self.learning_params[
+                                                 'connectivity'],
+                                             reflected=self.learning_params['reflected'],
+                                             reuse_eyes=reuse_eyes,
+                                             )
 
     def episode_loop(self):
         """
@@ -289,7 +314,8 @@ class BaseDQN:
                                                      prey_age=prey_ages,
                                                      prey_gait=prey_gait
                                                      )
-            efference_copy = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+            efference_copy = [chosen_a, self.simulation.fish.prev_action_impulse,
+                              self.simulation.fish.prev_action_angle]
 
             # Update buffer
             self.buffer.add_training(observation=o1,
@@ -406,7 +432,7 @@ class BaseDQN:
 
         Q2 = self.sess.run(self.target_QN.Q_out, feed_dict={
             self.target_QN.observation: np.vstack(train_batch[:, 4]),
-            self.target_QN.prev_actions: np.vstack(train_batch[:, 1]), # Previous actions (t+1?)
+            self.target_QN.prev_actions: np.vstack(train_batch[:, 1]),  # Previous actions (t+1?)
             self.target_QN.train_length: self.learning_params['trace_length'],
             self.target_QN.internal_state: np.vstack(train_batch[:, 6]),
             self.target_QN.rnn_state_in: state_train,
@@ -419,7 +445,8 @@ class BaseDQN:
         end_multiplier = -(train_batch[:, 5] - 1)
 
         double_Q = Q2[range(self.learning_params['batch_size'] * self.learning_params['trace_length']), Q1]
-        target_Q = train_batch[:, 2] + (self.learning_params['y'] * double_Q * end_multiplier)  # target_Q = r + y*Q(s',argmax(Q(s',a)))        # Update the network with our target values.
+        target_Q = train_batch[:, 2] + (self.learning_params[
+                                            'y'] * double_Q * end_multiplier)  # target_Q = r + y*Q(s',argmax(Q(s',a)))        # Update the network with our target values.
         self.sess.run(self.main_QN.updateModel,
                       feed_dict={self.main_QN.observation: np.vstack(train_batch[:, 0]),  # Observations (t)
                                  self.main_QN.targetQ: target_Q,
