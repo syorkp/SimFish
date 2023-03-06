@@ -1,14 +1,26 @@
-from Buffers.PPO.base_ppo_buffer import BasePPOBuffer
 import numpy as np
+import h5py
+import scipy.signal as sig
+
+from Buffers.base_buffer import BaseBuffer
 
 
-class PPOBufferContinuous(BasePPOBuffer):
+class PPOBuffer(BaseBuffer):
     """Buffer for full episode for PPO training, and logging."""
 
     def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False):
-        super().__init__(gamma, lmbda, batch_size, train_length, assay, debug)
+        super().__init__()
+
+        self.gamma = gamma
+        self.lmbda = lmbda
+        self.batch_size = batch_size
+        self.trace_length = train_length
+        self.pointer = 0
+        self.debug = debug
+        self.assay = assay
 
         # Buffer for training
+        self.critic_loss_buffer = []
         self.log_action_probability_buffer = []
 
         # Buffer purely for logging
@@ -30,12 +42,14 @@ class PPOBufferContinuous(BasePPOBuffer):
         self.target_output_buffer = []
 
         self.action_consequences_buffer = []
-
-        self.efference_copy_buffer = []
 
     def reset(self):
-        super().reset()
+        self._reset()
+
+        self.pointer = 0
+
         # Buffer for training
+        self.critic_loss_buffer = []
         self.log_action_probability_buffer = []
 
         # Buffer purely for logging
@@ -57,19 +71,95 @@ class PPOBufferContinuous(BasePPOBuffer):
         self.target_output_buffer = []
 
         self.action_consequences_buffer = []
-        self.efference_copy_buffer = []
 
-    def add_training(self, observation, internal_state, action, reward, value, l_p_action, rnn_state,
-                     rnn_state_ref, prediction_error=None, target_output=None):
-        self.observation_buffer.append(observation)
-        self.internal_state_buffer.append(internal_state)
-        self.reward_buffer.append(reward)
+    def tidy(self):
+        self.observation_buffer = np.array(self.observation_buffer)
+
+        self.action_buffer = np.array(self.action_buffer)
+        self.reward_buffer = np.array(self.reward_buffer)
+        self.value_buffer = np.array(self.value_buffer).flatten()
+        self.internal_state_buffer = np.array(self.internal_state_buffer)
+
+        self.rnn_state_buffer = np.array(self.rnn_state_buffer)
+        self.rnn_state_ref_buffer = np.array(self.rnn_state_ref_buffer)
+        self.log_action_probability_buffer = np.array(self.log_action_probability_buffer)
+
+    def add_training(self, observation, internal_state, action, reward, value, l_p_action, rnn_state, rnn_state_ref,
+                     prediction_error=None, target_output=None):
+        self._add_training(observation, internal_state, reward, rnn_state, rnn_state_ref)
+
         self.value_buffer.append(value)
-
-        self.rnn_state_buffer.append(rnn_state)
-        self.rnn_state_ref_buffer.append(rnn_state_ref)
         self.log_action_probability_buffer.append(l_p_action)
         self.action_buffer.append(action)
+
+    def save_environmental_positions(self, fish_position, prey_consumed, predator_present, prey_positions,
+                                     predator_position, sand_grain_positions, fish_angle,
+                                     salt_health, efference_copy,
+                                     prey_orientation=None, predator_orientation=None, prey_age=None, prey_gait=None):
+        self._save_environmental_positions(fish_position, prey_consumed, predator_present, prey_positions,
+                                           predator_position, sand_grain_positions, fish_angle, salt_health,
+                                           efference_copy,
+                                           prey_orientation, predator_orientation, prey_age, prey_gait)
+
+    @staticmethod
+    def pad_slice(buffer, desired_length, identity=None):
+        """Zero pads a trace so all are same length.
+        NOTE: Fails in case of previous action which doesnt need to be padded.
+        """
+        shape_of_data = buffer.shape[1:]
+        extra_pads = desired_length - buffer.shape[0]
+        padding_shape = (extra_pads,) + shape_of_data
+
+        if extra_pads < 0:
+            # If too long, cut off final.
+            return buffer[:extra_pads]
+        elif extra_pads == 0:
+            return buffer
+        else:
+            padding = np.zeros(padding_shape, dtype=float)
+            padding = padding + 0.01
+            buffer = np.concatenate((buffer, padding), axis=0)
+            return buffer
+
+    def calculate_advantages_and_returns(self, normalise_advantage=True):
+        value_buffer = np.array([v[0, 0] for v in self.value_buffer])
+        advantages = np.zeros_like(self.reward_buffer)
+        last_gae_lam = 0
+        for step in reversed(range(len(self.observation_buffer))):
+            if step == len(self.observation_buffer) - 1:
+                nextnonterminal = 1.0  # - self.dones
+                nextvalues = 0
+            else:
+                nextnonterminal = 1.0  # - mb_dones[step + 1]
+                nextvalues = self.value_buffer[step + 1]
+            delta = self.reward_buffer[step] + self.gamma * nextvalues * nextnonterminal - self.value_buffer[step]
+            advantages[step] = last_gae_lam = delta + self.gamma * self.lmbda * nextnonterminal * last_gae_lam
+        returns = advantages + value_buffer
+        self.advantage_buffer = advantages
+        self.return_buffer = returns
+
+        if self.debug:
+            self.check_buffers()
+
+    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, sediment, internal_state_order=None,
+                        salt_location=None):
+        hdf5_file, assay_group = self._save_assay_data(data_save_location, assay_configuration_id, assay_id, sediment,
+                                                       internal_state_order, salt_location)
+
+        self.create_data_group("impulse", np.array(self.action_buffer)[:, 0], assay_group)
+        self.create_data_group("angle", np.array(self.action_buffer)[:, 1], assay_group)
+
+        print(f"{assay_id} Data Saved")
+        hdf5_file.close()
+
+    def compute_rewards_to_go(self):
+        # NOT USED
+        rewards_to_go = []
+        current_discounted_reward = 0
+        for i, reward in enumerate(reversed(self.reward_buffer)):
+            current_discounted_reward = reward + current_discounted_reward * self.gamma
+            rewards_to_go.insert(0, current_discounted_reward)
+        return rewards_to_go
 
     def add_logging(self, mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref):
         self.mu_i_buffer.append(mu_i)
@@ -86,10 +176,6 @@ class PPOBufferContinuous(BasePPOBuffer):
         self.angle_loss_buffer.append(angle_loss)
         self.critic_loss_buffer.append(critic_loss)
         self.entropy_loss_buffer.append(entropy_loss)
-
-    def tidy(self):
-        super().tidy()
-        self.log_action_probability_buffer = np.array(self.log_action_probability_buffer)
 
     def get_episode_buffer(self):
         """Returns the episodes buffer, formatted as: X(Variable).TraceLength.DataDim, with zero padding for incomplete
@@ -133,12 +219,15 @@ class PPOBufferContinuous(BasePPOBuffer):
         """Gets a trace worth of data (or batch, as used previously)"""
         if final_batch:
             observation_slice = self.pad_slice(self.observation_buffer[self.pointer:-1, :], self.trace_length, "o")
-            internal_state_slice = self.pad_slice(self.internal_state_buffer[self.pointer:-1, :], self.trace_length, "i")
+            internal_state_slice = self.pad_slice(self.internal_state_buffer[self.pointer:-1, :], self.trace_length,
+                                                  "i")
             action_slice = self.pad_slice(self.action_buffer[self.pointer + 1:-1, :2], self.trace_length, "a")
             previous_action_slice = self.pad_slice(self.action_buffer[self.pointer:-2, :], self.trace_length, "p")
             value_slice = self.pad_slice(self.value_buffer[self.pointer:-2], self.trace_length, "v")
-            log_action_probability_slice = self.pad_slice(self.log_action_probability_buffer[self.pointer:-1], self.trace_length, "la")
-            advantage_slice = self.pad_slice(self.advantage_buffer[self.pointer:self.pointer + 50], self.trace_length, "ad")
+            log_action_probability_slice = self.pad_slice(self.log_action_probability_buffer[self.pointer:-1],
+                                                          self.trace_length, "la")
+            advantage_slice = self.pad_slice(self.advantage_buffer[self.pointer:self.pointer + 50], self.trace_length,
+                                             "ad")
             return_slice = self.pad_slice(self.return_buffer[self.pointer:self.pointer + 50], self.trace_length, "re")
 
         else:
@@ -170,15 +259,6 @@ class PPOBufferContinuous(BasePPOBuffer):
         return observation_slice, internal_state_slice, action_slice, previous_action_slice, \
                log_action_probability_slice, advantage_slice, return_slice, value_slice
 
-    def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, sediment, internal_state_order=None, salt_location=None):
-        hdf5_file, assay_group = BasePPOBuffer.save_assay_data(self, assay_id=assay_id, data_save_location=data_save_location,
-                                                               assay_configuration_id=assay_configuration_id, sediment=sediment,
-                                                               internal_state_order=internal_state_order,
-                                                               salt_location=salt_location)
-
-        print(f"{assay_id} Data Saved")
-        hdf5_file.close()
-
     def check_buffers(self):
         # Check for NaN
         print("Checking Buffers")
@@ -204,7 +284,7 @@ class PPOBufferContinuous(BasePPOBuffer):
 
         rnn_state_batch = np.reshape(np.array(rnn_state_batch), (n_rnns, batch_size, 2, n_units))
         rnn_state_batch_ref = np.reshape(np.array(rnn_state_batch_ref),
-                                               (n_rnns, batch_size, 2, n_units))
+                                         (n_rnns, batch_size, 2, n_units))
 
         rnn_state_batch = tuple(
             (np.array(rnn_state_batch[i, :, 0, :]), np.array(rnn_state_batch[i, :, 1, :])) for i in
@@ -214,44 +294,3 @@ class PPOBufferContinuous(BasePPOBuffer):
             in range(n_rnns))
 
         return rnn_state_batch, rnn_state_batch_ref
-
-    def update_rewards_rnd(self):
-        # reward_std = np.std(self.return_buffer)
-        # normalised_prediction_error = np.array(self.prediction_error_buffer) * reward_std
-        # normalised_prediction_error = np.sum(normalised_prediction_error, axis=2)
-        # normalised_prediction_error = normalised_prediction_error.reshape(self.return_buffer.shape[0])
-        normalised_prediction_error = np.sum(np.array(self.prediction_error_buffer), axis=2) * 100
-        normalised_prediction_error = normalised_prediction_error.reshape(self.return_buffer.shape[0])
-        self.return_buffer += normalised_prediction_error
-
-    def calculate_advantages_and_returns(self, normalise_advantage=True):
-        # Advantages = returns-values. Then scaled
-        # mb_advs[step] = last_gae_lam = delta + self.gamma * self.lam * nextnonterminal * last_gae_lam
-        # mb_returns = mb_advs + mb_values
-
-        # delta = self.reward_buffer[:-1] + self.gamma * self.value_buffer[1:] - self.value_buffer[:-1]
-        # advantage = self.discount_cumsum(delta, self.gamma * self.lmbda)
-        # if normalise_advantage:
-        #     advantage = (advantage - advantage.mean()) / (advantage.std() + 1e-10)
-        # returns = self.discount_cumsum(self.reward_buffer, self.gamma)[:-1]
-        # self.advantage_buffer = advantage
-        # self.return_buffer = returns
-        value_buffer = np.array([v[0, 0] for v in self.value_buffer])
-        last_values = self.value_buffer
-        advantages = np.zeros_like(self.reward_buffer)
-        last_gae_lam = 0
-        for step in reversed(range(len(self.observation_buffer))):
-            if step == len(self.observation_buffer) - 1:
-                nextnonterminal = 1.0  # - self.dones
-                nextvalues = 0
-            else:
-                nextnonterminal = 1.0  # - mb_dones[step + 1]
-                nextvalues = self.value_buffer[step + 1]
-            delta = self.reward_buffer[step] + self.gamma * nextvalues * nextnonterminal - self.value_buffer[step]
-            advantages[step] = last_gae_lam = delta + self.gamma * self.lmbda * nextnonterminal * last_gae_lam
-        returns = advantages + value_buffer
-        self.advantage_buffer = advantages
-        self.return_buffer = returns
-
-        if self.debug:
-            self.check_buffers()

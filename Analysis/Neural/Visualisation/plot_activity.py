@@ -104,7 +104,7 @@ def plot_activity(rnn_data, stimulus_data, start_plot=None):
 
 
 def plot_activity_visual_presentation(model_name, assay_config, assay_id, units, start_plot=None):
-    data = load_data("dqn_scaffold_14-1", "Prey-Full-Response-Vector", "Prey-Static-15")
+    data = load_data(model_name, assay_config, assay_id)
     rnn_data = [[state[0, 0, j] for i, state in enumerate(data["rnn_state"])] for j in range(512)]
     chosen_units = [unit for i, unit in enumerate(unit_activity1a) if i in units]
     stimulus_data = load_stimulus_data("dqn_scaffold_14-1", "Prey-Full-Response-Vector", "Prey-Static-15")
@@ -149,5 +149,5 @@ def plot_activity_visual_presentation(model_name, assay_config, assay_id, units,
 
 if __name__ == "__main__":
     # Various visual neurons
-    plot_activity_visual_presentation("dqn_scaffold_14-1", "Prey-Full-Response-Vector", "Prey-Static-15", [188, 192, 194, 234, 222], 600)
+    plot_activity_visual_presentation("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic-1", [0, 1, 2], 600)
 

@@ -6,7 +6,7 @@ import tensorflow.compat.v1 as tf
 
 from Analysis.Indexing.data_index_service import DataIndexServiceContinuous
 
-from Buffers.PPO.ppo_buffer_continuous import PPOBufferContinuous
+from Buffers.PPO.ppo_buffer import PPOBuffer
 
 from Configurations.Templates.assay_config import naturalistic_assay_config
 from Configurations.Utilities.turn_model_configs_into_assay_configs import transfer_config
@@ -85,22 +85,22 @@ class PPOTrainingService(TrainingService, ContinuousPPO):
 
         self.sb_emulator = True
 
-        self.buffer = PPOBufferContinuous(gamma=self.learning_params["gamma"],
-                                          lmbda=self.learning_params["lambda"],
-                                          batch_size=self.learning_params["batch_size"],
-                                          train_length=self.learning_params["trace_length"],
-                                          assay=False,
-                                          debug=False,
-                                          )
+        self.buffer = PPOBuffer(gamma=self.learning_params["gamma"],
+                                lmbda=self.learning_params["lambda"],
+                                batch_size=self.learning_params["batch_size"],
+                                train_length=self.learning_params["trace_length"],
+                                assay=False,
+                                debug=False,
+                                )
 
         # Save data from episode for video creation.
-        self.episode_buffer = PPOBufferContinuous(gamma=self.learning_params["gamma"],
-                                                  lmbda=self.learning_params["lambda"],
-                                                  batch_size=self.learning_params["batch_size"],
-                                                  train_length=self.learning_params["trace_length"],
-                                                  assay=True,
-                                                  debug=False,
-                                                  )
+        self.episode_buffer = PPOBuffer(gamma=self.learning_params["gamma"],
+                                        lmbda=self.learning_params["lambda"],
+                                        batch_size=self.learning_params["batch_size"],
+                                        train_length=self.learning_params["trace_length"],
+                                        assay=True,
+                                        debug=False,
+                                        )
 
         if self.learning_params["epsilon_greedy"]:
             self.epsilon_greedy = True

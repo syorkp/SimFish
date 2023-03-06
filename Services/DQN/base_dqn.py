@@ -70,6 +70,11 @@ class BaseDQN:
             self.package_output_data = None
         if not hasattr(self, "using_gpu"):
             self.using_gpu = None
+        if not hasattr(self, "model_location"):
+            self.model_location = None
+        if not hasattr(self, "episode_number"):
+            self.episode_number = None
+
         if not self.assay:
             self.full_efference_copy = True
 
@@ -329,7 +334,6 @@ class BaseDQN:
         self.total_steps += 1
         return o, efference_copy, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, FOV
 
-    # TODO: merge this with the above function
     def assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         chosen_a, updated_rnn_state, updated_rnn_state_ref, network_layers = \
             self.sess.run(
