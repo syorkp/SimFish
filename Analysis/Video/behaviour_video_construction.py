@@ -295,7 +295,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
                 comment='Movie support!')
     writer = FFMpegWriter(fps=15, metadata=metadata, codec='mpeg4', bitrate=1000000)
 
-    board = DrawingBoard(env_variables["arena_width"], env_variables["height"], data, include_sediment)
+    board = DrawingBoard(env_variables["arena_width"], env_variables["arena_height"], data, include_sediment)
     if show_energy_state:
         energy_levels = data["energy_state"]
     fish_positions = data["fish_position"]
@@ -370,7 +370,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             rrs, ccs = board.multi_circles(px, py, env_variables["prey_radius_visualisation"])
 
             rrs = np.clip(rrs, 0, env_variables["arena_width"]-1)
-            ccs = np.clip(ccs, 0, env_variables["height"]-1)
+            ccs = np.clip(ccs, 0, env_variables["arena_height"]-1)
 
             board.db[rrs, ccs] = (0, 0, 1)
 
@@ -381,7 +381,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
                 rrs, ccs = board.multi_circles(px, py, env_variables["prey_radius_visualisation"])
 
                 rrs = np.clip(rrs, 0, env_variables["arena_width"] - 1)
-                ccs = np.clip(ccs, 0, env_variables["height"] - 1)
+                ccs = np.clip(ccs, 0, env_variables["arena_height"] - 1)
 
                 board.db[rrs, ccs] = (0, 1, 1)
 
@@ -405,7 +405,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
                 dist_x1 = centre_x
                 dist_x2 = env_variables["arena_width"] - centre_x
                 dist_y1 = centre_y
-                dist_y2 = env_variables["height"] - centre_y
+                dist_y2 = env_variables["arena_height"] - centre_y
                 # print(dist_x1, dist_x2, dist_y1, dist_y2)
                 if dist_x1 < showed_region_quad:
                     centre_x += showed_region_quad - dist_x1
