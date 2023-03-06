@@ -27,10 +27,7 @@ class BaseEnvironment:
 
         max_photoreceptor_rf_size = max([self.env_variables['uv_photoreceptor_rf_size'],
                                          self.env_variables['red_photoreceptor_rf_size']])
-        if "light_gradient" in self.env_variables:
-            light_gradient = self.env_variables['light_gradient']
-        else:
-            light_gradient = 0
+        light_gradient = self.env_variables['light_gradient']
 
         # Set max visual distance to the point at which 99.9% of photons have been lost to absorption mask.
         max_visual_distance = np.absolute(np.log(0.001) / self.env_variables["light_decay_rate"])
@@ -166,6 +163,52 @@ class BaseEnvironment:
 
         self.switch_step = None
 
+    def set_collisions(self):
+        # Collision Types:
+        # 1: Edge
+        # 2: Prey
+        # 3: Fish mouth
+        # 4: Sand grains
+        # 5: Predator
+        # 6: Fish body
+        # 7: Prey cloud wall
+
+        self.col = self.space.add_collision_handler(2, 3)
+        self.col.begin = self.touch_prey
+
+        self.pred_col = self.space.add_collision_handler(5, 3)
+        self.pred_col.begin = self.touch_predator
+        self.pred_col2 = self.space.add_collision_handler(5, 6)
+        self.pred_col2.begin = self.touch_predator
+
+        self.edge_col = self.space.add_collision_handler(1, 3)
+        self.edge_col.begin = self.touch_wall
+
+        self.edge_pred_col = self.space.add_collision_handler(1, 5)
+        self.edge_pred_col.begin = self.remove_predator
+
+        self.grain_fish_col = self.space.add_collision_handler(3, 4)
+        self.grain_fish_col.begin = self.touch_grain
+
+        # to prevent predators from knocking out prey  or static grains
+        self.grain_pred_col = self.space.add_collision_handler(4, 5)
+        self.grain_pred_col.begin = self.no_collision
+        self.prey_pred_col = self.space.add_collision_handler(2, 5)
+        self.prey_pred_col.begin = self.no_collision
+
+        # To prevent the differential wall being hit by fish
+        self.fish_prey_wall = self.space.add_collision_handler(3, 7)
+        self.fish_prey_wall.begin = self.no_collision
+        self.fish_prey_wall2 = self.space.add_collision_handler(6, 7)
+        self.fish_prey_wall2.begin = self.no_collision
+        self.pred_prey_wall2 = self.space.add_collision_handler(5, 7)
+        self.pred_prey_wall2.begin = self.no_collision
+
+    def draw_walls_and_sediment(self):
+        self.board.erase(bkg=self.env_variables['background_brightness'])
+        self.board.draw_walls()
+        self.board.draw_sediment()
+
     def clear_environmental_features(self):
         """Removes all prey, predators, and sand grains from simulation"""
         for i, shp in enumerate(self.prey_shapes):
@@ -201,12 +244,6 @@ class BaseEnvironment:
 
         self.sand_grain_shapes = []
         self.sand_grain_bodies = []
-
-    def draw_walls_and_sediment(self):
-        self.board.erase(bkg=self.env_variables['background_brightness'])
-        FOV = self.board.get_field_of_view(self.fish.body.position)
-        self.board.draw_walls(FOV)
-        self.board.draw_sediment(FOV)
 
     def reset(self):
         self.num_steps = 0
@@ -526,8 +563,7 @@ class BaseEnvironment:
             self.prey_within_range = self.check_proximity_all_prey(self.env_variables["prey_sensing_distance"])
 
         for i, prey_body in enumerate(self.prey_bodies):
-            if self.prey_within_range[
-                i]:  # self.check_proximity(prey_body.position, self.env_variables['prey_sensing_distance']):
+            if self.prey_within_range[i]:
                 # Motion from fluid dynamics
                 if self.env_variables["prey_fluid_displacement"]:
                     distance_vector = prey_body.position - self.fish.body.position
@@ -771,14 +807,6 @@ class BaseEnvironment:
         else:
             return False
 
-    def predator_base_distance_to_fish(self):
-        return ((self.predator_location[0] - self.fish.body.position[0]) ** 2 +
-                (self.predator_location[1] - self.fish.body.position[1]) ** 2) ** 0.5
-
-    def predator_distance_to_fish(self):
-        return ((self.predator_body.position[0] - self.fish.body.position[0]) ** 2 +
-                (self.predator_body.position[1] - self.fish.body.position[1]) ** 2) ** 0.5
-
     def remove_predator(self, arbiter=None, space=None, data=None):
         if self.predator_body is not None:
             self.space.remove(self.predator_shape, self.predator_shape.body)
@@ -833,8 +861,8 @@ class BaseEnvironment:
             self.sand_grains_bumped += 1
 
     def get_last_action_magnitude(self):
-        return self.fish.prev_action_impulse * self.env_variables[
-            'displacement_scaling_factor']  # Scaled down both for mass effects and to make it possible for the prey to be caught.
+        return self.fish.prev_action_impulse * self.env_variables['displacement_scaling_factor']
+        # Scaled down both for mass effects and to make it possible for the prey to be caught.
 
     def displace_sand_grains(self):
         for i, body in enumerate(self.sand_grain_bodies):

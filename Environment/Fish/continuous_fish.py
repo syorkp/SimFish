@@ -4,12 +4,11 @@ from Environment.Fish.fish import Fish
 
 class ContinuousFish(Fish):
 
-    def __init__(self, board, env_variables, dark_col, using_gpu, fish_mass=None):
+    def __init__(self, board, env_variables, dark_col, using_gpu):
         super().__init__(board=board,
                          env_variables=env_variables,
                          dark_col=dark_col,
                          using_gpu=using_gpu,
-                         fish_mass=fish_mass
                          )
 
         self.making_capture = True

@@ -1,19 +1,14 @@
 import numpy as np
 import math
-import matplotlib.pyplot as plt
-from time import time
-
-import skimage.draw as draw
-from skimage import io
 
 from Environment.Board.field_of_view import FieldOfView
 
 
 class DrawingBoard:
 
-    def __init__(self, arena_width, arena_height, uv_light_decay_rate, red_light_decay_rate, photoreceptor_rf_size, using_gpu,
-                 prey_radius=4, predator_radius=100, visible_scatter=0.3, dark_light_ratio=0.0, dark_gain=0.01,
-                 light_gain=1.0, light_gradient=0, max_visual_distance=1500):
+    def __init__(self, arena_width, arena_height, uv_light_decay_rate, red_light_decay_rate, photoreceptor_rf_size,
+                 using_gpu, prey_radius, predator_radius, visible_scatter, dark_light_ratio, dark_gain, light_gain,
+                 light_gradient, max_visual_distance):
 
         self.using_gpu = using_gpu
 
@@ -34,6 +29,8 @@ class DrawingBoard:
         max_visual_distance = np.round(max_visual_distance).astype(np.int32)
         self.local_dim = max_visual_distance * 2 + 1
         self.max_visual_distance = max_visual_distance
+        self.fish_position_FOV = self.chosen_math_library.array([self.max_visual_distance, self.max_visual_distance])
+
         self.base_db = self.get_base_arena()
         self.base_db_illuminated = self.get_base_arena(visible_scatter)
         self.erase(visible_scatter)
@@ -41,7 +38,7 @@ class DrawingBoard:
         self.global_sediment_grating = self.get_sediment()
         self.global_luminance_mask = self.get_luminance_mask(dark_light_ratio, dark_gain)
         self.local_scatter, self.local_scatter_base = self.get_local_scatter()
-        
+
         self.prey_diameter = prey_radius * 2
         self.prey_radius = prey_radius
         self.predator_size = predator_radius * 2
@@ -80,7 +77,8 @@ class DrawingBoard:
         turbPower = 1.0
         turbSize = 162.0
 
-        noise = self.chosen_math_library.absolute(self.chosen_math_library.random.randn(self.arena_width, self.arena_height))
+        noise = self.chosen_math_library.absolute(
+            self.chosen_math_library.random.randn(self.arena_width, self.arena_height))
 
         # TODO: Stop repeating the following:
         xp, yp = self.chosen_math_library.arange(self.arena_width), self.chosen_math_library.arange(self.arena_height)
@@ -196,8 +194,8 @@ class DrawingBoard:
         """Must use both numpy and cupy as otherwise GPU runs out of memory. positions are board-centric"""
         # Reset empty mask
         self.empty_mask[:] = 1.0
+
         # fish position within FOV (central)
-        fish_position_FOV = self.chosen_math_library.array([self.max_visual_distance, self.max_visual_distance])
 
         if predator_locations.size == 0 and (not prey_occlusion or prey_locations.size == 0):
             return self.empty_mask
@@ -228,7 +226,7 @@ class DrawingBoard:
 
             # Number of lines to project through prey or predators, determined by arena_width, arena_height, and size of features. (1)
             n_lines_prey = self.compute_n(self.chosen_math_library.max(prey_half_angular_size) * 2,
-                                          len(prey_locations_FOV), p=prey_half_angular_size)
+                                          len(prey_locations_FOV))
 
             # Create array of angles between prey extremities to form lines. (Prey_num * n_lines_prey)
             interpolated_line_angles = self.chosen_math_library.linspace(prey_extremities[:, 0], prey_extremities[:, 1],
@@ -245,7 +243,7 @@ class DrawingBoard:
 
             # Find which prey are in left half of visual field (as angle convention requires adjustment)
             # (Prey_num * n_lines_prey)
-            prey_on_left = (expanded_prey_locations[:, 0] < fish_position_FOV[0]) * self.chosen_math_library.pi
+            prey_on_left = (expanded_prey_locations[:, 0] < self.fish_position_FOV[0]) * self.chosen_math_library.pi
 
             # Assign to array to include predators if present
             distance_along = prey_distance_along
@@ -295,7 +293,7 @@ class DrawingBoard:
                 distance_along = predator_distance_along
 
             expanded_predator_locations = self.chosen_math_library.tile(predator_locations_FOV, (n_lines_predator, 1))
-            predators_on_left = (expanded_predator_locations[:, 0] < fish_position_FOV[0]) * self.chosen_math_library.pi
+            predators_on_left = (expanded_predator_locations[:, 0] < self.fish_position_FOV[0]) * self.chosen_math_library.pi
 
             if prey_occlusion:
                 features_on_left = self.chosen_math_library.concatenate((features_on_left, predators_on_left), 0)
@@ -317,8 +315,8 @@ class DrawingBoard:
         m = self.chosen_math_library.tan(interpolated_line_angles)
 
         # Compute c (N_obj*n)
-        c = -m * fish_position_FOV[0]
-        c = c + fish_position_FOV[1]
+        c = -m * self.fish_position_FOV[0]
+        c = c + self.fish_position_FOV[1]
 
         # Compute components of intersections (N_obj*n x 4)
         c_exp = self.chosen_math_library.expand_dims(c, 1)
@@ -361,7 +359,7 @@ class DrawingBoard:
         valid_intersection_coordinates = intersection_coordinates[valid_points == 1]
 
         # Compute angles from the valid intersections (to find those matching original angles) (N_obj x 2)
-        possible_vectors = valid_intersection_coordinates - fish_position_FOV
+        possible_vectors = valid_intersection_coordinates - self.fish_position_FOV
         computed_angles = self.chosen_math_library.arctan2(possible_vectors[:, 1], possible_vectors[:, 0])
 
         # Make sure angles are in correct range.
@@ -388,7 +386,7 @@ class DrawingBoard:
         selected_intersections = valid_intersection_coordinates[same_values == 1]
 
         # Finding coordinates of object extremities.
-        proj_vector = selected_intersections - fish_position_FOV
+        proj_vector = selected_intersections - self.fish_position_FOV
         proj_distance = (proj_vector[:, 0] ** 2 + proj_vector[:, 1] ** 2) ** 0.5
 
         # Compute fraction along the projection vector at which features lie
@@ -408,7 +406,7 @@ class DrawingBoard:
 
         # Find coordinates of lines on features.
         points_on_features = proj_vector * fraction_along
-        points_on_features = fish_position_FOV + points_on_features
+        points_on_features = self.fish_position_FOV + points_on_features
         points_on_features = self.chosen_math_library.expand_dims(points_on_features, 1)
 
         selected_intersections = self.chosen_math_library.reshape(selected_intersections, (total_lines, 1, 2))
@@ -490,7 +488,9 @@ class DrawingBoard:
             gradient = self.chosen_math_library.expand_dims(gradient, 1)
             gradient = self.chosen_math_library.repeat(gradient, self.arena_height, 1)
             gradient = self.chosen_math_library.expand_dims(gradient, 2)
-            luminance_mask[int(dark_field_length-(self.light_gradient/2)):int(dark_field_length+(self.light_gradient/2)), :, :] = gradient
+            luminance_mask[
+            int(dark_field_length - (self.light_gradient / 2)):int(dark_field_length + (self.light_gradient / 2)), :,
+            :] = gradient
 
         else:
             luminance_mask[:dark_field_length, :, :] *= dark_gain
@@ -522,22 +522,26 @@ class DrawingBoard:
 
         # Top and left walls
         pixel_strip_x = A[:, low_dim_left, 0]  # Preserve luminance gradient by taking slice.
-        pixel_block_x = self.chosen_math_library.repeat(self.chosen_math_library.expand_dims(pixel_strip_x, 1), low_dim_left, axis=1)
+        pixel_block_x = self.chosen_math_library.repeat(self.chosen_math_library.expand_dims(pixel_strip_x, 1),
+                                                        low_dim_left, axis=1)
         A[:, :low_dim_left, 0] = pixel_block_x
 
         pixel_strip_y = A[low_dim_top, :, 0]
-        pixel_block_y = self.chosen_math_library.repeat(self.chosen_math_library.expand_dims(pixel_strip_y, 0), low_dim_top, axis=0)
+        pixel_block_y = self.chosen_math_library.repeat(self.chosen_math_library.expand_dims(pixel_strip_y, 0),
+                                                        low_dim_top, axis=0)
         A[:low_dim_top, :, 0] = pixel_block_y
 
         # Bottom and right walls
         pixel_strip_x = A[:, -high_dim_right, 0]
-        pixel_block_x = self.chosen_math_library.repeat(self.chosen_math_library.expand_dims(pixel_strip_x, 1), high_dim_right, 1)
+        pixel_block_x = self.chosen_math_library.repeat(self.chosen_math_library.expand_dims(pixel_strip_x, 1),
+                                                        high_dim_right, 1)
         if high_dim_right == 0:  # Necessary due to numpy indexing inconsistency.
             high_dim_right = -A.shape[1]
         A[:, -high_dim_right:, 0] = pixel_block_x
 
         pixel_strip_y = A[-high_dim_bottom, :, 0]
-        pixel_block_y = self.chosen_math_library.repeat(self.chosen_math_library.expand_dims(pixel_strip_y, 0), high_dim_bottom, 0)
+        pixel_block_y = self.chosen_math_library.repeat(self.chosen_math_library.expand_dims(pixel_strip_y, 0),
+                                                        high_dim_bottom, 0)
         if high_dim_bottom == 0:
             high_dim_bottom = -A.shape[0]
         A[-high_dim_bottom:, :, 0] = pixel_block_y
@@ -549,22 +553,15 @@ class DrawingBoard:
         Returns masked pixels in form W.H.3
         With Red.UV.Red2
         """
-        self.FOV.update_field_of_view(fish_position)
-        # FOV = self.get_field_of_view(fish_position)
-
         A = self.chosen_math_library.array(self.local_db)
 
         # apply FOV portion of luminance mask
-        # local_luminance_mask = self.global_luminance_mask[FOV['enclosed_fov'][0]:FOV['enclosed_fov'][1],
-        #                                                   FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], :]
         local_luminance_mask = self.chosen_math_library.zeros(self.local_db.shape)
         lum_slice = self.global_luminance_mask[self.FOV.enclosed_fov_top:self.FOV.enclosed_fov_bottom,
                                                self.FOV.enclosed_fov_left:self.FOV.enclosed_fov_right, :]
         local_luminance_mask[self.FOV.local_fov_top:self.FOV.local_fov_bottom,
                              self.FOV.local_fov_left:self.FOV.local_fov_right] = lum_slice
 
-        # A[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
-        #   FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], :] *= local_luminance_mask
         A *= local_luminance_mask
 
         # If FOV extends outside the arena, extend the A image
@@ -577,9 +574,10 @@ class DrawingBoard:
                                                         self.chosen_math_library.array(prey_locations),
                                                         self.chosen_math_library.array(predator_locations))
 
-        return A * O * self.local_scatter, local_luminance_mask[:,:,1] * self.local_scatter_base
+        return A * O * self.local_scatter, local_luminance_mask[:, :, 1] * self.local_scatter_base
 
-    def compute_n(self, angular_size, number_of_this_feature, max_separation=1, p=None):
+    def compute_n(self, angular_size, number_of_this_feature, max_separation=1):
+        """Computes the number of lines from which the visual input ot a photoreceptor is evaluated."""
 
         theta_separation = math.asin(max_separation / self.max_visual_distance)
         n = (angular_size / theta_separation)
@@ -597,11 +595,8 @@ class DrawingBoard:
         """To be called at start of episode"""
         self.global_sediment_grating = self.get_sediment()
 
-        # Dont need to call each ep?
-        # self.local_scatter = self.get_local_scatter()
-
-    def erase(self, bkg=0):
-        if bkg == 0:
+    def erase(self, bkg=0.):
+        if bkg == 0.:
             self.local_db = self.chosen_math_library.copy(self.base_db)
         else:
             self.local_db = self.chosen_math_library.copy(self.base_db_illuminated)
@@ -615,170 +610,22 @@ class DrawingBoard:
             db = (self.chosen_math_library.ones((self.local_dim, self.local_dim, 3), dtype=np.double) * bkg)
         return db
 
-    def circle(self, center, rad, color, visualisation=False):
-        rr, cc = draw.circle(center[1], center[0], rad, self.db.shape)
-        if visualisation:
-            self.db_visualisation[rr, cc, :] = color
-        else:
-            self.db[rr, cc, :] = color
+    def draw_sediment(self):
+        """Slice the global sediment for current field of view"""
 
-    def show_salt_location(self, location):
-        rr, cc = draw.circle(location[1], location[0], 10, self.db.shape)
-        self.db_visualisation[rr, cc, :] = (1, 0, 0)
+        sediment_slice = self.global_sediment_grating[self.FOV.enclosed_fov_top:self.FOV.enclosed_fov_bottom,
+                                                      self.FOV.enclosed_fov_left:self.FOV.enclosed_fov_right, 0]
 
-    def tail(self, head, left, right, tip, color, visualisation):
-        tail_coordinates = np.array((head, left, tip, right))
-        rr, cc = draw.polygon(tail_coordinates[:, 1], tail_coordinates[:, 0], self.db.shape)
-        if visualisation:
-            self.db_visualisation[rr, cc, :] = color
-        else:
-            self.db[rr, cc, :] = color
+        self.local_db[self.FOV.local_fov_top:self.FOV.local_fov_bottom,
+                      self.FOV.local_fov_left:self.FOV.local_fov_right, 2] = sediment_slice
 
-    def fish_shape(self, mouth_centre, mouth_rad, head_rad, tail_length, mouth_colour, body_colour, angle):
-        offset = np.pi / 2
-        angle += offset
-        angle = -angle
-        self.circle(mouth_centre, mouth_rad, mouth_colour, visualisation=True)  # For the mouth.
-        dx1, dy1 = head_rad * np.sin(angle), head_rad * np.cos(angle)
-        head_centre = (mouth_centre[0] + dx1,
-                       mouth_centre[1] + dy1)
-        self.circle(head_centre, head_rad, body_colour, visualisation=True)
-        dx2, dy2 = -1 * dy1, dx1
-        left_flank = (head_centre[0] + dx2,
-                      head_centre[1] + dy2)
-        right_flank = (head_centre[0] - dx2,
-                       head_centre[1] - dy2)
-        tip = (mouth_centre[0] + (tail_length + head_rad) * np.sin(angle),
-               mouth_centre[1] + (tail_length + head_rad) * np.cos(angle))
-        self.tail(head_centre, left_flank, right_flank, tip, body_colour, visualisation=True)
-
-    @staticmethod
-    def multi_circles(cx, cy, rad):
-        rr, cc = draw.circle(0, 0, rad)
-        rrs = np.tile(rr, (len(cy), 1)) + np.tile(np.reshape(cy, (len(cy), 1)), (1, len(rr)))
-        ccs = np.tile(cc, (len(cx), 1)) + np.tile(np.reshape(cx, (len(cx), 1)), (1, len(cc)))
-        return rrs, ccs
-
-    def show_action_continuous(self, impulse, angle, fish_angle, x_position, y_position, colour):
-        # rr, cc = draw.ellipse(int(y_position), int(x_position), (abs(angle) * 3) + 3, (impulse*0.5) + 3, rotation=-fish_angle)
-        rr, cc = draw.ellipse(int(y_position), int(x_position), 3, (impulse * 0.5) + 3, rotation=-fish_angle)
-        self.db_visualisation[rr, cc, :] = colour
-
-    def show_action_discrete(self, fish_angle, x_position, y_position, colour):
-        rr, cc = draw.ellipse(int(y_position), int(x_position), 5, 3, rotation=-fish_angle)
-        self.db_visualisation[rr, cc, :] = colour
-
-    def line(self, p1, p2, color):
-        rr, cc = draw.line(p1[1], p1[0], p2[1], p2[0])
-        self.db[rr, cc, :] = color
-
-    def get_size(self):
-        return self.arena_width, self.arena_height
-
-    def _draw_past_actions(self, n_actions_to_show):
-        # Select subset of actions to show
-        if len(self.action_buffer) > n_actions_to_show:
-            actions_to_show = self.action_buffer[len(self.action_buffer) - n_actions_to_show:]
-            positions_to_show = self.position_buffer[len(self.position_buffer) - n_actions_to_show:]
-            fish_angles_to_show = self.fish_angle_buffer[len(self.fish_angle_buffer) - n_actions_to_show:]
-        else:
-            actions_to_show = self.action_buffer
-            positions_to_show = self.position_buffer
-            fish_angles_to_show = self.fish_angle_buffer
-
-        for i, a in enumerate(actions_to_show):
-            adjusted_colour_index = ((1 - self.env_variables["background_brightness"]) * (i + 1) / len(actions_to_show)) + \
-                                    self.env_variables["background_brightness"]
-            if self.continuous_actions:
-                # action_colour = (1 * ((i+1)/len(actions_to_show)), 0, 0)
-                if a[1] < 0:
-                    action_colour = (
-                    adjusted_colour_index, self.env_variables["background_brightness"], self.env_variables["background_brightness"])
-                else:
-                    action_colour = (self.env_variables["background_brightness"], adjusted_colour_index, adjusted_colour_index)
-
-                self.board.show_action_continuous(a[0], a[1], fish_angles_to_show[i], positions_to_show[i][0],
-                                                  positions_to_show[i][1], action_colour)
-            else:
-                action_colour = self.fish.get_action_colour(actions_to_show[i], adjusted_colour_index,
-                                                            self.env_variables["background_brightness"])
-                self.board.show_action_discrete(fish_angles_to_show[i], positions_to_show[i][0],
-                                                positions_to_show[i][1], action_colour)
-
-    def draw_walls(self, FOV):
+    def draw_walls(self):
         """Draws walls as deep into FOV beyond wall objects as possible."""
 
-        self.local_db[FOV['local_coordinates_fov'][0], FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3],
-        0] = 1
-        self.local_db[FOV['local_coordinates_fov'][1] - 1,
-        FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], 0] = 1
-        self.local_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1], FOV['local_coordinates_fov'][2],
-        0] = 1
-        self.local_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
-        FOV['local_coordinates_fov'][3] - 1, 0] = 1
+        self.local_db[self.FOV.local_fov_top, self.FOV.local_fov_left:self.FOV.local_fov_right, 0] = 1
 
-    def draw_shapes_environmental(self, visualisation, prey_pos, sand_grain_pos=np.array([])):  # prey/sand positions are fish-centric
-        """Draws prey and sand grains in the local visualisation."""
-        # TODO: fix sand grain support (colour etc)    
-            
-        prey_pos += self.max_visual_distance + 1  # fish-centric to fov-centric
-        sand_grain_pos += self.max_visual_distance + 1
+        self.local_db[self.FOV.local_fov_bottom - 1, self.FOV.local_fov_left:self.FOV.local_fov_right, 0] = 1
 
-        # remove out of bounds prey
-        prey_pos = prey_pos[np.all((np.all(prey_pos <= self.local_dim, axis=1),
-                                    np.all(prey_pos >= 0, axis=1)), axis=0)]
-        # remove out of bounds sand grains
-        sand_grain_pos = sand_grain_pos[np.all((np.all(sand_grain_pos <= self.local_dim, axis=1),
-                                                np.all(sand_grain_pos >= 0, axis=1)), axis=0)]
+        self.local_db[self.FOV.local_fov_top:self.FOV.local_fov_bottom, self.FOV.local_fov_left, 0] = 1
 
-        if len(prey_pos) > 0:
-            rrs, ccs = self.multi_circles(prey_pos[:, 0], prey_pos[:, 1], self.prey_radius)
-            rrs = np.clip(rrs, 0, self.local_dim - 1)
-            ccs = np.clip(ccs, 0, self.local_dim - 1)
-
-            self.local_db[rrs, ccs, 1] = 1
-
-        if len(sand_grain_pos) > 0:
-            rrs, ccs = self.multi_circles(sand_grain_pos[:, 0], sand_grain_pos[:, 1], self.prey_diameter)
-            self.board.db[rrs, ccs] = (0, 0, 1)
-
-    def draw_sediment(self, FOV):  # slice the global sediment for current field of view
-
-        sediment_slice = self.global_sediment_grating[FOV['enclosed_fov'][0]:FOV['enclosed_fov'][1],
-                           FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], 0]
-
-        self.local_db[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
-        FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], 2] = sediment_slice
-
-    def get_field_of_view(self, fish_location):  # use field location to get field of view
-        # top bottom left right
-        fish_location = np.round(fish_location).astype(int)
-        full_fov = [fish_location[1] - self.max_visual_distance,
-                    fish_location[1] + self.max_visual_distance + 1,
-                    fish_location[0] - self.max_visual_distance,
-                    fish_location[0] + self.max_visual_distance + 1]
-
-        # check if field of view is within bounds of global sediment_slice
-        local_coordinates_fov = [0, self.local_dim, 0, self.local_dim]
-        enclosed_fov = full_fov.copy()
-        if full_fov[0] < 0:
-            enclosed_fov[0] = 0
-            local_coordinates_fov[0] = -full_fov[0]
-        if full_fov[1] > self.global_sediment_grating.shape[0]:
-            enclosed_fov[1] = self.global_sediment_grating.shape[0]
-            local_coordinates_fov[1] = self.local_dim - (full_fov[1] - self.global_sediment_grating.shape[0])
-        if full_fov[2] < 0:
-            enclosed_fov[2] = 0
-            local_coordinates_fov[2] = -full_fov[2]
-        if full_fov[3] > self.global_sediment_grating.shape[1]:
-            enclosed_fov[3] = self.global_sediment_grating.shape[1]
-            local_coordinates_fov[3] = self.local_dim - (full_fov[3] - self.global_sediment_grating.shape[1])
-
-        return {'full_fov': full_fov, 'enclosed_fov': enclosed_fov, 'local_coordinates_fov': local_coordinates_fov}
-
-
-if __name__ == "__main__":
-    d = DrawingBoard(500, 500)
-    d.circle((100, 200), 100, (1, 0, 0))
-    d.line((50, 50), (100, 200), (0, 1, 0))
-    d.show()
+        self.local_db[self.FOV.local_fov_top:self.FOV.local_fov_bottom, self.FOV.local_fov_right - 1, 0] = 1

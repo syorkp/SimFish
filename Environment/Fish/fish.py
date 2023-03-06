@@ -12,13 +12,10 @@ class Fish:
     Created to simplify the SimState class, while making it easier to have environments with multiple agents in future.
     """
 
-    def __init__(self, board, env_variables, dark_col, using_gpu, fish_mass=None):
+    def __init__(self, board, env_variables, dark_col, using_gpu):
 
         # For the purpose of producing a calibration curve.
-        if fish_mass is None:
-            inertia = pymunk.moment_for_circle(env_variables['fish_mass'], 0, env_variables['fish_head_radius'], (0, 0))
-        else:
-            inertia = pymunk.moment_for_circle(fish_mass, 0, env_variables['fish_mouth_radius'], (0, 0))
+        inertia = pymunk.moment_for_circle(env_variables['fish_mass'], 0, env_variables['fish_head_radius'], (0, 0))
 
         self.env_variables = env_variables
         self.body = pymunk.Body(1, inertia)

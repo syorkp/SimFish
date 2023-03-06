@@ -52,7 +52,7 @@ params = {
 
     # Saving and video parameters
     'time_per_step': 0.03,  # Length of each step used in gif creation
-    'summaryLength': 200,  # Number of episodes to periodically save for analysis
+    'summaryLength': 10,  # Number of episodes to periodically save for analysis
     'rnn_dim_shared': 512,  # number of rnn cells. Should no longer be used.
 
     # Dynamic network construction
@@ -140,7 +140,7 @@ env = {
     'prey_max_turning_angle': 0.25,  # Max turn (radians) that happens every step, to replicate linear wavy movement.
     'prey_fluid_displacement': False,
     'prey_jump': False,
-    'differential_prey': False,
+    'differential_prey': True,
     'fixed_prey_distribution': False,
     'prey_cloud_num': 16,
     'p_slow': 1.0,
@@ -217,7 +217,7 @@ env = {
     'unit_circle_diameter': 0.7,  # Circular current options
 }
 
-scaffold_name = "dqn_new_even"
+scaffold_name = "dqn_new"
 
 
 # For predator scaffolding

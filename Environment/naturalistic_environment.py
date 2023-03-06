@@ -22,10 +22,6 @@ class NaturalisticEnvironment(BaseEnvironment):
         else:
             self.chosen_math_library = np
 
-        # For calibrating observation scaling
-        # self.mean_observation_vals = [[0, 0, 0]]
-        # self.max_observation_vals = [[0, 0, 0]]
-
         # For currents (new simulation):
         self.impulse_vector_field = None
         self.coordinates_in_current = None  # May be used to provide efficient checking. Although vector comp probably faster.
@@ -57,7 +53,6 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.split_event = split_event
         self.modification = modification
 
-
     def reset(self):
         # print (f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
         # print(f"Mean UV: {sum([i[1] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -71,13 +66,12 @@ class NaturalisticEnvironment(BaseEnvironment):
         super().reset()
         self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_radius'] + 40,
                                                      self.env_variables['arena_width'] - (self.env_variables[
-                                                                                        'fish_mouth_radius'] + 40)),
+                                                                                              'fish_mouth_radius'] + 40)),
                                    np.random.randint(self.env_variables['fish_mouth_radius'] + 40,
                                                      self.env_variables['arena_height'] - (self.env_variables[
-                                                                                         'fish_mouth_radius'] + 40)))
+                                                                                               'fish_mouth_radius'] + 40)))
         self.fish.body.angle = np.random.random() * 2 * np.pi
 
-        
         self.fish.body.velocity = (0, 0)
         if self.env_variables["current_setting"]:
             self.impulse_vector_field *= np.random.choice([-1, 1], size=1, p=[0.5, 0.5]).astype(float)
@@ -85,14 +79,16 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         if self.env_variables["differential_prey"]:
             self.prey_cloud_locations = [
-                [np.random.randint(low=120 + self.env_variables['prey_radius'] + self.env_variables['fish_mouth_radius'],
-                                   high=self.env_variables['arena_width'] - (
-                                           self.env_variables['prey_radius'] + self.env_variables[
-                                       'fish_mouth_radius']) - 120),
-                 np.random.randint(low=120 + self.env_variables['prey_radius'] + self.env_variables['fish_mouth_radius'],
-                                   high=self.env_variables['arena_height'] - (
-                                           self.env_variables['prey_radius'] + self.env_variables[
-                                       'fish_mouth_radius']) - 120)]
+                [np.random.randint(
+                    low=120 + self.env_variables['prey_radius'] + self.env_variables['fish_mouth_radius'],
+                    high=self.env_variables['arena_width'] - (
+                            self.env_variables['prey_radius'] + self.env_variables[
+                        'fish_mouth_radius']) - 120),
+                 np.random.randint(
+                     low=120 + self.env_variables['prey_radius'] + self.env_variables['fish_mouth_radius'],
+                     high=self.env_variables['arena_height'] - (
+                             self.env_variables['prey_radius'] + self.env_variables[
+                         'fish_mouth_radius']) - 120)]
                 for cloud in range(int(self.env_variables["prey_cloud_num"]))]
 
             self.sand_grain_cloud_locations = [
@@ -173,7 +169,7 @@ Sand grain: {self.sand_grain_associated_reward}
                 self.create_prey(prey_position=p, prey_orientation=o)
 
         self.prey_ages = buffer.prey_age_buffer[-1]
-        self.prey_gaits = buffer.prey_gait_buffer[-1]
+        self.paramecia_gaits = buffer.prey_gait_buffer[-1]
 
         # Create predators in proper position and orientation.
         final_step_predator_position = buffer.predator_position_buffer[-1]
@@ -206,7 +202,7 @@ Sand grain: {self.sand_grain_associated_reward}
         """For the split assay mode - checks whether the specified condition is met at each step"""
 
         if self.split_event == "One-Prey-Close":
-            max_angular_deviation = np.pi/2
+            max_angular_deviation = np.pi / 2
             max_distance = 1000  # 10mm
 
             prey_near = self.check_proximity_all_prey(sensing_distance=max_distance)
@@ -228,7 +224,7 @@ Sand grain: {self.sand_grain_associated_reward}
     def make_modification(self):
         # Note of conditions to impose: Remove nearby prey, add nearby prey.
         if self.modification == "Nearby-Prey-Removal":
-            max_angular_deviation = np.pi/2
+            max_angular_deviation = np.pi / 2
             max_distance = 100  # 10mm
 
             prey_near = self.check_proximity_all_prey(sensing_distance=max_distance)
@@ -240,7 +236,7 @@ Sand grain: {self.sand_grain_associated_reward}
             prey_index_offset = len(self.prey_bodies)
             for i, p in enumerate(reversed(prey_close[0][0])):
                 if p:
-                    self.remove_prey(prey_index_offset-i)
+                    self.remove_prey(prey_index_offset - i)
                     print("Removed prey due to modification")
 
         else:
@@ -324,17 +320,15 @@ Sand grain: {self.sand_grain_associated_reward}
             self.salt_associated_reward = 0
             self.wall_associated_reward = 0
 
-        if 'predator_avoidance_reward' in self.env_variables:
-            if self.survived_attack:
-                print("Survived attack...")
-                reward += self.env_variables["predator_avoidance_reward"]
-                self.predator_associated_reward += self.env_variables["predator_cost"]
-                self.survived_attack = False
+        if self.survived_attack:
+            print("Survived attack...")
+            reward += self.env_variables["predator_avoidance_reward"]
+            self.predator_associated_reward += self.env_variables["predator_cost"]
+            self.survived_attack = False
 
-        if "sand_grain_touch_penalty" in self.env_variables:
-            if self.fish.touched_sand_grain:
-                reward -= self.env_variables["sand_grain_touch_penalty"]
-                self.sand_grain_associated_reward -= self.env_variables["sand_grain_touch_penalty"]
+        if self.fish.touched_sand_grain:
+            reward -= self.env_variables["sand_grain_touch_penalty"]
+            self.sand_grain_associated_reward -= self.env_variables["sand_grain_touch_penalty"]
 
         # Relocate fish (Assay mode only)
         if self.relocate_fish is not None:
@@ -367,10 +361,9 @@ Sand grain: {self.sand_grain_associated_reward}
                 done = True
                 self.recent_cause_of_death = "Salt"
 
-            if "salt_reward_penalty" in self.env_variables:
-                if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables["salt_recovery"]:
-                    reward -= self.env_variables["salt_reward_penalty"] * salt_damage
-                    self.salt_associated_reward -= self.env_variables['salt_reward_penalty'] * salt_damage
+            if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables["salt_recovery"]:
+                reward -= self.env_variables["salt_reward_penalty"] * salt_damage
+                self.salt_associated_reward -= self.env_variables['salt_reward_penalty'] * salt_damage
 
         if self.predator_body is not None:
             self.total_predator_steps += 1
@@ -385,19 +378,20 @@ Sand grain: {self.sand_grain_associated_reward}
             self.reproduce_prey()
             self.prey_ages = [age + 1 for age in self.prey_ages]
             for i, age in enumerate(self.prey_ages):
-                if age > self.env_variables["prey_safe_duration"] and np.random.rand(1) < self.env_variables[
-                    "p_prey_death"]:
+                if age > self.env_variables["prey_safe_duration"] and\
+                        np.random.rand(1) < self.env_variables["p_prey_death"]:
                     if not self.check_proximity(self.prey_bodies[i].position, 200):
                         # print("Removed prey")
                         self.remove_prey(i)
                         self.available_prey -= 1
 
-        # Log whether or not fish in light
+        # Log whether fish in light
         self.in_light_history.append(self.fish.body.position[0] > self.dark_col)
 
         self.num_steps += 1
 
         # Drawing the features visible at this step:
+        self.board.FOV.update_field_of_view(self.fish.body.position)
         self.draw_walls_and_sediment()
 
         # Calculate internal state
@@ -423,24 +417,31 @@ Sand grain: {self.sand_grain_associated_reward}
             if self.check_condition_met():
                 done = True
                 self.switch_step = self.num_steps
-        
+
         observation, FOV = self.resolve_visual_input()
 
         return observation, reward, internal_state, done, FOV
 
     def init_predator(self):
-        if self.predator_location is None and np.random.rand(1) < self.env_variables["probability_of_predator"] and \
-                self.num_steps > self.env_variables['immunity_steps'] and not self.check_fish_not_near_wall():
+        if self.predator_location is None and \
+                np.random.rand(1) < self.env_variables["probability_of_predator"] and \
+                self.num_steps > self.env_variables['immunity_steps'] and \
+                not self.check_fish_not_near_wall():
+
             self.create_predator()
 
     def resolve_visual_input(self):
         # eye positions within FOV - Relative eye positions to FOV
         right_eye_pos = (
-            -np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.board.max_visual_distance,
-            +np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.board.max_visual_distance)
+            -np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables[
+                'eyes_biasx'] + self.board.max_visual_distance,
+            +np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables[
+                'eyes_biasx'] + self.board.max_visual_distance)
         left_eye_pos = (
-            +np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.board.max_visual_distance,
-            -np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.board.max_visual_distance)
+            +np.cos(np.pi / 2 - self.fish.body.angle) * self.env_variables[
+                'eyes_biasx'] + self.board.max_visual_distance,
+            -np.sin(np.pi / 2 - self.fish.body.angle) * self.env_variables[
+                'eyes_biasx'] + self.board.max_visual_distance)
 
         if self.predator_body is not None:
             predator_bodies = np.array([self.predator_body.position])
@@ -452,11 +453,13 @@ Sand grain: {self.sand_grain_associated_reward}
         full_masked_image, lum_mask = self.board.get_masked_pixels(np.array(self.fish.body.position),
                                                                    np.array(prey_locations + sand_grain_locations),
                                                                    predator_bodies)
-        
+
         # Convert to FOV coordinates (to match eye coordinates)
-        prey_locations_array = np.array(prey_locations) - np.array(self.fish.body.position) + self.board.max_visual_distance
+        prey_locations_array = np.array(prey_locations) - np.array(
+            self.fish.body.position) + self.board.max_visual_distance
         if len(sand_grain_locations) > 0:
-            sand_grain_locations_array = np.array(sand_grain_locations) - np.array(self.fish.body.position) + self.board.max_visual_distance
+            sand_grain_locations_array = np.array(sand_grain_locations) - np.array(
+                self.fish.body.position) + self.board.max_visual_distance
         else:
             sand_grain_locations_array = np.empty((0, 2))
 
@@ -469,27 +472,6 @@ Sand grain: {self.sand_grain_associated_reward}
                                  self.fish.readings_to_photons(self.fish.right_eye.readings)))
 
         return observation, full_masked_image
-
-    def plot_observation(self, observation):
-        if self.using_gpu:
-            observation = observation.get()
-        observation = np.concatenate(
-            (observation[:, 0:1, :], np.zeros((observation.shape[0], 1, observation.shape[2])), observation[:, 1:2, :]),
-            axis=1)
-
-        left_1 = observation[:, :, 0]
-        right_1 = observation[:, :, 1]
-
-        left_1 = np.expand_dims(left_1, 0)
-        right_1 = np.expand_dims(right_1, 0)
-        fig, axs = plt.subplots(2, 1, sharex=True)
-
-        axs[0].imshow(left_1, aspect="auto")
-        axs[0].set_ylabel("Left eye")
-        axs[1].imshow(right_1, aspect="auto")
-        axs[1].set_ylabel("Right eye")
-        axs[1].set_xlabel("Photoreceptor")
-        plt.show()
 
     def create_current(self):
         """
@@ -671,4 +653,3 @@ Sand grain: {self.sand_grain_associated_reward}
             choice = np.random.choice(range(len(suitable_locations)))
             location_away = suitable_locations[choice]
             self.fish.body.position = np.array(location_away)
-    

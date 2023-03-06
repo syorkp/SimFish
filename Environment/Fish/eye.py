@@ -70,8 +70,12 @@ class Eye:
         self.n = self.compute_n(max([self.uv_photoreceptor_rf_size, self.red_photoreceptor_rf_size]))
 
         if plot_rfs:
-            self.plot_photoreceptors(self.uv_photoreceptor_angles.get(), self.red_photoreceptor_angles.get(),
-                                     self.uv_photoreceptor_rf_size, self.red_photoreceptor_rf_size, is_left)
+            if self.using_gpu:
+                self.plot_photoreceptors(self.uv_photoreceptor_angles.get(), self.red_photoreceptor_angles.get(),
+                                         self.uv_photoreceptor_rf_size, self.red_photoreceptor_rf_size, is_left)
+            else:
+                self.plot_photoreceptors(self.uv_photoreceptor_angles, self.red_photoreceptor_angles,
+                                         self.uv_photoreceptor_rf_size, self.red_photoreceptor_rf_size, is_left)
         # Compute repeated measures:
         self.photoreceptor_angles_surrounding = None
         self.photoreceptor_angles_surrounding_red = None
@@ -87,7 +91,8 @@ class Eye:
                                                                                               self.photoreceptor_angles_surrounding_red),
                                                                                              axis=0)
 
-    def plot_photoreceptors(self, uv_photoreceptor_angles, red_photoreceptor_angles, uv_photoreceptor_rf_size,
+    @staticmethod
+    def plot_photoreceptors(uv_photoreceptor_angles, red_photoreceptor_angles, uv_photoreceptor_rf_size,
                             red_photoreceptor_rf_size, is_left):
         # Plot the photoreceptors on a polar plot:
         plt.ioff()
@@ -114,7 +119,6 @@ class Eye:
         # plt.ion()
 
     def get_repeated_computations(self):
-
         # UV
         photoreceptor_angles_surrounding = self.chosen_math_library.expand_dims(self.uv_photoreceptor_angles, 1)
         photoreceptor_angles_surrounding = self.chosen_math_library.repeat(photoreceptor_angles_surrounding, self.n, 1)
@@ -157,7 +161,7 @@ class Eye:
                                                                    (n_photoreceptors_in_computation_axis_0, self.n, 1))
 
     def update_angles_sigmoid(self, verg_angle, retinal_field, is_left):
-        """Set the eyes visual angles to be an even distribution."""
+        """Set the eyes visual angles to be a sigmoidal distribution."""
 
         pr = [0]
         while True:
@@ -177,7 +181,7 @@ class Eye:
 
         return self.chosen_math_library.sort(pr)
 
-    def update_angles(self, verg_angle, retinal_field, is_left, photoreceptor_num, is_uv=False):
+    def update_angles(self, verg_angle, retinal_field, is_left, photoreceptor_num):
         """Set the eyes visual angles to be an even distribution."""
         if is_left:
             min_angle = -np.pi / 2 - retinal_field / 2 + verg_angle / 2
@@ -212,39 +216,29 @@ class Eye:
             uv_items = prey_positions
 
         if proj and (len(uv_items)) > 0:
-            proj_uv_readings = self._read_prey_proj_parallel(eye_x=eye_x,
-                                                             eye_y=eye_y,
-                                                             uv_pr_angles=self.uv_photoreceptor_angles,
-                                                             fish_angle=fish_angle,
-                                                             rf_size=self.uv_photoreceptor_rf_size,
-                                                             lum_mask=lum_mask,
-                                                             prey_pos=self.chosen_math_library.array(uv_items))
+            proj_uv_readings = self._read_prey_proj(eye_x=eye_x,
+                                                    eye_y=eye_y,
+                                                    uv_pr_angles=self.uv_photoreceptor_angles,
+                                                    fish_angle=fish_angle,
+                                                    rf_size=self.uv_photoreceptor_rf_size,
+                                                    lum_mask=lum_mask,
+                                                    prey_pos=self.chosen_math_library.array(uv_items))
 
             uv_readings += proj_uv_readings
 
             if len(sand_grain_positions) > 0:
-                red_readings_sand_grains = self._read_prey_proj_parallel(eye_x=eye_x,
-                                                                          eye_y=eye_y,
-                                                                          uv_pr_angles=self.red_photoreceptor_angles,
-                                                                          fish_angle=fish_angle,
-                                                                          rf_size=self.red_photoreceptor_rf_size,
-                                                                          lum_mask=lum_mask,
-                                                                          prey_pos=self.chosen_math_library.array(sand_grain_positions)
-                                                                          )
+                red_readings_sand_grains = self._read_prey_proj(eye_x=eye_x,
+                                                                eye_y=eye_y,
+                                                                uv_pr_angles=self.red_photoreceptor_angles,
+                                                                fish_angle=fish_angle,
+                                                                rf_size=self.red_photoreceptor_rf_size,
+                                                                lum_mask=lum_mask,
+                                                                prey_pos=self.chosen_math_library.array(sand_grain_positions)
+                                                                )
 
                 red_readings += red_readings_sand_grains * self.env_variables["sand_grain_red_component"]
 
-        # uv_readings_scaled = self.scale_readings(uv_readings,
-        #                                          self.env_variables['uv_scaling_factor']) * self.env_variables[
-        #                                              "light_gain"] / 200)
-
         self.uv_readings = self.add_noise_to_readings(uv_readings)
-
-        # red_readings_scaled = self.scale_readings(red_readings,
-        #                                           self.env_variables['red_scaling_factor'] * self.env_variables[
-        #                                               "light_gain"] / 200,
-        #                                           self.env_variables['red_2_scaling_factor'] * self.env_variables[
-        #                                               "light_gain"] / 200)
         self.red_readings = self.add_noise_to_readings(red_readings)
 
         interp_uv_readings = self.chosen_math_library.zeros((self.interpolated_observation.shape[0], 1))
@@ -272,55 +266,6 @@ class Eye:
             pass
 
     def _read_prey_proj(self, eye_x, eye_y, uv_pr_angles, fish_angle, rf_size, lum_mask, prey_pos):
-        """Reads the prey projection for the given eye position and fish angle.
-        """
-        if self.using_gpu:
-            abs_uv_pr_angles = uv_pr_angles.get()
-        else:
-            abs_uv_pr_angles = np.copy(uv_pr_angles)
-
-        rel_prey_pos = prey_pos - np.array([eye_x, eye_y])
-        rho = np.hypot(rel_prey_pos[:, 0], rel_prey_pos[:, 1])
-
-        within_range = np.where(rho < self.max_visual_range - 1)[0]
-        prey_pos_in_range = prey_pos[within_range, :]
-        rel_prey_pos = rel_prey_pos[within_range, :]
-        rho = rho[within_range]
-        theta = np.arctan2(rel_prey_pos[:, 1], rel_prey_pos[:, 0]) - fish_angle
-        theta = np.arctan2(np.sin(theta), np.cos(theta))  # wrap to [-pi, pi]
-        p_num = prey_pos_in_range.shape[0]
-
-        proj = np.zeros((p_num, len(self.ang)))
-        for p in range(p_num):
-            half_angle = np.arctan(self.prey_diameter / (2 * rho[p]))
-
-            l_ind = self._closest_index(self.ang, theta[p] - half_angle)
-            r_ind = self._closest_index(self.ang, theta[p] + half_angle)
-            try:
-                prey_brightness = lum_mask[int(np.floor(prey_pos_in_range[p, 1])) - 1,
-                                           int(np.floor(prey_pos_in_range[p, 0])) - 1]  # includes absorption
-            except IndexError:
-                print(
-                    f"Prey Position: {[int(np.floor(prey_pos_in_range[p, 1])) - 1, int(np.floor(prey_pos_in_range[p, 0])) - 1]}")
-                print(f"Prey index: {p} of {p_num}")
-                print(f"LMS: {lum_mask.shape}")
-
-            if self.using_gpu:
-                prey_brightness = prey_brightness.get()
-
-            proj[p, l_ind:r_ind] = prey_brightness
-
-        total_angular_input = np.sum(proj, axis=0)
-
-        pr_input = np.zeros((len(abs_uv_pr_angles), 1))
-        for pr in range(len(abs_uv_pr_angles)):
-            inds = [self._closest_index(self.ang, abs_uv_pr_angles[pr] - rf_size / 2),
-                    self._closest_index(self.ang, abs_uv_pr_angles[pr] + rf_size / 2)]
-            pr_input[pr, 0] = np.sum(total_angular_input[inds[0]:inds[1]], axis=0)
-
-        return self.chosen_math_library.array(pr_input)
-
-    def _read_prey_proj_parallel(self, eye_x, eye_y, uv_pr_angles, fish_angle, rf_size, lum_mask, prey_pos):
         """Reads the prey projection for the given eye position and fish angle.
         Same as " but performs more computation in parallel for each prey. Also have removed scatter.
         """
@@ -366,12 +311,6 @@ class Eye:
         pr_input = self.chosen_math_library.sum(pr_input, axis=1)
 
         return self.chosen_math_library.expand_dims(pr_input, axis=1)
-
-    @staticmethod
-    def _closest_index(array, value):
-        """Find index of closest value in array."""
-        idx = (np.abs(array - value)).argmin()
-        return idx
 
     def _closest_index_parallel(self, array, value_array):
         """Find indices of the closest values in array (for each row in axis=0)."""
@@ -425,12 +364,8 @@ class Eye:
         valid_points_more = (intersection_components < self.conditional_tiled[:n_photoreceptors]) * 1
         valid_points = valid_points_more * valid_points_ls
         valid_intersection_coordinates = intersection_coordinates[valid_points == 1]
-        try:
-            valid_intersection_coordinates = self.chosen_math_library.reshape(valid_intersection_coordinates,
-                                                                              (n_photoreceptors, self.n, 2, 2))
-        except ValueError:
-            print("ValueError")
-            print(f"Eye position: {[eye_x, eye_y]}")
+        valid_intersection_coordinates = self.chosen_math_library.reshape(valid_intersection_coordinates,
+                                                                          (n_photoreceptors, self.n, 2, 2))
 
         # Get intersections (PR_N x 2)
         eye_position = self.chosen_math_library.array([eye_x, eye_y])
@@ -450,11 +385,8 @@ class Eye:
 
         same_values = (angles == photoreceptor_angles_surrounding) * 1
         selected_intersections = valid_intersection_coordinates[same_values == 1]
-        try:
-            selected_intersections = self.chosen_math_library.reshape(selected_intersections,
-                                                                      (n_photoreceptors, self.n, 1, 2))
-        except ValueError:
-            print(f"Eye position: {eye_position}")
+        selected_intersections = self.chosen_math_library.reshape(selected_intersections,
+                                                                  (n_photoreceptors, self.n, 1, 2))
 
         eye_position_full = self.chosen_math_library.tile(eye_position, (n_photoreceptors, self.n, 1, 1))
         vertices = self.chosen_math_library.concatenate((eye_position_full, selected_intersections), axis=2)
@@ -638,101 +570,3 @@ class Eye:
         full_set_red = full_set[n_photoreceptors_uv:, :]
 
         return full_set_uv, full_set_red
-
-    def get_pr_line_coordinates_uv(self, eye_x, eye_y):
-        """For testing purposes"""
-        # Make sure angles are in desired range (PR_N x n)
-        photoreceptor_angles_surrounding_scaling = (self.uv_photoreceptor_angles // (
-                self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
-        photoreceptor_angles_surrounding = self.uv_photoreceptor_angles + photoreceptor_angles_surrounding_scaling
-
-        # Compute m using tan (PR_N x n)
-        m = self.chosen_math_library.tan(photoreceptor_angles_surrounding)
-
-        # Compute c (PR_N x n)
-        c = -m * eye_x
-        c = c + eye_y
-
-        # Compute components of intersections (PR_N x n x 4)
-        c_exp = self.chosen_math_library.expand_dims(c, 1)
-        c_exp = self.chosen_math_library.repeat(c_exp, 4, 1)
-
-        m_mul = self.chosen_math_library.expand_dims(m, 1)
-        full_m = self.chosen_math_library.repeat(m_mul, 4, 1)
-        m_mul = full_m * self.mul1_full[:self.uv_photoreceptor_num, 0]
-        m_mul[:, :3] = 1
-        addition_matrix = self.addition_matrix[:self.uv_photoreceptor_num, 0] * m_mul
-        division_matrix = full_m
-        division_matrix[:, 1] = 1
-        division_matrix[:, 3] = 1
-
-        intersection_components = ((c_exp * self.multiplication_matrix[
-                                            :self.uv_photoreceptor_num, 0]) + addition_matrix) / division_matrix
-
-        intersection_coordinates = self.chosen_math_library.expand_dims(intersection_components, 2)
-        intersection_coordinates = self.chosen_math_library.repeat(intersection_coordinates, 2, 2)
-        intersection_coordinates = (intersection_coordinates * self.mul_for_hypothetical[
-                                                               :self.uv_photoreceptor_num,
-                                                               0]) + self.add_for_hypothetical[
-                                                                     :self.uv_photoreceptor_num, 0]
-
-        # Compute possible intersections (PR_N x 2 x 2 x 2)
-        valid_points_ls = (intersection_components > 0) * 1
-        valid_points_more = (intersection_components < self.conditional_tiled[:self.uv_photoreceptor_num, 0]) * 1
-        valid_points = valid_points_more * valid_points_ls
-        valid_intersection_coordinates = intersection_coordinates[valid_points == 1]
-        valid_intersection_coordinates = self.chosen_math_library.reshape(valid_intersection_coordinates,
-                                                                          (self.uv_photoreceptor_num, 2, 2))
-        # Get intersections (PR_N x 2)
-        eye_position = self.chosen_math_library.array([eye_x, eye_y])
-        possible_vectors = valid_intersection_coordinates - eye_position
-
-        angles = self.chosen_math_library.arctan2(possible_vectors[:, :, 1], possible_vectors[:, :, 0])
-
-        # Make sure angles are in correct range.
-        angle_scaling = (angles // (self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
-        angles = angles + angle_scaling
-
-        angles = self.chosen_math_library.round(angles, 3)
-        photoreceptor_angles_surrounding = self.chosen_math_library.round(photoreceptor_angles_surrounding, 3)
-
-        photoreceptor_angles_surrounding = self.chosen_math_library.expand_dims(photoreceptor_angles_surrounding, 1)
-        photoreceptor_angles_surrounding = self.chosen_math_library.repeat(photoreceptor_angles_surrounding, 2, 1)
-
-        same_values = (angles == photoreceptor_angles_surrounding) * 1
-        selected_intersections = valid_intersection_coordinates[same_values == 1]
-        selected_intersections = self.chosen_math_library.reshape(selected_intersections,
-                                                                  (self.uv_photoreceptor_num, 1, 2))
-
-        eye_position_full = self.chosen_math_library.tile(eye_position, (self.uv_photoreceptor_num, 1, 1))
-        vertices = self.chosen_math_library.concatenate((eye_position_full, selected_intersections), axis=1)
-        vertices_xvals = vertices[:, :, 0]
-        vertices_yvals = vertices[:, :, 1]
-
-        min_x = self.chosen_math_library.min(vertices_xvals, axis=1)
-        max_x = self.chosen_math_library.max(vertices_xvals, axis=1)
-        min_y = self.chosen_math_library.min(vertices_yvals, axis=1)
-        max_y = self.chosen_math_library.max(vertices_yvals, axis=1)
-
-        # SEGMENT COMPUTATION
-        x_lens = self.chosen_math_library.rint(max_x - min_x)
-        y_lens = self.chosen_math_library.rint(max_y - min_y)
-
-        x_len = self.chosen_math_library.max(x_lens)
-        y_len = self.chosen_math_library.max(y_lens)
-
-        x_ranges = self.chosen_math_library.linspace(min_x, max_x, int(x_len))
-        y_ranges = self.chosen_math_library.linspace(min_y, max_y, int(y_len))
-
-        y_values = (m * x_ranges) + c
-        y_values = self.chosen_math_library.floor(y_values)
-        set_1 = self.chosen_math_library.stack((x_ranges, y_values), axis=-1)
-        x_values = (y_ranges - c) / m
-        x_values = self.chosen_math_library.floor(x_values)
-        set_2 = self.chosen_math_library.stack((x_values, y_ranges), axis=-1)
-        full_set = self.chosen_math_library.vstack((set_1, set_2)).astype(int)
-
-        full_set = full_set.swapaxes(0, 1)
-        full_set = full_set.reshape(self.uv_photoreceptor_num, -1, 2)
-
-        return full_set

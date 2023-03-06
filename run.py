@@ -680,7 +680,6 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
-
     # NEW VISUAL SYSTEM
 
     dqn_new_1 = [
@@ -690,6 +689,7 @@ if __name__ == "__main__": # may be needed to run on windows
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
+            "Using GPU": False,
         },
     ]
     dqn_new_2 = [
