@@ -35,16 +35,6 @@ class DQNAssayBuffer(BaseBuffer):
 
         self.action_buffer.append(action)
 
-    def pad_buffer(self, buffer):
-        max_dim = 0
-        for b in buffer:
-            if len(b) > max_dim:
-                max_dim = b
-        for b in buffer:
-            if len(b) < max_dim:
-                b.append(0)
-        return buffer
-
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order,
                         sediment, salt_location=None):
         hdf5_file, assay_group = self._save_assay_data(data_save_location, assay_configuration_id, assay_id, sediment, internal_state_order, salt_location)

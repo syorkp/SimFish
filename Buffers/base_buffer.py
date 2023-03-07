@@ -292,7 +292,7 @@ class BaseBuffer:
         max_dim = 0
         for b in buffer:
             if len(b) > max_dim:
-                max_dim = b
+                max_dim = len(b)
         for b in buffer:
             if len(b) < max_dim:
                 b.append(0)
