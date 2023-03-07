@@ -34,6 +34,17 @@ class DrawingBoard:
         self.base_db = self.get_base_arena()
         self.base_db_illuminated = self.get_base_arena(visible_scatter)
         self.erase(visible_scatter)
+        
+        # Repeated computations for sediment
+        self.turbPower = 1.0
+        self.turbSize = 162.0
+
+        xp, yp = self.chosen_math_library.arange(self.arena_width), self.chosen_math_library.arange(self.arena_height)
+        xy, py = self.chosen_math_library.meshgrid(xp, yp)
+        xy = self.chosen_math_library.expand_dims(xy, 2)
+        py = self.chosen_math_library.expand_dims(py, 2)
+        self.coords = self.chosen_math_library.concatenate((xy, py), axis=2)
+
 
         self.global_sediment_grating = self.get_sediment()
         self.global_luminance_mask = self.get_luminance_mask(dark_light_ratio, dark_gain)
@@ -66,16 +77,6 @@ class DrawingBoard:
         self.empty_mask = self.chosen_math_library.ones((self.local_dim, self.local_dim, 1), dtype=np.float64)
 
         self.FOV = FieldOfView(self.local_dim, self.max_visual_distance, self.arena_width, self.arena_height)
-
-        # Repeated computations for sediment
-        self.turbPower = 1.0
-        self.turbSize = 162.0
-
-        xp, yp = self.chosen_math_library.arange(self.arena_width), self.chosen_math_library.arange(self.arena_height)
-        xy, py = self.chosen_math_library.meshgrid(xp, yp)
-        xy = self.chosen_math_library.expand_dims(xy, 2)
-        py = self.chosen_math_library.expand_dims(py, 2)
-        self.coords = self.chosen_math_library.concatenate((xy, py), axis=2)
 
     def get_FOV_size(self):
         return self.local_dim, self.local_dim
