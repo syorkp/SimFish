@@ -457,7 +457,8 @@ class BaseEnvironment:
                 )
         else:
             self.prey_bodies[-1].position = prey_position
-            self.prey_bodies[-1].angle = prey_orientation
+            if prey_orientation is not None:
+                self.prey_bodies[-1].angle = prey_orientation
 
         self.prey_shapes[-1].color = (0, 0, 1)
         self.prey_shapes[-1].collision_type = 2
