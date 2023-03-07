@@ -3,7 +3,7 @@ Script to directly compute photons from background_brightness given all backgrou
 """
 
 import numpy as np
-from Tools.drawing_board import DrawingBoard
+from Environment.Board.drawing_board import DrawingBoard
 from Environment.Fish.eye import Eye
 from Analysis.load_model_config import load_assay_configuration_files
 

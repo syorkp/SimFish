@@ -67,6 +67,16 @@ class DrawingBoard:
 
         self.FOV = FieldOfView(self.local_dim, self.max_visual_distance, self.arena_width, self.arena_height)
 
+        # Repeated computations for sediment
+        self.turbPower = 1.0
+        self.turbSize = 162.0
+
+        xp, yp = self.chosen_math_library.arange(self.arena_width), self.chosen_math_library.arange(self.arena_height)
+        xy, py = self.chosen_math_library.meshgrid(xp, yp)
+        xy = self.chosen_math_library.expand_dims(xy, 2)
+        py = self.chosen_math_library.expand_dims(py, 2)
+        self.coords = self.chosen_math_library.concatenate((xy, py), axis=2)
+
     def get_FOV_size(self):
         return self.local_dim, self.local_dim
 
@@ -74,28 +84,16 @@ class DrawingBoard:
         xPeriod = self.chosen_math_library.random.uniform(0.0, 10.0)
         yPeriod = self.chosen_math_library.random.uniform(0.0, 10.0)
 
-        turbPower = 1.0
-        turbSize = 162.0
-
         noise = self.chosen_math_library.absolute(
             self.chosen_math_library.random.randn(self.arena_width, self.arena_height))
 
-        # TODO: Stop repeating the following:
-        xp, yp = self.chosen_math_library.arange(self.arena_width), self.chosen_math_library.arange(self.arena_height)
-        xy, py = self.chosen_math_library.meshgrid(xp, yp)
-        xy = self.chosen_math_library.expand_dims(xy, 2)
-        py = self.chosen_math_library.expand_dims(py, 2)
-        coords = self.chosen_math_library.concatenate((xy, py), axis=2)
+        xy_values = (self.coords[:, :, 0] * xPeriod / self.arena_width) + (self.coords[:, :, 1] * yPeriod / self.arena_height)
+        size = self.turbSize
 
-        xy_values = (coords[:, :, 0] * xPeriod / self.arena_width) + (coords[:, :, 1] * yPeriod / self.arena_height)
-        size = turbSize
-
-        # TODO: Stop repeating the following:
         turbulence = self.chosen_math_library.zeros((self.arena_width, self.arena_height))
 
-        # TODO: Stop repeating the following:
         while size >= 1:
-            reduced_coords = coords / size
+            reduced_coords = self.coords / size
 
             fractX = reduced_coords[:, :, 0] - reduced_coords[:, :, 0].astype(int)
             fractY = reduced_coords[:, :, 1] - reduced_coords[:, :, 1].astype(int)
@@ -115,8 +113,8 @@ class DrawingBoard:
             turbulence += value * size
             size /= 2.0
 
-        turbulence = 128 * turbulence / turbSize
-        xy_values += turbPower * turbulence / 256.0
+        turbulence = 128 * turbulence / self.turbSize
+        xy_values += self.turbPower * turbulence / 256.0
         new_grating = 256 * self.chosen_math_library.abs(self.chosen_math_library.sin(xy_values * 3.14159))
         new_grating /= self.chosen_math_library.max(new_grating)  # Normalise
         new_grating = self.chosen_math_library.expand_dims(new_grating, 2)

@@ -4,8 +4,6 @@ import skimage.draw as draw
 from skimage import io
 import matplotlib.pyplot as plt
 
-from Tools.ray_cast import rays
-
 
 class DrawingBoard:
 

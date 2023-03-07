@@ -5,6 +5,7 @@ import json
 import matplotlib.pyplot as plt
 from matplotlib.animation import FFMpegWriter
 
+# noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
 
 from Networks.DQN.q_network_dynamic import QNetworkDynamic

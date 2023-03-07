@@ -1,5 +1,6 @@
 import copy
 
+# noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
 
 tf.disable_v2_behavior()
@@ -156,8 +157,6 @@ class DynamicBaseNetwork:
 
     def create_layer(self, layer_name, layer_input, connection_type, layer_parameters, network_graph, reflected,
                      reuse_eyes):
-        # TODO: build in different levels of connection
-
         if layer_parameters[0] == "conv1d":
             filters, kernel_size, strides = layer_parameters[1:]
             if reuse_eyes and layer_name[-1] == "r":

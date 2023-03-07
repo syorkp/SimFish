@@ -182,8 +182,7 @@ class TrialManager:
 
             else:
                 if trial["Learning Algorithm"] == "PPO":
-                    new_job = multiprocessing.Process(target=ppo_assay_discrete.ppo_assay_target_discrete, args=(
-                        trial, total_steps, episode_number, memory_fraction))
+                    print("PPO discrete not supported.")
                 elif trial["Learning Algorithm"] == "A2C":
                     print('Cannot use A2C with discrete actions (assay mode)')
                     new_job = None

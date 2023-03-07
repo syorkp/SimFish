@@ -119,6 +119,20 @@ class Eye:
         # plt.ion()
 
     def get_repeated_computations(self):
+        """
+        Pre-computes and stores in memory all sets of repeated values for the read_stacked method:
+           - self.photoreceptor_angles_surrounding - The angles, from the midline of the fish, which enclose the active
+           region of each UV photoreceptor
+           - self.photoreceptor_angles_surrounding_red  - " but for all red photoreceptors
+           - self.mul_for_hypothetical
+           - self.add_for_hypothetical
+           - self.mul1_full
+           - self.addition_matrix
+           - self.conditional_tiled
+           - self.multiplication_matrix
+
+        """
+
         # UV
         photoreceptor_angles_surrounding = self.chosen_math_library.expand_dims(self.uv_photoreceptor_angles, 1)
         photoreceptor_angles_surrounding = self.chosen_math_library.repeat(photoreceptor_angles_surrounding, self.n, 1)
@@ -322,7 +336,17 @@ class Eye:
                       n_photoreceptors_uv, n_photoreceptors_red):
         """
         Lines method to return pixel sum for all points for each photoreceptor, over its segment.
-        Takes photoreceptor_angles_surrounding with UV then Red
+        Takes photoreceptor_angles_surrounding with UV then Red.
+
+        The aim of this method is to find all the coordinates enclosed in the receptive field of each photoreceptor.
+        This is done by defining n lines per photoreceptor, which are linearly interpolated between the edges of each photoreceptor,
+        tracing them for as far as they extend, and so find all valid coordinates which fall on them.
+        This necessarily over samples (disproportionately for shorter lines), though predictably, so can be accounted
+        for.
+
+        The method is poorly organised, as it has been designed to have as little computational overhead as possible.
+        To be efficient, the method must perform its computations in parallel (which limits the way of doing it to
+        memory inefficient and verbose approaches).
         """
         n_photoreceptors = n_photoreceptors_uv + n_photoreceptors_red
 
@@ -331,14 +355,14 @@ class Eye:
                 self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
         photoreceptor_angles_surrounding = photoreceptor_angles_surrounding + photoreceptor_angles_surrounding_scaling
 
-        # Compute m using tan (PR_N x n)
+        # Compute m (gradient of lines enclosing each PR) using tan (PR_N x n)
         m = self.chosen_math_library.tan(photoreceptor_angles_surrounding)
 
-        # Compute c (PR_N x n)
+        # Compute c (y-intercept of lines enclosing each PR) (PR_N x n)
         c = -m * eye_x
         c = c + eye_y
 
-        # Compute components of intersections (PR_N x n x 4)
+        # Compute components of intersections (two for each axis - up and down) (PR_N x n x 4)
         c_exp = self.chosen_math_library.expand_dims(c, 2)
         c_exp = self.chosen_math_library.repeat(c_exp, 4, 2)
 
@@ -351,13 +375,14 @@ class Eye:
         division_matrix[:, :, 1] = 1
         division_matrix[:, :, 3] = 1
 
-        intersection_components = ((c_exp * self.multiplication_matrix[
-                                            :n_photoreceptors]) + addition_matrix) / division_matrix
+        intersection_components = ((c_exp * self.multiplication_matrix[:n_photoreceptors]) + addition_matrix) / division_matrix
 
+        # Compute the coordinates at which the lines intersect the bounds of the environment/visual range. Note that
+        # some of these may be outside the environment along one axis
         intersection_coordinates = self.chosen_math_library.expand_dims(intersection_components, 3)
         intersection_coordinates = self.chosen_math_library.repeat(intersection_coordinates, 2, 3)
-        intersection_coordinates = (intersection_coordinates * self.mul_for_hypothetical[
-                                                               :n_photoreceptors]) + self.add_for_hypothetical[:n_photoreceptors]
+        intersection_coordinates = (intersection_coordinates * self.mul_for_hypothetical[:n_photoreceptors]) +\
+                                   self.add_for_hypothetical[:n_photoreceptors]
 
         # Compute possible intersections (PR_N x 2 x 2 x 2)
         valid_points_ls = (intersection_components > 0) * 1
@@ -367,23 +392,27 @@ class Eye:
         valid_intersection_coordinates = self.chosen_math_library.reshape(valid_intersection_coordinates,
                                                                           (n_photoreceptors, self.n, 2, 2))
 
-        # Get intersections (PR_N x 2)
+        # Compute the possible emanating vectors of the enclosing line of each photoreceptor (PR_N x 2)
         eye_position = self.chosen_math_library.array([eye_x, eye_y])
         possible_vectors = valid_intersection_coordinates - eye_position
 
+        # Compute the angles of each possible vector
         angles = self.chosen_math_library.arctan2(possible_vectors[:, :, :, 1], possible_vectors[:, :, :, 0])
 
         # Make sure angles are in correct range.
         angle_scaling = (angles // (self.chosen_math_library.pi * 2)) * self.chosen_math_library.pi * -2
         angles = angles + angle_scaling
 
+        # Round all angles to allow direct comparison.
         angles = self.chosen_math_library.round(angles, 3)
         photoreceptor_angles_surrounding = self.chosen_math_library.round(photoreceptor_angles_surrounding, 3)
-
         photoreceptor_angles_surrounding = self.chosen_math_library.expand_dims(photoreceptor_angles_surrounding, 2)
         photoreceptor_angles_surrounding = self.chosen_math_library.repeat(photoreceptor_angles_surrounding, 2, 2)
 
+        # Find which of the hypothetical angles match the original specified angles.
         same_values = (angles == photoreceptor_angles_surrounding) * 1
+
+        # Thus, outline the actual intersections with the bounding environment/visual range
         selected_intersections = valid_intersection_coordinates[same_values == 1]
         selected_intersections = self.chosen_math_library.reshape(selected_intersections,
                                                                   (n_photoreceptors, self.n, 1, 2))
@@ -415,9 +444,11 @@ class Eye:
         x_len = self.chosen_math_library.max(x_lens)
         y_len = self.chosen_math_library.max(y_lens)
 
+        # Find appropriate coordinates between the outlined intersections along which to evaluate the lines
         x_ranges = self.chosen_math_library.linspace(min_x, max_x, int(x_len))
         y_ranges = self.chosen_math_library.linspace(min_y, max_y, int(y_len))
 
+        # Evaluate the lines along the ranges, producing the final sets of coordinates enclosed by the photoreceptor RFs.
         y_values = (m * x_ranges) + c
         y_values = self.chosen_math_library.floor(y_values)
         set_1 = self.chosen_math_library.stack((x_ranges, y_values), axis=-1)
@@ -432,16 +463,13 @@ class Eye:
         full_set_uv = full_set[:n_photoreceptors_uv, :]
         full_set_red = full_set[n_photoreceptors_uv:, :]
 
-        # masked_arena_pixels = masked_arena_pixels[
-        #     full_set[:, :, 1], full_set[:, :, 0]]  # NOTE: Inverting x and y to match standard in program.
-        # total_sum = masked_arena_pixels.sum(axis=1)
-
-        masked_arena_pixels_uv = masked_arena_pixels_uv[full_set_uv[:, :, 1], full_set_uv[:, :,
-                                                                              0]]  # NOTE: Inverting x and y to match standard in program.
+        # For each set of coordinates, get the pixels in that region of the environment.
+        masked_arena_pixels_uv = masked_arena_pixels_uv[full_set_uv[:, :, 1],
+                                                        full_set_uv[:, :, 0]]  # NOTE: Inverts x and y to match standard.
         total_sum_uv = masked_arena_pixels_uv.sum(axis=1)
 
-        masked_arena_pixels_red = masked_arena_pixels_red[
-            full_set_red[:, :, 1], full_set_red[:, :, 0]]  # NOTE: Inverting x and y to match standard in program.
+        masked_arena_pixels_red = masked_arena_pixels_red[full_set_red[:, :, 1],
+                                                          full_set_red[:, :, 0]]  # NOTE: Inverts x and y to match standard.
         total_sum_red = masked_arena_pixels_red.sum(axis=1)
 
         # Compute oversampling ratio. This takes account of how many indexes have been computed for each sector, and
@@ -457,7 +485,7 @@ class Eye:
         return total_sum_uv, total_sum_red
 
     def add_noise_to_readings(self, readings):
-        """As specified, adds shot, read, and/or dark noise to readings."""
+        """Samples from Poisson distribution to get number of photons"""
         if self.env_variables["shot_noise"]:
             photons = self.chosen_math_library.random.poisson(readings)
         else:
@@ -470,8 +498,7 @@ class Eye:
         n = (photoreceptor_rf_size / theta_separation)
         return int(n)
 
-    def get_pr_coverage(self, masked_arena_pixels_uv, masked_arena_pixels_red, eye_x, eye_y, photoreceptor_angles_surrounding,
-                        n_photoreceptors_uv, n_photoreceptors_red):
+    def get_pr_coverage(self, eye_x, eye_y, photoreceptor_angles_surrounding, n_photoreceptors_uv, n_photoreceptors_red):
         """For testing purposes"""
         n_photoreceptors = n_photoreceptors_uv + n_photoreceptors_red
 

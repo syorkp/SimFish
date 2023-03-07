@@ -2,6 +2,8 @@ from time import time
 import json
 
 import numpy as np
+
+# noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
 
 from Analysis.Indexing.data_index_service import DataIndexServiceContinuous

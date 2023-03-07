@@ -101,7 +101,6 @@ class BaseBuffer:
             self.prey_gait_buffer.append(prey_gait)
 
     def create_data_group(self, key, data, assay_group):
-        # TODO: Compress data.
         # if data.dtype == np.object:
         #    dt = h5py.vlen_dtype(np.dtype('float32')) # should enable saving of variable length arrays (eg reproducing prey)
         #    print(data[0].shape)

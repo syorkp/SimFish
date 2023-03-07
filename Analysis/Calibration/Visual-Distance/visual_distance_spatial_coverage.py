@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.eye import Eye
-from Tools.drawing_board import DrawingBoard
+from Environment.Board.drawing_board import DrawingBoard
 
 
 def display_pr_coverage(model_name):
@@ -55,9 +55,7 @@ def display_pr_coverage(model_name):
     uv_arena_pixels = full_masked_image[:, :, 1:2]
     red_arena_pixels = np.concatenate(
          (full_masked_image[:, :, 0:1], full_masked_image[:, :, 2:]), axis=2)
-    uv_points, red_points = test_eye_l.get_pr_coverage(masked_arena_pixels_uv=uv_arena_pixels,
-                                                       masked_arena_pixels_red=red_arena_pixels,
-                                                       eye_x=left_eye_pos[0],
+    uv_points, red_points = test_eye_l.get_pr_coverage(eye_x=left_eye_pos[0],
                                                        eye_y=left_eye_pos[1],
                                                        photoreceptor_angles_surrounding=channel_angles_surrounding,
                                                        n_photoreceptors_uv=test_eye_l.uv_photoreceptor_num,
@@ -71,9 +69,7 @@ def display_pr_coverage(model_name):
     uv_arena_pixels = full_masked_image[:, :, 1:2]
     red_arena_pixels = np.concatenate(
          (full_masked_image[:, :, 0:1], full_masked_image[:, :, 2:]), axis=2)
-    uv_points, red_points = test_eye_r.get_pr_coverage(masked_arena_pixels_uv=uv_arena_pixels,
-                                                       masked_arena_pixels_red=red_arena_pixels,
-                                                       eye_x=right_eye_pos[0],
+    uv_points, red_points = test_eye_r.get_pr_coverage(eye_x=right_eye_pos[0],
                                                        eye_y=right_eye_pos[1],
                                                        photoreceptor_angles_surrounding=channel_angles_surrounding,
                                                        n_photoreceptors_uv=test_eye_r.uv_photoreceptor_num,

@@ -7,6 +7,7 @@ from Analysis.Connectivity.load_network_variables import load_network_variables_
 from Analysis.load_data import load_data
 from Analysis.Neural.Tools.normalise_activity import normalise_within_neuron_multiple_traces
 
+# noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
 
 

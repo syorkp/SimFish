@@ -4,8 +4,7 @@ import matplotlib.pyplot as plt
 from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.eye import Eye
 
-# from Analysis.Video.behaviour_video_construction import DrawingBoard
-from Tools.drawing_board import DrawingBoard
+from Environment.Board.drawing_board import DrawingBoard
 from Analysis.load_data import load_data
 
 

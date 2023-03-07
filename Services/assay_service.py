@@ -4,6 +4,7 @@ from datetime import datetime
 import copy
 import h5py
 
+# noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
 
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
@@ -210,6 +211,7 @@ class AssayService(BaseService):
 
         try:
             self.buffer.switch_step = data["switch_step"]
+            self.total_steps = data["switch_step"]
         except KeyError:
             print("Trial had no switch.")
             return False, False
@@ -243,11 +245,6 @@ class AssayService(BaseService):
         self.buffer.predator_orientation_buffer = data["predator_orientation"].tolist()
         self.buffer.prey_age_buffer = data["prey_ages"].tolist()
         self.buffer.prey_gait_buffer = data["prey_gaits"].tolist()
-
-        # TODO: Missing: Advantage buffer, return buffer
-
-        # Set number of steps - to both service and environment
-        num_steps_elapsed = data["observation"].shape[0]
 
         # Load RNN states to model.
         num_rnns = np.array(self.buffer.rnn_state_buffer).shape[2] / 2

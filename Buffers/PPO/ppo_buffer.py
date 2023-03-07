@@ -267,10 +267,6 @@ class PPOBuffer(BaseBuffer):
         if np.isnan(np.sum(np.sum(buffer) for buffer in buffers)):
             print("NaN Detected")
 
-        print("Buffers fine")
-
-        # TODO: Add methods for detecting values outside of range.
-
     def get_rnn_batch(self, key_points, batch_size):
         rnn_state_batch = []
         rnn_state_batch_ref = []

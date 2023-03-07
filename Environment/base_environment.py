@@ -68,7 +68,7 @@ class BaseEnvironment:
             self.prey_cloud_locations = [
                 [np.random.randint(
                     low=(self.env_variables['prey_cloud_region_size'] / 2) + self.env_variables['prey_radius'] +
-                        self.env_variables['fish_mouth_radius'],
+                         self.env_variables['fish_mouth_radius'],
                     high=self.env_variables['arena_width'] - ((
                                                                       self.env_variables['prey_radius'] +
                                                                       self.env_variables[
@@ -77,7 +77,7 @@ class BaseEnvironment:
                                                                           'prey_cloud_region_size'] / 2))),
                     np.random.randint(
                         low=(self.env_variables['prey_cloud_region_size'] / 2) + self.env_variables['prey_radius'] +
-                            self.env_variables['fish_mouth_radius'],
+                             self.env_variables['fish_mouth_radius'],
                         high=self.env_variables['arena_height'] - ((
                                                                            self.env_variables['prey_radius'] +
                                                                            self.env_variables[
@@ -430,7 +430,6 @@ class BaseEnvironment:
         return True
 
     def create_prey(self, prey_position=None, prey_orientation=None):
-        # TODO: LOAD ORIENTATIONS IF GIVEN
         self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
         self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_radius']))
         self.prey_shapes[-1].elasticity = 1.0
@@ -458,6 +457,7 @@ class BaseEnvironment:
                 )
         else:
             self.prey_bodies[-1].position = prey_position
+            self.prey_bodies[-1].angle = prey_orientation
 
         self.prey_shapes[-1].color = (0, 0, 1)
         self.prey_shapes[-1].collision_type = 2

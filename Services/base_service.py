@@ -1,6 +1,5 @@
 import json
 import cProfile
-import shutil
 
 import numpy as np
 import os
@@ -10,28 +9,6 @@ import tensorflow.compat.v1 as tf
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
-
-
-def delete_nv_folder():
-    print(os.getcwd())
-    location = "./../../../../home/zcbtspi/.nv"
-    if os.path.isdir(location):
-        print(f"Correct dir, removing {location}")
-        shutil.rmtree(location)
-        if os.path.isdir(location):
-            print("Failed...")
-    # location = "./../../.nv"
-    # if os.path.isdir(location):
-    #     print(f"Correct dir, removing {location}")
-    #     shutil.rmtree(location)
-    #     if os.path.isdir(location):
-    #         print("Failed...")
-    # location = "./../.nv"
-    # if os.path.isdir(location):
-    #     print("Correct dir, removing")
-    #     shutil.rmtree(location)
-    #     if os.path.isdir(location):
-    #         print("Failed...")
 
 
 class BaseService:
@@ -82,12 +59,10 @@ class BaseService:
         else:
             self.total_steps = 0
 
-        # Switchover at start of phase 1
-
         if not self.using_gpu:
             os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-        # Add attributes only if don't exist yet (prevents errors thrown).
+        # Placeholder Attributes
         if not hasattr(self, "environment_params"):
             self.environment_params = None
         if not hasattr(self, "last_position_dim"):
