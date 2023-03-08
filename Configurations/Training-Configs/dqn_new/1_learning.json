@@ -2,7 +2,7 @@
     "batch_size": 16,
     "trace_length": 64,
     "num_episodes": 100000,
-    "max_epLength": 100,
+    "max_epLength": 3000,
     "epsilon_greedy": true,
     "startE": 0.2,
     "endE": 0.01,
@@ -26,7 +26,7 @@
     "sigma_mode": "Decreasing",
     "num_actions": 12,
     "time_per_step": 0.03,
-    "summaryLength": 1,
+    "summaryLength": 200,
     "rnn_dim_shared": 512,
     "reflected": true,
     "base_network_layers": {
