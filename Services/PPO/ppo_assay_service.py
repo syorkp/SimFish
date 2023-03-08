@@ -202,7 +202,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
         action = a + [self.simulation.fish.prev_action_impulse,
                       self.simulation.fish.prev_action_angle]
 
-        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=a)
+        o, r, internal_state, d, full_masked_image = self.simulation.simulation_step(action=a)
 
         self.buffer.action_buffer.append(action)  # Add to buffer for loading of previous actions
 

@@ -205,16 +205,17 @@ if __name__ == "__main__": # may be needed to run on windows
             "Model Name": "dqn_new",
             "Environment Name": "dqn_new_1",
             "Assay Configuration Name": "Behavioural-Data-Free",
-            "Trial Number": 1,
+            "Trial Number": 3,
             "Run Mode": "Assay",
             "Learning Algorithm": "DQN",
             "behavioural recordings": ["environmental positions", "observation"],
             "network recordings": ["rnn_shared", "internal_state"],
             "Assays": [
                 {
+                    "assay id": "Naturalistic",
                     "stimulus paradigm": "Naturalistic",
                     "repeats": 10,
-                    "duration": 1000,
+                    "duration": 300,
                     "Tethered": False,
                     "save frames": False,
                     "use_mu": True,
@@ -225,7 +226,8 @@ if __name__ == "__main__": # may be needed to run on windows
                     "moving": False,
                     "collisions": True,
                 },
-            ]
+            ],
+            "Using GPU": False,
         }
         ]
 
@@ -681,6 +683,16 @@ if __name__ == "__main__": # may be needed to run on windows
     ]
 
     # NEW VISUAL SYSTEM
+    dqn_new_1_pred = [
+        {
+            "Model Name": "dqn_new_pred",
+            "Environment Name": "dqn_new_pred",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+            "Using GPU": False,
+        },
+    ]
 
     dqn_new_1 = [
         {
@@ -748,7 +760,7 @@ if __name__ == "__main__": # may be needed to run on windows
     ]
 
     if run_config is None:
-        run_config = dqn_new_1
+        run_config = dqn_new_1_pred
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]

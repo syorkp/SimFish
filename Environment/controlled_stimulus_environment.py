@@ -32,8 +32,8 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.reset_interval = reset_interval
 
         # Whole environment measurements.
-        board_height = env_variables["height"]
-        board_width = env_variables["width"]
+        board_height = env_variables["arena_height"]
+        board_width = env_variables["arena_width"]
 
         # Wall coordinates
         self.wall_1_coordinates = [[0, 0], [0, board_height]]

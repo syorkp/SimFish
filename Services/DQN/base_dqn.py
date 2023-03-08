@@ -188,7 +188,7 @@ class BaseDQN:
         self.simulation.reset()
 
         # Take the first simulation step, with a capture action. Assigns observation, reward, internal state, done, and
-        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=3)
+        o, r, internal_state, d, full_masked_image = self.simulation.simulation_step(action=3)
 
         # For benchmarking each episode.
         all_actions = []
@@ -208,16 +208,16 @@ class BaseDQN:
         while step_number < self.learning_params["max_epLength"]:
             print(step_number)
             step_number += 1
-            o, a, r, i_s, o1, d, rnn_state, rnn_state_ref, FOV = self.step_loop(o=o,
+            o, a, r, i_s, o1, d, rnn_state, rnn_state_ref, full_masked_image = self.step_loop(o=o,
                                                                                 internal_state=internal_state,
                                                                                 a=efference_copy,
                                                                                 rnn_state=rnn_state,
                                                                                 rnn_state_ref=rnn_state_ref)
             if self.debug:
                 if self.using_gpu:
-                    FOV = FOV.get()
-                FOV = np.clip(FOV / self.environment_params['light_gain'], 0, 1)
-                ax.imshow(FOV)
+                    full_masked_image = full_masked_image.get()
+                full_masked_image = np.clip(full_masked_image / self.environment_params['light_gain'], 0, 1)
+                ax.imshow(full_masked_image)
                 moviewriter.grab_frame()
                 ax.clear()
             all_actions.append(a[0])
@@ -288,13 +288,13 @@ class BaseDQN:
             chosen_a = chosen_a[0]
 
         # Simulation step
-        o1, given_reward, internal_state, d, FOV = self.simulation.simulation_step(action=chosen_a)
+        o1, given_reward, internal_state, d, full_masked_image = self.simulation.simulation_step(action=chosen_a)
 
         efference_copy = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
         if self.debug:
             pass
         else:
-            FOV = None
+            full_masked_image = None
 
         if self.save_environmental_data:
             sand_grain_positions, prey_positions, predator_position = self.get_positions()
@@ -334,7 +334,7 @@ class BaseDQN:
                                      )
 
         self.total_steps += 1
-        return o, efference_copy, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, FOV
+        return o, efference_copy, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, full_masked_image
 
     def assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         chosen_a, updated_rnn_state, updated_rnn_state_ref, network_layers = \
@@ -353,7 +353,7 @@ class BaseDQN:
                            })
 
         chosen_a = chosen_a[0]
-        o1, given_reward, internal_state1, d, FOV = self.simulation.simulation_step(action=chosen_a)
+        o1, given_reward, internal_state1, d, full_masked_image = self.simulation.simulation_step(action=chosen_a)
         sand_grain_positions, prey_positions, predator_position = self.get_positions()
 
         efference_copy = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]

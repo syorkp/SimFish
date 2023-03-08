@@ -407,13 +407,13 @@ class BaseEnvironment:
 
         if position_x < 8:
             new_position_x = 10
-        elif position_x > self.env_variables["width"] - 7:
-            new_position_x = self.env_variables["width"] - 9
+        elif position_x > self.env_variables["arena_width"] - 7:
+            new_position_x = self.env_variables["arena_width"] - 9
 
         if position_y < 8:
             new_position_y = 10
-        elif position_y > self.env_variables["height"] - 7:
-            new_position_y = self.env_variables["height"] - 9
+        elif position_y > self.env_variables["arena_height"] - 7:
+            new_position_y = self.env_variables["arena_height"] - 9
 
         if "new_position_x" in locals():
             new_position = pymunk.Vec2d(new_position_x, self.fish.body.position[1])
@@ -662,11 +662,12 @@ class BaseEnvironment:
     def move_predator(self):
         if self.check_predator_at_target() or self.check_predator_outside_walls():
             self.remove_predator()
+        else:
+            self.predator_body.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
 
-        self.predator_body.angle = np.pi / 2 - np.arctan2(
-            self.predator_target[0] - self.predator_body.position[0],
-            self.predator_target[1] - self.predator_body.position[1])
-        self.predator_body.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
+        # self.predator_body.angle = np.pi / 2 - np.arctan2(
+        #     self.predator_target[0] - self.predator_body.position[0],
+        #     self.predator_target[1] - self.predator_body.position[1])
 
     def touch_predator(self, arbiter, space, data):
         if self.num_steps > self.env_variables['immunity_steps']:
@@ -685,15 +686,15 @@ class BaseEnvironment:
             left = False
 
         # Check proximity to right wall
-        if self.env_variables["width"] - self.env_variables["distance_from_fish"] < fish_position[0] < \
-                self.env_variables["width"]:
+        if self.env_variables["arena_width"] - self.env_variables["distance_from_fish"] < fish_position[0] < \
+                self.env_variables["arena_width"]:
             right = True
         else:
             right = False
 
         # Check proximity to bottom wall
-        if self.env_variables["height"] - self.env_variables["distance_from_fish"] < fish_position[1] < \
-                self.env_variables["height"]:
+        if self.env_variables["arena_height"] - self.env_variables["distance_from_fish"] < fish_position[1] < \
+                self.env_variables["arena_height"]:
             bottom = True
         else:
             bottom = False
@@ -737,11 +738,11 @@ class BaseEnvironment:
 
         if x_position < buffer_region:
             return True
-        elif x_position > self.env_variables["width"] - buffer_region:
+        elif x_position > self.env_variables["arena_width"] - buffer_region:
             return True
         if y_position < buffer_region:
             return True
-        elif y_position > self.env_variables["height"] - buffer_region:
+        elif y_position > self.env_variables["arena_width"] - buffer_region:
             return True
 
     def load_predator(self, predator_position, predator_orientation, predator_target):
@@ -794,16 +795,17 @@ class BaseEnvironment:
         x_position, y_position = self.predator_body.position[0], self.predator_body.position[1]
         if x_position < 0:
             return True
-        elif x_position > self.env_variables["width"]:
+        elif x_position > self.env_variables["arena_width"]:
             return True
         if y_position < 0:
             return True
-        elif y_position > self.env_variables["height"]:
+        elif y_position > self.env_variables["arena_height"]:
             return True
 
     def check_predator_at_target(self):
         if (round(self.predator_body.position[0]), round(self.predator_body.position[1])) == (
                 round(self.predator_target[0]), round(self.predator_target[1])):
+            self.predator_attacks_avoided += 1
             return True
         else:
             return False

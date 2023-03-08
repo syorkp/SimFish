@@ -183,7 +183,7 @@ class DQNAssayService(AssayService, BaseDQN):
             a = 0
             self.step_number = 0
 
-        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=a)
+        o, r, internal_state, d, full_masked_image = self.simulation.simulation_step(action=a)
 
         if self.full_efference_copy:
             efference_copy = [[a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]]

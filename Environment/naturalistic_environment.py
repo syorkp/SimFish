@@ -195,7 +195,7 @@ Sand grain: {self.sand_grain_associated_reward}
         self.fish.energy_level = energy_state
 
         # Get latest observation.
-        observation, FOV = self.resolve_visual_input()
+        observation, full_masked_image = self.resolve_visual_input()
         return observation
 
     def check_condition_met(self):
@@ -418,9 +418,9 @@ Sand grain: {self.sand_grain_associated_reward}
                 done = True
                 self.switch_step = self.num_steps
 
-        observation, FOV = self.resolve_visual_input()
+        observation, full_masked_image = self.resolve_visual_input()
 
-        return observation, reward, internal_state, done, FOV
+        return observation, reward, internal_state, done, full_masked_image
 
     def init_predator(self):
         if self.predator_location is None and \
@@ -639,8 +639,8 @@ Sand grain: {self.sand_grain_associated_reward}
             cluster_coordinates = self.prey_cloud_locations[chosen_cluster]
             self.fish.body.position = np.array(cluster_coordinates)
         elif target_feature == "E":
-            xp, yp = np.arange(200, self.env_variables["width"] - 200), np.arange(200,
-                                                                                  self.env_variables["height"] - 200)
+            xp, yp = np.arange(200, self.env_variables["arena_width"] - 200), \
+                     np.arange(200, self.env_variables["arena_height"] - 200)
             xy, yp = np.meshgrid(xp, yp)
             xy = np.expand_dims(xy, 2)
             yp = np.expand_dims(yp, 2)

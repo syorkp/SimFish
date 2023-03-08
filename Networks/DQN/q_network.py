@@ -143,12 +143,21 @@ class QNetwork:
 
         self.conv4l_flat_ref = tf.layers.flatten(self.conv4l_ref)
         self.conv4r_flat_ref = tf.layers.flatten(self.conv4r_ref)
-        self.prev_actions_one_hot_rev = tf.reverse(self.prev_actions_one_hot, [1])
+        self.prev_actions_one_hot_rev = tf.concat([self.prev_actions_one_hot[0:, :][:, :1],
+                                                   self.prev_actions_one_hot[0:, :][:, 2:3],
+                                                   self.prev_actions_one_hot[0:, :][:, 1:2],
+                                                   self.prev_actions_one_hot[0:, :][:, 3:4],
+                                                   self.prev_actions_one_hot[0:, :][:, 5:6],
+                                                   self.prev_actions_one_hot[0:, :][:, 4:5],
+                                                   self.prev_actions_one_hot[0:, :][:, 6:7],
+                                                   self.prev_actions_one_hot[0:, :][:, 8:9],
+                                                   self.prev_actions_one_hot[0:, :][:, 7:8],
+                                                   self.prev_actions_one_hot[0:, :][:, 9:]], axis=1)
         self.internal_state_rev = tf.reverse(self.internal_state, [1])
 
         if full_efference_copy:
-            self.prev_action_impulse_rev = tf.reverse(self.prev_action_impulse, [1])
-            self.prev_action_angle_rev = tf.reverse(self.prev_action_angle, [1])
+            self.prev_action_impulse_rev = self.prev_action_impulse
+            self.prev_action_angle_rev = tf.multiply(self.prev_action_angle, -1)
             self.conv_with_states_ref = tf.concat(
                 [self.conv4l_flat_ref, self.conv4r_flat_ref, self.prev_actions_one_hot_rev, self.prev_action_impulse_rev, self.prev_action_angle_rev, self.internal_state_rev], 1)
         else:

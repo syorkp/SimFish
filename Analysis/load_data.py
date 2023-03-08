@@ -36,7 +36,7 @@ def load_data(model_name, assay_configuration, assay_id, training_data=False):
 
 
 if __name__ == "__main__":
-    d = load_data("dqn_new_even-1", "Episode 200", f"Episode 200", training_data=True)
+    d = load_data("dqn_new_pred-1", "Episode 1", f"Episode 1", training_data=True)
 
     fish_prey_vectors = np.expand_dims(d["fish_position"], 1) - d["prey_positions"]
     fish_prey_distances = (fish_prey_vectors[:, :, 0] ** 2 + fish_prey_vectors[:, :, 1] ** 2) ** 0.5

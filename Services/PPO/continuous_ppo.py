@@ -196,7 +196,7 @@ class ContinuousPPO:
             else:
                 action = [impulse[0][0], angle[0][0]]
 
-        o1, given_reward, new_internal_state, d, FOV = self.simulation.simulation_step(action=action)
+        o1, given_reward, new_internal_state, d, full_masked_image = self.simulation.simulation_step(action=action)
 
         sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
 
@@ -304,7 +304,7 @@ class ContinuousPPO:
             action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(action=action)
+        o1, r, new_internal_state, d, full_masked_image = self.simulation.simulation_step(action=action)
 
         # Changing action to include final action consequences.
         action_consequences = [self.simulation.fish.prev_action_impulse / self.environment_params["max_impulse"],
@@ -417,7 +417,7 @@ class ContinuousPPO:
             action = [impulse[0][0], angle[0][0]]
 
         # Simulation step
-        o1, r, new_internal_state, d, FOV = self.simulation.simulation_step(action=action)
+        o1, r, new_internal_state, d, full_masked_image = self.simulation.simulation_step(action=action)
 
         action_consequences = [self.simulation.fish.prev_action_impulse / self.environment_params["max_impulse"],
                                self.simulation.fish.prev_action_angle / self.environment_params["max_angle_change"]]
@@ -616,7 +616,7 @@ class ContinuousPPO:
             self.just_trained = False
         self.simulation.reset()
 
-        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=a)
+        o, r, internal_state, d, full_masked_image = self.simulation.simulation_step(action=a)
 
         self.total_episode_reward = 0  # Total reward over episode
 
