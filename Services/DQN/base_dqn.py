@@ -131,7 +131,7 @@ class BaseDQN:
                                     rnn_dim=512,
                                     rnn_cell=cell,
                                     my_scope="main",
-                                    num_actions=10,
+                                    num_actions=self.learning_params["num_actions"],
                                     internal_states=internal_states,
                                     learning_rate=self.learning_params["learning_rate"]
                                     )
@@ -139,7 +139,7 @@ class BaseDQN:
                                       rnn_dim=512,
                                       rnn_cell=cell_t,
                                       my_scope="target",
-                                      num_actions=10,
+                                      num_actions=self.learning_params["num_actions"],
                                       internal_states=internal_states,
                                       learning_rate=self.learning_params["learning_rate"]
                                       )
@@ -404,7 +404,7 @@ class BaseDQN:
         update_target(self.target_ops, self.sess)
 
         # Reset the recurrent layer's hidden state
-        rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
+        rnn_state_shapes = [512]  # self.main_QN.get_rnn_state_shapes()
 
         # Load the latest saved states... Note is technically incorrect.
         state_train = copy.copy(self.init_rnn_state)

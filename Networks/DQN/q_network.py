@@ -152,7 +152,10 @@ class QNetwork:
                                                    self.prev_actions_one_hot[0:, :][:, 6:7],
                                                    self.prev_actions_one_hot[0:, :][:, 8:9],
                                                    self.prev_actions_one_hot[0:, :][:, 7:8],
-                                                   self.prev_actions_one_hot[0:, :][:, 9:]], axis=1)
+                                                   self.prev_actions_one_hot[0:, :][:, 9:10],
+                                                   self.prev_actions_one_hot[0:, :][:, 11:12],
+                                                   self.prev_actions_one_hot[0:, :][:, 10:11],
+                                                   ], axis=1)
         self.internal_state_rev = tf.reverse(self.internal_state, [1])
 
         if full_efference_copy:
@@ -209,7 +212,10 @@ class QNetwork:
                                             self.Advantage_ref[0:, :][:, 6:7],
                                             self.Advantage_ref[0:, :][:, 8:9],
                                             self.Advantage_ref[0:, :][:, 7:8],
-                                            self.Advantage_ref[0:, :][:, 9:]], axis=1)
+                                            self.Advantage_ref[0:, :][:, 9:10],
+                                            self.Advantage_ref[0:, :][:, 11:12],
+                                            self.Advantage_ref[0:, :][:, 10:11],
+                                            ], axis=1)
         else:
             print(f"Static Q-network not set up for {num_actions} actions")
             self.Advantage_ref = tf.concat([self.Advantage_ref[0:, :][:, :1],
@@ -221,7 +227,9 @@ class QNetwork:
                                             self.Advantage_ref[0:, :][:, 6:7],
                                             self.Advantage_ref[0:, :][:, 8:9],
                                             self.Advantage_ref[0:, :][:, 7:8],
-                                            self.Advantage_ref[0:, :][:, 9:]], axis=1)
+                                            self.Advantage_ref[0:, :][:, 9:10],
+                                            self.Advantage_ref[0:, :][:, 11:12],
+                                            self.Advantage_ref[0:, :][:, 10:11]], axis=1)
 
         #                ------------ Integrating Normal and Reflected ------------                   #
 
