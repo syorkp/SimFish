@@ -94,7 +94,7 @@ class ContinuousPPO:
         """
         print("Creating networks...")
         internal_states = sum(
-            [1 for x in [self.environment_params['hunger'], self.environment_params['stress'],
+            [1 for x in [self.environment_params['stress'],
                          self.environment_params['energy_state'], self.environment_params['in_light'],
                          self.environment_params['salt']] if x is True])
         internal_states = max(internal_states, 1)
