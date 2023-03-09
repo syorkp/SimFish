@@ -122,8 +122,8 @@ class VisualisationBoard:
         self.db_visualisation = db
 
         if self.show_background:
-            self.db_visualisation += self.chosen_math_library.concatenate((self.background_grating/5,
-                                                                           self.background_grating/5,
+            self.db_visualisation += self.chosen_math_library.concatenate((self.background_grating/10,
+                                                                           self.background_grating/10,
                                                                            self.chosen_math_library.zeros(self.background_grating.shape)), axis=2)
 
     def get_base_arena(self, bkg=0.0):

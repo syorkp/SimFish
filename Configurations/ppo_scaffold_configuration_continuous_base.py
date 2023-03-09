@@ -22,7 +22,7 @@ params = {
        'batch_size': 1,  # How many experience traces to use for each training step. Works okay with 1.
        'trace_length': 50,  # How long each experience trace will be when training. Works okay with 50
        'num_episodes': 100000,  # How many episodes of game environment to train network with.
-       'max_epLength': 5000,  # The max allowed length of our episode.
+       'max_epLength': 3000,  # The max allowed length of our episode.
        'epsilon_greedy': True,
        'startE': 0.2,  # Starting chance of random action
        'endE': 0.01,  # Final chance of random action
@@ -219,9 +219,12 @@ env = {
        'unit_circle_diameter': 0.7,  # Circular current options
 }
 
-scaffold_name = "ppo_gamma"
+scaffold_name = "ppo_new"
 
 # env["probability_of_predator"] = 0.003
+env["background_brightness"] = 0.1 / (2.7769 * 10)
+env["light_gain"] = 2.7769 * 10
+env["dark_gain"] = 1.2397
 env["immunity_steps"] = 200
 env["distance_from_fish"] *= 4
 

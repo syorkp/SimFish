@@ -206,7 +206,6 @@ class BaseDQN:
             moviewriter = FFMpegWriter(fps=15)
             moviewriter.setup(fig, 'debug.mp4', dpi=500)
         while step_number < self.learning_params["max_epLength"]:
-            print(step_number)
             step_number += 1
             o, a, r, i_s, o1, d, rnn_state, rnn_state_ref, full_masked_image = self.step_loop(o=o,
                                                                                               internal_state=internal_state,

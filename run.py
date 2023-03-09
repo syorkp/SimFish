@@ -759,6 +759,52 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
+    ppo_new_1 = [
+        {
+            "Model Name": "ppo_new",
+            "Environment Name": "ppo_new",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    ppo_new_2 = [
+        {
+            "Model Name": "ppo_new",
+            "Environment Name": "ppo_new",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    ppo_new_3 = [
+        {
+            "Model Name": "ppo_new",
+            "Environment Name": "ppo_new",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    ppo_new_4 = [
+        {
+            "Model Name": "ppo_new",
+            "Environment Name": "ppo_new",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    ppo_new_5 = [
+        {
+            "Model Name": "ppo_new",
+            "Environment Name": "ppo_new",
+            "Trial Number": 5,
+            "Run Mode": "Training",
+            "Learning Algorithm": "PPO",
+        },
+    ]
+
     if run_config is None:
         run_config = dqn_new_1_pred
     else:
