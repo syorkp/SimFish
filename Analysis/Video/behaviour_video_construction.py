@@ -9,6 +9,7 @@ import skimage.draw as draw
 from skimage.transform import rescale
 from matplotlib.animation import FFMpegWriter
 
+from Analysis.load_data import load_data
 
 
 class DrawingBoard:
@@ -561,7 +562,7 @@ if __name__ == "__main__":
     # draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="A15")
     # model_name = "dqn_scaffold_14-1"
-    # data = load_data(model_name, "Interruptions-HA", "Naturalistic-3")
+    data = load_data("dqn_new_pred-1", "Episode 1", "Episode 1", training_data=True)
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-3")
@@ -571,21 +572,21 @@ if __name__ == "__main__":
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-5")
-    data_file = sys.argv[1]
-    config_file = sys.argv[2]
+    # data_file = sys.argv[1]
+    # config_file = sys.argv[2]
 
     #data_file = "../../Assay-Output/dqn_gamma-1/Behavioural-Data-Empty.h5"
-    #config_file = f"../../Configurations/Assay-Configs/dqn_gamma_final_env.json"
+    config_file = f"../../Configurations/Training-Configs/dqn_new_pred/1_env.json"
 
     with open(config_file, 'r') as f:
         env_variables = json.load(f)
-    with h5py.File(data_file, 'r') as datfl:
-        group = list(datfl.keys())[0]
-        data = {}
-        for key in datfl[group].keys():
-            data[key] = np.array(datfl[group][key])
+    # with h5py.File(data_file, 'r') as datfl:
+    #     group = list(datfl.keys())[0]
+    #     data = {}
+    #     for key in datfl[group].keys():
+    #         data[key] = np.array(datfl[group][key])
 
-    draw_episode(data, env_variables, 'test', continuous_actions=False, show_energy_state=True,
+    draw_episode(data, env_variables, 'pred_test', continuous_actions=False, show_energy_state=True,
                  trim_to_fish=True, showed_region_quad=500, include_sediment=True)
 
 

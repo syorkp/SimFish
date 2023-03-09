@@ -209,10 +209,10 @@ class BaseDQN:
             print(step_number)
             step_number += 1
             o, a, r, i_s, o1, d, rnn_state, rnn_state_ref, full_masked_image = self.step_loop(o=o,
-                                                                                internal_state=internal_state,
-                                                                                a=efference_copy,
-                                                                                rnn_state=rnn_state,
-                                                                                rnn_state_ref=rnn_state_ref)
+                                                                                              internal_state=internal_state,
+                                                                                              a=efference_copy,
+                                                                                              rnn_state=rnn_state,
+                                                                                              rnn_state_ref=rnn_state_ref)
             if self.debug:
                 if self.using_gpu:
                     full_masked_image = full_masked_image.get()
@@ -234,8 +234,12 @@ class BaseDQN:
                         len(self.experience_buffer.buffer) > self.batch_size:
                     self.train_networks()
             if d:
-                self.init_rnn_state = rnn_state
-                self.init_rnn_state_ref = rnn_state_ref
+                if self.use_static:
+                    self.init_rnn_state = [rnn_state]
+                    self.init_rnn_state_ref = [rnn_state_ref]
+                else:
+                    self.init_rnn_state = rnn_state
+                    self.init_rnn_state_ref = rnn_state_ref
                 break
         # Add the episode to the experience buffer
         if self.debug:

@@ -663,9 +663,9 @@ class BaseEnvironment:
         if self.check_predator_at_target() or self.check_predator_outside_walls():
             self.remove_predator()
         else:
-            # self.predator_body.angle = np.pi / 2 - np.arctan2(
-            #     self.predator_target[0] - self.predator_body.position[0],
-            #     self.predator_target[1] - self.predator_body.position[1])
+            self.predator_body.angle = np.pi / 2 - np.arctan2(
+                self.predator_target[0] - self.predator_body.position[0],
+                self.predator_target[1] - self.predator_body.position[1])
             self.predator_body.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
 
     def touch_predator(self, arbiter, space, data):
