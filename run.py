@@ -740,20 +740,47 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
-    dqn_new_even_1 = [
+    dqn_pp_1 = [
         {
-            "Model Name": "dqn_new_even",
-            "Environment Name": "dqn_new_even",
+            "Model Name": "dqn_prey_pred",
+            "Environment Name": "dqn_prey_pred",
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
     ]
-    dqn_new_even_2 = [
+    dqn_pp_2 = [
         {
-            "Model Name": "dqn_new_even",
-            "Environment Name": "dqn_new_even",
+            "Model Name": "dqn_prey_pred",
+            "Environment Name": "dqn_prey_pred",
             "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    dqn_pp_3 = [
+        {
+            "Model Name": "dqn_prey_pred",
+            "Environment Name": "dqn_prey_pred",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    dqn_pp_4 = [
+        {
+            "Model Name": "dqn_prey_pred",
+            "Environment Name": "dqn_prey_pred",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    dqn_pp_5 = [
+        {
+            "Model Name": "dqn_prey_pred",
+            "Environment Name": "dqn_prey_pred",
+            "Trial Number": 5,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
