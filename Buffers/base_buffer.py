@@ -108,7 +108,6 @@ class BaseBuffer:
         #    dt = data.dtype
 
         try:
-
             assay_group.create_dataset(key, data=data)
         except (RuntimeError, OSError) as exception:
             # print(f"Failed saving {key}. Attempting to delete existing data.")
@@ -263,23 +262,36 @@ class BaseBuffer:
             self.create_data_group("prey_orientations", self.pad_buffer(np.array(self.prey_orientation_buffer)),
                                    assay_group)
         except:
-            self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
+            try:
+                self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
+            except TypeError:
+                pass
+                # self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer).astype(np.float64), assay_group)
 
         try:
             self.create_data_group("predator_orientation", self.pad_buffer(np.array(self.predator_orientation_buffer)),
                                    assay_group)
         except:
-            self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
+            try:
+                self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
+            except TypeError:
+                pass
 
         try:
             self.create_data_group("prey_ages", self.pad_buffer(np.array(self.prey_age_buffer)), assay_group)
         except:
-            self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
+            try:
+                self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
+            except TypeError:
+                pass
 
         try:
             self.create_data_group("prey_gaits", self.pad_buffer(np.array(self.prey_gait_buffer)), assay_group)
         except:
-            self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
+            try:
+                self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
+            except TypeError:
+                pass
 
         self.create_data_group("reward", np.array(self.reward_buffer), assay_group)
         self.create_data_group("advantage", np.array(self.advantage_buffer), assay_group)
