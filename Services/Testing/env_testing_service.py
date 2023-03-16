@@ -41,7 +41,8 @@ class EnvTestingService(BaseService):
 
         # Create visualisation board
         self.visualisation_board = VisualisationBoard(self.environment_params["arena_width"],
-                                                      self.environment_params["arena_height"])
+                                                      self.environment_params["arena_height"],
+                                                      light_gradient=self.environment_params["light_gradient"])
         self.board_fig, self.ax_board = plt.subplots()
         self.board_image = plt.imshow(np.zeros((self.environment_params['arena_height'], self.environment_params['arena_width'], 3)))
         plt.ion()
@@ -69,6 +70,9 @@ class EnvTestingService(BaseService):
     def update_drawing(self):
         self.visualisation_board.erase_visualisation()
         self.draw_shapes()
+        self.visualisation_board.apply_light(dark_col=int(self.environment_params["dark_light_ratio"] * self.environment_params["arena_width"]),
+                                             dark_gain=self.environment_params["dark_gain"],
+                                             light_gain=self.environment_params["light_gain"])
         frame = self.output_frame(scale=0.5) / 255.
         self.board_image.set_data(frame / np.max(frame))
         plt.pause(0.000001)

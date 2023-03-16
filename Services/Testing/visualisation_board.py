@@ -11,7 +11,7 @@ class VisualisationBoard:
 
     def __init__(self, width, height, prey_size=4,
                  predator_size=100, visible_scatter=0.3, background_grating_frequency=50, dark_light_ratio=0.0,
-                 dark_gain=0.01, light_gain=1.0, light_gradient=0, max_visual_distance=1500, show_background=True):
+                 dark_gain=0.01, light_gain=1.0, light_gradient=200, max_visual_distance=1500, show_background=True):
 
         self.chosen_math_library = np
 
@@ -143,34 +143,21 @@ class VisualisationBoard:
         self.db[:, 0] = [1, 0, 0]
         self.db[:, self.height - 1] = [1, 0, 0]
 
-    def apply_light(self, dark_col, dark_gain, light_gain, visualisation):
+    def apply_light(self, dark_col, dark_gain, light_gain):
         if dark_col < 0:
             dark_col = 0
-        if visualisation:
-            if self.light_gradient > 0 and dark_col > 0:
-                gradient = self.chosen_math_library.linspace(dark_gain, light_gain, self.light_gradient)
-                gradient = self.chosen_math_library.expand_dims(gradient, 0)
-                gradient = self.chosen_math_library.repeat(gradient, self.height, 0)
-                gradient = self.chosen_math_library.expand_dims(gradient, 2)
-                self.db_visualisation[:, int(dark_col-(self.light_gradient/2)):int(dark_col+(self.light_gradient/2))] *= gradient
-                self.db_visualisation[:, :int(dark_col-(self.light_gradient/2))] *= dark_gain
-                self.db_visualisation[:, int(dark_col+(self.light_gradient/2)):] *= light_gain
-            else:
-                self.db_visualisation[:, :dark_col] *= dark_gain
-                self.db_visualisation[:, dark_col:] *= light_gain
 
+        if self.light_gradient > 0 and dark_col > 0:
+            gradient = self.chosen_math_library.linspace(1, 2, self.light_gradient)
+            gradient = self.chosen_math_library.expand_dims(gradient, 0)
+            gradient = self.chosen_math_library.repeat(gradient, self.height, 0)
+            gradient = self.chosen_math_library.expand_dims(gradient, 2)
+            self.db_visualisation[:, int(dark_col-(self.light_gradient/2)):int(dark_col+(self.light_gradient/2))] *= gradient
+            self.db_visualisation[:, :int(dark_col-(self.light_gradient/2))] *= 1
+            self.db_visualisation[:, int(dark_col+(self.light_gradient/2)):] *= 2
         else:
-            if self.light_gradient > 0 and dark_col > 0:
-                gradient = self.chosen_math_library.linspace(dark_gain, light_gain, self.light_gradient)
-                gradient = self.chosen_math_library.expand_dims(gradient, 0)
-                gradient = self.chosen_math_library.repeat(gradient, self.height, 0)
-                gradient = self.chosen_math_library.expand_dims(gradient, 2)
-                self.db[:, int(dark_col-(self.light_gradient/2)):int(dark_col+(self.light_gradient/2))] *= gradient
-                self.db[:, :int(dark_col-(self.light_gradient/2))] *= dark_gain
-                self.db[:, int(dark_col+(self.light_gradient/2)):] *= light_gain
-            else:
-                self.db[:, :dark_col] *= dark_gain
-                self.db[:, dark_col:] *= light_gain
+            self.db_visualisation[:, :dark_col] *= 1
+            self.db_visualisation[:, dark_col:] *= 2
 
     def circle(self, center, rad, color, visualisation=False):
         rr, cc = draw.circle(center[1], center[0], rad, self.db_visualisation.shape)

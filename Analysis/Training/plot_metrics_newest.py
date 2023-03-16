@@ -13,13 +13,20 @@ def interpolate_metric_data(data, scaffold_points):
     for s in scaffold_points:
         switch_ep = s[0]
         data_before_switch = (data[:, 0] < switch_ep) * (data[:, 0] >= previous_switch_ep)
+        steps = data[data_before_switch, 0]
+        try:
+            switch_ep = np.max(steps) + 1
+        except ValueError:
+            # The final scaffold point
+            pass
+
 
         switch_ep_difference = switch_ep - previous_switch_ep
         data[data_before_switch, 0] -= previous_switch_ep
         data[data_before_switch, 0] /= switch_ep_difference
         data[data_before_switch, 0] += (s[1] - 1)
 
-        previous_switch_ep = switch_ep
+        previous_switch_ep = s[0]
 
     data_before_switch = (data[:, 0] >= previous_switch_ep)
     switch_ep_difference = np.sum(data_before_switch * 1) * 2
@@ -50,6 +57,8 @@ def compute_rolling_averages_over_data_scaled_window(data, max_window, scaffold_
 
     window_start = 0
     rolling_average_full = []
+    steps_cut_compiled = []
+
     for w, window in enumerate(window_sizes):
         if exclude_overlapping:
             window_end = int(scaffold_points[w, 0] - window)
@@ -63,8 +72,12 @@ def compute_rolling_averages_over_data_scaled_window(data, max_window, scaffold_
         else:
             data_points_cut = len(data[:, 1])
 
+        if exclude_overlapping:
+            steps_cut_compiled.append(data[min(window_start, data_points_cut):min(window_end_index, data_points_cut), 0:1])
+
         rolling_average = np.array([[np.mean(data[i: i + window, 1])] for i in range(window_start, window_end_index) if i < data_points_cut])
         rolling_average_full.append(rolling_average)
+
         if exclude_overlapping:
             window_start = find_nearest(data[:, 0], window_end + window)
         else:
@@ -73,7 +86,11 @@ def compute_rolling_averages_over_data_scaled_window(data, max_window, scaffold_
     rolling_average_full = [r for r in rolling_average_full if len(r) > 0]
     rolling_average = np.concatenate((rolling_average_full), axis=0)
 
-    steps_cut = data[:data_points_cut, 0:1]
+
+    if exclude_overlapping:
+        steps_cut = np.concatenate(steps_cut_compiled, axis=0)
+    else:
+        steps_cut = data[:data_points_cut, 0:1]
 
     rolling_average = np.concatenate((steps_cut, rolling_average), axis=1)
     return rolling_average
@@ -456,7 +473,7 @@ if __name__ == "__main__":
                               ]
     plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=2000, interpolate_scaffold_points=True,
                                           figure_name="dqn_gamma2", scaled_window=True,
-                                          show_inset=["capture success rate", 23])# key_scaffold_points=[14, 29, 42])
+                                          show_inset=["capture success rate", 2])# key_scaffold_points=[14, 29, 42])
     # plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=100, interpolate_scaffold_points=True,
     #                                       figure_name="dqn_beta_mod", scaled_window=False,
     #                                       show_inset=["capture success rate", 23])#, key_scaffold_points=[10, 16, 31])
