@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import multivariate_normal
@@ -16,7 +18,7 @@ For creation of displays of action space usage across training.
 
 
 def get_impulse_angle_space_usage(impulses, angles, dqn, max_impulse, max_angle):
-    res = 100    # TODO: Determine bin width as function of sample number
+    res = 200    # TODO: Determine bin width as function of sample number
     angles = np.absolute(angles)
 
     impulse_lim = [0, 45]
@@ -77,12 +79,15 @@ def get_impulse_angle_space_usage(impulses, angles, dqn, max_impulse, max_angle)
             max_angle_index = find_nearest(angle_range, max_angle)
             heatmap_array[max_angle_index+1:, :] *= 0
 
+    original_whitespace = copy.copy(heatmap_array)
 
     # Overlay action choices in colours in heatmap
     nearest_i = np.array([find_nearest(impulse_range, i) for i in impulses])
     nearest_a = np.array([find_nearest(angle_range, a) for a in angles])
 
     heatmap_array[nearest_a, nearest_i] = np.array([1.0, 0, 0])
+
+    heatmap_array *= original_whitespace
 
     heatmap_array = np.flip(heatmap_array, axis=0)
 

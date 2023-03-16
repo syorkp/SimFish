@@ -44,7 +44,7 @@ class EnvTestingService(BaseService):
                                                       self.environment_params["arena_height"],
                                                       light_gradient=self.environment_params["light_gradient"])
         self.board_fig, self.ax_board = plt.subplots()
-        self.board_image = plt.imshow(np.zeros((self.environment_params['arena_height'], self.environment_params['arena_width'], 3)))
+        self.board_image = plt.imshow(np.zeros((self.environment_params['arena_height']*4, self.environment_params['arena_width']*4, 3)))
         plt.ion()
         plt.show()
 
@@ -64,8 +64,12 @@ class EnvTestingService(BaseService):
                 action = input()
                 action = int(action)
 
-            self.simulation.simulation_step(action)
-            self.update_drawing()
+            if action == 99:
+                plt.rcParams['figure.figsize'] = [10, 10]
+                plt.savefig("Fig")
+            else:
+                self.simulation.simulation_step(action)
+                self.update_drawing()
 
     def update_drawing(self):
         self.visualisation_board.erase_visualisation()
@@ -73,7 +77,7 @@ class EnvTestingService(BaseService):
         self.visualisation_board.apply_light(dark_col=int(self.environment_params["dark_light_ratio"] * self.environment_params["arena_width"]),
                                              dark_gain=self.environment_params["dark_gain"],
                                              light_gain=self.environment_params["light_gain"])
-        frame = self.output_frame(scale=0.5) / 255.
+        frame = self.output_frame(scale=4) / 255.
         self.board_image.set_data(frame / np.max(frame))
         plt.pause(0.000001)
 
@@ -144,8 +148,8 @@ class EnvTestingService(BaseService):
             self.visualisation_board.circle(self.simulation.predator_body.position, self.environment_params['predator_radius'],
                               self.simulation.predator_shape.color, True)
 
-        if self.environment_params["salt"] and self.environment_params["max_salt_damage"] > 0:
-            self.visualisation_board.show_salt_location(self.simulation.salt_location)
+        # if self.environment_params["salt"] and self.environment_params["max_salt_damage"] > 0:
+        #     self.visualisation_board.show_salt_location(self.simulation.salt_location)
 
     def output_frame(self, internal_state=np.array([[0, 0, 0]]), scale=0.25):
         # Adjust scale for larger environments
