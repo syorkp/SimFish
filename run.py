@@ -792,7 +792,7 @@ if __name__ == "__main__": # may be needed to run on windows
             "Environment Name": "ppo_new",
             "Trial Number": 1,
             "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
+            "Learning Algorithm": "PPO",
         },
     ]
     ppo_new_2 = [
@@ -801,7 +801,7 @@ if __name__ == "__main__": # may be needed to run on windows
             "Environment Name": "ppo_new",
             "Trial Number": 2,
             "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
+            "Learning Algorithm": "PPO",
         },
     ]
     ppo_new_3 = [
@@ -810,7 +810,7 @@ if __name__ == "__main__": # may be needed to run on windows
             "Environment Name": "ppo_new",
             "Trial Number": 3,
             "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
+            "Learning Algorithm": "PPO",
         },
     ]
     ppo_new_4 = [
@@ -819,7 +819,7 @@ if __name__ == "__main__": # may be needed to run on windows
             "Environment Name": "ppo_new",
             "Trial Number": 4,
             "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
+            "Learning Algorithm": "PPO",
         },
     ]
     ppo_new_5 = [

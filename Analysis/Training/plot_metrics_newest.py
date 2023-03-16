@@ -31,7 +31,7 @@ def interpolate_metric_data(data, scaffold_points):
     return data
 
 
-def compute_rolling_averages_over_data_scaled_window(data, max_window, scaffold_points, min_window=10):
+def compute_rolling_averages_over_data_scaled_window(data, max_window, scaffold_points, min_window=5, exclude_overlapping=True):
     # Compute episode length of each scaffold point...
     scaffold_points = np.array(scaffold_points)
     scaffold_points_order = np.argsort(scaffold_points[:, 1])
@@ -51,7 +51,10 @@ def compute_rolling_averages_over_data_scaled_window(data, max_window, scaffold_
     window_start = 0
     rolling_average_full = []
     for w, window in enumerate(window_sizes):
-        window_end = int(scaffold_points[w, 0])
+        if exclude_overlapping:
+            window_end = int(scaffold_points[w, 0] - window)
+        else:
+            window_end = int(scaffold_points[w, 0])
         window_end_index = find_nearest(data[:, 0], window_end)
 
         if w == len(window_sizes) - 1:
@@ -62,7 +65,10 @@ def compute_rolling_averages_over_data_scaled_window(data, max_window, scaffold_
 
         rolling_average = np.array([[np.mean(data[i: i + window, 1])] for i in range(window_start, window_end_index) if i < data_points_cut])
         rolling_average_full.append(rolling_average)
-        window_start = window_end_index
+        if exclude_overlapping:
+            window_start = find_nearest(data[:, 0], window_end + window)
+        else:
+            window_start = window_end_index
 
     rolling_average_full = [r for r in rolling_average_full if len(r) > 0]
     rolling_average = np.concatenate((rolling_average_full), axis=0)
@@ -394,10 +400,10 @@ if __name__ == "__main__":
                           ]
     chosen_metrics_dqn = ["prey capture index (fraction caught)",
                           "capture success rate",
-                          "episode reward",
+                          # "episode reward",
                           "Energy Efficiency Index",
-                          "Episode Duration",
-                          "Exploration Quotient",
+                          # "Episode Duration",
+                          # "Exploration Quotient",
                           "Action Heterogeneity Score",
 
                           "turn chain preference",
@@ -448,9 +454,9 @@ if __name__ == "__main__":
                               "predator avoidance index (avoided/p_pred)",
                               # "Phototaxis Index"
                               ]
-    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=20, interpolate_scaffold_points=True,
-                                          figure_name="dqn_gamma", scaled_window=True,
-                                          show_inset=["capture success rate", 34])# key_scaffold_points=[14, 29, 42])
+    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=2000, interpolate_scaffold_points=True,
+                                          figure_name="dqn_gamma2", scaled_window=True,
+                                          show_inset=["capture success rate", 23])# key_scaffold_points=[14, 29, 42])
     # plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=100, interpolate_scaffold_points=True,
     #                                       figure_name="dqn_beta_mod", scaled_window=False,
     #                                       show_inset=["capture success rate", 23])#, key_scaffold_points=[10, 16, 31])

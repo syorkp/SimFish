@@ -201,7 +201,8 @@ env = {
 
     # Energy state
     'action_energy_use_scaling': "Sublinear",  # Options: Nonlinear, linear, sublinear.
-    'i_scaling_energy_cost': 1.5e-04,  # Final for sublinear PPO: 0.0003
+    'i_scaling_energy_cost': 1.5e-04,  #
+    # Final for sublinear PPO: 0.0003
     'a_scaling_energy_cost': 1.5e-04,  # Final for sublinear PPO: 0.0003
     'baseline_energy_use': 0.0002,  # Final for sublinear PPO: 0.0015
     'consumption_energy_gain': 1.0,
