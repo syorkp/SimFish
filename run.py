@@ -736,7 +736,7 @@ if __name__ == "__main__":  # may be needed to run on windows
         {
             "Model Name": "dqn_gamma",
             "Environment Name": "dqn_gamma_3",
-            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Assay Configuration Name": "Behavioural-Data-Free-A",
             "Trial Number": 3,
             "Run Mode": "Assay",
             "Learning Algorithm": "DQN",
@@ -764,7 +764,7 @@ if __name__ == "__main__":  # may be needed to run on windows
         {
             "Model Name": "dqn_gamma",
             "Environment Name": "dqn_gamma_5",
-            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Assay Configuration Name": "Behavioural-Data-Free-A",
             "Trial Number": 5,
             "Run Mode": "Assay",
             "Learning Algorithm": "DQN",
@@ -795,7 +795,7 @@ if __name__ == "__main__":  # may be needed to run on windows
         {
             "Model Name": "dqn_gamma",
             "Environment Name": "dqn_gamma_s1",
-            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Assay Configuration Name": "Behavioural-Data-Free-A",
             "Trial Number": 4,
             "Run Mode": "Assay",
             "Learning Algorithm": "DQN",
@@ -823,7 +823,7 @@ if __name__ == "__main__":  # may be needed to run on windows
         {
             "Model Name": "dqn_gamma",
             "Environment Name": "dqn_gamma_s27",
-            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Assay Configuration Name": "Behavioural-Data-Free-B",
             "Trial Number": 4,
             "Run Mode": "Assay",
             "Learning Algorithm": "DQN",
@@ -851,7 +851,7 @@ if __name__ == "__main__":  # may be needed to run on windows
         {
             "Model Name": "dqn_gamma",
             "Environment Name": "dqn_gamma_s51",
-            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Assay Configuration Name": "Behavioural-Data-Free-C",
             "Trial Number": 4,
             "Run Mode": "Assay",
             "Learning Algorithm": "DQN",
@@ -879,7 +879,7 @@ if __name__ == "__main__":  # may be needed to run on windows
         {
             "Model Name": "dqn_gamma",
             "Environment Name": "dqn_gamma_3",
-            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Assay Configuration Name": "Behavioural-Data-Free-D",
             "Trial Number": 4,
             "Run Mode": "Assay",
             "Learning Algorithm": "DQN",
