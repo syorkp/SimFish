@@ -731,6 +731,181 @@ if __name__ == "__main__":  # may be needed to run on windows
         },
     ]
 
+    # Gathering for lab meeting
+    dqn_lab_meeting_gathering_1 = [
+        {
+            "Model Name": "dqn_gamma",
+            "Environment Name": "dqn_gamma_3",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 3,
+            "Run Mode": "Assay",
+            "Learning Algorithm": "DQN",
+            "Checkpoint": 11609,
+            "behavioural recordings": ["environmental positions", "observation"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "stimulus paradigm": "Naturalistic",
+                    "repeats": 100,
+                    "duration": 10000,
+                    "Tethered": False,
+                    "save frames": False,
+                    "use_mu": True,
+                    "save stimuli": False,
+                    "random positions": False,
+                    "reset": False,
+                    "background": None,
+                    "moving": False,
+                    "collisions": True,
+                },
+            ]
+        },
+        {
+            "Model Name": "dqn_gamma",
+            "Environment Name": "dqn_gamma_5",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 5,
+            "Run Mode": "Assay",
+            "Learning Algorithm": "DQN",
+            "Checkpoint": 4016,
+            "behavioural recordings": ["environmental positions", "observation"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "stimulus paradigm": "Naturalistic",
+                    "repeats": 100,
+                    "duration": 10000,
+                    "Tethered": False,
+                    "save frames": False,
+                    "use_mu": True,
+                    "save stimuli": False,
+                    "random positions": False,
+                    "reset": False,
+                    "background": None,
+                    "moving": False,
+                    "collisions": True,
+                },
+            ]
+        }
+        ]
+
+    dqn_lab_meeting_gathering_2 = [
+        {
+            "Model Name": "dqn_gamma",
+            "Environment Name": "dqn_gamma_s1",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 4,
+            "Run Mode": "Assay",
+            "Learning Algorithm": "DQN",
+            "Checkpoint": 2012,
+            "behavioural recordings": ["environmental positions", "observation"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "stimulus paradigm": "Naturalistic",
+                    "repeats": 100,
+                    "duration": 10000,
+                    "Tethered": False,
+                    "save frames": False,
+                    "use_mu": True,
+                    "save stimuli": False,
+                    "random positions": False,
+                    "reset": False,
+                    "background": None,
+                    "moving": False,
+                    "collisions": True,
+                },
+            ]
+        },
+        {
+            "Model Name": "dqn_gamma",
+            "Environment Name": "dqn_gamma_s27",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 4,
+            "Run Mode": "Assay",
+            "Learning Algorithm": "DQN",
+            "Checkpoint": 4002,
+            "behavioural recordings": ["environmental positions", "observation"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "stimulus paradigm": "Naturalistic",
+                    "repeats": 100,
+                    "duration": 10000,
+                    "Tethered": False,
+                    "save frames": False,
+                    "use_mu": True,
+                    "save stimuli": False,
+                    "random positions": False,
+                    "reset": False,
+                    "background": None,
+                    "moving": False,
+                    "collisions": True,
+                },
+            ]
+        },
+        {
+            "Model Name": "dqn_gamma",
+            "Environment Name": "dqn_gamma_s51",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 4,
+            "Run Mode": "Assay",
+            "Learning Algorithm": "DQN",
+            "Checkpoint": 6055,
+            "behavioural recordings": ["environmental positions", "observation"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "stimulus paradigm": "Naturalistic",
+                    "repeats": 100,
+                    "duration": 10000,
+                    "Tethered": False,
+                    "save frames": False,
+                    "use_mu": True,
+                    "save stimuli": False,
+                    "random positions": False,
+                    "reset": False,
+                    "background": None,
+                    "moving": False,
+                    "collisions": True,
+                },
+            ]
+        },
+        {
+            "Model Name": "dqn_gamma",
+            "Environment Name": "dqn_gamma_3",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 4,
+            "Run Mode": "Assay",
+            "Learning Algorithm": "DQN",
+            "Checkpoint": 12625,
+            "behavioural recordings": ["environmental positions", "observation"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "stimulus paradigm": "Naturalistic",
+                    "repeats": 100,
+                    "duration": 10000,
+                    "Tethered": False,
+                    "save frames": False,
+                    "use_mu": True,
+                    "save stimuli": False,
+                    "random positions": False,
+                    "reset": False,
+                    "background": None,
+                    "moving": False,
+                    "collisions": True,
+                },
+            ]
+        },
+        ]
+
     if run_config is None:
         run_config = ppo_gamma_6
     else:
