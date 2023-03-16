@@ -21,6 +21,7 @@ class BaseDQN:
         self.learning_params = None
         self.environment_params = None
         self.total_steps = None
+        self.action_usage = None
         self.simulation = None
         self.experience_buffer = None
         self.sess = None
@@ -260,6 +261,12 @@ class BaseDQN:
 
         return all_actions, total_episode_reward, experience, total_episode_attention
 
+    def reflect_obs(self, o):
+        o_ref = np.zeros_like(o)
+        o_ref[:, :, 0] = o[::-1, :, 1]
+        o_ref[:, :, 1] = o[::-1, :, 0]
+        return o_ref
+    
     def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         """
         Runs a step, choosing an action given an initial condition using the network/randomly, and running this in the
@@ -281,6 +288,8 @@ class BaseDQN:
         updated_rnn_state: The updated RNN state
         """
         # Generate actions and corresponding steps.
+        exploration = 'epsilon_greedy'
+
         feed_dict = {self.main_QN.observation: o,
                      self.main_QN.internal_state: internal_state,
                      self.main_QN.prev_actions: [a],
@@ -289,24 +298,27 @@ class BaseDQN:
                      self.main_QN.rnn_state_in_ref: rnn_state_ref,
                      self.main_QN.batch_size: 1,
                      self.main_QN.exp_keep: 1.0,
+                     self.main_QN.Temp: self.epsilon,
                      self.main_QN.learning_rate: self.learning_params["learning_rate"],
                      }
-
-        if np.random.rand(1) < self.epsilon or self.total_steps < self.initial_exploration_steps:
-            [updated_rnn_state, updated_rnn_state_ref, sa, sv] = self.sess.run(
-                [self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref, self.main_QN.streamA,
-                 self.main_QN.streamV], feed_dict=feed_dict)
+        greedy_a, q_dist, updated_rnn_state, updated_rnn_state_ref, sa, sv, val, adv, val_ref, adv_ref = self.sess.run(
+                [self.main_QN.predict, self.main_QN.Q_dist, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
+                 self.main_QN.streamA, self.main_QN.streamV, self.main_QN.Value, self.main_QN.Advantage,
+                 self.main_QN.Value_ref, self.main_QN.Advantage_ref],
+                feed_dict=feed_dict)
+        
+        if (np.random.rand(1) < self.epsilon and exploration == 'epsilon_greedy') or self.total_steps < self.initial_exploration_steps:
+          
             chosen_a = np.random.randint(0, self.learning_params['num_actions'])
         else:
-            chosen_a, updated_rnn_state, updated_rnn_state_ref, sa, sv = self.sess.run(
-                [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
-                 self.main_QN.streamA, self.main_QN.streamV],
-                feed_dict=feed_dict)
-            chosen_a = chosen_a[0]
-
+            if exploration == 'boltzmann':
+                chosen_a = np.random.choice(self.learning_params['num_actions'], p=q_dist[0])
+            else:
+                chosen_a = greedy_a[0]
         # Simulation step
         o1, given_reward, internal_state, d, FOV, att = self.simulation.simulation_step(action=chosen_a,
                                                                                         activations=(sa,))
+        self.action_usage[chosen_a] += 1
 
         action_reafference = [chosen_a, self.simulation.fish.prev_action_impulse,
                               self.simulation.fish.prev_action_angle]
@@ -362,6 +374,10 @@ class BaseDQN:
                                      reward=given_reward,
                                      rnn_state=updated_rnn_state,
                                      rnn_state_ref=updated_rnn_state_ref,
+                                     value=val,
+                                     advantage=adv,
+                                     value_ref=val_ref,
+                                     advantage_ref=adv_ref
                                      )
 
         self.total_steps += 1
@@ -549,9 +565,9 @@ class BaseDQN:
                 state_train = tuple(
                     (np.zeros([self.learning_params['batch_size'], shape]),
                      np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
-                # state_train_ref = tuple(
-                #     (np.zeros([self.learning_params['batch_size'], shape]),
-                #      np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
+                state_train_ref = tuple(
+                    (np.zeros([self.learning_params['batch_size'], shape]),
+                     np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
             else:
                 state_train = (np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]),
                                np.zeros([self.learning_params['batch_size'], self.main_QN.rnn_dim]))

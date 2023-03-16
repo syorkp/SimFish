@@ -60,6 +60,9 @@ class Eye:
 
         self.uv_photoreceptor_angles = self.update_angles_sigmoid(verg_angle, retinal_field, is_left)
         self.uv_photoreceptor_num = len(self.uv_photoreceptor_angles)
+        #self.uv_photoreceptor_angles = self.update_angles(verg_angle, retinal_field, is_left,
+        #                                                   self.uv_photoreceptor_num)
+
         self.red_photoreceptor_num = self.uv_photoreceptor_num
 
         self.interpolated_observation = self.chosen_math_library.arange(

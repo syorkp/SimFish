@@ -51,6 +51,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.action_associated_reward = 0
         self.salt_associated_reward = 0
         self.predator_associated_reward = 0
+        self.predator_touches = 0
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
 
@@ -157,6 +158,7 @@ Sand grain: {self.sand_grain_associated_reward}
         self.action_associated_reward = 0
         self.salt_associated_reward = 0
         self.predator_associated_reward = 0
+        self.predator_touches = 0
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
 
@@ -354,6 +356,7 @@ Sand grain: {self.sand_grain_associated_reward}
             print("Fish touched predator")
             reward -= self.env_variables['predator_cost']
             self.predator_associated_reward -= self.env_variables["predator_cost"]
+            self.predator_touches += 1
             self.survived_attack = False
             self.fish.touched_predator = False
             att += 1
@@ -370,7 +373,7 @@ Sand grain: {self.sand_grain_associated_reward}
                 att += 5
                 if 'predator_avoidance_reward' in self.env_variables:
                     reward += self.env_variables["predator_avoidance_reward"]
-                    self.predator_associated_reward += self.env_variables["predator_cost"]
+                    self.predator_associated_reward += self.env_variables["predator_avoidance_reward"]
 
         if "sand_grain_touch_penalty" in self.env_variables:
             if self.fish.touched_sand_grain:

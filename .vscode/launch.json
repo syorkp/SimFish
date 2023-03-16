@@ -11,7 +11,8 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["prey_basic"]
+            //"args": ["./Training-Output/prey_basic_mimic_master2-1/episodes/Episode 1200.h5", "./Configurations/Training-Configs/prey_basic_mimic_master2/1_env.json"]
+            "args": ["prey_very_basic_3"]
         }
     ]
 }

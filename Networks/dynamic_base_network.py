@@ -12,7 +12,7 @@ def flatten_list(t):
 class DynamicBaseNetwork:
 
     def __init__(self, simulation, my_scope, internal_states, internal_state_names, action_dim, num_actions,
-                 base_network_layers, modular_network_layers, ops, connectivity, reflected, algorithm, reuse_eyes):
+                 base_network_layers, modular_network_layers, ops, connectivity, reflected, algorithm, reuse_eyes, swap_eyes=True):
 
         self.resolve_connectivity(base_network_layers, modular_network_layers, ops, connectivity)
 
@@ -31,6 +31,29 @@ class DynamicBaseNetwork:
             self.prev_chosen_actions = self.prev_actions[:, 0]
             self.prev_chosen_actions = tf.cast(self.prev_chosen_actions, dtype=tf.int32)
             self.prev_actions_one_hot = tf.one_hot(self.prev_chosen_actions, num_actions, dtype=tf.float32)
+            if num_actions == 12:
+                self.prev_actions_one_hot_ref = tf.concat([self.prev_actions_one_hot[0:, :][:, :1],
+                                                    self.prev_actions_one_hot[0:, :][:, 2:3],
+                                                    self.prev_actions_one_hot[0:, :][:, 1:2],
+                                                    self.prev_actions_one_hot[0:, :][:, 3:4],
+                                                    self.prev_actions_one_hot[0:, :][:, 5:6],
+                                                    self.prev_actions_one_hot[0:, :][:, 4:5],
+                                                    self.prev_actions_one_hot[0:, :][:, 6:7],
+                                                    self.prev_actions_one_hot[0:, :][:, 8:9],
+                                                    self.prev_actions_one_hot[0:, :][:, 7:8],
+                                                    self.prev_actions_one_hot[0:, :][:, 9:10],
+                                                    self.prev_actions_one_hot[0:, :][:, 11:],
+                                                    self.prev_actions_one_hot[0:, :][:, 10:11]], axis=1)
+            elif num_actions == 7:
+                self.prev_actions_one_hot_ref = tf.concat([self.prev_actions_one_hot[0:, :][:, :1],
+                                                    self.prev_actions_one_hot[0:, :][:, 2:3],
+                                                    self.prev_actions_one_hot[0:, :][:, 1:2],
+                                                    self.prev_actions_one_hot[0:, :][:, 3:4],
+                                                    self.prev_actions_one_hot[0:, :][:, 5:6],
+                                                    self.prev_actions_one_hot[0:, :][:, 4:5],
+                                                    self.prev_actions_one_hot[0:, :][:, 6:7]], axis=1)
+                                                    
+
         else:
             self.prev_actions = tf.placeholder(shape=[None, action_dim*2], dtype=tf.float32, name='prev_actions')
 
@@ -42,7 +65,7 @@ class DynamicBaseNetwork:
             # If re-using weights from one eye to the other, reflect the observation reaching the right eye.
             left_eye = self.reshaped_observation[:, :, :, 0:1]
             right_eye = self.reshaped_observation[:, :, :, 1:2]
-            right_eye = tf.reverse(right_eye, axis=[1])
+            #right_eye = tf.reverse(right_eye, axis=[1])
             self.reshaped_observation = tf.concat((left_eye, right_eye), axis=3)
 
         # Record of processing step layers
@@ -57,37 +80,37 @@ class DynamicBaseNetwork:
 
         # Contains all layers to be referenced.
         if algorithm == "dqn":
-            self.network_graph = {"observation": self.reshaped_observation,
+            self.normal_network_graph = {"observation": self.reshaped_observation,
                                   "internal_state": self.internal_state,
                                   "prev_actions": self.prev_actions_one_hot,
                                   "prev_action_impulse": self.prev_action_impulse,
                                   "prev_action_angle": self.prev_action_angle,
                                   }
         else:
-            self.network_graph = {"observation": self.reshaped_observation,
+            self.normal_network_graph = {"observation": self.reshaped_observation,
                                   "internal_state": self.internal_state,
                                   "prev_actions": self.prev_actions}
         self.initialize_network(copy.copy(base_network_layers), copy.copy(modular_network_layers), copy.copy(ops),
-                                connectivity, self.network_graph, reuse_eyes=reuse_eyes)
+                                connectivity, self.normal_network_graph, reuse_eyes=reuse_eyes, swap_eyes=swap_eyes)
 
         if reflected:
             print("Building reflected graph")
             if algorithm == "dqn":
                 self.reflected_network_graph = {"observation": self.reshaped_observation,
                                                 "internal_state": self.internal_state,
-                                                "prev_actions": self.prev_actions_one_hot,
+                                                "prev_actions": self.prev_actions_one_hot_ref,
                                                 "prev_action_impulse": self.prev_action_impulse,
-                                                "prev_action_angle": self.prev_action_angle,
+                                                "prev_action_angle": self.prev_action_angle*-1,
                                                 }
             else:
                 self.reflected_network_graph = {"observation": self.reshaped_observation,
                                                 "internal_state": self.internal_state,
                                                 "prev_actions": self.prev_actions}
             self.initialize_network(copy.copy(base_network_layers), copy.copy(modular_network_layers), copy.copy(ops),
-                                    connectivity, self.reflected_network_graph, reflected=True, reuse_eyes=reuse_eyes)
+                                    connectivity, self.reflected_network_graph, reflected=True, reuse_eyes=reuse_eyes, swap_eyes=swap_eyes)
 
         # Name the outputs
-        self.processing_network_output = self.network_graph["output_layer"]
+        self.processing_network_output = self.normal_network_graph["output_layer"]
 
         if reflected:
             self.processing_network_output_ref = self.reflected_network_graph["output_layer"]
@@ -112,22 +135,25 @@ class DynamicBaseNetwork:
 
         self.rnn_layer_names = rnn_layers
 
-        self.rnn_state_shared = tuple(self.network_graph[layer + "_shared"] for layer in rnn_layers)
+        self.rnn_state_shared = tuple(self.normal_network_graph[layer + "_shared"] for layer in rnn_layers)
         self.rnn_state_in = tuple(self.rnn_cell_states[layer] for layer in rnn_layers)
 
         if reflected:
             self.rnn_state_ref = tuple(self.reflected_network_graph[layer + "_shared"] for layer in rnn_layers)
             self.rnn_state_in_ref = tuple(self.rnn_cell_states[layer + "_ref"] for layer in rnn_layers)
 
-    def perform_op(self, op, network_graph, reflected):
+    def perform_op(self, op, network_graph, reflected, swap_eyes):
         if op[0] == "eye_split":
-            if reflected:
-                network_graph[op[2][0]] = tf.reverse(self.network_graph[op[2][0]], [1])
-                network_graph[op[2][1]] = tf.reverse(self.network_graph[op[2][1]], [1])
+            if reflected and swap_eyes:
+                network_graph[op[2][0]] = network_graph[op[1][0]][:, :, :, 1]
+                network_graph[op[2][1]] = network_graph[op[1][0]][:, :, :, 0]
             else:
                 network_graph[op[2][0]] = network_graph[op[1][0]][:, :, :, 0]
                 network_graph[op[2][1]] = network_graph[op[1][0]][:, :, :, 1]
-
+            if reflected:
+                network_graph[op[2][0]] = tf.reverse(network_graph[op[2][0]], [1])
+                network_graph[op[2][1]] = tf.reverse(network_graph[op[2][1]], [1])
+ 
         elif op[0] == "flatten":
             network_graph[op[2][0]] = tf.layers.flatten(network_graph[op[1][0]], name=self.scope + "_" + op[2][0])
         elif op[0] == "concatenate":
@@ -166,23 +192,23 @@ class DynamicBaseNetwork:
                                                         reuse=reflected)
 
         elif layer_parameters[0] == "dynamic_rnn":
-            # if reflected:
-            #     state_layer_name = layer_name + "_ref"
-            # else:
-            #     state_layer_name = layer_name
-            state_layer_name = layer_name
+            if reflected:
+                state_layer_name = layer_name + "_ref"
+            else:
+                state_layer_name = layer_name
+            #state_layer_name = layer_name
             units = layer_parameters[1]
-            self.network_graph[layer_input + "_inputs"] = tf.layers.dense(network_graph[layer_input], units,
+            network_graph[layer_input + "_inputs"] = tf.layers.dense(network_graph[layer_input], units,
                                                                           activation=tf.nn.relu,
                                                                           kernel_initializer=tf.orthogonal_initializer,
                                                                           trainable=True,
                                                                           name=self.scope + "_" + layer_name + "_in",
                                                                           reuse=reflected)
             if reflected:  # TODO: Remove later, compatability issue now.
-                network_graph[layer_input + "_reshaped"] = tf.reshape(self.network_graph[layer_input + "_inputs"],
+                network_graph[layer_input + "_reshaped"] = tf.reshape(network_graph[layer_input + "_inputs"],
                                                                       [self.batch_size, self.train_length, units])
             else:
-                network_graph[layer_input + "_reshaped"] = tf.reshape(self.network_graph[layer_input + "_inputs"],
+                network_graph[layer_input + "_reshaped"] = tf.reshape(network_graph[layer_input + "_inputs"],
                                                                       [self.batch_size, self.train_length, units],
                                                                       name="flattened_shared_" + layer_name + "_in")
             network_graph[layer_name + "_dyn"], network_graph[layer_name + "_shared"] = tf.nn.dynamic_rnn(
@@ -204,10 +230,10 @@ class DynamicBaseNetwork:
                 self.reflected_network_graph[state] = self.reflected_network_graph["internal_state"][:, i]
         else:
             for i, state in enumerate(self.internal_state_names):
-                self.network_graph[state] = self.network_graph["internal_state"][:, i]
+                self.normal_network_graph[state] = self.normal_network_graph["internal_state"][:, i]
 
     def initialize_network(self, layers, modular_layers, ops, connectivity, network_graph, reflected=False,
-                           reuse_eyes=False):
+                           reuse_eyes=False, swap_eyes=True):
         """reuse_eyes, if true, causes all conv layers to be reused."""
 
         self.separate_internal_state_inputs(reflected)
@@ -218,7 +244,7 @@ class DynamicBaseNetwork:
             op_to_remove = None
             for op in ops.keys():
                 if set(ops[op][1]).issubset(list(network_graph.keys())):
-                    self.perform_op(ops[op], network_graph, reflected)
+                    self.perform_op(ops[op], network_graph, reflected, swap_eyes)
                     final_name = ops[op][2]
                     op_to_remove = op
                     break
@@ -275,8 +301,8 @@ class DynamicBaseNetwork:
         for layer in layers.keys():
             if layers[layer][0] == "dynamic_rnn":
                 rnn_units[layer] = tf.nn.rnn_cell.LSTMCell(num_units=layers[layer][1], state_is_tuple=True)
-                rnn_cell_states[layer] = rnn_units[layer].zero_state(self.train_length, tf.float32)
+                rnn_cell_states[layer] = rnn_units[layer].zero_state(self.batch_size, tf.float32)
                 if reflected:
-                    rnn_cell_states[layer + "_ref"] = rnn_units[layer].zero_state(self.train_length, tf.float32)  # TODO: TEST CHANGE HERE
+                    rnn_cell_states[layer + "_ref"] = rnn_units[layer].zero_state(self.batch_size, tf.float32)  # TODO: TEST CHANGE HERE
                 rnn_dim = layers[layer][1]
         return rnn_units, rnn_cell_states, rnn_dim

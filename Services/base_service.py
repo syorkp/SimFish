@@ -82,6 +82,7 @@ class BaseService:
         else:
             self.total_steps = 0
 
+        
         # Switchover at start of phase 1
 
         if not self.using_gpu:

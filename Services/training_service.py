@@ -625,7 +625,7 @@ class TrainingService(BaseService):
                 # Save the model
                 self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
 
-        if self.episode_number % self.learning_params['summaryLength'] == 0 and self.episode_number != 0:
+        if self.episode_number % self.learning_params['summaryLength'] == 0 and self.episode_number != 0 and self.save_environmental_data:
             if self.using_gpu:
                 background = self.simulation.board.global_background_grating.get()[:, :, 0]
             else:
@@ -645,8 +645,8 @@ class TrainingService(BaseService):
             episode_data = load_data(f"{self.model_name}-{self.model_number}", f"Episode {self.episode_number}",
                                      f"Episode {self.episode_number}", training_data=True)
 
-            draw_episode(episode_data, self.environment_params, f"{self.model_location}/episodes/Episode {self.episode_number}",
-                         self.continuous_actions)
+            #draw_episode(episode_data, self.environment_params, f"{self.model_location}/episodes/Episode {self.episode_number}",
+            #             self.continuous_actions)
 
             self.buffer.reset()
             self.save_environmental_data = False

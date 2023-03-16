@@ -797,24 +797,6 @@ class BaseEnvironment:
         del self.prey_ages[prey_index]
         del self.paramecia_gaits[prey_index]
 
-    def create_predator(self):
-        self.predator_bodies.append(
-            pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia']))
-        self.predator_shapes.append(pymunk.Circle(self.predator_bodies[-1], self.env_variables['predator_size']))
-        self.predator_shapes[-1].elasticity = 1.0
-        self.predator_bodies[-1].position = (
-            np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'],
-                              self.env_variables['width'] - (
-                                      self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'])),
-            np.random.randint(self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'],
-                              self.env_variables['height'] - (
-                                      self.env_variables['predator_size'] + self.env_variables['fish_mouth_size'])))
-        self.predator_shapes[-1].color = (0, 1, 0)
-        # Made green so still visible to us but not to fish.
-        self.predator_shapes[-1].collision_type = 5
-
-        self.space.add(self.predator_bodies[-1], self.predator_shapes[-1])
-
     def move_predator(self, micro_step):
         # OLD:
         # for pr in self.predator_bodies:
@@ -1080,64 +1062,7 @@ class BaseEnvironment:
         return ((self.predator_body.position[0] - self.fish.body.position[0]) ** 2 +
                 (self.predator_body.position[1] - self.fish.body.position[1]) ** 2) ** 0.5
 
-    def move_realistic_predator(self, micro_step):
-        if self.first_attack:
-            # If the first attack is to be a loom attack (specified by selecting loom stimulus in env config)
-            if self.loom_predator_current_size < self.env_variables["final_predator_size"]:
-                if micro_step == 0:
-                    self.grow_loom_predator()
-            else:
-                self.remaining_predator_attacks -= 1
-                self.predator_attacks_avoided += 1
-                self.new_attack_due = True
-                self.first_attack = False
-
-                # Remove the loom predator
-                self.space.remove(self.predator_shape, self.predator_shape.body)
-
-                # Create new predator
-                self.predator_body = pymunk.Body(self.env_variables['predator_mass'],
-                                                 self.env_variables['predator_inertia'])
-                self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_size'])
-                self.predator_shape.elasticity = 1.0
-                self.predator_body.position = self.predator_location
-                self.predator_shape.color = (0, 1, 0)
-                self.predator_shape.collision_type = 5
-                self.predator_shape.filter = pymunk.ShapeFilter(
-                    mask=pymunk.ShapeFilter.ALL_MASKS ^ 2)  # Category 2 objects cant collide with predator
-                self.space.add(self.predator_body, self.predator_shape)
-        else:
-            if self.check_predator_at_target():
-                self.remaining_predator_attacks -= 1
-                self.predator_attacks_avoided += 1
-                self.new_attack_due = True
-
-            if self.check_predator_outside_walls():
-                self.remaining_predator_attacks -= 1
-
-            # If predator out of strike range.
-            if self.predator_base_distance_to_fish() > self.env_variables["max_predator_attack_range"]:
-                self.predator_body.position = self.predator_location
-                return
-
-            if self.remaining_predator_attacks <= 0 or \
-                    self.total_predator_steps > self.env_variables["predator_presence_duration_steps"]:
-                self.remove_realistic_predator()
-                return
-            else:
-                if self.new_attack_due and self.check_fish_not_near_wall():
-                    self.new_attack_due = False
-                    self.initiate_repeated_predator_attack()
-
-            # Update predator target
-            # if self.predator_distance_to_fish() > self.env_variables["max_predator_reorient_distance"]:
-            #     self.predator_target = np.array(self.fish.body.position)
-
-            self.predator_body.angle = np.pi / 2 - np.arctan2(
-                self.predator_target[0] - self.predator_body.position[0],
-                self.predator_target[1] - self.predator_body.position[1])
-            self.predator_body.apply_impulse_at_local_point((self.env_variables['predator_impulse'], 0))
-
+ 
     def remove_realistic_predator(self, arbiter=None, space=None, data=None):
         if self.predator_body is not None:
             self.space.remove(self.predator_shape, self.predator_shape.body)

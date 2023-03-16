@@ -5,6 +5,8 @@ import math
 import sys
 import h5py
 import json
+from mpl_toolkits.mplot3d.art3d import Line3DCollection
+
 import matplotlib.pyplot as plt
 import skimage.draw as draw
 from skimage import io
@@ -15,12 +17,18 @@ from Tools.make_video import make_video
 from skimage.transform import resize, rescale
 from Tools.make_gif import make_gif
 from matplotlib.animation import FFMpegWriter
+from matplotlib.collections import LineCollection
+from sklearn.decomposition import PCA
+from scipy.signal import detrend
+from scipy.stats import zscore
 
 
 
 class DrawingBoard:
 
     def __init__(self, width, height, data, include_background):
+        plt.style.use('dark_background')
+
         self.width = width
         self.height = height
         self.include_background = include_background
@@ -89,7 +97,7 @@ class DrawingBoard:
         self.db[rr, cc, :] = colour
 
     def show_action_discrete(self, fish_angle, x_position, y_position, colour):
-        rr, cc = draw.ellipse(int(y_position), int(x_position), 5, 3, rotation=-fish_angle)
+        rr, cc = draw.ellipse(int(y_position), int(x_position), 3, 1, rotation=-fish_angle)
         self.db[rr, cc, :] = colour
 
     def show_consumption(self, fish_angle, x_position, y_position, colour):
@@ -269,14 +277,21 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 
 def draw_episode(data, env_variables, save_location, continuous_actions, draw_past_actions=True, show_energy_state=True,
-                 scale=1.0, draw_action_space_usage=True, trim_to_fish=True, save_id="", showed_region_quad=500, n_actions_to_show=500,
-                 s_per_frame=0.03, include_background=True, as_gif=False):
+                 scale=1.0, draw_action_space_usage=True, trim_to_fish=True, save_id="", showed_region_quad=500, n_actions_to_show=20,
+                 s_per_frame=0.03, include_background=True, as_gif=False, steps_to_show=None):
     #try:
     #    with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
     #        env_variables = json.load(f)
     #except FileNotFoundError:
     #    with open(f"Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
     #        env_variables = json.load(f)
+
+
+    rnn_states = data['rnn_state_actor'][:, 0, :]
+    rnn_states = detrend(zscore(rnn_states), axis=0)
+    rnn_states = rnn_states[:, np.std(rnn_states, axis=0) > 1e-6]
+    print(f"Used RNN dimensions: {rnn_states.shape[1]}")
+    rnn_states_PCA = PCA(n_components=3).fit_transform(rnn_states)
 
     save_location += save_id
     if "Training-Output" in save_location:
@@ -287,21 +302,26 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     fig = plt.figure(facecolor='0.9', figsize=(4, 3))
     gs = fig.add_gridspec(nrows=10, ncols=10, left=0.05, right=0.85,
                       hspace=0.1, wspace=0.05)
-    ax0 = fig.add_subplot(gs[:7, 0:6])
+    ax0 = fig.add_subplot(gs[:7, 0:6]) # arena
     
-    ax1 = fig.add_subplot(gs[7, 0:3])
-    ax2 = fig.add_subplot(gs[7, 3:6])
-    ax3 = fig.add_subplot(gs[0, 6:10])
-    ax4 = fig.add_subplot(gs[1, 6:10])
+    ax1 = fig.add_subplot(gs[7, 0:3])   # left eye
+    ax2 = fig.add_subplot(gs[7, 3:6])   # right eye
+    ax3 = fig.add_subplot(gs[0, 6:8])  # energy
+    ax3.set_facecolor((0,0,0))
+    ax4 = fig.add_subplot(gs[1, 6:10])  # pca over time
+    ax4.set_facecolor((0,0,0))
+    ax5 = fig.add_subplot(gs[2:6, 6:10], projection='3d') # pca in 3d
+    ax5.set_facecolor((0,0,0))
+
  #   ax5 = fig.add_subplot(gs[2, 6:10])
  #   ax6 = fig.add_subplot(gs[3, 6:10])
  #   ax7 = fig.add_subplot(gs[4, 6:10])
-    ax8 = fig.add_subplot(gs[5, 6])
+    ax8 = fig.add_subplot(gs[0, 8]) # action space usage
     if continuous_actions:
-        ax9 = fig.add_subplot(gs[5, 8])
+        ax9 = fig.add_subplot(gs[0, 9]) # action space usage (continuous)
 
     if not fast_mode:
-        ax10 = fig.add_subplot(gs[6:10, 6:10])
+        ax10 = fig.add_subplot(gs[6:10, 6:10]) # vision (polar)
 
     metadata = dict(title='Movie Test', artist='Matplotlib',
                 comment='Movie support!')
@@ -312,7 +332,9 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
         energy_levels = data["energy_state"]
     fish_positions = data["fish_position"]
     num_steps = fish_positions.shape[0]
-
+    if steps_to_show is None:
+        steps_to_show = range(num_steps)
+        
     #frames = []
     action_buffer = []
     position_buffer = []
@@ -336,7 +358,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
 
     with writer.saving(fig, f"{save_location}.mp4", 500):
 
-        for step in range(num_steps):
+        for step in steps_to_show:
             if "Training-Output" not in save_location:
                 print(f"{step}/{num_steps}")
             if continuous_actions:
@@ -385,7 +407,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             rrs = np.clip(rrs, 0, env_variables["width"]-1)
             ccs = np.clip(ccs, 0, env_variables["height"]-1)
 
-            board.db[rrs, ccs] = (0, 0, 1)
+            board.db[rrs, ccs] = (1, 0.5, 1)
 
             # Draw sand grains
             if env_variables["sand_grain_num"] > 0:
@@ -445,24 +467,27 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             right_obs = data['observation'][step, :, :, 1].T
             ax1.clear()
             ax2.clear()
-            ax1.imshow(np.clip(left_obs, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
+            left_obs = np.clip(left_obs, 0, 255)
+            right_obs = np.clip(right_obs, 0, 255)
+            left_obs_imj = np.expand_dims(left_obs, axis=2)
+            right_obs_imj = np.expand_dims(right_obs, axis=2)
+            left_obs_imj = np.concatenate((left_obs_imj, left_obs_imj, left_obs_imj), axis=2)
+            right_obs_imj = np.concatenate((right_obs_imj, right_obs_imj, right_obs_imj), axis=2)
+            left_obs_imj[0,:,1:] = 0
+            right_obs_imj[0,:,1:] = 0
+            left_obs_imj[1,:,1] = 0
+            right_obs_imj[1,:,1] = 0
+            left_obs_imj[2,:,[0,2]] = 0
+            right_obs_imj[2,:,[0,2]] = 0
+
+            ax1.imshow(left_obs_imj, interpolation='nearest', aspect='auto', vmin=1, vmax=256)
             ax1.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
-            ax2.imshow(np.clip(right_obs, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
+            ax2.imshow(right_obs_imj, interpolation='nearest', aspect='auto', vmin=1, vmax=256)
             ax2.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
 
-            # left_obs_c = data['observation_classic'][step, :, :, 0].T
-            #
-            # right_obs_c = data['observation_classic'][step, :, :, 1].T
-            # ax11.clear()
-            # ax22.clear()
-            # ax11.imshow(np.clip(left_obs_c, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
-            # ax11.tick_params(left = False, right = False , labelleft = False ,
-            #         labelbottom = False, bottom = False)
-            # ax22.imshow(np.clip(right_obs_c, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
-            # ax22.tick_params(left = False, right = False , labelleft = False ,
-            #         labelbottom = False, bottom = False)
+           
 
             if not fast_mode:
                 ax10.clear()
@@ -481,38 +506,51 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
                 alphas = np.concatenate((alphas, np.zeros((3, 1))), axis=1)
                 colors_red = np.array([1-colors[0,:], colors[0,:], colors[0,:], alphas[0,:]]).T
                 colors_uv = np.array([1-colors[1,:], colors[1,:], 1-colors[1,:], alphas[1,:]]).T
-                colors_red2 = np.array([1-colors[2,:], colors[2,:], colors[2,:], alphas[2,:]]).T
-                ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=2.5/rad_div, colors=colors_uv, wedgeprops={"edgecolor": None, "width": 2.4/rad_div}, center = left_eye_pos)
-                ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=3.0/rad_div, colors=colors_red, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = left_eye_pos)
-                ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=3.5/rad_div, colors=colors_red2, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = left_eye_pos)
-                
+                colors_red2 = np.array([colors[2,:], 1-colors[2,:], colors[2,:], alphas[2,:]]).T
+                ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=1.0/rad_div, colors=colors_red2, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = left_eye_pos)
+                ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=1.5/rad_div, colors=colors_uv, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = left_eye_pos)
+                ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=2.0/rad_div, colors=colors_red, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = left_eye_pos)
+                ax10.scatter(left_eye_pos[0], left_eye_pos[1], s=10, c='w')
+
                 right_eye_start_angle = +env_variables['visual_field']/2 - 90 + env_variables['eyes_verg_angle'] / 2 - np.rad2deg(data["fish_angle"][step])
                 right_eye_start_angle = right_eye_start_angle % 360
-
                 alphas = np.clip(right_obs, 0, 255) / 255
                 colors = np.zeros(alphas.shape)
                 colors = np.concatenate((colors, np.ones((3, 1))), axis=1)
                 alphas = np.concatenate((alphas, np.zeros((3, 1))), axis=1)
                 colors_red = np.array([1-colors[0,:], colors[0,:], colors[0,:], alphas[0,:]]).T
                 colors_uv = np.array([1-colors[1,:], colors[1,:], 1-colors[1,:], alphas[1,:]]).T
-                colors_red2 = np.array([1-colors[2,:], colors[2,:], colors[2,:], alphas[2,:]]).T
-                ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=2.5/rad_div, colors=colors_uv, wedgeprops={"edgecolor": None, "width": 2.4/rad_div}, center = right_eye_pos)
-                ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=3.0/rad_div, colors=colors_red, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = right_eye_pos)
-                ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=3.5/rad_div, colors=colors_red2, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = right_eye_pos)
+                colors_red2 = np.array([colors[2,:], 1-colors[2,:], colors[2,:], alphas[2,:]]).T
+                ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=1.0/rad_div, colors=colors_red2, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = right_eye_pos)
+                ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=1.5/rad_div, colors=colors_uv, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = right_eye_pos)
+                ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=2.0/rad_div, colors=colors_red, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = right_eye_pos)
+                ax10.scatter(right_eye_pos[0], right_eye_pos[1], s=10, c='w')
 
-                ax10.set_xlim(-1, 1)
-                ax10.set_ylim(-1, 1)
+                ax10.set_xlim(-0.4, 0.4)
+                ax10.set_ylim(-0.4, 0.4)
 
             plot_start = max(0, step - 100)
             ax3.clear()
-            ax3.plot(energy_levels[plot_start:step], color='green', linewidth=0.5)
+            ax3.plot(energy_levels[plot_start:step], linewidth=0.5)
             ax3.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
             ax4.clear()
-            ax4.plot(data['rnn_state_actor'][plot_start:step, 0, :40], linewidth=0.5)
+            ax4.plot(rnn_states_PCA[plot_start:step, :], linewidth=0.5)
             ax4.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
-            # ax5.clear()
+            ax5.clear()
+            rgb_color = [1.0, 0.5, 0.5]
+            line = Vanishing_Line(100, 50, rgb_color)
+            line.set_data()
+            line.set_data(rnn_states_PCA[:step,0], rnn_states_PCA[:step,1], rnn_states_PCA[:step,2])
+            ax5.add_collection(line.get_LineCollection())
+            ax5.scatter(rnn_states_PCA[step,0], rnn_states_PCA[step,1], rnn_states_PCA[step,2], color='red', s=2)
+            ax5.set_xlim((np.min(rnn_states_PCA[:,0]), np.max(rnn_states_PCA[:,0])))
+            ax5.set_ylim((np.min(rnn_states_PCA[:,1]), np.max(rnn_states_PCA[:,1])))
+            ax5.set_zlim((np.min(rnn_states_PCA[:,2]), np.max(rnn_states_PCA[:,2])))
+            ax5.tick_params(left = False, right = False , labelleft = False ,
+                    labelbottom = False, bottom = False)
+            
             # ax5.plot(data['rnn_state_actor'][plot_start:step, 0, 10:20], linewidth=0.5)
             # ax5.tick_params(left = False, right = False , labelleft = False ,
             #         labelbottom = False, bottom = False)
@@ -564,6 +602,83 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     #     make_video(frames, f"{save_location}.mp4", duration=len(frames) * s_per_frame, true_image=True)
 
 
+class Vanishing_Line(object):
+    def __init__(self, n_points, tail_length, rgb_color):
+        self.n_points = int(n_points)
+        self.tail_length = int(tail_length)
+        self.rgb_color = rgb_color
+
+    def set_data(self, x=None, y=None, z=None):
+        if x is None or y is None or z is None:
+            self.lc = Line3DCollection([])
+        else:
+            x = x[-self.n_points:]
+            y = y[-self.n_points:]
+            z = z[-self.n_points:]
+            
+            self.points = np.array([x, y, z]).T.reshape(-1, 1, 3)
+            
+            self.segments = np.concatenate([self.points[:-1], self.points[1:]],
+                                           axis=1)
+            if hasattr(self, 'alphas'):
+                del self.alphas
+            if hasattr(self, 'rgba_colors'):
+                del self.rgba_colors
+            self.lc.set_segments(self.segments)
+            self.lc.set_color(self.get_colors())
+            self.lc.set_linewidth(0.5)
+
+    def get_LineCollection(self):
+        if not hasattr(self, 'lc'):
+            self.set_data()
+        return self.lc
+
+
+    def get_alphas(self):
+        n = len(self.points)
+        if n < self.n_points:
+            rest_length = self.n_points - self.tail_length
+            if n <= rest_length:
+                return np.ones(n)
+            else:
+                tail_length = n - rest_length
+                tail = np.linspace(1./tail_length, 1., tail_length)
+                rest = np.ones(rest_length)
+                return np.concatenate((tail, rest))
+        else: # n == self.n_points
+            if not hasattr(self, 'alphas'):
+                tail = np.linspace(1./self.tail_length, 1., self.tail_length)
+                rest = np.ones(self.n_points - self.tail_length)
+                self.alphas = np.concatenate((tail, rest))
+            return self.alphas
+
+    def get_colors(self):
+        n = len(self.points)
+        if  n < 2:
+            return [self.rgb_color+[1.] for i in range(n)]
+        if n < self.n_points:
+            alphas = self.get_alphas()
+            rgba_colors = np.zeros((n, 4))
+            # first place the rgb color in the first three columns
+            rgba_colors[:,0:3] = self.rgb_color
+            # and the fourth column needs to be your alphas
+            rgba_colors[:, 3] = alphas
+            return rgba_colors
+        else:
+            if hasattr(self, 'rgba_colors'):
+                pass
+            else:
+                alphas = self.get_alphas()
+                rgba_colors = np.zeros((n, 4))
+                # first place the rgb color in the first three columns
+                rgba_colors[:,0:3] = self.rgb_color
+                # and the fourth column needs to be your alphas
+                rgba_colors[:, 3] = alphas
+                self.rgba_colors = rgba_colors
+            return self.rgba_colors
+
+
+
 if __name__ == "__main__":
     # model_name = "dqn_scaffold_26-2"
     # data = load_data(model_name, "Behavioural-Data-Videos-A1", "Naturalistic-1")
@@ -589,6 +704,12 @@ if __name__ == "__main__":
     data_file = sys.argv[1]
     config_file = sys.argv[2]
 
+    if len(sys.argv) > 3:
+        first_step = int(sys.argv[3])
+        last_step = int(sys.argv[4])
+        steps_to_show = range(first_step, last_step)
+    else:
+        steps_to_show = None
     #data_file = "../../Assay-Output/dqn_gamma-1/Behavioural-Data-Empty.h5"
     #config_file = f"../../Configurations/Assay-Configs/dqn_gamma_final_env.json"
 
@@ -600,8 +721,8 @@ if __name__ == "__main__":
         for key in datfl[group].keys():
             data[key] = np.array(datfl[group][key])
 
-    draw_episode(data, env_variables, 'test', continuous_actions=False, show_energy_state=True,
-                 trim_to_fish=True, showed_region_quad=500, include_background=True)
+    draw_episode(data, env_variables, 'test2', continuous_actions=False, show_energy_state=True,
+                 trim_to_fish=True, showed_region_quad=500, include_background=True, steps_to_show=steps_to_show)
 
 
 

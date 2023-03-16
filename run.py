@@ -90,6 +90,64 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
  
+    prey_very_basic_1 = [
+        {
+            "Model Name": "prey_very_basic_free",
+            "Environment Name": "prey_very_basic_free",
+            "Trial Number": 5,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    prey_very_basic_2 = [
+        {
+            "Model Name": "prey_very_basic_free",
+            "Environment Name": "prey_very_basic_free",
+            "Trial Number": 6,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    prey_very_basic_3 = [
+        {
+            "Model Name": "prey_very_basic_free",
+            "Environment Name": "prey_very_basic_free",
+            "Trial Number": 7,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    prey_very_basic_4 = [
+        {
+            "Model Name": "prey_very_basic_free",
+            "Environment Name": "prey_very_basic_free",
+            "Trial Number": 8,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    prey_basic_swap = [
+        {
+            "Model Name": "prey_basic",
+            "Environment Name": "prey_basic",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+    prey_basic_uni_eyes = [
+        {
+            "Model Name": "prey_basic",
+            "Environment Name": "prey_basic",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
     prey_basic_no_bias = [
         {
             "Model Name": "prey_basic_no_bias",
@@ -100,6 +158,45 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
+    prey_basic_mimic_master = [
+        {
+            "Model Name": "prey_basic_mimic_master",
+            "Environment Name": "prey_basic_mimic_master",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    prey_basic_mimic_master_diff_prs = [
+        {
+            "Model Name": "prey_basic_mimic_master",
+            "Environment Name": "prey_basic_mimic_master",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    prey_basic_mimic_master2_diff_prs = [
+        {
+            "Model Name": "prey_basic_mimic_master2",
+            "Environment Name": "prey_basic_mimic_master2",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    prey_basic_mimic_master2_bias = [
+        {
+            "Model Name": "prey_basic_mimic_master2_bias",
+            "Environment Name": "prey_basic_mimic_master2_bias",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
     predator_basic = [
         {
             "Model Name": "predator_basic",
@@ -109,7 +206,57 @@ if __name__ == "__main__": # may be needed to run on windows
             "Learning Algorithm": "DQN",
         },
     ]
+    prey_and_predator_1 = [
+        {
+            "Model Name": "prey_and_predator",
+            "Environment Name": "prey_and_predator",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
   
+    prey_and_predator_2_1 = [
+        {
+            "Model Name": "prey_and_predator3",
+            "Environment Name": "prey_and_predator3",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    prey_and_predator_2_2 = [
+        {
+            "Model Name": "prey_and_predator3",
+            "Environment Name": "prey_and_predator3",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    prey_and_predator_2_3 = [
+        {
+            "Model Name": "prey_and_predator3",
+            "Environment Name": "prey_and_predator3",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    prey_and_predator_2_4 = [
+        {
+            "Model Name": "prey_and_predator3",
+            "Environment Name": "prey_and_predator3",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+
     salt_basic = [
         {
             "Model Name": "salt_basic",
