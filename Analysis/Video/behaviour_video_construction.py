@@ -562,7 +562,7 @@ if __name__ == "__main__":
     # draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="A15")
     # model_name = "dqn_scaffold_14-1"
-    data = load_data("dqn_new_pred-1", "Episode 1", "Episode 1", training_data=True)
+    data = load_data("dqn_gamma-3", "Behavioural-Data-Free-A", "Naturalistic-1", training_data=False)
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-3")
@@ -576,7 +576,7 @@ if __name__ == "__main__":
     # config_file = sys.argv[2]
 
     #data_file = "../../Assay-Output/dqn_gamma-1/Behavioural-Data-Empty.h5"
-    config_file = f"../../Configurations/Training-Configs/dqn_new_pred/1_env.json"
+    config_file = f"../../Configurations/Training-Configs/dqn_gamma/52_env.json"
 
     with open(config_file, 'r') as f:
         env_variables = json.load(f)
@@ -586,7 +586,7 @@ if __name__ == "__main__":
     #     for key in datfl[group].keys():
     #         data[key] = np.array(datfl[group][key])
 
-    draw_episode(data, env_variables, 'pred_test', continuous_actions=False, show_energy_state=True,
+    draw_episode(data, env_variables, 'tttests', continuous_actions=False, show_energy_state=True,
                  trim_to_fish=True, showed_region_quad=500, include_sediment=True)
 
 

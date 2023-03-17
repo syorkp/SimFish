@@ -302,6 +302,7 @@ def get_all_density_plots_all_subsets(p1, p2, p3, n, return_objects, steps_prior
         prey_cloud = []
         pred_cloud = []
         for i in range(1, n + 1):
+            print(i)
             if i > 100:
                 data = load_data(p1, f"{p2}-2", f"{p3} {i}")
             else:
@@ -866,7 +867,10 @@ def plot_all_density_plots_across_scaffold(model_name, assay_config_a, assay_con
 if __name__ == "__main__":
     # VERSION 2, 2023
     # get_all_density_plots_all_subsets(f"dqn_gamma_pm-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
-    get_all_density_plots_all_subsets(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 20, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 50, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_gamma-3", "Behavioural-Data-Free", "Naturalistic", 50, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
+    get_all_density_plots_all_subsets(f"dqn_gamma-5", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
 
     # d = load_data("dqn_epsilon-1x", "Episode 10600", "Episode 10600", training_data=True)
     # d = load_data("dqn_gamma_pm-5", "Behavioural-Data-Free", "Naturalistic-1")
