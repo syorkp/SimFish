@@ -35,11 +35,10 @@ elif run_config == "4l":
 elif run_config == "dense":
     produce_meis("dqn_scaffold_26-2", "rnn_in", full_reafference=True, iterations=100, conv=False)
 elif run_config == "draw_ep":
-    models = ["dqn_gamma_pm-2", "dqn_gamma_pm-3", "dqn_gamma_pm-4", "dqn_gamma_pm-5"]
-    models = ["dqn_gamma-1"]
+    models = ["dqn_gamma-3", "dqn_gamma-5"]
     for model in models:
-        for i in range(1, 6):
-            data = load_data(model, "Behavioural-Data-Free", f"Naturalistic-{i}")
+        for i in range(1, 20):
+            data = load_data(model, "Behavioural-Data-Free-A", f"Naturalistic-{i}")
             assay_config_name = "dqn_gamma_final"
             save_location = f"Analysis-Output/Behavioural/Videos/{model}-{i}-behaviour"
 
