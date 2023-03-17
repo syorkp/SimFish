@@ -37,7 +37,7 @@ elif run_config == "dense":
 elif run_config == "draw_ep":
     models = ["dqn_gamma-3", "dqn_gamma-5"]
     for model in models:
-        for i in range(1, 20):
+        for i in range(1, 101):
             data = load_data(model, "Behavioural-Data-Free-A", f"Naturalistic-{i}")
             assay_config_name = "dqn_gamma_final"
             save_location = f"Analysis-Output/Behavioural/Videos/{model}-{i}-behaviour"

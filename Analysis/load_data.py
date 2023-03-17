@@ -36,5 +36,7 @@ def load_data(model_name, assay_configuration, assay_id, training_data=False):
 if __name__ == "__main__":
     datas = []
     red_channel = []
-    d = load_data("ppo_gamma-2", "Behavioural-Data-Free", f"Naturalistic-1")
+    for i in range(1, 101):
+        d = load_data("dqn_gamma-3", "Behavioural-Data-Free-A", f"Naturalistic-{i}")
+        print(np.sum(d["consumed"]))
 
