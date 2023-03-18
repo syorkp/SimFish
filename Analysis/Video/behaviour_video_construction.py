@@ -428,25 +428,25 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
                     labelbottom = False, bottom = False)
 
             plot_start = max(0, step - 100)
-            ax3.clear()
-            ax3.plot(energy_levels[plot_start:step], color='green')
-            ax3.tick_params(left = False, right = False , labelleft = False ,
-                    labelbottom = False, bottom = False)
-            ax4.clear()
-            ax4.plot(data['rnn_state_actor'][plot_start:step, 0, :10])
-            ax4.tick_params(left = False, right = False , labelleft = False ,
-                    labelbottom = False, bottom = False)
-            ax5.clear()
-            ax5.plot(data['rnn_state_actor'][plot_start:step, 0, 10:20])
-            ax5.tick_params(left = False, right = False , labelleft = False ,
-                    labelbottom = False, bottom = False)
-            ax6.clear()
-            ax6.plot(data['rnn_state_actor'][plot_start:step, 0, 20:30])
-            ax6.tick_params(left = False, right = False , labelleft = False ,
-                    labelbottom = False, bottom = False)
-            ax7.clear()
-            ax7.plot(data['rnn_state_actor'][plot_start:step, 0, 30:40])
-            ax7.tick_params(left=False, right=False , labelleft=False, labelbottom=False, bottom=False)
+            # ax3.clear()
+            # ax3.plot(energy_levels[plot_start:step], color='green')
+            # ax3.tick_params(left = False, right = False , labelleft = False ,
+            #         labelbottom = False, bottom = False)
+            # ax4.clear()
+            # ax4.plot(data['rnn_state_actor'][plot_start:step, 0, :10])
+            # ax4.tick_params(left = False, right = False , labelleft = False ,
+            #         labelbottom = False, bottom = False)
+            # ax5.clear()
+            # ax5.plot(data['rnn_state_actor'][plot_start:step, 0, 10:20])
+            # ax5.tick_params(left = False, right = False , labelleft = False ,
+            #         labelbottom = False, bottom = False)
+            # ax6.clear()
+            # ax6.plot(data['rnn_state_actor'][plot_start:step, 0, 20:30])
+            # ax6.tick_params(left = False, right = False , labelleft = False ,
+            #         labelbottom = False, bottom = False)
+            # ax7.clear()
+            # ax7.plot(data['rnn_state_actor'][plot_start:step, 0, 30:40])
+            # ax7.tick_params(left=False, right=False , labelleft=False, labelbottom=False, bottom=False)
             #plt.draw()
             #plt.pause(0.001)
             board.db = board.get_base_arena(0.3)
