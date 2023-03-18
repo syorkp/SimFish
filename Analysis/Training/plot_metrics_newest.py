@@ -323,17 +323,17 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
             # Add 0 line for metrics that cross it.
             try:
                 if min(model[metric][:, 1]) < 0:
-                    axs[i].hlines(0, 0, max(model[metric][:, 0]), color="black", linestyles="dashed")
+                    axs[i].hlines(0, 0, max(model[metric][:, 0]), color="black", linestyles="solid", linewidth=0.5)
             except KeyError:
                 ...
 
             axs[i].grid(True, axis="x")
 
-            if key_scaffold_points is not None:
-                ylim = axs[i].get_ylim()
-                for p in key_scaffold_points:
-                    axs[i].vlines(p, ylim[0]-ylim[0], ylim[1]+ylim[1], color="r")
-                axs[i].set_ylim(ylim[0], ylim[1])
+            # if key_scaffold_points is not None:
+            #     ylim = axs[i].get_ylim()
+            #     for p in key_scaffold_points:
+            #         axs[i].vlines(p, ylim[0]-ylim[0], ylim[1]+ylim[1], color="r")
+            #     axs[i].set_ylim(ylim[0], ylim[1])
             axs[i].set_ylabel(metric_name)
 
             try:
@@ -356,6 +356,13 @@ def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpola
         axs[-1].set_xlim(1, np.max(sc[:, 1]) + 1)
     else:
         axs[-1].set_xlabel("Episode")
+
+    if key_scaffold_points is not None:
+        for i in range(len(metrics)):
+            ylim = axs[i].get_ylim()
+            for p in key_scaffold_points:
+                axs[i].vlines(p, ylim[0], ylim[1], color="r")
+            axs[i].set_ylim(ylim[0], ylim[1])
 
     if show_inset is not None:
         inset_ylim = axs[metric_index].get_ylim()
@@ -473,7 +480,7 @@ if __name__ == "__main__":
                               ]
     plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=2000, interpolate_scaffold_points=True,
                                           figure_name="dqn_gamma2", scaled_window=True,
-                                          show_inset=["capture success rate", 2])# key_scaffold_points=[14, 29, 42])
+                                          show_inset=["capture success rate", 2], key_scaffold_points=[10, 15, 31, 45, 51])
     # plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=100, interpolate_scaffold_points=True,
     #                                       figure_name="dqn_beta_mod", scaled_window=False,
     #                                       show_inset=["capture success rate", 23])#, key_scaffold_points=[10, 16, 31])
