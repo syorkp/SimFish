@@ -40,7 +40,7 @@ elif run_config == "draw_ep":
         for i in range(1, 101):
             data = load_data(model, "Behavioural-Data-Free-A", f"Naturalistic-{i}")
             assay_config_name = "dqn_gamma_final"
-            save_location = f"Analysis-Output/Behavioural/Videos/{model}-{i}-behaviour"
+            save_location = f"Analysis-Output/Behavioural/Videos/{model}-{i}-behaviour2"
 
             try:
                 with open(f"../../Configurations/Assay-Configs/{assay_config_name}_env.json", 'r') as f:

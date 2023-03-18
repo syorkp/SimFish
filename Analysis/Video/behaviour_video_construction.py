@@ -286,11 +286,11 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     
     ax1 = fig.add_subplot(gs[-1, 0:4])
     ax2 = fig.add_subplot(gs[-1, 4:8])
-    ax3 = fig.add_subplot(gs[0, 6:])
-    ax4 = fig.add_subplot(gs[1, 6:])
-    ax5 = fig.add_subplot(gs[2, 6:])
-    ax6 = fig.add_subplot(gs[3, 6:])
-    ax7 = fig.add_subplot(gs[4, 6:])
+    # ax3 = fig.add_subplot(gs[0, 6:])
+    # ax4 = fig.add_subplot(gs[1, 6:])
+    # ax5 = fig.add_subplot(gs[2, 6:])
+    # ax6 = fig.add_subplot(gs[3, 6:])
+    # ax7 = fig.add_subplot(gs[4, 6:])
     metadata = dict(title='Movie Test', artist='Matplotlib',
                 comment='Movie support!')
     writer = FFMpegWriter(fps=15, metadata=metadata, codec='mpeg4', bitrate=1000000)
