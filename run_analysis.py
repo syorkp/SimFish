@@ -35,12 +35,12 @@ elif run_config == "4l":
 elif run_config == "dense":
     produce_meis("dqn_scaffold_26-2", "rnn_in", full_reafference=True, iterations=100, conv=False)
 elif run_config == "draw_ep":
-    models = ["dqn_gamma-3", "dqn_gamma-5"]
+    models = ["dqn_gamma-5"]
     for model in models:
         for i in range(1, 101):
             data = load_data(model, "Behavioural-Data-Free-A", f"Naturalistic-{i}")
             assay_config_name = "dqn_gamma_final"
-            save_location = f"Analysis-Output/Behavioural/Videos/{model}-{i}-behaviour2"
+            save_location = f"Analysis-Output/Behavioural/Videos/{model}-{i}-behaviour"
 
             try:
                 with open(f"../../Configurations/Assay-Configs/{assay_config_name}_env.json", 'r') as f:
@@ -52,6 +52,23 @@ elif run_config == "draw_ep":
             draw_episode(data, env_variables, save_location, continuous_actions=False, show_energy_state=False,
                          trim_to_fish=True, showed_region_quad=750, save_id=f"{i}", include_background=True,
                          as_gif=False, s_per_frame=0.1, scale=0.5)
+        models = ["dqn_gamma-4"]
+        for model in models:
+                for i in range(1, 101):
+                    data = load_data(model, "Behavioural-Data-Free-D", f"Naturalistic-{i}")
+                    assay_config_name = "dqn_gamma_final"
+                    save_location = f"Analysis-Output/Behavioural/Videos/{model}-{i}-behaviour"
+
+                    try:
+                        with open(f"../../Configurations/Assay-Configs/{assay_config_name}_env.json", 'r') as f:
+                            env_variables = json.load(f)
+                    except FileNotFoundError:
+                        with open(f"Configurations/Assay-Configs/{assay_config_name}_env.json", 'r') as f:
+                            env_variables = json.load(f)
+
+                    draw_episode(data, env_variables, save_location, continuous_actions=False, show_energy_state=False,
+                                 trim_to_fish=True, showed_region_quad=750, save_id=f"{i}", include_background=True,
+                                 as_gif=False, s_per_frame=0.1, scale=0.5)
             # draw_episode(data, assay_config_name, model, continuous_actions=False, show_energy_state=False,
             #              trim_to_fish=True, showed_region_quad=750, save_id=f"{i}", include_background=True,
             #              as_gif=False, s_per_frame=0.1, scale=0.5)
