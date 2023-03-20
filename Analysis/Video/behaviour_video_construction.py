@@ -492,9 +492,9 @@ if __name__ == "__main__":
     # data_file = sys.argv[1]
     # config_file = sys.argv[2]
 
-    data_file = "../../Assay-Output/dqn_gamma-3/Behavioural-Data-Free-A.h5"
+    data_file = "../../Assay-Output/dqn_gamma-4/Behavioural-Data-Free-C.h5"
     config_file = f"../../Configurations/Assay-Configs/dqn_gamma_final_env.json"
-    data = load_data("dqn_gamma-3", "Behavioural-Data-Free-A", "Naturalistic-1", training_data=False)
+    data = load_data("dqn_gamma-4", "Behavioural-Data-Free-C", "Naturalistic-14", training_data=False)
 
     with open(config_file, 'r') as f:
         env_variables = json.load(f)
@@ -504,7 +504,7 @@ if __name__ == "__main__":
     #     for key in datfl[group].keys():
     #         data[key] = np.array(datfl[group][key])
 
-    draw_episode(data, env_variables, 'tests', continuous_actions=False, show_energy_state=True,
+    draw_episode(data, env_variables, 'new-test', continuous_actions=False, show_energy_state=True,
                  trim_to_fish=True, showed_region_quad=500, include_background=True)
 
 

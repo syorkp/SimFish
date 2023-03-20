@@ -37,6 +37,6 @@ if __name__ == "__main__":
     datas = []
     red_channel = []
     for i in range(1, 101):
-        d = load_data("dqn_gamma-3", "Behavioural-Data-Free-A", f"Naturalistic-{i}")
-        print(np.sum(d["consumed"]))
+        d = load_data("dqn_gamma-4", "Behavioural-Data-Free-C", f"Naturalistic-{i}")
+        print(f'{i} - {np.sum(d["consumed"])}')
 
