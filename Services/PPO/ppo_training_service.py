@@ -21,7 +21,7 @@ tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
 
 
-def ppo_training_target_continuous_sbe(trial, total_steps, episode_number, memory_fraction, configuration_index):
+def ppo_training_target_continuous_sbe(trial, epsilon, total_steps, episode_number, memory_fraction, configuration_index):
     if "monitor gpu" in trial:
         monitor_gpu = trial["monitor gpu"]
     else:
@@ -57,6 +57,7 @@ def ppo_training_target_continuous_sbe(trial, total_steps, episode_number, memor
                                   config_name=trial["Environment Name"],
                                   continuous_actions=continuous_actions,
                                   model_exists=trial["Model Exists"],
+                                  epsilon=epsilon,
                                   configuration_index=configuration_index,
                                   full_logs=full_logs,
                                   profile_speed=profile_speed,
@@ -68,7 +69,7 @@ def ppo_training_target_continuous_sbe(trial, total_steps, episode_number, memor
 class PPOTrainingService(TrainingService, ContinuousPPO):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, continuous_actions, model_exists, configuration_index, full_logs, profile_speed):
+                 config_name, continuous_actions, model_exists, epsilon, configuration_index, full_logs, profile_speed):
         super().__init__(model_name=model_name, trial_number=trial_number,
                          total_steps=total_steps, episode_number=episode_number,
                          monitor_gpu=monitor_gpu, using_gpu=using_gpu,
@@ -106,7 +107,10 @@ class PPOTrainingService(TrainingService, ContinuousPPO):
 
         if self.learning_params["epsilon_greedy"]:
             self.epsilon_greedy = True
-            self.e = self.learning_params["startE"]
+            if epsilon is None:
+                self.epsilon = self.learning_params["startE"]
+            else:
+                self.epsilon = epsilon
         else:
             self.epsilon_greedy = False
 

@@ -68,8 +68,7 @@ def training_target(trial, epsilon, total_steps, episode_number, memory_fraction
 class DQNTrainingService(TrainingService, BaseDQN):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, continuous_actions, epsilon, model_exists,
-                 configuration_index, full_logs, profile_speed):
+                 config_name, continuous_actions, epsilon, model_exists, configuration_index, full_logs, profile_speed):
         super().__init__(model_name=model_name, trial_number=trial_number,
                          total_steps=total_steps, episode_number=episode_number,
                          monitor_gpu=monitor_gpu, using_gpu=using_gpu,

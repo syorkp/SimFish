@@ -298,8 +298,8 @@ class ContinuousPPO:
                                }
                 )
 
-            if self.e > self.learning_params['endE']:
-                self.e -= self.step_drop
+            if self.epsilon > self.learning_params['endE']:
+                self.epsilon -= self.step_drop
         else:
             action = [impulse[0][0], angle[0][0]]
 
@@ -411,8 +411,8 @@ class ContinuousPPO:
                                }
                 )
 
-            if self.e > self.learning_params['endE']:
-                self.e -= self.step_drop
+            if self.epsilon > self.learning_params['endE']:
+                self.epsilon -= self.step_drop
         else:
             action = [impulse[0][0], angle[0][0]]
 

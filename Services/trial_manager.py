@@ -147,7 +147,7 @@ class TrialManager:
             if continuous_actions:
                 if trial["Learning Algorithm"] == "PPO":
                     new_job = multiprocessing.Process(target=ppo_training_continuous.ppo_training_target_continuous_sbe,
-                                                          args=(trial, total_steps, episode_number, memory_fraction, configuration_index))
+                                                          args=(trial, epsilon, total_steps, episode_number, memory_fraction, configuration_index))
 
                 elif trial["Learning Algorithm"] == "DQN":
                     print('Cannot use DQN with continuous actions (training mode)')
