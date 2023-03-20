@@ -547,6 +547,7 @@ class Eye:
 
         full_set = full_set.swapaxes(0, 1)
         full_set = full_set.reshape(n_channels, -1, 2)
+        full_set = self.chosen_math_library.clip(full_set, 0, 1382)
 
         full_set_uv = full_set[:n_channels_uv, :]
         full_set_red = full_set[n_channels_uv:, :]

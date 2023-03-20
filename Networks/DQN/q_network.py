@@ -141,7 +141,8 @@ class QNetwork:
         self.conv4l_flat_ref = tf.layers.flatten(self.conv4l_ref)
         self.conv4r_flat_ref = tf.layers.flatten(self.conv4r_ref)
         self.prev_actions_one_hot_rev = tf.reverse(self.prev_actions_one_hot, [1])
-        self.internal_state_rev = tf.reverse(self.internal_state, [1])
+        # self.internal_state_rev = tf.reverse(self.internal_state, [1])
+        self.internal_state_rev = self.internal_state
 
         if full_reafference:
             self.prev_action_impulse_rev = tf.reverse(self.prev_action_impulse, [1])
@@ -159,6 +160,7 @@ class QNetwork:
 
         self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell, dtype=tf.float32,
                                                              initial_state=self.rnn_state_in, scope=my_scope + '_rnn')
+        self.rnn_state_shared = self.rnn_state_ref
         self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim])
         self.rnn_output_ref = self.rnn_ref
 

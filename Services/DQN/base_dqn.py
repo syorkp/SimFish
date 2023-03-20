@@ -279,16 +279,28 @@ class BaseDQN:
         updated_rnn_state: The updated RNN state
         """
         # Generate actions and corresponding steps.
-        feed_dict={self.main_QN.observation: o,
-                    self.main_QN.internal_state: internal_state,
-                    self.main_QN.prev_actions: [a],
-                    self.main_QN.train_length: 1,
-                    self.main_QN.rnn_state_in: rnn_state,
-                    self.main_QN.rnn_state_in_ref: rnn_state_ref,
-                    self.main_QN.batch_size: 1,
-                    self.main_QN.exp_keep: 1.0,
-                    self.main_QN.learning_rate: self.learning_params["learning_rate"],
-                    }
+        if self.environment_params["use_dynamic_network"]:
+            feed_dict = {self.main_QN.observation: o,
+                        self.main_QN.internal_state: internal_state,
+                        self.main_QN.prev_actions: [a],
+                        self.main_QN.train_length: 1,
+                        self.main_QN.rnn_state_in: rnn_state,
+                        self.main_QN.rnn_state_in_ref: rnn_state_ref,
+                        self.main_QN.batch_size: 1,
+                        self.main_QN.exp_keep: 1.0,
+                        self.main_QN.learning_rate: self.learning_params["learning_rate"],
+                        }
+        else:
+            feed_dict = {self.main_QN.observation: o,
+                         self.main_QN.internal_state: internal_state,
+                         self.main_QN.prev_actions: [a],
+                         self.main_QN.trainLength: 1,
+                         self.main_QN.rnn_state_in: rnn_state,
+                         self.main_QN.rnn_state_ref: rnn_state_ref,
+                         self.main_QN.batch_size: 1,
+                         self.main_QN.exp_keep: 1.0,
+                         # self.main_QN.learning_rate: self.learning_params["learning_rate"],
+                         }
 
         if np.random.rand(1) < self.epsilon or self.total_steps < self.initial_exploration_steps:
             [updated_rnn_state, updated_rnn_state_ref, sa, sv] = self.sess.run(

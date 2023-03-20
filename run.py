@@ -790,7 +790,6 @@ if __name__ == "__main__":  # may be needed to run on windows
             ]
         }
         ]
-
     dqn_lab_meeting_gathering_2 = [
         {
             "Model Name": "dqn_gamma",
@@ -906,8 +905,52 @@ if __name__ == "__main__":  # may be needed to run on windows
         },
         ]
 
+
+    # DEBUGGING (20.03 onwards)
+    dqn_basic_1 = [
+        {
+            "Model Name": "dqn_basic",
+            "Environment Name": "prey_basic_static",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+            "Using GPU": False
+        },
+    ]
+
+    dqn_basic_2 = [
+        {
+            "Model Name": "dqn_basic",
+            "Environment Name": "prey_basic_static",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    dqn_basic_3 = [
+        {
+            "Model Name": "dqn_basic",
+            "Environment Name": "prey_basic_static",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    dqn_basic_4 = [
+        {
+            "Model Name": "dqn_basic",
+            "Environment Name": "prey_basic_static",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+
     if run_config is None:
-        run_config = ppo_gamma_6
+        run_config = dqn_basic_1
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]
