@@ -915,9 +915,6 @@ if __name__ == "__main__":  # may be needed to run on windows
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
-    ]
-
-    dqn_basic_2 = [
         {
             "Model Name": "dqn_basic",
             "Environment Name": "prey_basic_static",
@@ -925,9 +922,6 @@ if __name__ == "__main__":  # may be needed to run on windows
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
-    ]
-
-    dqn_basic_3 = [
         {
             "Model Name": "dqn_basic",
             "Environment Name": "prey_basic_static",
@@ -935,9 +929,6 @@ if __name__ == "__main__":  # may be needed to run on windows
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
-    ]
-
-    dqn_basic_4 = [
         {
             "Model Name": "dqn_basic",
             "Environment Name": "prey_basic_static",
@@ -955,5 +946,5 @@ if __name__ == "__main__":  # may be needed to run on windows
         run_config = globals()[run_config]
 
     print(f"Start time: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-    manager = TrialManager(run_config, parallel_jobs=1)
+    manager = TrialManager(run_config, parallel_jobs=5)
     manager.run_priority_loop()
