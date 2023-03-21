@@ -593,7 +593,7 @@ class BaseDQN:
             # self.main_QN.rnn_state_in_ref: state_train_ref,  TODO: Bring back if works.
             self.main_QN.batch_size: self.learning_params['batch_size'],
             self.main_QN.exp_keep: 1.0,
-            self.main_QN.learning_rate: self.learning_params["learning_rate"],
+            # self.main_QN.learning_rate: self.learning_params["learning_rate"],
         })
 
         Q2 = self.sess.run(self.target_QN.Q_out, feed_dict={
@@ -605,7 +605,7 @@ class BaseDQN:
             # self.target_QN.rnn_state_in_ref: state_train_ref,   TODO: Bring back if works.
             self.target_QN.batch_size: self.learning_params['batch_size'],
             self.target_QN.exp_keep: 1.0,
-            self.main_QN.learning_rate: self.learning_params["learning_rate"],
+            # self.main_QN.learning_rate: self.learning_params["learning_rate"],
 
         })
 
@@ -626,6 +626,6 @@ class BaseDQN:
                                  # self.main_QN.rnn_state_in_ref: state_train_ref,    TODO: Bring back if works.
                                  self.main_QN.batch_size: self.learning_params['batch_size'],
                                  self.main_QN.exp_keep: 1.0,
-                                 self.main_QN.learning_rate: self.learning_params["learning_rate"],
+                                 # self.main_QN.learning_rate: self.learning_params["learning_rate"],
                                  })
 
