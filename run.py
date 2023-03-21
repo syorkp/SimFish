@@ -914,7 +914,6 @@ if __name__ == "__main__":  # may be needed to run on windows
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
-            "Using GPU": False
         },
     ]
 
