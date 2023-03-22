@@ -909,35 +909,34 @@ if __name__ == "__main__":  # may be needed to run on windows
     # DEBUGGING (20.03 onwards)
     dqn_basic_1 = [
         {
-            "Model Name": "dqn_basic",
+            "Model Name": "dqn_basic_f",
             "Environment Name": "prey_basic_static",
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
         {
-            "Model Name": "dqn_basic",
+            "Model Name": "dqn_basic_f",
             "Environment Name": "prey_basic_static",
             "Trial Number": 2,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
         {
-            "Model Name": "dqn_basic",
+            "Model Name": "dqn_basic_f",
             "Environment Name": "prey_basic_static",
             "Trial Number": 3,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
         {
-            "Model Name": "dqn_basic",
+            "Model Name": "dqn_basic_f",
             "Environment Name": "prey_basic_static",
             "Trial Number": 4,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
     ]
-
 
     dqn_epsilon_static_1 = [
         {

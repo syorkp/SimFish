@@ -43,6 +43,7 @@ class QNetwork:
         self.train_length = tf.placeholder(dtype=tf.int32)
         self.batch_size = tf.placeholder(dtype=tf.int32, shape=[])
         self.rnn_state_in = rnn_cell.zero_state(self.batch_size, tf.float32)
+        self.rnn_state_in_ref = rnn_cell.zero_state(self.batch_size, tf.float32)
 
         #                ------------ Normal network ------------                   #
 
@@ -159,8 +160,8 @@ class QNetwork:
         self.convFlat_ref = tf.reshape(self.rnn_in_ref, [self.batch_size, self.train_length, self.rnn_dim])
 
         self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell, dtype=tf.float32,
-                                                             initial_state=self.rnn_state_in, scope=my_scope + '_rnn')
-        self.rnn_state_shared = self.rnn_state_ref
+                                                             initial_state=self.rnn_state_in_ref, scope=my_scope + '_rnn')
+        self.rnn_state_shared = self.rnn_state
         self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim])
         self.rnn_output_ref = self.rnn_ref
 

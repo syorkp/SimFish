@@ -34,9 +34,10 @@ def load_data(model_name, assay_configuration, assay_id, training_data=False):
 
 
 if __name__ == "__main__":
+    d = load_data("dqn_basic-4", "Episode 300", "Episode 300", training_data=True)
     datas = []
-    red_channel = []
-    for i in range(1, 101):
-        d = load_data("dqn_gamma-4", "Behavioural-Data-Free-C", f"Naturalistic-{i}")
-        print(f'{i} - {np.sum(d["consumed"])}')
+    # red_channel = []
+    # for i in range(1, 101):
+    #     d = load_data("dqn_gamma-4", "Behavioural-Data-Free-C", f"Naturalistic-{i}")
+    #     print(f'{i} - {np.sum(d["consumed"])}')
 
