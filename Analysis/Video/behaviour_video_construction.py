@@ -317,7 +317,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     #     frames = np.zeros((num_steps, np.int(env_variables["height"]*scale), np.int((env_variables["width"]+addon)*scale), 3))
     with writer.saving(fig, f"{save_location}.mp4", 300):
 
-        for step in range(200):#num_steps):
+        for step in range(num_steps):
             if "Training-Output" not in save_location:
                 print(f"{step}/{num_steps}")
             if continuous_actions:
@@ -360,7 +360,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             rrs = np.clip(rrs, 0, env_variables["width"]-1)
             ccs = np.clip(ccs, 0, env_variables["height"]-1)
 
-            board.db[rrs, ccs] = (0, 0, 1)
+            board.db[rrs, ccs] = (1, 0, 1)
 
             # Draw sand grains
             if env_variables["sand_grain_num"] > 0:
@@ -371,7 +371,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
                 rrs = np.clip(rrs, 0, env_variables["width"] - 1)
                 ccs = np.clip(ccs, 0, env_variables["height"] - 1)
 
-                board.db_visualisation[rrs, ccs] = (0, 0, 1)
+                board.db_visualisation[rrs, ccs] = (1, 0, 1)
 
 
             if data["predator_presence"][step]:
