@@ -588,7 +588,7 @@ class BaseDQN:
             self.main_QN.train_length: self.learning_params['trace_length'],
             self.main_QN.internal_state: np.vstack(train_batch[:, 3]),
             self.main_QN.rnn_state_in: state_train,
-            # self.main_QN.rnn_state_in_ref: state_train_ref,  TODO: Bring back if works.
+            self.main_QN.rnn_state_in_ref: state_train_ref,
             self.main_QN.batch_size: self.learning_params['batch_size'],
             self.main_QN.exp_keep: 1.0,
             # self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -600,7 +600,7 @@ class BaseDQN:
             self.target_QN.train_length: self.learning_params['trace_length'],
             self.target_QN.internal_state: np.vstack(train_batch[:, 3]),
             self.target_QN.rnn_state_in: state_train,
-            # self.target_QN.rnn_state_in_ref: state_train_ref,   TODO: Bring back if works.
+            self.target_QN.rnn_state_in_ref: state_train_ref,
             self.target_QN.batch_size: self.learning_params['batch_size'],
             self.target_QN.exp_keep: 1.0,
             # self.main_QN.learning_rate: self.learning_params["learning_rate"],
@@ -621,7 +621,7 @@ class BaseDQN:
                                      (np.array([[6, 0, 0]]), np.vstack(train_batch[:-1, 1]))),
                                  self.main_QN.train_length: self.learning_params['trace_length'],
                                  self.main_QN.rnn_state_in: state_train,
-                                 # self.main_QN.rnn_state_in_ref: state_train_ref,    TODO: Bring back if works.
+                                 self.main_QN.rnn_state_in_ref: state_train_ref,
                                  self.main_QN.batch_size: self.learning_params['batch_size'],
                                  self.main_QN.exp_keep: 1.0,
                                  # self.main_QN.learning_rate: self.learning_params["learning_rate"],
