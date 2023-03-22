@@ -63,6 +63,7 @@ class DQNAssayBuffer:
         self.observation_buffer = []
         self.reward_buffer = []
         self.internal_state_buffer = []
+        self.advantage_buffer = []
         self.value_buffer = []
 
         self.rnn_state_buffer = []
@@ -93,13 +94,15 @@ class DQNAssayBuffer:
             self.switch_step = None
             self.unit_recordings = {}
 
-    def add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref):
+    def add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref, advantages, value):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
         self.reward_buffer.append(reward)
 
         self.rnn_state_buffer.append(rnn_state)
         self.rnn_state_ref_buffer.append(rnn_state_ref)
+        self.advantage_buffer.append(advantages)
+        self.value_buffer.append(value)
 
     def save_cnn_data(self, cnn_layers):
         self.conv_layer_buffer.append(cnn_layers)
@@ -328,6 +331,10 @@ class DQNAssayBuffer:
         #if "environmental positions" in self.recordings:
         self.create_data_group("action", np.array(self.action_buffer), assay_group)
         self.efference_copy_buffer = np.squeeze(np.array(self.efference_copy_buffer))
+
+        self.create_data_group("advantages", np.array(self.advantage_buffer), assay_group)
+        self.create_data_group("value", np.array(self.value_buffer), assay_group)
+
 
         self.create_data_group("impulse", self.efference_copy_buffer[:, 1], assay_group)
         self.create_data_group("angle", self.efference_copy_buffer[:, 2], assay_group)
