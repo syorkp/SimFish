@@ -22,6 +22,8 @@ class DQNAssayBuffer:
         self.internal_state_buffer = []
         self.advantage_buffer = []
         self.value_buffer = []
+        self.advantage_buffer_ref = []
+        self.value_buffer_ref = []
 
         self.return_buffer = []
         self.rnn_state_buffer = []
@@ -65,6 +67,8 @@ class DQNAssayBuffer:
         self.internal_state_buffer = []
         self.advantage_buffer = []
         self.value_buffer = []
+        self.advantage_buffer_ref = []
+        self.value_buffer_ref = []
 
         self.rnn_state_buffer = []
         self.rnn_state_ref_buffer = []
@@ -94,7 +98,8 @@ class DQNAssayBuffer:
             self.switch_step = None
             self.unit_recordings = {}
 
-    def add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref, advantages, value):
+    def add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref, advantages, value,
+                     advantages_ref, value_ref):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
         self.reward_buffer.append(reward)
@@ -103,6 +108,8 @@ class DQNAssayBuffer:
         self.rnn_state_ref_buffer.append(rnn_state_ref)
         self.advantage_buffer.append(advantages)
         self.value_buffer.append(value)
+        self.advantage_buffer_ref.append(advantages_ref)
+        self.value_buffer_ref.append(value_ref)
 
     def save_cnn_data(self, cnn_layers):
         self.conv_layer_buffer.append(cnn_layers)
@@ -334,6 +341,8 @@ class DQNAssayBuffer:
 
         self.create_data_group("advantages", np.array(self.advantage_buffer), assay_group)
         self.create_data_group("value", np.array(self.value_buffer), assay_group)
+        self.create_data_group("advantages_ref", np.array(self.advantage_buffer_ref), assay_group)
+        self.create_data_group("value_ref", np.array(self.value_buffer_ref), assay_group)
 
 
         self.create_data_group("impulse", self.efference_copy_buffer[:, 1], assay_group)
