@@ -34,7 +34,7 @@ def load_data(model_name, assay_configuration, assay_id, training_data=False):
 
 
 if __name__ == "__main__":
-    d = load_data("dqn_basic-4", "Episode 300", "Episode 300", training_data=True)
+    d = load_data("dqn_basic_f-2", "Episode 270", "Episode 270", training_data=True)
     datas = []
     # red_channel = []
     # for i in range(1, 101):
