@@ -305,12 +305,12 @@ class BaseDQN:
         if np.random.rand(1) < self.epsilon or self.total_steps < self.initial_exploration_steps:
             [updated_rnn_state, updated_rnn_state_ref, sa, sv, advantages, value] = self.sess.run(
                 [self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref, self.main_QN.streamA,
-                 self.main_QN.streamV, self.main_QN.AW, self.main_QN.VW], feed_dict=feed_dict)
+                 self.main_QN.streamV, self.main_QN.Advantage, self.main_QN.Value], feed_dict=feed_dict)
             chosen_a = np.random.randint(0, self.learning_params['num_actions'])
         else:
             chosen_a, updated_rnn_state, updated_rnn_state_ref, sa, sv, advantages, value = self.sess.run(
                 [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
-                 self.main_QN.streamA, self.main_QN.streamV, self.main_QN.AW, self.main_QN.VW],
+                 self.main_QN.streamA, self.main_QN.streamV, self.main_QN.Advantage, self.main_QN.Value],
                 feed_dict=feed_dict)
             chosen_a = chosen_a[0]
 
@@ -371,6 +371,8 @@ class BaseDQN:
                                      reward=given_reward,
                                      rnn_state=updated_rnn_state,
                                      rnn_state_ref=updated_rnn_state_ref,
+                                     advantages=advantages,
+                                     value=value
                                      )
 
         self.total_steps += 1
