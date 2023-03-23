@@ -541,22 +541,26 @@ class BaseDQN:
             if self.environment_params["use_dynamic_network"]:
                 rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
                 # Load the latest saved states... Note is technically incorrect.
+                state_train = copy.copy(self.init_rnn_state)
+                state_train = tuple(
+                    (np.tile(state_train[i][0], (self.learning_params['batch_size'], 1)),
+                     np.tile(state_train[i][1], (self.learning_params['batch_size'], 1)))
+                    for i, shape in enumerate(rnn_state_shapes))
+
+                state_train_ref = copy.copy(self.init_rnn_state_ref)
+                state_train_ref = tuple(
+                    (np.tile(state_train_ref[i][0], (self.learning_params['batch_size'], 1)),
+                     np.tile(state_train_ref[i][1], (self.learning_params['batch_size'], 1)))
+                    for i, shape in enumerate(rnn_state_shapes))
 
             else:
-                rnn_state_shapes = [512]
+                state_train = copy.copy(self.init_rnn_state)
+                state_train_ref = copy.copy(self.init_rnn_state_ref)
 
-            state_train = copy.copy(self.init_rnn_state)
-            state_train = tuple(
-                (np.tile(state_train[i][0], (self.learning_params['batch_size'], 1)),
-                 np.tile(state_train[i][1], (self.learning_params['batch_size'], 1)))
-                for i, shape in enumerate(rnn_state_shapes))
-
-            state_train_ref = copy.copy(self.init_rnn_state_ref)
-            state_train_ref = tuple(
-                (np.tile(state_train_ref[i][0], (self.learning_params['batch_size'], 1)),
-                 np.tile(state_train_ref[i][1], (self.learning_params['batch_size'], 1)))
-                for i, shape in enumerate(rnn_state_shapes))
-
+                state_train = (np.repeat(state_train[0], self.learning_params['batch_size'], 0),
+                               np.repeat(state_train[1], self.learning_params['batch_size'], 0))
+                state_train_ref = (np.repeat(state_train_ref[0], self.learning_params['batch_size'], 0),
+                                   np.repeat(state_train_ref[1], self.learning_params['batch_size'], 0))
         else:
 
             if self.environment_params["use_dynamic_network"]:
