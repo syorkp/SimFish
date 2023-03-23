@@ -538,22 +538,24 @@ class BaseDQN:
         update_target(self.target_ops, self.sess)
         # Reset the recurrent layer's hidden state
         if self.learning_params["maintain_state"]:
-            rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
+            if self.environment_params["use_dynamic_network"]:
+                rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
+                # Load the latest saved states... Note is technically incorrect.
 
-            # Load the latest saved states... Note is technically incorrect.
+            else:
+                rnn_state_shapes = [512]
+
             state_train = copy.copy(self.init_rnn_state)
             state_train = tuple(
                 (np.tile(state_train[i][0], (self.learning_params['batch_size'], 1)),
                  np.tile(state_train[i][1], (self.learning_params['batch_size'], 1)))
                 for i, shape in enumerate(rnn_state_shapes))
 
-            # TODO: TEST CHANGE HERE:
             state_train_ref = copy.copy(self.init_rnn_state_ref)
             state_train_ref = tuple(
                 (np.tile(state_train_ref[i][0], (self.learning_params['batch_size'], 1)),
                  np.tile(state_train_ref[i][1], (self.learning_params['batch_size'], 1)))
                 for i, shape in enumerate(rnn_state_shapes))
-            # TODO: END
 
         else:
 
