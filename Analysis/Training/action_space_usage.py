@@ -203,25 +203,27 @@ def display_binned_action_space_usage_multiple_trials(model_name, assay_config, 
 
 if __name__ == "__main__":
     # Impulse angle space DQN
-    display_impulse_angle_space_usage_multiple_trials("dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100,
-                                                      "dqn_gamma_4", dqn=True)
+    # display_impulse_angle_space_usage_multiple_trials("dqn_gamma-3", "Behavioural-Data-Free-A", "Naturalistic", 100,
+    #                                                   "dqn_gamma_3-A", dqn=True)
+    # display_impulse_angle_space_usage_multiple_trials("dqn_gamma-5", "Behavioural-Data-Free-A", "Naturalistic", 100,
+    #                                                   "dqn_gamma_5-A", dqn=True)
 
     # Bout usage single trial
     # display_binned_action_space_usage_multiple_trials("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 100,
     #                                                   "dqn_gamma_1")
 
     # Bout usage multiple trials
-    # display_binned_action_space_usage_comparison(["dqn_gamma-1", "dqn_gamma-2", "dqn_gamma-4", "dqn_gamma-5"], "Behavioural-Data-Free",
+    # display_binned_action_space_usage_comparison(["dqn_gamma-1", "dqn_gamma-3", "dqn_gamma-4", "dqn_gamma-5"], "Behavioural-Data-Free",
     #                                              "Naturalistic", 100, "dqn_gamma")
 
-    # d1 = load_data("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic-1")
-    # d2 = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-1")
-    # display_impulse_angle_space_usage_comparison(impulses_1=d1["impulse"],
-    #                                              angles_1=d1["angle"],
-    #                                              impulses_2=d2["efference_copy"][:, 0, 1],
-    #                                              angles_2=d2["efference_copy"][:, 0, 2],
-    #                                              figure_name="Test",
-    #                                              dqn=True)
+    d1 = load_data("dqn_gamma-4", "Behavioural-Data-Free-A", "Naturalistic-1")
+    d2 = load_data("dqn_gamma-4", "Behavioural-Data-Free-B", "Naturalistic-1")
+    display_impulse_angle_space_usage_comparison(impulses_1=d1["impulse"],
+                                                 angles_1=d1["angle"],
+                                                 impulses_2=d2["efference_copy"][:, 0, 1],
+                                                 angles_2=d2["efference_copy"][:, 0, 2],
+                                                 figure_name="Test",
+                                                 dqn=True)
 
     # display_impulse_angle_space_usage([d1["impulse"]], [d1["angle"]], "Test")
 

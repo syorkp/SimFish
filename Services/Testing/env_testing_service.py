@@ -65,11 +65,45 @@ class EnvTestingService(BaseService):
                 action = int(action)
 
             if action == 99:
-                plt.rcParams['figure.figsize'] = [10, 10]
-                plt.savefig("Fig")
+                self.create_display_images()
             else:
                 self.simulation.simulation_step(action)
                 self.update_drawing()
+
+    def create_display_images(self):
+        # Save main plot
+        relevant_image = copy.copy(self.visualisation_board.db_visualisation) * 255.0
+        relevant_image /= np.max(relevant_image)
+
+        fig, axs = plt.subplots(figsize=(10, 10))
+        axs.imshow(relevant_image)
+        axs.set_xticks([])
+        axs.set_yticks([])
+        fig.savefig(f"Screen-grab-{self.step_number}.png")
+
+        # Save zoomed in fish
+        relevant_image = copy.copy(self.visualisation_board.db_visualisation) * 255.0
+        relevant_image = relevant_image[int(self.simulation.fish.body.position[1]-100):int(self.simulation.fish.body.position[1]+100),
+                                        int(self.simulation.fish.body.position[0]-100):int(self.simulation.fish.body.position[0]+100)]
+        relevant_image /= np.max(relevant_image)
+
+        fig, axs = plt.subplots()
+        axs.imshow(relevant_image)
+        axs.set_xticks([])
+        axs.set_yticks([])
+        fig.savefig(f"Zoom-in-fish-{self.total_steps}.png")
+
+        # Save zoomed in prey
+        relevant_image = copy.copy(self.visualisation_board.db_visualisation) * 255.0
+        relevant_image = relevant_image[int(self.simulation.prey_bodies[-1].position[1]-100):int(self.simulation.prey_bodies[-1].position[1]+100),
+                                        int(self.simulation.prey_bodies[-1].position[0]-100):int(self.simulation.prey_bodies[-1].position[0]+100)]
+        relevant_image /= np.max(relevant_image)
+
+        fig, axs = plt.subplots()
+        axs.imshow(relevant_image)
+        axs.set_xticks([])
+        axs.set_yticks([])
+        fig.savefig(f"Zoom-in-prey-{self.total_steps}.png")
 
     def update_drawing(self):
         self.visualisation_board.erase_visualisation()
@@ -175,19 +209,19 @@ class EnvTestingService(BaseService):
         eyes = np.concatenate((eyes[:, :, :1], empty_green_eyes, eyes[:, :, 1:2]),
                                   axis=2)  # Note removes second red channel.
 
-        frame = np.vstack((arena, np.zeros((50, self.environment_params['arena_width'], 3)), eyes))
+        # frame = np.vstack((arena, np.zeros((50, self.environment_params['arena_width'], 3)), eyes))
+        #
+        # this_ac = np.zeros((20, self.environment_params['arena_width'], 3))
+        # this_ac[:, :, 0] = resize(internal_state, (20, self.environment_params['arena_width']), anti_aliasing=False,
+        #                           order=0) * 255
+        # this_ac[:, :, 1] = resize(internal_state, (20, self.environment_params['arena_width']), anti_aliasing=False,
+        #                           order=0) * 255
+        # this_ac[:, :, 2] = resize(internal_state, (20, self.environment_params['arena_width']), anti_aliasing=False,
+        #                           order=0) * 255
+        #
+        # frame = np.vstack((frame, np.zeros((20, self.environment_params['arena_width'], 3)), this_ac))
 
-        this_ac = np.zeros((20, self.environment_params['arena_width'], 3))
-        this_ac[:, :, 0] = resize(internal_state, (20, self.environment_params['arena_width']), anti_aliasing=False,
-                                  order=0) * 255
-        this_ac[:, :, 1] = resize(internal_state, (20, self.environment_params['arena_width']), anti_aliasing=False,
-                                  order=0) * 255
-        this_ac[:, :, 2] = resize(internal_state, (20, self.environment_params['arena_width']), anti_aliasing=False,
-                                  order=0) * 255
-
-        frame = np.vstack((frame, np.zeros((20, self.environment_params['arena_width'], 3)), this_ac))
-
-        frame = rescale(frame, scale, multichannel=True, anti_aliasing=True)
+        frame = rescale(arena, scale, multichannel=True, anti_aliasing=True)
 
         return frame
 

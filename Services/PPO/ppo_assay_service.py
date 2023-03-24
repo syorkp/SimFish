@@ -138,7 +138,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
         self.ppo_version = ContinuousPPO
         self.sb_emulator = sb_emulator
-        self.e = self.learning_params["startE"] / 2
+        self.epsilon = self.learning_params["startE"] / 2
         self.epsilon_greedy = self.learning_params["epsilon_greedy"]
         self.last_position_dim = self.environment_params["prey_num"]
 

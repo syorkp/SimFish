@@ -188,7 +188,7 @@ class ContinuousPPO:
                       mu_a[0][0] * self.environment_params['max_angle_change']]
         else:
             if self.epsilon_greedy:
-                if np.random.rand(1) < self.e:
+                if np.random.rand(1) < self.epsilon:
                     action = [impulse[0][0], angle[0][0]]
                 else:
                     action = [mu_i[0][0] * self.environment_params["max_impulse"],
@@ -274,7 +274,7 @@ class ContinuousPPO:
         )
 
         if self.epsilon_greedy:
-            if np.random.rand(1) < self.e:
+            if np.random.rand(1) < self.epsilon:
                 action = [impulse[0][0], angle[0][0]]
             else:
                 action = [mu_i[0][0] * self.environment_params["max_impulse"],
@@ -298,8 +298,8 @@ class ContinuousPPO:
                                }
                 )
 
-            if self.e > self.learning_params['endE']:
-                self.e -= self.step_drop
+            if self.epsilon > self.learning_params['endE']:
+                self.epsilon -= self.step_drop
         else:
             action = [impulse[0][0], angle[0][0]]
 
@@ -387,7 +387,7 @@ class ContinuousPPO:
                        }
         )
         if self.epsilon_greedy:
-            if np.random.rand(1) < self.e:
+            if np.random.rand(1) < self.epsilon:
                 action = [impulse[0][0], angle[0][0]]
             else:
                 action = [mu_i[0][0] * self.environment_params["max_impulse"],
@@ -411,8 +411,8 @@ class ContinuousPPO:
                                }
                 )
 
-            if self.e > self.learning_params['endE']:
-                self.e -= self.step_drop
+            if self.epsilon > self.learning_params['endE']:
+                self.epsilon -= self.step_drop
         else:
             action = [impulse[0][0], angle[0][0]]
 
