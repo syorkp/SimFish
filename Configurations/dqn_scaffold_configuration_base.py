@@ -185,7 +185,7 @@ env = {
     'reward_distance': 100,
     'proximity_reward': 0.002,
     'salt_reward_penalty': 1000,  # Scales with salt concentration. Was 10000
-    'action_reward_scaling': 1 / 1.5e-04,  # Arbitrary (practical) hyperparameter for penalty for action
+    'action_reward_scaling': 0, # 1 / 1.5e-04,  # Arbitrary (practical) hyperparameter for penalty for action
     'consumption_reward_scaling': 100000,  # Arbitrary (practical) hyperparameter for reward for consumption
     'wall_touch_penalty': 200,
 
@@ -217,7 +217,7 @@ env = {
     'unit_circle_diameter': 0.7,  # Circular current options
 }
 
-scaffold_name = "dqn_new"
+scaffold_name = "dqn_epsilon_new"
 
 
 # For predator scaffolding
@@ -272,10 +272,10 @@ high_pai = 800
 
 # Start with shot noise
 env["shot_noise"] = True
-env["background_brightness"] = 0.1 / (2.7769 * 10)
+env["background_brightness"] = 0.1
 env["max_salt_damage"] = 0.02
-env["light_gain"] = 2.7769 * 10
-env["dark_gain"] = 1.2397
+env["light_gain"] = 125.7
+env["dark_gain"] = 60.0
 
 # 2-10
 changes += [

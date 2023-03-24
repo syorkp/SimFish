@@ -740,47 +740,32 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
-    dqn_pp_1 = [
+    dqn_epsilon_new = [
         {
-            "Model Name": "dqn_prey_pred",
-            "Environment Name": "dqn_prey_pred",
+            "Model Name": "dqn_epsilon_new",
+            "Environment Name": "dqn_epsilon_new",
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
-    ]
-    dqn_pp_2 = [
         {
-            "Model Name": "dqn_prey_pred",
-            "Environment Name": "dqn_prey_pred",
+            "Model Name": "dqn_epsilon_new",
+            "Environment Name": "dqn_epsilon_new",
             "Trial Number": 2,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
-    ]
-    dqn_pp_3 = [
         {
-            "Model Name": "dqn_prey_pred",
-            "Environment Name": "dqn_prey_pred",
+            "Model Name": "dqn_epsilon_new",
+            "Environment Name": "dqn_epsilon_new",
             "Trial Number": 3,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
-    ]
-    dqn_pp_4 = [
         {
-            "Model Name": "dqn_prey_pred",
-            "Environment Name": "dqn_prey_pred",
+            "Model Name": "dqn_epsilon_new",
+            "Environment Name": "dqn_epsilon_new",
             "Trial Number": 4,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_pp_5 = [
-        {
-            "Model Name": "dqn_prey_pred",
-            "Environment Name": "dqn_prey_pred",
-            "Trial Number": 5,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
