@@ -16,6 +16,8 @@ class BaseBuffer:
         self.internal_state_buffer = []
         self.advantage_buffer = []
         self.value_buffer = []
+        self.advantage_buffer_ref = []
+        self.value_buffer_ref = []
         self.return_buffer = []
         self.rnn_state_buffer = []
         self.rnn_state_ref_buffer = []
@@ -50,6 +52,8 @@ class BaseBuffer:
         self.internal_state_buffer = []
         self.advantage_buffer = []
         self.value_buffer = []
+        self.advantage_buffer_ref = []
+        self.value_buffer_ref = []
         self.return_buffer = []
         self.rnn_state_buffer = []
         self.rnn_state_ref_buffer = []
@@ -72,10 +76,14 @@ class BaseBuffer:
         self.prey_gait_buffer = []
         self.switch_step = None  # Tracking switch step
 
-    def _add_training(self, observation, internal_state, reward, rnn_state, rnn_state_ref):
+    def _add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref, value, value_ref, advantage, advantage_ref):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
         self.reward_buffer.append(reward)
+        self.value_buffer.append(value)
+        self.value_buffer_ref.append(value_ref)
+        self.advantage_buffer.append(advantage)
+        self.advantage_buffer_ref.append(advantage_ref)
 
         self.rnn_state_buffer.append(rnn_state)
         self.rnn_state_ref_buffer.append(rnn_state_ref)
@@ -296,6 +304,8 @@ class BaseBuffer:
         self.create_data_group("reward", np.array(self.reward_buffer), assay_group)
         self.create_data_group("advantage", np.array(self.advantage_buffer), assay_group)
         self.create_data_group("value", np.array(self.value_buffer), assay_group)
+        self.create_data_group("advantage_ref", np.array(self.advantage_buffer_ref), assay_group)
+        self.create_data_group("value_ref", np.array(self.value_buffer_ref), assay_group)
         self.create_data_group("returns", np.array(self.return_buffer), assay_group)
 
         return hdf5_file, assay_group

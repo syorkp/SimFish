@@ -21,6 +21,7 @@ class BaseDQN:
         self.learning_params = None
         self.environment_params = None
         self.total_steps = None
+        self.action_usage = None
         self.simulation = None
         self.experience_buffer = None
         self.sess = None
@@ -182,7 +183,7 @@ class BaseDQN:
         steps in the episode. The relevant values are then saved to the experience buffer.
         """
         experience = []
-
+        maintain_state = False
         rnn_state = copy.copy(self.init_rnn_state)
         rnn_state_ref = copy.copy(self.init_rnn_state_ref)
         self.simulation.reset()
@@ -233,12 +234,13 @@ class BaseDQN:
                         len(self.experience_buffer.buffer) > self.batch_size:
                     self.train_networks()
             if d:
-                if self.use_static:
-                    self.init_rnn_state = [rnn_state]
-                    self.init_rnn_state_ref = [rnn_state_ref]
-                else:
-                    self.init_rnn_state = rnn_state
-                    self.init_rnn_state_ref = rnn_state_ref
+                if maintain_state:
+                    if self.use_static:
+                        self.init_rnn_state = [rnn_state]
+                        self.init_rnn_state_ref = [rnn_state_ref]
+                    else:
+                        self.init_rnn_state = rnn_state
+                        self.init_rnn_state_ref = rnn_state_ref
                 break
         # Add the episode to the experience buffer
         if self.debug:
@@ -247,6 +249,12 @@ class BaseDQN:
             fig.clf()
 
         return all_actions, total_episode_reward, experience
+
+    def reflect_obs(self, o):
+        o_ref = np.zeros_like(o)
+        o_ref[:, :, 0] = o[::-1, :, 1]
+        o_ref[:, :, 1] = o[::-1, :, 0]
+        return o_ref
 
     def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         """
@@ -269,6 +277,10 @@ class BaseDQN:
         updated_rnn_state: The updated RNN state
         """
         # Generate actions and corresponding steps.
+
+        #####
+        exploration = 'epsilon_greedy'
+
         feed_dict = {self.main_QN.observation: o,
                      self.main_QN.internal_state: internal_state,
                      self.main_QN.prev_actions: [a],
@@ -277,22 +289,35 @@ class BaseDQN:
                      self.main_QN.rnn_state_in_ref: rnn_state_ref,
                      self.main_QN.batch_size: 1,
                      self.main_QN.exp_keep: 1.0,
-                     self.main_QN.learning_rate: self.learning_params["learning_rate"],
+                     self.main_QN.Temp: self.epsilon,
+                     #self.main_QN.learning_rate: self.learning_params["learning_rate"],
                      }
-
-        if np.random.rand(1) < self.epsilon or self.total_steps < self.initial_exploration_steps:
-            [updated_rnn_state, updated_rnn_state_ref] = self.sess.run(
-                [self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref], feed_dict=feed_dict)
-            chosen_a = np.random.randint(0, self.learning_params['num_actions'])
-        else:
-            chosen_a, updated_rnn_state, updated_rnn_state_ref = self.sess.run(
-                [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref],
+        q_out, q_dist, updated_rnn_state, updated_rnn_state_ref, val, adv, val_ref, adv_ref = self.sess.run(
+                [self.main_QN.Q_out, self.main_QN.Q_dist, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
+                 self.main_QN.Value, self.main_QN.Advantage,
+                 self.main_QN.Value_ref, self.main_QN.Advantage_ref],
                 feed_dict=feed_dict)
-            chosen_a = chosen_a[0]
+        greedy_a = np.argmax(q_out, axis=1)
+
+        if exploration == 'epsilon_greedy':
+            if np.random.rand(1) < self.epsilon or self.total_steps < self.initial_exploration_steps:
+                chosen_a = np.random.randint(0, self.learning_params['num_actions'])
+            else:
+                chosen_a = greedy_a[0]
+
+        elif exploration == 'boltzmann':
+                chosen_a = np.random.choice(self.learning_params['num_actions'], p=q_dist[0])
+        elif exploration == 'UCB':
+            if self.total_steps < self.initial_exploration_steps:
+                chosen_a = np.random.randint(0, self.learning_params['num_actions'])
+            else:
+                chosen_a = np.argmax(q_out + np.sqrt(2 * np.log(self.total_steps) / (self.action_usage+1e-5)))    
 
         # Simulation step
         o1, given_reward, internal_state, d, full_masked_image = self.simulation.simulation_step(action=chosen_a)
-
+        self.action_usage[chosen_a] += 1
+        #####
+        
         efference_copy = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
         if self.debug:
             pass
@@ -335,7 +360,6 @@ class BaseDQN:
                                      rnn_state=updated_rnn_state,
                                      rnn_state_ref=updated_rnn_state_ref,
                                      )
-
         self.total_steps += 1
         return o, efference_copy, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, full_masked_image
 
@@ -410,18 +434,27 @@ class BaseDQN:
         rnn_state_shapes = [512]  # self.main_QN.get_rnn_state_shapes()
 
         # Load the latest saved states... Note is technically incorrect.
-        state_train = copy.copy(self.init_rnn_state)
-        state_train = tuple(
-            (np.tile(state_train[i][0], (self.learning_params['batch_size'], 1)),
-             np.tile(state_train[i][1], (self.learning_params['batch_size'], 1)))
-            for i, shape in enumerate(rnn_state_shapes))
+        maintain_state = False
 
-        state_train_ref = copy.copy(self.init_rnn_state_ref)
-        state_train_ref = tuple(
-            (np.tile(state_train_ref[i][0], (self.learning_params['batch_size'], 1)),
-             np.tile(state_train_ref[i][1], (self.learning_params['batch_size'], 1)))
-            for i, shape in enumerate(rnn_state_shapes))
+        if maintain_state:
+            state_train = copy.copy(self.init_rnn_state)
+            state_train = tuple(
+                (np.tile(state_train[i][0], (self.learning_params['batch_size'], 1)),
+                np.tile(state_train[i][1], (self.learning_params['batch_size'], 1)))
+                for i, shape in enumerate(rnn_state_shapes))
 
+            state_train_ref = copy.copy(self.init_rnn_state_ref)
+            state_train_ref = tuple(
+                (np.tile(state_train_ref[i][0], (self.learning_params['batch_size'], 1)),
+                np.tile(state_train_ref[i][1], (self.learning_params['batch_size'], 1)))
+                for i, shape in enumerate(rnn_state_shapes))
+        else:
+            state_train = tuple(
+                    (np.zeros([self.learning_params['batch_size'], shape]),
+                     np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
+            state_train_ref = tuple(
+                    (np.zeros([self.learning_params['batch_size'], shape]),
+                     np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
         # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
         train_batch = self.experience_buffer.sample(self.learning_params['batch_size'],
                                                     self.learning_params['trace_length'])
@@ -436,7 +469,7 @@ class BaseDQN:
             self.main_QN.rnn_state_in_ref: state_train_ref,
             self.main_QN.batch_size: self.learning_params['batch_size'],
             self.main_QN.exp_keep: 1.0,
-            self.main_QN.learning_rate: self.learning_params["learning_rate"],
+            #self.main_QN.learning_rate: self.learning_params["learning_rate"],
         })
 
         Q2 = self.sess.run(self.target_QN.Q_out, feed_dict={
@@ -448,12 +481,13 @@ class BaseDQN:
             self.target_QN.rnn_state_in_ref: state_train_ref,
             self.target_QN.batch_size: self.learning_params['batch_size'],
             self.target_QN.exp_keep: 1.0,
-            self.main_QN.learning_rate: self.learning_params["learning_rate"],
+            #self.main_QN.learning_rate: self.learning_params["learning_rate"],
         })
 
         end_multiplier = -(train_batch[:, 5] - 1)
 
         double_Q = Q2[range(self.learning_params['batch_size'] * self.learning_params['trace_length']), Q1]
+        
         target_Q = train_batch[:, 2] + (self.learning_params[
                                             'y'] * double_Q * end_multiplier)  # target_Q = r + y*Q(s',argmax(Q(s',a)))        # Update the network with our target values.
         self.sess.run(self.main_QN.updateModel,
@@ -468,5 +502,5 @@ class BaseDQN:
                                  self.main_QN.rnn_state_in_ref: state_train_ref,
                                  self.main_QN.batch_size: self.learning_params['batch_size'],
                                  self.main_QN.exp_keep: 1.0,
-                                 self.main_QN.learning_rate: self.learning_params["learning_rate"],
+                                 #self.main_QN.learning_rate: self.learning_params["learning_rate"],
                                  })

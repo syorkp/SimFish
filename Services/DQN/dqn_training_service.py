@@ -93,6 +93,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
         self.writer = None
         self.trainables = None
         self.target_ops = None
+        self.action_usage = np.zeros(self.learning_params["num_actions"])
 
         # Maintain variables
         if epsilon is not None:

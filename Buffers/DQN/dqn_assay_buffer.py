@@ -23,8 +23,8 @@ class DQNAssayBuffer(BaseBuffer):
 
         self.loss_buffer = []
 
-    def add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref):
-        self._add_training(observation, internal_state, reward, rnn_state, rnn_state_ref)
+    def add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref, value, value_ref, advantage, advantage_ref):
+        self._add_training(observation, internal_state, reward, action, rnn_state, rnn_state_ref, value, value_ref, advantage, advantage_ref)
 
     def save_environmental_positions(self, action, fish_position, prey_consumed, predator_present, prey_positions,
                                      predator_position, sand_grain_positions, fish_angle, salt_health, efference_copy,
