@@ -359,6 +359,10 @@ class BaseDQN:
                                      reward=given_reward,
                                      rnn_state=updated_rnn_state,
                                      rnn_state_ref=updated_rnn_state_ref,
+                                     value=val,
+                                     advantage=adv,
+                                     value_ref=val_ref,
+                                     advantage_ref=adv_ref
                                      )
         self.total_steps += 1
         return o, efference_copy, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, full_masked_image
@@ -417,7 +421,7 @@ class BaseDQN:
                                                      prey_orientation=prey_orientations,
                                                      predator_orientation=predator_orientation,
                                                      prey_age=prey_ages,
-                                                     prey_gait=prey_gait
+                                                     prey_gait=prey_gait,
                                                      )
         self.buffer.make_desired_recordings(network_layers)
 
