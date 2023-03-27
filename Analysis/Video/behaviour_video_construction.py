@@ -317,7 +317,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     #     frames = np.zeros((num_steps, np.int(env_variables["height"]*scale), np.int((env_variables["width"]+addon)*scale), 3))
     with writer.saving(fig, f"{save_location}.mp4", 300):
 
-        for step in range(num_steps):
+        for step in range(400):#num_steps):
             if "Training-Output" not in save_location:
                 print(f"{step}/{num_steps}")
             if continuous_actions:
@@ -493,8 +493,8 @@ if __name__ == "__main__":
     # config_file = sys.argv[2]
 
     data_file = "../../Assay-Output/dqn_gamma-4/Behavioural-Data-Free-C.h5"
-    config_file = f"../../Configurations/Assay-Configs/pbs_env.json"
-    data = load_data("dqn_basic-4", "Episode 300", "Episode 300", training_data=True)
+    config_file = f"../../Configurations/Assay-Configs/dqn_gamma_1_env.json"
+    data = load_data("dqn_epsilon_static-4", "Episode 400", "Episode 400", training_data=True)
 
     with open(config_file, 'r') as f:
         env_variables = json.load(f)
@@ -504,7 +504,7 @@ if __name__ == "__main__":
     #     for key in datfl[group].keys():
     #         data[key] = np.array(datfl[group][key])
 
-    draw_episode(data, env_variables, 'basic4', continuous_actions=False, show_energy_state=True,
+    draw_episode(data, env_variables, 'epsilon_st-4', continuous_actions=False, show_energy_state=True,
                  trim_to_fish=True, showed_region_quad=500, include_background=True)
 
 
