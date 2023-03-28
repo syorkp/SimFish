@@ -44,7 +44,7 @@ class EnvTestingService(BaseService):
                                                       self.environment_params["arena_height"],
                                                       light_gradient=self.environment_params["light_gradient"])
         self.board_fig, self.ax_board = plt.subplots()
-        self.board_image = plt.imshow(np.zeros((self.environment_params['arena_height']*4, self.environment_params['arena_width']*4, 3)))
+        self.board_image = plt.imshow(np.zeros((self.environment_params['arena_height'], self.environment_params['arena_width'], 3)))
         plt.ion()
         plt.show()
 
@@ -111,7 +111,7 @@ class EnvTestingService(BaseService):
         self.visualisation_board.apply_light(dark_col=int(self.environment_params["dark_light_ratio"] * self.environment_params["arena_width"]),
                                              dark_gain=self.environment_params["dark_gain"],
                                              light_gain=self.environment_params["light_gain"])
-        frame = self.output_frame(scale=4) / 255.
+        frame = self.output_frame(scale=1) / 255.
         self.board_image.set_data(frame / np.max(frame))
         plt.pause(0.000001)
 
@@ -209,19 +209,19 @@ class EnvTestingService(BaseService):
         eyes = np.concatenate((eyes[:, :, :1], empty_green_eyes, eyes[:, :, 1:2]),
                                   axis=2)  # Note removes second red channel.
 
-        # frame = np.vstack((arena, np.zeros((50, self.environment_params['arena_width'], 3)), eyes))
-        #
-        # this_ac = np.zeros((20, self.environment_params['arena_width'], 3))
-        # this_ac[:, :, 0] = resize(internal_state, (20, self.environment_params['arena_width']), anti_aliasing=False,
-        #                           order=0) * 255
-        # this_ac[:, :, 1] = resize(internal_state, (20, self.environment_params['arena_width']), anti_aliasing=False,
-        #                           order=0) * 255
-        # this_ac[:, :, 2] = resize(internal_state, (20, self.environment_params['arena_width']), anti_aliasing=False,
-        #                           order=0) * 255
-        #
-        # frame = np.vstack((frame, np.zeros((20, self.environment_params['arena_width'], 3)), this_ac))
+        frame = np.vstack((arena, np.zeros((50, self.environment_params['arena_width'], 3)), eyes))
 
-        frame = rescale(arena, scale, multichannel=True, anti_aliasing=True)
+        this_ac = np.zeros((20, self.environment_params['arena_width'], 3))
+        this_ac[:, :, 0] = resize(internal_state, (20, self.environment_params['arena_width']), anti_aliasing=False,
+                                  order=0) * 255
+        this_ac[:, :, 1] = resize(internal_state, (20, self.environment_params['arena_width']), anti_aliasing=False,
+                                  order=0) * 255
+        this_ac[:, :, 2] = resize(internal_state, (20, self.environment_params['arena_width']), anti_aliasing=False,
+                                  order=0) * 255
+
+        frame = np.vstack((frame, np.zeros((20, self.environment_params['arena_width'], 3)), this_ac))
+
+        frame = rescale(frame, scale, multichannel=True, anti_aliasing=True)
 
         return frame
 
