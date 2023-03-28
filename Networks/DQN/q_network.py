@@ -212,7 +212,9 @@ class QNetwork:
                                             self.Advantage_ref[0:, :][:, 6:7],
                                             self.Advantage_ref[0:, :][:, 8:9],
                                             self.Advantage_ref[0:, :][:, 7:8],
-                                            self.Advantage_ref[0:, :][:, 9:]], axis=1)
+                                            self.Advantage_ref[0:, :][:, 9:10],
+                                            self.Advantage_ref[0:, :][:, 11:12],
+                                            self.Advantage_ref[0:, :][:, 10:11]], axis=1)
 
         #                ------------ Integrating Normal and Reflected ------------                   #
 
