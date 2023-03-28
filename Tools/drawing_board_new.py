@@ -100,7 +100,7 @@ class DrawingBoard:
 
         self.global_background_grating = self.get_background_grating(background_grating_frequency)
         self.global_luminance_mask = self.get_luminance_mask(dark_light_ratio, dark_gain)
-        self.local_scatter = self.get_local_scatter()
+        self.local_scatter, self.local_scatter_base = self.get_local_scatter()
 
         self.prey_size = prey_size * 2
         self.prey_radius = prey_size
@@ -139,6 +139,9 @@ class DrawingBoard:
         self.show_background = show_background
 
         self.FOV = FieldOfView(self.local_dim, self.max_visual_distance, self.width, self.height)
+
+    def get_FOV_size(self):
+        return self.local_dim, self.local_dim
 
     def get_background_grating(self, frequency, linear=False):
         if linear:
@@ -274,7 +277,7 @@ class DrawingBoard:
             [adjusted_red_scatter, adjusted_uv_scatter, adjusted_red_scatter],
             axis=2)
         # adjusted_scatter = self.chosen_math_library.expand_dims(adjusted_scatter, 2)
-        return adjusted_scatter
+        return adjusted_scatter, desired_uv_scatter
 
     def create_obstruction_mask_lines_cupy(self, fish_position, prey_locations, predator_locations,
                                            prey_occlusion=False):
@@ -660,13 +663,16 @@ class DrawingBoard:
         # apply FOV portion of luminance mask
         # local_luminance_mask = self.global_luminance_mask[FOV['enclosed_fov'][0]:FOV['enclosed_fov'][1],
         #                                                   FOV['enclosed_fov'][2]:FOV['enclosed_fov'][3], :]
-        local_luminance_mask = self.global_luminance_mask[self.FOV.enclosed_fov_top:self.FOV.enclosed_fov_bottom,
-                                                          self.FOV.enclosed_fov_left:self.FOV.enclosed_fov_right, :]
+        local_luminance_mask = self.chosen_math_library.zeros(self.local_db.shape)
+        lum_slice = self.global_luminance_mask[self.FOV.enclosed_fov_top:self.FOV.enclosed_fov_bottom,
+                                               self.FOV.enclosed_fov_left:self.FOV.enclosed_fov_right, :]
+        local_luminance_mask[self.FOV.local_fov_top:self.FOV.local_fov_bottom,
+                             self.FOV.local_fov_left:self.FOV.local_fov_right] = lum_slice
 
         # A[FOV['local_coordinates_fov'][0]:FOV['local_coordinates_fov'][1],
         #   FOV['local_coordinates_fov'][2]:FOV['local_coordinates_fov'][3], :] *= local_luminance_mask
-        A[self.FOV.local_fov_top:self.FOV.local_fov_bottom,
-          self.FOV.local_fov_left:self.FOV.local_fov_right, :] *= local_luminance_mask
+        A *= local_luminance_mask
+
 
         # If FOV extends outside the arena, extend the A image
         A = self.extend_A(A)
@@ -678,7 +684,7 @@ class DrawingBoard:
                                                         self.chosen_math_library.array(prey_locations),
                                                         self.chosen_math_library.array(predator_locations))
 
-        return A * O * self.local_scatter
+        return A * O * self.local_scatter, local_luminance_mask[:,:,1] * self.local_scatter_base
 
     def compute_n(self, angular_size, number_of_this_feature, max_separation=1, p=None):
 

@@ -490,14 +490,23 @@ Sand grain: {self.sand_grain_associated_reward}
         else:
             predator_bodies = np.array([])
 
-        full_masked_image = self.board.get_masked_pixels(np.array(self.fish.body.position),
-                                                         np.array([i.position for i in self.prey_bodies] +
-                                                                  [i.position for i in self.sand_grain_bodies]),
-                                                         predator_bodies
-                                                         )
-        
-        self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
-        self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
+        prey_locations = [i.position for i in self.prey_bodies]
+        sand_grain_locations = [i.position for i in self.sand_grain_bodies]
+        full_masked_image, lum_mask = self.board.get_masked_pixels(np.array(self.fish.body.position),
+                                                                   np.array(prey_locations + sand_grain_locations),
+                                                                   predator_bodies)
+        prey_locations_array = np.array(prey_locations) - np.array(self.fish.body.position) + self.board.max_visual_distance
+
+        if len(sand_grain_locations) > 0:
+            sand_grain_locations_array = np.array(sand_grain_locations) - np.array(
+                self.fish.body.position) + self.board.max_visual_distance
+        else:
+            sand_grain_locations_array = np.empty((0, 2))
+
+        self.fish.left_eye.read(full_masked_image, left_eye_pos[0],
+                                left_eye_pos[1], self.fish.body.angle, lum_mask, prey_locations_array, sand_grain_locations_array)
+        self.fish.right_eye.read(full_masked_image, right_eye_pos[0],
+                                 right_eye_pos[1], self.fish.body.angle, lum_mask, prey_locations_array, sand_grain_locations_array)
 
         # if save_frames:
         #     self.board.erase_visualisation(bkg=0.3)

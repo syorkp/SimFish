@@ -938,40 +938,50 @@ if __name__ == "__main__":  # may be needed to run on windows
         },
     ]
 
-    dqn_epsilon_static_1 = [
+    dqn_epsilon_static_1_bew = [
         {
             "Model Name": "dqn_epsilon_static",
             "Environment Name": "dqn_epsilon_static",
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
+            "Using GPU": False
+        },
+    ]
+
+    dqn_epsilon_proj = [
+        {
+            "Model Name": "dqn_epsilon_proj",
+            "Environment Name": "dqn_epsilon_proj",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
         },
         {
-            "Model Name": "dqn_epsilon_static",
-            "Environment Name": "dqn_epsilon_static",
+            "Model Name": "dqn_epsilon_proj",
+            "Environment Name": "dqn_epsilon_proj",
             "Trial Number": 2,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
         {
-            "Model Name": "dqn_epsilon_static",
-            "Environment Name": "dqn_epsilon_static",
+            "Model Name": "dqn_epsilon_proj",
+            "Environment Name": "dqn_epsilon_proj",
             "Trial Number": 3,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
         {
-            "Model Name": "dqn_epsilon_static",
-            "Environment Name": "dqn_epsilon_static",
+            "Model Name": "dqn_epsilon_proj",
+            "Environment Name": "dqn_epsilon_proj",
             "Trial Number": 4,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
     ]
 
-
     if run_config is None:
-        run_config = dqn_basic_1
+        run_config = dqn_epsilon_static_1_bew
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]
