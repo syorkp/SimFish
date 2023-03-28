@@ -463,10 +463,13 @@ Sand grain: {self.sand_grain_associated_reward}
         else:
             sand_grain_locations_array = np.empty((0, 2))
 
-        self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle, lum_mask,
-                                prey_locations_array, sand_grain_locations_array)
-        self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle, lum_mask,
-                                 prey_locations_array, sand_grain_locations_array)
+        # self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle, lum_mask,
+        #                         prey_locations_array, sand_grain_locations_array)
+        # self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle, lum_mask,
+        #                          prey_locations_array, sand_grain_locations_array)
+
+        self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
+        self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
 
         observation = np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
                                  self.fish.readings_to_photons(self.fish.right_eye.readings)))

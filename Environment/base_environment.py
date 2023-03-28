@@ -205,10 +205,26 @@ class BaseEnvironment:
         self.pred_prey_wall2.begin = self.no_collision
 
     def draw_walls_and_sediment(self):
-        self.board.erase(bkg=self.env_variables['background_brightness'])
+
+        #TODO: remove items outside visual range
+        prey_pos = np.zeros((len(self.prey_bodies), 2), dtype=int)
+        prey_pos[:,0] = np.round(np.array([pr.position[0] for pr in self.prey_bodies]) - self.fish.body.position[0]).astype(int)
+        prey_pos[:,1] = np.round(np.array([pr.position[1] for pr in self.prey_bodies]) - self.fish.body.position[1]).astype(int)
+
+        sand_pos = np.zeros((len(self.sand_grain_bodies), 2), dtype=int)
+        sand_pos[:,0] = np.round(np.array([sg.position[0] for sg in self.sand_grain_bodies]) - self.fish.body.position[0]).astype(int)
+        sand_pos[:,1] = np.round(np.array([sg.position[1] for sg in self.sand_grain_bodies]) - self.fish.body.position[1]).astype(int)
+
+        self.board.erase(bkg=self.env_variables['bkg_scatter'])
+        #FOV = self.board.get_field_of_view(self.fish.body.position)
+  
+    
+
+ #       self.board.erase(bkg=self.env_variables['background_brightness'])
         self.board.draw_walls()
         self.board.draw_sediment()
-
+        self.board.draw_shapes_environmental(False, prey_pos, sand_pos, self.env_variables['sand_grain_colour'])
+  
     def clear_environmental_features(self):
         """Removes all prey, predators, and sand grains from simulation"""
         for i, shp in enumerate(self.prey_shapes):
