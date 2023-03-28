@@ -11,7 +11,7 @@ from Services.Testing.visualisation_board import VisualisationBoard
 
 class EnvTestingService(BaseService):
 
-    def __init__(self, config_name, continuous_actions):
+    def __init__(self, config_name, continuous_actions, display_board):
         super().__init__(model_name="Test",
                          trial_number=1,
                          total_steps=0,
@@ -21,7 +21,8 @@ class EnvTestingService(BaseService):
                          memory_fraction=1,
                          config_name=config_name,
                          continuous_actions=continuous_actions,
-                         monitor_performance=False
+                         monitor_performance=False,
+
                          )
 
         self.current_configuration_location = f"./Configurations/Assay-Configs/{self.config_name}"
@@ -39,12 +40,16 @@ class EnvTestingService(BaseService):
                                                               num_actions=12,
                                                               )
 
+        self.display_board = display_board
         # Create visualisation board
         self.visualisation_board = VisualisationBoard(self.environment_params["arena_width"],
                                                       self.environment_params["arena_height"],
                                                       light_gradient=self.environment_params["light_gradient"])
         self.board_fig, self.ax_board = plt.subplots()
-        self.board_image = plt.imshow(np.zeros((self.environment_params['arena_height'], self.environment_params['arena_width'], 3)))
+
+        self.scaling_factor = 1
+        self.board_image = plt.imshow(np.zeros((self.environment_params['arena_height']*4, self.environment_params['arena_width']*self.scaling_factor, 3)))
+
         plt.ion()
         plt.show()
 
@@ -111,7 +116,7 @@ class EnvTestingService(BaseService):
         self.visualisation_board.apply_light(dark_col=int(self.environment_params["dark_light_ratio"] * self.environment_params["arena_width"]),
                                              dark_gain=self.environment_params["dark_gain"],
                                              light_gain=self.environment_params["light_gain"])
-        frame = self.output_frame(scale=1) / 255.
+        frame = self.output_frame(scale=self.scaling_factor) / 255.
         self.board_image.set_data(frame / np.max(frame))
         plt.pause(0.000001)
 
