@@ -49,7 +49,7 @@ class Eye:
         self.uv_photoreceptor_rf_size = env_variables['uv_photoreceptor_rf_size']
         self.red_photoreceptor_rf_size = env_variables['red_photoreceptor_rf_size']
 
-        uv_photoreceptor_dist = "Half-Normal"
+        uv_photoreceptor_dist = "Uniform"
         if uv_photoreceptor_dist == "Sigmoid":
             self.uv_photoreceptor_angles = self.update_angles_sigmoid(verg_angle, retinal_field, is_left)
             self.uv_photoreceptor_num = len(self.uv_photoreceptor_angles)
