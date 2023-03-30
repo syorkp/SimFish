@@ -49,7 +49,18 @@ class Eye:
         self.uv_photoreceptor_rf_size = env_variables['uv_photoreceptor_rf_size']
         self.red_photoreceptor_rf_size = env_variables['red_photoreceptor_rf_size']
 
-        self.uv_photoreceptor_angles = self.update_angles_sigmoid(verg_angle, retinal_field, is_left)
+        uv_photoreceptor_dist = "Half-Normal"
+        if uv_photoreceptor_dist == "Sigmoid":
+            self.uv_photoreceptor_angles = self.update_angles_sigmoid(verg_angle, retinal_field, is_left)
+        elif uv_photoreceptor_dist == "Half-Normal":
+            self.uv_photoreceptor_angles = self.update_angles_strike_zone(verg_angle, retinal_field, is_left,
+                                                                          self.uv_photoreceptor_num,
+                                                                          env_variables["strike_zone_sigma"])
+        elif uv_photoreceptor_dist == "Uniform":
+            self.uv_photoreceptor_angles = self.update_angles(verg_angle, retinal_field, is_left,
+                                                               self.uv_photoreceptor_num)
+
+
         self.uv_photoreceptor_num = len(self.uv_photoreceptor_angles)
         self.red_photoreceptor_num = self.uv_photoreceptor_num
 
@@ -194,6 +205,27 @@ class Eye:
 
         return self.chosen_math_library.sort(pr)
 
+    def update_angles_strike_zone(self, verg_angle, retinal_field, is_left, photoreceptor_num, sigma):
+        """Set the eyes visual angles, with the option of particular distributions."""
+
+        # Half normal distribution
+        if is_left:
+            min_angle = -np.pi / 2 - retinal_field / 2 + verg_angle / 2
+            max_angle = -np.pi / 2 + retinal_field / 2 + verg_angle / 2
+
+        else:
+            min_angle = np.pi / 2 - retinal_field / 2 - verg_angle / 2
+            max_angle = np.pi / 2 + retinal_field / 2 - verg_angle / 2
+
+        # sampled_values = self.sample_half_normal_distribution(min_angle, max_angle, photoreceptor_num)
+        computed_values = self.create_half_normal_distribution(min_angle, max_angle, photoreceptor_num, sigma)
+
+        # plt.scatter(computed_values, computed_values)
+        # plt.show()
+        # self.indices_for_padding_uv = relative_indices
+
+        return self.chosen_math_library.array(computed_values)
+
     def update_angles(self, verg_angle, retinal_field, is_left, photoreceptor_num):
         """Set the eyes visual angles to be an even distribution."""
         if is_left:
@@ -203,6 +235,32 @@ class Eye:
             min_angle = np.pi / 2 - retinal_field / 2 - verg_angle / 2
             max_angle = np.pi / 2 + retinal_field / 2 - verg_angle / 2
         return self.chosen_math_library.linspace(min_angle, max_angle, photoreceptor_num)
+
+    def create_half_normal_distribution(self, min_angle, max_angle, photoreceptor_num, sigma=1):
+        mu = 0
+        angle_difference = abs(max_angle - min_angle)
+
+        angle_range = np.linspace(min_angle, max_angle, photoreceptor_num)
+        frequencies = 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(-(angle_range - mu) ** 2 / (2 * sigma ** 2))
+        differences = 1 / frequencies
+        differences[0] = 0
+        total_difference = np.sum(differences)
+        differences = (differences * angle_difference) / total_difference
+        cumulative_differences = np.cumsum(differences)
+        photoreceptor_angles = min_angle + cumulative_differences
+
+        # Computing Indices for resampling
+        # hypothetical_angle_range = np.linspace(min_angle, max_angle, self.max_photoreceptor_num)
+        # hypothetical_frequencies = 1/(sigma * np.sqrt(2 * np.pi)) * np.exp(-(hypothetical_angle_range-mu)**2/(2*sigma**2))
+        # hypothetical_differences = 1/hypothetical_frequencies
+        # hypothetical_differences[0] = 0
+        # hypothetical_total_difference = np.sum(hypothetical_differences)
+        # hypothetical_differences = (hypothetical_differences*angle_difference)/hypothetical_total_difference
+        # hypothetical_cumulative_differences = np.cumsum(hypothetical_differences)
+        # hypothetical_photoreceptor_angles = min_angle + hypothetical_cumulative_differences
+        # relative_indices = np.round(((hypothetical_photoreceptor_angles - min(hypothetical_photoreceptor_angles))/angle_difference) * (photoreceptor_num-1)).astype(int)
+
+        return photoreceptor_angles  # , relative_indices
 
     def read(self, masked_arena_pixels, eye_x, eye_y, fish_angle, lum_mask, prey_positions, sand_grain_positions,
              proj=True):

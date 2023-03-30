@@ -949,36 +949,68 @@ if __name__ == "__main__":  # may be needed to run on windows
         },
     ]
 
-    dqn_epsilon_proj = [
+    dqn_epsilon_proj_hn = [
         {
-            "Model Name": "dqn_epsilon_proj_a",
+            "Model Name": "dqn_epsilon_proj_hn",
             "Environment Name": "dqn_epsilon_proj_a",
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
         {
-            "Model Name": "dqn_epsilon_proj_a",
+            "Model Name": "dqn_epsilon_proj_hn",
             "Environment Name": "dqn_epsilon_proj_a",
             "Trial Number": 2,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
         {
-            "Model Name": "dqn_epsilon_proj_a",
+            "Model Name": "dqn_epsilon_proj_hn",
             "Environment Name": "dqn_epsilon_proj_a",
             "Trial Number": 3,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
         {
-            "Model Name": "dqn_epsilon_proj_a",
+            "Model Name": "dqn_epsilon_proj_hn",
             "Environment Name": "dqn_epsilon_proj_a",
             "Trial Number": 4,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
     ]
+
+    dqn_epsilon_proj_uniform = [
+        {
+            "Model Name": "dqn_epsilon_proj_un",
+            "Environment Name": "dqn_epsilon_proj_a",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_epsilon_proj_un",
+            "Environment Name": "dqn_epsilon_proj_a",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_epsilon_proj_un",
+            "Environment Name": "dqn_epsilon_proj_a",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_epsilon_proj_un",
+            "Environment Name": "dqn_epsilon_proj_a",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
 
     if run_config is None:
         run_config = dqn_epsilon_static_1_bew
