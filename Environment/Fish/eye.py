@@ -52,16 +52,17 @@ class Eye:
         uv_photoreceptor_dist = "Half-Normal"
         if uv_photoreceptor_dist == "Sigmoid":
             self.uv_photoreceptor_angles = self.update_angles_sigmoid(verg_angle, retinal_field, is_left)
+            self.uv_photoreceptor_num = len(self.uv_photoreceptor_angles)
         elif uv_photoreceptor_dist == "Half-Normal":
+            self.uv_photoreceptor_num = env_variables['uv_photoreceptor_num']
             self.uv_photoreceptor_angles = self.update_angles_strike_zone(verg_angle, retinal_field, is_left,
                                                                           self.uv_photoreceptor_num,
                                                                           env_variables["strike_zone_sigma"])
         elif uv_photoreceptor_dist == "Uniform":
+            self.uv_photoreceptor_num = env_variables['uv_photoreceptor_num']
             self.uv_photoreceptor_angles = self.update_angles(verg_angle, retinal_field, is_left,
                                                                self.uv_photoreceptor_num)
 
-
-        self.uv_photoreceptor_num = len(self.uv_photoreceptor_angles)
         self.red_photoreceptor_num = self.uv_photoreceptor_num
 
         self.interpolated_observation = self.chosen_math_library.arange(
