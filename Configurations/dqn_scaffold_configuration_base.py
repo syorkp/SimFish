@@ -310,7 +310,7 @@ env = {
     'fixed_prey_distribution': False,
 }
 
-scaffold_name = "dqn_epsilon_proj"
+scaffold_name = "dqn_epsilon_proj_a"
 
 # Testing reward balance changes
 # env['consumption_reward_scaling'] /= 1000
@@ -368,13 +368,13 @@ high_pai = 800
 
 # Start with shot noise
 env["shot_noise"] = True
-env["bkg_scatter"] = 0.0036011379595952326# 0.1
+env["bkg_scatter"] = 0.1
 env["max_salt_damage"] = 0.02
-env["light_gain"] = 47.769# 125.7
-env["dark_gain"] = 47.2397 # 60.0
-env['red_scaling_factor'] = 0.5  # Pixel counts are multiplied by this
-env['uv_scaling_factor'] = 0.5  # Pixel counts are multiplied by this
-env['red_2_scaling_factor'] = 0.1  # Pixel counts are multiplied by this
+env["light_gain"] = 125.7
+env["dark_gain"] = 60.0
+env['red_scaling_factor'] = 0.01  # Pixel counts are multiplied by this
+env['uv_scaling_factor'] = 0.8  # Pixel counts are multiplied by this
+env['red_2_scaling_factor'] = 0.005  # Pixel counts are multiplied by this
 
 
 # 2-10

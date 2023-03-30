@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
@@ -51,7 +53,7 @@ class EnvTestingService(BaseService):
         plt.ion()
         plt.show()
 
-    def episode_loop(self):
+    def controlled_episode_loop(self):
         ended = False
         while not ended:
             print("Enter action: ")
@@ -69,9 +71,67 @@ class EnvTestingService(BaseService):
 
             if action == 99:
                 self.create_display_images()
+            elif action == 666:
+                print("Enter new position x: ")
+                new_position_x = input()
+
+                print("Enter new position y: ")
+                new_position_y = input()
+
+                new_position_x = int(new_position_x)
+                new_position_y = int(new_position_y)
+                self.simulation.fish.body.position = np.array([new_position_x, new_position_y])
+
             else:
                 self.simulation.simulation_step(action)
                 self.update_drawing()
+
+    def run_full_episode(self, num_steps, random_position):
+        """Runs en episode with random actions, logging data."""
+        ended = False
+        observation_log = []
+
+        while not ended:
+            if self.continuous_actions:
+                impulse = random.uniform(0.0, 10.0)
+                angle = random.uniform(-np.pi, np.pi)
+
+                impulse = float(impulse)
+                angle = float(angle)
+
+                action = [impulse, angle]
+            else:
+                action = random.randint(0, 11)
+                action = int(action)
+
+            if random_position:
+                self.simulation.fish.body.position = (np.random.randint(self.environment_params['fish_mouth_size'] + 40,
+                                                             self.environment_params['width'] - (self.environment_params[
+                                                                                                'fish_mouth_size'] + 40)),
+                                           np.random.randint(self.environment_params['fish_mouth_size'] + 40,
+                                                             self.environment_params['height'] - (self.environment_params[
+                                                                                                 'fish_mouth_size'] + 40)))
+                self.simulation.fish.body.angle = (np.random.rand() -0.5) * 2 * np.pi
+                observation, reward, internal_state, done, FOV = self.simulation.simulation_step(6)
+            else:
+                observation, reward, internal_state, done, FOV = self.simulation.simulation_step(action)
+
+            # self.update_drawing()
+            observation_log.append(observation)
+
+            print(self.simulation.num_steps)
+            if self.simulation.num_steps == num_steps:
+                ended = True
+        observation_log = np.array(observation_log)
+        plt.clf()
+        plt.close()
+
+        fig, axs = plt.subplots(3, sharex=True)
+
+        axs[0].hist(observation_log[:, :, 0].flatten())
+        axs[1].hist(observation_log[:, :, 1].flatten())
+        axs[2].hist(observation_log[:, :, 2].flatten())
+        plt.show()
 
     def create_display_images(self):
         # Save main plot

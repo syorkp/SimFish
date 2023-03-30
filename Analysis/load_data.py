@@ -1,7 +1,7 @@
 import h5py
 import numpy as np
 import os
-
+import matplotlib.pyplot as plt
 
 def load_data(model_name, assay_configuration, assay_id, training_data=False):
     """Loads the data of an individual assay from an assay configuration file."""
@@ -34,7 +34,13 @@ def load_data(model_name, assay_configuration, assay_id, training_data=False):
 
 
 if __name__ == "__main__":
-    d = load_data("dqn_basic_f-2", "Episode 270", "Episode 270", training_data=True)
+    d = load_data("dqn_epsilon-6", "Episode 200", "Episode 200", training_data=True)
+
+    fig, axs = plt.subplots(3, sharex=True)
+    axs[0].hist(d["observation"][:, :, 0].flatten())
+    axs[1].hist(d["observation"][:, :, 1].flatten())
+    axs[2].hist(d["observation"][:, :, 2].flatten())
+    plt.show()
     datas = []
     # red_channel = []
     # for i in range(1, 101):
