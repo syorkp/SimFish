@@ -969,6 +969,36 @@ if __name__ == "__main__":  # may be needed to run on windows
         },
     ]
 
+    dqn_epsilon_static_3 = [
+        {
+            "Model Name": "dqn_epsilon_static_3",
+            "Environment Name": "dqn_epsilon_static_3",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_epsilon_static_3",
+            "Environment Name": "dqn_epsilon_static_3",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_epsilon_static_3",
+            "Environment Name": "dqn_epsilon_static_3",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_epsilon_static_3",
+            "Environment Name": "dqn_epsilon_static_3",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
 
     if run_config is None:
         run_config = dqn_basic_1

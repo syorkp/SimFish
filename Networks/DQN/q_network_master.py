@@ -1,4 +1,3 @@
-# noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
 
 tf.disable_v2_behavior()
@@ -7,7 +6,7 @@ tf.disable_v2_behavior()
 class QNetwork:
 
     def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, num_actions, internal_states=2, learning_rate=0.0001,
-                 full_efference_copy=True):
+                 extra_layer=False, full_reafference=True):
         """The network receives the observation from both eyes, processes it
         #through convolutional layers, concatenates it with the internal state
         #and feeds it to the RNN."""
@@ -17,9 +16,8 @@ class QNetwork:
         self.rnn_output_size = self.rnn_dim
         self.actions = tf.placeholder(shape=[None], dtype=tf.int32, name='actions')
         self.actions_one_hot = tf.one_hot(self.actions, num_actions, dtype=tf.float32)
-        #self.learning_rate = tf.placeholder(shape=None, dtype=tf.float32)
 
-        if full_efference_copy:
+        if full_reafference:
             self.prev_actions = tf.placeholder(shape=[None, 3], dtype=tf.float32, name='prev_actions')
             self.prev_action_consequences = self.prev_actions[:, 1:]
             self.prev_action_impulse = self.prev_action_consequences[:, :1]
@@ -34,8 +32,7 @@ class QNetwork:
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
 
         self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
-        self.normalized_observation = self.observation#/ 128.0) - 1.0
-        self.reshaped_observation = tf.reshape(self.normalized_observation, shape=[-1, self.num_arms, 3, 2])
+        self.reshaped_observation = tf.reshape(self.observation, shape=[-1, self.num_arms, 3, 2])
         self.left_eye = self.reshaped_observation[:, :, :, 0]
         self.right_eye = self.reshaped_observation[:, :, :, 1]
 
@@ -74,7 +71,7 @@ class QNetwork:
         self.conv4l_flat = tf.layers.flatten(self.conv4l)
         self.conv4r_flat = tf.layers.flatten(self.conv4r)
 
-        if full_efference_copy:
+        if full_reafference:
             self.conv_with_states = tf.concat(
                 [self.conv4l_flat, self.conv4r_flat, self.prev_actions_one_hot, self.prev_action_impulse,
                  self.prev_action_angle, self.internal_state], 1)
@@ -87,28 +84,28 @@ class QNetwork:
                                       trainable=True, name=my_scope + '_rnn_in')
         self.convFlat = tf.reshape(self.rnn_in, [self.batch_size, self.train_length, self.rnn_dim])
 
-        self.rnn, self.rnn_state_shared = tf.nn.dynamic_rnn(inputs=self.convFlat, cell=rnn_cell, dtype=tf.float32,
-                                                            initial_state=self.rnn_state_in, scope=my_scope + '_rnn', )
+        self.rnn, self.rnn_state = tf.nn.dynamic_rnn(inputs=self.convFlat, cell=rnn_cell, dtype=tf.float32,
+                                                     initial_state=self.rnn_state_in, scope=my_scope + '_rnn', )
         self.rnn = tf.reshape(self.rnn, shape=[-1, self.rnn_dim])
         self.rnn_output = self.rnn
 
-        # if extra_layer:
-        #     self.rnn_in2 = tf.layers.dense(self.rnn_output, self.rnn_dim, activation=tf.nn.relu,
-        #                                    kernel_initializer=tf.orthogonal_initializer,
-        #                                    trainable=True, name=my_scope + "_rnn_in_2")
-        #     self.rnnFlat = tf.reshape(self.rnn_in2, [self.batch_size, self.train_length, self.rnn_dim])
+        if extra_layer:
+            self.rnn_in2 = tf.layers.dense(self.rnn_output, self.rnn_dim, activation=tf.nn.relu,
+                                           kernel_initializer=tf.orthogonal_initializer,
+                                           trainable=True, name=my_scope + "_rnn_in_2")
+            self.rnnFlat = tf.reshape(self.rnn_in2, [self.batch_size, self.train_length, self.rnn_dim])
 
-        #     self.rnn2, self.rnn_state2 = tf.nn.dynamic_rnn(inputs=self.rnnFlat, cell=rnn_cell, dtype=tf.float32,
-        #                                                    initial_state=self.rnn_state_in, scope=my_scope + '_rnn2',
-        #                                                    name=my_scope + "_rnn2")
-        #     self.rnn2 = tf.reshape(self.rnn2, shape=[-1, self.rnn_dim])
-        #     self.rnn2_output = self.rnn2
-        #     # The output from the recurrent player is then split into separate Value and Advantage streams
-        #     self.streamA, self.streamV = tf.split(self.rnn2_output, 2, 1)
+            self.rnn2, self.rnn_state2 = tf.nn.dynamic_rnn(inputs=self.rnnFlat, cell=rnn_cell, dtype=tf.float32,
+                                                           initial_state=self.rnn_state_in, scope=my_scope + '_rnn2',
+                                                           name=my_scope + "_rnn2")
+            self.rnn2 = tf.reshape(self.rnn2, shape=[-1, self.rnn_dim])
+            self.rnn2_output = self.rnn2
+            # The output from the recurrent player is then split into separate Value and Advantage streams
+            self.streamA, self.streamV = tf.split(self.rnn2_output, 2, 1)
 
-        # else:
-        #     self.rnn_state2 = self.rnn_state_shared
-        self.streamA, self.streamV = tf.split(self.rnn_output, 2, 1)
+        else:
+            self.rnn_state2 = self.rnn_state
+            self.streamA, self.streamV = tf.split(self.rnn_output, 2, 1)
         self.AW = tf.Variable(tf.random_normal([self.rnn_output_size // 2, num_actions]), name=my_scope+"aw")
         self.VW = tf.Variable(tf.random_normal([self.rnn_output_size // 2, 1]), name=my_scope+"vw")
         self.Advantage = tf.matmul(self.streamA, self.AW)
@@ -144,26 +141,15 @@ class QNetwork:
 
         self.conv4l_flat_ref = tf.layers.flatten(self.conv4l_ref)
         self.conv4r_flat_ref = tf.layers.flatten(self.conv4r_ref)
-        self.prev_actions_one_hot_rev = tf.concat([self.prev_actions_one_hot[0:, :][:, :1],
-                                                   self.prev_actions_one_hot[0:, :][:, 2:3],
-                                                   self.prev_actions_one_hot[0:, :][:, 1:2],
-                                                   self.prev_actions_one_hot[0:, :][:, 3:4],
-                                                   self.prev_actions_one_hot[0:, :][:, 5:6],
-                                                   self.prev_actions_one_hot[0:, :][:, 4:5],
-                                                   self.prev_actions_one_hot[0:, :][:, 6:7],
-                                                   self.prev_actions_one_hot[0:, :][:, 8:9],
-                                                   self.prev_actions_one_hot[0:, :][:, 7:8],
-                                                   self.prev_actions_one_hot[0:, :][:, 9:10],
-                                                   self.prev_actions_one_hot[0:, :][:, 11:12],
-                                                   self.prev_actions_one_hot[0:, :][:, 10:11],
-                                                   ], axis=1)
-        #self.internal_state_rev = tf.reverse(self.internal_state, [1])
+        self.prev_actions_one_hot_rev = tf.reverse(self.prev_actions_one_hot, [1])
+        # self.internal_state_rev = tf.reverse(self.internal_state, [1])
+        self.internal_state_rev = self.internal_state
 
-        if full_efference_copy:
-            self.prev_action_impulse_rev = self.prev_action_impulse
-            self.prev_action_angle_rev = tf.multiply(self.prev_action_angle, -1)
+        if full_reafference:
+            self.prev_action_impulse_rev = tf.reverse(self.prev_action_impulse, [1])
+            self.prev_action_angle_rev = tf.reverse(self.prev_action_angle, [1])
             self.conv_with_states_ref = tf.concat(
-                [self.conv4l_flat_ref, self.conv4r_flat_ref, self.prev_actions_one_hot_rev, self.prev_action_impulse_rev, self.prev_action_angle_rev, self.internal_state], 1)
+                [self.conv4l_flat_ref, self.conv4r_flat_ref, self.prev_actions_one_hot_rev, self.prev_action_impulse_rev, self.prev_action_angle_rev, self.internal_state_rev], 1)
         else:
             self.conv_with_states_ref = tf.concat(
                 [self.conv4l_flat_ref, self.conv4r_flat_ref, self.prev_actions_one_hot_rev, self.internal_state_rev], 1)
@@ -175,45 +161,60 @@ class QNetwork:
 
         self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell, dtype=tf.float32,
                                                              initial_state=self.rnn_state_in_ref, scope=my_scope + '_rnn')
+        self.rnn_state_shared = self.rnn_state
         self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim])
         self.rnn_output_ref = self.rnn_ref
 
-        # if extra_layer:
-        #     self.rnn_in2_ref = tf.layers.dense(self.rnn_output_ref, self.rnn_dim, activation=tf.nn.relu,
-        #                                        kernel_initializer=tf.orthogonal_initializer,
-        #                                        trainable=True, name=my_scope + "_rnn_in_2", reuse=True)
-        #     self.rnnFlat_ref = tf.reshape(self.rnn_in2_ref, [self.batch_size, self.train_length, self.rnn_dim])
+        if extra_layer:
+            self.rnn_in2_ref = tf.layers.dense(self.rnn_output_ref, self.rnn_dim, activation=tf.nn.relu,
+                                               kernel_initializer=tf.orthogonal_initializer,
+                                               trainable=True, name=my_scope + "_rnn_in_2", reuse=True)
+            self.rnnFlat_ref = tf.reshape(self.rnn_in2_ref, [self.batch_size, self.train_length, self.rnn_dim])
 
-        #     self.rnn2_ref, self.rnn_state2_ref = tf.nn.dynamic_rnn(inputs=self.rnnFlat_ref, cell=rnn_cell,
-        #                                                            dtype=tf.float32,
-        #                                                            initial_state=self.rnn_state_in,
-        #                                                            scope=my_scope + '_rnn2', name=my_scope + "_rnn2",
-        #                                                            reuse=True)
-        #     self.rnn2_ref = tf.reshape(self.rnn2_ref, shape=[-1, self.rnn_dim])
-        #     self.rnn2_output_ref = self.rnn2_ref
-        #     # The output from the recurrent player is then split into separate Value and Advantage streams
-        #     self.streamA_ref, self.streamV_ref = tf.split(self.rnn2_output_ref, 2, 1)
+            self.rnn2_ref, self.rnn_state2_ref = tf.nn.dynamic_rnn(inputs=self.rnnFlat_ref, cell=rnn_cell,
+                                                                   dtype=tf.float32,
+                                                                   initial_state=self.rnn_state_in,
+                                                                   scope=my_scope + '_rnn2', name=my_scope + "_rnn2",
+                                                                   reuse=True)
+            self.rnn2_ref = tf.reshape(self.rnn2_ref, shape=[-1, self.rnn_dim])
+            self.rnn2_output_ref = self.rnn2_ref
+            # The output from the recurrent player is then split into separate Value and Advantage streams
+            self.streamA_ref, self.streamV_ref = tf.split(self.rnn2_output_ref, 2, 1)
 
-        # else:
-        #     self.rnn_state2_ref = self.rnn_state_ref
-        self.streamA_ref, self.streamV_ref = tf.split(self.rnn_output_ref, 2, 1)
+        else:
+            self.rnn_state2_ref = self.rnn_state_ref
+            self.streamA_ref, self.streamV_ref = tf.split(self.rnn_output_ref, 2, 1)
 
         self.Value_ref = tf.matmul(self.streamV_ref, self.VW)
         self.Advantage_ref = tf.matmul(self.streamA_ref, self.AW)
 
         # Swapping rows in advantage - Note that this is specific to the current action space and order
-        self.Advantage_ref = tf.concat([self.Advantage_ref[0:, :][:, :1],
-                                        self.Advantage_ref[0:, :][:, 2:3],
-                                        self.Advantage_ref[0:, :][:, 1:2],
-                                        self.Advantage_ref[0:, :][:, 3:4],
-                                        self.Advantage_ref[0:, :][:, 5:6],
-                                        self.Advantage_ref[0:, :][:, 4:5],
-                                        self.Advantage_ref[0:, :][:, 6:7],
-                                        self.Advantage_ref[0:, :][:, 8:9],
-                                        self.Advantage_ref[0:, :][:, 7:8],
-                                        self.Advantage_ref[0:, :][:, 9:10],
-                                        self.Advantage_ref[0:, :][:, 11:12],
-                                        self.Advantage_ref[0:, :][:, 10:11]], axis=1)
+        if num_actions == 10:
+
+            self.Advantage_ref = tf.concat([self.Advantage_ref[0:, :][:, :1],
+                                            self.Advantage_ref[0:, :][:, 2:3],
+                                            self.Advantage_ref[0:, :][:, 1:2],
+                                            self.Advantage_ref[0:, :][:, 3:4],
+                                            self.Advantage_ref[0:, :][:, 5:6],
+                                            self.Advantage_ref[0:, :][:, 4:5],
+                                            self.Advantage_ref[0:, :][:, 6:7],
+                                            self.Advantage_ref[0:, :][:, 8:9],
+                                            self.Advantage_ref[0:, :][:, 7:8],
+                                            self.Advantage_ref[0:, :][:, 9:]], axis=1)
+        else:
+            print(f"Static Q-network not set up for {num_actions} actions")
+            self.Advantage_ref = tf.concat([self.Advantage_ref[0:, :][:, :1],
+                                            self.Advantage_ref[0:, :][:, 2:3],
+                                            self.Advantage_ref[0:, :][:, 1:2],
+                                            self.Advantage_ref[0:, :][:, 3:4],
+                                            self.Advantage_ref[0:, :][:, 5:6],
+                                            self.Advantage_ref[0:, :][:, 4:5],
+                                            self.Advantage_ref[0:, :][:, 6:7],
+                                            self.Advantage_ref[0:, :][:, 8:9],
+                                            self.Advantage_ref[0:, :][:, 7:8],
+                                            self.Advantage_ref[0:, :][:, 9:10],
+                                            self.Advantage_ref[0:, :][:, 11:12],
+                                            self.Advantage_ref[0:, :][:, 10:11]], axis=1)
 
         #                ------------ Integrating Normal and Reflected ------------                   #
 
