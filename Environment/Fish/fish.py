@@ -259,7 +259,7 @@ class Fish:
     def readings_to_photons(self, readings):
         """Rounds down observations to form array of discrete photon events."""
         photons = np.floor(readings).astype(int)
-        photons = photons.clip(0, 255)
+        photons = photons.clip(0, 25500000)
 
         return photons
 

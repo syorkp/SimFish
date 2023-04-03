@@ -782,6 +782,70 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
+    # Without 0-255 obs clipping (with calibration that previously failed)
+    dqn_epsilon_proj_c = [
+        {
+            "Model Name": "dqn_epsilon_proj_c",
+            "Environment Name": "dqn_epsilon_proj_c",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_epsilon_proj_c",
+            "Environment Name": "dqn_epsilon_proj_c",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_epsilon_proj_c",
+            "Environment Name": "dqn_epsilon_proj_c",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_epsilon_proj_c",
+            "Environment Name": "dqn_epsilon_proj_c",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    # Without 0-255 obs clipping (but with calibration that works)
+    dqn_epsilon_proj_d = [
+        {
+            "Model Name": "dqn_epsilon_proj_d",
+            "Environment Name": "dqn_epsilon_proj_b",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_epsilon_proj_d",
+            "Environment Name": "dqn_epsilon_proj_b",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_epsilon_proj_d",
+            "Environment Name": "dqn_epsilon_proj_b",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_epsilon_proj_d",
+            "Environment Name": "dqn_epsilon_proj_b",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
 
     dqn_epsilon_new = [
         {
