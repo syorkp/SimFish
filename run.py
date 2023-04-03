@@ -751,6 +751,38 @@ if __name__ == "__main__": # may be needed to run on windows
         },
         ]
 
+    dqn_epsilon_proj_b = [
+        {
+            "Model Name": "dqn_epsilon_proj_b",
+            "Environment Name": "dqn_epsilon_proj_b",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_epsilon_proj_b",
+            "Environment Name": "dqn_epsilon_proj_b",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_epsilon_proj_b",
+            "Environment Name": "dqn_epsilon_proj_b",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_epsilon_proj_b",
+            "Environment Name": "dqn_epsilon_proj_b",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+
     dqn_epsilon_new = [
         {
             "Model Name": "dqn_epsilon_new_2",

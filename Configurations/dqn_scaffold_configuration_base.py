@@ -217,7 +217,7 @@ env = {
     'unit_circle_diameter': 0.7,  # Circular current options
 }
 
-scaffold_name = "dqn_epsilon_new_2"
+scaffold_name = "dqn_epsilon_proj_b"
 
 
 # For predator scaffolding
@@ -272,10 +272,13 @@ high_pai = 800
 
 # Start with shot noise
 env["shot_noise"] = True
-env["background_brightness"] = 0.0036011379595952326# 0.1
+env["background_brightness"] = 0.1 #0.0036011379595952326
 env["max_salt_damage"] = 0.02
-env["light_gain"] = 27.769# 125.7
-env["dark_gain"] = 1.2397 # 60.0
+env["light_gain"] = 125.7# 27.769# 125.7
+env["dark_gain"] = 60.0# 1.2397 # 60.0
+env['red_scaling_factor'] = 0.01  # Pixel counts are multiplied by this
+env['uv_scaling_factor'] = 0.8  # Pixel counts are multiplied by this
+env['red_2_scaling_factor'] = 0.005  # Pixel counts are multiplied by this
 
 # 2-10
 changes += [

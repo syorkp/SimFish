@@ -606,7 +606,7 @@ class DrawingBoard:
         else:
             # db = (self.chosen_math_library.ones((self.local_dim, self.local_dim, 3),
             #                                     dtype=np.double) * bkg) / self.light_gain
-            db = (self.chosen_math_library.ones((self.local_dim, self.local_dim, 3), dtype=np.double) * bkg)
+            db = (self.chosen_math_library.ones((self.local_dim, self.local_dim, 3), dtype=np.double) * bkg) / self.light_gain   # TODO: Added temporarily for match between.
         return db
 
     def draw_sediment(self):

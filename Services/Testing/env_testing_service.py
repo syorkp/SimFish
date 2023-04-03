@@ -48,7 +48,7 @@ class EnvTestingService(BaseService):
         self.board_fig, self.ax_board = plt.subplots()
 
         self.scaling_factor = 1
-        self.board_image = plt.imshow(np.zeros((self.environment_params['arena_height']*4, self.environment_params['arena_width']*self.scaling_factor, 3)))
+        self.board_image = plt.imshow(np.zeros((self.environment_params['arena_height']*self.scaling_factor, self.environment_params['arena_width']*self.scaling_factor, 3)))
 
         plt.ion()
         plt.show()
