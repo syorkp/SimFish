@@ -2,6 +2,7 @@ import numpy as np
 import math
 
 from Environment.Board.field_of_view import FieldOfView
+import skimage.draw as draw
 
 
 class DrawingBoard:
@@ -51,6 +52,7 @@ class DrawingBoard:
         self.local_scatter, self.local_scatter_base = self.get_local_scatter()
 
         self.prey_diameter = prey_radius * 2
+        self.prey_size = self.prey_diameter
         self.prey_radius = prey_radius
         self.predator_size = predator_radius * 2
         self.predator_radius = predator_radius
@@ -628,3 +630,64 @@ class DrawingBoard:
         self.local_db[self.FOV.local_fov_top:self.FOV.local_fov_bottom, self.FOV.local_fov_left, 0] = 1
 
         self.local_db[self.FOV.local_fov_top:self.FOV.local_fov_bottom, self.FOV.local_fov_right - 1, 0] = 1
+
+    @staticmethod
+    def multi_circles(cx, cy, rad):
+        rr, cc = draw.circle(0, 0, rad)
+        rrs = np.tile(rr, (len(cy), 1)) + np.tile(np.reshape(cy, (len(cy), 1)), (1, len(rr)))
+        ccs = np.tile(cc, (len(cx), 1)) + np.tile(np.reshape(cx, (len(cx), 1)), (1, len(cc)))
+        return rrs, ccs
+    
+    def draw_shapes_environmental(self, visualisation, prey_pos, sand_grain_pos=np.array([]),
+                                  sand_grain_colour=(0, 0, 1)):  # prey/sand positions are fish-centric
+        # if visualisation:  # Only draw fish if in visualisation mode
+        #     if self.env_variables["show_fish_body_energy_state"]:
+        #         fish_body_colour = (1 - self.fish.energy_level, self.fish.energy_level, 0)
+        #     else:
+        #         fish_body_colour = self.fish.head.color
+
+        #     self.fish_shape(self.fish.body.position, self.env_variables['fish_mouth_size'],
+        #                           self.env_variables['fish_head_size'], self.env_variables['fish_tail_length'],
+        #                           self.fish.mouth.color, fish_body_colour, self.fish.body.angle)
+
+        prey_pos += self.max_visual_distance + 1  # fish-centric to fov-centric
+        sand_grain_pos += self.max_visual_distance + 1
+
+        # remove out of bounds prey
+        prey_pos = prey_pos[np.all((np.all(prey_pos <= self.local_dim, axis=1),
+                                    np.all(prey_pos >= 0, axis=1)), axis=0)]
+        # remove out of bounds sand grains
+        sand_grain_pos = sand_grain_pos[np.all((np.all(sand_grain_pos <= self.local_dim, axis=1),
+                                                np.all(sand_grain_pos >= 0, axis=1)), axis=0)]
+
+        if len(prey_pos) > 0:
+            # px = np.round(np.array([pr.position[0] for pr in self.prey_bodies])).astype(int)
+            # py = np.round(np.array([pr.position[1] for pr in self.prey_bodies])).astype(int)
+            rrs, ccs = self.multi_circles(prey_pos[:, 0], prey_pos[:, 1], self.prey_size)
+            rrs = np.clip(rrs, 0, self.local_dim - 1)
+            ccs = np.clip(ccs, 0, self.local_dim - 1)
+
+            #            try:
+            #                if visualisation:
+            #                    self.board.db_visualisation[rrs, ccs] = self.prey_shapes[0].color
+            #                else:
+            #                    self.board.db[rrs, ccs] = self.prey_shapes[0].color
+
+            self.local_db[rrs.astype(int), ccs.astype(int), 1] = 1
+
+            # except IndexError:
+            #     print(f"Index Error for: PX: {max(rrs.flatten())}, PY: {max(ccs.flatten())}")
+            #     if max(rrs.flatten()) > self.env_variables['height']:
+            #         lost_index = np.argmax(py)
+            #     elif max(ccs.flatten()) > self.env_variables['width']:
+            #         lost_index = np.argmax(px)
+            #     else:
+            #         lost_index = 0
+            #         print(f"Fix needs to be tuned: PX: {max(px)}, PY: {max(py)}")
+            #     self.prey_bodies.pop(lost_index)
+            #     self.prey_shapes.pop(lost_index)
+            #     self.draw_shapes(visualisation=visualisation)
+
+        if len(sand_grain_pos) > 0:
+            rrs, ccs = self.multi_circles(sand_grain_pos[:, 0], sand_grain_pos[:, 1], self.prey_size)
+            self.board.db[rrs, ccs] = sand_grain_colour

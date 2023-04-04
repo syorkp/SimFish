@@ -418,9 +418,9 @@ Sand grain: {self.sand_grain_associated_reward}
                 done = True
                 self.switch_step = self.num_steps
 
-        observation, full_masked_image = self.resolve_visual_input()
+        observation, full_masked_image, observation_old = self.resolve_visual_input()
 
-        return observation, reward, internal_state, done, full_masked_image
+        return observation, reward, internal_state, done, full_masked_image, observation_old
 
     def init_predator(self):
         if self.predator_location is None and \
@@ -468,10 +468,31 @@ Sand grain: {self.sand_grain_associated_reward}
         self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle, lum_mask,
                                  prey_locations_array, sand_grain_locations_array)
 
+        
         observation = np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
                                  self.fish.readings_to_photons(self.fish.right_eye.readings)))
 
-        return observation, full_masked_image
+        # prey_pos = np.zeros((len(self.prey_bodies), 2), dtype=int)
+        # prey_pos[:,0] = np.round(np.array([pr.position[0] for pr in self.prey_bodies]) - self.fish.body.position[0]).astype(int)
+        # prey_pos[:,1] = np.round(np.array([pr.position[1] for pr in self.prey_bodies]) - self.fish.body.position[1]).astype(int)
+
+        # sand_pos = np.zeros((len(self.sand_grain_bodies), 2), dtype=int)
+        # sand_pos[:,0] = np.round(np.array([sg.position[0] for sg in self.sand_grain_bodies]) - self.fish.body.position[0]).astype(int)
+        # sand_pos[:,1] = np.round(np.array([sg.position[1] for sg in self.sand_grain_bodies]) - self.fish.body.position[1]).astype(int)
+        # self.board.draw_shapes_environmental(False, prey_pos, sand_pos)
+
+        # full_masked_image, lum_mask = self.board.get_masked_pixels(np.array(self.fish.body.position),
+        #                                                            np.array(prey_locations + sand_grain_locations),
+        #                                                            predator_bodies)
+        # self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle, lum_mask,
+        #                         prey_locations_array, sand_grain_locations_array, proj=False)
+        # self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle, lum_mask,
+                                #  prey_locations_array, sand_grain_locations_array, proj=False)
+
+        observation_old = observation#np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
+                                 #self.fish.readings_to_photons(self.fish.right_eye.readings)))
+        #observation = observation_old
+        return observation, full_masked_image, observation_old
 
     def create_current(self):
         """

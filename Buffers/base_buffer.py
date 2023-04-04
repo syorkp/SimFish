@@ -12,6 +12,7 @@ class BaseBuffer:
         # Buffer for training
         self.action_buffer = []
         self.observation_buffer = []
+        self.observation_old_buffer = []
         self.reward_buffer = []
         self.internal_state_buffer = []
         self.advantage_buffer = []
@@ -48,6 +49,7 @@ class BaseBuffer:
         # Buffer for training
         self.action_buffer = []
         self.observation_buffer = []
+        self.observation_old_buffer = []
         self.reward_buffer = []
         self.internal_state_buffer = []
         self.advantage_buffer = []
@@ -76,8 +78,9 @@ class BaseBuffer:
         self.prey_gait_buffer = []
         self.switch_step = None  # Tracking switch step
 
-    def _add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref, value, value_ref, advantage, advantage_ref):
+    def _add_training(self, observation, observation_old, internal_state, reward, action, rnn_state, rnn_state_ref, value, value_ref, advantage, advantage_ref):
         self.observation_buffer.append(observation)
+        self.observation_old_buffer.append(observation_old)
         self.internal_state_buffer.append(internal_state)
         self.reward_buffer.append(reward)
         self.value_buffer.append(value)
@@ -219,6 +222,7 @@ class BaseBuffer:
             assay_group = hdf5_file.get(assay_id)
 
         self.create_data_group("observation", np.array(self.observation_buffer), assay_group)
+        self.create_data_group("observation_old", np.array(self.observation_old_buffer), assay_group)
 
         for layer in self.unit_recordings.keys():
             self.create_data_group(layer, np.array(self.unit_recordings[layer]).squeeze(), assay_group)

@@ -189,7 +189,7 @@ class BaseDQN:
         self.simulation.reset()
 
         # Take the first simulation step, with a capture action. Assigns observation, reward, internal state, done, and
-        o, r, internal_state, d, full_masked_image = self.simulation.simulation_step(action=3)
+        o, r, internal_state, d, full_masked_image, o_o = self.simulation.simulation_step(action=3)
 
         # For benchmarking each episode.
         all_actions = []
@@ -208,7 +208,7 @@ class BaseDQN:
             moviewriter.setup(fig, 'debug.mp4', dpi=500)
         while step_number < self.learning_params["max_epLength"]:
             step_number += 1
-            o, a, r, i_s, o1, d, rnn_state, rnn_state_ref, full_masked_image = self.step_loop(o=o,
+            o, a, r, i_s, o1, d, rnn_state, rnn_state_ref, full_masked_image, o_o = self.step_loop(o=o,
                                                                                               internal_state=internal_state,
                                                                                               a=efference_copy,
                                                                                               rnn_state=rnn_state,
@@ -314,7 +314,7 @@ class BaseDQN:
                 chosen_a = np.argmax(q_out + np.sqrt(2 * np.log(self.total_steps) / (self.action_usage+1e-5)))    
 
         # Simulation step
-        o1, given_reward, internal_state, d, full_masked_image = self.simulation.simulation_step(action=chosen_a)
+        o1, given_reward, internal_state, d, full_masked_image, o_o = self.simulation.simulation_step(action=chosen_a)
         self.action_usage[chosen_a] += 1
         #####
         
@@ -354,6 +354,7 @@ class BaseDQN:
 
             # Update buffer
             self.buffer.add_training(observation=o1,
+                                     observation_old=o_o,
                                      internal_state=internal_state,
                                      action=efference_copy,
                                      reward=given_reward,
@@ -365,7 +366,7 @@ class BaseDQN:
                                      advantage_ref=adv_ref
                                      )
         self.total_steps += 1
-        return o, efference_copy, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, full_masked_image
+        return o, efference_copy, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, full_masked_image, o_o
 
     def assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         chosen_a, updated_rnn_state, updated_rnn_state_ref, network_layers = \

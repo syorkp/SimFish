@@ -460,9 +460,9 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             ax0.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
 
-            left_obs = data['observation'][step, :, :, 0].T
+            left_obs = data['observation_old'][step, :, :, 0].T
 
-            right_obs = data['observation'][step, :, :, 1].T
+            right_obs = data['observation_old'][step, :, :, 1].T
             ax1.clear()
             ax2.clear()
             left_obs = np.clip(left_obs, 0, 255)

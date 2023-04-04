@@ -49,10 +49,11 @@ class Eye:
         self.uv_photoreceptor_rf_size = env_variables['uv_photoreceptor_rf_size']
         self.red_photoreceptor_rf_size = env_variables['red_photoreceptor_rf_size']
 
-        self.uv_photoreceptor_angles = self.update_angles_sigmoid(verg_angle, retinal_field, is_left)
-        self.uv_photoreceptor_num = len(self.uv_photoreceptor_angles)
+        #self.uv_photoreceptor_angles = self.update_angles_sigmoid(verg_angle, retinal_field, is_left)
+        self.uv_photoreceptor_num = 60#len(self.uv_photoreceptor_angles)
         self.red_photoreceptor_num = self.uv_photoreceptor_num
-
+        self.uv_photoreceptor_angles = self.update_angles(verg_angle, retinal_field, is_left, self.uv_photoreceptor_num)
+        
         self.interpolated_observation = self.chosen_math_library.arange(
             self.chosen_math_library.min(self.uv_photoreceptor_angles),
             self.chosen_math_library.max(self.uv_photoreceptor_angles) + self.sz_rf_spacing / 2,

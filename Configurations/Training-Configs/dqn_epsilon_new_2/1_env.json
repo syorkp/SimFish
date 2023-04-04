@@ -29,7 +29,7 @@
     "sz_oversampling_factor": 2.5,
     "sigmoid_steepness": 5.0,
     "red_scaling_factor": 1,
-    "uv_scaling_factor": 1,
+    "uv_scaling_factor": 0.8,
     "red_2_scaling_factor": 0.2,
     "fraction_capture_permitted": 1.0,
     "capture_angle_deviation_allowance": 3.141592653589793,

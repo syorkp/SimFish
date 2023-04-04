@@ -34,7 +34,7 @@ class QNetwork:
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
 
         self.observation = tf.placeholder(shape=[None, 3, 2], dtype=tf.float32, name='obs')
-        self.normalized_observation = (self.observation / 128.0) - 1.0
+        self.normalized_observation = self.observation# / 128.0) - 1.0
         self.reshaped_observation = tf.reshape(self.normalized_observation, shape=[-1, self.num_arms, 3, 2])
         self.left_eye = self.reshaped_observation[:, :, :, 0]
         self.right_eye = self.reshaped_observation[:, :, :, 1]
