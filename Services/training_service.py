@@ -75,11 +75,11 @@ class TrainingService(BaseService):
         self.last_episodes_sand_grains_bumped = []
 
         # Determining whether RNN exists in network
-        rnns = [layer for layer in self.learning_params["base_network_layers"].keys() if
-                self.learning_params["base_network_layers"][layer][0] == "dynamic_rnn"] + \
-               [layer for layer in self.learning_params["modular_network_layers"].keys() if
-                self.learning_params["modular_network_layers"][layer][0] == "dynamic_rnn"]
-        self.rnn_in_network = True if len(rnns) > 0 else False
+        # rnns = [layer for layer in self.learning_params["base_network_layers"].keys() if
+        #         self.learning_params["base_network_layers"][layer][0] == "dynamic_rnn"] + \
+        #        [layer for layer in self.learning_params["modular_network_layers"].keys() if
+        #         self.learning_params["modular_network_layers"][layer][0] == "dynamic_rnn"]
+        self.rnn_in_network = True # if len(rnns) > 0 else False
 
         # For regular saving
         self.save_environmental_data = False
