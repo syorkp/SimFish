@@ -19,6 +19,7 @@ class Eye:
         else:
             self.chosen_math_library = np
 
+        self.uv_object_intensity = env_variables["uv_object_intensity"]
         self.board = board
         self.dark_gain = env_variables['dark_gain']
         self.light_gain = env_variables['light_gain']
@@ -237,6 +238,7 @@ class Eye:
                                                     rf_size=self.uv_photoreceptor_rf_size,
                                                     lum_mask=lum_mask,
                                                     prey_pos=self.chosen_math_library.array(uv_items))
+            proj_uv_readings *= self.uv_object_intensity
 
             uv_readings += proj_uv_readings
 
@@ -267,9 +269,9 @@ class Eye:
                                                                     self.red_readings[:, 1])
 
         # Scale for appropriate range
-        interp_uv_readings *= self.env_variables["uv_scaling_factor"]
-        interp_red_readings[:, 0] *= self.env_variables["red_scaling_factor"]
-        interp_red_readings[:, 1] *= self.env_variables["red_2_scaling_factor"]
+        # interp_uv_readings *= self.env_variables["uv_scaling_factor"]
+        # interp_red_readings[:, 0] *= self.env_variables["red_scaling_factor"]
+        # interp_red_readings[:, 1] *= self.env_variables["red_2_scaling_factor"]
 
         self.readings = self.chosen_math_library.concatenate(
             (interp_red_readings[:, 0:1], interp_uv_readings, interp_red_readings[:, 1:]), axis=1)

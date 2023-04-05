@@ -121,20 +121,6 @@ class DQNTrainingService(TrainingService, BaseDQN):
             with open(f"{self.model_location}/saved_parameters.json", "w") as file:
                 json.dump(output_data, file)
 
-        while self.switch_network_configuration:
-            tf.reset_default_graph()
-            sess = self.create_session()
-            print("Switching network configuration...")
-            with sess as self.sess:
-                self.create_network()
-                new_output_layer = self.main_QN.processing_network_output
-
-                if new_output_layer != self.original_output_layer:  # If altered shape of final output layer
-                    self.additional_layers += ["targetaw", "mainaw", "mainvw", "targetvw"]
-
-                self.original_output_layer = None
-                self.init_states()
-                TrainingService._run(self)
 
         print("Training finished, starting to gather data...")
         tf.reset_default_graph()

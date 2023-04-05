@@ -17,13 +17,6 @@ class BaseEnvironment:
         self.num_actions = num_actions
 
         self.env_variables = env_variables
-        # Rescale background_brightness to avoid disruption for larger fields
-        model = np.poly1d([1.32283913e-18, -4.10522256e-14, 4.92470049e-10, -2.86744090e-06, 8.22376164e-03,
-                           4.07923942e-01])  # TODO: Keep parameters updated
-        print(f"Original bkg scatter: {self.env_variables['background_brightness']}")
-        self.env_variables["background_brightness"] = self.env_variables["background_brightness"] / (
-                model(self.env_variables["arena_width"]) / model(1500))
-        print(f"New bkg scatter: {self.env_variables['background_brightness']}")
 
         max_photoreceptor_rf_size = max([self.env_variables['uv_photoreceptor_rf_size'],
                                          self.env_variables['red_photoreceptor_rf_size']])
@@ -45,7 +38,9 @@ class BaseEnvironment:
                                   dark_gain=self.env_variables['dark_gain'],
                                   light_gain=self.env_variables['light_gain'],
                                   light_gradient=light_gradient,
-                                  max_visual_distance=max_visual_distance
+                                  max_visual_distance=max_visual_distance,
+                                  red_object_intensity=self.env_variables["red_object_intensity"],
+                                  red2_object_intensity=self.env_variables["background_point_intensity"],
                                   )
 
         self.show_all = False
@@ -68,7 +63,7 @@ class BaseEnvironment:
             self.prey_cloud_locations = [
                 [np.random.randint(
                     low=(self.env_variables['prey_cloud_region_size'] / 2) + self.env_variables['prey_radius'] +
-                         self.env_variables['fish_mouth_radius'],
+                        self.env_variables['fish_mouth_radius'],
                     high=self.env_variables['arena_width'] - ((
                                                                       self.env_variables['prey_radius'] +
                                                                       self.env_variables[
@@ -77,7 +72,7 @@ class BaseEnvironment:
                                                                           'prey_cloud_region_size'] / 2))),
                     np.random.randint(
                         low=(self.env_variables['prey_cloud_region_size'] / 2) + self.env_variables['prey_radius'] +
-                             self.env_variables['fish_mouth_radius'],
+                            self.env_variables['fish_mouth_radius'],
                         high=self.env_variables['arena_height'] - ((
                                                                            self.env_variables['prey_radius'] +
                                                                            self.env_variables[

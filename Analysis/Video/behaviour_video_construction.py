@@ -324,7 +324,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
 
     with writer.saving(fig, f"{save_location}.mp4", 500):
 
-        for step in range(num_steps):
+        for step in range(200): #num_steps):
             if "Training-Output" not in save_location:
                 print(f"{step}/{num_steps}")
             if continuous_actions:
@@ -562,7 +562,7 @@ if __name__ == "__main__":
     # draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="A15")
     # model_name = "dqn_scaffold_14-1"
-    data = load_data("dqn_gamma-3", "Behavioural-Data-Free-A", "Naturalistic-1", training_data=False)
+    data = load_data("dqn_epsilon_proj_b-1", "Episode 80", "Episode 80", training_data=True)
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-3")
@@ -574,9 +574,8 @@ if __name__ == "__main__":
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-5")
     # data_file = sys.argv[1]
     # config_file = sys.argv[2]
-
     #data_file = "../../Assay-Output/dqn_gamma-1/Behavioural-Data-Empty.h5"
-    config_file = f"../../Configurations/Training-Configs/dqn_gamma/52_env.json"
+    config_file = f"../../Configurations/Training-Configs/dqn_epsilon_proj_b/1_env.json"
 
     with open(config_file, 'r') as f:
         env_variables = json.load(f)
@@ -586,8 +585,8 @@ if __name__ == "__main__":
     #     for key in datfl[group].keys():
     #         data[key] = np.array(datfl[group][key])
 
-    draw_episode(data, env_variables, 'tttests', continuous_actions=False, show_energy_state=True,
-                 trim_to_fish=True, showed_region_quad=500, include_sediment=True)
+    draw_episode(data, env_variables, 'new_proj_fixed', continuous_actions=False, show_energy_state=True,
+                 trim_to_fish=True, showed_region_quad=500, include_sediment=True, scale=0.4)
 
 
 

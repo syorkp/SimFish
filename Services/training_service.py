@@ -5,6 +5,7 @@ import time
 import numpy as np
 import pstats
 import cProfile
+import gc
 
 # noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
@@ -67,10 +68,6 @@ class TrainingService(BaseService):
 
         # For config scaffolding
         self.previous_config_switch = self.episode_number
-        self.switch_network_configuration = False
-        self.additional_layers = None
-        self.removed_layers = None
-        self.original_output_layer = None
 
         self.last_episodes_prey_caught = []
         self.last_episodes_reward = []
@@ -93,14 +90,7 @@ class TrainingService(BaseService):
             self.min_scaffold_interval = 20
 
     def _run(self):
-        if self.switch_network_configuration:
-            variables_to_keep = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
-            print("To remove:")
-            print(self.additional_layers)
-            variables_to_keep = self.remove_new_variables(variables_to_keep, self.additional_layers)
-            self.saver = tf.train.Saver(max_to_keep=None, var_list=variables_to_keep)
-        else:
-            self.saver = tf.train.Saver(max_to_keep=None)
+        self.saver = tf.train.Saver(max_to_keep=None)
 
         self.init = tf.global_variables_initializer()
         self.trainables = tf.trainable_variables()
@@ -132,15 +122,6 @@ class TrainingService(BaseService):
 
         self.writer = tf.summary.FileWriter(f"{self.model_location}/logs/", tf.get_default_graph())
 
-        if self.switch_network_configuration:
-            # Re-initialise...
-            self.sess.run(self.init)
-
-            # Save values, to prevent an error.
-            self.saver = tf.train.Saver(max_to_keep=None)
-            self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
-            self.switch_network_configuration = False
-
         if self.algorithm == "DQN":
             update_target(self.target_ops, self.sess)  # Set the target network to be equal to the primary network.
 
@@ -164,9 +145,6 @@ class TrainingService(BaseService):
                         print("Final condition surpassed, exiting training...")
                         break
 
-            if self.switch_network_configuration:
-                break
-
             self.save_configuration_files()
             self.episode_loop()
             if self.monitor_performance:
@@ -178,17 +156,6 @@ class TrainingService(BaseService):
                 if self.monitor_performance:
                     self.profile = cProfile.Profile()
                     self.profile.enable()
-
-    @staticmethod
-    def remove_new_variables(var_list, new_var_names):
-        filtered_var_list = []
-        for var in var_list:
-            if any(new_name in var.name for new_name in new_var_names):
-                #print(f"Found in {var.name}")
-                pass
-            else:
-                filtered_var_list.append(var)
-        return filtered_var_list
 
     def create_environment(self):
         if self.continuous_actions:
@@ -288,38 +255,12 @@ class TrainingService(BaseService):
             print(f"{self.model_id}: Changing configuration to configuration {self.configuration_index}")
             self.current_configuration_location = f"./Configurations/Training-Configs/{self.config_name}/{str(self.configuration_index)}"
 
-            original_base_network_layers = copy.copy([layer for layer in self.learning_params["base_network_layers"].keys()])
-            original_modular_network_layers = copy.copy([layer for layer in self.learning_params["modular_network_layers"].keys()])
-            original_layers = original_base_network_layers + original_modular_network_layers
-
             self.learning_params, self.environment_params = self.load_configuration_files()
             self.previous_config_switch = self.episode_number
             self.create_environment()
 
             self.last_episodes_prey_caught = []
             self.last_episodes_reward = []
-
-            new_base_network_layers = copy.copy(
-                [layer for layer in self.learning_params["base_network_layers"].keys()])
-            new_modular_network_layers = copy.copy(
-                [layer for layer in self.learning_params["modular_network_layers"].keys()])
-            new_layers = new_base_network_layers + new_modular_network_layers
-
-            additional_layers = [layer for layer in new_layers if layer not in original_layers]
-            removed_layers = [layer for layer in original_layers if layer not in new_layers]
-
-            if self.algorithm == "PPO":
-                self.original_output_layer = self.network.processing_network_output
-            elif self.algorithm == "DQN":
-                self.original_output_layer = self.main_QN.processing_network_output
-            else:
-                print("Possible error, algorithm incorrectly specified")
-
-            if len(additional_layers) > 0 or len(removed_layers) > 0:
-                print("Network changed, recreating...")
-                self.switch_network_configuration = True
-                self.additional_layers = additional_layers
-                self.removed_layers = removed_layers
 
             # Reset sigma progression
             if self.continuous_actions:
@@ -346,6 +287,8 @@ class TrainingService(BaseService):
                 self.simulation.board.light_gradient = self.environment_params["light_gradient"]
 
             self.simulation.create_current()
+
+            gc.collect()
         else:
             self.switched_configuration = False
 
