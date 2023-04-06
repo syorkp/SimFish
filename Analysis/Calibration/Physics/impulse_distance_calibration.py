@@ -1,13 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.stats import kde
 
 import pymunk
-from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
-
-from Environment.Action_Space.draw_angle_dist import draw_angle_dist, draw_angle_dist_narrowed
-from Environment.Action_Space.plot_bout_data import get_bout_data
-
 
 
 class TestEnvironment:

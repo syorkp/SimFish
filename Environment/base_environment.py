@@ -85,13 +85,11 @@ class BaseEnvironment:
                 [np.random.randint(
                     low=120 + self.env_variables['sand_grain_radius'] + self.env_variables['fish_mouth_radius'],
                     high=self.env_variables['arena_width'] - (
-                            self.env_variables['sand_grain_radius'] + self.env_variables[
-                        'fish_mouth_radius']) - 120),
+                            self.env_variables['sand_grain_radius'] + self.env_variables['fish_mouth_radius']) - 120),
                     np.random.randint(
                         low=120 + self.env_variables['sand_grain_radius'] + self.env_variables['fish_mouth_radius'],
                         high=self.env_variables['arena_height'] - (
-                                self.env_variables['sand_grain_radius'] + self.env_variables[
-                            'fish_mouth_radius']) - 120)]
+                                self.env_variables['sand_grain_radius'] + self.env_variables['fish_mouth_radius']) - 120)]
                 for cloud in range(int(self.env_variables["sand_grain_num"]))]
 
         self.predator_bodies = []

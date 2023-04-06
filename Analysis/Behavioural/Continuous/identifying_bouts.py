@@ -3,15 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
-from sklearn.metrics import silhouette_score
 
 from Analysis.Behavioural.Tools.BehavLabels.label_behavioural_context import label_capture_sequences, \
     label_exploration_sequences_free_swimming
 from Analysis.Behavioural.Continuous.plot_behavioural_choice import get_multiple_means
 from Analysis.load_data import load_data
-from Analysis.Behavioural.VisTools.show_action_sequence_block import display_all_sequences
-from Analysis.Behavioural.Continuous.show_spatial_density_continuous import get_all_density_plots_all_subsets_continuous
-from Environment.Action_Space.draw_angle_dist import get_modal_impulse_and_angle
+from Environment.Action_Space.draw_angle_dist_old import get_modal_impulse_and_angle
 
 
 def cluster_bouts(impulses, angles, cluster_type, cluster_num, model_name, impulse_scaling, angle_scaling,

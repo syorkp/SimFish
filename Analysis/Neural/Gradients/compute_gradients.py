@@ -8,7 +8,6 @@ Ways to determine inputs:
 
 import os
 import json
-import matplotlib.pyplot as plt
 
 import numpy as np
 # noinspection PyUnresolvedReferences
@@ -17,11 +16,9 @@ import tensorflow.compat.v1 as tf
 from Analysis.load_data import load_data
 from Analysis.Model.build_network import build_network_dqn
 from Analysis.load_model_config import load_assay_configuration_files
-from Analysis.Neural.Gradients.get_average_inputs import get_mean_inputs_for_context, get_all_inputs_for_context
 
-from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
-from Environment.Action_Space.draw_angle_dist import get_modal_impulse_and_angle
+from Environment.Action_Space.draw_angle_dist_old import get_modal_impulse_and_angle
 
 
 def get_target_unit(network, target_layer, i):

@@ -2,12 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io
 
-from scipy.optimize import leastsq
-from sklearn.mixture import GaussianMixture
 from sklearn.naive_bayes import GaussianNB
 
-from Environment.Action_Space.draw_angle_dist import get_pdf_for_bout
-from Environment.Action_Space.draw_angle_dist import convert_action_to_bout_id
+from Environment.Action_Space.draw_angle_dist_old import convert_action_to_bout_id
 
 
 def get_bout_data(bout_id):
@@ -15,7 +12,7 @@ def get_bout_data(bout_id):
         mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
     except FileNotFoundError:
         try:
-            mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
+            mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
         except FileNotFoundError:
             try:
                 mat = scipy.io.loadmat("../Environment/Action_Space/Bout_classification/bouts.mat")
@@ -23,7 +20,7 @@ def get_bout_data(bout_id):
                 try:
                     mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
                 except:
-                    mat = scipy.io.loadmat("Bout_classification/bouts.mat")
+                    mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
 
     bout_id = convert_action_to_bout_id(bout_id)
     bout_id += 1
@@ -53,9 +50,9 @@ def plot_bout_data(bout_id):
         mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
     except FileNotFoundError:
         try:
-            mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
+            mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
         except FileNotFoundError:
-            mat = scipy.io.loadmat("Bout_classification/bouts.mat")
+            mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
 
     bout_id = convert_action_to_bout_id(bout_id)
     bout_id = 5
@@ -93,9 +90,9 @@ def separate_dist_naive_bayes(action):
         mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
     except FileNotFoundError:
         try:
-            mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
+            mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
         except FileNotFoundError:
-            mat = scipy.io.loadmat("Bout_classification/bouts.mat")
+            mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
 
     bout_id = convert_action_to_bout_id(action)
 

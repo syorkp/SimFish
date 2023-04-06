@@ -2,13 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io
 from scipy.stats import multivariate_normal
-from math import log10, floor
 import matplotlib.patches as mpatches
 
 from Analysis.load_model_config import load_configuration_files_by_scaffold_point
-from Environment.Action_Space.draw_angle_dist import convert_action_to_bout_id
-from Environment.Action_Space.draw_angle_dist_new import draw_angle_dist_new
-from Environment.Action_Space.Bout_classification.action_masking import produce_action_mask, get_new_bout_params, \
+from Environment.Action_Space.draw_angle_dist_old import convert_action_to_bout_id
+from Environment.Action_Space.Bout_classification.action_masking import get_new_bout_params, \
     produce_action_mask_version_3
 
 
@@ -47,7 +45,7 @@ def get_all_bouts():
             mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
         except FileNotFoundError:
             try:
-                mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
+                mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
             except FileNotFoundError:
                 mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
 

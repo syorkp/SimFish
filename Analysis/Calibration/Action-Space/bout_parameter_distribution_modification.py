@@ -6,7 +6,7 @@ from sklearn.mixture import GaussianMixture
 from sklearn.naive_bayes import GaussianNB
 import scipy.stats as stats
 
-from Environment.Action_Space.draw_angle_dist import convert_action_to_bout_id, get_pdf_for_bout
+from Environment.Action_Space.draw_angle_dist_old import convert_action_to_bout_id, get_pdf_for_bout
 from Analysis.Behavioural.VisTools.get_action_name import get_action_name_unlateralised
 
 
@@ -39,7 +39,7 @@ def separate_dist_naive_bayes_j_turns(action):
         mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
     except FileNotFoundError:
         try:
-            mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
+            mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
         except FileNotFoundError:
             mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
 
@@ -214,7 +214,7 @@ def separate_dist2(action, dist=False, n_components=2):
         mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
     except FileNotFoundError:
         try:
-            mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
+            mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
         except FileNotFoundError:
             mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
 

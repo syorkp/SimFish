@@ -1,12 +1,11 @@
 import numpy as np
 import scipy.io
 import matplotlib.pyplot as plt
-from scipy.stats import multivariate_normal
 from sklearn.cluster import KMeans
 
 from Analysis.Behavioural.VisTools.get_action_name import get_action_name_unlateralised
 
-from Environment.Action_Space.draw_angle_dist import convert_action_to_bout_id
+from Environment.Action_Space.draw_angle_dist_old import convert_action_to_bout_id
 
 """To create the final form of all the bouts, and display them for ease - 2D Gaussian distributions in all cases."""
 
@@ -19,7 +18,7 @@ def get_bout_data(action_num):
         mat = scipy.io.loadmat("./Environment/Action_Space/Bout_classification/bouts.mat")
     except FileNotFoundError:
         try:
-            mat = scipy.io.loadmat("../../Environment/Action_Space/Bout_classification/bouts.mat")
+            mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
         except FileNotFoundError:
             mat = scipy.io.loadmat("../../../Environment/Action_Space/Bout_classification/bouts.mat")
 

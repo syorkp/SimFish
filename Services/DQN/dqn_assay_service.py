@@ -8,7 +8,7 @@ import tensorflow.compat.v1 as tf
 from Analysis.Video.behaviour_video_construction import draw_episode
 from Analysis.load_data import load_data
 from Buffers.DQN.dqn_assay_buffer import DQNAssayBuffer
-from Environment.Action_Space.draw_angle_dist import get_modal_impulse_and_angle
+from Environment.Action_Space.draw_angle_dist_old import get_modal_impulse_and_angle
 from Services.assay_service import AssayService
 from Services.DQN.base_dqn import BaseDQN
 

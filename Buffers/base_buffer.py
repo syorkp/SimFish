@@ -2,6 +2,7 @@ import numpy as np
 
 import h5py
 
+
 class BaseBuffer:
 
     def __init__(self):
@@ -320,13 +321,3 @@ class BaseBuffer:
             if len(b) < max_dim:
                 b.append(0)
         return buffer
-
-
-
-
-
-
-
-
-
-
