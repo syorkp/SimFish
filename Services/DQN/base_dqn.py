@@ -47,7 +47,7 @@ class BaseDQN:
 
         self.init_rnn_state = None  # Reset RNN hidden state
         self.init_rnn_state_ref = None
-        self.use_static = True  # TODO: REMOVE TEST HERE
+        self.maintain_state = True
 
         # Add attributes only if don't exist yet (prevents errors thrown).
         if not hasattr(self, "get_positions"):
@@ -96,10 +96,7 @@ class BaseDQN:
                     (np.array(data[f"rnn_state_{shape}_ref_1"]), np.array(data[f"rnn_state_{shape}_ref_2"]))
                     for shape in range(int(num_rnns)))
         else:
-            if self.use_static:
-                rnn_state_shapes = [512]
-            else:
-                rnn_state_shapes = self.main_QN.get_rnn_state_shapes()
+            rnn_state_shapes = [512]
 
             self.init_rnn_state = tuple(
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
@@ -117,65 +114,26 @@ class BaseDQN:
                          self.environment_params['energy_state'], self.environment_params['in_light'],
                          self.environment_params['salt']] if x is True])
         internal_states = max(internal_states, 1)
-        internal_state_names = self.get_internal_state_order()
 
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
         cell_t = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
 
-        if "reuse_eyes" in self.learning_params:
-            reuse_eyes = self.learning_params['reuse_eyes']
-        else:
-            reuse_eyes = False
-
-        if self.use_static:
-            self.main_QN = QNetwork(simulation=self.simulation,
-                                    rnn_dim=512,
-                                    rnn_cell=cell,
-                                    my_scope="main",
-                                    num_actions=self.learning_params["num_actions"],
-                                    internal_states=internal_states,
-                                    learning_rate=self.learning_params["learning_rate"]
-                                    )
-            self.target_QN = QNetwork(simulation=self.simulation,
-                                      rnn_dim=512,
-                                      rnn_cell=cell_t,
-                                      my_scope="target",
-                                      num_actions=self.learning_params["num_actions"],
-                                      internal_states=internal_states,
-                                      learning_rate=self.learning_params["learning_rate"]
-                                      )
-        else:
-            self.main_QN = QNetworkDynamic(simulation=self.simulation,
-                                           my_scope='main',
-                                           internal_states=internal_states,
-                                           internal_state_names=internal_state_names,
-                                           num_actions=self.learning_params['num_actions'],
-                                           base_network_layers=self.learning_params[
-                                               'base_network_layers'],
-                                           modular_network_layers=self.learning_params[
-                                               'modular_network_layers'],
-                                           ops=self.learning_params['ops'],
-                                           connectivity=self.learning_params[
-                                               'connectivity'],
-                                           reflected=self.learning_params['reflected'],
-                                           reuse_eyes=reuse_eyes,
-                                           )
-            self.target_QN = QNetworkDynamic(simulation=self.simulation,
-
-                                             my_scope='target',
-                                             internal_states=internal_states,
-                                             internal_state_names=internal_state_names,
-                                             num_actions=self.learning_params['num_actions'],
-                                             base_network_layers=self.learning_params[
-                                                 'base_network_layers'],
-                                             modular_network_layers=self.learning_params[
-                                                 'modular_network_layers'],
-                                             ops=self.learning_params['ops'],
-                                             connectivity=self.learning_params[
-                                                 'connectivity'],
-                                             reflected=self.learning_params['reflected'],
-                                             reuse_eyes=reuse_eyes,
-                                             )
+        self.main_QN = QNetwork(simulation=self.simulation,
+                                rnn_dim=512,
+                                rnn_cell=cell,
+                                my_scope="main",
+                                num_actions=self.learning_params["num_actions"],
+                                internal_states=internal_states,
+                                learning_rate=self.learning_params["learning_rate"]
+                                )
+        self.target_QN = QNetwork(simulation=self.simulation,
+                                  rnn_dim=512,
+                                  rnn_cell=cell_t,
+                                  my_scope="target",
+                                  num_actions=self.learning_params["num_actions"],
+                                  internal_states=internal_states,
+                                  learning_rate=self.learning_params["learning_rate"]
+                                  )
 
     def episode_loop(self):
         """
@@ -183,13 +141,12 @@ class BaseDQN:
         steps in the episode. The relevant values are then saved to the experience buffer.
         """
         experience = []
-        maintain_state = False
         rnn_state = copy.copy(self.init_rnn_state)
         rnn_state_ref = copy.copy(self.init_rnn_state_ref)
         self.simulation.reset()
 
         # Take the first simulation step, with a capture action. Assigns observation, reward, internal state, done, and
-        o, r, internal_state, d, full_masked_image = self.simulation.simulation_step(action=3)
+        o, r, i_s, d, full_masked_image = self.simulation.simulation_step(action=3)
 
         # For benchmarking each episode.
         all_actions = []
@@ -208,8 +165,8 @@ class BaseDQN:
             moviewriter.setup(fig, 'debug.mp4', dpi=500)
         while step_number < self.learning_params["max_epLength"]:
             step_number += 1
-            o, a, r, i_s, o1, d, rnn_state, rnn_state_ref, full_masked_image = self.step_loop(o=o,
-                                                                                              internal_state=internal_state,
+            o, a, r, i_s2, o1, d, rnn_state, rnn_state_ref, full_masked_image = self.step_loop(o=o,
+                                                                                              internal_state=i_s,
                                                                                               a=efference_copy,
                                                                                               rnn_state=rnn_state,
                                                                                               rnn_state_ref=rnn_state_ref)
@@ -221,10 +178,11 @@ class BaseDQN:
                 moviewriter.grab_frame()
                 ax.clear()
             all_actions.append(a[0])
-            experience.append(np.reshape(np.array([o, np.array(a), r, internal_state, o1, d, i_s]), [1, 7]))
+            #                                  Obs (t)  A (t+1)  R (t+1)  I_S (t) O (t+1)  D(t+1)  I_S (t+1)
+            experience.append(np.reshape(np.array([o, np.array(a), r, i_s, o1, d, i_s2]), [1, 7]))
             total_episode_reward += r
             efference_copy = a
-            internal_state = i_s
+            i_s = i_s2
 
             o = o1
             if self.total_steps > self.pre_train_steps:
@@ -234,13 +192,9 @@ class BaseDQN:
                         len(self.experience_buffer.buffer) > self.batch_size:
                     self.train_networks()
             if d:
-                if maintain_state:
-                    if self.use_static:
-                        self.init_rnn_state = [rnn_state]
-                        self.init_rnn_state_ref = [rnn_state_ref]
-                    else:
-                        self.init_rnn_state = rnn_state
-                        self.init_rnn_state_ref = rnn_state_ref
+                if self.maintain_state:
+                    self.init_rnn_state = [rnn_state]
+                    self.init_rnn_state_ref = [rnn_state_ref]
                 break
         # Add the episode to the experience buffer
         if self.debug:
@@ -304,7 +258,6 @@ class BaseDQN:
                 chosen_a = np.random.randint(0, self.learning_params['num_actions'])
             else:
                 chosen_a = greedy_a[0]
-
         elif exploration == 'boltzmann':
                 chosen_a = np.random.choice(self.learning_params['num_actions'], p=q_dist[0])
         elif exploration == 'UCB':
@@ -438,9 +391,7 @@ class BaseDQN:
         rnn_state_shapes = [512]  # self.main_QN.get_rnn_state_shapes()
 
         # Load the latest saved states... Note is technically incorrect.
-        maintain_state = False
-
-        if maintain_state:
+        if self.maintain_state:
             state_train = copy.copy(self.init_rnn_state)
             state_train = tuple(
                 (np.tile(state_train[i][0], (self.learning_params['batch_size'], 1)),
@@ -466,9 +417,9 @@ class BaseDQN:
         # Below we perform the Double-DQN update to the target Q-values
         Q1 = self.sess.run(self.main_QN.predict, feed_dict={
             self.main_QN.observation: np.vstack(train_batch[:, 4]),
-            self.main_QN.prev_actions: np.vstack(train_batch[:, 1]),  # Previous actions (t+1?)
+            self.main_QN.prev_actions: np.vstack(train_batch[:, 1]),  # Previous actions (t+1)
             self.main_QN.train_length: self.learning_params['trace_length'],
-            self.main_QN.internal_state: np.vstack(train_batch[:, 6]),  # Internal states (t+1?)
+            self.main_QN.internal_state: np.vstack(train_batch[:, 6]),  # Internal states (t+1)
             self.main_QN.rnn_state_in: state_train,
             self.main_QN.rnn_state_in_ref: state_train_ref,
             self.main_QN.batch_size: self.learning_params['batch_size'],
@@ -478,7 +429,7 @@ class BaseDQN:
 
         Q2 = self.sess.run(self.target_QN.Q_out, feed_dict={
             self.target_QN.observation: np.vstack(train_batch[:, 4]),
-            self.target_QN.prev_actions: np.vstack(train_batch[:, 1]),  # Previous actions (t+1?)
+            self.target_QN.prev_actions: np.vstack(train_batch[:, 1]),  # Previous actions (t+1)
             self.target_QN.train_length: self.learning_params['trace_length'],
             self.target_QN.internal_state: np.vstack(train_batch[:, 6]),
             self.target_QN.rnn_state_in: state_train,
@@ -497,10 +448,10 @@ class BaseDQN:
         self.sess.run(self.main_QN.updateModel,
                       feed_dict={self.main_QN.observation: np.vstack(train_batch[:, 0]),  # Observations (t)
                                  self.main_QN.targetQ: target_Q,
-                                 self.main_QN.actions: np.vstack(train_batch[:, 1])[:, 0],
-                                 self.main_QN.internal_state: np.vstack(train_batch[:, 3]),  # Internal states (t?)
+                                 self.main_QN.actions: np.vstack(train_batch[:, 1])[:, 0],  # Actions (t+1)
+                                 self.main_QN.internal_state: np.vstack(train_batch[:, 3]),  # Internal states (t)
                                  self.main_QN.prev_actions: np.vstack(
-                                     (np.array([[6, 0, 0]]), np.vstack(train_batch[:-1, 1]))),  # Previous actions (t?)
+                                     (np.array([[6, 0, 0]]), np.vstack(train_batch[:-1, 1]))),  # Previous actions (t)
                                  self.main_QN.train_length: self.learning_params['trace_length'],
                                  self.main_QN.rnn_state_in: state_train,
                                  self.main_QN.rnn_state_in_ref: state_train_ref,

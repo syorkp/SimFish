@@ -759,6 +759,7 @@ class BaseEnvironment:
         self.space.add(self.predator_body, self.predator_shape)
 
     def create_predator(self):
+        self.total_predators += 1
         self.predator_body = pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia'])
         self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_radius'])
         self.predator_shape.elasticity = 1.0
@@ -813,7 +814,8 @@ class BaseEnvironment:
             self.predator_target = None
             self.remaining_predator_attacks = None
             self.total_predator_steps = None
-            self.survived_attack = True
+            if not self.fish.touched_predator:
+                self.survived_attack = True
         else:
             pass
 

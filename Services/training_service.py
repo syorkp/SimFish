@@ -322,7 +322,7 @@ class TrainingService(BaseService):
             json.dump(data, f, indent=4)
 
 
-    def _save_episode(self, episode_start_t, total_episode_reward, prey_caught, predators_avoided, sand_grains_bumped,):
+    def _save_episode(self, episode_start_t, total_episode_reward, prey_caught, sand_grains_bumped,):
         """Saves episode data common to all models"""
         # print(f"{self.model_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}",
         #       flush=True)
@@ -334,7 +334,7 @@ class TrainingService(BaseService):
 
         # Keep recent predators caught for configuration change conditionals
         self.last_episodes_prey_caught.append(prey_caught)
-        self.last_episodes_predators_avoided.append(predators_avoided)
+        self.last_episodes_predators_avoided.append(self.simulation.total_predators_survived)
         self.last_episodes_sand_grains_bumped.append(sand_grains_bumped)
         self.last_episodes_reward.append(total_episode_reward)
 
@@ -378,7 +378,7 @@ class TrainingService(BaseService):
 
         if self.environment_params["probability_of_predator"] > 0:
             predators_avoided_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="predators avoided", simple_value=predators_avoided)])
+                value=[tf.Summary.Value(tag="predators avoided", simple_value=self.simulation.total_predators_survived)])
             self.writer.add_summary(predators_avoided_summary, self.episode_number)
 
         if self.environment_params["sand_grain_num"] > 0:
@@ -422,10 +422,10 @@ class TrainingService(BaseService):
                 self.writer.add_summary(capture_success_summary, self.episode_number)
 
         if self.environment_params["probability_of_predator"] != 0:
-            if death_int == 1:
-                predator_avoided_index = predators_avoided / (predators_avoided + 1)
+            if self.simulation.total_predators > 0:
+                predator_avoided_index = self.simulation.total_predators_survived / self.simulation.total_predators
             else:
-                predator_avoided_index = 1.0
+                predator_avoided_index = 0.0
             predators_avoided_summary = tf.Summary(
                 value=[tf.Summary.Value(tag="predator avoidance index (avoided/p_pred)",
                                         simple_value=predator_avoided_index)])
@@ -444,6 +444,12 @@ class TrainingService(BaseService):
                 value=[tf.Summary.Value(tag="Mean salt damage taken per step",
                                         simple_value=mean_salt_damage_per_step)])
             self.writer.add_summary(salt_summary, self.episode_number)
+
+            mean_salt_penalty = self.simulation.salt_associated_reward / self.simulation.num_steps
+            salt_penalty_summary = tf.Summary(
+                value=[tf.Summary.Value(tag="Mean salt penalty",
+                                        simple_value=mean_salt_penalty)])
+            self.writer.add_summary(salt_penalty_summary, self.episode_number)
 
         if self.environment_params["dark_light_ratio"] > 0:
             light_dominance = 0.5 / (1-self.environment_params["dark_light_ratio"])

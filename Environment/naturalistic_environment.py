@@ -41,6 +41,10 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.available_prey = self.env_variables["prey_num"]
         self.vector_agreement = []
 
+        # For producing useful PAI
+        self.total_predators = 0
+        self.total_predators_survived = 0
+
         # For Reward tracking (debugging)
         self.energy_associated_reward = 0
         self.action_associated_reward = 0
@@ -134,6 +138,9 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.recent_cause_of_death = None
         self.available_prey = self.env_variables["prey_num"]
         self.vector_agreement = []
+
+        self.total_predators = 0
+        self.total_predators_survived = 0
 
         # For Reward tracking (debugging)
         print(f"""REWARD CONTRIBUTIONS:        
@@ -312,19 +319,20 @@ Sand grain: {self.sand_grain_associated_reward}
         if self.fish.touched_predator:
             print("Fish eaten by predator")
             reward -= self.env_variables['predator_cost']
-            done = True
-            self.fish.touched_predator = False
-            self.recent_cause_of_death = "Predator"
             self.survived_attack = False
             self.predator_associated_reward -= self.env_variables["predator_cost"]
-            self.salt_associated_reward = 0
-            self.wall_associated_reward = 0
+            self.remove_predator()
+            self.fish.touched_predator = False
 
-        if self.survived_attack:
+            # self.recent_cause_of_death = "Predator"
+            # done = True
+
+        if (self.predator_body is None) and self.survived_attack:
             print("Survived attack...")
             reward += self.env_variables["predator_avoidance_reward"]
             self.predator_associated_reward += self.env_variables["predator_cost"]
             self.survived_attack = False
+            self.total_predators_survived += 1
 
         if self.fish.touched_sand_grain:
             reward -= self.env_variables["sand_grain_touch_penalty"]
@@ -358,8 +366,8 @@ Sand grain: {self.sand_grain_associated_reward}
                 self.fish.salt_health = 1.0
             if self.fish.salt_health < 0:
                 print("Fish too salty")
-                done = True
-                self.recent_cause_of_death = "Salt"
+                # done = True
+                # self.recent_cause_of_death = "Salt"
 
             if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables["salt_recovery"]:
                 reward -= self.env_variables["salt_reward_penalty"] * salt_damage

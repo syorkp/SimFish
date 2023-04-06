@@ -782,6 +782,37 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
+    dqn_0_2 = [
+        {
+            "Model Name": "dqn_0",
+            "Environment Name": "dqn_0",
+            "Trial Number": 5,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_0",
+            "Environment Name": "dqn_0",
+            "Trial Number": 6,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_0",
+            "Environment Name": "dqn_0",
+            "Trial Number": 7,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_0",
+            "Environment Name": "dqn_0",
+            "Trial Number": 8,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
     ppo_new_1 = [
         {
             "Model Name": "ppo_new",

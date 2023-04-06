@@ -53,7 +53,6 @@ class VisualisationBoard:
         return full_arena
 
     def marble_texture(self):
-        # TODO: Can be made much more efficient through none repeating computations.
         # Generate these randomly so grid can have any orientation.
         xPeriod = self.chosen_math_library.random.uniform(0.0, 10.0)
         yPeriod = self.chosen_math_library.random.uniform(0.0, 10.0)
@@ -63,7 +62,6 @@ class VisualisationBoard:
 
         noise = self.chosen_math_library.absolute(self.chosen_math_library.random.randn(self.width, self.height))
 
-        # TODO: Stop repeating the following:
         xp, yp = self.chosen_math_library.arange(self.width), self.chosen_math_library.arange(self.height)
         xy, py = self.chosen_math_library.meshgrid(xp, yp)
         xy = self.chosen_math_library.expand_dims(xy, 2)
@@ -73,10 +71,8 @@ class VisualisationBoard:
         xy_values = (coords[:, :, 0] * xPeriod / self.width) + (coords[:, :, 1] * yPeriod / self.height)
         size = turbSize
 
-        # TODO: Stop repeating the following:
         turbulence = self.chosen_math_library.zeros((self.width, self.height))
 
-        # TODO: Stop repeating the following:
         while size >= 1:
             reduced_coords = coords / size
 

@@ -156,14 +156,13 @@ class DQNTrainingService(TrainingService, BaseDQN):
                           total_episode_reward=total_episode_reward,
                           experience=experience,
                           prey_caught=self.simulation.prey_caught,
-                          predators_avoided=self.simulation.predator_attacks_avoided,
                           sand_grains_bumped=self.simulation.sand_grains_bumped,
                           )
         print(f"""{self.model_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}
 Total episode reward: {total_episode_reward}\n""", flush=True)
 
     def save_episode(self, episode_start_t, all_actions, total_episode_reward, experience, prey_caught,
-                     predators_avoided, sand_grains_bumped):
+                     sand_grains_bumped):
         """
         Saves the episode the experience buffer.
         :param prey_caught:
@@ -178,7 +177,7 @@ Total episode reward: {total_episode_reward}\n""", flush=True)
         """
 
         TrainingService._save_episode(self, episode_start_t, total_episode_reward, prey_caught,
-                                      predators_avoided, sand_grains_bumped)
+                                      sand_grains_bumped)
 
         # Action Diversity
         all_actions_frequency = []
