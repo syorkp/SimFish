@@ -54,15 +54,8 @@ params = {
 
        # Saving and video parameters
        'time_per_step': 0.03,  # Length of each step used in gif creation
-       'summaryLength': 200,  # Number of episodes to periodically save for analysis
+       'summaryLength': 100,  # Number of episodes to periodically save for analysis
        'rnn_dim_shared': 512,  # number of rnn cells
-
-       # Dynamic network construction
-       'reflected': reflected,
-       'base_network_layers': base_network_layers,
-       'modular_network_layers': modular_network_layers,
-       'ops': ops,
-       'connectivity': connectivity,
 
        'reuse_eyes': True,
 
@@ -70,7 +63,7 @@ params = {
        'network_saving_frequency_steps': 100000,
 
        # Specify how many episodes required before another scaffold switch can occur.
-       'min_scaffold_interval': 50,
+       'min_scaffold_interval': 100,
        'scaffold_stasis_requirement': True,
 }
 
@@ -113,9 +106,9 @@ env = {
        "sz_size": 1.047,  # 60 deg
        "sz_oversampling_factor": 2.5,
        "sigmoid_steepness": 5.0,
-       'red_scaling_factor': 1,  # Pixel counts are multiplied by this
-       'uv_scaling_factor': 1,  # Pixel counts are multiplied by this
-       'red_2_scaling_factor': 0.2,  # Pixel counts are multiplied by this
+       'red_object_intensity': 1,  # Pixel counts are multiplied by this
+       'uv_object_intensity': 1,  # Pixel counts are multiplied by this
+       'background_point_intensity': 0.2,  # Pixel counts are multiplied by this
 
        # Fish-Paramecium Capture restrictions
        'fraction_capture_permitted': 1.0,  # Should be 1.0 if no temporal restriction imposed.
@@ -219,12 +212,16 @@ env = {
        'unit_circle_diameter': 0.7,  # Circular current options
 }
 
-scaffold_name = "ppo_new"
+scaffold_name = "ppo_proj"
 
 # env["probability_of_predator"] = 0.003
-env["background_brightness"] = 0.1 / (2.7769 * 10)
-env["light_gain"] = 2.7769 * 10
-env["dark_gain"] = 1.2397
+env["light_gain"] = 125.7# 27.769# 125.7
+env["dark_gain"] = 60.0# 1.2397 # 60.0
+env["background_brightness"] = 0.8 * 0.08108736209284662/env["light_gain"]  # 0.1 #0.0036011379595952326
+env['red_object_intensity'] = 0.01  # Pixel counts are multiplied by this
+env['uv_object_intensity'] = 0.8  # Pixel counts are multiplied by this
+env['background_point_intensity'] = 0.005  # Pixel counts are multiplied by this
+
 env["immunity_steps"] = 200
 env["distance_from_fish"] *= 4
 

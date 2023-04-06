@@ -23,20 +23,23 @@ class DQNAssayBuffer(BaseBuffer):
 
         self.loss_buffer = []
 
-    def add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref, value, value_ref, advantage, advantage_ref):
-        self._add_training(observation, internal_state, reward, action, rnn_state, rnn_state_ref, value, value_ref, advantage, advantage_ref)
+    def add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref, value, value_ref,
+                     advantage, advantage_ref):
+        self._add_training(observation, internal_state, reward, action, rnn_state, rnn_state_ref, value, value_ref,
+                           advantage, advantage_ref)
 
     def save_environmental_positions(self, action, fish_position, prey_consumed, predator_present, prey_positions,
                                      predator_position, sand_grain_positions, fish_angle, salt_health, efference_copy,
                                      prey_orientation=None, predator_orientation=None, prey_age=None, prey_gait=None):
+
         self._save_environmental_positions(fish_position, prey_consumed, predator_present, prey_positions,
                                            predator_position, sand_grain_positions, fish_angle, salt_health,
                                            efference_copy, prey_orientation, predator_orientation, prey_age, prey_gait)
-
         self.action_buffer.append(action)
 
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order,
                         sediment, salt_location=None):
+
         hdf5_file, assay_group = self._save_assay_data(data_save_location, assay_configuration_id, assay_id, sediment,
                                                        internal_state_order, salt_location)
 
