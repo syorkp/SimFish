@@ -463,8 +463,8 @@ Sand grain: {self.sand_grain_associated_reward}
                                                                    predator_bodies)
 
         # Convert to FOV coordinates (to match eye coordinates)
-        prey_locations_array = np.array(prey_locations) - np.array(
-            self.fish.body.position) + self.board.max_visual_distance
+        if len(prey_locations) > 0:
+            prey_locations_array = np.array(prey_locations) - np.array(self.fish.body.position) + self.board.max_visual_distance
         if len(sand_grain_locations) > 0:
             sand_grain_locations_array = np.array(sand_grain_locations) - np.array(
                 self.fish.body.position) + self.board.max_visual_distance
