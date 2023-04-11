@@ -12,8 +12,8 @@ import statsmodels.api as sm
 import scipy.stats as st
 
 from Analysis.Training.tools import find_nearest
-from Environment.Action_Space.draw_angle_dist_old import convert_action_to_bout_id
-from Environment.Action_Space.final_bout_creation import get_bout_data
+from Analysis.Calibration.ActionSpace.draw_angle_dist_old import convert_action_to_bout_id
+from Analysis.Calibration.ActionSpace.final_bout_creation import get_bout_data
 
 # tf.disable_v2_behavior()
 

@@ -6,7 +6,7 @@ import json
 
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
-from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator_dynamic import PPONetworkMultivariate2Dynamic
+from Networks.PPO.proximal_policy_optimizer_continuous_dynamic import PPONetworkMultivariate2Dynamic
 
 from Networks.DQN.q_network_dynamic import QNetworkDynamic
 

@@ -5,7 +5,7 @@ from sklearn.cluster import KMeans
 
 from Analysis.Behavioural.VisTools.get_action_name import get_action_name_unlateralised
 
-from Environment.Action_Space.draw_angle_dist_old import convert_action_to_bout_id
+from Analysis.Calibration.ActionSpace.draw_angle_dist_old import convert_action_to_bout_id
 
 """To create the final form of all the bouts, and display them for ease - 2D Gaussian distributions in all cases."""
 

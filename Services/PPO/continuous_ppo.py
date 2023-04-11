@@ -7,7 +7,8 @@ import json
 # noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
 
-from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator_dynamic import PPONetworkMultivariate2Dynamic
+from Networks.PPO.proximal_policy_optimizer_continuous_dynamic import PPONetworkMultivariate2Dynamic
+from Networks.PPO.proximal_policy_optimizer_continuous import PPONetworkActorMultivariate
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -87,6 +88,9 @@ class ContinuousPPO:
         self.output_dimensions = 2
         self.just_trained = False
 
+        self.use_dynamic_network = False
+
+
     def create_network(self):
         """
         Create the main and target Q networks, according to the configuration parameters.
@@ -104,27 +108,46 @@ class ContinuousPPO:
             reuse_eyes = self.learning_params['reuse_eyes']
         else:
             reuse_eyes = False
-        self.network = PPONetworkMultivariate2Dynamic(simulation=self.simulation,
-                                                      # rnn_dim=self.learning_params['rnn_dim_shared'],
-                                                      my_scope='PPO',
-                                                      internal_states=internal_states,
-                                                      internal_state_names=internal_state_names,
-                                                      max_impulse=self.environment_params[
-                                                          'max_impulse'],
-                                                      max_angle_change=self.environment_params[
-                                                          'max_angle_change'],
-                                                      clip_param=self.learning_params[
-                                                          'clip_param'],
-                                                      base_network_layers=self.learning_params[
-                                                          'base_network_layers'],
-                                                      modular_network_layers=self.learning_params[
-                                                          'modular_network_layers'],
-                                                      ops=self.learning_params['ops'],
-                                                      connectivity=self.learning_params[
-                                                          'connectivity'],
-                                                      reflected=self.learning_params['reflected'],
-                                                      reuse_eyes=reuse_eyes,
-                                                      )
+
+
+        if self.use_dynamic_network:
+            self.network = PPONetworkMultivariate2Dynamic(simulation=self.simulation,
+                                                          # rnn_dim=self.learning_params['rnn_dim_shared'],
+                                                          my_scope='PPO',
+                                                          internal_states=internal_states,
+                                                          internal_state_names=internal_state_names,
+                                                          max_impulse=self.environment_params[
+                                                              'max_impulse'],
+                                                          max_angle_change=self.environment_params[
+                                                              'max_angle_change'],
+                                                          clip_param=self.learning_params[
+                                                              'clip_param'],
+                                                          base_network_layers=self.learning_params[
+                                                              'base_network_layers'],
+                                                          modular_network_layers=self.learning_params[
+                                                              'modular_network_layers'],
+                                                          ops=self.learning_params['ops'],
+                                                          connectivity=self.learning_params[
+                                                              'connectivity'],
+                                                          reflected=self.learning_params['reflected'],
+                                                          reuse_eyes=reuse_eyes,
+                                                          )
+        else:
+            cell = tf.nn.rnn_cell.LSTMCell(num_units=512, state_is_tuple=True)
+
+            self.network = PPONetworkActorMultivariate(simulation=self.simulation,
+                                                       rnn_dim=512,
+                                                       rnn_cell=cell,
+                                                       my_scope='PPO',
+                                                       internal_states=internal_states,
+                                                       max_impulse=self.environment_params['max_impulse'],
+                                                       max_angle_change=self.environment_params[
+                                                              'max_angle_change'],
+                                                       clip_param=self.learning_params[
+                                                              'clip_param'],
+                                                       input_sigmas=True,
+                                                       impose_action_mask=True,
+                                                       )
 
         print("Created network")
 
@@ -251,9 +274,9 @@ class ContinuousPPO:
              self.simulation.fish.prev_action_angle,
              ]  # Set impulse to scale to be inputted to network
 
-        impulse, angle, V, updated_rnn_state, updated_rnn_state_ref, neg_log_action_probability, mu_i, mu_a, \
+        impulse, angle, V, V_ref, updated_rnn_state, updated_rnn_state_ref, neg_log_action_probability, mu_i, mu_a, \
         si = self.sess.run(
-            [self.network.impulse_output, self.network.angle_output, self.network.value_output,
+            [self.network.impulse_output, self.network.angle_output, self.network.value_fn_1, self.network.value_fn_2,
              self.network.rnn_state_shared, self.network.rnn_state_ref,
              self.network.neg_log_prob,
              self.network.mu_impulse_combined,
@@ -315,10 +338,13 @@ class ContinuousPPO:
                                  internal_state=internal_state,
                                  action=action,
                                  reward=r,
-                                 value=V,
                                  l_p_action=neg_log_action_probability,
                                  rnn_state=rnn_state,
                                  rnn_state_ref=rnn_state_ref,
+                                 value=V,
+                                 value_ref=V_ref,
+                                 advantage=0,
+                                 advantage_ref=0,
                                  )
 
         if self.save_environmental_data:
@@ -597,7 +623,10 @@ class ContinuousPPO:
                     in range(int(num_rnns)))
         else:
             # Init states for RNN - For steps, not training.
-            rnn_state_shapes = self.network.get_rnn_state_shapes()
+            if self.use_dynamic_network:
+                rnn_state_shapes = self.network.get_rnn_state_shapes()
+            else:
+                rnn_state_shapes = [512]
             self.init_rnn_state = tuple(
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
             self.init_rnn_state_ref = tuple(

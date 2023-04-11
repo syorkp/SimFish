@@ -84,9 +84,10 @@ class PPOBuffer(BaseBuffer):
         self.rnn_state_ref_buffer = np.array(self.rnn_state_ref_buffer)
         self.log_action_probability_buffer = np.array(self.log_action_probability_buffer)
 
-    def add_training(self, observation, internal_state, action, reward, value, l_p_action, rnn_state, rnn_state_ref,
-                     prediction_error=None, target_output=None):
-        self._add_training(observation, internal_state, reward, rnn_state, rnn_state_ref)
+    def add_training(self, observation, internal_state, action, reward, l_p_action, rnn_state, rnn_state_ref,
+                     value, value_ref, advantage, advantage_ref):
+        self._add_training(observation, internal_state, reward, action, rnn_state, rnn_state_ref, value, value_ref,
+                           advantage, advantage_ref)
 
         self.value_buffer.append(value)
         self.log_action_probability_buffer.append(l_p_action)

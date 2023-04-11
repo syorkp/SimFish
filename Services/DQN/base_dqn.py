@@ -391,25 +391,25 @@ class BaseDQN:
         rnn_state_shapes = [512]  # self.main_QN.get_rnn_state_shapes()
 
         # Load the latest saved states... Note is technically incorrect.
-        if self.maintain_state:
-            state_train = copy.copy(self.init_rnn_state)
-            state_train = tuple(
-                (np.tile(state_train[i][0], (self.learning_params['batch_size'], 1)),
-                np.tile(state_train[i][1], (self.learning_params['batch_size'], 1)))
-                for i, shape in enumerate(rnn_state_shapes))
-
-            state_train_ref = copy.copy(self.init_rnn_state_ref)
-            state_train_ref = tuple(
-                (np.tile(state_train_ref[i][0], (self.learning_params['batch_size'], 1)),
-                np.tile(state_train_ref[i][1], (self.learning_params['batch_size'], 1)))
-                for i, shape in enumerate(rnn_state_shapes))
-        else:
-            state_train = tuple(
-                    (np.zeros([self.learning_params['batch_size'], shape]),
-                     np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
-            state_train_ref = tuple(
-                    (np.zeros([self.learning_params['batch_size'], shape]),
-                     np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
+        # if self.maintain_state:
+        #     state_train = copy.copy(self.init_rnn_state)
+        #     state_train = tuple(
+        #         (np.tile(state_train[i][0], (self.learning_params['batch_size'], 1)),
+        #         np.tile(state_train[i][1], (self.learning_params['batch_size'], 1)))
+        #         for i, shape in enumerate(rnn_state_shapes))
+        #
+        #     state_train_ref = copy.copy(self.init_rnn_state_ref)
+        #     state_train_ref = tuple(
+        #         (np.tile(state_train_ref[i][0], (self.learning_params['batch_size'], 1)),
+        #         np.tile(state_train_ref[i][1], (self.learning_params['batch_size'], 1)))
+        #         for i, shape in enumerate(rnn_state_shapes))
+        # else:
+        state_train = tuple(
+                (np.zeros([self.learning_params['batch_size'], shape]),
+                 np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
+        state_train_ref = tuple(
+                (np.zeros([self.learning_params['batch_size'], shape]),
+                 np.zeros([self.learning_params['batch_size'], shape])) for shape in rnn_state_shapes)
         # Get a random batch of experiences: ndarray 1024x6, with the six columns containing o, a, r, i_s, o1, d
         train_batch = self.experience_buffer.sample(self.learning_params['batch_size'],
                                                     self.learning_params['trace_length'])

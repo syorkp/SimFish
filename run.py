@@ -845,9 +845,18 @@ if __name__ == "__main__": # may be needed to run on windows
     ]
 
 
-
+    ppo_proj_test = [
+        {
+            "Model Name": "ppo_proj",
+            "Environment Name": "ppo_proj",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "PPO",
+            "Using GPU": False,
+        },
+    ]
     if run_config is None:
-        run_config = dqn_epsilon_new_test
+        run_config = ppo_proj_test
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]

@@ -77,7 +77,8 @@ class BaseBuffer:
         self.prey_gait_buffer = []
         self.switch_step = None  # Tracking switch step
 
-    def _add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref, value, value_ref, advantage, advantage_ref):
+    def _add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref, value, value_ref,
+                      advantage, advantage_ref):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
         self.reward_buffer.append(reward)
