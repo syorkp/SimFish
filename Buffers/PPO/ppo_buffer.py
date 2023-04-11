@@ -275,7 +275,7 @@ class PPOBuffer(BaseBuffer):
             rnn_state_batch.append(self.rnn_state_buffer[point])
             rnn_state_batch_ref.append(self.rnn_state_ref_buffer[point])
 
-        n_rnns = np.array(rnn_state_batch).shape[1]
+        n_rnns = 1 # np.array(rnn_state_batch).shape[1]
         n_units = np.array(rnn_state_batch).shape[-1]
 
         rnn_state_batch = np.reshape(np.array(rnn_state_batch), (n_rnns, batch_size, 2, n_units))

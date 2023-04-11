@@ -562,7 +562,7 @@ if __name__ == "__main__":
     # draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="A15")
     # model_name = "dqn_scaffold_14-1"
-    data = load_data("dqn_0-1", "Episode 100", "Episode 100", training_data=True)
+    data = load_data("dqn_0-1", "Episode 900", "Episode 900", training_data=True)
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-3")
@@ -586,7 +586,7 @@ if __name__ == "__main__":
     #         data[key] = np.array(datfl[group][key])
 
     draw_episode(data, env_variables, 'new_proj_fixed', continuous_actions=False, show_energy_state=True,
-                 trim_to_fish=True, showed_region_quad=500, include_sediment=True, scale=0.4, max_steps=200)
+                 trim_to_fish=True, showed_region_quad=500, include_sediment=True, scale=0.4, max_steps=1000)
 
 
 

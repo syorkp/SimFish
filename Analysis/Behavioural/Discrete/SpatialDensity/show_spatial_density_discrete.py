@@ -279,14 +279,14 @@ def create_density_cloud_compared(density_list1, density_list2, action_num, stim
 
 
 def get_all_density_plots(data, save_location):
-    for action_num in range(0, 10):
+    for action_num in range(0, 12):
         prey_1, pred_1 = get_clouds_with_action(data, action_num)
 
         if len(prey_1) > 2:
-            create_density_cloud(prey_1, action_num, "Prey", False, save_location)
+            create_density_cloud(prey_1, action_num, "Prey", False, save_location, "Training", 0)
 
         if len(pred_1) > 2:
-            create_density_cloud(pred_1, action_num, "Predator", False, save_location)
+            create_density_cloud(pred_1, action_num, "Predator", False, save_location, "Training", 0)
 
 
 def get_all_density_plots_all_subsets(p1, p2, p3, n, return_objects, steps_prior=0, position_predictive=False):
@@ -870,12 +870,11 @@ if __name__ == "__main__":
     # get_all_density_plots_all_subsets(f"dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 50, return_objects=False)
     # get_all_density_plots_all_subsets(f"dqn_gamma-3", "Behavioural-Data-Free", "Naturalistic", 50, return_objects=False)
     # get_all_density_plots_all_subsets(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
-    get_all_density_plots_all_subsets(f"dqn_gamma-5", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_0-5", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
 
-    # d = load_data("dqn_epsilon-1x", "Episode 10600", "Episode 10600", training_data=True)
-    # d = load_data("dqn_gamma_pm-5", "Behavioural-Data-Free", "Naturalistic-1")
-    #
-    # save_location = f"../../../../Analysis-Output/Behavioural/Spatial-Density-Plots/dqn_gamma-4/"
+    d = load_data("dqn_0-1", "Episode 900", "Episode 900", training_data=True)
+    save_location = f"../../../../Analysis-Output/Behavioural/Spatial-Density-Plots/dqn_0-1/"
+    get_all_density_plots(d, save_location)
     #
     # create_cstart_overlap_plot(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False,
     #                            save_location=save_location)
