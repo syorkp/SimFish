@@ -89,7 +89,6 @@ class PPOBuffer(BaseBuffer):
         self._add_training(observation, internal_state, reward, action, rnn_state, rnn_state_ref, value, value_ref,
                            advantage, advantage_ref)
 
-        self.value_buffer.append(value)
         self.log_action_probability_buffer.append(l_p_action)
         self.action_buffer.append(action)
 
