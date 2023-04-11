@@ -197,7 +197,7 @@ Total episode reward: {self.total_episode_reward}\n""", flush=True)
         """
         TrainingService._save_episode_continuous_variables(self)
         TrainingService._save_episode(self, episode_start_t, total_episode_reward, prey_caught,
-                                      predators_avoided, sand_grains_bumped)
+                                      sand_grains_bumped)
 
         output_data = {"episode_number": self.episode_number,
                        "total_steps": self.total_steps,

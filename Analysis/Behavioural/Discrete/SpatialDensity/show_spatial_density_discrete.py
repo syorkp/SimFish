@@ -872,7 +872,7 @@ if __name__ == "__main__":
     # get_all_density_plots_all_subsets(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
     # get_all_density_plots_all_subsets(f"dqn_0-5", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
 
-    d = load_data("dqn_0-1", "Episode 900", "Episode 900", training_data=True)
+    d = load_data("dqn_0-1", "Episode 800", "Episode 800", training_data=True)
     save_location = f"../../../../Analysis-Output/Behavioural/Spatial-Density-Plots/dqn_0-1/"
     get_all_density_plots(d, save_location)
     #
