@@ -89,7 +89,7 @@
     "salt_reward_penalty": 100000,
     "action_reward_scaling": 0,
     "consumption_reward_scaling": 100000,
-    "wall_touch_penalty": 200,
+    "wall_touch_penalty": 0,
     "stress": false,
     "stress_compound": 0.9,
     "energy_state": true,
