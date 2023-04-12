@@ -348,7 +348,7 @@ class ContinuousPPO:
                                  )
 
         if self.save_environmental_data:
-            sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
+            sand_grain_positions, prey_positions, predator_position = self.get_positions()
             prey_orientations = [p.angle for p in self.simulation.prey_bodies]
             try:
                 predator_orientation = self.simulation.predator_body.angle
@@ -357,15 +357,14 @@ class ContinuousPPO:
             prey_ages = self.simulation.prey_ages
             prey_gait = self.simulation.paramecia_gaits
 
-            self.buffer.save_environmental_positions(self.simulation.fish.body.position,
-                                                     self.simulation.prey_consumed_this_step,
-                                                     self.simulation.predator_body,
-                                                     prey_positions,
-                                                     predator_position,
-                                                     sand_grain_positions,
-                                                     vegetation_positions,
-                                                     self.simulation.fish.body.angle,
-                                                     self.simulation.fish.salt_health,
+            self.buffer.save_environmental_positions(fish_position=self.simulation.fish.body.position,
+                                                     prey_consumed=self.simulation.prey_consumed_this_step,
+                                                     predator_present=self.simulation.predator_body,
+                                                     prey_positions=prey_positions,
+                                                     predator_position=predator_position,
+                                                     sand_grain_positions=sand_grain_positions,
+                                                     fish_angle=self.simulation.fish.body.angle,
+                                                     salt_health=self.simulation.fish.salt_health,
                                                      efference_copy=a,
                                                      prey_orientation=prey_orientations,
                                                      predator_orientation=predator_orientation,

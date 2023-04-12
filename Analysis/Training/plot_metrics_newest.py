@@ -413,6 +413,7 @@ if __name__ == "__main__":
     ppo_models_old = ["ppo_scaffold_21-1", "ppo_scaffold_21-2"]
 
     dqn_models = ["dqn_gamma-1", "dqn_gamma-2", "dqn_gamma-3", "dqn_gamma-4", "dqn_gamma-5"]
+    dqn_models = ["dqn_0-1", "dqn_0-2", "dqn_0-3", "dqn_0-4", "dqn_0-5", "dqn_0-6", "dqn_0-7", "dqn_0-8"]
     dqn_models_mod = ["dqn_beta_mod-1", "dqn_beta_mod-2", "dqn_beta_mod-3", "dqn_beta_mod-4", "dqn_beta_mod-5"]
     ppo_models = ["ppo_beta-1", "ppo_beta-2", "ppo_beta-3", "ppo_beta-4", "ppo_beta-5"]
     ppo_models_mod = ["ppo_beta_mod-1", "ppo_beta_mod-2", "ppo_beta_mod-3", "ppo_beta_mod-4", "ppo_beta_mod-5"]
@@ -478,9 +479,9 @@ if __name__ == "__main__":
                               "predator avoidance index (avoided/p_pred)",
                               # "Phototaxis Index"
                               ]
-    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=2000, interpolate_scaffold_points=True,
-                                          figure_name="dqn_gamma2", scaled_window=True,
-                                          show_inset=["capture success rate", 2], key_scaffold_points=[10, 15, 31, 45, 51])
+    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=20, interpolate_scaffold_points=True,
+                                          figure_name="dqn_0", scaled_window=True,
+                                          show_inset=["capture success rate", 2])#, key_scaffold_points=[10, 15, 31, 45, 51])
     # plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=100, interpolate_scaffold_points=True,
     #                                       figure_name="dqn_beta_mod", scaled_window=False,
     #                                       show_inset=["capture success rate", 23])#, key_scaffold_points=[10, 16, 31])
