@@ -133,11 +133,6 @@ class TrainingService(BaseService):
                 self.switched_configuration = False
                 print("Reached final config...")
                 if len(self.last_episodes_prey_caught) >= self.min_scaffold_interval:
-                    # if np.mean(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"] \
-                    #         > self.finished_conditions["PAI"] \
-                    #         and np.mean(self.last_episodes_prey_caught)/self.environment_params["prey_num"] \
-                    #         > self.finished_conditions["PCI"]:
-
                     if np.mean(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"] \
                             > self.finished_conditions["PAI"] \
                             and np.mean(self.last_episodes_prey_caught)/self.simulation.available_prey \
@@ -194,26 +189,9 @@ class TrainingService(BaseService):
                     np.mean(self.last_episodes_sand_grains_bumped) > self.sgb_transitions[next_point]:
                 switch_criteria_met = True
 
-            # if switch_criteria_met:
-            #     print("Switch criteria met...")
-
-            # if self.episode_number - self.previous_config_switch < self.min_scaffold_interval:
-            #     # print(f"Switch min interval not reached: {self.episode_number} {self.previous_config_switch} {self.min_scaffold_interval}")
-            #     switch_criteria_met = False
-
             # Also check whether no improvement in selected metric is present
             if "scaffold_stasis_requirement" in self.learning_params:
                 if switch_criteria_met and self.learning_params["scaffold_stasis_requirement"]:
-                    # When based on target parameter:
-                    # if next_point in predators_conditional_transition_points:
-                    #     important_values = np.array(self.last_episodes_predators_avoided) / self.environment_params["probability_of_predator"]
-                    # elif next_point in prey_conditional_transition_points:
-                    #     important_values = np.array(self.last_episodes_prey_caught) / self.simulation.available_prey
-                    # elif next_point in grains_bumped_conditional_transfer_points:
-                    #     important_values = np.array(self.last_episodes_sand_grains_bumped)
-                    # else:
-                    #     important_values = np.array(self.last_episodes_prey_caught) / self.simulation.available_prey
-
                     # When based on episode reward:
                     important_values = np.array(self.last_episodes_reward)
 
@@ -247,6 +225,7 @@ class TrainingService(BaseService):
             self.switched_configuration = True
 
             self.save_rnn_state()
+
             # Save the model
             self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
             self.checkpoint_steps = self.total_steps
@@ -321,12 +300,8 @@ class TrainingService(BaseService):
         with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'w') as f:
             json.dump(data, f, indent=4)
 
-
-    def _save_episode(self, episode_start_t, total_episode_reward, prey_caught, sand_grains_bumped,):
+    def _save_episode(self, total_episode_reward, prey_caught, sand_grains_bumped,):
         """Saves episode data common to all models"""
-        # print(f"{self.model_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}",
-        #       flush=True)
-
         # # Log the average training time for episodes (when not saved)
         # if not self.save_frames:
         #     self.training_times.append(time() - episode_start_t)
@@ -388,9 +363,9 @@ class TrainingService(BaseService):
 
         # Normalised Logs
         if self.environment_params["prey_num"] != 0 and self.environment_params["sand_grain_num"] != 0:
-            # prey_capture_index = prey_caught / self.environment_params["prey_num"]
             prey_capture_index = prey_caught / self.simulation.available_prey
             sand_grain_capture_index = sand_grains_bumped / self.environment_params["sand_grain_num"]
+
             # Note, generally would expect to prefer sand grains as each bump counts as a capture.
             if sand_grain_capture_index == 0:
                 prey_preference = 1
@@ -403,7 +378,6 @@ class TrainingService(BaseService):
             self.writer.add_summary(prey_preference_summary, self.episode_number)
 
         if self.environment_params["prey_num"] != 0:
-            # fraction_prey_caught = prey_caught / self.environment_params["prey_num"]
             fraction_prey_caught = prey_caught / self.simulation.available_prey
             prey_caught_summary = tf.Summary(
                 value=[tf.Summary.Value(tag="prey capture index (fraction caught)", simple_value=fraction_prey_caught)])
@@ -468,7 +442,8 @@ class TrainingService(BaseService):
         # Current opposition log
         if self.environment_params["current_setting"] is not False:
             current_opposition_metric = np.sum(self.simulation.vector_agreement)
-            # Should be positive when fish swims with current, negative when swims against, and zero if has no preference.
+
+            # Should be positive when fish swims with current, negative when swims against, and zero if no preference.
             current_opposition_summary = tf.Summary(
                 value=[tf.Summary.Value(tag="Current Opposition",
                                         simple_value=current_opposition_metric)])
@@ -518,13 +493,11 @@ class TrainingService(BaseService):
             )
             self.writer.add_summary(episode_duration_summary, self.episode_number)
 
-
         if "network_saving_frequency_steps" in self.learning_params:
             if self.total_steps - int(self.checkpoint_steps) >= self.learning_params['network_saving_frequency_steps']:
 
                 # IF the steps interval is sufficient, will save the network according to episode number, so matches rnn
                 # state and episode number initialisation
-                # print(f"mean time: {np.mean(self.training_times)}")
                 self.save_rnn_state()
                 # Save the model
                 self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
@@ -557,11 +530,10 @@ class TrainingService(BaseService):
                                         internal_state_order=internal_state_order,
                                         sediment=sediment,
                                         salt_location=salt_location)
-            episode_data = load_data(f"{self.model_name}-{self.model_number}", f"Episode {self.episode_number}",
-                                     f"Episode {self.episode_number}", training_data=True)
-
-            #draw_episode(episode_data, self.environment_params, f"{self.model_location}/episodes/Episode {self.episode_number}",
-            #             self.continuous_actions)
+            # episode_data = load_data(f"{self.model_name}-{self.model_number}", f"Episode {self.episode_number}",
+            #                          f"Episode {self.episode_number}", training_data=True)
+            # draw_episode(episode_data, self.environment_params, f"{self.model_location}/episodes/Episode {self.episode_number}",
+            #              self.continuous_actions)
 
             self.buffer.reset()
             self.save_environmental_data = False
@@ -574,178 +546,6 @@ class TrainingService(BaseService):
             print(f"GPU usage {os.system('gpustat -cp')}")
 
         self.reward_list.append(total_episode_reward)
-
-    def _save_episode_discrete_variables(self):
-        values = self.buffer.value_buffer
-        mean_value = np.mean(values)
-        max_value = np.max(values)
-        min_value = np.min(values)
-        value_summary = tf.Summary(value=[tf.Summary.Value(tag="mean value", simple_value=mean_value)])
-        self.writer.add_summary(value_summary, self.episode_number)
-        value_summary = tf.Summary(value=[tf.Summary.Value(tag="max value", simple_value=max_value)])
-        self.writer.add_summary(value_summary, self.episode_number)
-        value_summary = tf.Summary(value=[tf.Summary.Value(tag="min value", simple_value=min_value)])
-        self.writer.add_summary(value_summary, self.episode_number)
-
-        # Action Diversity
-        if self.full_logs:
-            # Save Loss
-            mean_critic_loss = np.mean(self.buffer.critic_loss_buffer)
-            max_critic_loss = np.max(self.buffer.critic_loss_buffer)
-            min_critic_loss = np.min(self.buffer.critic_loss_buffer)
-            critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean critic_loss", simple_value=mean_critic_loss)])
-            self.writer.add_summary(critic_loss_summary, self.episode_number)
-            critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max critic_loss", simple_value=max_critic_loss)])
-            self.writer.add_summary(critic_loss_summary, self.episode_number)
-            critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min critic_loss", simple_value=min_critic_loss)])
-            self.writer.add_summary(critic_loss_summary, self.episode_number)
-
-            mean_actor_loss = np.mean(self.buffer.actor_loss_buffer)
-            max_actor_loss = np.max(self.buffer.actor_loss_buffer)
-            min_actor_loss = np.min(self.buffer.actor_loss_buffer)
-            actor_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean actor_loss", simple_value=mean_actor_loss)])
-            self.writer.add_summary(actor_loss_summary, self.episode_number)
-            actor_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max actor_loss", simple_value=max_actor_loss)])
-            self.writer.add_summary(actor_loss_summary, self.episode_number)
-            actor_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min actor_loss", simple_value=min_actor_loss)])
-            self.writer.add_summary(actor_loss_summary, self.episode_number)
-
-    def _save_episode_continuous_variables(self):
-        impulses = np.array(self.buffer.action_buffer)[:, 0]
-        mean_impulse = np.mean(impulses)
-        max_impulse = np.max(impulses)
-        min_impulse = np.min(impulses)
-        impulse_summary = tf.Summary(value=[tf.Summary.Value(tag="mean impulse", simple_value=mean_impulse)])
-        self.writer.add_summary(impulse_summary, self.episode_number)
-        impulse_summary = tf.Summary(value=[tf.Summary.Value(tag="max impulse", simple_value=max_impulse)])
-        self.writer.add_summary(impulse_summary, self.episode_number)
-        impulse_summary = tf.Summary(value=[tf.Summary.Value(tag="min impulse", simple_value=min_impulse)])
-        self.writer.add_summary(impulse_summary, self.episode_number)
-
-        angles = np.array(self.buffer.action_buffer)[:, 1]
-        mean_angle = np.mean(angles)
-        max_angle = np.max(angles)
-        min_angle = np.min(angles)
-        angle_summary = tf.Summary(value=[tf.Summary.Value(tag="mean angle", simple_value=mean_angle)])
-        self.writer.add_summary(angle_summary, self.episode_number)
-        angle_summary = tf.Summary(value=[tf.Summary.Value(tag="max angle", simple_value=max_angle)])
-        self.writer.add_summary(angle_summary, self.episode_number)
-        angle_summary = tf.Summary(value=[tf.Summary.Value(tag="min angle", simple_value=min_angle)])
-        self.writer.add_summary(angle_summary, self.episode_number)
-
-        # # Value Summary
-        values = np.array(self.buffer.value_buffer)
-        mean_value = np.mean(values)
-        max_value = np.max(values)
-        min_value = np.min(values)
-        value_summary = tf.Summary(value=[tf.Summary.Value(tag="mean value", simple_value=mean_value)])
-        self.writer.add_summary(value_summary, self.episode_number)
-        value_summary = tf.Summary(value=[tf.Summary.Value(tag="max value", simple_value=max_value)])
-        self.writer.add_summary(value_summary, self.episode_number)
-        value_summary = tf.Summary(value=[tf.Summary.Value(tag="min value", simple_value=min_value)])
-        self.writer.add_summary(value_summary, self.episode_number)
-
-        # Turn Chain metric
-        turn_chain_preference = get_normalised_turn_chain_metric_continuous(angles)
-        turn_chain_preference_summary = tf.Summary(value=[tf.Summary.Value(tag="turn chain preference", simple_value=turn_chain_preference)])
-        self.writer.add_summary(turn_chain_preference_summary, self.episode_number)
-
-        # Action Diversity
-        impulse_choice_range = np.max(np.absolute(self.buffer.mu_i_buffer)) - np.min(np.absolute(self.buffer.mu_i_buffer))
-        angle_choice_range = np.max(np.absolute(self.buffer.mu_a_buffer)) - np.min(np.absolute(self.buffer.mu_a_buffer))
-        impulse_choice_range_prop = impulse_choice_range / self.environment_params["max_impulse"]
-        angle_choice_range_prop = angle_choice_range / self.environment_params["max_angle_change"]
-
-        impulse_action_diversity = tf.Summary(value=[tf.Summary.Value(tag="Impulse Choice Diversity", simple_value=impulse_choice_range_prop)])
-        self.writer.add_summary(impulse_action_diversity, self.episode_number)
-
-        angle_action_diversity = tf.Summary(value=[tf.Summary.Value(tag="Angle Choice Diversity", simple_value=angle_choice_range_prop)])
-        self.writer.add_summary(angle_action_diversity, self.episode_number)
-
-        if self.full_logs:
-            # Save Loss
-
-            if len(self.buffer.critic_loss_buffer) > 0:
-                mean_critic_loss = np.mean(self.buffer.critic_loss_buffer)
-                max_critic_loss = np.max(self.buffer.critic_loss_buffer)
-                min_critic_loss = np.min(self.buffer.critic_loss_buffer)
-                critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean critic_loss", simple_value=mean_critic_loss)])
-                self.writer.add_summary(critic_loss_summary, self.episode_number)
-                critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max critic_loss", simple_value=max_critic_loss)])
-                self.writer.add_summary(critic_loss_summary, self.episode_number)
-                critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min critic_loss", simple_value=min_critic_loss)])
-                self.writer.add_summary(critic_loss_summary, self.episode_number)
-
-                mean_impulse_loss = np.mean(self.buffer.impulse_loss_buffer)
-                max_impulse_loss = np.max(self.buffer.impulse_loss_buffer)
-                min_impulse_loss = np.min(self.buffer.impulse_loss_buffer)
-                impulse_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean impulse_loss", simple_value=mean_impulse_loss)])
-                self.writer.add_summary(impulse_loss_summary, self.episode_number)
-                impulse_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max impulse_loss", simple_value=max_impulse_loss)])
-                self.writer.add_summary(impulse_loss_summary, self.episode_number)
-                impulse_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min impulse_loss", simple_value=min_impulse_loss)])
-                self.writer.add_summary(impulse_loss_summary, self.episode_number)
-
-                mean_angle_loss = np.mean(self.buffer.angle_loss_buffer)
-                max_angle_loss = np.max(self.buffer.angle_loss_buffer)
-                min_angle_loss = np.min(self.buffer.angle_loss_buffer)
-                angle_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean angle_loss", simple_value=mean_angle_loss)])
-                self.writer.add_summary(angle_loss_summary, self.episode_number)
-                angle_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max angle_loss", simple_value=max_angle_loss)])
-                self.writer.add_summary(angle_loss_summary, self.episode_number)
-                angle_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min angle_loss", simple_value=min_angle_loss)])
-                self.writer.add_summary(angle_loss_summary, self.episode_number)
-
-                mean_entropy_loss = np.mean(self.buffer.entropy_loss_buffer)
-                max_entropy_loss = np.max(self.buffer.entropy_loss_buffer)
-                min_entropy_loss = np.min(self.buffer.entropy_loss_buffer)
-                entropy_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean entropy_loss", simple_value=mean_entropy_loss)])
-                self.writer.add_summary(entropy_loss_summary, self.episode_number)
-                entropy_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max entropy_loss", simple_value=max_entropy_loss)])
-                self.writer.add_summary(entropy_loss_summary, self.episode_number)
-                entropy_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min entropy_loss", simple_value=min_entropy_loss)])
-                self.writer.add_summary(entropy_loss_summary, self.episode_number)
-
-            # Saving Parameters for Testing
-            mean_mu_i = np.mean(self.buffer.mu_i_buffer)
-            max_mu_i = np.max(self.buffer.mu_i_buffer)
-            min_mu_i = np.min(self.buffer.mu_i_buffer)
-            mu_i = tf.Summary(value=[tf.Summary.Value(tag="mean mu_i", simple_value=mean_mu_i)])
-            self.writer.add_summary(mu_i, self.episode_number)
-            mu_i = tf.Summary(value=[tf.Summary.Value(tag="max mu_i", simple_value=max_mu_i)])
-            self.writer.add_summary(mu_i, self.episode_number)
-            mu_i = tf.Summary(value=[tf.Summary.Value(tag="min mu_i", simple_value=min_mu_i)])
-            self.writer.add_summary(mu_i, self.episode_number)
-
-            mean_si_i = np.mean(self.buffer.si_i_buffer)
-            max_si_i = np.max(self.buffer.si_i_buffer)
-            min_si_i = np.min(self.buffer.si_i_buffer)
-            si_i = tf.Summary(value=[tf.Summary.Value(tag="mean si_i", simple_value=mean_si_i)])
-            self.writer.add_summary(si_i, self.episode_number)
-            si_i = tf.Summary(value=[tf.Summary.Value(tag="max si_i", simple_value=max_si_i)])
-            self.writer.add_summary(si_i, self.episode_number)
-            si_i = tf.Summary(value=[tf.Summary.Value(tag="min si_i", simple_value=min_si_i)])
-            self.writer.add_summary(si_i, self.episode_number)
-
-            mean_mu_a = np.mean(self.buffer.mu_a_buffer)
-            max_mu_a = np.max(self.buffer.mu_a_buffer)
-            min_mu_a = np.min(self.buffer.mu_a_buffer)
-            mu_a = tf.Summary(value=[tf.Summary.Value(tag="mean mu_a", simple_value=mean_mu_a)])
-            self.writer.add_summary(mu_a, self.episode_number)
-            mu_a = tf.Summary(value=[tf.Summary.Value(tag="max mu_a", simple_value=max_mu_a)])
-            self.writer.add_summary(mu_a, self.episode_number)
-            mu_a = tf.Summary(value=[tf.Summary.Value(tag="min mu_a", simple_value=min_mu_a)])
-            self.writer.add_summary(mu_a, self.episode_number)
-
-            mean_si_a = np.mean(self.buffer.si_a_buffer)
-            max_si_a = np.max(self.buffer.si_a_buffer)
-            min_si_a = np.min(self.buffer.si_a_buffer)
-            si_a = tf.Summary(value=[tf.Summary.Value(tag="mean si_a", simple_value=mean_si_a)])
-            self.writer.add_summary(si_a, self.episode_number)
-            si_a = tf.Summary(value=[tf.Summary.Value(tag="max si_a", simple_value=max_si_a)])
-            self.writer.add_summary(si_a, self.episode_number)
-            si_a = tf.Summary(value=[tf.Summary.Value(tag="min si_a", simple_value=min_si_a)])
-            self.writer.add_summary(si_a, self.episode_number)
 
     def save_configuration_files(self):
         with open(f"{self.model_location}/learning_configuration.json", 'w') as f:

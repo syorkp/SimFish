@@ -172,9 +172,7 @@ class PPONetworkActorMultivariate(BaseNetwork):
         self.entropy_loss = -tf.multiply(self.entropy, self.entropy_coefficient)
 
         self.total_loss = self.policy_loss + self.entropy_loss + self.value_loss
-        # self.total_loss = self.policy_loss - tf.multiply(self.entropy, self.entropy_coefficient) + \
-        #                   tf.multiply(self.value_loss, self.value_coefficient)
-        # self.total_loss = self.policy_loss + tf.multiply(self.value_loss, self.value_coefficient)
+
         self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
 
         # Gradient clipping (for stability)
@@ -185,17 +183,3 @@ class PPONetworkActorMultivariate(BaseNetwork):
 
         self.trainer = tf.train.AdamOptimizer(learning_rate=self.learning_rate, epsilon=1e-5)
         self.train = self.trainer.apply_gradients(self.model_gradients)
-
-        # TODO: Probably not meant to be there, but changed since main tests.
-        # self.train = tf.train.AdamOptimizer(self.learning_rate, name='optimizer').minimize(
-        #     self.total_loss)  # Two trains?
-
-    @staticmethod
-    def bounded_output(x, lower, upper):
-        scale = upper - lower
-        return scale * tf.nn.sigmoid(x) + lower
-
-    @property
-    def pdtype(self):
-        """ProbabilityDistributionType: type of the distribution for stochastic actions."""
-        return self._pdtype

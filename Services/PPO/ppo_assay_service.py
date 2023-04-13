@@ -103,7 +103,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                  checkpoint, behavioural_recordings, network_recordings, interventions, run_version, split_event,
                  modification):
         """
-        Runs a set of assays provided by the run configuraiton.
+        Runs a set of assays provided by the run configuration.
         """
         # Set random seed
         super().__init__(model_name=model_name,
@@ -287,7 +287,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                                      assay['assay id'], training_data=False)
             draw_episode(episode_data, self.config_name, f"{self.model_name}-{self.model_number}",
                          self.continuous_actions,
-                         save_id=f"{self.assay_configuration_id}-{assay['assay id']}", training_episode=False)
+                         save_id=f"{self.assay_configuration_id}-{assay['assay id']}")
 
         print(f"Assay: {assay['assay id']} Completed")
         print("")

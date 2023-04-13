@@ -17,13 +17,14 @@ class ControlledStimulusEnvironmentContinuous(BaseEnvironment):
     """
 
     def __init__(self, env_variables, stimuli, using_gpu, tethered=True, set_positions=False, moving=False,
-                 random=False, reset_each_step=False, reset_interval=1, sediment=None, draw_screen=False):
+                 random=False, reset_each_step=False, reset_interval=1, sediment=None, draw_screen=False,
+                 assay_all_details=None):
         super().__init__(env_variables, draw_screen, using_gpu)
 
         if tethered:
-            self.fish = ContinuousTetheredFish(self.board, env_variables, self.dark_col)
+            self.fish = ContinuousTetheredFish(self.board, env_variables, self.dark_col, using_gpu)
         else:
-            self.fish = ContinuousFish(self.board, env_variables, self.dark_col)
+            self.fish = ContinuousFish(self.board, env_variables, self.dark_col, using_gpu)
         self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 
         # TODO: Unify in future with other stimuli

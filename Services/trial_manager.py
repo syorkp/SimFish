@@ -427,8 +427,6 @@ class TrialManager:
                         running_jobs[str(index)].join()
                         print(
                             f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Post-Split Original Complete")
-                        complete = True
-            to_delete = None
 
     def run_training(self, index, trial, running_jobs, memory_fraction, to_delete):
         epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)

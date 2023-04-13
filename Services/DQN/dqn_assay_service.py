@@ -266,7 +266,7 @@ class DQNAssayService(AssayService, BaseDQN):
             episode_data = load_data(f"{self.model_name}-{self.model_number}", self.assay_configuration_id,
                                      assay['assay id'], training_data=False)
             draw_episode(episode_data, self.config_name, f"{self.model_name}-{self.model_number}", self.continuous_actions,
-                         save_id=f"{self.assay_configuration_id}-{assay['assay id']}", training_episode=False)
+                         save_id=f"{self.assay_configuration_id}-{assay['assay id']}")
 
         print(f"Assay: {assay['assay id']} Completed")
         print("")

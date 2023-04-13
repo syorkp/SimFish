@@ -46,7 +46,6 @@ def training_target(trial, epsilon, total_steps, episode_number, memory_fraction
     else:
         profile_speed = False
 
-
     services = DQNTrainingService(model_name=trial["Model Name"],
                                   trial_number=trial["Trial Number"],
                                   total_steps=total_steps,
@@ -69,10 +68,14 @@ class DQNTrainingService(TrainingService, BaseDQN):
 
     def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
                  config_name, continuous_actions, epsilon, model_exists, configuration_index, full_logs, profile_speed):
-        super().__init__(model_name=model_name, trial_number=trial_number,
-                         total_steps=total_steps, episode_number=episode_number,
-                         monitor_gpu=monitor_gpu, using_gpu=using_gpu,
-                         memory_fraction=memory_fraction, config_name=config_name,
+        super().__init__(model_name=model_name,
+                         trial_number=trial_number,
+                         total_steps=total_steps,
+                         episode_number=episode_number,
+                         monitor_gpu=monitor_gpu,
+                         using_gpu=using_gpu,
+                         memory_fraction=memory_fraction,
+                         config_name=config_name,
                          continuous_actions=continuous_actions,
                          model_exists=model_exists,
                          configuration_index=configuration_index,
@@ -121,7 +124,6 @@ class DQNTrainingService(TrainingService, BaseDQN):
             with open(f"{self.model_location}/saved_parameters.json", "w") as file:
                 json.dump(output_data, file)
 
-
         print("Training finished, starting to gather data...")
         tf.reset_default_graph()
 
@@ -147,12 +149,10 @@ class DQNTrainingService(TrainingService, BaseDQN):
         data_index_service.produce_behavioural_summary_display()
 
     def episode_loop(self):
-        t0 = time()
         self.current_episode_max_duration = self.learning_params["max_epLength"]
         all_actions, total_episode_reward, experience = BaseDQN.episode_loop(self)
 
-        self.save_episode(episode_start_t=t0,
-                          all_actions=all_actions,
+        self.save_episode(all_actions=all_actions,
                           total_episode_reward=total_episode_reward,
                           experience=experience,
                           prey_caught=self.simulation.prey_caught,
@@ -161,8 +161,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
         print(f"""{self.model_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}
 Total episode reward: {total_episode_reward}\n""", flush=True)
 
-    def save_episode(self, episode_start_t, all_actions, total_episode_reward, experience, prey_caught,
-                     sand_grains_bumped):
+    def save_episode(self, all_actions, total_episode_reward, experience, prey_caught, sand_grains_bumped):
         """
         Saves the episode the experience buffer.
         :param prey_caught:
@@ -176,8 +175,7 @@ Total episode reward: {total_episode_reward}\n""", flush=True)
         :return:
         """
 
-        TrainingService._save_episode(self, episode_start_t, total_episode_reward, prey_caught,
-                                      sand_grains_bumped)
+        TrainingService._save_episode(self, total_episode_reward, prey_caught, sand_grains_bumped)
 
         # Action Diversity
         all_actions_frequency = []

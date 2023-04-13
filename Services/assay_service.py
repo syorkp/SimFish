@@ -82,10 +82,7 @@ class AssayService(BaseService):
         self.episode_number = episode_number
         self.total_steps = total_steps
 
-        # Output Data
-        self.assay_output_data_format = None
-        self.assay_output_data = []
-        self.output_data = {}
+        # Summary
         self.episode_summary_data = None
 
         # Hacky fix for h5py problem:
@@ -155,7 +152,6 @@ class AssayService(BaseService):
         for assay in self.assays:
 
             # Init recordings
-            self.create_output_data_storage(self.behavioural_recordings, self.network_recordings)
             self.buffer.init_assay_recordings(self.behavioural_recordings, self.network_recordings)
 
             self.learning_params, self.environment_params = self.load_configuration_files()
@@ -189,7 +185,8 @@ class AssayService(BaseService):
         self.save_metadata()
         self.save_episode_data()
 
-    def expand_assays(self, assays):
+    @staticmethod
+    def expand_assays(assays):
         """Utilitiy function to add in repeats of any assays and bring them into the standard of the program (while
          allowing immediate simplifications to be made)"""
         new_assays = []
@@ -347,10 +344,6 @@ class AssayService(BaseService):
             original_matrix = self.sess.graph.get_tensor_by_name(target)
             self.sess.run(tf.assign(original_matrix, ablated_layers[layer]))
             print(f"Ablated {layer}")
-
-    def create_output_data_storage(self, behavioural_recordings, network_recordings):
-        self.output_data = {key: [] for key in behavioural_recordings + network_recordings}
-        self.output_data["step"] = []
 
     def save_episode_data(self):
         self.episode_summary_data = {

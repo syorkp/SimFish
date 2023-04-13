@@ -76,7 +76,6 @@ if __name__ == "__main__": # may be needed to run on windows
     with open('Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_26_2.npy', 'rb') as f:
         full_ablation_matrix = np.load(f)
 
-
     #                    ASSAY
 
     dqn_empty_config_large_gamma_1 = [
@@ -106,128 +105,6 @@ if __name__ == "__main__": # may be needed to run on windows
                     "collisions": True,
                 },
                 ]
-        }
-        ]
-
-    dqn_free_config_large_gamma_1 = [
-        {
-            "Model Name": "dqn_gamma",
-            "Environment Name": "dqn_gamma_final",
-            "Assay Configuration Name": "Behavioural-Data-Free",
-            "Trial Number": 1,
-            "Run Mode": "Assay",
-            "Learning Algorithm": "DQN",
-            "Using GPU": False,
-            "behavioural recordings": ["environmental positions", "observation"],
-            "network recordings": ["rnn_shared", "internal_state"],
-            "Assays": [
-                {
-                    "assay id": "Naturalistic",
-                    "stimulus paradigm": "Naturalistic",
-                    "repeats": 100,
-                    "duration": 10000,
-                    "Tethered": False,
-                    "save frames": False,
-                    "use_mu": True,
-                    "save stimuli": False,
-                    "random positions": False,
-                    "reset": False,
-                    "background": None,
-                    "moving": False,
-                    "collisions": True,
-                },
-            ]
-        }
-        ]
-
-    dqn_free_config_large_gamma_3 = [
-        {
-            "Model Name": "dqn_gamma",
-            "Environment Name": "dqn_gamma_final_x",
-            "Assay Configuration Name": "Behavioural-Data-Free",
-            "Trial Number": 1,
-            "Run Mode": "Assay",
-            "Learning Algorithm": "DQN",
-            "behavioural recordings": ["environmental positions", "observation"],
-            "network recordings": ["rnn_shared", "internal_state"],
-            "Assays": [
-                {
-                    "assay id": "Naturalistic",
-                    "stimulus paradigm": "Naturalistic",
-                    "repeats": 50,
-                    "duration": 100,
-                    "Tethered": False,
-                    "save frames": False,
-                    "use_mu": True,
-                    "save stimuli": False,
-                    "random positions": False,
-                    "reset": False,
-                    "background": None,
-                    "moving": False,
-                    "collisions": True,
-                },
-            ]
-        }
-        ]
-
-    assay_gathering_test = [
-        {
-            "Model Name": "dqn_epsilon",
-            "Environment Name": "dqn_epsilon_final_1",
-            "Assay Configuration Name": "Behavioural-Data-Free",
-            "Trial Number": 6,
-            "Run Mode": "Assay",
-            "Learning Algorithm": "DQN",
-            "behavioural recordings": ["environmental positions", "observation"],
-            "network recordings": ["rnn_shared", "internal_state"],
-            "Assays": [
-                {
-                    "assay id": "Naturalistic",
-                    "stimulus paradigm": "Naturalistic",
-                    "repeats": 10,
-                    "duration": 1000,
-                    "Tethered": False,
-                    "save frames": False,
-                    "use_mu": True,
-                    "save stimuli": False,
-                    "random positions": False,
-                    "reset": False,
-                    "background": None,
-                    "moving": False,
-                    "collisions": True,
-                },
-            ]
-        }
-        ]
-
-    assay_gathering_new_test = [
-        {
-            "Model Name": "dqn_new",
-            "Environment Name": "dqn_new_1",
-            "Assay Configuration Name": "Behavioural-Data-Free",
-            "Trial Number": 3,
-            "Run Mode": "Assay",
-            "Learning Algorithm": "DQN",
-            "behavioural recordings": ["environmental positions", "observation"],
-            "network recordings": ["rnn_shared", "internal_state"],
-            "Assays": [
-                {
-                    "assay id": "Naturalistic",
-                    "stimulus paradigm": "Naturalistic",
-                    "repeats": 10,
-                    "duration": 300,
-                    "Tethered": False,
-                    "save frames": False,
-                    "use_mu": True,
-                    "save stimuli": False,
-                    "random positions": False,
-                    "reset": False,
-                    "background": None,
-                    "moving": False,
-                    "collisions": True,
-                },
-            ],
-            "Using GPU": False,
         }
         ]
 
@@ -403,354 +280,6 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
-    dqn_test_1 = [
-        {
-            "Model Name": "dqn_test",
-            "Environment Name": "dqn_epsilon",
-            "Trial Number": 1,
-            "Run Mode": "Training",
-            "Profile Speed": True,
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_test_scaled_1 = [
-        {
-            "Model Name": "dqn_test_scaled",
-            "Environment Name": "dqn_epsilon_scaled",
-            "Trial Number": 1,
-            "Run Mode": "Training",
-            "Profile Speed": True,
-            "Learning Algorithm": "DQN",
-        },
-    ]
-
-    dqn_epsilon_1 = [
-        {
-            "Model Name": "dqn_epsilon",
-            "Environment Name": "dqn_epsilon",
-            "Trial Number": 1,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_epsilon_2 = [
-        {
-            "Model Name": "dqn_epsilon",
-            "Environment Name": "dqn_epsilon",
-            "Trial Number": 2,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_epsilon_3 = [
-        {
-            "Model Name": "dqn_epsilon",
-            "Environment Name": "dqn_epsilon",
-            "Trial Number": 3,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_epsilon_4 = [
-        {
-            "Model Name": "dqn_epsilon",
-            "Environment Name": "dqn_epsilon",
-            "Trial Number": 4,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_epsilon_5 = [
-        {
-            "Model Name": "dqn_epsilon",
-            "Environment Name": "dqn_epsilon",
-            "Trial Number": 5,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-
-    dqn_epsilon_6 = [
-        {
-            "Model Name": "dqn_epsilon",
-            "Environment Name": "dqn_epsilon_1",
-            "Trial Number": 6,
-            "Profile Speed": True,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-
-
-    dqn_gamma_sg_1 = [
-        {
-            "Model Name": "dqn_gamma_sg",
-            "Environment Name": "dqn_gamma_sg",
-            "Trial Number": 1,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_gamma_sg_2 = [
-        {
-            "Model Name": "dqn_gamma_sg",
-            "Environment Name": "dqn_gamma_sg",
-            "Trial Number": 2,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-
-    dqn_gamma_pm_1 = [
-        {
-            "Model Name": "dqn_gamma_pm",
-            "Environment Name": "dqn_gamma_pm",
-            "Trial Number": 1,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_gamma_pm_2 = [
-        {
-            "Model Name": "dqn_gamma_pm",
-            "Environment Name": "dqn_gamma_pm",
-            "Trial Number": 2,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_gamma_pm_3 = [
-        {
-            "Model Name": "dqn_gamma_pm",
-            "Environment Name": "dqn_gamma_pm",
-            "Trial Number": 3,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_gamma_pm_4 = [
-        {
-            "Model Name": "dqn_gamma_pm",
-            "Environment Name": "dqn_gamma_pm",
-            "Trial Number": 4,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_gamma_pm_5 = [
-        {
-            "Model Name": "dqn_gamma_pm",
-            "Environment Name": "dqn_gamma_pm",
-            "Trial Number": 5,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-
-    dqn_delta_ns_1 = [
-        {
-            "Model Name": "dqn_delta_ns",
-            "Environment Name": "dqn_delta_ns",
-            "Trial Number": 1,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_delta_ns_2 = [
-        {
-            "Model Name": "dqn_delta_ns",
-            "Environment Name": "dqn_delta_ns",
-            "Trial Number": 2,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-
-    dqn_delta_1 = [
-        {
-            "Model Name": "dqn_delta",
-            "Environment Name": "dqn_delta",
-            "Trial Number": 1,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_delta_2 = [
-        {
-            "Model Name": "dqn_delta",
-            "Environment Name": "dqn_delta",
-            "Trial Number": 2,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_delta_3 = [
-        {
-            "Model Name": "dqn_delta",
-            "Environment Name": "dqn_delta",
-            "Trial Number": 3,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_delta_4 = [
-        {
-            "Model Name": "dqn_delta",
-            "Environment Name": "dqn_delta",
-            "Trial Number": 4,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_delta_5 = [
-        {
-            "Model Name": "dqn_delta",
-            "Environment Name": "dqn_delta",
-            "Trial Number": 5,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-
-    dqn_delta_test_1 = [
-        {
-            "Model Name": "dqn_delta_test",
-            "Environment Name": "dqn_delta_test",
-            "Trial Number": 1,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-
-    #                   TRAINING - PPO
-
-    ppo_gamma_1 = [
-        {
-            "Model Name": "ppo_gamma",
-            "Environment Name": "ppo_gamma",
-            "Trial Number": 1,
-            "Run Mode": "Training",
-            "Learning Algorithm": "PPO",
-        },
-    ]
-    ppo_gamma_2 = [
-        {
-            "Model Name": "ppo_gamma",
-            "Environment Name": "ppo_gamma",
-            "Trial Number": 2,
-            "Run Mode": "Training",
-            "Learning Algorithm": "PPO",
-        },
-    ]
-    ppo_gamma_3 = [
-        {
-            "Model Name": "ppo_gamma",
-            "Environment Name": "ppo_gamma",
-            "Trial Number": 3,
-            "Run Mode": "Training",
-            "Learning Algorithm": "PPO",
-        },
-    ]
-    ppo_gamma_4 = [
-        {
-            "Model Name": "ppo_gamma",
-            "Environment Name": "ppo_gamma",
-            "Trial Number": 4,
-            "Run Mode": "Training",
-            "Learning Algorithm": "PPO",
-        },
-    ]
-    ppo_gamma_5 = [
-        {
-            "Model Name": "ppo_gamma",
-            "Environment Name": "ppo_gamma",
-            "Trial Number": 5,
-            "Run Mode": "Training",
-            "Learning Algorithm": "PPO",
-        },
-
-    ]
-
-    ppo_gamma_6 = [
-        {
-            "Model Name": "ppo_gamma",
-            "Environment Name": "ppo_gamma_1",
-            "Using GPU": False,
-            "Trial Number": 6,
-            "Run Mode": "Training",
-            "Learning Algorithm": "PPO",
-        },
-    ]
-
-    # NEW VISUAL SYSTEM
-    dqn_new_1_pred = [
-        {
-            "Model Name": "dqn_new_pred",
-            "Environment Name": "dqn_new_pred",
-            "Trial Number": 1,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-            "Using GPU": False,
-        },
-    ]
-
-    dqn_new_1 = [
-        {
-            "Model Name": "dqn_new",
-            "Environment Name": "dqn_new",
-            "Trial Number": 1,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_new_2 = [
-        {
-            "Model Name": "dqn_new",
-            "Environment Name": "dqn_new",
-            "Trial Number": 2,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_new_3 = [
-        {
-            "Model Name": "dqn_new",
-            "Environment Name": "dqn_new",
-            "Trial Number": 3,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_new_4 = [
-        {
-            "Model Name": "dqn_new",
-            "Environment Name": "dqn_new",
-            "Trial Number": 4,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-    dqn_new_5 = [
-        {
-            "Model Name": "dqn_new",
-            "Environment Name": "dqn_new",
-            "Trial Number": 5,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
-
-    dqn_epsilon_new_test = [
-        {
-            "Model Name": "dqn_epsilon_new",
-            "Environment Name": "dqn_epsilon_new",
-            "Trial Number": 1,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-            "Using GPU": False
-        },
-        ]
-
     dqn_0 = [
         {
             "Model Name": "dqn_0",
@@ -777,6 +306,37 @@ if __name__ == "__main__": # may be needed to run on windows
             "Model Name": "dqn_0",
             "Environment Name": "dqn_0",
             "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+    dqn_0_2 = [
+        {
+            "Model Name": "dqn_0",
+            "Environment Name": "dqn_0",
+            "Trial Number": 5,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_0",
+            "Environment Name": "dqn_0",
+            "Trial Number": 6,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_0",
+            "Environment Name": "dqn_0",
+            "Trial Number": 7,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_0",
+            "Environment Name": "dqn_0",
+            "Trial Number": 8,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
@@ -813,37 +373,7 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
-
-    dqn_0_2 = [
-        {
-            "Model Name": "dqn_0",
-            "Environment Name": "dqn_0",
-            "Trial Number": 5,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-        {
-            "Model Name": "dqn_0",
-            "Environment Name": "dqn_0",
-            "Trial Number": 6,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-        {
-            "Model Name": "dqn_0",
-            "Environment Name": "dqn_0",
-            "Trial Number": 7,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-        {
-            "Model Name": "dqn_0",
-            "Environment Name": "dqn_0",
-            "Trial Number": 8,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-    ]
+    #                   TRAINING - PPO
 
     ppo_proj = [
         {
@@ -876,16 +406,6 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
-    ppo_proj_test = [
-        {
-            "Model Name": "ppo_proj",
-            "Environment Name": "ppo_proj",
-            "Trial Number": 1,
-            "Run Mode": "Training",
-            "Learning Algorithm": "PPO",
-            "Using GPU": False,
-        },
-    ]
     if run_config is None:
         run_config = ppo_proj_test
     else:

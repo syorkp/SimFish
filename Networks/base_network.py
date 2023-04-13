@@ -15,8 +15,8 @@ class BaseNetwork:
         self.train_length = tf.placeholder(dtype=tf.int32, shape=[], name="train_length")
         self.batch_size = tf.placeholder(dtype=tf.int32, shape=[], name='batch_size')
 
-        self.rnn_state_in = rnn_cell.zero_state(self.batch_size, tf.float32)  # Changed frmo train_length to be in line with dqn
-        self.rnn_state_in_ref = rnn_cell.zero_state(self.batch_size, tf.float32)  # Changed frmo train_length to be in line with dqn
+        self.rnn_state_in = rnn_cell.zero_state(self.batch_size, tf.float32)
+        self.rnn_state_in_ref = rnn_cell.zero_state(self.batch_size, tf.float32)
 
         # Networks Inputs
         self.prev_actions = tf.placeholder(shape=[None, action_dim], dtype=tf.float32, name='prev_actions')
@@ -113,8 +113,8 @@ class BaseNetwork:
 
         self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell,
                                                              dtype=tf.float32,
-                                                             initial_state=self.rnn_state_in,#_ref,
-                                                             scope=my_scope + '_rnn')  # No need to reuse as takes rnn_cell as argument for both.
+                                                             initial_state=self.rnn_state_in,
+                                                             scope=my_scope + '_rnn')
         self.rnn_ref = tf.reshape(self.rnn_ref, shape=[-1, self.rnn_dim])
         self.rnn_output_ref = self.rnn_ref
 

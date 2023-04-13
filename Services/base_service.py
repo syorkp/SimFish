@@ -115,7 +115,7 @@ class BaseService:
             internal_state_order.append("salt")
         return internal_state_order
 
-    def get_positions(self):
+    def get_feature_positions(self):
         """Should be here as is used in both training and assay services."""
         if len(self.simulation.sand_grain_bodies) > 0:
             sand_grain_positions = [self.simulation.sand_grain_bodies[i].position for i, b in

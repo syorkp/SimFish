@@ -244,7 +244,6 @@ class BaseDQN:
                      self.main_QN.batch_size: 1,
                      self.main_QN.exp_keep: 1.0,
                      self.main_QN.Temp: self.epsilon,
-                     #self.main_QN.learning_rate: self.learning_params["learning_rate"],
                      }
         q_out, q_dist, updated_rnn_state, updated_rnn_state_ref, val, adv, val_ref, adv_ref = self.sess.run(
                 [self.main_QN.Q_out, self.main_QN.Q_dist, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
@@ -264,7 +263,7 @@ class BaseDQN:
             if self.total_steps < self.initial_exploration_steps:
                 chosen_a = np.random.randint(0, self.learning_params['num_actions'])
             else:
-                chosen_a = np.argmax(q_out + np.sqrt(2 * np.log(self.total_steps) / (self.action_usage+1e-5)))    
+                chosen_a = np.argmax(q_out + np.sqrt(2 * np.log(self.total_steps) / (self.action_usage+1e-5)))
 
         # Simulation step
         o1, given_reward, internal_state, d, full_masked_image = self.simulation.simulation_step(action=chosen_a)
@@ -318,7 +317,8 @@ class BaseDQN:
                                      advantage_ref=adv_ref
                                      )
         self.total_steps += 1
-        return o, efference_copy, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, full_masked_image
+        return o, efference_copy, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, \
+               full_masked_image
 
     def assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         chosen_a, updated_rnn_state, updated_rnn_state_ref, network_layers = \
@@ -424,7 +424,6 @@ class BaseDQN:
             self.main_QN.rnn_state_in_ref: state_train_ref,
             self.main_QN.batch_size: self.learning_params['batch_size'],
             self.main_QN.exp_keep: 1.0,
-            #self.main_QN.learning_rate: self.learning_params["learning_rate"],
         })
 
         Q2 = self.sess.run(self.target_QN.Q_out, feed_dict={
@@ -436,15 +435,15 @@ class BaseDQN:
             self.target_QN.rnn_state_in_ref: state_train_ref,
             self.target_QN.batch_size: self.learning_params['batch_size'],
             self.target_QN.exp_keep: 1.0,
-            #self.main_QN.learning_rate: self.learning_params["learning_rate"],
         })
 
         end_multiplier = -(train_batch[:, 5] - 1)
 
         double_Q = Q2[range(self.learning_params['batch_size'] * self.learning_params['trace_length']), Q1]
-        
-        target_Q = train_batch[:, 2] + (self.learning_params[
-                                            'y'] * double_Q * end_multiplier)  # target_Q = r + y*Q(s',argmax(Q(s',a)))        # Update the network with our target values.
+
+        # Update the network with our target values.
+        target_Q = train_batch[:, 2] + (self.learning_params['y'] * double_Q * end_multiplier)
+
         self.sess.run(self.main_QN.updateModel,
                       feed_dict={self.main_QN.observation: np.vstack(train_batch[:, 0]),  # Observations (t)
                                  self.main_QN.targetQ: target_Q,
@@ -457,5 +456,4 @@ class BaseDQN:
                                  self.main_QN.rnn_state_in_ref: state_train_ref,
                                  self.main_QN.batch_size: self.learning_params['batch_size'],
                                  self.main_QN.exp_keep: 1.0,
-                                 #self.main_QN.learning_rate: self.learning_params["learning_rate"],
                                  })

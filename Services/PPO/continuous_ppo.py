@@ -82,14 +82,12 @@ class ContinuousPPO:
 
         # Placeholders
         self.epsilon_greedy = None
-        # self.e = None
         self.step_drop = None
 
         self.output_dimensions = 2
         self.just_trained = False
 
         self.use_dynamic_network = False
-
 
     def create_network(self):
         """
@@ -108,7 +106,6 @@ class ContinuousPPO:
             reuse_eyes = self.learning_params['reuse_eyes']
         else:
             reuse_eyes = False
-
 
         if self.use_dynamic_network:
             self.network = PPONetworkMultivariate2Dynamic(simulation=self.simulation,
@@ -142,9 +139,9 @@ class ContinuousPPO:
                                                        internal_states=internal_states,
                                                        max_impulse=self.environment_params['max_impulse'],
                                                        max_angle_change=self.environment_params[
-                                                              'max_angle_change'],
+                                                           'max_angle_change'],
                                                        clip_param=self.learning_params[
-                                                              'clip_param'],
+                                                           'clip_param'],
                                                        input_sigmas=True,
                                                        impose_action_mask=True,
                                                        )
@@ -174,12 +171,11 @@ class ContinuousPPO:
                 self.angle_sigma = np.array([self.learning_params["min_sigma_angle"]])
 
     def _assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
-        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0],
              a[1],
              self.simulation.fish.prev_action_impulse,
              self.simulation.fish.prev_action_angle,
-             ]  # Set impulse to scale to be inputted to network
+             ]
 
         impulse, angle, V, updated_rnn_state, updated_rnn_state_ref, network_layers, \
         mu_i, mu_a, mu1, mu1_ref, mu_a1, mu_a_ref, si_i, si_a = self.sess.run(
@@ -267,12 +263,11 @@ class ContinuousPPO:
         return given_reward, new_internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, action
 
     def _step_loop_full_logs(self, o, internal_state, a, rnn_state, rnn_state_ref):
-        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
         a = [a[0],
              a[1],
              self.simulation.fish.prev_action_impulse,
              self.simulation.fish.prev_action_angle,
-             ]  # Set impulse to scale to be inputted to network
+             ]
 
         impulse, angle, V, V_ref, updated_rnn_state, updated_rnn_state_ref, neg_log_action_probability, mu_i, mu_a, \
         si = self.sess.run(
@@ -380,16 +375,11 @@ class ContinuousPPO:
         return r, new_internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, action
 
     def _step_loop_reduced_logs(self, o, internal_state, a, rnn_state, rnn_state_ref):
-
-        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
-        # a = [a[0] / self.environment_params['max_impulse'],
-        #      a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
-
         a = [a[0],
              a[1],
              self.simulation.fish.prev_action_impulse,
              self.simulation.fish.prev_action_angle,
-             ]  # Set impulse to scale to be inputted to network
+             ]
 
         impulse, angle, V, updated_rnn_state, updated_rnn_state_ref, mu_i, mu_a, neg_log_action_probability = self.sess.run(
             [self.network.impulse_output, self.network.angle_output,
@@ -497,29 +487,14 @@ class ContinuousPPO:
         value_batch = value_buffer[
                       batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
 
-        if target_outputs_buffer is not None:
-            target_outputs_batch = target_outputs_buffer[
-                                   batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params[
-                                       "batch_size"]]
-
         current_batch_size = observation_batch.shape[0]
 
         # Stacking for correct network dimensions
         observation_batch = np.vstack(np.vstack(observation_batch))
         internal_state_batch = np.vstack(np.vstack(internal_state_batch))
-        try:
-            action_batch = np.concatenate(np.array(action_batch))
-            # print(action_batch.shape)
-            action_batch = np.reshape(np.array(action_batch),
-                                      (self.learning_params["trace_length"] * current_batch_size, 2))
-        except:
-            action_batch = np.concatenate(np.array(action_batch))
-
-            print("Error... ")
-            print(current_batch_size)
-            print(action_batch.shape)
-
-            action_batch = np.array(action_batch)
+        action_batch = np.concatenate(np.array(action_batch))
+        action_batch = np.reshape(np.array(action_batch),
+                                  (self.learning_params["trace_length"] * current_batch_size, 2))
 
         previous_action_batch = np.vstack(np.vstack(previous_action_batch))
         log_action_probability_batch = log_action_probability_batch.flatten()
@@ -552,9 +527,9 @@ class ContinuousPPO:
 
             # Get the current batch
             observation_batch, internal_state_batch, action_batch, previous_action_batch, log_action_probability_batch, \
-                advantage_batch, return_batch, previous_value_batch, current_batch_size = self.get_batch(
-                    batch, observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer,
-                    log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer)
+            advantage_batch, return_batch, previous_value_batch, current_batch_size = self.get_batch(
+                batch, observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer,
+                log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer)
 
             # Loss value logging
             average_loss_value = 0

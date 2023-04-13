@@ -57,16 +57,12 @@ class PPONetworkMultivariate2Dynamic(DynamicBaseNetwork):
 
         self.sigma_action = tf.concat([self.sigma_impulse_combined, self.sigma_angle_combined], axis=1)
 
-        # self.log_std = tf.get_variable(name='logstd', shape=[1, 2], initializer=tf.zeros_initializer(), trainable=True)
-        # self.sigma_action = tf.exp(self.log_std)
-
         #            ----------        Form Distribution Estimations       ---------            #
 
         self.action_distribution = MaskedMultivariateNormal(loc=self.mu_action, scale_diag=self.sigma_action,
                                                             impulse_scaling=max_impulse,
                                                             angle_scaling=max_angle_change)
         self.action_output = tf.squeeze(self.action_distribution.sample_masked(1), axis=0)
-
 
         self.impulse_output, self.angle_output = tf.split(self.action_output, 2, axis=1)
 
@@ -106,7 +102,7 @@ class PPONetworkMultivariate2Dynamic(DynamicBaseNetwork):
         # Value loss
         self.returns_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='returns')
         self.old_value_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='old_value')
-        # self.value_cliprange_placeholder = tf.placeholder(shape=[None], dtype=tf.float32, name='value_cliprange')
+
         # Clip the different between old and new value NOTE: this depends on the reward scaling
         self.value_clipped = self.old_value_placeholder + tf.clip_by_value(
             self.value_output - self.old_value_placeholder, -clip_param, clip_param)
@@ -125,7 +121,7 @@ class PPONetworkMultivariate2Dynamic(DynamicBaseNetwork):
 
         self.total_loss = self.policy_loss - tf.multiply(self.entropy, self.entropy_coefficient) + \
                           tf.multiply(self.value_loss, self.value_coefficient)
-        # self.total_loss = self.policy_loss + tf.multiply(self.value_loss, self.value_coefficient)
+
         self.learning_rate = tf.placeholder(dtype=tf.float32, name="learning_rate")
 
         # Gradient clipping (for stability)
