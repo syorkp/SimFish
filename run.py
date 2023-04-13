@@ -108,6 +108,64 @@ if __name__ == "__main__": # may be needed to run on windows
         }
         ]
 
+    dqn_0_initial = [
+        {
+            "Model Name": "dqn_0",
+            "Environment Name": "dqn_0_1",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 1,
+            "Run Mode": "Assay",
+            "Learning Algorithm": "DQN",
+            "behavioural recordings": ["environmental positions", "observation"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "repeats": 40,
+                    "stimulus paradigm": "Naturalistic",
+                    "duration": 10000,
+                    "Tethered": False,
+                    "save frames": False,
+                    "use_mu": True,
+                    "save stimuli": False,
+                    "random positions": False,
+                    "reset": False,
+                    "background": None,
+                    "moving": False,
+                    "collisions": True,
+                },
+                ]
+        },
+        {
+            "Model Name": "dqn_0",
+            "Environment Name": "dqn_0_7",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 7,
+            "Run Mode": "Assay",
+            "Learning Algorithm": "DQN",
+            "behavioural recordings": ["environmental positions", "observation"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "repeats": 40,
+                    "stimulus paradigm": "Naturalistic",
+                    "duration": 10000,
+                    "Tethered": False,
+                    "save frames": False,
+                    "use_mu": True,
+                    "save stimuli": False,
+                    "random positions": False,
+                    "reset": False,
+                    "background": None,
+                    "moving": False,
+                    "collisions": True,
+                },
+            ]
+        }
+        ]
+
+
     # Split timelines assay
 
     dqn_split_assay_test = [

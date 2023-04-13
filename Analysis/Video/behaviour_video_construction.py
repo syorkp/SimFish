@@ -264,7 +264,7 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 def draw_episode(data, env_variables, save_location, continuous_actions, draw_past_actions=True, show_energy_state=True,
                  scale=1.0, draw_action_space_usage=True, trim_to_fish=True, save_id="", showed_region_quad=500, n_actions_to_show=500,
-                 s_per_frame=0.03, include_sediment=True, as_gif=False, max_steps=999999):
+                 s_per_frame=0.03, include_sediment=True, as_gif=False, max_steps=999999, show_salt_location=False):
     #try:
     #    with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
     #        env_variables = json.load(f)
@@ -389,6 +389,10 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
 
             if data["predator_presence"][step]:
                 board.circle(data["predator_positions"][step], env_variables['predator_radius'], (0, 1, 0))
+
+            if show_salt_location:
+                board.circle(data["salt_location"], 20, (1, 0, 1))
+
 
             # if draw_action_space_usage:
             #     if continuous_actions:
@@ -562,7 +566,7 @@ if __name__ == "__main__":
     # draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="A15")
     # model_name = "dqn_scaffold_14-1"
-    data = load_data("dqn_0-1", "Episode 900", "Episode 900", training_data=True)
+    data = load_data("dqn_salt_only-1", "Episode 600", "Episode 600", training_data=True)
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-3")
@@ -585,8 +589,9 @@ if __name__ == "__main__":
     #     for key in datfl[group].keys():
     #         data[key] = np.array(datfl[group][key])
 
-    draw_episode(data, env_variables, 'new_proj_fixed', continuous_actions=False, show_energy_state=True,
-                 trim_to_fish=True, showed_region_quad=500, include_sediment=True, scale=0.4, max_steps=1000)
+    draw_episode(data, env_variables, 'salt_avoidance', continuous_actions=False, show_energy_state=True,
+                 trim_to_fish=False, showed_region_quad=500, include_sediment=True, scale=0.4, max_steps=1000,
+                 show_salt_location=True)
 
 
 
