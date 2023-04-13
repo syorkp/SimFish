@@ -7,6 +7,7 @@ import numpy as np
 import tensorflow.compat.v1 as tf
 
 from Analysis.Indexing.data_index_service import DataIndexServiceContinuous
+from Analysis.Behavioural.Exploration.turn_chain_metric import get_normalised_turn_chain_metric_continuous
 
 from Buffers.PPO.ppo_buffer import PPOBuffer
 
