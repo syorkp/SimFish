@@ -50,8 +50,8 @@ class BaseDQN:
         self.maintain_state = True
 
         # Add attributes only if don't exist yet (prevents errors thrown).
-        if not hasattr(self, "get_positions"):
-            self.get_positions = None
+        if not hasattr(self, "get_feature_positions"):
+            self.get_feature_positions = None
         if not hasattr(self, "buffer"):
             self.buffer = None
         if not hasattr(self, "output_data"):
@@ -277,7 +277,7 @@ class BaseDQN:
             full_masked_image = None
 
         if self.save_environmental_data:
-            sand_grain_positions, prey_positions, predator_position = self.get_positions()
+            sand_grain_positions, prey_positions, predator_position = self.get_feature_positions()
             prey_orientations = np.array([p.angle for p in self.simulation.prey_bodies]).astype(np.float32)
             try:
                 predator_orientation = self.simulation.predator_body.angle
@@ -337,7 +337,7 @@ class BaseDQN:
 
         chosen_a = chosen_a[0]
         o1, given_reward, internal_state1, d, full_masked_image = self.simulation.simulation_step(action=chosen_a)
-        sand_grain_positions, prey_positions, predator_position = self.get_positions()
+        sand_grain_positions, prey_positions, predator_position = self.get_feature_positions()
 
         efference_copy = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
 
