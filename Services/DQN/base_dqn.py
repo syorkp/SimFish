@@ -321,10 +321,9 @@ class BaseDQN:
                full_masked_image
 
     def assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
-        chosen_a, updated_rnn_state, updated_rnn_state_ref, network_layers = \
+        chosen_a, updated_rnn_state, updated_rnn_state_ref = \
             self.sess.run(
-                [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
-                 self.main_QN.network_graph],
+                [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref],
                 feed_dict={self.main_QN.observation: o,
                            self.main_QN.internal_state: internal_state,
                            self.main_QN.prev_actions: a,
@@ -376,7 +375,7 @@ class BaseDQN:
                                                      prey_age=prey_ages,
                                                      prey_gait=prey_gait,
                                                      )
-        self.buffer.make_desired_recordings(network_layers)
+        # self.buffer.make_desired_recordings(network_layers)
 
         return o, efference_copy, given_reward, internal_state1, o1, d, updated_rnn_state
 
