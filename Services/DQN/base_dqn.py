@@ -321,9 +321,10 @@ class BaseDQN:
                full_masked_image
 
     def assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
-        chosen_a, updated_rnn_state, updated_rnn_state_ref = \
+        chosen_a, updated_rnn_state, updated_rnn_state_ref, value, advantage, value_ref, advantage_ref = \
             self.sess.run(
-                [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref],
+                [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref, self.main_QN.Value, self.main_QN.Advantage,
+                 self.main_QN.Value_ref, self.main_QN.Advantage_ref],
                 feed_dict={self.main_QN.observation: o,
                            self.main_QN.internal_state: internal_state,
                            self.main_QN.prev_actions: a,
@@ -348,6 +349,10 @@ class BaseDQN:
                                  reward=given_reward,
                                  rnn_state=updated_rnn_state,
                                  rnn_state_ref=updated_rnn_state_ref,
+                                 value=value,
+                                 value_ref=value_ref,
+                                 advantage=advantage,
+                                 advantage_ref=advantage_ref
                                  )
 
         # Saving step data
