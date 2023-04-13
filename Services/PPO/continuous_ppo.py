@@ -217,7 +217,7 @@ class ContinuousPPO:
 
         o1, given_reward, new_internal_state, d, full_masked_image = self.simulation.simulation_step(action=action)
 
-        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_feature_positions()
+        sand_grain_positions, prey_positions, predator_position = self.get_feature_positions()
 
         efference_copy = action + [self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
 
@@ -449,7 +449,7 @@ class ContinuousPPO:
                                  )
 
         if self.save_environmental_data:
-            sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_feature_positions()
+            sand_grain_positions, prey_positions, predator_position = self.get_feature_positions()
             self.episode_buffer.save_environmental_positions(self.simulation.fish.body.position,
                                                              self.simulation.prey_consumed_this_step,
                                                              self.simulation.predator_body,
