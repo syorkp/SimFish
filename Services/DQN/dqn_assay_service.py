@@ -142,7 +142,7 @@ class DQNAssayService(AssayService, BaseDQN):
             self.init_states()
             AssayService._run(self)
 
-    def perform_assay(self, assay, background=None, energy_state=None):
+    def perform_assay(self, assay, sediment=None, energy_state=None):
         if self.rnn_input is not None:
             rnn_state = copy.copy(self.rnn_input[0])
             rnn_state_ref = copy.copy(self.rnn_input[1])
@@ -152,7 +152,7 @@ class DQNAssayService(AssayService, BaseDQN):
 
         if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
             print("Loading Simulation")
-            o = self.simulation.load_simulation(self.buffer, background, energy_state)
+            o = self.simulation.load_simulation(self.buffer, sediment, energy_state)
             internal_state = self.buffer.internal_state_buffer[-1]
             a = self.buffer.action_buffer[-1]
 
