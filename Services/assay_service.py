@@ -144,11 +144,6 @@ class AssayService(BaseService):
 
         self.implement_interventions()
 
-        if self.ppo_version is not None:
-            self.buffer.rnn_layer_names = self.network.rnn_layer_names
-        else:
-            self.buffer.rnn_layer_names = self.main_QN.rnn_layer_names
-
         for assay in self.assays:
 
             # Init recordings
