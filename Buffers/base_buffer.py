@@ -231,12 +231,19 @@ class BaseBuffer:
         try:
             self.create_data_group("rnn_state", self.rnn_state_buffer, assay_group)
         except TypeError:
-            self.create_data_group("rnn_state", np.array(self.rnn_state_buffer).astype(np.float64), assay_group)
+            try:
+                print("Failed to save RNN state")
+                print(np.array(self.rnn_state_buffer).shape)
+                print(np.array(self.rnn_state_buffer)[0].shape)
+            except:
+                pass
+            # self.create_data_group("rnn_state", np.array(self.rnn_state_buffer).astype(np.float64), assay_group)
 
         try:
             self.create_data_group("rnn_state_ref", self.rnn_state_ref_buffer, assay_group)
         except TypeError:
-            self.create_data_group("rnn_state_ref", np.array(self.rnn_state_ref_buffer).astype(np.float64), assay_group)
+            pass
+            #self.create_data_group("rnn_state_ref", np.array(self.rnn_state_ref_buffer).astype(np.float64), assay_group)
 
         self.internal_state_buffer = np.array(self.internal_state_buffer)
 
