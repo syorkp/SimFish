@@ -52,9 +52,9 @@ if __name__ == "__main__":
     print(f"11-{np.sum(d['action'] == 11)}")
     # datas = []
     # obs = []
-    # for i in range(1, 41):
-    #     d = load_data("dqn_0-1", "Behavioural-Data-Free", f"Naturalistic-{i}", training_data=False)
-    #     print(f"1-{np.sum(d['action']==1)}")
+    for i in range(1, 7):
+        d = load_data("dqn_0-1", "Behavioural-Data-Free", f"Naturalistic-{i}", training_data=False)
+        print(f"{i}-{np.sum(d['consumed'])}")
     #     print(f"2-{np.sum(d['action'] == 2)}")
     #     print(f"4-{np.sum(d['action'] == 4)}")
     #     print(f"5-{np.sum(d['action'] == 5)}")

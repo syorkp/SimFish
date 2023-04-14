@@ -112,7 +112,7 @@ if __name__ == "__main__": # may be needed to run on windows
         {
             "Model Name": "dqn_0",
             "Environment Name": "dqn_0_1",
-            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Assay Configuration Name": "Behavioural-Data-Empty",
             "Trial Number": 1,
             "Run Mode": "Assay",
             "Learning Algorithm": "DQN",
@@ -139,7 +139,7 @@ if __name__ == "__main__": # may be needed to run on windows
         {
             "Model Name": "dqn_0",
             "Environment Name": "dqn_0_7",
-            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Assay Configuration Name": "Behavioural-Data-Empty",
             "Trial Number": 7,
             "Run Mode": "Assay",
             "Learning Algorithm": "DQN",
