@@ -225,11 +225,12 @@ class DQNAssayService(AssayService, BaseDQN):
                         internal_state[0, index] = self.salt_interruptions[self.step_number]
             self.previous_action = a
 
-            o, a, r, internal_state, o1, d, rnn_state = self.step_loop(o=o,
-                                                                       internal_state=internal_state,
-                                                                       a=efference_copy,
-                                                                       rnn_state=rnn_state,
-                                                                       rnn_state_ref=rnn_state_ref)
+            o, a, r, internal_state, o1, d, rnn_state, rnn_state_ref = self.step_loop(o=o,
+                                                                                      internal_state=internal_state,
+                                                                                      a=efference_copy,
+                                                                                      rnn_state=rnn_state,
+                                                                                      rnn_state_ref=rnn_state_ref
+                                                                                      )
             o = o1
 
             if d:

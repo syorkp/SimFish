@@ -481,7 +481,7 @@ if __name__ == "__main__":
                               ]
     plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=15, interpolate_scaffold_points=True,
                                           figure_name="dqn_0", scaled_window=True,
-                                          show_inset=["capture success rate", 2], key_scaffold_points=[4, 8, 9])
+                                          show_inset=["capture success rate", 2], key_scaffold_points=[4, 5, 9, 10, 13])
     # plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=100, interpolate_scaffold_points=True,
     #                                       figure_name="dqn_beta_mod", scaled_window=False,
     #                                       show_inset=["capture success rate", 23])#, key_scaffold_points=[10, 16, 31])

@@ -382,7 +382,7 @@ class BaseDQN:
                                                      )
         # self.buffer.make_desired_recordings(network_layers)
 
-        return o, efference_copy, given_reward, internal_state1, o1, d, updated_rnn_state
+        return o, efference_copy, given_reward, internal_state1, o1, d, updated_rnn_state, updated_rnn_state_ref
 
     def train_networks(self):
         """

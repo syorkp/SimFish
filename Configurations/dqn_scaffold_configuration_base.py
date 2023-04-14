@@ -283,13 +283,13 @@ env['background_point_intensity'] = 0.005  # Pixel counts are multiplied by this
 # 2-10
 changes += [
     ["PCI", low_pci, "anneling_steps", 500000,
-     "capture_swim_extra_cost", 50],
+     "capture_swim_extra_cost", 50],  # 2
 
-    ["PCI", low_pci, "wall_reflection", False],
+    ["PCI", low_pci, "wall_reflection", False],  # 3
 
     # 2) Visual System
     ["PCI", low_pci, "red_photoreceptor_rf_size", 0.0133,
-     "uv_photoreceptor_rf_size", 0.0133],
+     "uv_photoreceptor_rf_size", 0.0133],  # 4
 
     # ["PCI", low_pci, "shot_noise", True],
 
@@ -307,16 +307,16 @@ original_prey_cloud_num = env["prey_cloud_num"]
 # Normal
 changes += [
     ["PCI", high_pci * 12 / 8, "prey_cloud_num", original_prey_cloud_num * 6 / 8,
-     "prey_num", original_prey_num * 6 / 8],
+     "prey_num", original_prey_num * 6 / 8],  # 5
 
     ["PCI", high_pci * 12 / 8, "prey_cloud_num", original_prey_cloud_num * 4 / 8,
-     "prey_num", original_prey_num * 4 / 8],
+     "prey_num", original_prey_num * 4 / 8],  # 6
 
     ["PCI", high_pci * 20 / 8, "prey_cloud_num", original_prey_cloud_num * 2 / 8,
-     "prey_num", original_prey_num * 2 / 8],
+     "prey_num", original_prey_num * 2 / 8],  # 7
 
     ["PCI", high_pci * 20 / 8, "prey_cloud_num", original_prey_cloud_num * 1 / 8,
-     "prey_num", original_prey_num * 1 / 8],
+     "prey_num", original_prey_num * 1 / 8],  # 8
 ]
 
 # Sand grains
@@ -356,10 +356,10 @@ high_pci *= 20 / 8
 # 3) Fine Prey Capture 19-34
 changes += [["PCI", high_pci, "prey_fluid_displacement", True,
              "prey_jump", True,
-             ],
-            ["PCI", high_pci, "fish_mouth_radius", 4],
-            ["PCI", high_pci, "fraction_capture_permitted", 0.2],
-            ["PCI", high_pci, "capture_angle_deviation_allowance", np.pi / 5],
+             ],  # 9
+            ["PCI", high_pci, "fish_mouth_radius", 4],  # 10
+            ["PCI", high_pci, "fraction_capture_permitted", 0.2],  # 11
+            ["PCI", high_pci, "capture_angle_deviation_allowance", np.pi / 5],  # 12
 
             ]
 
