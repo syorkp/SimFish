@@ -431,6 +431,38 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
+    dqn_salt_only_reduced = [
+        {
+            "Model Name": "dqn_salt_only_reduced",
+            "Environment Name": "dqn_salt_only_reduced",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_salt_only_reduced",
+            "Environment Name": "dqn_salt_only_reduced",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_salt_only_reduced",
+            "Environment Name": "dqn_salt_only_reduced",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_salt_only_reduced",
+            "Environment Name": "dqn_salt_only_reduced",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+
     #                   TRAINING - PPO
 
     ppo_proj = [

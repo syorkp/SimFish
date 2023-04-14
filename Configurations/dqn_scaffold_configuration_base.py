@@ -210,7 +210,7 @@ env = {
     'unit_circle_diameter': 0.7,  # Circular current options
 }
 
-scaffold_name = "dqn_salt_only"
+scaffold_name = "dqn_salt_only_reduced"
 
 
 # For predator scaffolding
@@ -268,9 +268,11 @@ env["shot_noise"] = True
 
 env["max_salt_damage"] = 0.02
 
-# env["prey_num"] = 0
-# env["capture_swim_extra_cost"] = 0
-# env["wall_touch_penalty"] = 0
+env["prey_num"] = 0
+env["capture_swim_extra_cost"] = 0
+env["wall_touch_penalty"] = 0
+env["energy_state"] = False
+env["in_light"] = False
 
 env["salt_reward_penalty"] = 100000
 env["light_gain"] = 125.7# 27.769# 125.7
