@@ -120,7 +120,6 @@ class QNetworkReduced:
         self.Value_final = tf.divide(tf.add(self.Value, self.Value_ref), 2)
         self.Advantage_final = tf.divide(tf.add(self.Advantage, self.Advantage_ref), 2)
 
-        self.salience = tf.gradients(self.Advantage_final, self.observation)
         # Then combine them together to get our final Q-values.
         self.Q_out = self.Value_final + tf.subtract(self.Advantage_final,
                                                     tf.reduce_mean(self.Advantage_final, axis=1, keep_dims=True))
