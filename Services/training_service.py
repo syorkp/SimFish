@@ -287,7 +287,8 @@ class TrainingService(BaseService):
 
     def save_rnn_state(self):
         data = {}
-        num_rnns = len(self.init_rnn_state)
+        # num_rnns = len(self.init_rnn_state)
+        num_rnns = 1
         for rnn in range(num_rnns):
             data_1 = {
                 f"rnn_state_{rnn}_1": self.init_rnn_state[rnn][0].tolist(),

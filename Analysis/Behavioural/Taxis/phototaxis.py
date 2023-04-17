@@ -244,7 +244,8 @@ if __name__ == "__main__":
     # plot_all_phototaxis_analysis_multiple_models(["dqn_gamma-1", "dqn_gamma-2"], "Behavioural-Data-Free",
     #                                              "Naturalistic", 100)
 
-    plot_all_phototaxis_analysis("dqn_0-7", "Behavioural-Data-Free", "Naturalistic", 8)
+    plot_all_phototaxis_analysis("dqn_0-1", "Behavioural-Data-Empty", "Naturalistic", 40)
+    plot_all_phototaxis_analysis("dqn_0-7", "Behavioural-Data-Empty", "Naturalistic", 40)
     # plot_all_phototaxis_analysis("dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100)
     # plot_all_phototaxis_analysis("dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100)
     # plot_all_phototaxis_analysis("dqn_gamma-5", "Behavioural-Data-Free", "Naturalistic", 100)
