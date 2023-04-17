@@ -251,7 +251,6 @@ Sand grain: {self.sand_grain_associated_reward}
 
     def bring_fish_in_bounds(self):
         # Resolve if fish falls out of bounds.
-        print(self.fish.body.position)
         if self.fish.body.position[0] < 4 or self.fish.body.position[1] < 4 or \
                 self.fish.body.position[0] > self.env_variables["arena_width"] - 4 or \
                 self.fish.body.position[1] > self.env_variables["arena_height"] - 4:
@@ -269,7 +268,9 @@ Sand grain: {self.sand_grain_associated_reward}
         self.fish_angle_buffer.append(self.fish.body.angle)
         self.position_buffer.append(np.array(self.fish.body.position))
 
+        print(f"1 - {self.fish.body.position}")
         reward = self.fish.take_action(action)
+        print(f"2 - {self.fish.body.position}")
         # For Reward tracking (debugging)
         self.action_associated_reward += reward
 
@@ -317,6 +318,8 @@ Sand grain: {self.sand_grain_associated_reward}
             if self.fish.touched_edge:
                 self.fish.touched_edge = False
 
+        print(f"3 - {self.fish.body.position}")
+
         if self.fish.touched_predator:
             print("Fish eaten by predator")
             reward -= self.env_variables['predator_cost']
@@ -345,6 +348,7 @@ Sand grain: {self.sand_grain_associated_reward}
                 self.transport_fish(self.relocate_fish[self.num_steps])
 
         self.bring_fish_in_bounds()
+        print(f"4 - {self.fish.body.position}")
 
         # Energy level
         if self.env_variables["energy_state"]:
