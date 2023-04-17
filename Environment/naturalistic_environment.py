@@ -269,6 +269,7 @@ Sand grain: {self.sand_grain_associated_reward}
         self.position_buffer.append(np.array(self.fish.body.position))
 
         print(f"1 - {self.fish.body.position}")
+        print(action)
         reward = self.fish.take_action(action)
         print(f"2 - {self.fish.body.position}")
         # For Reward tracking (debugging)
