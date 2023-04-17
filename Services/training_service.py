@@ -1,6 +1,4 @@
-import copy
 import json
-import os
 import time
 import numpy as np
 import pstats
@@ -9,10 +7,6 @@ import gc
 
 # noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
-
-from Analysis.Behavioural.Exploration.turn_chain_metric import get_normalised_turn_chain_metric_continuous
-from Analysis.Video.behaviour_video_construction import draw_episode
-from Analysis.load_data import load_data
 
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
@@ -28,11 +22,10 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 class TrainingService(BaseService):
 
-    def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, continuous_actions, model_exists, configuration_index,
-                 full_logs, profile_speed):
+    def __init__(self, model_name, trial_number, total_steps, episode_number, using_gpu, memory_fraction,
+                 config_name, continuous_actions, model_exists, configuration_index, profile_speed):
 
-        super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
+        super().__init__(model_name, trial_number, total_steps, episode_number, using_gpu, memory_fraction,
                          config_name, continuous_actions, profile_speed)
 
         # Configurations
@@ -64,7 +57,6 @@ class TrainingService(BaseService):
         # Training Data
         self.training_times = []
         self.reward_list = []
-        self.full_logs = full_logs
 
         # For config scaffolding
         self.previous_config_switch = self.episode_number
@@ -88,6 +80,9 @@ class TrainingService(BaseService):
             self.min_scaffold_interval = self.learning_params["min_scaffold_interval"]
         else:
             self.min_scaffold_interval = 20
+
+        if not hasattr(self, "experience_buffer"):
+            self.experience_buffer = None
 
     def _run(self):
         self.saver = tf.train.Saver(max_to_keep=None)
@@ -165,6 +160,8 @@ class TrainingService(BaseService):
                                                               )
 
     def check_update_configuration(self):
+        """Check whether the specified performance criteria to switch configurations have been met."""
+
         next_point = str(self.configuration_index + 1)
         episode_transition_points = self.episode_transitions.keys()
         switch_criteria_met = False
@@ -272,6 +269,8 @@ class TrainingService(BaseService):
             self.switched_configuration = False
 
     def load_transitions(self):
+        """Load the transitions.json file that specify the conditions under which the scaffold should switch."""
+
         with open(f"Configurations/Training-Configs/{self.config_name}/transitions.json", 'r') as f:
             transitions = json.load(f)
         self.episode_transitions = transitions["Episode"]
@@ -286,6 +285,8 @@ class TrainingService(BaseService):
         self.total_configurations = len(configurations) + 1
 
     def save_rnn_state(self):
+        """Save the current RNN state to a json file."""
+
         data = {}
         # num_rnns = len(self.init_rnn_state)
         num_rnns = 1
@@ -301,14 +302,9 @@ class TrainingService(BaseService):
         with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'w') as f:
             json.dump(data, f, indent=4)
 
-    def _save_episode(self, total_episode_reward, prey_caught, sand_grains_bumped,):
+    def _save_episode(self, total_episode_reward, prey_caught, sand_grains_bumped):
         """Saves episode data common to all models"""
-        # # Log the average training time for episodes (when not saved)
-        # if not self.save_frames:
-        #     self.training_times.append(time() - episode_start_t)
-        #     print(np.mean(self.training_times))
 
-        # Keep recent predators caught for configuration change conditionals
         self.last_episodes_prey_caught.append(prey_caught)
         self.last_episodes_predators_avoided.append(self.simulation.total_predators_survived)
         self.last_episodes_sand_grains_bumped.append(sand_grains_bumped)
@@ -488,11 +484,10 @@ class TrainingService(BaseService):
             )
             self.writer.add_summary(configuration_summary, self.episode_number)
 
-        if self.full_logs:
-            episode_duration_summary = tf.Summary(
-                value=[tf.Summary.Value(tag="Episode Duration", simple_value=self.simulation.num_steps)]
-            )
-            self.writer.add_summary(episode_duration_summary, self.episode_number)
+        episode_duration_summary = tf.Summary(
+            value=[tf.Summary.Value(tag="Episode Duration", simple_value=self.simulation.num_steps)]
+        )
+        self.writer.add_summary(episode_duration_summary, self.episode_number)
 
         if "network_saving_frequency_steps" in self.learning_params:
             if self.total_steps - int(self.checkpoint_steps) >= self.learning_params['network_saving_frequency_steps']:
@@ -531,10 +526,6 @@ class TrainingService(BaseService):
                                         internal_state_order=internal_state_order,
                                         sediment=sediment,
                                         salt_location=salt_location)
-            # episode_data = load_data(f"{self.model_name}-{self.model_number}", f"Episode {self.episode_number}",
-            #                          f"Episode {self.episode_number}", training_data=True)
-            # draw_episode(episode_data, self.environment_params, f"{self.model_location}/episodes/Episode {self.episode_number}",
-            #              self.continuous_actions)
 
             self.buffer.reset()
             self.save_environmental_data = False
@@ -543,12 +534,10 @@ class TrainingService(BaseService):
             print('starting to log data', flush=True)
             self.save_environmental_data = True
 
-        if self.monitor_gpu:
-            print(f"GPU usage {os.system('gpustat -cp')}")
-
         self.reward_list.append(total_episode_reward)
 
     def save_configuration_files(self):
+        """Saves the configuration files for the current scaffold point to the model directory."""
         with open(f"{self.model_location}/learning_configuration.json", 'w') as f:
             json.dump(self.learning_params, f, indent=4)
         with open(f"{self.model_location}/environment_configuration.json", 'w') as f:

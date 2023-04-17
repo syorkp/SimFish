@@ -38,16 +38,6 @@ class TrialManager:
 
         self.parallel_jobs = parallel_jobs
 
-    def create_configuration_files(self):
-        """
-        For each of the trials specified, creates the required environment and learning configuration JSON files by
-        running the existing create_configuration_[].py files.
-        :return:
-        """
-        for trial in self.priority_ordered_trials:
-            configuration_creator_file = f"Configurations/create_configuration_{trial['Environment Name']}.py"
-            os.system(configuration_creator_file)
-
     def create_output_directories(self):
         """
         If there are not already existing output directories for the trials, creates them.
@@ -91,21 +81,6 @@ class TrialManager:
         return False
 
     @staticmethod
-    def load_configuration_files(environment_name):
-        """
-        Called by create_trials method, should return the learning and environment configurations in JSON format.
-        :param environment_name:
-        :return:
-        """
-        print("Loading configuration...")
-        configuration_location = f"./Configurations/Assay-Configs/{environment_name}"
-        with open(f"{configuration_location}_learning.json", 'r') as f:
-            params = json.load(f)
-        with open(f"{configuration_location}_env.json", 'r') as f:
-            env = json.load(f)
-        return params, env
-
-    @staticmethod
     def get_saved_parameters(trial):
         """
         Extracts the saved parameters in teh saved_parameters.json document.
@@ -134,6 +109,7 @@ class TrialManager:
         return epsilon, total_steps, episode_number, configuration_index
 
     def get_new_job(self, trial, total_steps, episode_number, memory_fraction, epsilon, configuration_index):
+        # TODO: Fix conditional hell
         # Setting optional variables
         if "Continuous Actions" in trial:
             continuous_actions = trial["Continuous Actions"]
@@ -143,11 +119,13 @@ class TrialManager:
             else:
                 continuous_actions = False
 
+        new_job = None
+
         if trial["Run Mode"] == "Training":
             if continuous_actions:
                 if trial["Learning Algorithm"] == "PPO":
                     new_job = multiprocessing.Process(target=ppo_training_continuous.ppo_training_target_continuous_sbe,
-                                                          args=(trial, epsilon, total_steps, episode_number, memory_fraction, configuration_index))
+                                                      args=(trial, epsilon, total_steps, episode_number, memory_fraction, configuration_index))
 
                 elif trial["Learning Algorithm"] == "DQN":
                     print('Cannot use DQN with continuous actions (training mode)')
@@ -207,8 +185,8 @@ class TrialManager:
 
             else:
                 if trial["Learning Algorithm"] == "PPO":
-                    new_job = multiprocessing.Process(target=ppo_assay_discrete.ppo_assay_target_discrete, args=(
-                        trial, total_steps, episode_number, memory_fraction))
+                    print('Invalid "Learning Algorithm" selected with discrete actions (assay mode)')
+
                 elif trial["Learning Algorithm"] == "DQN":
                     new_job = multiprocessing.Process(target=dqn_assay_service.assay_target, args=(
                         trial, total_steps, episode_number, memory_fraction))
@@ -230,8 +208,8 @@ class TrialManager:
 
             else:
                 if trial["Learning Algorithm"] == "PPO":
-                    new_job = multiprocessing.Process(target=ppo_assay_discrete.ppo_assay_target_discrete, args=(
-                        trial, total_steps, episode_number, memory_fraction))
+                    print('Invalid "Learning Algorithm" selected with discrete actions (assay mode)')
+
                 elif trial["Learning Algorithm"] == "DQN":
                     new_job = multiprocessing.Process(target=dqn_assay_service.assay_target, args=(
                         trial, total_steps, episode_number, memory_fraction))
@@ -245,6 +223,8 @@ class TrialManager:
         return new_job
 
     def run_analysis_across_scaffold(self, index, trial, running_jobs, memory_fraction, to_delete):
+        """Gathers specified data at each point in elapsed scaffold of a model. Then run a specified set of anlaysis
+        scripts on that data."""
         complete = False
 
         # Find number of scaffold points
@@ -349,6 +329,9 @@ class TrialManager:
                 complete = False
 
     def run_split_assay_mode(self, index, trial, running_jobs, memory_fraction, to_delete):
+        """Assay mode whereby an episode is run, until a specified condition is met. From here, the episode is run
+        twice, once with a specified modification, and once as normal."""
+
         print("Running Split Assay Mode")
         # Run all assays, up to the point of the split.
         complete = False
@@ -428,7 +411,9 @@ class TrialManager:
                         print(
                             f"{trial['Model Name']} {trial['Trial Number']}, {trial['Run Mode']} Post-Split Original Complete")
 
-    def run_training(self, index, trial, running_jobs, memory_fraction, to_delete):
+    def run_training_or_assay(self, index, trial, running_jobs, memory_fraction, to_delete):
+        """Run training or assay mode."""
+
         epsilon, total_steps, episode_number, configuration = self.get_saved_parameters(trial)
         new_job = self.get_new_job(trial, total_steps, episode_number, memory_fraction, epsilon, configuration)
         if new_job is not None:
@@ -448,8 +433,7 @@ class TrialManager:
 
     def run_priority_loop(self):
         """
-        Executes the trials in the required order.
-        :return:
+        Executes the trials in parallel by required order.
         """
         memory_fraction = 0.99 / self.parallel_jobs
         running_jobs = {}
@@ -459,9 +443,13 @@ class TrialManager:
             if to_delete is not None:
                 del running_jobs[to_delete]
                 to_delete = None
+            elif trial["Run Mode"] == "Training":
+                self.run_training_or_assay(index, trial, running_jobs, memory_fraction, to_delete)
+            elif trial["Run Mode"] == "Assay":
+                self.run_training_or_assay(index, trial, running_jobs, memory_fraction, to_delete)
             elif trial["Run Mode"] == "Assay-Analysis-Across-Scaffold":
                 self.run_analysis_across_scaffold(index, trial, running_jobs, memory_fraction, to_delete)
             elif trial["Run Mode"] == "Split-Assay":
                 self.run_split_assay_mode(index, trial, running_jobs, memory_fraction, to_delete)
             else:
-                self.run_training(index, trial, running_jobs, memory_fraction, to_delete)
+                self.run_training_or_assay(index, trial, running_jobs, memory_fraction, to_delete)

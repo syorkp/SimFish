@@ -5,9 +5,7 @@ Created on Mon Oct  5 07:52:17 2020
 
 @author: asaph
 """
-import copy
-import json
-import os
+
 import numpy as np
 
 # all distances in pixels

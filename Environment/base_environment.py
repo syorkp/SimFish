@@ -1,9 +1,6 @@
 import copy
-import math
 import random
 import numpy as np
-import matplotlib.pyplot as plt
-from skimage.transform import resize, rescale
 import pymunk
 
 from Environment.Board.drawing_board import DrawingBoard
@@ -155,8 +152,12 @@ class BaseEnvironment:
         self.survived_attack = False
 
         self.switch_step = None
+        self.available_prey = self.env_variables["prey_num"]
+        self.total_predators = 0
 
     def set_collisions(self):
+        """Specifies the collisions that occur in the Pymunk simulation."""
+
         # Collision Types:
         # 1: Edge
         # 2: Prey
@@ -198,6 +199,7 @@ class BaseEnvironment:
         self.pred_prey_wall2.begin = self.no_collision
 
     def draw_walls_and_sediment(self):
+        """Draws the walls and background sediment on the drawing board, which is used for computing visual inputs."""
         self.board.erase(bkg=self.env_variables['background_brightness'])
         self.board.draw_walls()
         self.board.draw_sediment()

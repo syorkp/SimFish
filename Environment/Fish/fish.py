@@ -1,9 +1,7 @@
 import numpy as np
 import pymunk
-from skimage.transform import resize, rescale
 
 from Environment.Fish.eye import Eye
-# from Environment.Action_Space.draw_angle_dist import draw_angle_dist
 from Environment.Action_Space.draw_angle_dist import draw_angle_dist_new as draw_angle_dist
 
 

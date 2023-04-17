@@ -7,6 +7,7 @@ import h5py
 # noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
 
+from Analysis.Calibration.ActionSpace.draw_angle_dist_old import get_modal_impulse_and_angle
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Environment.controlled_stimulus_environment import ControlledStimulusEnvironment
 from Environment.controlled_stimulus_environment_continuous import ControlledStimulusEnvironmentContinuous
@@ -20,11 +21,11 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 class AssayService(BaseService):
 
-    def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
+    def __init__(self, model_name, trial_number, total_steps, episode_number, using_gpu, memory_fraction,
                  config_name, continuous_environment, assays, set_random_seed, assay_config_name, checkpoint,
                  behavioural_recordings, network_recordings, interventions, run_version, split_event, modification):
 
-        super().__init__(model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
+        super().__init__(model_name, trial_number, total_steps, episode_number, using_gpu, memory_fraction,
                          config_name, continuous_environment)
 
         # Assay configuration and save location
@@ -110,7 +111,11 @@ class AssayService(BaseService):
         self.network_recordings = network_recordings
         self.interventions = interventions
 
+        if not hasattr(self, "perform_assay"):
+            self.perform_assay = None
+
     def implement_interventions(self):
+        """Separates the different specified interventions to their own attributes."""
         if self.interventions is not None:
             if "visual_interruptions" in self.interventions.keys():
                 self.visual_interruptions = self.interventions["visual_interruptions"]
@@ -171,6 +176,7 @@ class AssayService(BaseService):
 
             if assay["save stimuli"]:
                 self.save_stimuli_data(assay)
+            self.save_episode_data(assay)
 
             self.visual_interruptions = None
             self.efference_copy_interruptions = None
@@ -178,11 +184,10 @@ class AssayService(BaseService):
             self.relocate_fish = None
 
         self.save_metadata()
-        self.save_episode_data()
 
     @staticmethod
     def expand_assays(assays):
-        """Utilitiy function to add in repeats of any assays and bring them into the standard of the program (while
+        """Utility function to add in repeats of any assays and bring them into the standard of the program (while
          allowing immediate simplifications to be made)"""
         new_assays = []
         for assay in assays:
@@ -193,6 +198,9 @@ class AssayService(BaseService):
         return new_assays
 
     def load_assay_buffer(self, assay):
+        """Loading and properly initialising the final state of the assay buffer from an exising file. Used in split
+        assay mode."""
+
         print("Loading Assay Buffer")
         # Get the assay id of the base trial (without mod)
         assay_id = assay["assay id"].replace("-Mod", "")
@@ -253,6 +261,7 @@ class AssayService(BaseService):
         return data["sediment"], energy_state
 
     def log_stimuli(self):
+        """For controlled stimulus environment mode, logs the stimuli presented during an episode"""
         stimuli = self.simulation.stimuli_information
         to_save = {}
         for stimulus in stimuli.keys():
@@ -266,7 +275,6 @@ class AssayService(BaseService):
     def create_testing_environment(self, assay):
         """
         Creates the testing environment as specified  by apparatus mode and given assays.
-        :return:
         """
 
         if assay["stimulus paradigm"] == "Projection":
@@ -326,7 +334,39 @@ class AssayService(BaseService):
                                                                   relocate_fish=self.relocate_fish,
                                                                   )
 
+    def perform_interruptions(self, o, efference_copy, internal_state):
+        if self.visual_interruptions is not None:
+            if self.visual_interruptions[self.step_number] == 1:
+                # mean values over all data  TODO: Will need updating in line with new visual system
+                o[:, 0, :] = 4
+                o[:, 1, :] = 11
+                o[:, 2, :] = 16
+        if self.efference_copy_interruptions is not None:
+            if self.efference_copy_interruptions[self.step_number] is not False:
+                action = self.efference_copy_interruptions[self.step_number]
+                i, a = get_modal_impulse_and_angle(action)
+                efference_copy = [[action, i, a]]
+        if self.preset_energy_state is not None:
+            if self.preset_energy_state[self.step_number] is not False:
+                self.simulation.fish.energy_level = self.preset_energy_state[self.step_number]
+                internal_state_order = self.get_internal_state_order()
+                index = internal_state_order.index("energy_state")
+                internal_state[0, index] = self.preset_energy_state[self.step_number]
+        if self.in_light_interruptions is not None:
+            if self.in_light_interruptions[self.step_number] == 1:
+                internal_state_order = self.get_internal_state_order()
+                index = internal_state_order.index("in_light")
+                internal_state[0, index] = self.in_light_interruptions[self.step_number]
+        if self.salt_interruptions is not None:
+            if self.salt_interruptions[self.step_number] == 1:
+                internal_state_order = self.get_internal_state_order()
+                index = internal_state_order.index("salt")
+                internal_state[0, index] = self.salt_interruptions[self.step_number]
+
+        return o, efference_copy, internal_state
+
     def ablate_units(self, ablated_layers):
+        """Sets the weights of a specified layer to a provided matrix."""
 
         for layer in ablated_layers.keys():
             if layer == "rnn_weights":
@@ -340,23 +380,27 @@ class AssayService(BaseService):
             self.sess.run(tf.assign(original_matrix, ablated_layers[layer]))
             print(f"Ablated {layer}")
 
-    def save_episode_data(self):
+    def save_episode_data(self, assay):
+        """Save a few performance indicators for an episode to a summary_data.json file."""
+
         self.episode_summary_data = {
             "Prey Caught": self.simulation.prey_caught,
             "Predators Avoided": self.simulation.predator_attacks_avoided,
             "Sand Grains Bumped": self.simulation.sand_grains_bumped,
         }
-        with open(f"{self.data_save_location}/{self.assay_configuration_id}-summary_data.json", "w") as output_file:
+        with open(f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}-summary_data.json", "w") as output_file:
             json.dump(self.episode_summary_data, output_file)
         self.episode_summary_data = None
 
     def save_stimuli_data(self, assay):
+        """Saves data about presented stimuli in controlled stimulus mode to a json file."""
         with open(f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}-stimuli_data.json",
                   "w") as output_file:
             json.dump(self.stimuli_data, output_file)
         self.stimuli_data = []
 
     def save_metadata(self):
+        """Saves metadata about a model at the time when assay data was generated."""
         metadata = {
             "Total Episodes": self.episode_number,
             "Total Steps": self.total_steps,

@@ -1,6 +1,3 @@
-import numpy as np
-import matplotlib.pyplot as plt
-
 from Environment.naturalistic_environment import NaturalisticEnvironment
 from Environment.Fish.fish import Fish
 

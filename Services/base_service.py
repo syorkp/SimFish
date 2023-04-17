@@ -13,7 +13,7 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 class BaseService:
 
-    def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
+    def __init__(self, model_name, trial_number, total_steps, episode_number, using_gpu, memory_fraction,
                  config_name, continuous_actions, monitor_performance=False):
 
         self.monitor_performance = monitor_performance
@@ -35,7 +35,6 @@ class BaseService:
 
         # Computation Parameters
         self.using_gpu = using_gpu
-        self.monitor_gpu = monitor_gpu
         self.memory_fraction = memory_fraction
 
         # Networks Parameters
@@ -81,6 +80,8 @@ class BaseService:
             self._episode_loop = None
 
     def create_session(self):
+        """Returns a tf.Session() object."""
+
         print("Creating Session..")
 
         if self.using_gpu:
@@ -97,6 +98,7 @@ class BaseService:
             return tf.Session()
 
     def load_configuration_files(self):
+        """Load configuration files."""
         with open(f"{self.current_configuration_location}_learning.json", 'r') as f:
             params = json.load(f)
         with open(f"{self.current_configuration_location}_env.json", 'r') as f:
@@ -104,6 +106,7 @@ class BaseService:
         return params, env
 
     def get_internal_state_order(self):
+        """Returns a list, indicating the order of variables in the internal state provided to the network."""
         internal_state_order = []
         if self.environment_params['in_light']:
             internal_state_order.append("in_light")
@@ -116,7 +119,7 @@ class BaseService:
         return internal_state_order
 
     def get_feature_positions(self):
-        """Should be here as is used in both training and assay services."""
+        """Returns the positions of all environmental features for logging."""
         if len(self.simulation.sand_grain_bodies) > 0:
             sand_grain_positions = [self.simulation.sand_grain_bodies[i].position for i, b in
                                     enumerate(self.simulation.sand_grain_bodies)]

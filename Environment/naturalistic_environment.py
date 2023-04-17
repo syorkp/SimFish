@@ -38,11 +38,9 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.recent_cause_of_death = None
 
         # For producing a useful PCI
-        self.available_prey = self.env_variables["prey_num"]
         self.vector_agreement = []
 
         # For producing useful PAI
-        self.total_predators = 0
         self.total_predators_survived = 0
 
         # For Reward tracking (debugging)
@@ -373,6 +371,8 @@ Sand grain: {self.sand_grain_associated_reward}
             if self.env_variables["salt_reward_penalty"] > 0:  # and salt_damage > self.env_variables["salt_recovery"]:  TODO: Trying without this for simplicity
                 reward -= self.env_variables["salt_reward_penalty"] * salt_damage
                 self.salt_associated_reward -= self.env_variables['salt_reward_penalty'] * salt_damage
+        else:
+            salt_damage = 0
 
         if self.predator_body is not None:
             self.total_predator_steps += 1

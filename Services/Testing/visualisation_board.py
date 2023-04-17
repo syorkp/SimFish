@@ -9,9 +9,8 @@ from skimage import io
 
 class VisualisationBoard:
 
-    def __init__(self, width, height, prey_size=4,
-                 predator_size=100, visible_scatter=0.3, background_grating_frequency=50, dark_light_ratio=0.0,
-                 dark_gain=0.01, light_gain=1.0, light_gradient=200, max_visual_distance=1500, show_background=True):
+    def __init__(self, width, height, prey_size=4, predator_size=100, visible_scatter=0.3,
+                 background_grating_frequency=50, light_gain=1.0, light_gradient=200, max_visual_distance=1500):
 
         self.chosen_math_library = np
 
@@ -32,9 +31,6 @@ class VisualisationBoard:
 
         # For debugging purposes
         self.mask_buffer_time_point = None
-
-        # For obstruction mask (reset each time is called).
-        self.show_background = show_background
 
     def get_background_grating(self, frequency, linear=False):
         if linear:
@@ -117,10 +113,9 @@ class VisualisationBoard:
         db[:, self.height - 2:self.height - 1] = self.chosen_math_library.array([1, 0, 0])
         self.db_visualisation = db
 
-        if self.show_background:
-            self.db_visualisation += self.chosen_math_library.concatenate((self.background_grating/10,
-                                                                           self.background_grating/10,
-                                                                           self.chosen_math_library.zeros(self.background_grating.shape)), axis=2)
+        self.db_visualisation += self.chosen_math_library.concatenate((self.background_grating/10,
+                                                                       self.background_grating/10,
+                                                                       self.chosen_math_library.zeros(self.background_grating.shape)), axis=2)
 
     def get_base_arena(self, bkg=0.0):
         if bkg == 0:

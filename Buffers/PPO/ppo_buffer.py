@@ -1,6 +1,4 @@
 import numpy as np
-import h5py
-import scipy.signal as sig
 
 from Buffers.base_buffer import BaseBuffer
 
@@ -106,6 +104,7 @@ class PPOBuffer(BaseBuffer):
         """Zero pads a trace so all are same length.
         NOTE: Fails in case of previous action which doesnt need to be padded.
         """
+        buffer = np.array(buffer)
         shape_of_data = buffer.shape[1:]
         extra_pads = desired_length - buffer.shape[0]
         padding_shape = (extra_pads,) + shape_of_data
@@ -245,9 +244,10 @@ class PPOBuffer(BaseBuffer):
                 log_action_probability_slice = self.log_action_probability_buffer[
                                                self.pointer:self.pointer + self.trace_length, :]
             except ValueError:
+                log_action_probability_slice = []
                 print(f"Pointer: {self.pointer}")
                 print(f"Trace length: {self.trace_length}")
-                print(f"Shape log action prob buffer: {self.log_action_probability_buffer.shape}")
+                print(f"Shape log action prob buffer: {np.array(self.log_action_probability_buffer).shape}")
 
             advantage_slice = self.advantage_buffer[self.pointer:self.pointer + self.trace_length]
             return_slice = self.return_buffer[self.pointer:self.pointer + self.trace_length]

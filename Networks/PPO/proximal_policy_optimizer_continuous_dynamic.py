@@ -137,8 +137,3 @@ class PPONetworkMultivariate2Dynamic(DynamicBaseNetwork):
     def bounded_output(x, lower, upper):
         scale = upper - lower
         return scale * tf.nn.sigmoid(x) + lower
-
-    @property
-    def pdtype(self):
-        """ProbabilityDistributionType: type of the distribution for stochastic actions."""
-        return self._pdtype

@@ -7,9 +7,7 @@ tf.disable_v2_behavior()
 class QNetworkReduced:
 
     def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, num_actions, internal_states=2, learning_rate=0.0001,):
-        """The network receives the observation from both eyes, processes it
-        #through convolutional layers, concatenates it with the internal state
-        #and feeds it to the RNN."""
+        """Simplified network without visual inputs."""
 
         self.num_arms = simulation.fish.left_eye.observation_size  # Rays for each eye
         self.rnn_dim = rnn_dim

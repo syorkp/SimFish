@@ -1,4 +1,3 @@
-from time import time
 import json
 
 import numpy as np
@@ -23,25 +22,10 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 
 def ppo_training_target_continuous_sbe(trial, epsilon, total_steps, episode_number, memory_fraction, configuration_index):
-    if "monitor gpu" in trial:
-        monitor_gpu = trial["monitor gpu"]
-    else:
-        monitor_gpu = False
-
     if "Using GPU" in trial:
         using_gpu = trial["Using GPU"]
     else:
         using_gpu = True
-
-    if "Continuous Actions" in trial:
-        continuous_actions = trial["Continuous Actions"]
-    else:
-        continuous_actions = True
-
-    if "Full Logs" in trial:
-        full_logs = trial["Full Logs"]
-    else:
-        full_logs = True
 
     if "Profile Speed" in trial:
         profile_speed = trial["Profile Speed"]
@@ -52,15 +36,12 @@ def ppo_training_target_continuous_sbe(trial, epsilon, total_steps, episode_numb
                                   trial_number=trial["Trial Number"],
                                   total_steps=total_steps,
                                   episode_number=episode_number,
-                                  monitor_gpu=monitor_gpu,
                                   using_gpu=using_gpu,
                                   memory_fraction=memory_fraction,
                                   config_name=trial["Environment Name"],
-                                  continuous_actions=continuous_actions,
                                   model_exists=trial["Model Exists"],
                                   epsilon=epsilon,
                                   configuration_index=configuration_index,
-                                  full_logs=full_logs,
                                   profile_speed=profile_speed,
                                   )
     print("Created service...", flush=True)
@@ -69,16 +50,18 @@ def ppo_training_target_continuous_sbe(trial, epsilon, total_steps, episode_numb
 
 class PPOTrainingService(TrainingService, ContinuousPPO):
 
-    def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, continuous_actions, model_exists, epsilon, configuration_index, full_logs, profile_speed):
-        super().__init__(model_name=model_name, trial_number=trial_number,
-                         total_steps=total_steps, episode_number=episode_number,
-                         monitor_gpu=monitor_gpu, using_gpu=using_gpu,
-                         memory_fraction=memory_fraction, config_name=config_name,
-                         continuous_actions=continuous_actions,
+    def __init__(self, model_name, trial_number, total_steps, episode_number, using_gpu, memory_fraction,
+                 config_name, model_exists, epsilon, configuration_index, profile_speed):
+        super().__init__(model_name=model_name,
+                         trial_number=trial_number,
+                         total_steps=total_steps,
+                         episode_number=episode_number,
+                         using_gpu=using_gpu,
+                         memory_fraction=memory_fraction,
+                         config_name=config_name,
+                         continuous_actions=True,
                          model_exists=model_exists,
                          configuration_index=configuration_index,
-                         full_logs=full_logs,
                          profile_speed=profile_speed
                          )
 
@@ -181,12 +164,6 @@ Mean Impulse: {np.mean([i[0] for i in self.buffer.action_buffer])}
 Mean Angle {np.mean([i[1] for i in self.buffer.action_buffer])}
 Total episode reward: {self.total_episode_reward}\n""", flush=True)
 
-    def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
-        if self.full_logs:
-            return self._step_loop_full_logs(o, internal_state, a, rnn_state, rnn_state_ref)
-        else:
-            return self._step_loop_reduced_logs(o, internal_state, a, rnn_state, rnn_state_ref)
-
     def save_episode(self, total_episode_reward, prey_caught, sand_grains_bumped):
         """
         Saves the episode the experience buffer. Also creates a gif if at interval.
@@ -201,6 +178,8 @@ Total episode reward: {self.total_episode_reward}\n""", flush=True)
             json.dump(output_data, file)
 
     def _save_episode_continuous_variables(self):
+        """Adds variables unique to PPO to tensorflow logs."""
+
         impulses = np.array(self.buffer.action_buffer)[:, 0]
         mean_impulse = np.mean(impulses)
         max_impulse = np.max(impulses)
@@ -252,87 +231,84 @@ Total episode reward: {self.total_episode_reward}\n""", flush=True)
         angle_action_diversity = tf.Summary(value=[tf.Summary.Value(tag="Angle Choice Diversity", simple_value=angle_choice_range_prop)])
         self.writer.add_summary(angle_action_diversity, self.episode_number)
 
-        if self.full_logs:
-            # Save Loss
+        if len(self.buffer.critic_loss_buffer) > 0:
+            mean_critic_loss = np.mean(self.buffer.critic_loss_buffer)
+            max_critic_loss = np.max(self.buffer.critic_loss_buffer)
+            min_critic_loss = np.min(self.buffer.critic_loss_buffer)
+            critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean critic_loss", simple_value=mean_critic_loss)])
+            self.writer.add_summary(critic_loss_summary, self.episode_number)
+            critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max critic_loss", simple_value=max_critic_loss)])
+            self.writer.add_summary(critic_loss_summary, self.episode_number)
+            critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min critic_loss", simple_value=min_critic_loss)])
+            self.writer.add_summary(critic_loss_summary, self.episode_number)
 
-            if len(self.buffer.critic_loss_buffer) > 0:
-                mean_critic_loss = np.mean(self.buffer.critic_loss_buffer)
-                max_critic_loss = np.max(self.buffer.critic_loss_buffer)
-                min_critic_loss = np.min(self.buffer.critic_loss_buffer)
-                critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean critic_loss", simple_value=mean_critic_loss)])
-                self.writer.add_summary(critic_loss_summary, self.episode_number)
-                critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max critic_loss", simple_value=max_critic_loss)])
-                self.writer.add_summary(critic_loss_summary, self.episode_number)
-                critic_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min critic_loss", simple_value=min_critic_loss)])
-                self.writer.add_summary(critic_loss_summary, self.episode_number)
+            mean_impulse_loss = np.mean(self.buffer.impulse_loss_buffer)
+            max_impulse_loss = np.max(self.buffer.impulse_loss_buffer)
+            min_impulse_loss = np.min(self.buffer.impulse_loss_buffer)
+            impulse_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean impulse_loss", simple_value=mean_impulse_loss)])
+            self.writer.add_summary(impulse_loss_summary, self.episode_number)
+            impulse_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max impulse_loss", simple_value=max_impulse_loss)])
+            self.writer.add_summary(impulse_loss_summary, self.episode_number)
+            impulse_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min impulse_loss", simple_value=min_impulse_loss)])
+            self.writer.add_summary(impulse_loss_summary, self.episode_number)
 
-                mean_impulse_loss = np.mean(self.buffer.impulse_loss_buffer)
-                max_impulse_loss = np.max(self.buffer.impulse_loss_buffer)
-                min_impulse_loss = np.min(self.buffer.impulse_loss_buffer)
-                impulse_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean impulse_loss", simple_value=mean_impulse_loss)])
-                self.writer.add_summary(impulse_loss_summary, self.episode_number)
-                impulse_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max impulse_loss", simple_value=max_impulse_loss)])
-                self.writer.add_summary(impulse_loss_summary, self.episode_number)
-                impulse_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min impulse_loss", simple_value=min_impulse_loss)])
-                self.writer.add_summary(impulse_loss_summary, self.episode_number)
+            mean_angle_loss = np.mean(self.buffer.angle_loss_buffer)
+            max_angle_loss = np.max(self.buffer.angle_loss_buffer)
+            min_angle_loss = np.min(self.buffer.angle_loss_buffer)
+            angle_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean angle_loss", simple_value=mean_angle_loss)])
+            self.writer.add_summary(angle_loss_summary, self.episode_number)
+            angle_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max angle_loss", simple_value=max_angle_loss)])
+            self.writer.add_summary(angle_loss_summary, self.episode_number)
+            angle_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min angle_loss", simple_value=min_angle_loss)])
+            self.writer.add_summary(angle_loss_summary, self.episode_number)
 
-                mean_angle_loss = np.mean(self.buffer.angle_loss_buffer)
-                max_angle_loss = np.max(self.buffer.angle_loss_buffer)
-                min_angle_loss = np.min(self.buffer.angle_loss_buffer)
-                angle_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean angle_loss", simple_value=mean_angle_loss)])
-                self.writer.add_summary(angle_loss_summary, self.episode_number)
-                angle_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max angle_loss", simple_value=max_angle_loss)])
-                self.writer.add_summary(angle_loss_summary, self.episode_number)
-                angle_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min angle_loss", simple_value=min_angle_loss)])
-                self.writer.add_summary(angle_loss_summary, self.episode_number)
+            mean_entropy_loss = np.mean(self.buffer.entropy_loss_buffer)
+            max_entropy_loss = np.max(self.buffer.entropy_loss_buffer)
+            min_entropy_loss = np.min(self.buffer.entropy_loss_buffer)
+            entropy_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean entropy_loss", simple_value=mean_entropy_loss)])
+            self.writer.add_summary(entropy_loss_summary, self.episode_number)
+            entropy_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max entropy_loss", simple_value=max_entropy_loss)])
+            self.writer.add_summary(entropy_loss_summary, self.episode_number)
+            entropy_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min entropy_loss", simple_value=min_entropy_loss)])
+            self.writer.add_summary(entropy_loss_summary, self.episode_number)
 
-                mean_entropy_loss = np.mean(self.buffer.entropy_loss_buffer)
-                max_entropy_loss = np.max(self.buffer.entropy_loss_buffer)
-                min_entropy_loss = np.min(self.buffer.entropy_loss_buffer)
-                entropy_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="mean entropy_loss", simple_value=mean_entropy_loss)])
-                self.writer.add_summary(entropy_loss_summary, self.episode_number)
-                entropy_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="max entropy_loss", simple_value=max_entropy_loss)])
-                self.writer.add_summary(entropy_loss_summary, self.episode_number)
-                entropy_loss_summary = tf.Summary(value=[tf.Summary.Value(tag="min entropy_loss", simple_value=min_entropy_loss)])
-                self.writer.add_summary(entropy_loss_summary, self.episode_number)
+        # Saving Parameters for Testing
+        mean_mu_i = np.mean(self.buffer.mu_i_buffer)
+        max_mu_i = np.max(self.buffer.mu_i_buffer)
+        min_mu_i = np.min(self.buffer.mu_i_buffer)
+        mu_i = tf.Summary(value=[tf.Summary.Value(tag="mean mu_i", simple_value=mean_mu_i)])
+        self.writer.add_summary(mu_i, self.episode_number)
+        mu_i = tf.Summary(value=[tf.Summary.Value(tag="max mu_i", simple_value=max_mu_i)])
+        self.writer.add_summary(mu_i, self.episode_number)
+        mu_i = tf.Summary(value=[tf.Summary.Value(tag="min mu_i", simple_value=min_mu_i)])
+        self.writer.add_summary(mu_i, self.episode_number)
 
-            # Saving Parameters for Testing
-            mean_mu_i = np.mean(self.buffer.mu_i_buffer)
-            max_mu_i = np.max(self.buffer.mu_i_buffer)
-            min_mu_i = np.min(self.buffer.mu_i_buffer)
-            mu_i = tf.Summary(value=[tf.Summary.Value(tag="mean mu_i", simple_value=mean_mu_i)])
-            self.writer.add_summary(mu_i, self.episode_number)
-            mu_i = tf.Summary(value=[tf.Summary.Value(tag="max mu_i", simple_value=max_mu_i)])
-            self.writer.add_summary(mu_i, self.episode_number)
-            mu_i = tf.Summary(value=[tf.Summary.Value(tag="min mu_i", simple_value=min_mu_i)])
-            self.writer.add_summary(mu_i, self.episode_number)
+        mean_si_i = np.mean(self.buffer.si_i_buffer)
+        max_si_i = np.max(self.buffer.si_i_buffer)
+        min_si_i = np.min(self.buffer.si_i_buffer)
+        si_i = tf.Summary(value=[tf.Summary.Value(tag="mean si_i", simple_value=mean_si_i)])
+        self.writer.add_summary(si_i, self.episode_number)
+        si_i = tf.Summary(value=[tf.Summary.Value(tag="max si_i", simple_value=max_si_i)])
+        self.writer.add_summary(si_i, self.episode_number)
+        si_i = tf.Summary(value=[tf.Summary.Value(tag="min si_i", simple_value=min_si_i)])
+        self.writer.add_summary(si_i, self.episode_number)
 
-            mean_si_i = np.mean(self.buffer.si_i_buffer)
-            max_si_i = np.max(self.buffer.si_i_buffer)
-            min_si_i = np.min(self.buffer.si_i_buffer)
-            si_i = tf.Summary(value=[tf.Summary.Value(tag="mean si_i", simple_value=mean_si_i)])
-            self.writer.add_summary(si_i, self.episode_number)
-            si_i = tf.Summary(value=[tf.Summary.Value(tag="max si_i", simple_value=max_si_i)])
-            self.writer.add_summary(si_i, self.episode_number)
-            si_i = tf.Summary(value=[tf.Summary.Value(tag="min si_i", simple_value=min_si_i)])
-            self.writer.add_summary(si_i, self.episode_number)
+        mean_mu_a = np.mean(self.buffer.mu_a_buffer)
+        max_mu_a = np.max(self.buffer.mu_a_buffer)
+        min_mu_a = np.min(self.buffer.mu_a_buffer)
+        mu_a = tf.Summary(value=[tf.Summary.Value(tag="mean mu_a", simple_value=mean_mu_a)])
+        self.writer.add_summary(mu_a, self.episode_number)
+        mu_a = tf.Summary(value=[tf.Summary.Value(tag="max mu_a", simple_value=max_mu_a)])
+        self.writer.add_summary(mu_a, self.episode_number)
+        mu_a = tf.Summary(value=[tf.Summary.Value(tag="min mu_a", simple_value=min_mu_a)])
+        self.writer.add_summary(mu_a, self.episode_number)
 
-            mean_mu_a = np.mean(self.buffer.mu_a_buffer)
-            max_mu_a = np.max(self.buffer.mu_a_buffer)
-            min_mu_a = np.min(self.buffer.mu_a_buffer)
-            mu_a = tf.Summary(value=[tf.Summary.Value(tag="mean mu_a", simple_value=mean_mu_a)])
-            self.writer.add_summary(mu_a, self.episode_number)
-            mu_a = tf.Summary(value=[tf.Summary.Value(tag="max mu_a", simple_value=max_mu_a)])
-            self.writer.add_summary(mu_a, self.episode_number)
-            mu_a = tf.Summary(value=[tf.Summary.Value(tag="min mu_a", simple_value=min_mu_a)])
-            self.writer.add_summary(mu_a, self.episode_number)
-
-            mean_si_a = np.mean(self.buffer.si_a_buffer)
-            max_si_a = np.max(self.buffer.si_a_buffer)
-            min_si_a = np.min(self.buffer.si_a_buffer)
-            si_a = tf.Summary(value=[tf.Summary.Value(tag="mean si_a", simple_value=mean_si_a)])
-            self.writer.add_summary(si_a, self.episode_number)
-            si_a = tf.Summary(value=[tf.Summary.Value(tag="max si_a", simple_value=max_si_a)])
-            self.writer.add_summary(si_a, self.episode_number)
-            si_a = tf.Summary(value=[tf.Summary.Value(tag="min si_a", simple_value=min_si_a)])
-            self.writer.add_summary(si_a, self.episode_number)
+        mean_si_a = np.mean(self.buffer.si_a_buffer)
+        max_si_a = np.max(self.buffer.si_a_buffer)
+        min_si_a = np.min(self.buffer.si_a_buffer)
+        si_a = tf.Summary(value=[tf.Summary.Value(tag="mean si_a", simple_value=mean_si_a)])
+        self.writer.add_summary(si_a, self.episode_number)
+        si_a = tf.Summary(value=[tf.Summary.Value(tag="max si_a", simple_value=max_si_a)])
+        self.writer.add_summary(si_a, self.episode_number)
+        si_a = tf.Summary(value=[tf.Summary.Value(tag="min si_a", simple_value=min_si_a)])
+        self.writer.add_summary(si_a, self.episode_number)

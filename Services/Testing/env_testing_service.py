@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import copy
 from skimage.transform import resize, rescale
+import random
 
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
@@ -16,7 +17,6 @@ class EnvTestingService(BaseService):
                          trial_number=1,
                          total_steps=0,
                          episode_number=0,
-                         monitor_gpu=False,
                          using_gpu=False,
                          memory_fraction=1,
                          config_name=config_name,
@@ -220,10 +220,7 @@ class EnvTestingService(BaseService):
             rrs, ccs = self.visualisation_board.multi_circles(px, py, prey_size)
 
             try:
-                if visualisation:
-                    self.visualisation_board.db_visualisation[rrs, ccs] = self.simulation.sand_grain_shapes[0].color
-                else:
-                    self.visualisation_board.db[rrs, ccs] = self.simulation.sand_grain_shapes[0].color
+                self.visualisation_board.db[rrs, ccs] = self.simulation.sand_grain_shapes[0].color
             except IndexError:
                 print(f"Index Error for: RRS: {max(rrs.flatten())}, CCS: {max(ccs.flatten())}")
                 if max(rrs.flatten()) > self.environment_params['arena_width']:

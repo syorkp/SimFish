@@ -1,8 +1,5 @@
 import numpy as np
 import math
-from skimage.draw import line
-from skimage.transform import resize
-import scipy.signal as signal
 import matplotlib.pyplot as plt
 
 

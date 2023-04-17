@@ -8,7 +8,6 @@ from matplotlib.animation import FFMpegWriter
 # noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
 
-from Networks.DQN.q_network_dynamic import QNetworkDynamic
 from Networks.DQN.graph_functions import update_target
 from Networks.DQN.q_network import QNetwork
 from Networks.DQN.q_network_reduced import QNetworkReduced
@@ -81,10 +80,14 @@ class BaseDQN:
         self.maintain_state = True
 
     def init_states(self):
+        """Log what RNN states should be at the start of an episode - if they are saved, load them. If not, initialise
+        them as zeros."""
+
         # Init states for RNN
-        print("Loading RNN states")
 
         if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
+            print("Loading RNN states")
+
             with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
                 print("Successfully loaded previous state.")
                 data = json.load(f)
@@ -280,6 +283,7 @@ class BaseDQN:
                          self.main_QN.exp_keep: 1.0,
                          self.main_QN.Temp: self.epsilon,
                          }
+
         q_out, q_dist, updated_rnn_state, updated_rnn_state_ref, val, adv, val_ref, adv_ref = self.sess.run(
             [self.main_QN.Q_out, self.main_QN.Q_dist, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
              self.main_QN.Value, self.main_QN.Advantage,
@@ -299,11 +303,11 @@ class BaseDQN:
                 chosen_a = np.random.randint(0, self.learning_params['num_actions'])
             else:
                 chosen_a = np.argmax(q_out + np.sqrt(2 * np.log(self.total_steps) / (self.action_usage + 1e-5)))
+        else:
+            chosen_a = [None]
 
-        # Simulation step
         o1, given_reward, internal_state, d, full_masked_image = self.simulation.simulation_step(action=chosen_a)
         self.action_usage[chosen_a] += 1
-        #####
 
         efference_copy = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
         if self.debug:
@@ -312,34 +316,10 @@ class BaseDQN:
             full_masked_image = None
 
         if self.save_environmental_data:
-            sand_grain_positions, prey_positions, predator_position = self.get_feature_positions()
-            prey_orientations = np.array([p.angle for p in self.simulation.prey_bodies]).astype(np.float32)
-            try:
-                predator_orientation = self.simulation.predator_body.angle
-            except:
-                predator_orientation = 0
-            prey_ages = np.array(self.simulation.prey_ages)
-            prey_gait = np.array(self.simulation.paramecia_gaits)
-
-            self.buffer.save_environmental_positions(chosen_a,
-                                                     self.simulation.fish.body.position,
-                                                     self.simulation.prey_consumed_this_step,
-                                                     self.simulation.predator_body,
-                                                     prey_positions,
-                                                     predator_position,
-                                                     sand_grain_positions,
-                                                     self.simulation.fish.body.angle,
-                                                     self.simulation.fish.salt_health,
-                                                     efference_copy=a,
-                                                     prey_orientation=prey_orientations,
-                                                     predator_orientation=predator_orientation,
-                                                     prey_age=prey_ages,
-                                                     prey_gait=prey_gait
-                                                     )
+            self.log_data(chosen_a, a)
+            # This buffer is only used for data logging, not training.
             efference_copy = [chosen_a, self.simulation.fish.prev_action_impulse,
                               self.simulation.fish.prev_action_angle]
-
-            # Update buffer
             self.buffer.add_training(observation=o1,
                                      internal_state=internal_state,
                                      action=efference_copy,
@@ -351,11 +331,44 @@ class BaseDQN:
                                      value_ref=val_ref,
                                      advantage_ref=adv_ref
                                      )
+
         self.total_steps += 1
         return o, efference_copy, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, \
                full_masked_image
 
+    def log_data(self, chosen_a, a):
+        """Log data from an episode."""
+        # TODO: Generalise, and use for PPO as well as assay modes too.
+
+        sand_grain_positions, prey_positions, predator_position = self.get_feature_positions()
+        prey_orientations = np.array([p.angle for p in self.simulation.prey_bodies]).astype(np.float32)
+
+        try:
+            predator_orientation = self.simulation.predator_body.angle
+        except:
+            predator_orientation = 0
+
+        prey_ages = np.array(self.simulation.prey_ages)
+        prey_gait = np.array(self.simulation.paramecia_gaits)
+
+        self.buffer.save_environmental_positions(chosen_a,
+                                                 self.simulation.fish.body.position,
+                                                 self.simulation.prey_consumed_this_step,
+                                                 self.simulation.predator_body,
+                                                 prey_positions,
+                                                 predator_position,
+                                                 sand_grain_positions,
+                                                 self.simulation.fish.body.angle,
+                                                 self.simulation.fish.salt_health,
+                                                 efference_copy=a,
+                                                 prey_orientation=prey_orientations,
+                                                 predator_orientation=predator_orientation,
+                                                 prey_age=prey_ages,
+                                                 prey_gait=prey_gait
+                                                 )
+
     def assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
+        """Run an assay step loop."""
         chosen_a, updated_rnn_state, updated_rnn_state_ref, value, advantage, value_ref, advantage_ref = \
             self.sess.run(
                 [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref, self.main_QN.Value,

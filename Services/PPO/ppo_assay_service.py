@@ -14,25 +14,10 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 
 def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fraction):
-    if "monitor gpu" in trial:
-        monitor_gpu = trial["monitor gpu"]
-    else:
-        monitor_gpu = False
-
     if "Using GPU" in trial:
         using_gpu = trial["Using GPU"]
     else:
         using_gpu = True
-
-    if "Continuous Actions" in trial:
-        continuous_actions = trial["Continuous Actions"]
-    else:
-        continuous_actions = True
-
-    if "SB Emulator" in trial:
-        sb_emulator = trial["SB Emulator"]
-    else:
-        sb_emulator = True
 
     if "Checkpoint" in trial:
         checkpoint = trial["Checkpoint"]
@@ -76,15 +61,12 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
                                         trial_number=trial["Trial Number"],
                                         total_steps=total_steps,
                                         episode_number=episode_number,
-                                        monitor_gpu=monitor_gpu,
                                         using_gpu=using_gpu,
                                         memory_fraction=memory_fraction,
                                         config_name=trial["Environment Name"],
-                                        continuous_environment=continuous_actions,
                                         assays=trial["Assays"],
                                         set_random_seed=set_random_seed,
                                         assay_config_name=trial["Assay Configuration Name"],
-                                        sb_emulator=sb_emulator,
                                         checkpoint=checkpoint,
                                         behavioural_recordings=behavioural_recordings,
                                         network_recordings=network_recordings,
@@ -98,8 +80,8 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
 
 class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
-    def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, continuous_environment, assays, set_random_seed, assay_config_name, sb_emulator,
+    def __init__(self, model_name, trial_number, total_steps, episode_number, using_gpu, memory_fraction,
+                 config_name, assays, set_random_seed, assay_config_name,
                  checkpoint, behavioural_recordings, network_recordings, interventions, run_version, split_event,
                  modification):
         """
@@ -110,11 +92,10 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                          trial_number=trial_number,
                          total_steps=total_steps,
                          episode_number=episode_number,
-                         monitor_gpu=monitor_gpu,
                          using_gpu=using_gpu,
                          memory_fraction=memory_fraction,
                          config_name=config_name,
-                         continuous_environment=continuous_environment,
+                         continuous_environment=True,
                          assays=assays,
                          set_random_seed=set_random_seed,
                          assay_config_name=assay_config_name,
@@ -137,7 +118,6 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                                 )
 
         self.ppo_version = ContinuousPPO
-        self.sb_emulator = sb_emulator
         self.epsilon = self.learning_params["startE"] / 2
         self.epsilon_greedy = self.learning_params["epsilon_greedy"]
         self.last_position_dim = self.environment_params["prey_num"]
@@ -150,6 +130,8 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
             AssayService._run(self)
 
     def perform_assay(self, assay, background=None, energy_state=None):
+        """Perform assay - used instead of episode loop"""
+
         self.update_sigmas()
 
         if self.rnn_input is not None:
@@ -199,42 +181,19 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
             self.buffer.reset()
             self.just_trained = False
 
-        action = a + [self.simulation.fish.prev_action_impulse,
+        efferenec_copy = a + [self.simulation.fish.prev_action_impulse,
                       self.simulation.fish.prev_action_angle]
 
         o, r, internal_state, d, full_masked_image = self.simulation.simulation_step(action=a)
 
-        self.buffer.action_buffer.append(action)  # Add to buffer for loading of previous actions
+        self.buffer.action_buffer.append(efferenec_copy)  # Add to buffer for loading of previous actions
 
         self.step_number = 0
         while self.step_number < self.current_episode_max_duration:
             if self.assay is not None:
                 # Deal with interventions
-                if self.visual_interruptions is not None:
-                    if self.visual_interruptions[self.step_number] == 1:
-                        # mean values over all data
-                        o[:, 0, :] = 4
-                        o[:, 1, :] = 11
-                        o[:, 2, :] = 16
-                if self.efference_copy_interruptions is not None:
-                    if self.efference_copy_interruptions[self.step_number] is not False:
-                        a = [self.efference_copy_interruptions[self.step_number]]
-                if self.preset_energy_state is not None:
-                    if self.preset_energy_state[self.step_number] is not False:
-                        self.simulation.fish.energy_level = self.preset_energy_state[self.step_number]
-                        internal_state_order = self.get_internal_state_order()
-                        index = internal_state_order.index("energy_state")
-                        internal_state[0, index] = self.preset_energy_state[self.step_number]
-                if self.in_light_interruptions is not False:
-                    if self.in_light_interruptions[self.step_number] == 1:
-                        internal_state_order = self.get_internal_state_order()
-                        index = internal_state_order.index("in_light")
-                        internal_state[0, index] = self.in_light_interruptions[self.step_number]
-                if self.salt_interruptions is not False:
-                    if self.salt_interruptions[self.step_number] == 1:
-                        internal_state_order = self.get_internal_state_order()
-                        index = internal_state_order.index("salt")
-                        internal_state[0, index] = self.salt_interruptions[self.step_number]
+                if self.interruptions:
+                    o, efference_copy, internal_state = self.perform_interruptions(o, efference_copy, internal_state)
 
                 self.previous_action = a
 

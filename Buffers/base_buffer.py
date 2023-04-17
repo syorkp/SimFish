@@ -6,6 +6,7 @@ import h5py
 class BaseBuffer:
 
     def __init__(self):
+        self.assay = False
         self.recordings = None
         self.rnn_layer_names = []
         self.unit_recordings = {}
