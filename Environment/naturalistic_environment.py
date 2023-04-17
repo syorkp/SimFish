@@ -365,11 +365,11 @@ Sand grain: {self.sand_grain_associated_reward}
             if self.fish.salt_health > 1.0:
                 self.fish.salt_health = 1.0
             if self.fish.salt_health < 0:
-                print("Fish too salty")
+                pass
                 # done = True
                 # self.recent_cause_of_death = "Salt"
 
-            if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables["salt_recovery"]:
+            if self.env_variables["salt_reward_penalty"] > 0:  # and salt_damage > self.env_variables["salt_recovery"]:  TODO: Trying without this for simplicity
                 reward -= self.env_variables["salt_reward_penalty"] * salt_damage
                 self.salt_associated_reward -= self.env_variables['salt_reward_penalty'] * salt_damage
 
@@ -415,7 +415,9 @@ Sand grain: {self.sand_grain_associated_reward}
             internal_state.append(self.fish.energy_level)
             internal_state_order.append("energy_state")
         if self.env_variables['salt']:
-            internal_state.append(salt_damage)
+            # Scale salt damage so is within same range as pixel counts going in (learning using these also failed with
+            # lower scaling)
+            internal_state.append((255 * salt_damage)/self.env_variables["max_salt_damage"])
             internal_state_order.append("salt")
         if len(internal_state) == 0:
             internal_state.append(0)
