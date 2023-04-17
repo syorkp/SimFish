@@ -473,27 +473,27 @@ if __name__ == "__main__": # may be needed to run on windows
             "Run Mode": "Training",
             "Learning Algorithm": "PPO",
         },
-        {
-            "Model Name": "ppo_proj",
-            "Environment Name": "ppo_proj",
-            "Trial Number": 2,
-            "Run Mode": "Training",
-            "Learning Algorithm": "PPO",
-        },
-        {
-            "Model Name": "ppo_proj",
-            "Environment Name": "ppo_proj",
-            "Trial Number": 3,
-            "Run Mode": "Training",
-            "Learning Algorithm": "PPO",
-        },
-        {
-            "Model Name": "ppo_proj",
-            "Environment Name": "ppo_proj",
-            "Trial Number": 4,
-            "Run Mode": "Training",
-            "Learning Algorithm": "PPO",
-        },
+        # {
+        #     "Model Name": "ppo_proj",
+        #     "Environment Name": "ppo_proj",
+        #     "Trial Number": 2,
+        #     "Run Mode": "Training",
+        #     "Learning Algorithm": "PPO",
+        # },
+        # {
+        #     "Model Name": "ppo_proj",
+        #     "Environment Name": "ppo_proj",
+        #     "Trial Number": 3,
+        #     "Run Mode": "Training",
+        #     "Learning Algorithm": "PPO",
+        # },
+        # {
+        #     "Model Name": "ppo_proj",
+        #     "Environment Name": "ppo_proj",
+        #     "Trial Number": 4,
+        #     "Run Mode": "Training",
+        #     "Learning Algorithm": "PPO",
+        # },
     ]
 
     if run_config is None:

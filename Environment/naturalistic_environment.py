@@ -251,6 +251,7 @@ Sand grain: {self.sand_grain_associated_reward}
 
     def bring_fish_in_bounds(self):
         # Resolve if fish falls out of bounds.
+        print(self.fish.body.position)
         if self.fish.body.position[0] < 4 or self.fish.body.position[1] < 4 or \
                 self.fish.body.position[0] > self.env_variables["arena_width"] - 4 or \
                 self.fish.body.position[1] > self.env_variables["arena_height"] - 4:
