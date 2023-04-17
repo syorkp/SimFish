@@ -468,7 +468,7 @@ if __name__ == "__main__": # may be needed to run on windows
     ppo_proj = [
         {
             "Model Name": "ppo_proj",
-            "Environment Name": "ppo_proj",
+            "Environment Name": "ppo_proj_test",
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "PPO",
