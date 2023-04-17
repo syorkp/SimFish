@@ -48,7 +48,6 @@ class BaseDQN:
 
         self.init_rnn_state = None  # Reset RNN hidden state
         self.init_rnn_state_ref = None
-        self.maintain_state = True
 
         # Add attributes only if don't exist yet (prevents errors thrown).
         if not hasattr(self, "get_feature_positions"):
@@ -78,15 +77,13 @@ class BaseDQN:
         if not hasattr(self, "episode_number"):
             self.episode_number = None
 
-        if not self.assay:
-            self.full_efference_copy = True
-
         self.reduced_network = True  # If running network with only salt and efference copy.
+        self.maintain_state = True
 
     def init_states(self):
         # Init states for RNN
-        print("Loading states")
-        # IF SAVE PRESENT
+        print("Loading RNN states")
+
         if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
             with open(f"{self.model_location}/rnn_state-{self.episode_number}.json", 'r') as f:
                 print("Successfully loaded previous state.")
@@ -109,50 +106,50 @@ class BaseDQN:
     def create_network(self):
         """
         Create the main and target Q networks, according to the configuration parameters.
-        :return: The main network and the target network graphs.
         """
+
         print("Creating networks...")
-        internal_states = sum(
+        num_internal_states = sum(
             [1 for x in [self.environment_params['stress'],
                          self.environment_params['energy_state'], self.environment_params['in_light'],
                          self.environment_params['salt']] if x is True])
-        internal_states = max(internal_states, 1)
+        num_internal_states = max(num_internal_states, 1)
 
-        cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
-        cell_t = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
+        cell_main = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
+        cell_target = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
 
         if self.reduced_network:
             self.main_QN = QNetworkReduced(simulation=self.simulation,
                                            rnn_dim=512,
-                                           rnn_cell=cell,
+                                           rnn_cell=cell_main,
                                            my_scope="main",
                                            num_actions=self.learning_params["num_actions"],
-                                           internal_states=internal_states,
+                                           internal_states=num_internal_states,
                                            learning_rate=self.learning_params["learning_rate"]
                                            )
             self.target_QN = QNetworkReduced(simulation=self.simulation,
                                              rnn_dim=512,
-                                             rnn_cell=cell_t,
+                                             rnn_cell=cell_target,
                                              my_scope="target",
                                              num_actions=self.learning_params["num_actions"],
-                                             internal_states=internal_states,
+                                             internal_states=num_internal_states,
                                              learning_rate=self.learning_params["learning_rate"]
                                              )
         else:
             self.main_QN = QNetwork(simulation=self.simulation,
                                     rnn_dim=512,
-                                    rnn_cell=cell,
+                                    rnn_cell=cell_main,
                                     my_scope="main",
                                     num_actions=self.learning_params["num_actions"],
-                                    internal_states=internal_states,
+                                    internal_states=num_internal_states,
                                     learning_rate=self.learning_params["learning_rate"]
                                     )
             self.target_QN = QNetwork(simulation=self.simulation,
                                       rnn_dim=512,
-                                      rnn_cell=cell_t,
+                                      rnn_cell=cell_target,
                                       my_scope="target",
                                       num_actions=self.learning_params["num_actions"],
-                                      internal_states=internal_states,
+                                      internal_states=num_internal_states,
                                       learning_rate=self.learning_params["learning_rate"]
                                       )
 
@@ -164,6 +161,7 @@ class BaseDQN:
         experience = []
         rnn_state = copy.copy(self.init_rnn_state)
         rnn_state_ref = copy.copy(self.init_rnn_state_ref)
+
         self.simulation.reset()
 
         # Take the first simulation step, with a capture action. Assigns observation, reward, internal state, done, and
@@ -176,14 +174,13 @@ class BaseDQN:
         step_number = 0  # To allow exit after maximum steps.
         a = 3  # Initialise action for episode.
 
-        if self.full_efference_copy:
-            efference_copy = [a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
-        else:
-            efference_copy = a
+        efference_copy = [a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+
         if self.debug:
             fig, ax = plt.subplots(figsize=(4, 3))
             moviewriter = FFMpegWriter(fps=15)
             moviewriter.setup(fig, 'debug.mp4', dpi=500)
+
         while step_number < self.learning_params["max_epLength"]:
             step_number += 1
             o, a, r, i_s2, o1, d, rnn_state, rnn_state_ref, full_masked_image = self.step_loop(o=o,
@@ -198,14 +195,23 @@ class BaseDQN:
                 ax.imshow(full_masked_image)
                 moviewriter.grab_frame()
                 ax.clear()
+
             all_actions.append(a[0])
-            #                                  Obs (t)  A (t+1)  R (t+1)  I_S (t) O (t+1)  D(t+1)  I_S (t+1)
-            experience.append(np.reshape(np.array([o, np.array(a), r, i_s, o1, d, i_s2]), [1, 7]))
+
+            experience.append(np.reshape(np.array([o,            # Obs (t)
+                                                   np.array(a),  # A (t+1)
+                                                   r,            # R (t+1)
+                                                   i_s,          # I_S (t)
+                                                   o1,           # O (t+1)
+                                                   d,            # D(t+1)
+                                                   i_s2]),       # I_S (t+1)
+                                         [1, 7]))
             total_episode_reward += r
+
             efference_copy = a
             i_s = i_s2
-
             o = o1
+
             if self.total_steps > self.pre_train_steps:
                 if self.epsilon > self.learning_params['endE']:
                     self.epsilon -= self.step_drop
@@ -217,7 +223,7 @@ class BaseDQN:
                     self.init_rnn_state = [rnn_state]
                     self.init_rnn_state_ref = [rnn_state_ref]
                 break
-        # Add the episode to the experience buffer
+
         if self.debug:
             moviewriter.finish()
             self.debug = False
@@ -251,9 +257,6 @@ class BaseDQN:
         d: Boolean indicating agent death.
         updated_rnn_state: The updated RNN state
         """
-        # Generate actions and corresponding steps.
-
-        #####
         exploration = 'epsilon_greedy'
 
         if self.reduced_network:

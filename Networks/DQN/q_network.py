@@ -6,8 +6,7 @@ tf.disable_v2_behavior()
 
 class QNetwork:
 
-    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, num_actions, internal_states=2, learning_rate=0.0001,
-                 full_efference_copy=True):
+    def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, num_actions, internal_states=2, learning_rate=0.0001):
         """The network receives the observation from both eyes, processes it
         #through convolutional layers, concatenates it with the internal state
         #and feeds it to the RNN."""
@@ -18,17 +17,13 @@ class QNetwork:
         self.actions = tf.placeholder(shape=[None], dtype=tf.int32, name='actions')
         self.actions_one_hot = tf.one_hot(self.actions, num_actions, dtype=tf.float32)
 
-        if full_efference_copy:
-            self.prev_actions = tf.placeholder(shape=[None, 3], dtype=tf.float32, name='prev_actions')
-            self.prev_action_consequences = self.prev_actions[:, 1:]
-            self.prev_action_impulse = self.prev_action_consequences[:, :1]
-            self.prev_action_angle = self.prev_action_consequences[:, 1:]
-            self.prev_chosen_actions = self.prev_actions[:, 0]
-            self.prev_chosen_actions = tf.cast(self.prev_chosen_actions, dtype=tf.int32)
-            self.prev_actions_one_hot = tf.one_hot(self.prev_chosen_actions, num_actions, dtype=tf.float32)
-        else:
-            self.prev_actions = tf.placeholder(shape=[None], dtype=tf.int32, name='actions')
-            self.prev_actions_one_hot = tf.one_hot(self.prev_actions, num_actions, dtype=tf.float32)
+        self.prev_actions = tf.placeholder(shape=[None, 3], dtype=tf.float32, name='prev_actions')
+        self.prev_action_consequences = self.prev_actions[:, 1:]
+        self.prev_action_impulse = self.prev_action_consequences[:, :1]
+        self.prev_action_angle = self.prev_action_consequences[:, 1:]
+        self.prev_chosen_actions = self.prev_actions[:, 0]
+        self.prev_chosen_actions = tf.cast(self.prev_chosen_actions, dtype=tf.int32)
+        self.prev_actions_one_hot = tf.one_hot(self.prev_chosen_actions, num_actions, dtype=tf.float32)
 
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
 
@@ -72,13 +67,9 @@ class QNetwork:
         self.conv4l_flat = tf.layers.flatten(self.conv4l)
         self.conv4r_flat = tf.layers.flatten(self.conv4r)
 
-        if full_efference_copy:
-            self.conv_with_states = tf.concat(
-                [self.conv4l_flat, self.conv4r_flat, self.prev_actions_one_hot, self.prev_action_impulse,
-                 self.prev_action_angle, self.internal_state], 1)
-        else:
-            self.conv_with_states = tf.concat(
-                [self.conv4l_flat, self.conv4r_flat, self.prev_actions_one_hot, self.internal_state], 1)
+        self.conv_with_states = tf.concat(
+            [self.conv4l_flat, self.conv4r_flat, self.prev_actions_one_hot, self.prev_action_impulse,
+             self.prev_action_angle, self.internal_state], 1)
 
         self.rnn_in = tf.layers.dense(self.conv_with_states, self.rnn_dim, activation=tf.nn.relu,
                                       kernel_initializer=tf.orthogonal_initializer,
@@ -140,14 +131,10 @@ class QNetwork:
                                                    self.prev_actions_one_hot[0:, :][:, 10:11],
                                                    ], axis=1)
 
-        if full_efference_copy:
-            self.prev_action_impulse_rev = self.prev_action_impulse
-            self.prev_action_angle_rev = tf.multiply(self.prev_action_angle, -1)
-            self.conv_with_states_ref = tf.concat(
-                [self.conv4l_flat_ref, self.conv4r_flat_ref, self.prev_actions_one_hot_rev, self.prev_action_impulse_rev, self.prev_action_angle_rev, self.internal_state], 1)
-        else:
-            self.conv_with_states_ref = tf.concat(
-                [self.conv4l_flat_ref, self.conv4r_flat_ref, self.prev_actions_one_hot_rev, self.internal_state_rev], 1)
+        self.prev_action_impulse_rev = self.prev_action_impulse
+        self.prev_action_angle_rev = tf.multiply(self.prev_action_angle, -1)
+        self.conv_with_states_ref = tf.concat(
+            [self.conv4l_flat_ref, self.conv4r_flat_ref, self.prev_actions_one_hot_rev, self.prev_action_impulse_rev, self.prev_action_angle_rev, self.internal_state], 1)
 
         self.rnn_in_ref = tf.layers.dense(self.conv_with_states_ref, self.rnn_dim, activation=tf.nn.relu,
                                           kernel_initializer=tf.orthogonal_initializer,

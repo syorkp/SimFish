@@ -268,10 +268,8 @@ Sand grain: {self.sand_grain_associated_reward}
         self.fish_angle_buffer.append(self.fish.body.angle)
         self.position_buffer.append(np.array(self.fish.body.position))
 
-        print(f"1 - {self.fish.body.position}")
-        print(action)
         reward = self.fish.take_action(action)
-        print(f"2 - {self.fish.body.position}")
+
         # For Reward tracking (debugging)
         self.action_associated_reward += reward
 
@@ -319,8 +317,6 @@ Sand grain: {self.sand_grain_associated_reward}
             if self.fish.touched_edge:
                 self.fish.touched_edge = False
 
-        print(f"3 - {self.fish.body.position}")
-
         if self.fish.touched_predator:
             print("Fish eaten by predator")
             reward -= self.env_variables['predator_cost']
@@ -349,7 +345,6 @@ Sand grain: {self.sand_grain_associated_reward}
                 self.transport_fish(self.relocate_fish[self.num_steps])
 
         self.bring_fish_in_bounds()
-        print(f"4 - {self.fish.body.position}")
 
         # Energy level
         if self.env_variables["energy_state"]:
@@ -423,7 +418,11 @@ Sand grain: {self.sand_grain_associated_reward}
         if self.env_variables['salt']:
             # Scale salt damage so is within same range as pixel counts going in (learning using these also failed with
             # lower scaling)
-            internal_state.append((255 * salt_damage)/self.env_variables["max_salt_damage"])
+            if self.env_variables["max_salt_damage"] > 0:
+                internal_state.append((255 * salt_damage)/self.env_variables["max_salt_damage"])
+            else:
+                internal_state.append(0.0)
+
             internal_state_order.append("salt")
         if len(internal_state) == 0:
             internal_state.append(0)

@@ -468,36 +468,36 @@ if __name__ == "__main__": # may be needed to run on windows
     ppo_proj = [
         {
             "Model Name": "ppo_proj",
-            "Environment Name": "ppo_proj_test",
+            "Environment Name": "ppo_proj",
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "PPO",
         },
-        # {
-        #     "Model Name": "ppo_proj",
-        #     "Environment Name": "ppo_proj",
-        #     "Trial Number": 2,
-        #     "Run Mode": "Training",
-        #     "Learning Algorithm": "PPO",
-        # },
-        # {
-        #     "Model Name": "ppo_proj",
-        #     "Environment Name": "ppo_proj",
-        #     "Trial Number": 3,
-        #     "Run Mode": "Training",
-        #     "Learning Algorithm": "PPO",
-        # },
-        # {
-        #     "Model Name": "ppo_proj",
-        #     "Environment Name": "ppo_proj",
-        #     "Trial Number": 4,
-        #     "Run Mode": "Training",
-        #     "Learning Algorithm": "PPO",
-        # },
+        {
+            "Model Name": "ppo_proj",
+            "Environment Name": "ppo_proj",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "PPO",
+        },
+        {
+            "Model Name": "ppo_proj",
+            "Environment Name": "ppo_proj",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "PPO",
+        },
+        {
+            "Model Name": "ppo_proj",
+            "Environment Name": "ppo_proj",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "PPO",
+        },
     ]
 
     if run_config is None:
-        run_config = ppo_proj_test
+        run_config = ppo_proj
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]
