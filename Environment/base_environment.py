@@ -482,6 +482,7 @@ class BaseEnvironment:
 
     def check_proximity_all_prey(self, sensing_distance):
         all_prey_positions = np.array([pr.position for pr in self.prey_bodies])
+
         fish_position = np.expand_dims(np.array(self.fish.body.position), 0)
         fish_prey_vectors = all_prey_positions - fish_position
 

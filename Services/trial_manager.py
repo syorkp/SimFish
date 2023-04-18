@@ -284,7 +284,7 @@ class TrialManager:
             else:
                 print("New job failed")
 
-            while len(running_jobs.keys()) > self.parallel_jobs - 1 and to_delete is None:
+            while len(running_jobs.keys()) > 0 and to_delete is None:
                 for process in running_jobs.keys():
                     if running_jobs[process].is_alive():
                         pass

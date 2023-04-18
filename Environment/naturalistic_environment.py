@@ -207,17 +207,21 @@ Sand grain: {self.sand_grain_associated_reward}
         """For the split assay mode - checks whether the specified condition is met at each step"""
 
         if self.split_event == "One-Prey-Close":
-            max_angular_deviation = np.pi / 2
-            max_distance = 1000  # 10mm
-
-            prey_near = self.check_proximity_all_prey(sensing_distance=max_distance)
-            fish_prey_incidence = self.get_fish_prey_incidence()
-            within_visual_field = np.absolute(fish_prey_incidence) < max_angular_deviation
-
-            prey_close = prey_near * within_visual_field
-            num_prey_close = np.sum(prey_close * 1)
-            if num_prey_close == 1:
+            if self.num_steps == 10:  # TODO: Remove
                 return True
+
+            if len(self.prey_bodies) > 0:
+                max_angular_deviation = np.pi / 2  # Anywhere in visual field.
+                max_distance = 100  # 10mm
+
+                prey_near = self.check_proximity_all_prey(sensing_distance=max_distance)
+                fish_prey_incidence = self.get_fish_prey_incidence()
+                within_visual_field = np.absolute(fish_prey_incidence) < max_angular_deviation
+
+                prey_close = prey_near * within_visual_field
+                num_prey_close = np.sum(prey_close * 1)
+                if num_prey_close == 1:
+                    return True
         elif self.split_event == "Empty-Surroundings":
             ...
         else:
@@ -430,6 +434,7 @@ Sand grain: {self.sand_grain_associated_reward}
 
         if self.assay_run_version == "Original":
             if self.check_condition_met():
+                print("Split condition met")
                 done = True
                 self.switch_step = self.num_steps
 

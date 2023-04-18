@@ -78,6 +78,8 @@ if __name__ == "__main__": # may be needed to run on windows
 
     #                    ASSAY
 
+    # Assay mode 1: Base
+
     dqn_empty_config_large_gamma_1 = [
         {
             "Model Name": "dqn_gamma",
@@ -280,15 +282,14 @@ if __name__ == "__main__": # may be needed to run on windows
         }
         ]
 
-
-    # Split timelines assay
+    # Assay mode 2: Split timelines assay
 
     dqn_split_assay_test = [
         {
-            "Model Name": "dqn_gamma",
-            "Environment Name": "dqn_gamma_final_mod",
+            "Model Name": "dqn_0",
+            "Environment Name": "dqn_0_1",
             "Assay Configuration Name": "Behavioural-Data-Free",
-            "Trial Number": 3,
+            "Trial Number": 1,
             "Run Mode": "Split-Assay",
             "Split Event": "One-Prey-Close",
             "Modification": "Nearby-Prey-Removal",
@@ -301,7 +302,7 @@ if __name__ == "__main__": # may be needed to run on windows
                     "assay id": "Naturalistic",
                     "stimulus paradigm": "Naturalistic",
                     "repeats": 1,
-                    "duration": 2000,
+                    "duration": 20,
                     "Tethered": False,
                     "save frames": False,
                     "use_mu": True,
@@ -348,16 +349,17 @@ if __name__ == "__main__": # may be needed to run on windows
         }
     ]
 
-    # Assay And Analysis
+    # Assay mode 3: Assay And Analysis
 
-    dqn_gamma_analysis_across_scaffold_1 = [
+    dqn_analysis_across_scaffold_test = [
         {
-            "Model Name": "dqn_gamma",
-            "Environment Name": "dqn_gamma_free",
+            "Model Name": "dqn_0",
+            "Environment Name": "dqn_0_1",
             "Assay Configuration Name": "Behavioural-Data-Free",
             "Config Modification": "Empty",
             "Trial Number": 1,
             "Delete Data": True,
+            "Using GPU": False,
             "Run Mode": "Assay-Analysis-Across-Scaffold",
             "Learning Algorithm": "DQN",
             "behavioural recordings": ["environmental positions", "observation"],
@@ -365,9 +367,9 @@ if __name__ == "__main__": # may be needed to run on windows
             "Assays": [
                 {
                     "assay id": "Naturalistic",
-                    "repeats": 10,
+                    "repeats": 1,
                     "stimulus paradigm": "Naturalistic",
-                    "duration": 10000,
+                    "duration": 1000,
                     "Tethered": False,
                     "save frames": False,
                     "use_mu": True,
@@ -391,13 +393,14 @@ if __name__ == "__main__": # may be needed to run on windows
         }
     ]
 
-    ppo_gamma_analysis_across_scaffold_1 = [
+    ppo_analysis_across_scaffold_test = [
         {
-            "Model Name": "ppo_gamma",
-            "Environment Name": "ppo_gamma_free",
+            "Model Name": "ppo_proj",
+            "Environment Name": "ppo_proj_1",
             "Assay Configuration Name": "Behavioural-Data-Free",
             "Config Modification": "Empty",
-            "Trial Number": 3,
+            "Trial Number": 1,
+            "Using GPU": False,
             "Run Mode": "Assay-Analysis-Across-Scaffold",
             "Learning Algorithm": "PPO",
             "behavioural recordings": ["environmental positions", "observation"],
@@ -407,7 +410,7 @@ if __name__ == "__main__": # may be needed to run on windows
                     "assay id": "Naturalistic",
                     "repeats": 1,
                     "stimulus paradigm": "Naturalistic",
-                    "duration": 10000,
+                    "duration": 1000,
                     "Tethered": False,
                     "save frames": False,
                     "use_mu": True,
@@ -642,7 +645,7 @@ if __name__ == "__main__": # may be needed to run on windows
     ]
 
     if run_config is None:
-        run_config = ppo_proj
+        run_config = ppo_analysis_across_scaffold_test
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]
