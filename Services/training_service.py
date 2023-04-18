@@ -290,6 +290,11 @@ class TrainingService(BaseService):
         data = {}
         # num_rnns = len(self.init_rnn_state)
         num_rnns = 1
+
+        if len(self.init_rnn_state) > num_rnns:
+            self.init_rnn_state = [self.init_rnn_state]
+            self.init_rnn_state_ref = [self.init_rnn_state_ref]
+
         for rnn in range(num_rnns):
             data_1 = {
                 f"rnn_state_{rnn}_1": self.init_rnn_state[rnn][0].tolist(),
