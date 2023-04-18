@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def reset_salt_gradient(max_salt_damage, salt_recovery_rate, width=3000, height=3000):
-    salt_concentration_decay = 0.002
+def reset_salt_gradient(max_salt_damage, salt_recovery_rate, salt_concentration_decay, width=3000, height=3000):
+
 
     xp, yp = np.arange(width), np.arange(height)
 
@@ -31,4 +31,4 @@ def reset_salt_gradient(max_salt_damage, salt_recovery_rate, width=3000, height=
 
 
 if __name__ == "__main__":
-    reset_salt_gradient(max_salt_damage=0.02, salt_recovery_rate=0.005)
+    reset_salt_gradient(max_salt_damage=0.02, salt_recovery_rate=0.005, salt_concentration_decay=0.002)

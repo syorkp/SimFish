@@ -496,8 +496,9 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
 
             plot_start = max(0, step - 100)
             ax3.clear()
-            ax3.plot(energy_levels[plot_start:step], color='green', linewidth=0.5)
-            ax3.tick_params(left = False, right = False , labelleft = False ,
+            if show_energy_state:
+                ax3.plot(energy_levels[plot_start:step], color='green', linewidth=0.5)
+                ax3.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
             ax4.clear()
             ax4.plot(data['rnn_state'][plot_start:step, 0, :10], linewidth=0.5)
@@ -566,7 +567,7 @@ if __name__ == "__main__":
     # draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="A15")
     # model_name = "dqn_scaffold_14-1"
-    data = load_data("dqn_0-1", "Behavioural-Data-Free", "Naturalistic-2", training_data=False)
+    data = load_data("dqn_salt_only_reduced-3", "Episode 100", "Episode 100", training_data=True)
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-3")
@@ -589,8 +590,8 @@ if __name__ == "__main__":
     #     for key in datfl[group].keys():
     #         data[key] = np.array(datfl[group][key])
 
-    draw_episode(data, env_variables, 'dqn_0_1_2', continuous_actions=False, show_energy_state=True,
-                 trim_to_fish=True, showed_region_quad=500, include_sediment=True, scale=0.4, max_steps=300,
+    draw_episode(data, env_variables, 'salt avoidance', continuous_actions=False, show_energy_state=False,
+                 trim_to_fish=False, showed_region_quad=500, include_sediment=True, scale=0.4, max_steps=300,
                  show_salt_location=True)
 
 

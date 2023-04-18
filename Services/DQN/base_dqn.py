@@ -76,7 +76,7 @@ class BaseDQN:
         if not hasattr(self, "episode_number"):
             self.episode_number = None
 
-        self.reduced_network = True  # If running network with only salt and efference copy.
+        self.reduced_network = False  # If running network with only salt and efference copy.
         self.maintain_state = True
 
     def init_states(self):
