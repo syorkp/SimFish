@@ -369,21 +369,33 @@ class BaseDQN:
 
     def assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         """Run an assay step loop."""
+
+        if self.reduced_network:
+            feed_dict = {self.main_QN.internal_state: internal_state,
+                         self.main_QN.prev_actions: a,
+                         self.main_QN.train_length: 1,
+                         self.main_QN.rnn_state_in: rnn_state,
+                         self.main_QN.rnn_state_in_ref: rnn_state_ref,
+                         self.main_QN.batch_size: 1,
+                         self.main_QN.exp_keep: 1.0,
+                         }
+        else:
+            feed_dict = {self.main_QN.observation: o,
+                         self.main_QN.internal_state: internal_state,
+                         self.main_QN.prev_actions: a,
+                         self.main_QN.train_length: 1,
+                         self.main_QN.rnn_state_in: rnn_state,
+                         self.main_QN.rnn_state_in_ref: rnn_state_ref,
+                         self.main_QN.batch_size: 1,
+                         self.main_QN.exp_keep: 1.0,
+                         }
+
         chosen_a, updated_rnn_state, updated_rnn_state_ref, value, advantage, value_ref, advantage_ref = \
             self.sess.run(
                 [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref, self.main_QN.Value,
                  self.main_QN.Advantage,
                  self.main_QN.Value_ref, self.main_QN.Advantage_ref],
-                feed_dict={self.main_QN.observation: o,
-                           self.main_QN.internal_state: internal_state,
-                           self.main_QN.prev_actions: a,
-                           self.main_QN.train_length: 1,
-                           self.main_QN.rnn_state_in: rnn_state,
-                           self.main_QN.rnn_state_in_ref: rnn_state_ref,
-
-                           self.main_QN.batch_size: 1,
-                           self.main_QN.exp_keep: 1.0,
-                           })
+            feed_dict=feed_dict)
 
         chosen_a = chosen_a[0]
         o1, given_reward, internal_state1, d, full_masked_image = self.simulation.simulation_step(action=chosen_a)
