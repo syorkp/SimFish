@@ -431,7 +431,7 @@ Sand grain: {self.sand_grain_associated_reward}
 
         if self.assay_run_version == "Original":
             if self.check_condition_met():
-                print("Split condition met")
+                print(f"Split condition met at step: {self.num_steps}")
                 done = True
                 self.switch_step = self.num_steps
 
