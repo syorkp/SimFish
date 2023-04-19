@@ -554,7 +554,10 @@ class DrawingBoard:
         Returns masked pixels in form W.H.3
         With Red.UV.Red2
         """
-        A = self.chosen_math_library.array(self.local_db)
+        try:
+            A = self.chosen_math_library.array(self.local_db)
+        except ValueError:
+            print(self.local_db)
 
         # apply FOV portion of luminance mask
         local_luminance_mask = self.chosen_math_library.zeros(self.local_db.shape)
