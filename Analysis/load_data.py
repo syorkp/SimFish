@@ -43,7 +43,11 @@ if __name__ == "__main__":
     # min_distance = np.min(fish_prey_distances, axis=1)
     # max_uv = np.max(d["observation"][:, :, 1, :], axis=(1, 2))
     # comb = np.concatenate((np.expand_dims(min_distance, 1), np.expand_dims(max_uv, 1)), axis=1)
-    d = load_data("dqn_0-1", "Behavioural-Data-Free", f"Naturalistic-1")
+    d = load_data("dqn_salt_only_reduced-1", "Behavioural-Data-Free", f"Naturalistic-3")
+
+    plt.plot(d["reward"])
+    plt.show()
+
     d = load_data("dqn_salt_only_reduced-1", "Episode 900", f"Episode 900", training_data=True)
     print(f"1-{np.sum(d['action'] == 1)}")
     print(f"2-{np.sum(d['action'] == 2)}")

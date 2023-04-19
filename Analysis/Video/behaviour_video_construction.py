@@ -567,7 +567,7 @@ if __name__ == "__main__":
     # draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="A15")
     # model_name = "dqn_scaffold_14-1"
-    data = load_data("dqn_salt_only_reduced-3", "Episode 100", "Episode 100", training_data=True)
+    data = load_data("dqn_salt_only_reduced-1", "Behavioural-Data-Free", "Naturalistic-1", training_data=False)
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-3")

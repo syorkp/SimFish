@@ -4,7 +4,7 @@ import numpy as np
 from Analysis.load_data import load_data
 
 
-def compare_action_usage_over_time(data, bins=5):
+def compare_action_usage_over_salt_concentration(data, bins=5):
     bin_groups = np.linspace(0, len(data["action"]), bins+1, endpoint=True).astype(int)
     action_counts = np.zeros((12, bins))
     actions_present = np.array([])
@@ -36,18 +36,4 @@ def compare_action_usage_over_time(data, bins=5):
     ax.tick_params(axis="y", labelsize=20)
     # plt.legend([get_action_name(int(a)) for a in reversed(actions_present)])
     plt.show()
-
-
-def compare_action_usage_over_time_multiple_models(datas):
-    ...
-
-
-if __name__ == "__main__":
-    data = load_data("dqn_salt_only_reduced-1", "Behavioural-Data-Free", f"Naturalistic-5")
-    compare_action_usage_over_time(data, bins=4)
-
-
-
-
-
 

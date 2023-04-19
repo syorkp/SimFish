@@ -76,7 +76,7 @@ class BaseDQN:
         if not hasattr(self, "episode_number"):
             self.episode_number = None
 
-        self.reduced_network = False  # If running network with only salt and efference copy.
+        self.reduced_network = True  # If running network with only salt and efference copy.
         self.maintain_state = True
 
     def init_states(self):
@@ -122,8 +122,10 @@ class BaseDQN:
         cell_target = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
 
         if self.reduced_network:
+            cell_main = tf.nn.rnn_cell.LSTMCell(num_units=64, state_is_tuple=True)
+            cell_target = tf.nn.rnn_cell.LSTMCell(num_units=64, state_is_tuple=True)
             self.main_QN = QNetworkReduced(simulation=self.simulation,
-                                           rnn_dim=512,
+                                           rnn_dim=64,
                                            rnn_cell=cell_main,
                                            my_scope="main",
                                            num_actions=self.learning_params["num_actions"],
@@ -131,7 +133,7 @@ class BaseDQN:
                                            learning_rate=self.learning_params["learning_rate"]
                                            )
             self.target_QN = QNetworkReduced(simulation=self.simulation,
-                                             rnn_dim=512,
+                                             rnn_dim=64,
                                              rnn_cell=cell_target,
                                              my_scope="target",
                                              num_actions=self.learning_params["num_actions"],

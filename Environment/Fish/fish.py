@@ -3,6 +3,7 @@ import pymunk
 
 from Environment.Fish.eye import Eye
 from Environment.Action_Space.draw_angle_dist import draw_angle_dist_new as draw_angle_dist
+from Environment.Action_Space.draw_angle_dist import draw_angle_dist_mean as draw_angle_dist_mean
 
 
 class Fish:
@@ -94,12 +95,17 @@ class Fish:
         else:
             self.chosen_math_library = np
 
+        self.deterministic_action = True
+
     def take_action(self, action):
         reward = 0
 
         """For discrete fish, overrided by continuous fish class."""
         if action == 0:  # Slow2
-            angle_change, distance = draw_angle_dist(8)
+            if self.deterministic_action:
+                angle_change, distance = draw_angle_dist_mean(8)
+            else:
+                angle_change, distance = draw_angle_dist(8)
             self.prev_action_angle = angle_change
             self.body.angle += self.prev_action_angle
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -107,7 +113,10 @@ class Fish:
             self.head.color = (0, 1, 0)
 
         elif action == 1:  # RT right
-            angle_change, distance = draw_angle_dist(7)
+            if self.deterministic_action:
+                angle_change, distance = draw_angle_dist_mean(7)
+            else:
+                angle_change, distance = draw_angle_dist(7)
             self.prev_action_angle = angle_change
             self.body.angle += angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -115,7 +124,10 @@ class Fish:
             self.head.color = (0, 1, 0)
 
         elif action == 2:  # RT left
-            angle_change, distance = draw_angle_dist(7)
+            if self.deterministic_action:
+                angle_change, distance = draw_angle_dist_mean(7)
+            else:
+                angle_change, distance = draw_angle_dist(7)
             self.prev_action_angle = -angle_change
             self.body.angle -= angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -123,7 +135,10 @@ class Fish:
             self.head.color = (0, 1, 0)
 
         elif action == 3:  # Short capture swim
-            angle_change, distance = draw_angle_dist(0)
+            if self.deterministic_action:
+                angle_change, distance = draw_angle_dist_mean(0)
+            else:
+                angle_change, distance = draw_angle_dist(0)
             reward -= self.env_variables['capture_swim_extra_cost']
             self.prev_action_angle = angle_change
             self.body.angle += self.prev_action_angle
@@ -133,7 +148,10 @@ class Fish:
             self.making_capture = True
 
         elif action == 4:  # j turn right
-            angle_change, distance = draw_angle_dist(4)
+            if self.deterministic_action:
+                angle_change, distance = draw_angle_dist_mean(4)
+            else:
+                angle_change, distance = draw_angle_dist(4)
             self.prev_action_angle = angle_change
             self.body.angle += angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -141,7 +159,10 @@ class Fish:
             self.head.color = [1, 1, 1]
 
         elif action == 5:  # j turn left
-            angle_change, distance = draw_angle_dist(4)
+            if self.deterministic_action:
+                angle_change, distance = draw_angle_dist_mean(4)
+            else:
+                angle_change, distance = draw_angle_dist(4)
             self.prev_action_angle = -angle_change
             self.body.angle -= angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -154,7 +175,10 @@ class Fish:
             self.prev_action_angle = 0
 
         elif action == 7:  # c start right
-            angle_change, distance = draw_angle_dist(5)
+            if self.deterministic_action:
+                angle_change, distance = draw_angle_dist_mean(5)
+            else:
+                angle_change, distance = draw_angle_dist(5)
             self.prev_action_angle = angle_change
             self.body.angle += angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -162,7 +186,10 @@ class Fish:
             self.head.color = [1, 0, 0]
 
         elif action == 8:  # c start left
-            angle_change, distance = draw_angle_dist(5)
+            if self.deterministic_action:
+                angle_change, distance = draw_angle_dist_mean(5)
+            else:
+                angle_change, distance = draw_angle_dist(5)
             self.prev_action_angle = -angle_change
             self.body.angle -= angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -170,7 +197,10 @@ class Fish:
             self.head.color = [1, 0, 0]
 
         elif action == 9:  # Approach swim.
-            angle_change, distance = draw_angle_dist(10)
+            if self.deterministic_action:
+                angle_change, distance = draw_angle_dist_mean(10)
+            else:
+                angle_change, distance = draw_angle_dist(10)
             self.prev_action_angle = angle_change
             self.body.angle += self.prev_action_angle
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -178,7 +208,10 @@ class Fish:
             self.head.color = (0, 1, 0)
 
         elif action == 10:  # j turn 1 right
-            angle_change, distance = draw_angle_dist(44)
+            if self.deterministic_action:
+                angle_change, distance = draw_angle_dist_mean(44)
+            else:
+                angle_change, distance = draw_angle_dist(44)
             self.prev_action_angle = angle_change
             self.body.angle += angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
@@ -186,7 +219,10 @@ class Fish:
             self.head.color = [1, 1, 1]
 
         elif action == 11:  # j turn 2 left
-            angle_change, distance = draw_angle_dist(44)
+            if self.deterministic_action:
+                angle_change, distance = draw_angle_dist_mean(44)
+            else:
+                angle_change, distance = draw_angle_dist(44)
             self.prev_action_angle = -angle_change
             self.body.angle -= angle_change
             self.prev_action_impulse = self.calculate_impulse(distance)
