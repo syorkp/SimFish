@@ -429,6 +429,7 @@ Sand grain: {self.sand_grain_associated_reward}
             internal_state.append(0)
         internal_state = np.array([internal_state])
 
+        print(self.num_steps)
         if self.assay_run_version == "Original":
             if self.check_condition_met():
                 print(f"Split condition met at step: {self.num_steps}")
