@@ -18,7 +18,7 @@ params = {
     'batch_size': 16,  # How many experience traces to use for each training step.
     'trace_length': 64,  # How long each experience trace will be when training
     'num_episodes': 100000,  # How many episodes of game environment to train network with.
-    'max_epLength': 3000,  # The max allowed length of our episode.
+    'max_epLength': 300,  # The max allowed length of our episode.
     'epsilon_greedy': True,
     'startE': 0.2,  # Starting chance of random action
     'endE': 0.01,  # Final chance of random action
@@ -46,12 +46,12 @@ params = {
     'sigma_mode': "Decreasing",  # Options: Decreasing (linear reduction with reduction time), Static
 
     # Discrete Action Space
-    'num_actions': 12,  # size of action space
+    'num_actions': 3,  # size of action space
 
     # Saving and video parameters
     'time_per_step': 0.03,  # Length of each step used in gif creation
     'summaryLength': 100,  # Number of episodes to periodically save for analysis
-    'rnn_dim_shared': 512,  # number of rnn cells. Should no longer be used.
+    'rnn_dim_shared': 64,  # number of rnn cells. Should no longer be used.
 
     'reuse_eyes': True,
 

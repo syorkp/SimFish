@@ -27,7 +27,7 @@
     "num_actions": 3,
     "time_per_step": 0.03,
     "summaryLength": 100,
-    "rnn_dim_shared": 512,
+    "rnn_dim_shared": 64,
     "reuse_eyes": true,
     "network_saving_frequency_steps": 100000,
     "min_scaffold_interval": 100,
