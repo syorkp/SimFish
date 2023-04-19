@@ -207,9 +207,6 @@ Sand grain: {self.sand_grain_associated_reward}
         """For the split assay mode - checks whether the specified condition is met at each step"""
 
         if self.split_event == "One-Prey-Close":
-            if self.num_steps == 10:  # TODO: Remove
-                return True
-
             if len(self.prey_bodies) > 0:
                 max_angular_deviation = np.pi / 2  # Anywhere in visual field.
                 max_distance = 100  # 10mm
