@@ -208,7 +208,7 @@ Sand grain: {self.sand_grain_associated_reward}
 
         if self.split_event == "One-Prey-Close":
 
-            if self.num_steps == 1000:
+            if self.num_steps == 15:
                 return True
 
             if len(self.prey_bodies) > 0:
