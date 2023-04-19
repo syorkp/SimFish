@@ -294,7 +294,6 @@ if __name__ == "__main__": # may be needed to run on windows
             "Split Event": "One-Prey-Close",
             "Modification": "Nearby-Prey-Removal",
             "Learning Algorithm": "DQN",
-            "Using GPU": False,
             "behavioural recordings": ["environmental positions", "observation", "reward assessments"],
             "network recordings": ["rnn_shared", "internal_state"],
             "Assays": [
@@ -302,7 +301,7 @@ if __name__ == "__main__": # may be needed to run on windows
                     "assay id": "Naturalistic",
                     "stimulus paradigm": "Naturalistic",
                     "repeats": 1,
-                    "duration": 20,
+                    "duration": 2000,
                     "Tethered": False,
                     "save frames": False,
                     "use_mu": True,
