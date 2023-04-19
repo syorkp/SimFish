@@ -200,8 +200,8 @@ Sand grain: {self.sand_grain_associated_reward}
         self.fish.energy_level = energy_state
 
         # Get latest observation.
+        self.board.FOV.update_field_of_view(self.fish.body.position)
         self.draw_walls_and_sediment()
-
         observation, full_masked_image = self.resolve_visual_input()
         return observation
 
