@@ -284,10 +284,9 @@ class BaseBuffer:
 
         # Extra buffers (needed for perfect reloading of states)
         if self.assay:
-            print(self.prey_orientation_buffer)
+            self.prey_orientation_buffer = np.array(self.pad_buffer(self.prey_orientation_buffer))
             try:
-                self.create_data_group("prey_orientations", self.pad_buffer(np.array(self.prey_orientation_buffer)),
-                                       assay_group)
+                self.create_data_group("prey_orientations", self.prey_orientation_buffer, assay_group)
             except:
                 try:
                     self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer).astype(np.float64), assay_group)
