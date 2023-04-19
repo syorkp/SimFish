@@ -286,7 +286,7 @@ class BaseBuffer:
         if self.assay:
             self.prey_orientation_buffer = np.array(self.pad_buffer(self.prey_orientation_buffer))
             print(self.prey_orientation_buffer)
-            self.create_data_group("prey_orientations", self.prey_orientation_buffer, assay_group)
+            self.create_data_group("prey_orientations", self.prey_orientation_buffer.astype(np.float64), assay_group)
 
             try:
                 self.create_data_group("predator_orientation", self.pad_buffer(np.array(self.predator_orientation_buffer)),
