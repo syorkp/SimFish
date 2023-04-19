@@ -134,10 +134,10 @@ class ContinuousPPO:
                                                           reuse_eyes=reuse_eyes,
                                                           )
         else:
-            cell = tf.nn.rnn_cell.LSTMCell(num_units=512, state_is_tuple=True)
+            cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
 
             self.network = PPONetworkActorMultivariate(simulation=self.simulation,
-                                                       rnn_dim=512,
+                                                       rnn_dim=self.learning_params['rnn_dim_shared'],
                                                        rnn_cell=cell,
                                                        my_scope='PPO',
                                                        internal_states=internal_states,
@@ -524,7 +524,7 @@ class ContinuousPPO:
             if self.use_dynamic_network:
                 rnn_state_shapes = self.network.get_rnn_state_shapes()
             else:
-                rnn_state_shapes = [512]
+                rnn_state_shapes = [self.learning_params['rnn_dim_shared']]
             self.init_rnn_state = tuple(
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
             self.init_rnn_state_ref = tuple(
