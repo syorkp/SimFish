@@ -207,6 +207,10 @@ Sand grain: {self.sand_grain_associated_reward}
         """For the split assay mode - checks whether the specified condition is met at each step"""
 
         if self.split_event == "One-Prey-Close":
+
+            if self.num_steps == 1000:
+                return True
+
             if len(self.prey_bodies) > 0:
                 max_angular_deviation = np.pi / 2  # Anywhere in visual field.
                 max_distance = 100  # 10mm
@@ -429,7 +433,7 @@ Sand grain: {self.sand_grain_associated_reward}
             internal_state.append(0)
         internal_state = np.array([internal_state])
 
-        print(self.num_steps)
+
         if self.assay_run_version == "Original":
             if self.check_condition_met():
                 print(f"Split condition met at step: {self.num_steps}")
