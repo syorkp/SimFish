@@ -54,3 +54,4 @@ def compare_action_frequency_light_dark(model_name, assay_config, assay_id, n):
 
 if __name__ == "__main__":
     compare_action_frequency_light_dark("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 100)
+

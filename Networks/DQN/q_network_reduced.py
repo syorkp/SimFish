@@ -110,8 +110,10 @@ class QNetworkReduced:
 
         #                ------------ Integrating Normal and Reflected ------------                   #
 
-        self.Value_final = tf.divide(tf.add(self.Value, self.Value_ref), 2)
-        self.Advantage_final = tf.divide(tf.add(self.Advantage, self.Advantage_ref), 2)
+        # self.Value_final = tf.divide(tf.add(self.Value, self.Value_ref), 2)
+        # self.Advantage_final = tf.divide(tf.add(self.Advantage, self.Advantage_ref), 2)
+        self.Value_final = self.Value
+        self.Advantage_final = self.Advantage
 
         # Then combine them together to get our final Q-values.
         self.Q_out = self.Value_final + tf.subtract(self.Advantage_final,
