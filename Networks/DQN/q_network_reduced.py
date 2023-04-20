@@ -21,7 +21,7 @@ class QNetworkReduced:
         self.prev_action_angle = self.prev_action_consequences[:, 1:]
         self.prev_chosen_actions = self.prev_actions[:, 0]
         self.prev_chosen_actions = tf.cast(self.prev_chosen_actions, dtype=tf.int32)
-        self.prev_actions_one_hot = tf.one_hot(self.prev_chosen_actions, num_actions, dtype=tf.float32) * 255.
+        self.prev_actions_one_hot = tf.one_hot(self.prev_chosen_actions, num_actions, dtype=tf.float32) # * 255.
 
         self.internal_state = tf.placeholder(shape=[None, internal_states], dtype=tf.float32, name='internal_state')
 

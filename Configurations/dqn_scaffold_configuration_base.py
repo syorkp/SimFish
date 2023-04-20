@@ -18,7 +18,7 @@ params = {
     'batch_size': 16,  # How many experience traces to use for each training step.
     'trace_length': 64,  # How long each experience trace will be when training
     'num_episodes': 100000,  # How many episodes of game environment to train network with.
-    'max_epLength': 300,  # The max allowed length of our episode.
+    'max_epLength': 3000,  # The max allowed length of our episode.
     'epsilon_greedy': True,
     'startE': 0.2,  # Starting chance of random action
     'endE': 0.01,  # Final chance of random action
@@ -208,7 +208,7 @@ env = {
     'unit_circle_diameter': 0.7,  # Circular current options
 }
 
-scaffold_name = "dqn_salt_only_reduced"
+scaffold_name = "dqn_salt_only_reduced_2"
 
 
 # For predator scaffolding
