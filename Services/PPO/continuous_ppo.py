@@ -294,7 +294,7 @@ class ContinuousPPO:
                        self.network.sigma_impulse_combined_proto: self.impulse_sigma,
                        self.network.sigma_angle_combined_proto: self.angle_sigma,
                        self.network.rnn_state_in: rnn_state,
-                       # self.network.rnn_state_in_ref: rnn_state_ref,
+                       self.network.rnn_state_in_ref: rnn_state_ref,
                        self.network.batch_size: 1,
                        self.network.train_length: 1,
                        self.network.entropy_coefficient: self.learning_params["lambda_entropy"],
@@ -318,7 +318,7 @@ class ContinuousPPO:
                                self.network.sigma_impulse_combined_proto: self.impulse_sigma,
                                self.network.sigma_angle_combined_proto: self.angle_sigma,
                                self.network.rnn_state_in: rnn_state,
-                               # self.network.rnn_state_in_ref: rnn_state_ref,
+                               self.network.rnn_state_in_ref: rnn_state_ref,
                                self.network.batch_size: 1,
                                self.network.train_length: 1,
 
@@ -475,7 +475,7 @@ class ContinuousPPO:
                                self.network.prev_actions: previous_action_batch,
                                self.network.internal_state: internal_state_batch,
                                self.network.rnn_state_in: rnn_state_slice,
-                               # self.network.rnn_state_in_ref: rnn_state_ref_slice,
+                               self.network.rnn_state_in_ref: rnn_state_ref_slice,
 
                                self.network.sigma_impulse_combined_proto: self.impulse_sigma,
                                self.network.sigma_angle_combined_proto: self.angle_sigma,
