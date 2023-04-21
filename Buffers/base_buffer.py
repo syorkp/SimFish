@@ -168,7 +168,7 @@ class BaseBuffer:
 
                 for prey in range(prey_positions_differences.shape[0]):
                     differences_to_large_array = prey_positions_differences[prey]
-                    differences_to_large_array[:max([min_index, forbidden_index])] *= 1000
+                    differences_to_large_array[:max([min_index, forbidden_index])] *= 10000
                     order_of_size = np.argsort(differences_to_large_array)
                     forbidden_index = order_of_size[0]
                     if forbidden_index >= total_prey_existing - 1:
@@ -178,9 +178,9 @@ class BaseBuffer:
 
         # Remove columns with only [1000., 1000] or [10000, 10000] (or just both).
         just_1000 = np.sum(
-            (overly_large_position_array[:, :] == 1000.), axis=0)
-        just_10000 = np.sum(
             (overly_large_position_array[:, :] == 10000.), axis=0)
+        just_10000 = np.sum(
+            (overly_large_position_array[:, :] == 100000.), axis=0)
 
         whole_just_1000 = (just_1000 == num_steps) * 1
         whole_just_10000 = (just_10000 == num_steps) * 1
@@ -189,9 +189,9 @@ class BaseBuffer:
         to_delete = whole_just_1000 + whole_just_10000 + only_both
         to_delete = [i for i, d in enumerate(to_delete) if d > 0]
 
-        overly_large_position_array[overly_large_position_array == 10000] = 100000
-
         new_prey_position_array = np.delete(overly_large_position_array, to_delete, axis=1)
+        new_prey_position_array[new_prey_position_array == 10000] = 100000
+
         return new_prey_position_array
 
     def fix_jagged_buffer(self, buffer):
