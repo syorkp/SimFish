@@ -348,26 +348,26 @@ class BaseBuffer:
             try:
                 self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
             except:
-                self.prey_orientation_buffer = self.fix_jagged_buffer(self.prey_orientation_buffer)
+                self.prey_orientation_buffer = self.fix_jagged_buffer_one_dim(self.prey_orientation_buffer)
                 self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
 
 
             try:
                 self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
             except:
-                self.predator_orientation_buffer = self.fix_jagged_buffer(self.predator_orientation_buffer)
+                self.predator_orientation_buffer = self.fix_jagged_buffer_one_dim(self.predator_orientation_buffer)
                 self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
 
             try:
                 self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
             except:
-                self.prey_age_buffer = self.fix_jagged_buffer(self.prey_age_buffer)
+                self.prey_age_buffer = self.fix_jagged_buffer_one_dim(self.prey_age_buffer)
                 self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
 
             try:
                 self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
             except:
-                self.prey_gait_buffer = self.fix_jagged_buffer(self.prey_gait_buffer)
+                self.prey_gait_buffer = self.fix_jagged_buffer_one_dim(self.prey_gait_buffer)
                 self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
 
 
