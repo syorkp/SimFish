@@ -135,6 +135,63 @@ class BaseBuffer:
         for l in self.unit_recordings.keys():
             self.unit_recordings[l].append(network_layers[l][0])
 
+
+    def fix_jagged_buffer_one_dim(self, buffer):
+        """Run in the event of prey reproduction to prevent dim errors."""
+        # NEW - Has an entire column for each prey that exists at any given time
+        # For each step, shift the array of positions across until aligned (should be the min difference with above
+        # values).
+        print("Fixing buffer")
+        num_steps = len(buffer)
+        num_prey_init = len(buffer[0])
+        overly_large_position_array = np.ones((num_steps, num_prey_init * 100)) * 10000
+        min_index = 0
+        total_prey_existing = num_prey_init
+
+        for i, prey_position_slice in enumerate(buffer):
+            # Ensure one of the arrays is available to accept a new prey.
+            overly_large_position_array[i:, total_prey_existing:total_prey_existing + 4] = 1000
+
+            if i == 0:
+                overly_large_position_array[i, :num_prey_init] = np.array(buffer[i])
+            else:
+                num_prey = len(buffer[i])
+                num_prey_previous = len(overly_large_position_array[i - 1])
+
+                prey_position_slice_expanded = np.repeat(np.expand_dims(prey_position_slice, 1), num_prey_previous, 1)
+                prey_position_slice_previous_expanded = np.repeat(np.expand_dims(overly_large_position_array[i - 1], 0),
+                                                                  num_prey, 0)
+
+                prey_positions_differences = prey_position_slice_expanded - prey_position_slice_previous_expanded
+
+                forbidden_index = 0
+
+                for prey in range(prey_positions_differences.shape[0]):
+                    differences_to_large_array = prey_positions_differences[prey]
+                    differences_to_large_array[:max([min_index, forbidden_index])] *= 1000
+                    order_of_size = np.argsort(differences_to_large_array)
+                    forbidden_index = order_of_size[0]
+                    if forbidden_index >= total_prey_existing - 1:
+                        total_prey_existing += 1
+                    overly_large_position_array[i, forbidden_index] = prey_position_slice[prey]
+                    forbidden_index += 1
+
+        # Remove columns with only [1000., 1000] or [10000, 10000] (or just both).
+        just_1000 = np.sum(
+            (overly_large_position_array[:, :] == 1000.), axis=0)
+        just_10000 = np.sum(
+            (overly_large_position_array[:, :] == 10000.), axis=0)
+
+        whole_just_1000 = (just_1000 == num_steps) * 1
+        whole_just_10000 = (just_10000 == num_steps) * 1
+        only_both = (just_1000 + just_10000 == num_steps) * 1
+
+        to_delete = whole_just_1000 + whole_just_10000 + only_both
+        to_delete = [i for i, d in enumerate(to_delete) if d > 0]
+
+        new_prey_position_array = np.delete(overly_large_position_array, to_delete, axis=1)
+        return new_prey_position_array
+
     def fix_jagged_buffer(self, buffer):
         """Run in the event of prey reproduction to prevent dim errors."""
         # OLD - Creates overlapping array. Complicates analysis too much.
@@ -161,7 +218,7 @@ class BaseBuffer:
         print("Fixing buffer")
         num_steps = len(buffer)
         num_prey_init = len(buffer[0])
-        overly_large_position_array = np.ones((num_steps, num_prey_init * 100, len(buffer[0][0]))) * 10000
+        overly_large_position_array = np.ones((num_steps, num_prey_init * 100, 2)) * 10000
         min_index = 0
         total_prey_existing = num_prey_init
 
