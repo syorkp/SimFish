@@ -175,6 +175,11 @@ Sand grain: {self.sand_grain_associated_reward}
 
         self.prey_ages = np.array(buffer.prey_age_buffer[-1]).astype(int)
         self.paramecia_gaits = np.array(buffer.prey_gait_buffer[-1]).astype(int)
+        print(len(self.prey_ages))
+        print(len(self.paramecia_gaits))
+        print(len(final_step_prey_positions))
+        print(len(final_step_prey_orientations))
+
 
         # Create predators in proper position and orientation.
         final_step_predator_position = buffer.predator_position_buffer[-1]
