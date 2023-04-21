@@ -210,9 +210,6 @@ Sand grain: {self.sand_grain_associated_reward}
 
         if self.split_event == "One-Prey-Close":
 
-            if self.num_steps == 100:
-                return True
-
             if len(self.prey_bodies) > 0:
                 max_angular_deviation = np.pi / 2  # Anywhere in visual field.
                 max_distance = 100  # 10mm
