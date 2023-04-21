@@ -173,8 +173,8 @@ Sand grain: {self.sand_grain_associated_reward}
             if p[0] != 10000.0:
                 self.create_prey(prey_position=p, prey_orientation=o)
 
-        self.prey_ages = buffer.prey_age_buffer[-1].astype(int)
-        self.paramecia_gaits = buffer.prey_gait_buffer[-1].astype(int)
+        self.prey_ages = np.array(buffer.prey_age_buffer[-1]).astype(int)
+        self.paramecia_gaits = np.array(buffer.prey_gait_buffer[-1]).astype(int)
 
         # Create predators in proper position and orientation.
         final_step_predator_position = buffer.predator_position_buffer[-1]
