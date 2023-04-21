@@ -285,7 +285,7 @@ if __name__ == "__main__": # may be needed to run on windows
 
     dqn_salt_zeroed_assay = [
         {
-            "Model Name": "dqn_salt_only_zeroed",
+            "Model Name": "dqn_salt_only_reduced_z",
             "Environment Name": "dqn_sor",
             "Assay Configuration Name": "Behavioural-Data-Free",
             "Trial Number": 1,
