@@ -135,7 +135,7 @@ class BaseBuffer:
         for l in self.unit_recordings.keys():
             self.unit_recordings[l].append(network_layers[l][0])
 
-    def fix_prey_position_buffer(self):
+    def fix_jagged_buffer(self, buffer):
         """Run in the event of prey reproduction to prevent dim errors."""
         # OLD - Creates overlapping array. Complicates analysis too much.
         # new_prey_buffer = []
@@ -159,20 +159,20 @@ class BaseBuffer:
         # For each step, shift the array of positions across until aligned (should be the min difference with above
         # values).
         print("Fixing buffer")
-        num_steps = len(self.prey_positions_buffer)
-        num_prey_init = len(self.prey_positions_buffer[0])
+        num_steps = len(buffer)
+        num_prey_init = len(buffer[0])
         overly_large_position_array = np.ones((num_steps, num_prey_init * 100, 2)) * 10000
         min_index = 0
         total_prey_existing = num_prey_init
 
-        for i, prey_position_slice in enumerate(self.prey_positions_buffer):
+        for i, prey_position_slice in enumerate(buffer):
             # Ensure one of the arrays is available to accept a new prey.
             overly_large_position_array[i:, total_prey_existing:total_prey_existing + 4] = 1000
 
             if i == 0:
-                overly_large_position_array[i, :num_prey_init] = np.array(self.prey_positions_buffer[i])
+                overly_large_position_array[i, :num_prey_init] = np.array(buffer[i])
             else:
-                num_prey = len(self.prey_positions_buffer[i])
+                num_prey = len(buffer[i])
                 num_prey_previous = len(overly_large_position_array[i - 1])
 
                 prey_position_slice_expanded = np.repeat(np.expand_dims(prey_position_slice, 1), num_prey_previous, 1)
@@ -210,7 +210,7 @@ class BaseBuffer:
         to_delete = [i for i, d in enumerate(to_delete) if d > 0]
 
         new_prey_position_array = np.delete(overly_large_position_array, to_delete, axis=1)
-        self.prey_positions_buffer = new_prey_position_array
+        return new_prey_position_array
 
     def _save_assay_data(self, data_save_location, assay_configuration_id, assay_id, sediment, internal_state_order,
                          salt_location):
@@ -273,7 +273,7 @@ class BaseBuffer:
         try:
             self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
         except:
-            self.fix_prey_position_buffer()
+            self.prey_positions_buffer = self.fix_jagged_buffer(self.prey_positions_buffer)
             self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
 
         self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)
@@ -287,33 +287,32 @@ class BaseBuffer:
         # Extra buffers (needed for perfect reloading of states)
         if self.assay:
             self.prey_orientation_buffer = np.array(self.pad_buffer(self.prey_orientation_buffer))
-            print(self.prey_orientation_buffer)
-            self.create_data_group("prey_orientations", self.prey_orientation_buffer.astype(np.float64), assay_group)
 
             try:
-                self.create_data_group("predator_orientation", self.pad_buffer(np.array(self.predator_orientation_buffer)),
-                                       assay_group)
+                self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
             except:
-                try:
-                    self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer).astype(np.float64), assay_group)
-                except TypeError:
-                    pass
+                self.prey_orientation_buffer = self.fix_jagged_buffer(self.prey_orientation_buffer)
+                self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
+
 
             try:
-                self.create_data_group("prey_ages", self.pad_buffer(np.array(self.prey_age_buffer)), assay_group)
+                self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
             except:
-                try:
-                    self.create_data_group("prey_ages", np.array(self.prey_age_buffer).astype(np.float64), assay_group)
-                except TypeError:
-                    pass
+                self.predator_orientation_buffer = self.fix_jagged_buffer(self.predator_orientation_buffer)
+                self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
 
             try:
-                self.create_data_group("prey_gaits", self.pad_buffer(np.array(self.prey_gait_buffer)), assay_group)
+                self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
             except:
-                try:
-                    self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer).astype(np.float64), assay_group)
-                except TypeError:
-                    pass
+                self.prey_age_buffer = self.fix_jagged_buffer(self.prey_age_buffer)
+                self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
+
+            try:
+                self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
+            except:
+                self.prey_gait_buffer = self.fix_jagged_buffer(self.prey_gait_buffer)
+                self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
+
 
         self.create_data_group("reward", np.array(self.reward_buffer), assay_group)
         self.create_data_group("advantage", np.array(self.advantage_buffer), assay_group)
