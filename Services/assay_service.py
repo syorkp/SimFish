@@ -210,8 +210,8 @@ class AssayService(BaseService):
         data = {key: np.array(g.get(key)) for key in g.keys()}
 
         try:
-            self.buffer.switch_step = data["switch_step"]
-            self.total_steps = data["switch_step"]
+            self.buffer.switch_step = data["switch_step"][0]
+            self.total_steps = data["switch_step"][0]
         except KeyError:
             print("Trial had no switch.")
             return False, False
