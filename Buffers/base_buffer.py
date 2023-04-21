@@ -161,7 +161,7 @@ class BaseBuffer:
         print("Fixing buffer")
         num_steps = len(buffer)
         num_prey_init = len(buffer[0])
-        overly_large_position_array = np.ones((num_steps, num_prey_init * 100, 2)) * 10000
+        overly_large_position_array = np.ones((num_steps, num_prey_init * 100, len(buffer[0][0]))) * 10000
         min_index = 0
         total_prey_existing = num_prey_init
 
