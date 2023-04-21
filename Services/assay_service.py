@@ -406,5 +406,6 @@ class AssayService(BaseService):
             "Total Steps": self.total_steps,
             "Assay Date": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         }
+        print(metadata)
         with open(f"{self.data_save_location}/{self.assay_configuration_id}.json", "w") as output_file:
             json.dump(metadata, output_file)
