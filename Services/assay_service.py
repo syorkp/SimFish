@@ -403,7 +403,7 @@ class AssayService(BaseService):
         """Saves metadata about a model at the time when assay data was generated."""
         metadata = {
             "Total Episodes": self.episode_number,
-            "Total Steps": self.total_steps,
+            "Total Steps": int(self.total_steps),
             "Assay Date": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         }
         print(metadata)
