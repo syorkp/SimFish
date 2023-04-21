@@ -425,11 +425,11 @@ Sand grain: {self.sand_grain_associated_reward}
         if self.env_variables['salt']:
             # Scale salt damage so is within same range as pixel counts going in (learning using these also failed with
             # lower scaling)
-            internal_state.append(0.0)
-            # if self.env_variables["max_salt_damage"] > 0:
-            #     internal_state.append((255 * salt_damage)/self.env_variables["max_salt_damage"])
-            # else:
-            #     internal_state.append(0.0)
+            # internal_state.append(0.0)
+            if self.env_variables["max_salt_damage"] > 0:
+                internal_state.append((255 * salt_damage)/self.env_variables["max_salt_damage"])
+            else:
+                internal_state.append(0.0)
 
             internal_state_order.append("salt")
         if len(internal_state) == 0:

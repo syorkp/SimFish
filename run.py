@@ -282,7 +282,6 @@ if __name__ == "__main__": # may be needed to run on windows
         }
         ]
 
-
     dqn_salt_zeroed_assay = [
         {
             "Model Name": "dqn_salt_only_reduced_z",

@@ -217,7 +217,7 @@ def plot_salt_analysis(model_name, assay_config, assay_id, n):
 
 
 if __name__ == "__main__":
-    plot_salt_analysis(f"dqn_salt_only_reduced-1", "Behavioural-Data-Free", "Naturalistic", 40)
+    plot_salt_analysis(f"dqn_salt_only_reduced_z-1", "Behavioural-Data-Free", "Naturalistic", 40)
     # plot_salt_analysis(f"dqn_salt_only_reduced-4", "Behavioural-Data-Free", "Naturalistic", 40)
     # plot_salt_analysis(f"dqn_gamma-2", "Behavioural-Data-Free", "Naturalistic", 100)
     # plot_salt_analysis(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100)
