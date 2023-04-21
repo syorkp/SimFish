@@ -46,12 +46,12 @@ params = {
     'sigma_mode': "Decreasing",  # Options: Decreasing (linear reduction with reduction time), Static
 
     # Discrete Action Space
-    'num_actions': 3,  # size of action space
+    'num_actions': 12,  # size of action space
 
     # Saving and video parameters
     'time_per_step': 0.03,  # Length of each step used in gif creation
     'summaryLength': 100,  # Number of episodes to periodically save for analysis
-    'rnn_dim_shared': 64,  # number of rnn cells. Should no longer be used.
+    'rnn_dim_shared': 512,  # number of rnn cells. Should no longer be used.
 
     'reuse_eyes': True,
 
@@ -208,7 +208,7 @@ env = {
     'unit_circle_diameter': 0.7,  # Circular current options
 }
 
-scaffold_name = "dqn_salt_only_reduced_2"
+scaffold_name = "dqn_salt_only_reduced"
 
 
 # For predator scaffolding

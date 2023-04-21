@@ -95,7 +95,7 @@ class Fish:
         else:
             self.chosen_math_library = np
 
-        self.deterministic_action = True
+        self.deterministic_action = False
 
     def take_action(self, action):
         reward = 0
