@@ -534,11 +534,9 @@ class BaseEnvironment:
 
         # Generate impulses
         impulse_types = [0, self.env_variables["slow_impulse_paramecia"], self.env_variables["fast_impulse_paramecia"]]
-        try:
-            impulses = [impulse_types[gait] for gait in self.paramecia_gaits]
-        except:
-            print(self.paramecia_gaits)
-            print(impulse_types)
+        impulses = [impulse_types[gait] for gait in self.paramecia_gaits]
+        print(self.paramecia_gaits)
+        print(impulse_types)
 
         # Do once per step.
         if micro_step == 0:
