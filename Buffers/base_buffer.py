@@ -144,13 +144,13 @@ class BaseBuffer:
         print("Fixing buffer")
         num_steps = len(buffer)
         num_prey_init = len(buffer[0])
-        overly_large_position_array = np.ones((num_steps, num_prey_init * 100)) * 10000
+        overly_large_position_array = np.ones((num_steps, num_prey_init * 100)) * 100000
         min_index = 0
         total_prey_existing = num_prey_init
 
         for i, prey_position_slice in enumerate(buffer):
             # Ensure one of the arrays is available to accept a new prey.
-            overly_large_position_array[i:, total_prey_existing:total_prey_existing + 4] = 1000
+            overly_large_position_array[i:, total_prey_existing:total_prey_existing + 4] = 10000
 
             if i == 0:
                 overly_large_position_array[i, :num_prey_init] = np.array(buffer[i])
@@ -189,8 +189,7 @@ class BaseBuffer:
         to_delete = whole_just_1000 + whole_just_10000 + only_both
         to_delete = [i for i, d in enumerate(to_delete) if d > 0]
 
-        overly_large_position_array[overly_large_position_array == 1000] = 0
-        overly_large_position_array[overly_large_position_array == 10000] = 0
+        overly_large_position_array[overly_large_position_array == 10000] = 100000
 
         new_prey_position_array = np.delete(overly_large_position_array, to_delete, axis=1)
         return new_prey_position_array
