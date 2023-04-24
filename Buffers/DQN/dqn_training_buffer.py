@@ -49,7 +49,7 @@ class DQNTrainingBuffer:
 
     def check_saved(self):
         """Returns true if a saved experience buffer exists for the model."""
-        file = Path(f"{self.output_location}/training_buffer.data")
+        file = Path(f"{self.output_location}/logs/training_buffer.data")
 #        file = Path(f"{self.output_location}/training_buffer.h5")
         if file.is_file():
             return True
