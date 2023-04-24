@@ -336,37 +336,6 @@ class BaseDQN:
         return o, efference_copy, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, \
                full_masked_image
 
-    def log_data(self, chosen_a, a):
-        """Log data from an episode."""
-        # TODO: Generalise, and use for PPO as well as assay modes too.
-
-        sand_grain_positions, prey_positions, predator_position = self.get_feature_positions()
-        prey_orientations = np.array([p.angle for p in self.simulation.prey_bodies]).astype(np.float32)
-
-        try:
-            predator_orientation = self.simulation.predator_body.angle
-        except:
-            predator_orientation = 0
-
-        prey_ages = np.array(self.simulation.prey_ages)
-        prey_gait = np.array(self.simulation.paramecia_gaits)
-
-        self.buffer.save_environmental_positions(chosen_a,
-                                                 self.simulation.fish.body.position,
-                                                 self.simulation.prey_consumed_this_step,
-                                                 self.simulation.predator_body,
-                                                 prey_positions,
-                                                 predator_position,
-                                                 sand_grain_positions,
-                                                 self.simulation.fish.body.angle,
-                                                 self.simulation.fish.salt_health,
-                                                 efference_copy=a,
-                                                 prey_orientation=prey_orientations,
-                                                 predator_orientation=predator_orientation,
-                                                 prey_age=prey_ages,
-                                                 prey_gait=prey_gait
-                                                 )
-
     def assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         """Run an assay step loop."""
 
@@ -418,29 +387,8 @@ class BaseDQN:
 
         # Saving step data
         if "environmental positions" in self.buffer.recordings:
-            prey_orientations = np.array([p.angle for p in self.simulation.prey_bodies]).astype(np.float32)
-            try:
-                predator_orientation = self.simulation.predator_body.angle
-            except:
-                predator_orientation = 0
-            prey_ages = self.simulation.prey_ages
-            prey_gait = self.simulation.paramecia_gaits
+            self.log_data(a, chosen_a)
 
-            self.buffer.save_environmental_positions(chosen_a,
-                                                     self.simulation.fish.body.position,
-                                                     self.simulation.prey_consumed_this_step,
-                                                     self.simulation.predator_body,
-                                                     prey_positions,
-                                                     predator_position,
-                                                     sand_grain_positions,
-                                                     self.simulation.fish.body.angle,
-                                                     self.simulation.fish.salt_health,
-                                                     efference_copy=a,
-                                                     prey_orientation=prey_orientations,
-                                                     predator_orientation=predator_orientation,
-                                                     prey_age=prey_ages,
-                                                     prey_gait=prey_gait,
-                                                     )
         # self.buffer.make_desired_recordings(network_layers)
 
         return o, efference_copy, given_reward, internal_state1, o1, d, updated_rnn_state, updated_rnn_state_ref

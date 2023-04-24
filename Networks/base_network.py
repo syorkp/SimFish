@@ -51,6 +51,9 @@ class BaseNetwork:
         self.conv4r = tf.layers.conv1d(inputs=self.conv3r, filters=64, kernel_size=4, strides=1, padding='valid',
                                        activation=tf.nn.relu, name=my_scope + '_conv4r')
 
+        # We take the output from the final convolutional layer and send it to a recurrent layer.
+        # The input must be reshaped into [batch x trace x units] for rnn processing,
+        # and then returned to [batch x units] when sent through the upper levels.
         self.conv4l_flat = tf.layers.flatten(self.conv4l)
         self.conv4r_flat = tf.layers.flatten(self.conv4r)
 

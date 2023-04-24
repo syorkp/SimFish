@@ -109,7 +109,6 @@ class TrialManager:
         return epsilon, total_steps, episode_number, configuration_index
 
     def get_new_job(self, trial, total_steps, episode_number, memory_fraction, epsilon, configuration_index):
-        # TODO: Fix conditional hell
         # Setting optional variables
         if "Continuous Actions" in trial:
             continuous_actions = trial["Continuous Actions"]
@@ -122,103 +121,40 @@ class TrialManager:
         new_job = None
 
         if trial["Run Mode"] == "Training":
-            if continuous_actions:
-                if trial["Learning Algorithm"] == "PPO":
+            if continuous_actions and trial["Learning Algorithm"] == "PPO":
                     new_job = multiprocessing.Process(target=ppo_training_continuous.ppo_training_target_continuous_sbe,
                                                       args=(trial, epsilon, total_steps, episode_number, memory_fraction, configuration_index))
-
-                elif trial["Learning Algorithm"] == "DQN":
-                    print('Cannot use DQN with continuous actions (training mode)')
-                    new_job = None
-                else:
-                    print('Invalid "Learning Algorithm" selected with continuous actions (training mode)')
-                    new_job = None
-
-            else:
-                if trial["Learning Algorithm"] == "PPO":
-                    print("PPO Discrete Not Supported.")
-                elif trial["Learning Algorithm"] == "DQN":
+            elif not continuous_actions and trial["Learning Algorithm"] == "DQN":
                     new_job = multiprocessing.Process(target=dqn_training_service.training_target,
                                                       args=(trial, epsilon, total_steps, episode_number, memory_fraction, configuration_index))
-                else:
-                    print('Invalid "Learning Algorithm" selected with discrete actions (training mode)')
-                    new_job = None
 
         elif trial["Run Mode"] == "Assay-Analysis-Across-Scaffold":
-
-            if continuous_actions:
-                if trial["Learning Algorithm"] == "PPO":
+            if continuous_actions and  trial["Learning Algorithm"] == "PPO":
                     new_job = multiprocessing.Process(target=ppo_assay_continuous.ppo_assay_target_continuous, args=(
                         trial, total_steps, episode_number, memory_fraction))
-
-                elif trial["Learning Algorithm"] == "DQN":
-                    print('Cannot use DQN with continuous actions (assay mode)')
-                    new_job = None
-                else:
-                    print('Invalid "Learning Algorithm" selected with continuous actions (assay mode)')
-                    new_job = None
-
-            else:
-                if trial["Learning Algorithm"] == "PPO":
-                    print("PPO discrete not supported.")
-                elif trial["Learning Algorithm"] == "A2C":
-                    print('Cannot use A2C with discrete actions (assay mode)')
-                    new_job = None
-                elif trial["Learning Algorithm"] == "DQN":
+            elif not continuous_actions and trial["Learning Algorithm"] == "DQN":
                     new_job = multiprocessing.Process(target=dqn_assay_service.assay_target, args=(
                         trial, total_steps, episode_number, memory_fraction))
-                else:
-                    print('Invalid "Learning Algorithm" selected with discrete actions (assay mode)')
-                    new_job = None
 
         elif trial["Run Mode"] == "Split-Assay":
-            if continuous_actions:
-                if trial["Learning Algorithm"] == "PPO":
-                    new_job = multiprocessing.Process(target=ppo_assay_continuous.ppo_assay_target_continuous, args=(
-                        trial, total_steps, episode_number, memory_fraction))
-                elif trial["Learning Algorithm"] == "DQN":
-                    print('Cannot use DQN with continuous actions (assay mode)')
-                    new_job = None
-                else:
-                    print('Invalid "Learning Algorithm" selected with continuous actions (assay mode)')
-                    new_job = None
-
-            else:
-                if trial["Learning Algorithm"] == "PPO":
-                    print('Invalid "Learning Algorithm" selected with discrete actions (assay mode)')
-
-                elif trial["Learning Algorithm"] == "DQN":
+            if continuous_actions and trial["Learning Algorithm"] == "PPO":
+                new_job = multiprocessing.Process(target=ppo_assay_continuous.ppo_assay_target_continuous, args=(
+                    trial, total_steps, episode_number, memory_fraction))
+            elif not continuous_actions and trial["Learning Algorithm"] == "DQN":
                     new_job = multiprocessing.Process(target=dqn_assay_service.assay_target, args=(
                         trial, total_steps, episode_number, memory_fraction))
-                else:
-                    print('Invalid "Learning Algorithm" selected with discrete actions (assay mode)')
-                    new_job = None
 
         elif trial["Run Mode"] == "Assay":
-            if continuous_actions:
-                if trial["Learning Algorithm"] == "PPO":
+            if continuous_actions and trial["Learning Algorithm"] == "PPO":
                     new_job = multiprocessing.Process(target=ppo_assay_continuous.ppo_assay_target_continuous, args=(
                         trial, total_steps, episode_number, memory_fraction))
-                elif trial["Learning Algorithm"] == "DQN":
-                    print('Cannot use DQN with continuous actions (assay mode)')
-                    new_job = None
-                else:
-                    print('Invalid "Learning Algorithm" selected with continuous actions (assay mode)')
-                    new_job = None
 
-            else:
-                if trial["Learning Algorithm"] == "PPO":
-                    print('Invalid "Learning Algorithm" selected with discrete actions (assay mode)')
-
-                elif trial["Learning Algorithm"] == "DQN":
+            elif not continuous_actions and trial["Learning Algorithm"] == "DQN":
                     new_job = multiprocessing.Process(target=dqn_assay_service.assay_target, args=(
                         trial, total_steps, episode_number, memory_fraction))
-                else:
-                    print('Invalid "Learning Algorithm" selected with discrete actions (assay mode)')
-                    new_job = None
-        else:
-            print('Invalid "Run Mode" selected')
-            new_job = None
+
+        if new_job is None:
+            print("Trial run mode or learning algorithm incorrectly specified.")
 
         return new_job
 

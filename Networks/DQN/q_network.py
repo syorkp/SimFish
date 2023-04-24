@@ -10,8 +10,6 @@ class QNetwork:
         """The network receives the observation from both eyes, processes it through convolutional layers, concatenates
         it with the internal state and feeds it to the RNN."""
 
-        # TODO: Make so uses the base network class in the same way as PPO.
-
         self.num_arms = simulation.fish.left_eye.observation_size  # Rays for each eye
         self.rnn_dim = rnn_dim
         self.rnn_output_size = self.rnn_dim

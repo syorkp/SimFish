@@ -148,3 +148,33 @@ class BaseService:
             predator_position = np.array([10000, 10000])
 
         return sand_grain_positions, prey_positions, predator_position
+
+    def log_data(self, chosen_a, a):
+        """Log data from an episode."""
+        sand_grain_positions, prey_positions, predator_position = self.get_feature_positions()
+        prey_orientations = np.array([p.angle for p in self.simulation.prey_bodies]).astype(np.float32)
+
+        try:
+            predator_orientation = self.simulation.predator_body.angle
+        except:
+            predator_orientation = 0
+
+        prey_ages = np.array(self.simulation.prey_ages)
+        prey_gait = np.array(self.simulation.paramecia_gaits)
+
+        self.buffer.save_environmental_positions(action=chosen_a,
+                                                 fish_position=self.simulation.fish.body.position,
+                                                 prey_consumed=self.simulation.prey_consumed_this_step,
+                                                 predator_present=self.simulation.predator_body,
+                                                 prey_positions=prey_positions,
+                                                 predator_position=predator_position,
+                                                 sand_grain_positions=sand_grain_positions,
+                                                 fish_angle=self.simulation.fish.body.angle,
+                                                 salt_health=self.simulation.fish.salt_health,
+                                                 efference_copy=a,
+                                                 prey_orientation=prey_orientations,
+                                                 predator_orientation=predator_orientation,
+                                                 prey_age=prey_ages,
+                                                 prey_gait=prey_gait
+                                                 )
+

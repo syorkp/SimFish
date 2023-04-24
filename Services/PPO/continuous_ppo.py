@@ -226,8 +226,6 @@ class ContinuousPPO:
 
         o1, given_reward, new_internal_state, d, full_masked_image = self.simulation.simulation_step(action=action)
 
-        sand_grain_positions, prey_positions, predator_position = self.get_feature_positions()
-
         efference_copy = action + [self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
 
         # Update buffer
@@ -243,28 +241,7 @@ class ContinuousPPO:
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
 
         if "environmental positions" in self.buffer.recordings:
-            prey_orientations = np.array([p.angle for p in self.simulation.prey_bodies]).astype(np.float32)
-            try:
-                predator_orientation = self.simulation.predator_body.angle
-            except:
-                predator_orientation = 0
-            prey_ages = self.simulation.prey_ages
-            prey_gait = self.simulation.paramecia_gaits
-
-            self.buffer.save_environmental_positions(self.simulation.fish.body.position,
-                                                     self.simulation.prey_consumed_this_step,
-                                                     self.simulation.predator_body,
-                                                     prey_positions,
-                                                     predator_position,
-                                                     sand_grain_positions,
-                                                     self.simulation.fish.body.angle,
-                                                     self.simulation.fish.salt_health,
-                                                     efference_copy=a,
-                                                     prey_orientation=prey_orientations,
-                                                     predator_orientation=predator_orientation,
-                                                     prey_age=prey_ages,
-                                                     prey_gait=prey_gait
-                                                     )
+            self.log_data(action, efference_copy)
 
         self.buffer.make_desired_recordings(network_layers)
 
@@ -338,10 +315,10 @@ class ContinuousPPO:
         action_consequences = [self.simulation.fish.prev_action_impulse / self.environment_params["max_impulse"],
                                self.simulation.fish.prev_action_angle / self.environment_params["max_angle_change"]]
 
-        action = action + action_consequences
+        efference_copy = action + action_consequences
         self.buffer.add_training(observation=o,
                                  internal_state=internal_state,
-                                 action=action,
+                                 action=efference_copy,
                                  reward=r,
                                  l_p_action=neg_log_action_probability,
                                  rnn_state=rnn_state,
@@ -353,29 +330,7 @@ class ContinuousPPO:
                                  )
 
         if self.save_environmental_data:
-            sand_grain_positions, prey_positions, predator_position = self.get_feature_positions()
-            prey_orientations = [p.angle for p in self.simulation.prey_bodies]
-            try:
-                predator_orientation = self.simulation.predator_body.angle
-            except:
-                predator_orientation = 0
-            prey_ages = self.simulation.prey_ages
-            prey_gait = self.simulation.paramecia_gaits
-
-            self.buffer.save_environmental_positions(fish_position=self.simulation.fish.body.position,
-                                                     prey_consumed=self.simulation.prey_consumed_this_step,
-                                                     predator_present=self.simulation.predator_body,
-                                                     prey_positions=prey_positions,
-                                                     predator_position=predator_position,
-                                                     sand_grain_positions=sand_grain_positions,
-                                                     fish_angle=self.simulation.fish.body.angle,
-                                                     salt_health=self.simulation.fish.salt_health,
-                                                     efference_copy=a,
-                                                     prey_orientation=prey_orientations,
-                                                     predator_orientation=predator_orientation,
-                                                     prey_age=prey_ages,
-                                                     prey_gait=prey_gait
-                                                     )
+            self.log_data(action, efference_copy)
 
         si_i = si[0][0]
         si_a = si[0][1]
