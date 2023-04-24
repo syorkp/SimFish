@@ -44,10 +44,10 @@ class DQNAssayBuffer(BaseBuffer):
         self.create_data_group("action", np.array(self.action_buffer), assay_group)
         self.efference_copy_buffer = np.squeeze(np.array(self.efference_copy_buffer))
 
-        print(self.efference_copy_buffer)
-
-        self.create_data_group("impulse", self.efference_copy_buffer[:, 1], assay_group)
-        self.create_data_group("angle", self.efference_copy_buffer[:, 2], assay_group)
+        # print(self.efference_copy_buffer)
+        #
+        # self.create_data_group("impulse", self.efference_copy_buffer[:, 1], assay_group)
+        # self.create_data_group("angle", self.efference_copy_buffer[:, 2], assay_group)
 
         print(f"{assay_id} Data Saved")
         hdf5_file.close()
