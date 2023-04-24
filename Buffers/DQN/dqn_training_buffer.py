@@ -43,7 +43,7 @@ class DQNTrainingBuffer:
         print("Saved experience buffer")
 
     def load(self):
-        with open("f{self.output_location}/logs/training_buffer.data", "rb") as file:
+        with open(f"{self.output_location}/logs/training_buffer.data", "rb") as file:
             self.buffer = pickle.load(file)
         print("Loaded experience buffer")
 
