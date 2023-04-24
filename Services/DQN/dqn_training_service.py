@@ -92,6 +92,8 @@ class DQNTrainingService(TrainingService, BaseDQN):
         with sess as self.sess:
             self.create_network()
             self.init_states()
+            if self.experience_buffer.check_saved():
+                self.experience_buffer.load()
             TrainingService._run(self)
             self.saver.save(self.sess, f"{self.model_location}/model-{str(self.episode_number)}.cptk")
             # Save the parameters to be carried over.
@@ -138,6 +140,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
                           prey_caught=self.simulation.prey_caught,
                           sand_grains_bumped=self.simulation.sand_grains_bumped,
                           )
+        self.experience_buffer.save()
         print(f"""{self.model_id} - episode {str(self.episode_number)}: num steps = {str(self.simulation.num_steps)}
 Total episode reward: {total_episode_reward}\n""", flush=True)
 

@@ -567,7 +567,7 @@ if __name__ == "__main__":
     # draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="A15")
     # model_name = "dqn_scaffold_14-1"
-    data = load_data("dqn_salt_only_reduced-1", "Behavioural-Data-Free", "Naturalistic-1", training_data=False)
+    data = load_data("dqn_salt_only_reduced-1", "Episode 900", "Episode 900", training_data=True)
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-3")
@@ -590,7 +590,7 @@ if __name__ == "__main__":
     #     for key in datfl[group].keys():
     #         data[key] = np.array(datfl[group][key])
 
-    draw_episode(data, env_variables, 'salt avoidance', continuous_actions=False, show_energy_state=False,
+    draw_episode(data, env_variables, 'salt avoidance 24.4', continuous_actions=False, show_energy_state=False,
                  trim_to_fish=False, showed_region_quad=500, include_sediment=True, scale=0.4, max_steps=300,
                  show_salt_location=True)
 
