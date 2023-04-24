@@ -3,6 +3,7 @@ import numpy as np
 import pickle
 from pathlib import Path
 
+
 class DQNTrainingBuffer:
 
     def __init__(self, output_location, buffer_size=4000):
@@ -37,23 +38,14 @@ class DQNTrainingBuffer:
         return np.reshape(sampled_traces, [batch_size * trace_length, 7])
 
     def save(self):
-        # hdf5_file = h5py.File(f"{self.output_location}/training_buffer.h5", "w")
-        # group = hdf5_file.create_group("buffer")
-        # for i, l in enumerate(self.buffer):
-        #     # if l.dtype == "O":
-        #     #     l = l.astype(np.float64)
-        #     group.create_dataset(str(i), data=l.astype(np.float64))
-        # hdf5_file.close()
         with open(f"{self.output_location}/logs/training_buffer.data", "wb") as file:
             pickle.dump(self.buffer, file)
+        print("Saved experience buffer")
 
     def load(self):
-        # hdf5_file = h5py.File(f"{self.output_location}/training_buffer.h5", "r")
-        # group = hdf5_file.get("buffer")
-        # self.buffer = [l for l in group]
-        # hdf5_file.close()
         with open("f{self.output_location}/logs/training_buffer.data", "rb") as file:
             self.buffer = pickle.load(file)
+        print("Loaded experience buffer")
 
     def check_saved(self):
         """Returns true if a saved experience buffer exists for the model."""
