@@ -44,10 +44,10 @@ class QNetworkReduced:
             [self.prev_actions_one_hot, self.prev_action_impulse,
              self.prev_action_angle, self.internal_state], 1)
 
-        self.rnn_in = tf.layers.dense(self.conv_with_states, self.rnn_dim, activation=tf.nn.relu,
-                                      kernel_initializer=tf.orthogonal_initializer,
-                                      trainable=True, name=my_scope + '_rnn_in')
-        self.convFlat = tf.reshape(self.rnn_in, [self.batch_size, self.train_length, self.rnn_dim])
+        # self.rnn_in = tf.layers.dense(self.conv_with_states, self.rnn_dim, activation=tf.nn.relu,
+        #                               kernel_initializer=tf.orthogonal_initializer,
+        #                               trainable=True, name=my_scope + '_rnn_in')
+        self.convFlat = tf.reshape(self.conv_with_states, [self.batch_size, self.train_length, self.conv_with_states.shape[1]])
 
         self.rnn, self.rnn_state_shared = tf.nn.dynamic_rnn(inputs=self.convFlat, cell=rnn_cell, dtype=tf.float32,
                                                             initial_state=self.rnn_state_in, scope=my_scope + '_rnn', )
@@ -79,10 +79,10 @@ class QNetworkReduced:
         self.conv_with_states_ref = tf.concat(
             [self.prev_actions_one_hot_rev, self.prev_action_impulse_rev, self.prev_action_angle_rev, self.internal_state], 1)
 
-        self.rnn_in_ref = tf.layers.dense(self.conv_with_states_ref, self.rnn_dim, activation=tf.nn.relu,
-                                          kernel_initializer=tf.orthogonal_initializer,
-                                          trainable=True, name=my_scope + '_rnn_in', reuse=True)
-        self.convFlat_ref = tf.reshape(self.rnn_in_ref, [self.batch_size, self.train_length, self.rnn_dim])
+        # self.rnn_in_ref = tf.layers.dense(self.conv_with_states_ref, self.rnn_dim, activation=tf.nn.relu,
+        #                                   kernel_initializer=tf.orthogonal_initializer,
+        #                                   trainable=True, name=my_scope + '_rnn_in', reuse=True)
+        self.convFlat_ref = tf.reshape(self.conv_with_states_ref, [self.batch_size, self.train_length, self.conv_with_states_ref.shape[1]])
 
         self.rnn_ref, self.rnn_state_ref = tf.nn.dynamic_rnn(inputs=self.convFlat_ref, cell=rnn_cell, dtype=tf.float32,
                                                              initial_state=self.rnn_state_in_ref, scope=my_scope + '_rnn')

@@ -284,10 +284,10 @@ class BaseDQN:
                          self.main_QN.Temp: self.epsilon,
                          }
 
-        q_out, q_dist, updated_rnn_state, updated_rnn_state_ref, val, adv, val_ref, adv_ref = self.sess.run(
+        q_out, q_dist, updated_rnn_state, updated_rnn_state_ref, val, adv, val_ref, adv_ref, network_inputs = self.sess.run(
             [self.main_QN.Q_out, self.main_QN.Q_dist, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
              self.main_QN.Value, self.main_QN.Advantage,
-             self.main_QN.Value_ref, self.main_QN.Advantage_ref],
+             self.main_QN.Value_ref, self.main_QN.Advantage_ref, self.main_QN.conv_with_states],
             feed_dict=feed_dict)
         greedy_a = np.argmax(q_out, axis=1)
 

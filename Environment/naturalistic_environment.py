@@ -263,7 +263,6 @@ Sand grain: {self.sand_grain_associated_reward}
             self.fish.body.position = new_position
 
     def simulation_step(self, action, impulse):
-        print(self.num_steps)
         self.prey_consumed_this_step = False
         self.last_action = action
         self.fish.touched_sand_grain = False

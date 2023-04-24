@@ -578,35 +578,35 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
-    dqn_salt_only_reduced = [
+    dqn_salt_only_simplified = [
         {
-            "Model Name": "dqn_salt_only_reduced",
-            "Environment Name": "dqn_salt_only_reduced",
+            "Model Name": "dqn_salt_only_simplified",
+            "Environment Name": "dqn_salt_only_simplified",
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
-        # {
-        #     "Model Name": "dqn_salt_only_reduced",
-        #     "Environment Name": "dqn_salt_only_reduced",
-        #     "Trial Number": 2,
-        #     "Run Mode": "Training",
-        #     "Learning Algorithm": "DQN",
-        # },
-        # {
-        #     "Model Name": "dqn_salt_only_reduced",
-        #     "Environment Name": "dqn_salt_only_reduced",
-        #     "Trial Number": 3,
-        #     "Run Mode": "Training",
-        #     "Learning Algorithm": "DQN",
-        # },
-        # {
-        #     "Model Name": "dqn_salt_only_reduced",
-        #     "Environment Name": "dqn_salt_only_reduced",
-        #     "Trial Number": 4,
-        #     "Run Mode": "Training",
-        #     "Learning Algorithm": "DQN",
-        # },
+        {
+            "Model Name": "dqn_salt_only_simplified",
+            "Environment Name": "dqn_salt_only_simplified",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_salt_only_simplified",
+            "Environment Name": "dqn_salt_only_simplified",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_salt_only_simplified",
+            "Environment Name": "dqn_salt_only_simplified",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
     ]
 
     dqn_salt_only_reduced_2 = [
@@ -674,7 +674,7 @@ if __name__ == "__main__": # may be needed to run on windows
     ]
 
     if run_config is None:
-        run_config = dqn_salt_only_reduced
+        run_config = dqn_salt_only_simplified
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]
