@@ -516,9 +516,9 @@ class TrainingService(BaseService):
 
         if self.episode_number % self.learning_params['summaryLength'] == 0 and self.episode_number != 0:
             if self.using_gpu:
-                sediment = self.simulation.board.global_sediment_grating.get()[:, :, 0]
+                sediment = 0  #self.simulation.board.global_sediment_grating.get()[:, :, 0]
             else:
-                sediment = self.simulation.board.global_sediment_grating[:, :, 0]
+                sediment = 0  #self.simulation.board.global_sediment_grating[:, :, 0]
             if self.environment_params["salt"]:
                 salt_location = self.simulation.salt_location
             else:
