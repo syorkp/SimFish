@@ -316,10 +316,8 @@ class BaseDQN:
             full_masked_image = None
 
         if self.save_environmental_data:
-            self.log_data(chosen_a, a)
+            self.log_data(chosen_a, efference_copy)
             # This buffer is only used for data logging, not training.
-            efference_copy = [chosen_a, self.simulation.fish.prev_action_impulse,
-                              self.simulation.fish.prev_action_angle]
             self.buffer.add_training(observation=o1,
                                      internal_state=internal_state,
                                      action=efference_copy,
