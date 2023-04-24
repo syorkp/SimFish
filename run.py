@@ -586,27 +586,27 @@ if __name__ == "__main__": # may be needed to run on windows
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
-        {
-            "Model Name": "dqn_salt_only_reduced",
-            "Environment Name": "dqn_salt_only_reduced",
-            "Trial Number": 2,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-        {
-            "Model Name": "dqn_salt_only_reduced",
-            "Environment Name": "dqn_salt_only_reduced",
-            "Trial Number": 3,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
-        {
-            "Model Name": "dqn_salt_only_reduced",
-            "Environment Name": "dqn_salt_only_reduced",
-            "Trial Number": 4,
-            "Run Mode": "Training",
-            "Learning Algorithm": "DQN",
-        },
+        # {
+        #     "Model Name": "dqn_salt_only_reduced",
+        #     "Environment Name": "dqn_salt_only_reduced",
+        #     "Trial Number": 2,
+        #     "Run Mode": "Training",
+        #     "Learning Algorithm": "DQN",
+        # },
+        # {
+        #     "Model Name": "dqn_salt_only_reduced",
+        #     "Environment Name": "dqn_salt_only_reduced",
+        #     "Trial Number": 3,
+        #     "Run Mode": "Training",
+        #     "Learning Algorithm": "DQN",
+        # },
+        # {
+        #     "Model Name": "dqn_salt_only_reduced",
+        #     "Environment Name": "dqn_salt_only_reduced",
+        #     "Trial Number": 4,
+        #     "Run Mode": "Training",
+        #     "Learning Algorithm": "DQN",
+        # },
     ]
 
     dqn_salt_only_reduced_2 = [
@@ -674,7 +674,7 @@ if __name__ == "__main__": # may be needed to run on windows
     ]
 
     if run_config is None:
-        run_config = ppo_analysis_across_scaffold_test
+        run_config = dqn_salt_only_reduced
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]

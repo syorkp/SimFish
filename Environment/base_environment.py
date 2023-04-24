@@ -22,23 +22,23 @@ class BaseEnvironment:
         # Set max visual distance to the point at which 99.9% of photons have been lost to absorption mask.
         max_visual_distance = np.absolute(np.log(0.001) / self.env_variables["light_decay_rate"])
 
-        self.board = DrawingBoard(arena_width=self.env_variables['arena_width'],
-                                  arena_height=self.env_variables['arena_height'],
-                                  uv_light_decay_rate=self.env_variables['light_decay_rate'],
-                                  red_light_decay_rate=self.env_variables['light_decay_rate'],
-                                  photoreceptor_rf_size=max_photoreceptor_rf_size,
-                                  using_gpu=using_gpu,
-                                  prey_radius=self.env_variables['prey_radius'],
-                                  predator_radius=self.env_variables['predator_radius'],
-                                  visible_scatter=self.env_variables['background_brightness'],
-                                  dark_light_ratio=self.env_variables['dark_light_ratio'],
-                                  dark_gain=self.env_variables['dark_gain'],
-                                  light_gain=self.env_variables['light_gain'],
-                                  light_gradient=light_gradient,
-                                  max_visual_distance=max_visual_distance,
-                                  red_object_intensity=self.env_variables["red_object_intensity"],
-                                  red2_object_intensity=self.env_variables["background_point_intensity"],
-                                  )
+        # self.board = DrawingBoard(arena_width=self.env_variables['arena_width'],
+        #                           arena_height=self.env_variables['arena_height'],
+        #                           uv_light_decay_rate=self.env_variables['light_decay_rate'],
+        #                           red_light_decay_rate=self.env_variables['light_decay_rate'],
+        #                           photoreceptor_rf_size=max_photoreceptor_rf_size,
+        #                           using_gpu=using_gpu,
+        #                           prey_radius=self.env_variables['prey_radius'],
+        #                           predator_radius=self.env_variables['predator_radius'],
+        #                           visible_scatter=self.env_variables['background_brightness'],
+        #                           dark_light_ratio=self.env_variables['dark_light_ratio'],
+        #                           dark_gain=self.env_variables['dark_gain'],
+        #                           light_gain=self.env_variables['light_gain'],
+        #                           light_gradient=light_gradient,
+        #                           max_visual_distance=max_visual_distance,
+        #                           red_object_intensity=self.env_variables["red_object_intensity"],
+        #                           red2_object_intensity=self.env_variables["background_point_intensity"],
+        #                           )
 
         self.show_all = False
         self.num_steps = 0
@@ -248,7 +248,7 @@ class BaseEnvironment:
         self.predator_attacks_avoided = 0
         self.sand_grains_bumped = 0
         self.energy_level_log = []
-        self.board.light_gain = self.env_variables["light_gain"]
+        # self.board.light_gain = self.env_variables["light_gain"]
         self.switch_step = None
 
         # New energy system:
@@ -261,7 +261,7 @@ class BaseEnvironment:
             self.salt_damage_history = []
 
         self.clear_environmental_features()
-        self.board.reset()
+        # self.board.reset()
 
         self.mask_buffer = []
         self.action_buffer = []

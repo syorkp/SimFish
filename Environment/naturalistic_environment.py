@@ -263,6 +263,7 @@ Sand grain: {self.sand_grain_associated_reward}
             self.fish.body.position = new_position
 
     def simulation_step(self, action, impulse):
+        print(self.num_steps)
         self.prey_consumed_this_step = False
         self.last_action = action
         self.fish.touched_sand_grain = False
@@ -406,8 +407,8 @@ Sand grain: {self.sand_grain_associated_reward}
         self.num_steps += 1
 
         # Drawing the features visible at this step:
-        self.board.FOV.update_field_of_view(self.fish.body.position)
-        self.draw_walls_and_sediment()
+        # self.board.FOV.update_field_of_view(self.fish.body.position)
+        # self.draw_walls_and_sediment()
 
         # Calculate internal state
         internal_state = []
@@ -442,7 +443,7 @@ Sand grain: {self.sand_grain_associated_reward}
                 done = True
                 self.switch_step = self.num_steps
 
-        observation, full_masked_image = self.resolve_visual_input()
+        observation, full_masked_image = None, None #self.resolve_visual_input()
 
         return observation, reward, internal_state, done, full_masked_image
 

@@ -17,7 +17,7 @@ class DiscreteNaturalisticEnvironment(NaturalisticEnvironment):
                          )
 
         # Create the fish class instance and add to the space.
-        self.fish = Fish(board=self.board,
+        self.fish = Fish(board=None,
                          env_variables=env_variables,
                          dark_col=self.dark_col,
                          using_gpu=using_gpu
