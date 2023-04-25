@@ -55,6 +55,8 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.split_event = split_event
         self.modification = modification
 
+        self.previous_salt = 0
+
     def reset(self):
         # print (f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
         # print(f"Mean UV: {sum([i[1] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -156,6 +158,8 @@ Sand grain: {self.sand_grain_associated_reward}
         self.predator_associated_reward = 0
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
+
+        self.previous_salt = 0
 
     def load_simulation(self, buffer, sediment, energy_state):
         self.num_steps = len(buffer.fish_position_buffer)
@@ -426,10 +430,11 @@ Sand grain: {self.sand_grain_associated_reward}
             # lower scaling)
             # internal_state.append(0.0)
             if self.env_variables["max_salt_damage"] > 0:
-                # internal_state.append((255 * salt_damage)/self.env_variables["max_salt_damage"])  TODO: Change here
-                internal_state.append((salt_damage)/self.env_variables["max_salt_damage"])
+                # internal_state.append((255 * salt_damage)/self.env_variables["max_salt_damage"]) # TODO: Change here
+                internal_state.append((salt_damage-self.previous_salt)/self.env_variables["max_salt_damage"])
             else:
                 internal_state.append(0.0)
+            self.previous_salt = salt_damage
 
             internal_state_order.append("salt")
         if len(internal_state) == 0:
