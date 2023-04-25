@@ -280,7 +280,7 @@ class BaseBuffer:
         except ValueError:
             assay_group = hdf5_file.get(assay_id)
 
-        self.create_data_group("observation", np.array(self.observation_buffer), assay_group)
+        # self.create_data_group("observation", np.array(self.observation_buffer), assay_group)
 
         for layer in self.unit_recordings.keys():
             self.create_data_group(layer, np.array(self.unit_recordings[layer]).squeeze(), assay_group)
