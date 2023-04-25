@@ -208,7 +208,7 @@ env = {
     'unit_circle_diameter': 0.7,  # Circular current options
 }
 
-scaffold_name = "dqn_salt_only_simplified"
+scaffold_name = "dqn_salt_only_simplified_2"
 
 
 # For predator scaffolding

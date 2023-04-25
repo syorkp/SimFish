@@ -31,4 +31,4 @@ def reset_salt_gradient(max_salt_damage, salt_recovery_rate, salt_concentration_
 
 
 if __name__ == "__main__":
-    reset_salt_gradient(max_salt_damage=0.02, salt_recovery_rate=0.005, salt_concentration_decay=0.002)
+    reset_salt_gradient(max_salt_damage=0.02, salt_recovery_rate=0.005, salt_concentration_decay=0.004)

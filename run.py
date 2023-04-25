@@ -580,29 +580,29 @@ if __name__ == "__main__": # may be needed to run on windows
 
     dqn_salt_only_simplified = [
         {
-            "Model Name": "dqn_salt_only_simplified",
-            "Environment Name": "dqn_salt_only_simplified",
+            "Model Name": "dqn_salt_only_simplified_2",
+            "Environment Name": "dqn_salt_only_simplified_2",
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
         {
-            "Model Name": "dqn_salt_only_simplified",
-            "Environment Name": "dqn_salt_only_simplified",
+            "Model Name": "dqn_salt_only_simplified_2",
+            "Environment Name": "dqn_salt_only_simplified_2",
             "Trial Number": 2,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
         {
-            "Model Name": "dqn_salt_only_simplified",
-            "Environment Name": "dqn_salt_only_simplified",
+            "Model Name": "dqn_salt_only_simplified_2",
+            "Environment Name": "dqn_salt_only_simplified_2",
             "Trial Number": 3,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
         {
-            "Model Name": "dqn_salt_only_simplified",
-            "Environment Name": "dqn_salt_only_simplified",
+            "Model Name": "dqn_salt_only_simplified_2",
+            "Environment Name": "dqn_salt_only_simplified_2",
             "Trial Number": 4,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
