@@ -174,7 +174,7 @@ class AssayService(BaseService):
                 if complete:
                     break
 
-            if assay["save stimuli"]:
+            if assay["stimulus paradigm"] == "Projection":
                 self.save_stimuli_data(assay)
             self.save_episode_data(assay)
 
@@ -282,7 +282,7 @@ class AssayService(BaseService):
                 self.simulation = ControlledStimulusEnvironmentContinuous(env_variables=self.environment_params,
                                                                           stimuli=assay["stimuli"],
                                                                           using_gpu=self.using_gpu,
-                                                                          tethered=assay["Tethered"],
+                                                                          tethered=assay["tethered"],
                                                                           set_positions=assay["set positions"],
                                                                           random=assay["random positions"],
                                                                           moving=assay["moving"],
@@ -295,7 +295,7 @@ class AssayService(BaseService):
                 self.simulation = ControlledStimulusEnvironment(env_variables=self.environment_params,
                                                                 stimuli=assay["stimuli"],
                                                                 using_gpu=self.using_gpu,
-                                                                tethered=assay["Tethered"],
+                                                                tethered=assay["tethered"],
                                                                 set_positions=assay["set positions"],
                                                                 random=assay["random positions"],
                                                                 moving=assay["moving"],
