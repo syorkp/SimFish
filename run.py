@@ -578,36 +578,68 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
-    dqn_salt_only_simplified = [
+    dqn_salt_change_only = [
         {
-            "Model Name": "dqn_salt_only_simplified_2",
-            "Environment Name": "dqn_salt_only_simplified_2",
+            "Model Name": "dqn_salt_change_only",
+            "Environment Name": "dqn_salt_only_simplified",
             "Trial Number": 1,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
         {
-            "Model Name": "dqn_salt_only_simplified_2",
-            "Environment Name": "dqn_salt_only_simplified_2",
+            "Model Name": "dqn_salt_change_only",
+            "Environment Name": "dqn_salt_only_simplified",
             "Trial Number": 2,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
         {
-            "Model Name": "dqn_salt_only_simplified_2",
-            "Environment Name": "dqn_salt_only_simplified_2",
+            "Model Name": "dqn_salt_change_only",
+            "Environment Name": "dqn_salt_only_simplified",
             "Trial Number": 3,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
         {
-            "Model Name": "dqn_salt_only_simplified_2",
-            "Environment Name": "dqn_salt_only_simplified_2",
+            "Model Name": "dqn_salt_change_only",
+            "Environment Name": "dqn_salt_only_simplified",
             "Trial Number": 4,
             "Run Mode": "Training",
             "Learning Algorithm": "DQN",
         },
     ]
+
+    dqn_salt_only_unscaled = [
+        {
+            "Model Name": "dqn_salt_only_unscaled",
+            "Environment Name": "dqn_salt_only_simplified",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_salt_only_unscaled",
+            "Environment Name": "dqn_salt_only_simplified",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_salt_only_unscaled",
+            "Environment Name": "dqn_salt_only_simplified",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_salt_only_unscaled",
+            "Environment Name": "dqn_salt_only_simplified",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
 
     dqn_salt_only_reduced_2 = [
         {
@@ -639,6 +671,38 @@ if __name__ == "__main__": # may be needed to run on windows
             "Learning Algorithm": "DQN",
         },
     ]
+
+    dqn_inverted_salt_reward = [
+        {
+            "Model Name": "dqn_salt_only_inverted",
+            "Environment Name": "dqn_salt_only_inverted",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_salt_only_inverted",
+            "Environment Name": "dqn_salt_only_inverted",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_salt_only_inverted",
+            "Environment Name": "dqn_salt_only_inverted",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_salt_only_inverted",
+            "Environment Name": "dqn_salt_only_inverted",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
 
     #                   TRAINING - PPO
 
