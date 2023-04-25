@@ -186,11 +186,10 @@ class ContinuousPPO:
              self.simulation.fish.prev_action_angle,
              ]
 
-        impulse, angle, V, updated_rnn_state, updated_rnn_state_ref, network_layers, \
+        impulse, angle, V, V_ref, updated_rnn_state, updated_rnn_state_ref, \
         mu_i, mu_a, mu1, mu1_ref, mu_a1, mu_a_ref, si_i, si_a = self.sess.run(
-            [self.network.impulse_output, self.network.angle_output, self.network.value_output,
+            [self.network.impulse_output, self.network.angle_output, self.network.value_output, self.network.value_fn_2,
              self.network.rnn_state_shared, self.network.rnn_state_ref,
-             self.network.network_graph,
              self.network.mu_impulse_combined,
              self.network.mu_angle_combined,
              self.network.mu_impulse,
@@ -235,15 +234,16 @@ class ContinuousPPO:
                                  reward=given_reward,
                                  value=V,
                                  l_p_action=0,
-                                 rnn_state=rnn_state,
-                                 rnn_state_ref=rnn_state_ref,
+                                 rnn_state=updated_rnn_state,
+                                 rnn_state_ref=updated_rnn_state_ref,
+                                 value_ref=V_ref,
+                                 advantage=0,
+                                 advantage_ref=0
                                  )
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
 
         if "environmental positions" in self.buffer.recordings:
-            self.log_data(action, efference_copy)
-
-        self.buffer.make_desired_recordings(network_layers)
+            self.log_data(efference_copy, action)
 
         return given_reward, new_internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, action
 

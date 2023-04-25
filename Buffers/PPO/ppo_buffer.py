@@ -90,7 +90,7 @@ class PPOBuffer(BaseBuffer):
         self.log_action_probability_buffer.append(l_p_action)
         self.action_buffer.append(action)
 
-    def save_environmental_positions(self, fish_position, prey_consumed, predator_present, prey_positions,
+    def save_environmental_positions(self, action, fish_position, prey_consumed, predator_present, prey_positions,
                                      predator_position, sand_grain_positions, fish_angle,
                                      salt_health, efference_copy,
                                      prey_orientation=None, predator_orientation=None, prey_age=None, prey_gait=None):

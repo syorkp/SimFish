@@ -160,7 +160,8 @@ Sand grain: {self.sand_grain_associated_reward}
     def load_simulation(self, buffer, sediment, energy_state):
         self.num_steps = len(buffer.fish_position_buffer)
 
-        self.board.global_sediment_grating = self.chosen_math_library.array(np.expand_dims(sediment, 2))
+        # TODO: temp change here.
+        # self.board.global_sediment_grating = self.chosen_math_library.array(np.expand_dims(sediment, 2))
 
         self.salt_location = buffer.salt_location
         self.reset_salt_gradient(buffer.salt_location)
@@ -171,12 +172,18 @@ Sand grain: {self.sand_grain_associated_reward}
         final_step_prey_orientations = buffer.prey_orientations_buffer[-1]
         for p, o in zip(final_step_prey_positions, final_step_prey_orientations):
             if p[0] != 10000.0:
-                self.create_prey(prey_position=p, prey_orientation=o)
+                self.create_prey(prey_position=p, prey_orientation=o)  # TODO: Build in prey age and gait loading here.
 
-        self.prey_ages = np.array(buffer.prey_age_buffer[-1]).astype(int)
-        self.paramecia_gaits = np.array(buffer.prey_gait_buffer[-1]).astype(int)
-        self.prey_ages = self.prey_ages[~(self.prey_ages == 100000)]
-        self.paramecia_gaits = self.paramecia_gaits[~(self.paramecia_gaits == 100000)]
+        # self.prey_ages = np.array(buffer.prey_age_buffer[-1]).astype(int)
+        # self.paramecia_gaits = np.array(buffer.prey_gait_buffer[-1]).astype(int)
+        # self.prey_ages = self.prey_ages[~(self.prey_ages == 100000)]
+        # self.paramecia_gaits = self.paramecia_gaits[~(self.paramecia_gaits == 100000)]
+        # self.prey_ages = self.prey_ages.tolist()
+        # self.paramecia_gaits = self.paramecia_gaits.tolist()
+        #
+        # print(len(self.prey_bodies))
+        # print(len(self.paramecia_gaits))
+        # print(len(self.prey_ages))
 
         # Create predators in proper position and orientation.
         final_step_predator_position = buffer.predator_position_buffer[-1]
@@ -201,11 +208,12 @@ Sand grain: {self.sand_grain_associated_reward}
         self.fish.body.angle = np.array(buffer.fish_angle_buffer[-1])
         self.fish.energy_level = energy_state
 
-        # Get latest observation.
-        self.board.FOV.update_field_of_view(self.fish.body.position)
-        self.draw_walls_and_sediment()
-        observation, full_masked_image = self.resolve_visual_input()
-        return observation
+        # Get latest observation.  TODO: temp change here
+        # self.board.FOV.update_field_of_view(self.fish.body.position)
+        # self.draw_walls_and_sediment()
+        # observation, full_masked_image = self.resolve_visual_input()
+        # return observation
+        return np.zeros((139, 3, 2))
 
     def check_condition_met(self):
         """For the split assay mode - checks whether the specified condition is met at each step"""
@@ -405,9 +413,9 @@ Sand grain: {self.sand_grain_associated_reward}
 
         self.num_steps += 1
 
-        # Drawing the features visible at this step:
-        self.board.FOV.update_field_of_view(self.fish.body.position)
-        self.draw_walls_and_sediment()
+        # Drawing the features visible at this step:  TODO: Temp change here
+        # self.board.FOV.update_field_of_view(self.fish.body.position)
+        # self.draw_walls_and_sediment()
 
         # Calculate internal state
         internal_state = []
@@ -442,7 +450,9 @@ Sand grain: {self.sand_grain_associated_reward}
                 done = True
                 self.switch_step = self.num_steps
 
-        observation, full_masked_image = self.resolve_visual_input()
+        # TODO: Temp change here
+        # observation, full_masked_image = self.resolve_visual_input()
+        observation, full_masked_image = np.zeros((139, 3, 2)), None
 
         return observation, reward, internal_state, done, full_masked_image
 

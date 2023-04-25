@@ -76,6 +76,107 @@ if __name__ == "__main__": # may be needed to run on windows
     with open('Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_26_2.npy', 'rb') as f:
         full_ablation_matrix = np.load(f)
 
+    # Config Examples
+    dqn_basic_assay_example = [
+        {
+            "Model Name": "dqn_salt_only_reduced",
+            "Environment Name": "dqn_sor",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 1,
+            "Checkpoint": 67,
+            "Run Mode": "Assay",
+            "Learning Algorithm": "DQN",
+            "behavioural recordings": ["environmental positions"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "repeats": 2,
+                    "stimulus paradigm": "Naturalistic",
+                    "duration": 100,
+                    "tethered": False,
+                    "save frames": False,
+                },
+                ]
+        },
+        ]
+
+    ppo_basic_assay_example = [
+        {
+            "Model Name": "ppo_proj_reduced",
+            "Environment Name": "ppo_proj_1",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 1,
+            "Run Mode": "Assay",
+            "Learning Algorithm": "PPO",
+            "behavioural recordings": ["environmental positions"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "repeats": 2,
+                    "stimulus paradigm": "Naturalistic",
+                    "duration": 100,
+                    "tethered": False,
+                    "save frames": False,
+                    "use_mu": True,
+                },
+                ]
+        },
+        ]
+
+    dqn_split_assay_example = [
+        {
+            "Model Name": "dqn_0_0",
+            "Environment Name": "dqn_0_1",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 1,
+            "Run Mode": "Split-Assay",
+            "Split Event": "One-Prey-Close",
+            "Modification": "Nearby-Prey-Removal",
+            "Learning Algorithm": "DQN",
+            "behavioural recordings": ["environmental positions", "observation", "reward assessments"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "stimulus paradigm": "Naturalistic",
+                    "repeats": 1,
+                    "duration": 5000,
+                    "tethered": False,
+                    "save frames": False,
+                },
+            ]
+        }
+    ]
+
+    ppo_split_assay_example = [
+        {
+            "Model Name": "ppo_proj",
+            "Environment Name": "ppo_proj_1",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 1,
+            "Run Mode": "Split-Assay",
+            "Split Event": "One-Prey-Close",
+            "Modification": "Nearby-Prey-Removal",
+            "Learning Algorithm": "PPO",
+            "behavioural recordings": ["environmental positions"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "stimulus paradigm": "Naturalistic",
+                    "repeats": 1,
+                    "duration": 100,
+                    "tethered": False,
+                    "save frames": False,
+                    "use_mu": True,
+                },
+            ]
+        }
+    ]
+
+
     #                    ASSAY
 
     # Assay mode 1: Base
@@ -161,93 +262,6 @@ if __name__ == "__main__": # may be needed to run on windows
         }
         ]
 
-    dqn_salt_only_assay = [
-        {
-            "Model Name": "dqn_salt_only_reduced",
-            "Environment Name": "dqn_sor",
-            "Assay Configuration Name": "Behavioural-Data-Free",
-            "Trial Number": 1,
-            "Checkpoint": 67,
-            "Run Mode": "Assay",
-            "Learning Algorithm": "DQN",
-            "behavioural recordings": ["environmental positions", "observation"],
-            "network recordings": ["rnn_shared", "internal_state"],
-            "Assays": [
-                {
-                    "assay id": "Naturalistic",
-                    "repeats": 40,
-                    "stimulus paradigm": "Naturalistic",
-                    "duration": 10000,
-                    "tethered": False,
-                    "save frames": False,
-                },
-                ]
-        },
-        {
-            "Model Name": "dqn_salt_only_reduced",
-            "Environment Name": "dqn_sor",
-            "Assay Configuration Name": "Behavioural-Data-Free",
-            "Trial Number": 2,
-            "Checkpoint": 67,
-            "Run Mode": "Assay",
-            "Learning Algorithm": "DQN",
-            "behavioural recordings": ["environmental positions", "observation"],
-            "network recordings": ["rnn_shared", "internal_state"],
-            "Assays": [
-                {
-                    "assay id": "Naturalistic",
-                    "repeats": 40,
-                    "stimulus paradigm": "Naturalistic",
-                    "duration": 10000,
-                    "tethered": False,
-                    "save frames": False,
-                },
-            ]
-        },
-        {
-            "Model Name": "dqn_salt_only_reduced",
-            "Environment Name": "dqn_sor",
-            "Assay Configuration Name": "Behavioural-Data-Free",
-            "Trial Number": 3,
-            "Checkpoint": 67,
-            "Run Mode": "Assay",
-            "Learning Algorithm": "DQN",
-            "behavioural recordings": ["environmental positions", "observation"],
-            "network recordings": ["rnn_shared", "internal_state"],
-            "Assays": [
-                {
-                    "assay id": "Naturalistic",
-                    "repeats": 40,
-                    "stimulus paradigm": "Naturalistic",
-                    "duration": 10000,
-                    "tethered": False,
-                    "save frames": False,
-                },
-            ]
-        },
-        {
-            "Model Name": "dqn_salt_only_reduced",
-            "Environment Name": "dqn_sor",
-            "Assay Configuration Name": "Behavioural-Data-Free",
-            "Trial Number": 4,
-            "Checkpoint": 101,
-            "Run Mode": "Assay",
-            "Learning Algorithm": "DQN",
-            "behavioural recordings": ["environmental positions", "observation"],
-            "network recordings": ["rnn_shared", "internal_state"],
-            "Assays": [
-                {
-                    "assay id": "Naturalistic",
-                    "repeats": 40,
-                    "stimulus paradigm": "Naturalistic",
-                    "duration": 10000,
-                    "tethered": False,
-                    "save frames": False,
-                },
-            ]
-        }
-        ]
-
     dqn_salt_zeroed_assay = [
         {
             "Model Name": "dqn_salt_only_reduced_z",
@@ -271,32 +285,9 @@ if __name__ == "__main__": # may be needed to run on windows
         },
         ]
 
-    # Assay mode 2: Split timelines assay
 
-    dqn_split_assay_test = [
-        {
-            "Model Name": "dqn_0",
-            "Environment Name": "dqn_0_1",
-            "Assay Configuration Name": "Behavioural-Data-Free",
-            "Trial Number": 1,
-            "Run Mode": "Split-Assay",
-            "Split Event": "One-Prey-Close",
-            "Modification": "Nearby-Prey-Removal",
-            "Learning Algorithm": "DQN",
-            "behavioural recordings": ["environmental positions", "observation", "reward assessments"],
-            "network recordings": ["rnn_shared", "internal_state"],
-            "Assays": [
-                {
-                    "assay id": "Naturalistic",
-                    "stimulus paradigm": "Naturalistic",
-                    "repeats": 1,
-                    "duration": 1000,
-                    "tethered": False,
-                    "save frames": False,
-                },
-            ]
-        }
-    ]
+
+    # Assay mode 2: Split timelines assay
 
     ppo_split_assay_test = [
         {
@@ -604,7 +595,7 @@ if __name__ == "__main__": # may be needed to run on windows
     ]
 
     if run_config is None:
-        run_config = ppo_analysis_across_scaffold_test
+        run_config = ppo_split_assay_example
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]

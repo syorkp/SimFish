@@ -49,10 +49,11 @@ class Fish:
 
         max_visual_range = np.absolute(np.log(0.001) / self.env_variables["light_decay_rate"])
 
-        self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True, env_variables, dark_col, using_gpu,
-                            max_visual_range=max_visual_range)
-        self.right_eye = Eye(board, self.verg_angle, self.retinal_field, False, env_variables, dark_col, using_gpu,
-                             max_visual_range=max_visual_range)
+        # TODO: Temp change here
+        # self.left_eye = Eye(board, self.verg_angle, self.retinal_field, True, env_variables, dark_col, using_gpu,
+        #                     max_visual_range=max_visual_range)
+        # self.right_eye = Eye(board, self.verg_angle, self.retinal_field, False, env_variables, dark_col, using_gpu,
+        #                      max_visual_range=max_visual_range)
 
         self.hungry = 0
         self.stress = 1

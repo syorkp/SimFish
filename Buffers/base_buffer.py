@@ -285,25 +285,31 @@ class BaseBuffer:
         for layer in self.unit_recordings.keys():
             self.create_data_group(layer, np.array(self.unit_recordings[layer]).squeeze(), assay_group)
 
-        self.rnn_state_buffer = np.array(self.rnn_state_buffer).squeeze()
-        self.rnn_state_ref_buffer = np.array(self.rnn_state_ref_buffer).squeeze()
-
         try:
+            self.rnn_state_buffer = np.array(self.rnn_state_buffer).squeeze()
+            self.rnn_state_ref_buffer = np.array(self.rnn_state_ref_buffer).squeeze()
+
             self.create_data_group("rnn_state", self.rnn_state_buffer, assay_group)
-        except TypeError:
-            try:
-                print("Failed to save RNN state")
-                print(np.array(self.rnn_state_buffer).shape)
-                print(np.array(self.rnn_state_buffer)[0].shape)
-            except:
-                pass
-            # self.create_data_group("rnn_state", np.array(self.rnn_state_buffer).astype(np.float64), assay_group)
-
-        try:
             self.create_data_group("rnn_state_ref", self.rnn_state_ref_buffer, assay_group)
         except TypeError:
-            pass
-            #self.create_data_group("rnn_state_ref", np.array(self.rnn_state_ref_buffer).astype(np.float64), assay_group)
+            # Fixes jagged array error that occurs in split assay mode.
+            for i, rnn in enumerate(self.rnn_state_buffer):
+                if np.array(rnn).shape[0] == 2:
+                    self.rnn_state_buffer[i] = np.array([np.array(rnn)]).astype(np.float64)
+                else:
+                    self.rnn_state_buffer[i] = np.array(rnn).astype(np.float64)
+
+            for i, rnn in enumerate(self.rnn_state_ref_buffer):
+                if np.array(rnn).shape[0] == 2:
+                    self.rnn_state_ref_buffer[i] = np.array([np.array(rnn)]).astype(np.float64)
+                else:
+                    self.rnn_state_ref_buffer[i] = np.array(rnn).astype(np.float64)
+
+            self.rnn_state_buffer = np.array(self.rnn_state_buffer).squeeze()
+            self.rnn_state_ref_buffer = np.array(self.rnn_state_ref_buffer).squeeze()
+
+            self.create_data_group("rnn_state", self.rnn_state_buffer, assay_group)
+            self.create_data_group("rnn_state_ref", self.rnn_state_ref_buffer, assay_group)
 
         self.internal_state_buffer = np.array(self.internal_state_buffer)
 
@@ -338,7 +344,8 @@ class BaseBuffer:
         self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)
         self.create_data_group("sand_grain_positions", np.array(self.sand_grain_position_buffer), assay_group)
 
-        self.create_data_group("sediment", np.array(sediment), assay_group)
+        # TODO: Test change here
+        # self.create_data_group("sediment", np.array(sediment), assay_group)
 
         if self.switch_step != None:
             self.create_data_group("switch_step", np.array([self.switch_step]), assay_group)

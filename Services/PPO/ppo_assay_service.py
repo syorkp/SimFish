@@ -129,7 +129,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
             self.init_states()
             AssayService._run(self)
 
-    def perform_assay(self, assay, background=None, energy_state=None):
+    def perform_assay(self, assay, sediment=None, energy_state=None):
         """Perform assay - used instead of episode loop"""
 
         self.update_sigmas()
@@ -147,7 +147,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
         if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
             print("Loading Simulation")
-            o = self.simulation.load_simulation(self.buffer, background, energy_state)
+            o = self.simulation.load_simulation(self.buffer, sediment, energy_state)
             internal_state = self.buffer.internal_state_buffer[-1]
             a = self.buffer.action_buffer[-1]
 
@@ -156,21 +156,28 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
             if self.run_version == "Modified-Completion":
                 self.simulation.make_modification()
 
-            a, updated_rnn_state, rnn2_state, network_layers = \
+            impulse, angle, updated_rnn_state, rnn2_state, mu_i, mu_a, \
+            si = \
                 self.sess.run(
-                    [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
-                     self.main_QN.network_graph],
-                    feed_dict={self.main_QN.observation: o,
-                               self.main_QN.internal_state: internal_state,
-                               self.main_QN.prev_actions: np.expand_dims(a, 0),
-                               self.main_QN.train_length: 1,
-                               self.main_QN.rnn_state_in: rnn_state,
-                               self.main_QN.rnn_state_in_ref: rnn_state_ref,
+                    [self.network.impulse_output, self.network.angle_output, self.network.rnn_state_shared,
+                     self.network.rnn_state_ref,
+                     self.network.mu_impulse_combined,
+                     self.network.mu_angle_combined,
+                     self.network.sigma_action,
+                     ],
+                    feed_dict={self.network.observation: o,
+                               self.network.internal_state: internal_state,
+                               self.network.prev_actions: np.expand_dims(a, 0),
+                               self.network.train_length: 1,
+                               self.network.batch_size: 1,
+                               self.network.rnn_state_in: rnn_state,
+                               self.network.rnn_state_in_ref: rnn_state_ref,
+                               self.network.sigma_impulse_combined_proto: self.impulse_sigma,
+                               self.network.sigma_angle_combined_proto: self.angle_sigma,
+                               self.network.entropy_coefficient: self.learning_params["lambda_entropy"],
 
-                               self.main_QN.batch_size: 1,
-                               self.main_QN.exp_keep: 1.0,
                                })
-
+            a = [mu_i, mu_a]
             self.step_number = len(self.buffer.internal_state_buffer)
         else:
             self.simulation.reset()
@@ -182,7 +189,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
             self.just_trained = False
 
         efferenec_copy = a + [self.simulation.fish.prev_action_impulse,
-                      self.simulation.fish.prev_action_angle]
+                              self.simulation.fish.prev_action_angle]
 
         o, r, internal_state, d, full_masked_image = self.simulation.simulation_step(action=a)
 
@@ -229,8 +236,8 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
         else:
             salt_location = None
 
-        if self.using_gpu:
-            background = self.simulation.board.global_sediment_grating.get()[:, :, 0]
+        if self.using_gpu:  # TODO: temp change here
+            background = 0  # self.simulation.board.global_sediment_grating.get()[:, :, 0]
         else:
             background = self.simulation.board.global_sediment_grating[:, :, 0]
 
