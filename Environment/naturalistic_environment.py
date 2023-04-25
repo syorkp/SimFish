@@ -426,7 +426,8 @@ Sand grain: {self.sand_grain_associated_reward}
             # lower scaling)
             # internal_state.append(0.0)
             if self.env_variables["max_salt_damage"] > 0:
-                internal_state.append((255 * salt_damage)/self.env_variables["max_salt_damage"])
+                # internal_state.append((255 * salt_damage)/self.env_variables["max_salt_damage"])  TODO: Change here
+                internal_state.append((salt_damage)/self.env_variables["max_salt_damage"])
             else:
                 internal_state.append(0.0)
 
