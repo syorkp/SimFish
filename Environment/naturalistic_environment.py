@@ -378,7 +378,7 @@ Sand grain: {self.sand_grain_associated_reward}
                 # done = True
                 # self.recent_cause_of_death = "Salt"
 
-            if self.env_variables["salt_reward_penalty"] > 0:  # and salt_damage > self.env_variables["salt_recovery"]:  TODO: Trying without this for simplicity
+            if self.env_variables["salt_reward_penalty"] != 0:  # and salt_damage > self.env_variables["salt_recovery"]:  TODO: Trying without this for simplicity
                 reward -= self.env_variables["salt_reward_penalty"] * salt_damage
                 self.salt_associated_reward -= self.env_variables['salt_reward_penalty'] * salt_damage
         else:
@@ -430,8 +430,8 @@ Sand grain: {self.sand_grain_associated_reward}
             # lower scaling)
             # internal_state.append(0.0)
             if self.env_variables["max_salt_damage"] > 0:
-                # internal_state.append((255 * salt_damage)/self.env_variables["max_salt_damage"]) # TODO: Change here
-                internal_state.append((salt_damage-self.previous_salt)/self.env_variables["max_salt_damage"])
+                internal_state.append((255 * salt_damage)/self.env_variables["max_salt_damage"]) # TODO: Change here
+                # internal_state.append((salt_damage-self.previous_salt)/self.env_variables["max_salt_damage"])
             else:
                 internal_state.append(0.0)
             self.previous_salt = salt_damage
