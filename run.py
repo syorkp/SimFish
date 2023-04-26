@@ -176,6 +176,72 @@ if __name__ == "__main__": # may be needed to run on windows
         }
     ]
 
+    dqn_analysis_across_scaffold_example = [
+        {
+            "Model Name": "dqn_0_0",
+            "Environment Name": "dqn_0_1",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Config Modification": "Empty",
+            "Trial Number": 1,
+            "Delete Data": False,
+            "Run Mode": "Assay-Analysis-Across-Scaffold",
+            "Learning Algorithm": "DQN",
+            "behavioural recordings": ["environmental positions"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "repeats": 1,
+                    "stimulus paradigm": "Naturalistic",
+                    "duration": 1000,
+                    "tethered": False,
+                    "save frames": False,
+                },
+            ],
+            "Analysis": [
+                {
+                    "analysis id": "Turn-Analysis",
+                    "analysis script": "Analysis.Behavioural.Exploration.turning_analysis_discrete",
+                    "analysis function": "plot_all_turn_analysis",
+                    "analysis arguments": ["model_name", "assay_config_name", "Naturalistic", 1],
+                }
+            ],
+        }
+    ]
+
+    ppo_analysis_across_scaffold_example = [
+        {
+            "Model Name": "ppo_proj",
+            "Environment Name": "ppo_proj_1",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Config Modification": "Empty",
+            "Trial Number": 1,
+            "Run Mode": "Assay-Analysis-Across-Scaffold",
+            "Learning Algorithm": "PPO",
+            "behavioural recordings": ["environmental positions", "observation"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "repeats": 1,
+                    "stimulus paradigm": "Naturalistic",
+                    "duration": 1000,
+                    "tethered": False,
+                    "save frames": False,
+                    "use_mu": True,
+                },
+            ],
+            "Analysis": [
+                {
+                    "analysis id": "Turn-Analysis",
+                    "analysis script": "Analysis.Behavioural.Exploration.turning_analysis_continuous",
+                    "analysis function": "plot_all_turn_analysis_continuous",
+                    "analysis arguments": ["model_name", "assay_config_name", "Naturalistic", 1],
+                }
+            ],
+        }
+    ]
+
 
     #                    ASSAY
 
@@ -286,103 +352,9 @@ if __name__ == "__main__": # may be needed to run on windows
         ]
 
 
-
-    # Assay mode 2: Split timelines assay
-
-    ppo_split_assay_test = [
-        {
-            "Model Name": "ppo_gamma",
-            "Environment Name": "ppo_gamma_2",
-            "Assay Configuration Name": "Behavioural-Data-Free",
-            "Trial Number": 2,
-            "Run Mode": "Split-Assay",
-            "Split Event": "One-Prey-Close",
-            "Modification": "Nearby-Prey-Removal",
-            "Learning Algorithm": "PPO",
-            "behavioural recordings": ["environmental positions", "observation", "reward assessments"],
-            "network recordings": ["rnn_shared", "internal_state"],
-            "Assays": [
-                {
-                    "assay id": "Naturalistic",
-                    "stimulus paradigm": "Naturalistic",
-                    "repeats": 1,
-                    "duration": 2000,
-                    "tethered": False,
-                    "save frames": False,
-                    "use_mu": True,
-                },
-            ]
-        }
-    ]
-
     # Assay mode 3: Assay And Analysis
 
-    dqn_analysis_across_scaffold_test = [
-        {
-            "Model Name": "dqn_0",
-            "Environment Name": "dqn_0_1",
-            "Assay Configuration Name": "Behavioural-Data-Free",
-            "Config Modification": "Empty",
-            "Trial Number": 1,
-            "Delete Data": True,
-            "Using GPU": False,
-            "Run Mode": "Assay-Analysis-Across-Scaffold",
-            "Learning Algorithm": "DQN",
-            "behavioural recordings": ["environmental positions", "observation"],
-            "network recordings": ["rnn_shared", "internal_state"],
-            "Assays": [
-                {
-                    "assay id": "Naturalistic",
-                    "repeats": 1,
-                    "stimulus paradigm": "Naturalistic",
-                    "duration": 1000,
-                    "tethered": False,
-                    "save frames": False,
-                },
-            ],
-            "Analysis": [
-                {
-                    "analysis id": "Turn-Analysis",
-                    "analysis script": "Analysis.Behavioural.Exploration.turning_analysis_discrete",
-                    "analysis function": "plot_all_turn_analysis",
-                    "analysis arguments": ["model_name", "assay_config_name", "Naturalistic", 10],
-                }
-            ],
-        }
-    ]
 
-    ppo_analysis_across_scaffold_test = [
-        {
-            "Model Name": "ppo_proj",
-            "Environment Name": "ppo_proj_1",
-            "Assay Configuration Name": "Behavioural-Data-Free",
-            "Config Modification": "Empty",
-            "Trial Number": 1,
-            "Run Mode": "Assay-Analysis-Across-Scaffold",
-            "Learning Algorithm": "PPO",
-            "behavioural recordings": ["environmental positions", "observation"],
-            "network recordings": ["rnn_shared", "internal_state"],
-            "Assays": [
-                {
-                    "assay id": "Naturalistic",
-                    "repeats": 1,
-                    "stimulus paradigm": "Naturalistic",
-                    "duration": 1000,
-                    "tethered": False,
-                    "save frames": False,
-                    "use_mu": True,
-                },
-            ],
-            "Analysis": [
-                {
-                    "analysis id": "Turn-Analysis",
-                    "analysis script": "Analysis.Behavioural.Exploration.turning_analysis_continuous",
-                    "analysis function": "plot_all_turn_analysis_continuous",
-                    "analysis arguments": ["model_name", "assay_config_name", "Naturalistic", 1],
-                }
-            ],
-        }
-    ]
 
     #                   TRAINING - DQN
 
@@ -595,7 +567,7 @@ if __name__ == "__main__": # may be needed to run on windows
     ]
 
     if run_config is None:
-        run_config = ppo_split_assay_example
+        run_config = dqn_analysis_across_scaffold_example
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]
