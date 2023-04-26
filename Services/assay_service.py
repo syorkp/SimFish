@@ -171,6 +171,7 @@ class AssayService(BaseService):
 
             while True:
                 complete = self.perform_assay(assay, sediment=sediment, energy_state=energy_state)
+                self.buffer.reset()
                 if complete:
                     break
 
@@ -240,6 +241,8 @@ class AssayService(BaseService):
         self.buffer.prey_consumed_buffer = data["consumed"].tolist()
 
         energy_state = data["energy_state"][-1]
+        while hasattr(energy_state, "__len__"):
+            energy_state = energy_state[0]
 
         self.buffer.prey_orientations_buffer = data["prey_orientations"].tolist()
         self.buffer.predator_orientation_buffer = data["predator_orientation"].tolist()

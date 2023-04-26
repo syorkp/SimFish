@@ -368,9 +368,9 @@ class BaseDQN:
 
         chosen_a = chosen_a[0]
         o1, given_reward, internal_state1, d, full_masked_image = self.simulation.simulation_step(action=chosen_a)
-        sand_grain_positions, prey_positions, predator_position = self.get_feature_positions()
 
         efference_copy = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
+
 
         # Update buffer
         self.buffer.add_training(observation=o1,

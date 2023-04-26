@@ -23,7 +23,7 @@ class DQNAssayBuffer(BaseBuffer):
 
     def add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref, value, value_ref,
                      advantage, advantage_ref):
-        self._add_training(observation=observation, internal_state=internal_state, reward=reward, action=action,
+        self._add_training(observation=observation, internal_state=internal_state, reward=reward,
                            rnn_state=rnn_state, rnn_state_ref=rnn_state_ref, value=value, value_ref=value_ref,
                            advantage=advantage, advantage_ref=advantage_ref)
 

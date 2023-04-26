@@ -84,8 +84,9 @@ class PPOBuffer(BaseBuffer):
 
     def add_training(self, observation, internal_state, action, reward, l_p_action, rnn_state, rnn_state_ref,
                      value, value_ref, advantage, advantage_ref):
-        self._add_training(observation, internal_state, reward, action, rnn_state, rnn_state_ref, value, value_ref,
-                           advantage, advantage_ref)
+        self._add_training(observation=observation, internal_state=internal_state, reward=reward,
+                           rnn_state=rnn_state, rnn_state_ref=rnn_state_ref, value=value, value_ref=value_ref,
+                           advantage=advantage, advantage_ref=advantage_ref)
 
         self.log_action_probability_buffer.append(l_p_action)
         self.action_buffer.append(action)
@@ -145,6 +146,7 @@ class PPOBuffer(BaseBuffer):
         hdf5_file, assay_group = self._save_assay_data(data_save_location, assay_configuration_id, assay_id, sediment,
                                                        internal_state_order, salt_location)
 
+        print(np.array(self.action_buffer))
         self.create_data_group("impulse", np.array(self.action_buffer)[:, 0], assay_group)
         self.create_data_group("angle", np.array(self.action_buffer)[:, 1], assay_group)
 

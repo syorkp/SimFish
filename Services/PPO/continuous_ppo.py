@@ -179,7 +179,6 @@ class ContinuousPPO:
 
     def _assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         """Run network and simulation step in assay mode."""
-
         a = [a[0],
              a[1],
              self.simulation.fish.prev_action_impulse,
@@ -228,15 +227,15 @@ class ContinuousPPO:
         efference_copy = action + [self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
 
         # Update buffer
-        self.buffer.add_training(observation=o,
-                                 internal_state=internal_state,
+        self.buffer.add_training(observation=o1,
+                                 internal_state=new_internal_state,
                                  action=efference_copy,
                                  reward=given_reward,
                                  value=V,
+                                 value_ref=V_ref,
                                  l_p_action=0,
                                  rnn_state=updated_rnn_state,
                                  rnn_state_ref=updated_rnn_state_ref,
-                                 value_ref=V_ref,
                                  advantage=0,
                                  advantage_ref=0
                                  )

@@ -44,7 +44,7 @@ if __name__ == "__main__":
     # max_uv = np.max(d["observation"][:, :, 1, :], axis=(1, 2))
     # comb = np.concatenate((np.expand_dims(min_distance, 1), np.expand_dims(max_uv, 1)), axis=1)
     d = load_data("ppo_proj-1", "Behavioural-Data-Free", f"Naturalistic-1")
-    d2 = load_data("dqn_0_0-1", "Behavioural-Data-Free", f"Naturalistic-Mod-1")
+    d2 = load_data("ppo_proj-1", "Behavioural-Data-Free", f"Naturalistic-Mod-1")
 
     # plt.plot(d["salt"])
     # plt.show()

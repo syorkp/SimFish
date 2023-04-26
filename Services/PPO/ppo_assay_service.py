@@ -156,7 +156,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
             if self.run_version == "Modified-Completion":
                 self.simulation.make_modification()
 
-            impulse, angle, updated_rnn_state, rnn2_state, mu_i, mu_a, \
+            impulse, angle, updated_rnn_state, updated_rnn_state_ref, mu_i, mu_a, \
             si = \
                 self.sess.run(
                     [self.network.impulse_output, self.network.angle_output, self.network.rnn_state_shared,
@@ -177,7 +177,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                                self.network.entropy_coefficient: self.learning_params["lambda_entropy"],
 
                                })
-            a = [mu_i, mu_a]
+            a = [mu_i[0][0], mu_a[0][0]]
             self.step_number = len(self.buffer.internal_state_buffer)
         else:
             self.simulation.reset()
@@ -188,12 +188,12 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
             self.buffer.reset()
             self.just_trained = False
 
-        efferenec_copy = a + [self.simulation.fish.prev_action_impulse,
+        efference_copy = a + [self.simulation.fish.prev_action_impulse,
                               self.simulation.fish.prev_action_angle]
 
         o, r, internal_state, d, full_masked_image = self.simulation.simulation_step(action=a)
 
-        self.buffer.action_buffer.append(efferenec_copy)  # Add to buffer for loading of previous actions
+        self.buffer.action_buffer.append(efference_copy)  # Add to buffer for loading of previous actions
 
         self.step_number = 0
         while self.step_number < self.current_episode_max_duration:

@@ -78,7 +78,7 @@ class BaseBuffer:
         self.prey_gait_buffer = []
         self.switch_step = None  # Tracking switch step
 
-    def _add_training(self, observation, internal_state, reward, action, rnn_state, rnn_state_ref, value, value_ref,
+    def _add_training(self, observation, internal_state, reward, rnn_state, rnn_state_ref, value, value_ref,
                       advantage, advantage_ref):
         self.observation_buffer.append(observation)
         self.internal_state_buffer.append(internal_state)
@@ -286,11 +286,11 @@ class BaseBuffer:
             self.create_data_group(layer, np.array(self.unit_recordings[layer]).squeeze(), assay_group)
 
         try:
-            self.rnn_state_buffer = np.array(self.rnn_state_buffer).squeeze()
-            self.rnn_state_ref_buffer = np.array(self.rnn_state_ref_buffer).squeeze()
+            rnn_buffer = np.array(self.rnn_state_buffer).squeeze()
+            rnn_ref_buffer = np.array(self.rnn_state_ref_buffer).squeeze()
 
-            self.create_data_group("rnn_state", self.rnn_state_buffer, assay_group)
-            self.create_data_group("rnn_state_ref", self.rnn_state_ref_buffer, assay_group)
+            self.create_data_group("rnn_state", rnn_buffer, assay_group)
+            self.create_data_group("rnn_state_ref", rnn_ref_buffer, assay_group)
         except TypeError:
             # Fixes jagged array error that occurs in split assay mode.
             for i, rnn in enumerate(self.rnn_state_buffer):
@@ -305,15 +305,13 @@ class BaseBuffer:
                 else:
                     self.rnn_state_ref_buffer[i] = np.array(rnn).astype(np.float64)
 
-            self.rnn_state_buffer = np.array(self.rnn_state_buffer).squeeze()
-            self.rnn_state_ref_buffer = np.array(self.rnn_state_ref_buffer).squeeze()
-
             self.create_data_group("rnn_state", self.rnn_state_buffer, assay_group)
             self.create_data_group("rnn_state_ref", self.rnn_state_ref_buffer, assay_group)
 
         self.internal_state_buffer = np.array(self.internal_state_buffer)
 
         self.internal_state_buffer = np.reshape(self.internal_state_buffer, (-1, len(internal_state_order)))
+
         self.create_data_group("internal_state", np.array(self.internal_state_buffer), assay_group)
 
         # Get internal state names and save each.

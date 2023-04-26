@@ -319,6 +319,10 @@ class Fish:
                          self.a_scaling_energy_cost * (abs(self.prev_action_angle) ** 0.5) + \
                          self.baseline_energy_use
 
+        # print()
+        # print(self.prev_action_impulse)
+        # print()
+
         reward += (energy_intake * self.consumption_reward_scaling) - (energy_use * self.action_reward_scaling)
 
         self.energy_level += energy_intake - energy_use

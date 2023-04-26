@@ -206,6 +206,7 @@ Sand grain: {self.sand_grain_associated_reward}
 
         self.fish.body.position = np.array(buffer.fish_position_buffer[-1])
         self.fish.body.angle = np.array(buffer.fish_angle_buffer[-1])
+
         self.fish.energy_level = energy_state
 
         # Get latest observation.  TODO: temp change here
@@ -255,7 +256,8 @@ Sand grain: {self.sand_grain_associated_reward}
             prey_index_offset = len(self.prey_bodies)
             for i, p in enumerate(reversed(prey_close[0][0])):
                 if p:
-                    self.remove_prey(prey_index_offset - i)
+                    # self.remove_prey(prey_index_offset - i)
+                    self.prey_bodies[prey_index_offset-i].position = np.array([20000, 15000])
                     print("Removed prey due to modification")
 
         else:
@@ -428,6 +430,7 @@ Sand grain: {self.sand_grain_associated_reward}
             internal_state_order.append("stress")
         if self.env_variables['energy_state']:
             internal_state.append(self.fish.energy_level)
+            # print(self.fish.energy_level)
             internal_state_order.append("energy_state")
         if self.env_variables['salt']:
             # Scale salt damage so is within same range as pixel counts going in (learning using these also failed with
@@ -443,8 +446,7 @@ Sand grain: {self.sand_grain_associated_reward}
             internal_state.append(0)
         internal_state = np.array([internal_state])
 
-
-        if self.assay_run_version == "Original":
+        if self.assay_run_version == "Original" and self.num_steps > 2:  # Temporal conditional stops assay buffer size errors.
             if self.check_condition_met():
                 print(f"Split condition met at step: {self.num_steps}")
                 done = True

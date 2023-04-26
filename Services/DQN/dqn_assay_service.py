@@ -139,6 +139,7 @@ class DQNAssayService(AssayService, BaseDQN):
             a = self.load_simulation(sediment, energy_state, rnn_state, rnn_state_ref)
             a = a[0]
             self.step_number = len(self.buffer.internal_state_buffer)
+
         else:
             self.simulation.reset()
             a = 0
@@ -177,6 +178,15 @@ class DQNAssayService(AssayService, BaseDQN):
                 break
 
             efference_copy = [a]
+
+        # Catch in case assay duration completes without the split being made.
+        if self.run_version == "Original":
+            if self.simulation.switch_step is not None:
+                self.buffer.switch_step = self.simulation.switch_step
+            else:
+                # If no split occurs, return without saving data.
+                print("No split occurred, as condition never met. Returning without saving data.")
+                return False
 
         if self.environment_params["salt"]:
             salt_location = self.simulation.salt_location
