@@ -386,8 +386,8 @@ Sand grain: {self.sand_grain_associated_reward}
 
             # Salt change reward - positive if gets closer.
             salt_change = salt_damage - self.previous_salt
-            reward += salt_change * 1000
-            self.salt_associated_reward += salt_change * 100000
+            reward += salt_change * 100
+            self.salt_associated_reward += salt_change * 100
             # Baseline penalty
             reward -= 0.1
             self.salt_associated_reward -= 0.1
