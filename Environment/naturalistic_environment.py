@@ -55,7 +55,7 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.split_event = split_event
         self.modification = modification
 
-        self.previous_salt = 0
+        self.previous_salt = 0.005
 
     def reset(self):
         # print (f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -159,7 +159,7 @@ Sand grain: {self.sand_grain_associated_reward}
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
 
-        self.previous_salt = 0
+        self.previous_salt = 0.005
 
     def load_simulation(self, buffer, sediment, energy_state):
         self.num_steps = len(buffer.fish_position_buffer)
@@ -386,9 +386,10 @@ Sand grain: {self.sand_grain_associated_reward}
 
             # Salt change reward - positive if gets closer.
             salt_change = salt_damage - self.previous_salt
-            reward += salt_change * 100
+            reward += salt_change * 10
             # Baseline penalty
             reward -= 0.1
+            self.salt_associated_reward -= 0.1
 
             if salt_damage > 0.015:  # REGION FOR SPARSE HIGH REWARD
                 reward += 100 #self.env_variables["salt_reward_penalty"] * salt_damage
