@@ -14,6 +14,9 @@ This will be useful for gathering data at different stages in scaffold.
 
 
 def get_checkpoint(model_name, scaffold_point):
+    """Using the tensorboard logs, returns the most suitable (latest) checkpoint episode number for a given scaffold
+    point"""
+
     print(scaffold_point)
     scaffold_point_transition = scaffold_point + 1
 

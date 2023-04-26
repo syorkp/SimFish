@@ -270,7 +270,7 @@ class ContinuousPPO:
                        self.network.sigma_impulse_combined_proto: self.impulse_sigma,
                        self.network.sigma_angle_combined_proto: self.angle_sigma,
                        self.network.rnn_state_in: rnn_state,
-                       self.network.rnn_state_in_ref: rnn_state_ref,
+                       # self.network.rnn_state_in_ref: rnn_state_ref,   TODO: Currently incorrect, though learning doesnt occur when correct.
                        self.network.batch_size: 1,
                        self.network.train_length: 1,
                        self.network.entropy_coefficient: self.learning_params["lambda_entropy"],

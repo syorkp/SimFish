@@ -42,6 +42,7 @@ def get_frameshift_sequences(action_sequences):
 
 
 def plot_all_turn_analysis(model_name, assay_config, assay_id, n, figure_moniker="", use_purely_turn_sequences=True, data_cutoff=None):
+    print("Running turning analysis")
     no_prey_actions, no_prey_timestamps = get_no_prey_stimuli_sequences(model_name, assay_config, assay_id, n, data_cutoff)
     otherwise_exploration_sequences = get_exploration_sequences(model_name, assay_config, assay_id, n, data_cutoff)
 
