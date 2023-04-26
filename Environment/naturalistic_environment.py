@@ -386,12 +386,13 @@ Sand grain: {self.sand_grain_associated_reward}
 
             # Salt change reward - positive if gets closer.
             salt_change = salt_damage - self.previous_salt
-            reward += salt_change * 10
+            reward += salt_change * 1000
+            self.salt_associated_reward += salt_change * 100000
             # Baseline penalty
             reward -= 0.1
             self.salt_associated_reward -= 0.1
 
-            if salt_damage > 0.015:  # REGION FOR SPARSE HIGH REWARD
+            if salt_damage > 0.018:  # REGION FOR SPARSE HIGH REWARD
                 reward += 100 #self.env_variables["salt_reward_penalty"] * salt_damage
                 self.salt_associated_reward += 100 #self.env_variables['salt_reward_penalty'] * salt_damage
         else:
@@ -453,7 +454,6 @@ Sand grain: {self.sand_grain_associated_reward}
         if len(internal_state) == 0:
             internal_state.append(0)
         internal_state = np.array([internal_state])
-
 
         if self.assay_run_version == "Original":
             if self.check_condition_met():
