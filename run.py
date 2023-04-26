@@ -578,6 +578,38 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
+    dqn_salt_reward_function = [
+        {
+            "Model Name": "dqn_salt_reward_function",
+            "Environment Name": "dqn_salt_only_inverted",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_salt_reward_function",
+            "Environment Name": "dqn_salt_only_inverted",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_salt_reward_function",
+            "Environment Name": "dqn_salt_only_inverted",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+        {
+            "Model Name": "dqn_salt_reward_function",
+            "Environment Name": "dqn_salt_only_inverted",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "DQN",
+        },
+    ]
+
+
     ppo_salt_only_simplified = [
         {
             "Model Name": "ppo_salt_only_simplified",
@@ -770,7 +802,7 @@ if __name__ == "__main__": # may be needed to run on windows
     ]
 
     if run_config is None:
-        run_config = dqn_salt_only_simplified
+        run_config = dqn_salt_reward_function
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]

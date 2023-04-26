@@ -377,10 +377,22 @@ Sand grain: {self.sand_grain_associated_reward}
                 pass
                 # done = True
                 # self.recent_cause_of_death = "Salt"
+            # NORMAL METHOD
+            # if self.env_variables["salt_reward_penalty"] != 0 and salt_damage > self.env_variables["salt_recovery"]:
+            #     reward -= self.env_variables["salt_reward_penalty"] * salt_damage
+            #     self.salt_associated_reward += self.env_variables['salt_reward_penalty'] * salt_damage
 
-            if self.env_variables["salt_reward_penalty"] != 0:  # and salt_damage > self.env_variables["salt_recovery"]:  TODO: Trying without this for simplicity
-                reward -= self.env_variables["salt_reward_penalty"] * salt_damage
-                self.salt_associated_reward -= self.env_variables['salt_reward_penalty'] * salt_damage
+            # Reproducing plume behaviour method.  TODO: REMOVE
+
+            # Salt change reward - positive if gets closer.
+            salt_change = salt_damage - self.previous_salt
+            reward += salt_change * 100
+            # Baseline penalty
+            reward -= 0.1
+
+            if salt_damage > 0.015:  # REGION FOR SPARSE HIGH REWARD
+                reward += 100 #self.env_variables["salt_reward_penalty"] * salt_damage
+                self.salt_associated_reward += 100 #self.env_variables['salt_reward_penalty'] * salt_damage
         else:
             salt_damage = 0
 
