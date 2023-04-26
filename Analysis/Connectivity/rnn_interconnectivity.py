@@ -239,10 +239,10 @@ if __name__ == "__main__":
     selected_weights *= (np.absolute(selected_weights) > to_include)
 
     rnn_interconnectivity_1[:512, 512:1024] = selected_weights
-    with open('../../Configurations/Ablation-Matrices/post_ablation_weights_1_dqn_26_2.npy', 'wb') as f:
+    with open('../../Configurations/Run-Configurations/Ablation-Matrices/post_ablation_weights_1_dqn_26_2.npy', 'wb') as f:
         np.save(f, rnn_interconnectivity_1)
     rnn_interconnectivity_1[:512, 512:1024] = 0
-    with open('../../Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_26_2.npy', 'wb') as f:
+    with open('../../Configurations/Run-Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_26_2.npy', 'wb') as f:
         np.save(f, rnn_interconnectivity_1)
 
 

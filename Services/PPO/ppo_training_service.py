@@ -10,7 +10,6 @@ from Analysis.Behavioural.Exploration.turn_chain_metric import get_normalised_tu
 
 from Buffers.PPO.ppo_buffer import PPOBuffer
 
-from Configurations.Templates.assay_config import naturalistic_assay_config
 from Configurations.Utilities.turn_model_configs_into_assay_configs import transfer_config
 
 from Services.PPO.continuous_ppo import ContinuousPPO
@@ -117,29 +116,7 @@ class PPOTrainingService(TrainingService, ContinuousPPO):
             with open(f"{self.model_location}/saved_parameters.json", "w") as file:
                 json.dump(output_data, file)
 
-        print("Training finished, starting to gather data...")
-        tf.reset_default_graph()
-
-        # Create Assay Config from Training Config
-        transfer_config(self.model_name, self.model_name)
-
-        # Build trial
-        trial = naturalistic_assay_config
-        trial["Model Name"] = self.model_name
-        trial["Environment Name"] = self.model_name
-        trial["Trial Number"] = self.model_number
-        trial["Continuous Actions"] = True
-        trial["Learning Algorithm"] = "PPO"
-        for i, assay in enumerate(trial["Assays"]):
-            trial["Assays"][i]["duration"] = self.learning_params["max_epLength"]
-            trial["Assays"][i]["save frames"] = False
-
-        # Run data gathering
-        ppo_assay_target_continuous(trial, self.total_steps, self.episode_number, self.memory_fraction)
-
-        # Perform cursory analysis on data
-        data_index_service = DataIndexServiceContinuous(self.model_id)
-        data_index_service.produce_behavioural_summary_display()
+        print("Training finished")
 
     def episode_loop(self):
         """

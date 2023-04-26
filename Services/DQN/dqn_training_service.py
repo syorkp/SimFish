@@ -9,7 +9,6 @@ from Analysis.Indexing.data_index_service import DataIndexServiceDiscrete
 from Analysis.Behavioural.Exploration.turn_chain_metric import get_normalised_turn_chain_metric_discrete
 from Buffers.DQN.dqn_training_buffer import DQNTrainingBuffer
 from Buffers.DQN.dqn_assay_buffer import DQNAssayBuffer
-from Configurations.Templates.assay_config import naturalistic_assay_config
 from Configurations.Utilities.turn_model_configs_into_assay_configs import transfer_config
 from Services.training_service import TrainingService
 from Services.DQN.dqn_assay_service import assay_target
@@ -105,29 +104,7 @@ class DQNTrainingService(TrainingService, BaseDQN):
             with open(f"{self.model_location}/saved_parameters.json", "w") as file:
                 json.dump(output_data, file)
 
-        print("Training finished, starting to gather data...")
-        tf.reset_default_graph()
-
-        # Create Assay Config from Training Config
-        transfer_config(self.model_name, self.model_name)
-
-        # Build trial
-        trial = naturalistic_assay_config
-        trial["Model Name"] = self.model_name
-        trial["Environment Name"] = self.model_name
-        trial["Trial Number"] = self.model_number
-        trial["Continuous Actions"] = False
-        trial["Learning Algorithm"] = "DQN"
-        for i, assay in enumerate(trial["Assays"]):
-            trial["Assays"][i]["duration"] = self.learning_params["max_epLength"]
-            trial["Assays"][i]["save frames"] = False
-
-        # Run data gathering
-        assay_target(trial, self.total_steps, self.episode_number, self.memory_fraction)
-
-        # Perform cursory analysis on data
-        data_index_service = DataIndexServiceDiscrete(self.model_id)
-        data_index_service.produce_behavioural_summary_display()
+        print("Training finished")
 
     def episode_loop(self):
         """Run DQN episode loop (training mode)"""

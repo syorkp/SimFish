@@ -1,8 +1,4 @@
-from Configurations.Templates.interruptions import energy_state_profile_long_term, salt_profile_long_term, \
-    in_light_profile_long_term, efference_A, efference_B, efference_C, efference_D, efference_E, efference_F, \
-    efference_G, efference_H, efference_V, efference_W, efference_X, efference_Y, efference_Z, \
-    long_term_visual_interruption_profile
-
+from Configurations.Templates.interruptions import energy_state_profile_long_term
 
 # ========== Training Mode ==========
 

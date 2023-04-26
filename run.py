@@ -6,10 +6,6 @@ from datetime import datetime
 import numpy as np
 
 from Services.trial_manager import TrialManager
-from Configurations.Templates.interruptions import energy_state_profile_long_term, salt_profile_long_term, \
-    in_light_profile_long_term, efference_A, efference_B, efference_C, efference_D, efference_E, efference_F, \
-    efference_G, efference_H, efference_V, efference_W, efference_X, efference_Y, efference_Z, long_term_visual_interruption_profile, \
-    brief_interruption_profile, fish_relocation_to_nowhere, energy_state_profile_long_term, long_term_interruption_profile, rnn_zeros
 
 if __name__ == "__main__": # may be needed to run on windows
     # Get config argument
@@ -65,9 +61,9 @@ if __name__ == "__main__": # may be needed to run on windows
     vrv_config = [vrv_config]
 
     # Ablation configs
-    with open('Configurations/Ablation-Matrices/post_ablation_weights_1_dqn_26_2.npy', 'rb') as f:
+    with open('Configurations/Run-Configurations/Ablation-Matrices/post_ablation_weights_1_dqn_26_2.npy', 'rb') as f:
         ablation_matrix = np.load(f)
-    with open('Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_26_2.npy', 'rb') as f:
+    with open('Configurations/Run-Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_26_2.npy', 'rb') as f:
         full_ablation_matrix = np.load(f)
 
     # Config Examples
