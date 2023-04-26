@@ -578,6 +578,38 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
+    ppo_salt_only_simplified = [
+        {
+            "Model Name": "ppo_salt_only_simplified",
+            "Environment Name": "ppo_salt_only_simplified",
+            "Trial Number": 1,
+            "Run Mode": "Training",
+            "Learning Algorithm": "PPO",
+        },
+        {
+            "Model Name": "ppo_salt_only_simplified",
+            "Environment Name": "ppo_salt_only_simplified",
+            "Trial Number": 2,
+            "Run Mode": "Training",
+            "Learning Algorithm": "PPO",
+        },
+        {
+            "Model Name": "ppo_salt_only_simplified",
+            "Environment Name": "ppo_salt_only_simplified",
+            "Trial Number": 3,
+            "Run Mode": "Training",
+            "Learning Algorithm": "PPO",
+        },
+        {
+            "Model Name": "ppo_salt_only_simplified",
+            "Environment Name": "ppo_salt_only_simplified",
+            "Trial Number": 4,
+            "Run Mode": "Training",
+            "Learning Algorithm": "PPO",
+        },
+    ]
+
+
     dqn_salt_change_only = [
         {
             "Model Name": "dqn_salt_change_only",

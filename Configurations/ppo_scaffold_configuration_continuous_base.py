@@ -214,6 +214,19 @@ env = {
 
 scaffold_name = "ppo_proj"
 
+# env["shot_noise"] = True
+#
+# env["max_salt_damage"] = 0.02
+#
+# env["prey_num"] = 0
+# env["capture_swim_extra_cost"] = 0
+# env["wall_touch_penalty"] = 0
+# env["energy_state"] = False
+# env["in_light"] = False
+#
+# env["salt_reward_penalty"] = -100000
+
+
 # env["probability_of_predator"] = 0.003
 env["light_gain"] = 125.7# 27.769# 125.7
 env["dark_gain"] = 60.0# 1.2397 # 60.0
