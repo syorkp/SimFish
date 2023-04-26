@@ -207,8 +207,12 @@ class DQNAssayService(AssayService, BaseDQN):
         if assay["save frames"]:
             episode_data = load_data(f"{self.model_name}-{self.model_number}", self.assay_configuration_id,
                                      assay['assay id'], training_data=False)
-            draw_episode(episode_data, self.config_name, f"{self.model_name}-{self.model_number}", self.continuous_actions,
-                         save_id=f"{self.assay_configuration_id}-{assay['assay id']}")
+            draw_episode(data=episode_data,
+                         env_variables=self.environment_params,
+                         save_location=f"Assay-Output/{self.model_name}-{self.model_number}/",
+                         continuous_actions=self.continuous_actions,
+                         save_id=f"{self.assay_configuration_id}-{assay['assay id']}",
+                         include_sediment=False)
 
         print(f"Assay: {assay['assay id']} Completed")
         print("")

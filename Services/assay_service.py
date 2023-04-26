@@ -294,7 +294,6 @@ class AssayService(BaseService):
                                                                           moving=assay["moving"],
                                                                           reset_each_step=assay["reset"],
                                                                           reset_interval=assay["reset interval"],
-                                                                          sediment=assay["sediment"],
                                                                           assay_all_details=assay
                                                                           )
             else:
@@ -307,7 +306,6 @@ class AssayService(BaseService):
                                                                 moving=assay["moving"],
                                                                 reset_each_step=assay["reset"],
                                                                 reset_interval=assay["reset interval"],
-                                                                sediment=assay["sediment"],
                                                                 assay_all_details=assay,
                                                                 )
         elif assay["stimulus paradigm"] == "Naturalistic":

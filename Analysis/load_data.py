@@ -43,7 +43,7 @@ if __name__ == "__main__":
     # min_distance = np.min(fish_prey_distances, axis=1)
     # max_uv = np.max(d["observation"][:, :, 1, :], axis=(1, 2))
     # comb = np.concatenate((np.expand_dims(min_distance, 1), np.expand_dims(max_uv, 1)), axis=1)
-    d = load_data("ppo_proj-1", "Behavioural-Data-Free", f"Naturalistic-1")
+    d = load_data("dqn_0_0-1", "Controlled-Visual-Stimuli", f"Moving-Prey-1")
     d2 = load_data("ppo_proj-1", "Behavioural-Data-Free", f"Naturalistic-Mod-1")
 
     # plt.plot(d["salt"])

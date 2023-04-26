@@ -296,7 +296,10 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
                 comment='Movie support!')
     writer = FFMpegWriter(fps=15, metadata=metadata, codec='mpeg4', bitrate=1000000)
 
-    board = DrawingBoard(env_variables["arena_width"], env_variables["arena_height"], data, include_sediment)
+    board = DrawingBoard(env_variables["arena_width"],
+                         env_variables["arena_height"],
+                         data,
+                         include_sediment)
     if show_energy_state:
         energy_levels = data["energy_state"]
     fish_positions = data["fish_position"]

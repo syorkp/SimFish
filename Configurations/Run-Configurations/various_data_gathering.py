@@ -1,3 +1,138 @@
+controlled_assay_configuration_2 = [
+    {
+        "Model Name": "basic_all_features",
+        "Environment Name": "test_square",
+        "Trial Number": 1,
+        "Assay Configuration Name": "Controlled_Visual_Stimuli",
+        "Run Mode": "Assay",
+        "Realistic Bouts": False,
+        "Using GPU": True,
+        "monitor gpu": True,
+        "Priority": 1,
+        "Assays": [
+            {
+                "assay id": "Moving-Prey",
+                "stimulus paradigm": "Projection",
+                "duration": 241,
+                "Tethered": True,
+                "save frames": True,
+                "recordings": ["behavioural choice", "rnn state", "observation"],
+                "stimuli": {
+                    "prey 1": [
+                        {"step": 0,
+                         "position": [150, 150]},
+                        {"step": 40,
+                         "position": [450, 150]},
+                        {"step": 80,
+                         "position": [450, 450]},
+                        {"step": 120,
+                         "position": [150, 450]},
+                        {"step": 160,
+                         "position": [450, 450]},
+                        {"step": 200,
+                         "position": [450, 150]},
+                        {"step": 240,
+                         "position": [150, 150]},
+                    ],
+                },
+                "interactions": []},
+{
+                "assay id": "Moving-Predator",
+                "stimulus paradigm": "Projection",
+                "duration": 121,
+                "Tethered": True,
+                "save frames": True,
+                "recordings": ["behavioural choice", "rnn state", "observation"],
+                "stimuli": {
+                    "predator 1": [
+                        {"step": 0,
+                         "position": [100, 100]},
+                        {"step": 20,
+                         "position": [500, 100]},
+                        {"step": 40,
+                         "position": [500, 500]},
+                        {"step": 60,
+                         "position": [100, 500]},
+                        {"step": 80,
+                         "position": [500, 500]},
+                        {"step": 100,
+                         "position": [500, 100]},
+                        {"step": 120,
+                         "position": [100, 100]},
+                    ],
+                },
+                "interactions": []},
+        ]
+    },
+    {
+        "Model Name": "realistic_all_features",
+        "Environment Name": "test_square",
+        "Trial Number": 2,
+        "Assay Configuration Name": "Controlled_Visual_Stimuli",
+        "Run Mode": "Assay",
+        "Realistic Bouts": True,
+        "Using GPU": True,
+        "monitor gpu": True,
+        "Priority": 1,
+        "Assays": [
+            {
+                "assay id": "Moving-Prey",
+                "stimulus paradigm": "Projection",
+                "duration": 241,
+                "Tethered": True,
+                "save frames": True,
+                "recordings": ["behavioural choice", "rnn state", "observation"],
+                "stimuli": {
+                    "prey 1": [
+                        {"step": 0,
+                         "position": [150, 150]},
+                        {"step": 40,
+                         "position": [450, 150]},
+                        {"step": 80,
+                         "position": [450, 450]},
+                        {"step": 120,
+                         "position": [150, 450]},
+                        {"step": 160,
+                         "position": [450, 450]},
+                        {"step": 200,
+                         "position": [450, 150]},
+                        {"step": 240,
+                         "position": [150, 150]},
+                    ],
+                },
+                "interactions": []
+            },
+            {
+                "assay id": "Moving-Predator",
+                "stimulus paradigm": "Projection",
+                "duration": 121,
+                "Tethered": True,
+                "save frames": True,
+                "recordings": ["behavioural choice", "rnn state", "observation"],
+                "stimuli": {
+                    "predator 1": [
+                        {"step": 0,
+                         "position": [100, 100]},
+                        {"step": 20,
+                         "position": [500, 100]},
+                        {"step": 40,
+                         "position": [500, 500]},
+                        {"step": 60,
+                         "position": [100, 500]},
+                        {"step": 80,
+                         "position": [500, 500]},
+                        {"step": 100,
+                         "position": [500, 100]},
+                        {"step": 120,
+                         "position": [100, 100]},
+                    ],
+                },
+                "interactions": []},
+        ]
+    },
+]
+
+
 # Data Gathering
 
 dqn_14_naturalistic_data = [
