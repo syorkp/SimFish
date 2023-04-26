@@ -448,7 +448,7 @@ Sand grain: {self.sand_grain_associated_reward}
                 done = True
                 self.switch_step = self.num_steps
 
-        observation, full_masked_image = None, None #self.resolve_visual_input()
+        observation, full_masked_image = np.zeros((139, 3, 2)), None #self.resolve_visual_input()
 
         return observation, reward, internal_state, done, full_masked_image
 
