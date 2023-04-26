@@ -22,6 +22,7 @@ class BaseEnvironment:
         # Set max visual distance to the point at which 99.9% of photons have been lost to absorption mask.
         max_visual_distance = np.absolute(np.log(0.001) / self.env_variables["light_decay_rate"])
 
+        # TODO: Temp change here
         # self.board = DrawingBoard(arena_width=self.env_variables['arena_width'],
         #                           arena_height=self.env_variables['arena_height'],
         #                           uv_light_decay_rate=self.env_variables['light_decay_rate'],
@@ -39,6 +40,7 @@ class BaseEnvironment:
         #                           red_object_intensity=self.env_variables["red_object_intensity"],
         #                           red2_object_intensity=self.env_variables["background_point_intensity"],
         #                           )
+        self.board = None
 
         self.show_all = False
         self.num_steps = 0
