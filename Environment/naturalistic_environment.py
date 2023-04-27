@@ -55,6 +55,9 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.split_event = split_event
         self.modification = modification
 
+        self.num_steps_prey_available = 0
+
+
     def reset(self):
         # print (f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
         # print(f"Mean UV: {sum([i[1] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -157,6 +160,8 @@ Sand grain: {self.sand_grain_associated_reward}
         self.wall_associated_reward = 0
         self.sand_grain_associated_reward = 0
 
+        self.num_steps_prey_available = 0
+
     def load_simulation(self, buffer, sediment, energy_state):
         self.num_steps = len(buffer.fish_position_buffer)
 
@@ -216,6 +221,15 @@ Sand grain: {self.sand_grain_associated_reward}
         # return observation
         return np.zeros((139, 3, 2))
 
+    def get_prey_within_visual_field(self, max_angular_deviation, max_distance):
+        prey_near = self.check_proximity_all_prey(sensing_distance=max_distance)
+        fish_prey_incidence = self.get_fish_prey_incidence()
+        within_visual_field = np.absolute(fish_prey_incidence) < max_angular_deviation
+
+        prey_in_visual_field = prey_near * within_visual_field
+
+        return prey_in_visual_field
+
     def check_condition_met(self):
         """For the split assay mode - checks whether the specified condition is met at each step"""
 
@@ -225,12 +239,8 @@ Sand grain: {self.sand_grain_associated_reward}
                 max_angular_deviation = np.pi / 2  # Anywhere in visual field.
                 max_distance = 100  # 10mm
 
-                prey_near = self.check_proximity_all_prey(sensing_distance=max_distance)
-                fish_prey_incidence = self.get_fish_prey_incidence()
-                within_visual_field = np.absolute(fish_prey_incidence) < max_angular_deviation
-
-                prey_close = prey_near * within_visual_field
-                num_prey_close = np.sum(prey_close * 1)
+                prey_in_visual_field = self.get_prey_within_visual_field(max_angular_deviation, max_distance)
+                num_prey_close = np.sum(prey_in_visual_field * 1)
                 if num_prey_close == 1:
                     return True
         elif self.split_event == "Empty-Surroundings":
@@ -247,14 +257,10 @@ Sand grain: {self.sand_grain_associated_reward}
             max_angular_deviation = np.pi / 2
             max_distance = 100  # 10mm
 
-            prey_near = self.check_proximity_all_prey(sensing_distance=max_distance)
-            fish_prey_incidence = self.get_fish_prey_incidence()
-            within_visual_field = np.absolute(fish_prey_incidence) < max_angular_deviation
-
-            prey_close = prey_near * within_visual_field
-
+            prey_in_visual_field = self.get_prey_within_visual_field(max_angular_deviation, max_distance)
             prey_index_offset = len(self.prey_bodies)
-            for i, p in enumerate(reversed(prey_close[0][0])):
+
+            for i, p in enumerate(reversed(prey_in_visual_field[0][0])):
                 if p:
                     # self.remove_prey(prey_index_offset - i)
                     self.prey_bodies[prey_index_offset-i].position = np.array([20000, 15000])
@@ -412,6 +418,12 @@ Sand grain: {self.sand_grain_associated_reward}
 
         # Log whether fish in light
         self.in_light_history.append(self.fish.body.position[0] > self.dark_col)
+
+        # Log steps where prey in visual field.
+        prey_in_visual_field = self.get_prey_within_visual_field(max_angular_deviation=2.2, max_distance=100)
+        num_prey_close = np.sum(prey_in_visual_field * 1)
+        if num_prey_close > 0:
+            self.num_steps_prey_available += 1
 
         self.num_steps += 1
 

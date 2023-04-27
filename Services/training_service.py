@@ -451,6 +451,18 @@ class TrainingService(BaseService):
                                         simple_value=current_opposition_metric)])
             self.writer.add_summary(current_opposition_summary, self.episode_number)
 
+        # Prey availability metric
+        prop_steps_prey_available = self.simulation.num_steps_prey_available / self.simulation.num_steps
+        prop_steps_prey_available_summary = tf.Summary(
+            value=[tf.Summary.Value(tag="Prop Steps Prey Available",
+                                    simple_value=prop_steps_prey_available)])
+        self.writer.add_summary(prop_steps_prey_available_summary, self.episode_number)
+
+        num_steps_prey_available_summary = tf.Summary(
+            value=[tf.Summary.Value(tag="Num Steps Prey Available",
+                                    simple_value=self.simulation.num_steps_prey_available)])
+        self.writer.add_summary(num_steps_prey_available_summary, self.episode_number)
+
         # Energy efficiency index - Just the average energy used per step.
         if self.environment_params["energy_state"]:
             energy_used = 0
