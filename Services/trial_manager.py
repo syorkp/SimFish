@@ -159,7 +159,7 @@ class TrialManager:
         return new_job
 
     def run_analysis_across_scaffold(self, index, trial, running_jobs, memory_fraction, to_delete):
-        """Gathers specified data at each point in elapsed scaffold of a model. Then run a specified set of anlaysis
+        """Gathers specified data at each point in elapsed scaffold of a model. Then run a specified set of analysis
         scripts on that data."""
         complete = False
 

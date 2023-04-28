@@ -371,8 +371,7 @@ class BaseBuffer:
             self.fix_prey_buffers()
         self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
 
-        # TODO: Test change here
-        # self.create_data_group("sediment", np.array(sediment), assay_group)
+        self.create_data_group("sediment", np.array(sediment), assay_group)
 
         if self.switch_step != None:
             self.create_data_group("switch_step", np.array([self.switch_step]), assay_group)

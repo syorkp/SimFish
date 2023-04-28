@@ -277,8 +277,7 @@ class AssayService(BaseService):
             range(0, int(num_rnns), 2))
 
         # Impose sediment (red2 channel).
-        # sediment = data["sediment"]
-        sediment = None  # TODO: Temp change here.
+        sediment = data["sediment"]
 
         return sediment, energy_state
 

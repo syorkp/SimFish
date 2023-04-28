@@ -155,8 +155,7 @@ Sand grain: {self.sand_grain_associated_reward}
     def load_simulation(self, buffer, sediment, energy_state):
         self.num_steps = len(buffer.fish_position_buffer)
 
-        # TODO: temp change here.
-        # self.board.global_sediment_grating = self.chosen_math_library.array(np.expand_dims(sediment, 2))
+        self.board.global_sediment_grating = self.chosen_math_library.array(np.expand_dims(sediment, 2))
         self.prey_identifiers = []
 
         self.salt_location = buffer.salt_location
@@ -207,12 +206,11 @@ Sand grain: {self.sand_grain_associated_reward}
 
         self.fish.energy_level = energy_state
 
-        # Get latest observation.  TODO: temp change here
-        # self.board.FOV.update_field_of_view(self.fish.body.position)
-        # self.draw_walls_and_sediment()
-        # observation, full_masked_image = self.resolve_visual_input()
-        # return observation
-        return np.zeros((139, 3, 2))
+        # Get latest observation.
+        self.board.FOV.update_field_of_view(self.fish.body.position)
+        self.draw_walls_and_sediment()
+        observation, full_masked_image = self.resolve_visual_input()
+        return observation
 
     def get_prey_within_visual_field(self, max_angular_deviation, max_distance):
         prey_near = self.check_proximity_all_prey(sensing_distance=max_distance)
@@ -420,9 +418,9 @@ Sand grain: {self.sand_grain_associated_reward}
 
         self.num_steps += 1
 
-        # Drawing the features visible at this step:  TODO: Temp change here
-        # self.board.FOV.update_field_of_view(self.fish.body.position)
-        # self.draw_walls_and_sediment()
+        # Drawing the features visible at this step:
+        self.board.FOV.update_field_of_view(self.fish.body.position)
+        self.draw_walls_and_sediment()
 
         # Calculate internal state
         internal_state = []
@@ -457,9 +455,7 @@ Sand grain: {self.sand_grain_associated_reward}
                 done = True
                 self.switch_step = self.num_steps
 
-        # TODO: Temp change here
-        # observation, full_masked_image = self.resolve_visual_input()
-        observation, full_masked_image = np.zeros((139, 3, 2)), None
+        observation, full_masked_image = self.resolve_visual_input()
 
         return observation, reward, internal_state, done, full_masked_image
 

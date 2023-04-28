@@ -168,9 +168,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         internal_state = np.array([internal_state])
 
         # Observation
-        # TODO: Temp change here
-        # observation, full_masked_image = self.resolve_visual_input()
-        observation, full_masked_image = np.zeros((139, 3, 2)), None
+        observation, full_masked_image = self.resolve_visual_input()
 
         return observation, reward, internal_state, done, full_masked_image
 

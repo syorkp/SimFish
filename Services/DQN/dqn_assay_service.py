@@ -193,9 +193,8 @@ class DQNAssayService(AssayService, BaseDQN):
         else:
             salt_location = None
 
-        # TODO: Temp change here
         if self.using_gpu:
-            background = None  #self.simulation.board.global_sediment_grating.get()[:, :, 0]
+            background = self.simulation.board.global_sediment_grating.get()[:, :, 0]
         else:
             background = self.simulation.board.global_sediment_grating[:, :, 0]
 

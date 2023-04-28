@@ -9,8 +9,7 @@ class QNetworkReduced:
     def __init__(self, simulation, rnn_dim, rnn_cell, my_scope, num_actions, internal_states=2, learning_rate=0.0001,):
         """Simplified network without visual inputs."""
 
-        # TODO: Test change here
-        self.num_arms = 120  #simulation.fish.left_eye.observation_size  # Rays for each eye
+        self.num_arms = simulation.fish.left_eye.observation_size  # Rays for each eye
         self.rnn_dim = rnn_dim
         self.rnn_output_size = self.rnn_dim
         self.actions = tf.placeholder(shape=[None], dtype=tf.int32, name='actions')

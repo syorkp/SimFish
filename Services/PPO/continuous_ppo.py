@@ -168,8 +168,7 @@ class ContinuousPPO:
                                                "sigma_reduction_time"])])
             self.angle_sigma = np.array([self.learning_params["max_sigma_angle"] - (
                     self.learning_params["max_sigma_angle"] - self.learning_params["min_sigma_angle"]) * (
-                                                 self.sigma_total_steps / self.learning_params[
-                                             "sigma_reduction_time"])])
+                                                 self.sigma_total_steps / self.learning_params["sigma_reduction_time"])])
             # To prevent ever returning NaN
             if math.isnan(self.impulse_sigma[0]):
                 self.impulse_sigma = np.array([self.learning_params["min_sigma_impulse"]])
@@ -228,21 +227,20 @@ class ContinuousPPO:
 
         # Update buffer
         self.buffer.add_training(observation=o1,
-                                   internal_state=new_internal_state,
-                                   action=efference_copy,
-                                   reward=given_reward,
-                                   value=V,
-                                   value_ref=V_ref,
-                                   l_p_action=0,
-                                   rnn_state=updated_rnn_state,
-                                   rnn_state_ref=updated_rnn_state_ref,
-                                   advantage=0,
-                                   advantage_ref=0
-                                   )
+                                 internal_state=new_internal_state,
+                                 action=efference_copy,
+                                 reward=given_reward,
+                                 value=V,
+                                 value_ref=V_ref,
+                                 l_p_action=0,
+                                 rnn_state=updated_rnn_state,
+                                 rnn_state_ref=updated_rnn_state_ref,
+                                 advantage=0,
+                                 advantage_ref=0
+                                 )
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
         if "environmental positions" in self.buffer.recordings:
             self.log_data(efference_copy, action)
-
 
         return given_reward, new_internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, action
 
@@ -316,17 +314,17 @@ class ContinuousPPO:
 
         efference_copy = action + action_consequences
         self.buffer.add_training(observation=o,
-                                   internal_state=internal_state,
-                                   action=efference_copy,
-                                   reward=r,
-                                   l_p_action=neg_log_action_probability,
-                                   rnn_state=rnn_state,
-                                   rnn_state_ref=rnn_state_ref,
-                                   value=V,
-                                   value_ref=V_ref,
-                                   advantage=0,
-                                   advantage_ref=0,
-                                   )
+                                 internal_state=internal_state,
+                                 action=efference_copy,
+                                 reward=r,
+                                 l_p_action=neg_log_action_probability,
+                                 rnn_state=rnn_state,
+                                 rnn_state_ref=rnn_state_ref,
+                                 value=V,
+                                 value_ref=V_ref,
+                                 advantage=0,
+                                 advantage_ref=0,
+                                 )
 
         if self.save_environmental_data:
             self.log_data(action, efference_copy)

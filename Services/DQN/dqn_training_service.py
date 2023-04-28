@@ -5,7 +5,6 @@ import numpy as np
 # noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
 
-from Analysis.Indexing.data_index_service import DataIndexServiceDiscrete
 from Analysis.Behavioural.Exploration.turn_chain_metric import get_normalised_turn_chain_metric_discrete
 from Buffers.DQN.dqn_training_buffer import DQNTrainingBuffer
 from Buffers.DQN.dqn_assay_buffer import DQNAssayBuffer

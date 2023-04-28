@@ -243,8 +243,8 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
         else:
             salt_location = None
 
-        if self.using_gpu:  # TODO: temp change here
-            background = 0  # self.simulation.board.global_sediment_grating.get()[:, :, 0]
+        if self.using_gpu:
+            background = self.simulation.board.global_sediment_grating.get()[:, :, 0]
         else:
             background = self.simulation.board.global_sediment_grating[:, :, 0]
 
