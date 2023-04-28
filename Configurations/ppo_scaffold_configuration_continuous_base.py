@@ -12,10 +12,7 @@ import os
 import numpy as np
 
 from Utilities.scaffold_creation import create_scaffold, build_changes_list_gradual
-from Networks.original_network import connectivity, reflected, base_network_layers, modular_network_layers, ops
 
-ops["join_eyes"][1].remove("prev_action_impulse")
-ops["join_eyes"][1].remove("prev_action_angle")
 
 params = {
        # Learning (Universal)
