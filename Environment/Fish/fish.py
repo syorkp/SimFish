@@ -2,8 +2,8 @@ import numpy as np
 import pymunk
 
 from Environment.Fish.eye import Eye
-from Environment.Action_Space.draw_angle_dist import draw_angle_dist_new as draw_angle_dist
-from Environment.Action_Space.draw_angle_dist import draw_angle_dist_mean as draw_angle_dist_mean
+from Environment.Action_Space.draw_angle_and_distance import draw_angle_and_distance as draw_angle_dist
+from Environment.Action_Space.draw_angle_and_distance import draw_angle_dist_mean as draw_angle_dist_mean
 
 
 class Fish:

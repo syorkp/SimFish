@@ -411,10 +411,11 @@ Sand grain: {self.sand_grain_associated_reward}
         self.in_light_history.append(self.fish.body.position[0] > self.dark_col)
 
         # Log steps where prey in visual field.
-        prey_in_visual_field = self.get_prey_within_visual_field(max_angular_deviation=2.2, max_distance=100)
-        num_prey_close = np.sum(prey_in_visual_field * 1)
-        if num_prey_close > 0:
-            self.num_steps_prey_available += 1
+        if len(self.prey_bodies) > 0:
+            prey_in_visual_field = self.get_prey_within_visual_field(max_angular_deviation=2.2, max_distance=100)
+            num_prey_close = np.sum(prey_in_visual_field * 1)
+            if num_prey_close > 0:
+                self.num_steps_prey_available += 1
 
         self.num_steps += 1
 

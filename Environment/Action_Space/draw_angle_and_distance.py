@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def draw_angle_dist_new(bout_id):
+def draw_angle_and_distance(bout_id):
     if bout_id == 8:  # Slow2
         mean = [2.49320953e+00, 2.36217665e-19]
         cov = [[4.24434912e-01, 1.89175382e-18],
@@ -82,7 +82,7 @@ def draw_angle_dist_mean(bout_id):
 
 
 if __name__ == "__main__":
-    x = draw_angle_dist_new(10)
-    x = draw_angle_dist_new(5)
+    x = draw_angle_and_distance(10)
+    x = draw_angle_and_distance(5)
 
 

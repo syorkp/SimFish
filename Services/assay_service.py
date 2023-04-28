@@ -151,8 +151,6 @@ class AssayService(BaseService):
         for assay in self.assays:
 
             # Init recordings
-            self.buffer.init_assay_recordings(self.behavioural_recordings, self.network_recordings)
-
             self.learning_params, self.environment_params = self.load_configuration_files()
 
             self.save_frames = assay["save frames"]

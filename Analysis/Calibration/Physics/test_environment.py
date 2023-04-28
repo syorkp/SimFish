@@ -4,7 +4,7 @@ import copy
 
 import pymunk
 
-from Environment.Action_Space.draw_angle_dist import draw_angle_dist_new as draw_angle_dist_narrowed
+from Environment.Action_Space.draw_angle_and_distance import draw_angle_and_distance as draw_angle_dist_narrowed
 from Environment.Action_Space.draw_angle_dist_old import convert_action_to_bout_id
 
 

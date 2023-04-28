@@ -139,9 +139,6 @@ class PPOBuffer(BaseBuffer):
         self.advantage_buffer = advantages
         self.return_buffer = returns
 
-        if self.debug:
-            self.check_buffers()
-
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, sediment, internal_state_order=None,
                         salt_location=None):
         hdf5_file, assay_group = self._save_assay_data(data_save_location, assay_configuration_id, assay_id, sediment,
@@ -152,15 +149,6 @@ class PPOBuffer(BaseBuffer):
 
         print(f"{assay_id} Data Saved")
         hdf5_file.close()
-
-    def compute_rewards_to_go(self):
-        # NOT USED
-        rewards_to_go = []
-        current_discounted_reward = 0
-        for i, reward in enumerate(reversed(self.reward_buffer)):
-            current_discounted_reward = reward + current_discounted_reward * self.gamma
-            rewards_to_go.insert(0, current_discounted_reward)
-        return rewards_to_go
 
     def add_logging(self, mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref):
         self.mu_i_buffer.append(mu_i)
@@ -260,14 +248,6 @@ class PPOBuffer(BaseBuffer):
 
         return observation_slice, internal_state_slice, action_slice, previous_action_slice, \
                log_action_probability_slice, advantage_slice, return_slice, value_slice
-
-    def check_buffers(self):
-        # Check for NaN
-        print("Checking Buffers")
-        buffers = [self.advantage_buffer, self.reward_buffer, self.observation_buffer, self.action_buffer,
-                   self.return_buffer, self.value_buffer, self.log_action_probability_buffer]
-        if np.isnan(np.sum(np.sum(buffer) for buffer in buffers)):
-            print("NaN Detected")
 
     def get_rnn_batch(self, key_points, batch_size):
         rnn_state_batch = []

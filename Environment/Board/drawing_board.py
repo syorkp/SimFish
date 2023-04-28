@@ -5,6 +5,8 @@ from Environment.Board.field_of_view import FieldOfView
 
 
 class DrawingBoard:
+    """Class used to create a 2D image of the environment and surrounding features, and use this to compute photoreceptor
+    inputs"""
 
     def __init__(self, arena_width, arena_height, uv_light_decay_rate, red_light_decay_rate, photoreceptor_rf_size,
                  using_gpu, prey_radius, predator_radius, visible_scatter, dark_light_ratio, dark_gain, light_gain,
