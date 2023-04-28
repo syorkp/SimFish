@@ -160,6 +160,7 @@ class AssayService(BaseService):
 
             self.create_testing_environment(assay)
 
+
             if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
                 sediment, energy_state = self.load_assay_buffer(assay)
 
@@ -235,19 +236,36 @@ class AssayService(BaseService):
         self.buffer.fish_angle_buffer = data["angle"].tolist()
         self.buffer.predator_position_buffer = data["predator_positions"].tolist()
         self.buffer.salt_health_buffer = data["salt_health"].tolist()
-        self.buffer.prey_positions_buffer = data["prey_positions"].tolist()
         self.buffer.sand_grain_position_buffer = data["sand_grain_positions"].tolist()
         self.buffer.salt_location = data["salt_location"].tolist()
         self.buffer.prey_consumed_buffer = data["consumed"].tolist()
+        self.buffer.predator_orientation_buffer = data["predator_orientation"].tolist()
 
         energy_state = data["energy_state"][-1]
         while hasattr(energy_state, "__len__"):
             energy_state = energy_state[0]
 
-        self.buffer.prey_orientations_buffer = data["prey_orientations"].tolist()
-        self.buffer.predator_orientation_buffer = data["predator_orientation"].tolist()
+        self.buffer.prey_positions_buffer = data["prey_positions"].tolist()
+        self.buffer.prey_orientation_buffer = data["prey_orientations"].tolist()
         self.buffer.prey_age_buffer = data["prey_ages"].tolist()
         self.buffer.prey_gait_buffer = data["prey_gaits"].tolist()
+        self.buffer.prey_identifiers_buffer = data["prey_identifiers"].tolist()
+
+        # Bring into the original formatting (before padding)
+        self.buffer.prey_positions_buffer = [list(filter(lambda a: a != [15000, 15000], step)) for step in self.buffer.prey_positions_buffer]
+        self.buffer.prey_orientation_buffer = [list(filter(lambda a: a != 15000, step)) for step in self.buffer.prey_orientation_buffer]
+        self.buffer.prey_age_buffer = [list(filter(lambda a: a != 15000, step)) for step in self.buffer.prey_age_buffer]
+        self.buffer.prey_gait_buffer = [list(filter(lambda a: a != 15000, step)) for step in self.buffer.prey_gait_buffer]
+        self.buffer.prey_identifiers_buffer = [list(filter(lambda a: a != 15000, step)) for step in self.buffer.prey_identifiers_buffer]
+
+        for p, o, a, g, i in zip(self.buffer.prey_positions_buffer, self.buffer.prey_orientation_buffer,
+                                 self.buffer.prey_age_buffer, self.buffer.prey_gait_buffer, self.buffer.prey_identifiers_buffer):
+            if len(p) != len(o) or \
+                    len(p) != len(a) or \
+                    len(p) != len(g) or \
+                    len(p) != len(i):
+                print("ERROR")
+
 
         # Load RNN states to model.
         num_rnns = np.array(self.buffer.rnn_state_buffer).shape[2] / 2
@@ -410,6 +428,5 @@ class AssayService(BaseService):
             "Total Steps": int(self.total_steps),
             "Assay Date": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         }
-        print(metadata)
         with open(f"{self.data_save_location}/{self.assay_configuration_id}.json", "w") as output_file:
             json.dump(metadata, output_file)

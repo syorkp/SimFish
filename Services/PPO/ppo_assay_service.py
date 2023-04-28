@@ -147,7 +147,11 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
         if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
             print("Loading Simulation")
+
             o = self.simulation.load_simulation(self.buffer, sediment, energy_state)
+            self.simulation.prey_identifiers = copy.copy(self.buffer.prey_identifiers_buffer[-1])
+            self.simulation.total_prey_created = int(max([max(p_i) for p_i in self.buffer.prey_identifiers_buffer]) + 1)
+
             internal_state = self.buffer.internal_state_buffer[-1]
             a = self.buffer.action_buffer[-1]
 
@@ -179,6 +183,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                                })
             a = [mu_i[0][0], mu_a[0][0]]
             self.step_number = len(self.buffer.internal_state_buffer)
+
         else:
             self.simulation.reset()
             a = [4.0, 0.0]
@@ -195,8 +200,9 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
         self.buffer.action_buffer.append(efference_copy)  # Add to buffer for loading of previous actions
 
-        self.step_number = 0
+
         while self.step_number < self.current_episode_max_duration:
+
             if self.assay is not None:
                 # Deal with interventions
                 if self.interruptions:
@@ -216,6 +222,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
             self.total_episode_reward += r
             if d:
+
                 if self.run_version == "Original":
                     if self.simulation.switch_step != None:
                         self.buffer.switch_step = self.simulation.switch_step

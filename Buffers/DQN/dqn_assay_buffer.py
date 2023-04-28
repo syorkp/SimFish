@@ -29,11 +29,12 @@ class DQNAssayBuffer(BaseBuffer):
 
     def save_environmental_positions(self, action, fish_position, prey_consumed, predator_present, prey_positions,
                                      predator_position, sand_grain_positions, fish_angle, salt_health, efference_copy,
-                                     prey_orientation=None, predator_orientation=None, prey_age=None, prey_gait=None):
+                                     prey_orientation, predator_orientation, prey_age, prey_gait, prey_identifiers):
 
         self._save_environmental_positions(fish_position, prey_consumed, predator_present, prey_positions,
                                            predator_position, sand_grain_positions, fish_angle, salt_health,
-                                           efference_copy, prey_orientation, predator_orientation, prey_age, prey_gait)
+                                           efference_copy, prey_orientation, predator_orientation, prey_age, prey_gait,
+                                           prey_identifiers)
         self.action_buffer.append(action)
 
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, internal_state_order,

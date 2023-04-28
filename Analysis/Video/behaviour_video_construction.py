@@ -570,7 +570,8 @@ if __name__ == "__main__":
     # draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="A15")
     # model_name = "dqn_scaffold_14-1"
-    data = load_data("dqn_salt_only_reduced-1", "Episode 900", "Episode 900", training_data=True)
+    data = load_data("dqn_salt_reward_function-1", "Episode 200", "Episode 200", training_data=True)
+    data2 = load_data("ppo_proj-1", "Episode 100", "Episode 100", training_data=True)
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-3")
@@ -584,6 +585,7 @@ if __name__ == "__main__":
     # config_file = sys.argv[2]
     #data_file = "../../Assay-Output/dqn_gamma-1/Behavioural-Data-Empty.h5"
     config_file = f"../../Configurations/Training-Configs/dqn_0/1_env.json"
+    data["observation"] = data2["observation"]
 
     with open(config_file, 'r') as f:
         env_variables = json.load(f)
@@ -593,8 +595,8 @@ if __name__ == "__main__":
     #     for key in datfl[group].keys():
     #         data[key] = np.array(datfl[group][key])
 
-    draw_episode(data, env_variables, 'salt avoidance 24.4', continuous_actions=False, show_energy_state=False,
-                 trim_to_fish=False, showed_region_quad=500, include_sediment=True, scale=0.4, max_steps=300,
+    draw_episode(data, env_variables, 'salt avoidance 27.4 2', continuous_actions=False, show_energy_state=False,
+                 trim_to_fish=False, showed_region_quad=500, include_sediment=False, scale=0.4, max_steps=300,
                  show_salt_location=True)
 
 

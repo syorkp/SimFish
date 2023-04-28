@@ -57,7 +57,6 @@ class NaturalisticEnvironment(BaseEnvironment):
 
         self.num_steps_prey_available = 0
 
-
     def reset(self):
         # print (f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
         # print(f"Mean UV: {sum([i[1] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
@@ -167,6 +166,7 @@ Sand grain: {self.sand_grain_associated_reward}
 
         # TODO: temp change here.
         # self.board.global_sediment_grating = self.chosen_math_library.array(np.expand_dims(sediment, 2))
+        self.prey_identifiers = []
 
         self.salt_location = buffer.salt_location
         self.reset_salt_gradient(buffer.salt_location)
@@ -174,10 +174,12 @@ Sand grain: {self.sand_grain_associated_reward}
 
         # Create prey in proper positions and orientations
         final_step_prey_positions = buffer.prey_positions_buffer[-1]
-        final_step_prey_orientations = buffer.prey_orientations_buffer[-1]
-        for p, o in zip(final_step_prey_positions, final_step_prey_orientations):
+        final_step_prey_orientations = buffer.prey_orientation_buffer[-1]
+        final_step_prey_gaits = buffer.prey_gait_buffer[-1]
+        final_step_prey_ages = buffer.prey_age_buffer[-1]
+        for p, o, g, a in zip(final_step_prey_positions, final_step_prey_orientations, final_step_prey_gaits, final_step_prey_ages):
             if p[0] != 10000.0:
-                self.create_prey(prey_position=p, prey_orientation=o)  # TODO: Build in prey age and gait loading here.
+                self.create_prey(prey_position=p, prey_orientation=o, prey_gait=g, prey_age=a)
 
         # self.prey_ages = np.array(buffer.prey_age_buffer[-1]).astype(int)
         # self.paramecia_gaits = np.array(buffer.prey_gait_buffer[-1]).astype(int)
@@ -193,10 +195,10 @@ Sand grain: {self.sand_grain_associated_reward}
         # Create predators in proper position and orientation.
         final_step_predator_position = buffer.predator_position_buffer[-1]
         final_step_predator_orientation = buffer.predator_orientation_buffer[-1]
-        if final_step_predator_position[0] != 10000.0:
+        if final_step_predator_position[0] != 15000:
 
             # Find step when predator was introduced. Get fish position then.
-            predator_present = (np.array(buffer.predator_position_buffer)[:, 0] != 10000.0)
+            predator_present = (np.array(buffer.predator_position_buffer)[:, 0] != 15000)
             predator_lifespan = 0
             for p in reversed(predator_present):
                 if p:
@@ -263,7 +265,7 @@ Sand grain: {self.sand_grain_associated_reward}
             for i, p in enumerate(reversed(prey_in_visual_field[0][0])):
                 if p:
                     # self.remove_prey(prey_index_offset - i)
-                    self.prey_bodies[prey_index_offset-i].position = np.array([20000, 15000])
+                    self.prey_bodies[prey_index_offset-i].position = np.array([20000, 20000])
                     print("Removed prey due to modification")
 
         else:

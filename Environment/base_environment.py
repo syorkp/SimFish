@@ -157,6 +157,10 @@ class BaseEnvironment:
         self.available_prey = self.env_variables["prey_num"]
         self.total_predators = 0
 
+        # Iteratively generated prey identifiers.
+        self.total_prey_created = 0
+        self.prey_identifiers = []
+
     def set_collisions(self):
         """Specifies the collisions that occur in the Pymunk simulation."""
 
@@ -241,6 +245,10 @@ class BaseEnvironment:
 
         self.sand_grain_shapes = []
         self.sand_grain_bodies = []
+
+        # Iteratively generated prey identifiers.
+        self.total_prey_created = 0
+        self.prey_identifiers = []
 
     def reset(self):
         self.num_steps = 0
@@ -428,7 +436,7 @@ class BaseEnvironment:
         self.fish.touched_edge_this_step = True
         return True
 
-    def create_prey(self, prey_position=None, prey_orientation=None):
+    def create_prey(self, prey_position=None, prey_orientation=None, prey_gait=None, prey_age=None):
         self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
         self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_radius']))
         self.prey_shapes[-1].elasticity = 1.0
@@ -459,18 +467,25 @@ class BaseEnvironment:
             if prey_orientation is not None:
                 self.prey_bodies[-1].angle = prey_orientation
 
+        if prey_orientation is None:
+            # When is a new prey being created
+            self.prey_identifiers.append(self.total_prey_created)
+            self.total_prey_created += 1
+            self.paramecia_gaits.append(
+                np.random.choice([0, 1, 2], 1, p=[1 - (self.env_variables["p_fast"] + self.env_variables["p_slow"]),
+                                                  self.env_variables["p_slow"],
+                                                  self.env_variables["p_fast"]])[0])
+            if self.env_variables["prey_reproduction_mode"]:
+                self.prey_ages.append(0)
+        else:
+
+            self.paramecia_gaits.append(int(prey_gait))
+            if self.env_variables["prey_reproduction_mode"]:
+                self.prey_ages.append(int(prey_age))
+
         self.prey_shapes[-1].color = (0, 0, 1)
         self.prey_shapes[-1].collision_type = 2
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
-
-        # New prey motion
-        self.paramecia_gaits.append(
-            np.random.choice([0, 1, 2], 1, p=[1 - (self.env_variables["p_fast"] + self.env_variables["p_slow"]),
-                                              self.env_variables["p_slow"],
-                                              self.env_variables["p_fast"]])[0])
-
-        if self.env_variables["prey_reproduction_mode"]:
-            self.prey_ages.append(0)
 
     def check_proximity(self, feature_position, sensing_distance):
         sensing_area = [[feature_position[0] - sensing_distance,
@@ -633,12 +648,7 @@ class BaseEnvironment:
                         deviation = abs(deviation)
                     if deviation < self.env_variables["capture_angle_deviation_allowance"]:
                         valid_capture = True
-                        space.remove(shp, shp.body)
-                        self.prey_shapes.remove(shp)
-                        self.prey_bodies.remove(shp.body)
-                        del self.paramecia_gaits[i]
-                        if self.env_variables["prey_reproduction_mode"]:
-                            del self.prey_ages[i]
+                        self.remove_prey(i)
                     else:
                         self.failed_capture_attempts += 1
 
@@ -658,6 +668,7 @@ class BaseEnvironment:
         del self.prey_bodies[prey_index]
         del self.prey_ages[prey_index]
         del self.paramecia_gaits[prey_index]
+        del self.prey_identifiers[prey_index]
 
     def move_predator(self):
         if self.check_predator_at_target() or self.check_predator_outside_walls():

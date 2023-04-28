@@ -130,22 +130,21 @@ class BaseService:
         if self.simulation.prey_bodies:
             prey_positions = [prey.position for prey in self.simulation.prey_bodies]
             prey_positions = np.array([[i[0], i[1]] for i in prey_positions])
-            while True: 
-                if len(prey_positions) < self.last_position_dim:
-                    prey_positions = np.append(prey_positions, [[10000, 10000]], axis=0)
-                else:
-                    break
+            # while True:
+            #     if len(prey_positions) < self.last_position_dim:
+            #         prey_positions = np.append(prey_positions, [[10000, 10000]], axis=0)
+            #     else:
+            #         break
 
             self.last_position_dim = len(prey_positions)
-
         else:
-            prey_positions = np.array([[10000, 10000]])
+            prey_positions = np.array([[15000, 15000]])
 
         if self.simulation.predator_body is not None:
             predator_position = self.simulation.predator_body.position
             predator_position = np.array([predator_position[0], predator_position[1]])
         else:
-            predator_position = np.array([10000, 10000])
+            predator_position = np.array([15000, 15000])
 
         return sand_grain_positions, prey_positions, predator_position
 
@@ -162,6 +161,8 @@ class BaseService:
         prey_ages = np.array(self.simulation.prey_ages)
         prey_gait = np.array(self.simulation.paramecia_gaits)
 
+        prey_identifiers = np.array(self.simulation.prey_identifiers)
+
         self.buffer.save_environmental_positions(action=a,
                                                  fish_position=self.simulation.fish.body.position,
                                                  prey_consumed=self.simulation.prey_consumed_this_step,
@@ -175,6 +176,7 @@ class BaseService:
                                                  prey_orientation=prey_orientations,
                                                  predator_orientation=predator_orientation,
                                                  prey_age=prey_ages,
-                                                 prey_gait=prey_gait
+                                                 prey_gait=prey_gait,
+                                                 prey_identifiers=prey_identifiers
                                                  )
 

@@ -179,6 +179,7 @@ class ContinuousPPO:
 
     def _assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
         """Run network and simulation step in assay mode."""
+
         a = [a[0],
              a[1],
              self.simulation.fish.prev_action_impulse,
@@ -240,9 +241,9 @@ class ContinuousPPO:
                                  advantage_ref=0
                                  )
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
-
         if "environmental positions" in self.buffer.recordings:
             self.log_data(efference_copy, action)
+
 
         return given_reward, new_internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, action
 

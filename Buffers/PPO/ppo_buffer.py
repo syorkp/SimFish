@@ -92,13 +92,14 @@ class PPOBuffer(BaseBuffer):
         self.action_buffer.append(action)
 
     def save_environmental_positions(self, action, fish_position, prey_consumed, predator_present, prey_positions,
-                                     predator_position, sand_grain_positions, fish_angle,
-                                     salt_health, efference_copy,
-                                     prey_orientation=None, predator_orientation=None, prey_age=None, prey_gait=None):
+                                     predator_position, sand_grain_positions, fish_angle, salt_health, efference_copy,
+                                     prey_orientation=None, predator_orientation=None, prey_age=None, prey_gait=None,
+                                     prey_identifiers=None):
         self._save_environmental_positions(fish_position, prey_consumed, predator_present, prey_positions,
                                            predator_position, sand_grain_positions, fish_angle, salt_health,
                                            efference_copy,
-                                           prey_orientation, predator_orientation, prey_age, prey_gait)
+                                           prey_orientation, predator_orientation, prey_age, prey_gait,
+                                           prey_identifiers)
 
     @staticmethod
     def pad_slice(buffer, desired_length, identity=None):
@@ -146,9 +147,8 @@ class PPOBuffer(BaseBuffer):
         hdf5_file, assay_group = self._save_assay_data(data_save_location, assay_configuration_id, assay_id, sediment,
                                                        internal_state_order, salt_location)
 
-        print(np.array(self.action_buffer))
-        self.create_data_group("impulse", np.array(self.action_buffer)[:, 0], assay_group)
-        self.create_data_group("angle", np.array(self.action_buffer)[:, 1], assay_group)
+        self.create_data_group("impulse", np.array(self.efference_copy_buffer)[:, 0], assay_group)
+        self.create_data_group("angle", np.array(self.efference_copy_buffer)[:, 1], assay_group)
 
         print(f"{assay_id} Data Saved")
         hdf5_file.close()

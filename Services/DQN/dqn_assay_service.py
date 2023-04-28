@@ -228,6 +228,8 @@ class DQNAssayService(AssayService, BaseDQN):
 
         a = self.buffer.action_buffer[-1]
         a = np.array([a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle])
+        self.simulation.prey_identifiers = copy.copy(self.buffer.prey_identifiers_buffer[-1])
+        self.simulation.total_prey_created = int(max([max(p_i) for p_i in self.buffer.prey_identifiers_buffer]) + 1)
 
         if self.run_version == "Modified-Completion":
             self.simulation.make_modification()

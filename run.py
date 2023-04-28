@@ -149,6 +149,31 @@ if __name__ == "__main__": # may be needed to run on windows
         },
     ]
 
+    dqn_split_assay_example = [
+        {
+            "Model Name": "dqn_0_0",
+            "Environment Name": "dqn_0_1",
+            "Assay Configuration Name": "Behavioural-Data-Free",
+            "Trial Number": 1,
+            "Run Mode": "Split-Assay",
+            "Split Event": "One-Prey-Close",
+            "Modification": "Nearby-Prey-Removal",
+            "Learning Algorithm": "DQN",
+            "behavioural recordings": ["environmental positions", "observation", "reward assessments"],
+            "network recordings": ["rnn_shared", "internal_state"],
+            "Assays": [
+                {
+                    "assay id": "Naturalistic",
+                    "stimulus paradigm": "Naturalistic",
+                    "repeats": 1,
+                    "duration": 500,
+                    "tethered": False,
+                    "save frames": False,
+                },
+            ]
+        }
+    ]
+
     #                    ASSAY
 
     # Assay mode 1: Base
@@ -473,7 +498,7 @@ if __name__ == "__main__": # may be needed to run on windows
     ]
 
     if run_config is None:
-        run_config = controlled_assay_configuration_2
+        run_config = dqn_split_assay_example
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]
