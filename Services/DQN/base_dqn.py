@@ -320,17 +320,17 @@ class BaseDQN:
             # This buffer is only used for data logging, not training.
             efference_copy = [chosen_a, self.simulation.fish.prev_action_impulse,
                               self.simulation.fish.prev_action_angle]
-            self.buffer.add_training(observation=o1,
-                                     internal_state=internal_state,
-                                     action=efference_copy,
-                                     reward=given_reward,
-                                     rnn_state=updated_rnn_state,
-                                     rnn_state_ref=updated_rnn_state_ref,
-                                     value=val,
-                                     advantage=adv,
-                                     value_ref=val_ref,
-                                     advantage_ref=adv_ref
-                                     )
+            self.buffer.add_agent_data(observation=o1,
+                                       internal_state=internal_state,
+                                       action=efference_copy,
+                                       reward=given_reward,
+                                       rnn_state=updated_rnn_state,
+                                       rnn_state_ref=updated_rnn_state_ref,
+                                       value=val,
+                                       advantage=adv,
+                                       value_ref=val_ref,
+                                       advantage_ref=adv_ref
+                                       )
 
         self.total_steps += 1
         return o, efference_copy, given_reward, internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, \
@@ -373,17 +373,17 @@ class BaseDQN:
 
 
         # Update buffer
-        self.buffer.add_training(observation=o1,
-                                 internal_state=internal_state1,
-                                 action=efference_copy,
-                                 reward=given_reward,
-                                 rnn_state=updated_rnn_state,
-                                 rnn_state_ref=updated_rnn_state_ref,
-                                 value=value,
-                                 value_ref=value_ref,
-                                 advantage=advantage,
-                                 advantage_ref=advantage_ref
-                                 )
+        self.buffer.add_agent_data(observation=o1,
+                                   internal_state=internal_state1,
+                                   action=efference_copy,
+                                   reward=given_reward,
+                                   rnn_state=updated_rnn_state,
+                                   rnn_state_ref=updated_rnn_state_ref,
+                                   value=value,
+                                   value_ref=value_ref,
+                                   advantage=advantage,
+                                   advantage_ref=advantage_ref
+                                   )
 
         # Saving step data
         if "environmental positions" in self.buffer.recordings:

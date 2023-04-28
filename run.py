@@ -79,39 +79,38 @@ if __name__ == "__main__": # may be needed to run on windows
             "behavioural recordings": ["environmental positions", "observation"],
             "network recordings": ["rnn_shared", "internal_state"],
             "Assays": [
-                {
-                    "assay id": "Moving-Prey",
-                    "repeats": 1,
-                    "stimulus paradigm": "Projection",
-                    "duration": 241,
-                    "tethered": True,
-                    "save frames": True,
-                    "set positions": True,
-                    "random positions": False,
-                    "reset": False,
-                    "reset interval": 1000,
-                    "moving": True,
-                    "collisions": True,
-                    "stimuli": {
-                        "prey 1": [
-                            {"step": 0,
-                             "position": [150, 150]},
-                            {"step": 40,
-                             "position": [450, 150]},
-                            {"step": 80,
-                             "position": [450, 450]},
-                            {"step": 120,
-                             "position": [150, 450]},
-                            {"step": 160,
-                             "position": [450, 450]},
-                            {"step": 200,
-                             "position": [450, 150]},
-                            {"step": 240,
-                             "position": [150, 150]},
-                        ],
-                    },
-                    "interactions": []
-                },
+                # {
+                #     "assay id": "Moving-Prey",
+                #     "repeats": 1,
+                #     "stimulus paradigm": "Projection",
+                #     "duration": 241,
+                #     "tethered": True,
+                #     "save frames": True,
+                #     "set positions": True,
+                #     "random positions": False,
+                #     "reset": False,
+                #     "reset interval": 1000,
+                #     "moving": True,
+                #     "collisions": True,
+                #     "stimuli": {
+                #         "prey 1": [
+                #             {"step": 0,
+                #              "position": [150, 150]},
+                #             {"step": 40,
+                #              "position": [450, 150]},
+                #             {"step": 80,
+                #              "position": [450, 450]},
+                #             {"step": 120,
+                #              "position": [150, 450]},
+                #             {"step": 160,
+                #              "position": [450, 450]},
+                #             {"step": 200,
+                #              "position": [450, 150]},
+                #             {"step": 240,
+                #              "position": [150, 150]},
+                #         ],
+                #     },
+                # },
                 {
                     "assay id": "Moving-Predator",
                     "repeats": 1,
@@ -144,34 +143,9 @@ if __name__ == "__main__": # may be needed to run on windows
                              "position": [100, 100]},
                         ],
                     },
-                    "interactions": []},
+                }
             ]
         },
-    ]
-
-    dqn_split_assay_example = [
-        {
-            "Model Name": "dqn_0_0",
-            "Environment Name": "dqn_0_1",
-            "Assay Configuration Name": "Behavioural-Data-Free",
-            "Trial Number": 1,
-            "Run Mode": "Split-Assay",
-            "Split Event": "One-Prey-Close",
-            "Modification": "Nearby-Prey-Removal",
-            "Learning Algorithm": "DQN",
-            "behavioural recordings": ["environmental positions", "observation", "reward assessments"],
-            "network recordings": ["rnn_shared", "internal_state"],
-            "Assays": [
-                {
-                    "assay id": "Naturalistic",
-                    "stimulus paradigm": "Naturalistic",
-                    "repeats": 1,
-                    "duration": 500,
-                    "tethered": False,
-                    "save frames": False,
-                },
-            ]
-        }
     ]
 
     #                    ASSAY
@@ -498,7 +472,7 @@ if __name__ == "__main__": # may be needed to run on windows
     ]
 
     if run_config is None:
-        run_config = dqn_split_assay_example
+        run_config = controlled_assay_configuration_2
     else:
         print(f"{run_config} entered.")
         run_config = globals()[run_config]

@@ -119,7 +119,7 @@ class BaseBuffer:
         """Uses the prey identifiers buffer to reformat the prey buffers (which are likely jagged), so that single
         columns correspond to individual prey."""
         num_steps = len(self.prey_identifiers_buffer)
-        total_distinct_prey = int(max([max(step) for step in self.prey_identifiers_buffer]) + 1)
+        total_distinct_prey = int(max([item for sublist in self.prey_identifiers_buffer for item in sublist]) + 1)   #[max(step) for step in self.prey_identifiers_buffer]) + 1)
 
         # print(total_distinct_prey)
 
@@ -130,18 +130,8 @@ class BaseBuffer:
         new_prey_identity_buffer = np.ones((num_steps, total_distinct_prey)) * 15000
 
         for step, prey_identities in enumerate(self.prey_identifiers_buffer):
-            # print(prey_identities)
             for p, prey_i in enumerate(prey_identities):
-                # if prey_i > 40:
-                #     print(f"{step} - {prey_identities}")
-                try:
-                    new_prey_position_buffer[step, prey_i, :] = self.prey_positions_buffer[step][p]
-                except:
-                    print(p)
-                    # print(prey_i)
-                    # print(
-                    #     f"{len(self.prey_positions_buffer[step])} {len(self.prey_orientation_buffer[step])} {len(self.prey_age_buffer[step])} {len(self.prey_gait_buffer[step])} {len(self.prey_identifiers_buffer[step])}")
-
+                new_prey_position_buffer[step, prey_i, :] = self.prey_positions_buffer[step][p]
                 new_prey_orientation_buffer[step, prey_i] = self.prey_orientation_buffer[step][p]
                 new_prey_age_buffer[step, prey_i] = self.prey_age_buffer[step][p]
                 new_prey_gait_buffer[step, prey_i] = self.prey_gait_buffer[step][p]
@@ -374,18 +364,12 @@ class BaseBuffer:
 
         self.predator_presence_buffer = [0 if i is None else 1 for i in self.predator_presence_buffer]
         self.create_data_group("predator_presence", np.array(self.predator_presence_buffer), assay_group)
-
-        self.fix_prey_buffers()
-        self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
-
-        # try:
-        #     self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
-        # except:
-        #     self.prey_positions_buffer = self.fix_jagged_buffer(self.prey_positions_buffer)
-        #     self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
-
         self.create_data_group("predator_positions", np.array(self.predator_position_buffer), assay_group)
         self.create_data_group("sand_grain_positions", np.array(self.sand_grain_position_buffer), assay_group)
+
+        if len([item for sublist in self.prey_identifiers_buffer for item in sublist]) > 0:
+            self.fix_prey_buffers()
+        self.create_data_group("prey_positions", np.array(self.prey_positions_buffer), assay_group)
 
         # TODO: Test change here
         # self.create_data_group("sediment", np.array(sediment), assay_group)
@@ -397,35 +381,9 @@ class BaseBuffer:
         if self.assay:
             self.create_data_group("prey_identifiers", self.prey_identifiers_buffer, assay_group)
             self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
-
-            # self.prey_orientation_buffer = np.array(self.pad_buffer(self.prey_orientation_buffer))
-            #
-            # try:
-            #     self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
-            # except:
-            #     self.prey_orientation_buffer = self.fix_jagged_buffer_one_dim(self.prey_orientation_buffer)
-            #     self.create_data_group("prey_orientations", np.array(self.prey_orientation_buffer), assay_group)
-
             self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
-            # try:
-            #     self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
-            # except:
-            #     self.predator_orientation_buffer = self.fix_jagged_buffer_one_dim(self.predator_orientation_buffer)
-            #     self.create_data_group("predator_orientation", np.array(self.predator_orientation_buffer), assay_group)
-
             self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
-            # try:
-            #     self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
-            # except:
-            #     self.prey_age_buffer = self.fix_jagged_buffer_one_dim(self.prey_age_buffer)
-            #     self.create_data_group("prey_ages", np.array(self.prey_age_buffer), assay_group)
             self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
-            # try:
-            #     self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
-            # except:
-            #     self.prey_gait_buffer = self.fix_jagged_buffer_one_dim(self.prey_gait_buffer)
-            #     self.create_data_group("prey_gaits", np.array(self.prey_gait_buffer), assay_group)
-
 
         self.create_data_group("reward", np.array(self.reward_buffer), assay_group)
         self.create_data_group("advantage", np.array(self.advantage_buffer), assay_group)

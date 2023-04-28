@@ -10,7 +10,6 @@ import tensorflow.compat.v1 as tf
 from Analysis.Calibration.ActionSpace.draw_angle_dist_old import get_modal_impulse_and_angle
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Environment.controlled_stimulus_environment import ControlledStimulusEnvironment
-from Environment.controlled_stimulus_environment_continuous import ControlledStimulusEnvironmentContinuous
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Services.base_service import BaseService
 
@@ -160,7 +159,6 @@ class AssayService(BaseService):
 
             self.create_testing_environment(assay)
 
-
             if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
                 sediment, energy_state = self.load_assay_buffer(assay)
 
@@ -302,30 +300,19 @@ class AssayService(BaseService):
         """
 
         if assay["stimulus paradigm"] == "Projection":
-            if self.continuous_actions:
-                self.simulation = ControlledStimulusEnvironmentContinuous(env_variables=self.environment_params,
-                                                                          stimuli=assay["stimuli"],
-                                                                          using_gpu=self.using_gpu,
-                                                                          tethered=assay["tethered"],
-                                                                          set_positions=assay["set positions"],
-                                                                          random=assay["random positions"],
-                                                                          moving=assay["moving"],
-                                                                          reset_each_step=assay["reset"],
-                                                                          reset_interval=assay["reset interval"],
-                                                                          assay_all_details=assay
-                                                                          )
-            else:
-                self.simulation = ControlledStimulusEnvironment(env_variables=self.environment_params,
-                                                                stimuli=assay["stimuli"],
-                                                                using_gpu=self.using_gpu,
-                                                                tethered=assay["tethered"],
-                                                                set_positions=assay["set positions"],
-                                                                random=assay["random positions"],
-                                                                moving=assay["moving"],
-                                                                reset_each_step=assay["reset"],
-                                                                reset_interval=assay["reset interval"],
-                                                                assay_all_details=assay,
-                                                                )
+            self.simulation = ControlledStimulusEnvironment(env_variables=self.environment_params,
+                                                            stimuli=assay["stimuli"],
+                                                            using_gpu=self.using_gpu,
+                                                            num_actions=self.learning_params["num_actions"],
+                                                            tethered=assay["tethered"],
+                                                            set_positions=assay["set positions"],
+                                                            random=assay["random positions"],
+                                                            moving=assay["moving"],
+                                                            reset_each_step=assay["reset"],
+                                                            reset_interval=assay["reset interval"],
+                                                            assay_all_details=assay,
+                                                            continuous=self.continuous_actions
+                                                            )
         elif assay["stimulus paradigm"] == "Naturalistic":
             if self.continuous_actions:
                 self.simulation = ContinuousNaturalisticEnvironment(env_variables=self.environment_params,

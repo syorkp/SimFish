@@ -8,8 +8,7 @@ from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEn
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Networks.PPO.proximal_policy_optimizer_continuous_dynamic import PPONetworkMultivariate2Dynamic
 
-from Networks.DQN.q_network_reduced import QNetworkReduced
-from Networks.DQN.q_network_dynamic import QNetworkDynamic
+from Networks.DQN.q_network import QNetwork
 
 tf.disable_v2_behavior()
 
@@ -174,7 +173,7 @@ def load_network_variables_dqn(model_name, conf_name, full_efference_copy=False)
         internal_states = max(internal_states, 1)
         internal_state_names = get_internal_state_order(env)
 
-        network = QNetworkDynamic(simulation=simulation,
+        network = QNetwork(simulation=simulation,
                                   my_scope='main',
                                   internal_states=internal_states,
                                   internal_state_names=internal_state_names,

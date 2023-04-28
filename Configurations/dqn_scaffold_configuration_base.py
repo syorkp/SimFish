@@ -176,7 +176,7 @@ env = {
     'reward_distance': 100,
     'proximity_reward': 0.002,
     'salt_reward_penalty': 1000,  # Scales with salt concentration. Was 10000
-    'action_reward_scaling': 0, # 1 / 1.5e-04,  # Arbitrary (practical) hyperparameter for penalty for action
+    'action_reward_scaling': 0,  # 1 / 1.5e-04,  # Arbitrary (practical) hyperparameter for penalty for action
     'consumption_reward_scaling': 100000,  # Arbitrary (practical) hyperparameter for reward for consumption
     'wall_touch_penalty': 200,
 

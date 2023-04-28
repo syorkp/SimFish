@@ -15,14 +15,21 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     """
 
     def __init__(self, env_variables, stimuli, using_gpu, tethered, set_positions, moving,
-                 random, reset_each_step, reset_interval, assay_all_details=None):
-        super().__init__(env_variables, draw_screen, using_gpu)
+                 random, reset_each_step, reset_interval, num_actions, assay_all_details=None, continuous=False):
+        super().__init__(env_variables, using_gpu, num_actions)
 
         self.tethered = tethered
-        if self.tethered:
-            self.fish = TetheredFish(self.board, env_variables, self.dark_col, using_gpu)
+        if continuous:
+            self.continuous_actions = True
+            if tethered:
+                self.fish = ContinuousTetheredFish(self.board, env_variables, self.dark_col, using_gpu)
+            else:
+                self.fish = ContinuousFish(self.board, env_variables, self.dark_col, using_gpu)
         else:
-            self.fish = Fish(self.board, env_variables, self.dark_col, using_gpu)
+            if self.tethered:
+                self.fish = TetheredFish(self.board, env_variables, self.dark_col, using_gpu)
+            else:
+                self.fish = Fish(self.board, env_variables, self.dark_col, using_gpu)
 
         self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 
@@ -80,7 +87,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.fish.body.angle = 0
         self.fish.body.velocity = (0, 0)
 
-    def simulation_step(self, action, frame_buffer=None):
+    def simulation_step(self, action):
         self.prey_consumed_this_step = False
 
         if self.reset_at_interval and self.num_steps % self.reset_interval == 0 and self.tethered:
@@ -123,7 +130,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                 # self.recent_cause_of_death = "Salt"
 
             if self.env_variables[
-                "salt_reward_penalty"] > 0:  # and salt_damage > self.env_variables["salt_recovery"]:  TODO: Trying without this for simplicity
+                "salt_reward_penalty"] > 0:  # and salt_damage > self.env_variables["salt_recovery"]:
                 reward -= self.env_variables["salt_reward_penalty"] * salt_damage
         else:
             salt_damage = 0
@@ -192,7 +199,6 @@ class ControlledStimulusEnvironment(BaseEnvironment):
             self.predator_bodies[index].position = (a, b)
 
     def update_random_stimuli(self):
-        # TODO: Add in baseline feature.
         stimuli_to_delete = []
         for i, stimulus, in enumerate(self.random_stimuli.keys()):
             if self.num_steps % self.unset_stimuli[stimulus]["interval"] == 0:
@@ -256,7 +262,6 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         return self.get_distance_for_size(stimulus, sizes[progression])
 
     def update_unset_stimuli(self):
-        # TODO: Still need to update so that can have multiple, sequential stimuli. Will require adding in onset into stimulus, as well as changing the baseline phase. Not useful for current requirements.
         stimuli_to_delete = []
         init_period = 100
         print(self.num_steps)
@@ -346,15 +351,17 @@ class ControlledStimulusEnvironment(BaseEnvironment):
             except IndexError:
                 self.prey_bodies.pop(i)
                 self.prey_shapes.pop(i)
+                self.prey_ages.pop(i)
+                self.prey_identifiers.pop(i)
                 finished_prey.append(prey)
 
         for i, predator in enumerate(self.predator_positions):
             try:
-                self.predator_bodies[i].position = (self.predator_positions[predator][self.num_steps][0],
-                                                    self.predator_positions[predator][self.num_steps][1])
+                self.predator_body.position = (self.predator_positions[predator][self.num_steps][0],
+                                               self.predator_positions[predator][self.num_steps][1])
             except IndexError:
-                self.predator_bodies.pop(i)
-                self.predator_shapes.pop(i)
+                self.predator_body = None
+                self.predator_shape = None
                 finished_predators.append(predator)
 
         for item in finished_prey:

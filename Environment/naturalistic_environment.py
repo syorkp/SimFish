@@ -58,15 +58,6 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.num_steps_prey_available = 0
 
     def reset(self):
-        # print (f"Mean R: {sum([i[0] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
-        # print(f"Mean UV: {sum([i[1] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
-        # print(f"Mean R2: {sum([i[2] for i in self.mean_observation_vals])/len(self.mean_observation_vals)}")
-        #
-        # print(f"Max R: {max([i[0] for i in self.max_observation_vals])}")
-        # print(f"Max UV: {max([i[1] for i in self.max_observation_vals])}")
-        # print(f"Max R2: {max([i[2] for i in self.max_observation_vals])}")
-        # self.mean_observation_vals = [[0, 0, 0]]
-        # self.max_observation_vals = [[0, 0, 0]]
         super().reset()
         self.fish.body.position = (np.random.randint(self.env_variables['fish_mouth_radius'] + 40,
                                                      self.env_variables['arena_width'] - (self.env_variables[
@@ -392,7 +383,7 @@ Sand grain: {self.sand_grain_associated_reward}
                 # done = True
                 # self.recent_cause_of_death = "Salt"
 
-            if self.env_variables["salt_reward_penalty"] > 0:  # and salt_damage > self.env_variables["salt_recovery"]:  TODO: Trying without this for simplicity
+            if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables["salt_recovery"]:
                 reward -= self.env_variables["salt_reward_penalty"] * salt_damage
                 self.salt_associated_reward -= self.env_variables['salt_reward_penalty'] * salt_damage
         else:
