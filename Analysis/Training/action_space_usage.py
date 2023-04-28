@@ -18,7 +18,7 @@ For creation of displays of action space usage across training.
 
 
 def get_impulse_angle_space_usage(impulses, angles, dqn, max_impulse, max_angle):
-    res = 200    # TODO: Determine bin width as function of sample number
+    res = 200
     angles = np.absolute(angles)
 
     impulse_lim = [0, 45]

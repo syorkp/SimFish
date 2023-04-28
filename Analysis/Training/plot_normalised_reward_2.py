@@ -3,7 +3,7 @@ import numpy as np
 
 from Analysis.Training.load_from_logfiles import load_all_log_data, order_metric_data
 from Analysis.Training.tools import find_nearest
-from Analysis.Training.plot_metrics_newest import order_chosen_model_data, compute_rolling_averages
+from Analysis.Training.plot_metrics import order_chosen_model_data, compute_rolling_averages
 
 
 def plot_reward_pre_post_scaffold(model_list, model_list_no_scaffold, window, figure_name):
@@ -101,4 +101,3 @@ if __name__ == "__main__":
     dqn_models_no_scaffold = ["dqn_delta_ns-1", "dqn_delta_ns-2"]
 
     plot_reward_pre_post_scaffold(dqn_models, dqn_models_no_scaffold, 10, figure_name="dqn_delta")
-    # TODO: Add option for second set of models, which dont have scaffold switches

@@ -20,7 +20,3 @@ if __name__ == "__main__":
     energy_state_data = get_parameter_across_trials(f"dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 100, "energy_state")
 
     show_action_histograms(action_data, energy_state_data)
-
-
-# TODO: Make raster plot display.
-# TODO: Create probability of actions gridplot at different energy states.

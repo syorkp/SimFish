@@ -3,7 +3,6 @@ import math
 
 
 def create_figure(neuron_data, plot_number, n_subplots, n_prev_subplots, s_vector):
-    # TODO: Note, does not currently plot all channels, just one.
     if n_subplots > 2:
         fig, axs = plt.subplots(int(n_subplots/2), 2, sharex=True)
     else:

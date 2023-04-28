@@ -224,11 +224,11 @@ class DQNAssayService(AssayService, BaseDQN):
         """Load the simulation in a given state - used for split assay mode."""
         o = self.simulation.load_simulation(self.buffer, sediment, energy_state)
         internal_state = self.buffer.internal_state_buffer[-1]
-
         a = self.buffer.action_buffer[-1]
-        a = np.array([a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle])
         self.simulation.prey_identifiers = copy.copy(self.buffer.prey_identifiers_buffer[-1])
         self.simulation.total_prey_created = int(max([max(p_i) for p_i in self.buffer.prey_identifiers_buffer]) + 1)
+
+        a = np.array([a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle])
 
         if self.run_version == "Modified-Completion":
             self.simulation.make_modification()

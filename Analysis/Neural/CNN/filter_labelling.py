@@ -82,7 +82,6 @@ def get_all_filter_labels(kernel, positive_colour_threshold, negative_colour_thr
                                                  colour_threshold=positive_colour_threshold[colour_i])
             for location in locations:
                 all_labels.append(f"Contiguous {colour}: Length {tested_length}, Locations: {location}")
-                # TODO: Look for surroundings.
 
             positive_gradient_locations, negative_gradient_locations = label_filters_gradient(kernel, tested_length,
                                                                                               colour_index=colour_i)
@@ -100,7 +99,6 @@ def get_thresholds(kernels, percentile=90):
         positive_values = np.sort(kernels[:, c][(kernels[:, c] > 0)])
         negative_values = np.sort(kernels[:, c][(kernels[:, c] <= 0)])
 
-        # TODO: Find threshold
         num_positive = len(positive_values)
         threshold_positive = num_positive * percentile/100
         num_negative = len(negative_values)
@@ -120,7 +118,6 @@ def get_thresholds(kernels, percentile=90):
 
 
 def label_all_filters(kernels):
-    # TODO: determine colour_threshold  - should be based on percentiles.
     positive_thresholds, negative_thresholds = get_thresholds(kernels)
 
     compiled_labels = []

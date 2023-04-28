@@ -201,27 +201,8 @@ def plot_mse_across(bins, mse, mse_diff, mse_random, mse_diff_random):
     plt.savefig("MSE diff bins.png")
     plt.clf()
 
-    x = True
-
 
 if __name__ == "__main__":
-    # with open('ablatedValues.npy', 'rb') as f:
-    #     ablated = np.load(f)
-    # PPO
-    # with open("ppo21_2_rnn.npy", "rb") as f:
-    #     network_variables_ppo = np.load(f)
-    # plot_hist_all_weights(network_variables_ppo, name="ppo_21-2-all", bins=2000)
-    # plot_hist_all_weights(network_variables_ppo[:512, 512:1024], name="ppo_21-2-selected", bins=2000)
-    #
-    #
-    # # DQN untrained model
-    # network_variables_2 = load_network_variables_dqn("dqn_scaffold_26-5", "dqn_26_2", True)
-    # rnn_interconnectivity_1 = get_rnn_interconnectivity(network_variables_2, gate_num=None)
-    # rnn_interconnectivity_1 = rnn_interconnectivity_1["main_rnn/lstm_cell/kernel:0"]
-    # plot_hist_all_weights(rnn_interconnectivity_1, name="untrained-full", bins=2000)
-    #
-    # tf.reset_default_graph()
-
     # DQN
     network_variables_1 = load_network_variables_dqn("dqn_scaffold_26-2", "dqn_26_2", True)
     rnn_interconnectivity_1 = get_rnn_interconnectivity(network_variables_1, gate_num=None)

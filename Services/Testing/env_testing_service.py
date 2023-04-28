@@ -234,10 +234,6 @@ class EnvTestingService(BaseService):
                 self.simulation.sand_grain_shapes.pop(lost_index)
                 self.draw_shapes()
 
-        for i, pr in enumerate(self.simulation.predator_bodies):
-            self.visualisation_board.circle(pr.position, self.environment_params['predator_radius'],
-                                            self.simulation.predator_shapes[i].color, True)
-
         if self.simulation.predator_body is not None:
             self.visualisation_board.circle(self.simulation.predator_body.position, self.environment_params['predator_radius'],
                               self.simulation.predator_shape.color, True)

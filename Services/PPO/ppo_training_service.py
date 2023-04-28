@@ -68,8 +68,6 @@ class PPOTrainingService(TrainingService, ContinuousPPO):
         self.batch_size = self.learning_params["batch_size"]
         self.trace_length = self.learning_params["trace_length"]
 
-        self.sb_emulator = True
-
         self.buffer = PPOBuffer(gamma=self.learning_params["gamma"],
                                 lmbda=self.learning_params["lambda"],
                                 batch_size=self.learning_params["batch_size"],
@@ -98,8 +96,6 @@ class PPOTrainingService(TrainingService, ContinuousPPO):
 
         self.step_drop = (self.learning_params['startE'] - self.learning_params['endE']) / self.learning_params[
             'anneling_steps']
-
-        self.last_position_dim = self.environment_params["prey_num"]
 
     def run(self):
         sess = self.create_session()

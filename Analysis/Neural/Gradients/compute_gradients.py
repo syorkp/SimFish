@@ -152,9 +152,6 @@ def compute_gradient_for_input(model_name, observation, energy_state, salt_input
         checkpoint = tf.train.get_checkpoint_state(model_location)
         saver.restore(sess, checkpoint.model_checkpoint_path)
 
-        # TODO: Build system for targeting specific layers - can input though keys.
-        # TODO: Build the same for the dynamic naming system.
-
         # Gradients with respect to each input
         unit_gradients_obs = {}
         unit_gradients_efference = {}
@@ -299,9 +296,6 @@ def compute_average_gradient_many_inputs(model_name, observation, energy_state, 
         trainables = tf.trainable_variables()
         checkpoint = tf.train.get_checkpoint_state(model_location)
         saver.restore(sess, checkpoint.model_checkpoint_path)
-
-        # TODO: Build system for targeting specific layers - can input though keys.
-        # TODO: Build the same for the dynamic naming system.
 
         # Gradients with respect to each input
         unit_gradients_obs = {}

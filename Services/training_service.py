@@ -66,16 +66,6 @@ class TrainingService(BaseService):
         self.last_episodes_predators_avoided = []
         self.last_episodes_sand_grains_bumped = []
 
-        # Determining whether RNN exists in network
-        # rnns = [layer for layer in self.learning_params["base_network_layers"].keys() if
-        #         self.learning_params["base_network_layers"][layer][0] == "dynamic_rnn"] + \
-        #        [layer for layer in self.learning_params["modular_network_layers"].keys() if
-        #         self.learning_params["modular_network_layers"][layer][0] == "dynamic_rnn"]
-        self.rnn_in_network = True # if len(rnns) > 0 else False
-
-        # For regular saving
-        self.save_environmental_data = False
-
         if "min_scaffold_interval" in self.learning_params:
             self.min_scaffold_interval = self.learning_params["min_scaffold_interval"]
         else:
@@ -288,7 +278,6 @@ class TrainingService(BaseService):
         """Save the current RNN state to a json file."""
 
         data = {}
-        # num_rnns = len(self.init_rnn_state)
         num_rnns = 1
 
         if len(self.init_rnn_state) > num_rnns:
@@ -545,11 +534,9 @@ class TrainingService(BaseService):
                                         salt_location=salt_location)
 
             self.buffer.reset()
-            self.save_environmental_data = False
 
         if (self.episode_number + 1) % self.learning_params['summaryLength'] == 0:
             print('starting to log data', flush=True)
-            self.save_environmental_data = True
 
         self.reward_list.append(total_episode_reward)
 

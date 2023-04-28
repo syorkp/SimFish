@@ -227,8 +227,5 @@ if __name__ == "__main__":
     # v = load_network_variables_ppo("ppo_scaffold_21-2", "ppo_21_2")
     v = load_network_variables_dqn_reduced("dqn_salt_only_reduced-1", "dqn_sor")
 
-    rnn = v["PPO_rnn/lstm_cell/kernel:0"]
-    with open('ppo21_2_rnn.npy', 'wb') as f:
-        np.save(f, rnn)
 
 

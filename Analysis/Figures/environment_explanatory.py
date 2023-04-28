@@ -245,8 +245,6 @@ def visualise_environent_at_step(model_name, assay_config, assay_id, step_to_dra
     plt.savefig("./Panels/Panel-1/background.jpg")
     plt.show()
 
-
-    # TODO: Print scatter, obstrution, background, and light gain masks in parallel.
     AB, L, O, S = board.get_masked_pixels(np.array([data["fish_position"][step_to_draw][0], data["fish_position"][step_to_draw][1]]),
                                                 data["prey_positions"][step_to_draw],
                                                 predator_bodies, return_masks=True)

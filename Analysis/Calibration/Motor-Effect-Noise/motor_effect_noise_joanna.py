@@ -78,7 +78,6 @@ def get_distance_and_ori_change_within_frames(start_frame, end_frame, position_f
     distance = ((x_position_during[1:] - x_position_during[:-1]) ** 2 + (y_position_during[1:] - y_position_during[:-1])) ** 0.5
     orientation = orientation_during[1:] - orientation_during[:-1]
 
-    # TODO: Throw error if whole response cant be found.
     return distance, orientation, position_during
 
 

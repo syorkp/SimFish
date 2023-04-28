@@ -10,8 +10,6 @@ from Analysis.Behavioural.Discrete.bout_transition_probabilities import visualis
     compute_transition_probabilities, get_first_order_transition_counts_from_sequences
 
 
-# TODO: Decorrelate for recent capture (where more likely to be prey nearby).
-
 def group_sequences_by_energy_cutoffs(capture_sequences, energy_states, c, difference):
     new_capture_sequences = []
     new_energy_states = []

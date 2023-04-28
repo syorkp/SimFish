@@ -210,11 +210,6 @@ class TestEnvironment:
 
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
 
-        # New prey motion TODO: Check doesnt mess with base version.
-        # self.paramecia_gaits.append(
-        #     np.random.choice([0, 1, 2], 1, p=[1 - (self.env_variables["p_fast"] + self.env_variables["p_slow"]),
-        #                                       self.env_variables["p_slow"],
-        #                                       self.env_variables["p_fast"]])[0])
         # New prey motion
         self.paramecia_gaits.append(
             np.random.choice([0, 1, 2], 1, p=[1 - (self.env_variables["p_fast"] + self.env_variables["p_slow"]),

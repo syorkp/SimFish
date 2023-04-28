@@ -16,7 +16,7 @@ To create a graph of the style in Figure 3b of Marques et al. (2018)
 
 
 def draw_fish(x, y, mouth_size, head_size, tail_length, ax):
-    mouth_centre = (x, y)  # TODO: Make sure this is true
+    mouth_centre = (x, y)
 
     mouth = plt.Circle(mouth_centre, mouth_size, fc="green")
     ax.add_patch(mouth)
@@ -364,7 +364,6 @@ def create_overlap_plot(cloud_left, cloud_right, stimulus_name, action, model_na
 
     # Make the plot
     fig, ax = plt.subplots(figsize=(10, 10))
-    # zi = np.clip(zi, -0.0000015, 0.0000015)  # TODO: Remove
 
     pcm = ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
 

@@ -40,7 +40,6 @@ class BaseEnvironment:
                                   red2_object_intensity=self.env_variables["background_point_intensity"],
                                   )
 
-        self.show_all = False
         self.num_steps = 0
         self.fish = None
 
@@ -89,9 +88,6 @@ class BaseEnvironment:
                                 self.env_variables['sand_grain_radius'] + self.env_variables['fish_mouth_radius']) - 120)]
                 for cloud in range(int(self.env_variables["sand_grain_num"]))]
 
-        self.predator_bodies = []
-        self.predator_shapes = []
-
         self.predator_body = None
         self.predator_shape = None
         self.predator_target = None
@@ -112,11 +108,8 @@ class BaseEnvironment:
         # New energy system (log)
         self.energy_level_log = []
 
-        # New complex predators
+        # New predator
         self.predator_location = None
-        self.remaining_predator_attacks = None
-        self.total_predator_steps = None
-        self.new_attack_due = False
 
         # New prey movement
         self.paramecia_gaits = None
@@ -134,10 +127,6 @@ class BaseEnvironment:
 
         if self.env_variables["prey_reproduction_mode"]:
             self.prey_ages = []
-
-        # For initial loom attack
-        self.first_attack = False
-        self.loom_predator_current_size = None
 
         self.touched_sand_grain = False
 
@@ -221,32 +210,19 @@ class BaseEnvironment:
 
         self.prey_cloud_wall_shapes = []
 
-        self.paramecia_gaits = []
-
-        if self.env_variables["prey_reproduction_mode"]:
-            self.prey_ages = []
-
         if self.predator_shape is not None:
             self.remove_predator()
         self.predator_location = None
-        self.remaining_predator_attacks = None
-        self.total_predator_steps = None
-        self.new_attack_due = False
-        self.first_attack = False
-        self.loom_predator_current_size = None
 
         self.prey_shapes = []
         self.prey_bodies = []
-
-        self.predator_shapes = []
-        self.predator_bodies = []
+        self.prey_identifiers = []
+        self.paramecia_gaits = []
+        self.prey_ages = []
+        self.total_prey_created = 0
 
         self.sand_grain_shapes = []
         self.sand_grain_bodies = []
-
-        # Iteratively generated prey identifiers.
-        self.total_prey_created = 0
-        self.prey_identifiers = []
 
     def reset(self):
         self.num_steps = 0
@@ -760,7 +736,6 @@ class BaseEnvironment:
         self.predator_body.position = (predator_position[0], predator_position[1])
         self.predator_body.angle = predator_orientation
         self.predator_target = predator_target
-        self.total_predator_steps = 0
 
         self.predator_shape.color = (0, 1, 0)
         self.predator_location = (predator_position[0], predator_position[1])
@@ -787,7 +762,6 @@ class BaseEnvironment:
 
         self.predator_body.position = (x_position, y_position)
         self.predator_target = fish_position
-        self.total_predator_steps = 0
 
         self.predator_shape.color = (0, 1, 0)
         self.predator_location = (x_position, y_position)
@@ -824,8 +798,6 @@ class BaseEnvironment:
             self.predator_body = None
             self.predator_location = None
             self.predator_target = None
-            self.remaining_predator_attacks = None
-            self.total_predator_steps = None
             if not self.fish.touched_predator:
                 self.survived_attack = True
         else:

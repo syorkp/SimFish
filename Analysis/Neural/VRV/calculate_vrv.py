@@ -19,7 +19,7 @@ def get_stimulus_vector(stimulus_data, stimulus):
 
 
 def get_all_neuron_vectors(all_data, stimulus, stimulus_data, neuron_type):
-    # Modified for new data type TODO: Fix guesswork for neuron choice
+    # Modified for new data type
     n_neurons = all_data[neuron_type].shape[3]
     vectors = []
     for i in range(n_neurons):
@@ -95,7 +95,6 @@ def normalise_vrvs(vectors):
 def create_full_stimulus_vector(model_name, background=False):
     full_stimulus_vector = []
     file_precursors = ["Prey", "Predator"]
-    file_precursors = ["Prey"]  #TODO: Change back later
     actual_prey_assay_ids = ["Prey-Static-5", "Prey-Static-10", "Prey-Static-15",
                       "Prey-Left-5", "Prey-Left-10", "Prey-Left-15",
                       "Prey-Right-5", "Prey-Right-10", "Prey-Right-15",
@@ -133,7 +132,6 @@ def create_full_response_vector(model_name, background=False):
     # Creates the full 484 dimensional response vector.
     response_vectors = [[] for i in range(512)]
     file_precursors = ["Prey", "Predator"]
-    file_precursors = ["Prey"]  # TODO: Switch back when using predators
     prey_assay_ids = ["Prey-Static-5", "Prey-Static-10", "Prey-Static-15",
                       "Prey-Left-5", "Prey-Left-10", "Prey-Left-15",
                       "Prey-Right-5", "Prey-Right-10", "Prey-Right-15",

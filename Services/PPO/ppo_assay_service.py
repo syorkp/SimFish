@@ -114,7 +114,6 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                                 batch_size=self.learning_params["batch_size"],
                                 train_length=self.learning_params["trace_length"],
                                 assay=True,
-                                debug=False,
                                 )
 
         self.ppo_version = ContinuousPPO
@@ -128,6 +127,42 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
             self.create_network()
             self.init_states()
             AssayService._run(self)
+
+    def load_simulation(self, sediment, energy_state, rnn_state, rnn_state_ref):
+        o = self.simulation.load_simulation(self.buffer, sediment, energy_state)
+        internal_state = self.buffer.internal_state_buffer[-1]
+        a = self.buffer.action_buffer[-1]
+        self.simulation.prey_identifiers = copy.copy(self.buffer.prey_identifiers_buffer[-1])
+        self.simulation.total_prey_created = int(max([max(p_i) for p_i in self.buffer.prey_identifiers_buffer]) + 1)
+
+        a = np.array(a + [self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle])
+
+        if self.run_version == "Modified-Completion":
+            self.simulation.make_modification()
+
+        impulse, angle, updated_rnn_state, updated_rnn_state_ref, mu_i, mu_a, \
+        si = \
+            self.sess.run(
+                [self.network.impulse_output, self.network.angle_output, self.network.rnn_state_shared,
+                 self.network.rnn_state_ref,
+                 self.network.mu_impulse_combined,
+                 self.network.mu_angle_combined,
+                 self.network.sigma_action,
+                 ],
+                feed_dict={self.network.observation: o,
+                           self.network.internal_state: internal_state,
+                           self.network.prev_actions: np.expand_dims(a, 0),
+                           self.network.train_length: 1,
+                           self.network.batch_size: 1,
+                           self.network.rnn_state_in: rnn_state,
+                           self.network.rnn_state_in_ref: rnn_state_ref,
+                           self.network.sigma_impulse_combined_proto: self.impulse_sigma,
+                           self.network.sigma_angle_combined_proto: self.angle_sigma,
+                           self.network.entropy_coefficient: self.learning_params["lambda_entropy"],
+
+                           })
+        a = [mu_i[0][0], mu_a[0][0]]
+        return a
 
     def perform_assay(self, assay, sediment=None, energy_state=None):
         """Perform assay - used instead of episode loop"""
@@ -148,40 +183,7 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
         if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
             print("Loading Simulation")
 
-            o = self.simulation.load_simulation(self.buffer, sediment, energy_state)
-            self.simulation.prey_identifiers = copy.copy(self.buffer.prey_identifiers_buffer[-1])
-            self.simulation.total_prey_created = int(max([max(p_i) for p_i in self.buffer.prey_identifiers_buffer]) + 1)
-
-            internal_state = self.buffer.internal_state_buffer[-1]
-            a = self.buffer.action_buffer[-1]
-
-            a = np.array(a + [self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle])
-
-            if self.run_version == "Modified-Completion":
-                self.simulation.make_modification()
-
-            impulse, angle, updated_rnn_state, updated_rnn_state_ref, mu_i, mu_a, \
-            si = \
-                self.sess.run(
-                    [self.network.impulse_output, self.network.angle_output, self.network.rnn_state_shared,
-                     self.network.rnn_state_ref,
-                     self.network.mu_impulse_combined,
-                     self.network.mu_angle_combined,
-                     self.network.sigma_action,
-                     ],
-                    feed_dict={self.network.observation: o,
-                               self.network.internal_state: internal_state,
-                               self.network.prev_actions: np.expand_dims(a, 0),
-                               self.network.train_length: 1,
-                               self.network.batch_size: 1,
-                               self.network.rnn_state_in: rnn_state,
-                               self.network.rnn_state_in_ref: rnn_state_ref,
-                               self.network.sigma_impulse_combined_proto: self.impulse_sigma,
-                               self.network.sigma_angle_combined_proto: self.angle_sigma,
-                               self.network.entropy_coefficient: self.learning_params["lambda_entropy"],
-
-                               })
-            a = [mu_i[0][0], mu_a[0][0]]
+            a = self.load_simulation(sediment, energy_state, rnn_state, rnn_state_ref)
             self.step_number = len(self.buffer.internal_state_buffer)
 
         else:

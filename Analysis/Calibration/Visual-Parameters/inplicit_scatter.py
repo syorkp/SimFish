@@ -1,5 +1,6 @@
 """
-To determine how to adjust scatter mask to incorporate implicit scatter.
+To determine how to adjust scatter mask to incorporate implicit scatter (which is a result of the way the visual system
+works.
 """
 
 import matplotlib.pyplot as plt
@@ -13,6 +14,7 @@ def get_final_scatter_mask2(i, j, x, y, light_decay_rate, theta):
     implicit_scatter[implicit_scatter < 1] = 1
     adjusted_scatter = desired_scatter * implicit_scatter
     return adjusted_scatter
+
 
 def get_final_scatter_mask(i, j, x, y, light_decay_rate, theta):
     desired_scatter = np.exp(-light_decay_rate * (((x - i) ** 2 + (y - j) ** 2) ** 0.5))

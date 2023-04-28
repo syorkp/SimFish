@@ -6,7 +6,7 @@ from Buffers.base_buffer import BaseBuffer
 class PPOBuffer(BaseBuffer):
     """Buffer for full episode for PPO training, and logging."""
 
-    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False):
+    def __init__(self, gamma, lmbda, batch_size, train_length, assay):
         super().__init__()
 
         self.gamma = gamma
@@ -14,7 +14,6 @@ class PPOBuffer(BaseBuffer):
         self.batch_size = batch_size
         self.trace_length = train_length
         self.pointer = 0
-        self.debug = debug
         self.assay = assay
 
         # Buffer for training

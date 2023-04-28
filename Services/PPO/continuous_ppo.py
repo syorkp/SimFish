@@ -94,8 +94,6 @@ class ContinuousPPO:
         self.output_dimensions = 2
         self.just_trained = False
 
-        self.use_dynamic_network = False
-
     def create_network(self):
         """
         Create the PPO network, according to the configuration parameters.
@@ -106,48 +104,21 @@ class ContinuousPPO:
                          self.environment_params['energy_state'], self.environment_params['in_light'],
                          self.environment_params['salt']] if x is True])
         internal_states = max(internal_states, 1)
-        internal_state_names = self.get_internal_state_order()
+        cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
 
-        reuse_eyes = self.learning_params['reuse_eyes']
-
-        if self.use_dynamic_network:
-            self.network = PPONetworkMultivariate2Dynamic(simulation=self.simulation,
-                                                          # rnn_dim=self.learning_params['rnn_dim_shared'],
-                                                          my_scope='PPO',
-                                                          internal_states=internal_states,
-                                                          internal_state_names=internal_state_names,
-                                                          max_impulse=self.environment_params[
-                                                              'max_impulse'],
-                                                          max_angle_change=self.environment_params[
-                                                              'max_angle_change'],
-                                                          clip_param=self.learning_params[
-                                                              'clip_param'],
-                                                          base_network_layers=self.learning_params[
-                                                              'base_network_layers'],
-                                                          modular_network_layers=self.learning_params[
-                                                              'modular_network_layers'],
-                                                          ops=self.learning_params['ops'],
-                                                          connectivity=self.learning_params[
-                                                              'connectivity'],
-                                                          reflected=self.learning_params['reflected'],
-                                                          reuse_eyes=reuse_eyes,
-                                                          )
-        else:
-            cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
-
-            self.network = PPONetworkActorMultivariate(simulation=self.simulation,
-                                                       rnn_dim=self.learning_params['rnn_dim_shared'],
-                                                       rnn_cell=cell,
-                                                       my_scope='PPO',
-                                                       internal_states=internal_states,
-                                                       max_impulse=self.environment_params['max_impulse'],
-                                                       max_angle_change=self.environment_params[
-                                                           'max_angle_change'],
-                                                       clip_param=self.learning_params[
-                                                           'clip_param'],
-                                                       input_sigmas=True,
-                                                       impose_action_mask=True,
-                                                       )
+        self.network = PPONetworkActorMultivariate(simulation=self.simulation,
+                                                   rnn_dim=self.learning_params['rnn_dim_shared'],
+                                                   rnn_cell=cell,
+                                                   my_scope='PPO',
+                                                   internal_states=internal_states,
+                                                   max_impulse=self.environment_params['max_impulse'],
+                                                   max_angle_change=self.environment_params[
+                                                       'max_angle_change'],
+                                                   clip_param=self.learning_params[
+                                                       'clip_param'],
+                                                   input_sigmas=True,
+                                                   impose_action_mask=True,
+                                                   )
 
         print("Created network")
 
@@ -295,7 +266,6 @@ class ContinuousPPO:
                                self.network.rnn_state_in_ref: rnn_state_ref,
                                self.network.batch_size: 1,
                                self.network.train_length: 1,
-
                                self.network.action_placeholder: np.reshape(action, (1, 2)),
                                }
                 )
@@ -338,8 +308,7 @@ class ContinuousPPO:
 
     def get_batch(self, batch, observation_buffer, internal_state_buffer, action_buffer,
                   previous_action_buffer,
-                  log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer,
-                  target_outputs_buffer=None):
+                  log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer):
         """Returns correctly sized arrays for network training values for a given batch."""
 
         observation_batch = observation_buffer[
@@ -473,10 +442,7 @@ class ContinuousPPO:
                     in range(int(num_rnns)))
         else:
             # Init states for RNN - For steps, not training.
-            if self.use_dynamic_network:
-                rnn_state_shapes = self.network.get_rnn_state_shapes()
-            else:
-                rnn_state_shapes = [self.learning_params['rnn_dim_shared']]
+            rnn_state_shapes = [self.learning_params['rnn_dim_shared']]
             self.init_rnn_state = tuple(
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
             self.init_rnn_state_ref = tuple(

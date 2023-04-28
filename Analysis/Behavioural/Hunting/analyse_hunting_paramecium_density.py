@@ -62,7 +62,7 @@ def plot_hunting_initiation_vs_prey_in_field(model_name, assay_config, assay_id,
         all_seq, all_ts = get_hunting_sequences_timestamps(data, False)
         all_steps, hunting_steps, initiation_steps, abort_steps, pre_capture_steps = get_hunting_conditions(data, all_ts)
 
-        # TODO: Note can do the same for abort condition.
+        # Note can do the same for abort condition.
         try:
             initiation_rate = compute_initiation_rate_all_steps(len(all_steps), initiation_steps, window_size=200)
             prey_in_visual_field = get_prey_in_visual_field(data["fish_position"], data["fish_angle"], data["prey_positions"], 100)

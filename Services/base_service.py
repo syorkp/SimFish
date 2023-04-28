@@ -64,8 +64,6 @@ class BaseService:
         # Placeholder Attributes
         if not hasattr(self, "environment_params"):
             self.environment_params = None
-        if not hasattr(self, "last_position_dim"):
-            self.last_position_dim = None
         if not hasattr(self, "episode_buffer"):
             self.episode_buffer = None
         if not hasattr(self, "buffer"):
@@ -125,18 +123,11 @@ class BaseService:
                                     enumerate(self.simulation.sand_grain_bodies)]
             sand_grain_positions = [[i[0], i[1]] for i in sand_grain_positions]
         else:
-            sand_grain_positions = [[10000, 10000]]
+            sand_grain_positions = [[15000, 15000]]
 
         if self.simulation.prey_bodies:
             prey_positions = [prey.position for prey in self.simulation.prey_bodies]
             prey_positions = np.array([[i[0], i[1]] for i in prey_positions])
-            # while True:
-            #     if len(prey_positions) < self.last_position_dim:
-            #         prey_positions = np.append(prey_positions, [[10000, 10000]], axis=0)
-            #     else:
-            #         break
-
-            self.last_position_dim = len(prey_positions)
         else:
             prey_positions = np.array([[15000, 15000]])
 

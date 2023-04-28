@@ -84,7 +84,6 @@ class BaseDQN:
         them as zeros."""
 
         # Init states for RNN
-
         if os.path.isfile(f"{self.model_location}/rnn_state-{self.episode_number}.json"):
             print("Loading RNN states")
 
@@ -206,7 +205,7 @@ class BaseDQN:
                                                    r,            # R (t+1)
                                                    i_s,          # I_S (t)
                                                    o1,           # O (t+1)
-                                                   d,            # D(t+1)
+                                                   d,            # D (t+1)
                                                    i_s2]),       # I_S (t+1)
                                          [1, 7]))
             total_episode_reward += r
@@ -371,7 +370,6 @@ class BaseDQN:
 
         efference_copy = [chosen_a, self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
 
-
         # Update buffer
         self.buffer.add_agent_data(observation=o1,
                                    internal_state=internal_state1,
@@ -388,8 +386,6 @@ class BaseDQN:
         # Saving step data
         if "environmental positions" in self.buffer.recordings:
             self.log_data(a, chosen_a)
-
-        # self.buffer.make_desired_recordings(network_layers)
 
         return o, efference_copy, given_reward, internal_state1, o1, d, updated_rnn_state, updated_rnn_state_ref
 

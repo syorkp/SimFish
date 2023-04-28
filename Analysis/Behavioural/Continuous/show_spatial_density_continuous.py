@@ -10,7 +10,7 @@ from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
 
 def draw_fish(x, y, mouth_size, head_size, tail_length, ax):
-    mouth_centre = (x, y)  # TODO: Make sure this is true
+    mouth_centre = (x, y)
 
     mouth = plt.Circle(mouth_centre, mouth_size, fc="green")
     ax.add_patch(mouth)
@@ -119,7 +119,6 @@ def create_density_cloud_overlap(cloud_left, cloud_right, action_num, stimulus_n
 
     # Make the plot
     fig, ax = plt.subplots(figsize=(10, 10))
-    # zi = np.clip(zi, -0.0000015, 0.0000015)  # TODO: Remove
 
     pcm = ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
 

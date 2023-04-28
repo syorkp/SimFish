@@ -25,7 +25,6 @@ def get_formatted_data(broad_categories, atas, sel, threshold=10):
 def save_all_categorisations(model_name):
     event_triggered_average_data = load_data(model_name, "Behavioural-Data-Free", "Naturalistic-1")
     action_triggered_averages = get_eta(event_triggered_average_data, "actions")
-    # TODO: Make work for any other associations
     full_rv = create_full_response_vector(model_name)
     full_sv = create_full_stimulus_vector(model_name)
     sel = label_all_units_selectivities(full_rv, full_sv)

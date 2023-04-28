@@ -194,7 +194,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         if "prey" in stimulus_key:
             self.prey_bodies[index].position = (a, b)
         elif "predator" in stimulus_key:
-            self.predator_bodies[index].position = (a, b)
+            self.predator_body.position = (a, b)
 
     def update_random_stimuli(self):
         stimuli_to_delete = []
@@ -271,7 +271,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                 if "prey" in stimulus:
                     self.prey_bodies[i].position = (10, 10)
                 elif "predator" in stimulus:
-                    self.predator_bodies[i].position = (10, 10)
+                    self.predator_body.position = (10, 10)
             else:
 
                 if (self.num_steps-init_period) % self.unset_stimuli[stimulus]["interval"] == 0:
@@ -280,7 +280,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                     if "prey" in stimulus:
                         self.prey_bodies[i].position = (10, 10)
                     elif "predator" in stimulus:
-                        self.predator_bodies[i].position = (10, 10)
+                        self.predator_body.position = (10, 10)
 
                 elif (self.num_steps-init_period) % self.unset_stimuli[stimulus]["interval"] == round(self.unset_stimuli[stimulus]["interval"]/3):
                     # Pre onset period
@@ -288,7 +288,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                     if "prey" in stimulus:
                         self.prey_bodies[i].position = (10, 10)
                     elif "predator" in stimulus:
-                        self.predator_bodies[i].position = (10, 10)
+                        self.predator_body.position = (10, 10)
 
                 elif (self.num_steps-init_period) % self.unset_stimuli[stimulus]["interval"] == round(2 * self.unset_stimuli[stimulus]["interval"]/3):
                     # Appearance period

@@ -36,8 +36,6 @@ class NaturalisticEnvironment(BaseEnvironment):
         self.impulse_against_fish_previous_step = None
 
         self.recent_cause_of_death = None
-
-        # For producing a useful PCI
         self.vector_agreement = []
 
         # For producing useful PAI
@@ -171,17 +169,6 @@ Sand grain: {self.sand_grain_associated_reward}
             if p[0] != 10000.0:
                 self.create_prey(prey_position=p, prey_orientation=o, prey_gait=g, prey_age=a)
 
-        # self.prey_ages = np.array(buffer.prey_age_buffer[-1]).astype(int)
-        # self.paramecia_gaits = np.array(buffer.prey_gait_buffer[-1]).astype(int)
-        # self.prey_ages = self.prey_ages[~(self.prey_ages == 100000)]
-        # self.paramecia_gaits = self.paramecia_gaits[~(self.paramecia_gaits == 100000)]
-        # self.prey_ages = self.prey_ages.tolist()
-        # self.paramecia_gaits = self.paramecia_gaits.tolist()
-        #
-        # print(len(self.prey_bodies))
-        # print(len(self.paramecia_gaits))
-        # print(len(self.prey_ages))
-
         # Create predators in proper position and orientation.
         final_step_predator_position = buffer.predator_position_buffer[-1]
         final_step_predator_orientation = buffer.predator_orientation_buffer[-1]
@@ -225,7 +212,6 @@ Sand grain: {self.sand_grain_associated_reward}
         """For the split assay mode - checks whether the specified condition is met at each step"""
 
         if self.split_event == "One-Prey-Close":
-
             if len(self.prey_bodies) > 0:
                 max_angular_deviation = np.pi / 2  # Anywhere in visual field.
                 max_distance = 100  # 10mm
@@ -253,7 +239,6 @@ Sand grain: {self.sand_grain_associated_reward}
 
             for i, p in enumerate(reversed(prey_in_visual_field[0][0])):
                 if p:
-                    # self.remove_prey(prey_index_offset - i)
                     self.prey_bodies[prey_index_offset-i].position = np.array([20000, 20000])
                     print("Removed prey due to modification")
 
@@ -287,12 +272,6 @@ Sand grain: {self.sand_grain_associated_reward}
         # For impulse direction logging (current opposition metric)
         self.fish.impulse_vector_x = self.fish.prev_action_impulse * np.sin(self.fish.body.angle)
         self.fish.impulse_vector_y = self.fish.prev_action_impulse * np.cos(self.fish.body.angle)
-
-        # Add policy helper reward to encourage proximity to prey.
-        # for ii in range(len(self.prey_bodies)):
-        #     if self.check_proximity(self.prey_bodies[ii].position, self.env_variables['reward_distance']):
-        #         reward += self.env_variables['proximity_reward']
-
         done = False
 
         # Change internal state variables
@@ -387,9 +366,6 @@ Sand grain: {self.sand_grain_associated_reward}
         else:
             salt_damage = 0
 
-        if self.predator_body is not None:
-            self.total_predator_steps += 1
-
         if self.fish.touched_edge_this_step:
             reward -= self.env_variables["wall_touch_penalty"]
             self.wall_associated_reward -= self.env_variables["wall_touch_penalty"]
@@ -403,7 +379,6 @@ Sand grain: {self.sand_grain_associated_reward}
                 if age > self.env_variables["prey_safe_duration"] and\
                         np.random.rand(1) < self.env_variables["p_prey_death"]:
                     if not self.check_proximity(self.prey_bodies[i].position, 200):
-                        # print("Removed prey")
                         self.remove_prey(i)
                         self.available_prey -= 1
 
@@ -439,7 +414,6 @@ Sand grain: {self.sand_grain_associated_reward}
         if self.env_variables['salt']:
             # Scale salt damage so is within same range as pixel counts going in (learning using these also failed with
             # lower scaling)
-            # internal_state.append(0.0)
             if self.env_variables["max_salt_damage"] > 0:
                 internal_state.append((255 * salt_damage)/self.env_variables["max_salt_damage"])
             else:
@@ -640,13 +614,9 @@ Sand grain: {self.sand_grain_associated_reward}
         original_orientations = np.array([self.fish.body.angle])
         # original_orientations = np.array([self.fish.body.angle] + [body.angle for body in self.prey_bodies])
 
-        try:
-            associated_impulse_vectors = self.impulse_vector_field[
-                all_feature_coordinates[:, 0], all_feature_coordinates[:, 1]]
-        except:
-            print("Feature coordinates out of range, exception thrown.")
-            print(f"Feature coordinates: {all_feature_coordinates}")
-            associated_impulse_vectors = np.array([[0.0, 0.0] for i in range(all_feature_coordinates.shape[0])])
+        associated_impulse_vectors = self.impulse_vector_field[
+            all_feature_coordinates[:, 0], all_feature_coordinates[:, 1]]
+
 
         self.fish.body.angle = np.pi
         self.fish.body.apply_impulse_at_local_point(

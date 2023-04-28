@@ -2,7 +2,7 @@
 import tensorflow.compat.v1 as tf
 import tensorflow_probability as tfp
 
-from Networks.base_network import BaseNetwork
+from Networks.PPO.base_network import BaseNetwork
 from Networks.PPO.masked_multivariate_normal import MaskedMultivariateNormal
 
 tf.disable_v2_behavior()
