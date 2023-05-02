@@ -113,6 +113,7 @@ class BaseService:
             internal_state_order.append("energy_state")
         if self.environment_params['salt']:
             internal_state_order.append("salt")
+        internal_state_order = ['a1', 'a2', 'a3']
         return internal_state_order
 
     def get_positions(self):

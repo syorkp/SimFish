@@ -251,7 +251,7 @@ Sand grain: {self.sand_grain_associated_reward}
                                         np.clip(self.fish.body.position[1], 6, self.env_variables["arena_height"] - 30))
             self.fish.body.position = new_position
 
-    def simulation_step(self, action, impulse):
+    def simulation_step(self, action, impulse, good_action):
         self.prey_consumed_this_step = False
         self.last_action = action
         self.fish.touched_sand_grain = False
@@ -411,8 +411,18 @@ Sand grain: {self.sand_grain_associated_reward}
             internal_state_order.append("salt")
         if len(internal_state) == 0:
             internal_state.append(0)
+        rnd_int = np.random.randint(0, 3)
+        if rnd_int == 0:
+            internal_state = [1., 0., 0.]
+        elif rnd_int == 1:
+            internal_state = [0., 1., 0.]
+        elif rnd_int == 2:
+            internal_state = [0., 0., 1.]
         internal_state = np.array([internal_state])
-
+        if action == good_action:
+            reward = 100
+        else:
+            reward = 0
         if self.assay_run_version == "Original":
             if self.check_condition_met():
                 done = True

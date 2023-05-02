@@ -216,8 +216,8 @@ class QNetwork:
 
         #                ------------ Integrating Normal and Reflected ------------                   #
 
-        self.Value_final = tf.divide(tf.add(self.Value, self.Value_ref), 2)
-        self.Advantage_final = tf.divide(tf.add(self.Advantage, self.Advantage_ref), 2)
+        self.Value_final = self.Value#tf.divide(tf.add(self.Value, self.Value_ref), 2)
+        self.Advantage_final = self.Advantage#tf.divide(tf.add(self.Advantage, self.Advantage_ref), 2)
 
         self.salience = tf.gradients(self.Advantage_final, self.observation)
         # Then combine them together to get our final Q-values.

@@ -11,7 +11,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["prey_basic_debug"]
+            "args": ["dqn_epsilon_new"]
         }
     ]
 }

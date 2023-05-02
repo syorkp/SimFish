@@ -117,6 +117,7 @@ class BaseDQN:
                          self.environment_params['energy_state'], self.environment_params['in_light'],
                          self.environment_params['salt']] if x is True])
         internal_states = max(internal_states, 1)
+        internal_states = 3
         internal_state_names = self.get_internal_state_order()
 
         cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
@@ -189,7 +190,7 @@ class BaseDQN:
         self.simulation.reset()
 
         # Take the first simulation step, with a capture action. Assigns observation, reward, internal state, done, and
-        o, r, internal_state, d, full_masked_image = self.simulation.simulation_step(action=3)
+        o, r, internal_state, d, full_masked_image = self.simulation.simulation_step(action=0, good_action=0)
 
         # For benchmarking each episode.
         all_actions = []
@@ -212,7 +213,7 @@ class BaseDQN:
                                                                                               internal_state=internal_state,
                                                                                               a=efference_copy,
                                                                                               rnn_state=rnn_state,
-                                                                                              rnn_state_ref=rnn_state_ref)
+                                                                                              rnn_state_ref=rnn_state_ref, experience=experience)
             if self.debug:
                 if self.using_gpu:
                     full_masked_image = full_masked_image.get()
@@ -256,7 +257,7 @@ class BaseDQN:
         o_ref[:, :, 1] = o[::-1, :, 0]
         return o_ref
 
-    def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
+    def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref, experience):
         """
         Runs a step, choosing an action given an initial condition using the network/randomly, and running this in the
         environment.
@@ -280,7 +281,11 @@ class BaseDQN:
 
         #####
         exploration = 'epsilon_greedy'
-
+        if len(experience) > 5:
+            good_action = np.where(experience[-2][0][6][0] == 1.)[0][0]
+        else:
+            good_action = 0
+        #good_action = np.where(internal_state[0] == 1.)[0][0]
         feed_dict = {self.main_QN.observation: o,
                      self.main_QN.internal_state: internal_state,
                      self.main_QN.prev_actions: [a],
@@ -314,7 +319,7 @@ class BaseDQN:
                 chosen_a = np.argmax(q_out + np.sqrt(2 * np.log(self.total_steps) / (self.action_usage+1e-5)))    
 
         # Simulation step
-        o1, given_reward, internal_state, d, full_masked_image = self.simulation.simulation_step(action=chosen_a)
+        o1, given_reward, internal_state, d, full_masked_image = self.simulation.simulation_step(action=chosen_a, good_action=good_action)
         self.action_usage[chosen_a] += 1
         #####
         
