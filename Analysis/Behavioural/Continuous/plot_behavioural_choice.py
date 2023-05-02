@@ -7,7 +7,7 @@ import seaborn as sns
 from Analysis.load_data import load_data
 from Analysis.Behavioural.Tools.BehavLabels.label_behavioural_context import label_behavioural_context_multiple_trials, \
     get_behavioural_context_name_by_index
-from Environment.Action_Space.draw_angle_dist import get_modal_impulse_and_angle
+from Environment.Action_Space.draw_angle_dist_old import get_modal_impulse_and_angle
 from Environment.Action_Space.Bout_classification.action_masking import get_action_mask
 
 

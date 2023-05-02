@@ -13,7 +13,7 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 class BaseService:
 
-    def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
+    def __init__(self, model_name, trial_number, total_steps, episode_number, using_gpu, memory_fraction,
                  config_name, continuous_actions, monitor_performance=False):
 
         self.monitor_performance = monitor_performance
@@ -35,7 +35,6 @@ class BaseService:
 
         # Computation Parameters
         self.using_gpu = using_gpu
-        self.monitor_gpu = monitor_gpu
         self.memory_fraction = memory_fraction
 
         # Networks Parameters
@@ -65,8 +64,6 @@ class BaseService:
         # Placeholder Attributes
         if not hasattr(self, "environment_params"):
             self.environment_params = None
-        if not hasattr(self, "last_position_dim"):
-            self.last_position_dim = None
         if not hasattr(self, "episode_buffer"):
             self.episode_buffer = None
         if not hasattr(self, "buffer"):
@@ -81,6 +78,8 @@ class BaseService:
             self._episode_loop = None
 
     def create_session(self):
+        """Returns a tf.Session() object."""
+
         print("Creating Session..")
 
         if self.using_gpu:
@@ -97,6 +96,7 @@ class BaseService:
             return tf.Session()
 
     def load_configuration_files(self):
+        """Load configuration files."""
         with open(f"{self.current_configuration_location}_learning.json", 'r') as f:
             params = json.load(f)
         with open(f"{self.current_configuration_location}_env.json", 'r') as f:
@@ -104,6 +104,7 @@ class BaseService:
         return params, env
 
     def get_internal_state_order(self):
+        """Returns a list, indicating the order of variables in the internal state provided to the network."""
         internal_state_order = []
         if self.environment_params['in_light']:
             internal_state_order.append("in_light")
@@ -116,33 +117,58 @@ class BaseService:
         internal_state_order = ['a1', 'a2', 'a3']
         return internal_state_order
 
-    def get_positions(self):
-        """Should be here as is used in both training and assay services."""
+    def get_feature_positions(self):
+        """Returns the positions of all environmental features for logging."""
         if len(self.simulation.sand_grain_bodies) > 0:
             sand_grain_positions = [self.simulation.sand_grain_bodies[i].position for i, b in
                                     enumerate(self.simulation.sand_grain_bodies)]
             sand_grain_positions = [[i[0], i[1]] for i in sand_grain_positions]
         else:
-            sand_grain_positions = [[10000, 10000]]
+            sand_grain_positions = [[15000, 15000]]
 
         if self.simulation.prey_bodies:
             prey_positions = [prey.position for prey in self.simulation.prey_bodies]
             prey_positions = np.array([[i[0], i[1]] for i in prey_positions])
-            while True: 
-                if len(prey_positions) < self.last_position_dim:
-                    prey_positions = np.append(prey_positions, [[10000, 10000]], axis=0)
-                else:
-                    break
-
-            self.last_position_dim = len(prey_positions)
-
         else:
-            prey_positions = np.array([[10000, 10000]])
+            prey_positions = np.array([[15000, 15000]])
 
         if self.simulation.predator_body is not None:
             predator_position = self.simulation.predator_body.position
             predator_position = np.array([predator_position[0], predator_position[1]])
         else:
-            predator_position = np.array([10000, 10000])
+            predator_position = np.array([15000, 15000])
 
         return sand_grain_positions, prey_positions, predator_position
+
+    def log_data(self, efference_copy, a):
+        """Log data from an episode."""
+        sand_grain_positions, prey_positions, predator_position = self.get_feature_positions()
+        prey_orientations = np.array([p.angle for p in self.simulation.prey_bodies]).astype(np.float32)
+
+        try:
+            predator_orientation = self.simulation.predator_body.angle
+        except:
+            predator_orientation = 0
+
+        prey_ages = np.array(self.simulation.prey_ages)
+        prey_gait = np.array(self.simulation.paramecia_gaits)
+
+        prey_identifiers = np.array(self.simulation.prey_identifiers)
+
+        self.buffer.save_environmental_positions(action=a,
+                                                 fish_position=self.simulation.fish.body.position,
+                                                 prey_consumed=self.simulation.prey_consumed_this_step,
+                                                 predator_present=self.simulation.predator_body,
+                                                 prey_positions=prey_positions,
+                                                 predator_position=predator_position,
+                                                 sand_grain_positions=sand_grain_positions,
+                                                 fish_angle=self.simulation.fish.body.angle,
+                                                 salt_health=self.simulation.fish.salt_health,
+                                                 efference_copy=efference_copy,
+                                                 prey_orientation=prey_orientations,
+                                                 predator_orientation=predator_orientation,
+                                                 prey_age=prey_ages,
+                                                 prey_gait=prey_gait,
+                                                 prey_identifiers=prey_identifiers
+                                                 )
+

@@ -4,8 +4,8 @@ import copy
 
 import pymunk
 
-from Environment.Action_Space.draw_angle_dist_new import draw_angle_dist_new as draw_angle_dist_narrowed
-from Environment.Action_Space.draw_angle_dist import convert_action_to_bout_id
+from Environment.Action_Space.draw_angle_and_distance import draw_angle_and_distance as draw_angle_dist_narrowed
+from Environment.Action_Space.draw_angle_dist_old import convert_action_to_bout_id
 
 
 
@@ -210,11 +210,6 @@ class TestEnvironment:
 
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
 
-        # New prey motion TODO: Check doesnt mess with base version.
-        # self.paramecia_gaits.append(
-        #     np.random.choice([0, 1, 2], 1, p=[1 - (self.env_variables["p_fast"] + self.env_variables["p_slow"]),
-        #                                       self.env_variables["p_slow"],
-        #                                       self.env_variables["p_fast"]])[0])
         # New prey motion
         self.paramecia_gaits.append(
             np.random.choice([0, 1, 2], 1, p=[1 - (self.env_variables["p_fast"] + self.env_variables["p_slow"]),

@@ -42,12 +42,13 @@ def get_frameshift_sequences(action_sequences):
 
 
 def plot_all_turn_analysis(model_name, assay_config, assay_id, n, figure_moniker="", use_purely_turn_sequences=True, data_cutoff=None):
+    print("Running turning analysis")
     no_prey_actions, no_prey_timestamps = get_no_prey_stimuli_sequences(model_name, assay_config, assay_id, n, data_cutoff)
     otherwise_exploration_sequences = get_exploration_sequences(model_name, assay_config, assay_id, n, data_cutoff)
 
     if use_purely_turn_sequences:
-        turn_exploration_sequences = extract_purely_turn_sequences(otherwise_exploration_sequences, 5)
-        turn_no_prey_sequences = extract_purely_turn_sequences(no_prey_actions, 5)
+        turn_exploration_sequences = extract_purely_turn_sequences(otherwise_exploration_sequences, 2)
+        turn_no_prey_sequences = extract_purely_turn_sequences(no_prey_actions, 2)
     else:
         turn_exploration_sequences = extract_turn_sequences(otherwise_exploration_sequences)
         turn_no_prey_sequences = extract_turn_sequences(no_prey_actions)
@@ -128,13 +129,13 @@ def plot_all_turn_analysis_multiple_models_discrete(model_names, assay_config, a
 
 if __name__ == "__main__":
     # Get all plots for a single model
-    for i in range(1, 31):
-        plot_all_turn_analysis("dqn_gamma-1", f"dqn_gamma_c{i}", f"Naturalistic", 100, figure_moniker=str(i))
+    plot_all_turn_analysis("dqn_0-1", f"Behavioural-Data-Empty", f"Naturalistic", 40, figure_moniker="dqn_0-1")
+    plot_all_turn_analysis("dqn_0-7", f"Behavioural-Data-Empty", f"Naturalistic", 40, figure_moniker="dqn_0-7")
 
     # Get all plots for multiple models
-    # plot_all_turn_analysis_multiple_models_discrete(["dqn_gamma-1", "dqn_gamma-2", "dqn_gamma-4", "dqn_gamma-5"],
-    #                                                 "Behavioural-Data-Empty",
-    #                                                 f"Naturalistic", 100, data_cutoff=None)
+    # plot_all_turn_analysis_multiple_models_discrete(["dqn_0-1", "dqn_0-7"],
+    #                                                 "Behavioural-Data-Free",
+    #                                                 f"Naturalistic", 8, data_cutoff=None)
 
     # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", f"Naturalistic-18")
     # exploration_timestamps, exploration_sequences, exploration_fish_orientations = \

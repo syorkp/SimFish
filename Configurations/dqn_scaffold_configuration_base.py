@@ -5,15 +5,13 @@ Created on Mon Oct  5 07:52:17 2020
 
 @author: asaph
 """
-import copy
-import json
-import os
+
 import numpy as np
 
 # all distances in pixels
 
 from Utilities.scaffold_creation import create_scaffold, build_changes_list_gradual
-from Networks.original_network import connectivity, reflected, base_network_layers, modular_network_layers, ops
+
 
 params = {
     # Learning (Universal)
@@ -52,15 +50,8 @@ params = {
 
     # Saving and video parameters
     'time_per_step': 0.03,  # Length of each step used in gif creation
-    'summaryLength': 10,  # Number of episodes to periodically save for analysis
+    'summaryLength': 100,  # Number of episodes to periodically save for analysis
     'rnn_dim_shared': 512,  # number of rnn cells. Should no longer be used.
-
-    # Dynamic network construction
-    'reflected': reflected,
-    'base_network_layers': base_network_layers,
-    'modular_network_layers': modular_network_layers,
-    'ops': ops,
-    'connectivity': connectivity,
 
     'reuse_eyes': True,
 
@@ -111,9 +102,9 @@ env = {
     "sz_size": 1.047,  # 60 deg
     "sz_oversampling_factor": 2.5,
     "sigmoid_steepness": 5.0,
-    'red_scaling_factor': 1,  # Pixel counts are multiplied by this
-    'uv_scaling_factor': 1,  # Pixel counts are multiplied by this
-    'red_2_scaling_factor': 0.2,  # Pixel counts are multiplied by this
+    'red_object_intensity': 1,  # Pixels are multiplied by this
+    'uv_object_intensity': 1,  # Pixels are multiplied by this
+    'background_point_intensity': 0.2,  # Pixels are multiplied by this
 
     # Fish-Paramecium Capture restrictions
     'fraction_capture_permitted': 1.0,  # Should be 1.0 if no temporal restriction imposed.
@@ -185,7 +176,7 @@ env = {
     'reward_distance': 100,
     'proximity_reward': 0.002,
     'salt_reward_penalty': 1000,  # Scales with salt concentration. Was 10000
-    'action_reward_scaling': 0, # 1 / 1.5e-04,  # Arbitrary (practical) hyperparameter for penalty for action
+    'action_reward_scaling': 0,  # 1 / 1.5e-04,  # Arbitrary (practical) hyperparameter for penalty for action
     'consumption_reward_scaling': 100000,  # Arbitrary (practical) hyperparameter for reward for consumption
     'wall_touch_penalty': 200,
 
@@ -217,7 +208,7 @@ env = {
     'unit_circle_diameter': 0.7,  # Circular current options
 }
 
-scaffold_name = "dqn_epsilon_proj_b"
+scaffold_name = "dqn_salt_only_reduced"
 
 
 # For predator scaffolding
@@ -257,47 +248,35 @@ high_pci = 0.3 / 3
 low_pai = 600
 high_pai = 800
 
-# Initial predator scaffolding
-# changes += build_changes_list_gradual("PCI", low_pci, "distance_from_fish", env["distance_from_fish"],
-#                                       env["distance_from_fish"] / 2, 5, discrete=False)
-# For sand grain simplifying
-# changes += [
-#        ["PCI", high_pci, "sand_grain_red_component", 1.5],
-#        ["PCI", high_pci, "sand_grain_red_component", 1.0],
-#        ["PCI", high_pci, "sand_grain_red_component", 0.5],
-#        ["PCI", high_pci, "sand_grain_red_component", 0.0],
-# ]
-
-# Predator changes
-
 # Start with shot noise
 env["shot_noise"] = True
-env["background_brightness"] = 0.1 #0.0036011379595952326
+
 env["max_salt_damage"] = 0.02
+
+env["prey_num"] = 0
+env["capture_swim_extra_cost"] = 0
+env["wall_touch_penalty"] = 0
+env["energy_state"] = False
+env["in_light"] = False
+
+env["salt_reward_penalty"] = 100000
 env["light_gain"] = 125.7# 27.769# 125.7
 env["dark_gain"] = 60.0# 1.2397 # 60.0
-env['red_scaling_factor'] = 0.01  # Pixel counts are multiplied by this
-env['uv_scaling_factor'] = 0.8  # Pixel counts are multiplied by this
-env['red_2_scaling_factor'] = 0.005  # Pixel counts are multiplied by this
+env["background_brightness"] = 0.8 * 0.08108736209284662/env["light_gain"]  # 0.1 #0.0036011379595952326
+env['red_object_intensity'] = 0.01  # Pixel counts are multiplied by this
+env['uv_object_intensity'] = 0.8  # Pixel counts are multiplied by this
+env['background_point_intensity'] = 0.005  # Pixel counts are multiplied by this
 
 # 2-10
 changes += [
     ["PCI", low_pci, "anneling_steps", 500000,
-     "capture_swim_extra_cost", 50],
+     "capture_swim_extra_cost", 50],  # 2
 
-    ["PCI", low_pci, "wall_reflection", False],
+    ["PCI", low_pci, "wall_reflection", False],  # 3
 
     # 2) Visual System
     ["PCI", low_pci, "red_photoreceptor_rf_size", 0.0133,
-     "uv_photoreceptor_rf_size", 0.0133],
-
-    # ["PCI", low_pci, "shot_noise", True],
-
-    # ["PCI", low_pci, "background_brightness", 0.1],
-
-    # ["PCI", high_pci, "light_gain", 160.],
-
-    # ["PCI", high_pci, "light_gain", 125.7]
+     "uv_photoreceptor_rf_size", 0.0133],  # 4
 ]
 
 # 2) Exploration 15-18
@@ -307,48 +286,17 @@ original_prey_cloud_num = env["prey_cloud_num"]
 # Normal
 changes += [
     ["PCI", high_pci * 12 / 8, "prey_cloud_num", original_prey_cloud_num * 6 / 8,
-     "prey_num", original_prey_num * 6 / 8],
+     "prey_num", original_prey_num * 6 / 8],  # 5
 
     ["PCI", high_pci * 12 / 8, "prey_cloud_num", original_prey_cloud_num * 4 / 8,
-     "prey_num", original_prey_num * 4 / 8],
+     "prey_num", original_prey_num * 4 / 8],  # 6
 
     ["PCI", high_pci * 20 / 8, "prey_cloud_num", original_prey_cloud_num * 2 / 8,
-     "prey_num", original_prey_num * 2 / 8],
+     "prey_num", original_prey_num * 2 / 8],  # 7
 
     ["PCI", high_pci * 20 / 8, "prey_cloud_num", original_prey_cloud_num * 1 / 8,
-     "prey_num", original_prey_num * 1 / 8],
+     "prey_num", original_prey_num * 1 / 8],  # 8
 ]
-
-# Sand grains
-# changes += [["PCI", high_pci, "prey_num", original_prey_num * 7/8],
-#             ["PCI", high_pci, "prey_cloud_num", original_prey_cloud_num * 7/8],
-#             ["PCI", high_pci, "sand_grain_num", original_prey_num * 7/8],
-#
-#             ["PCI", high_pci * 10/8, "prey_num", original_prey_num * 6/8],
-#             ["PCI", high_pci * 10/8, "prey_cloud_num", original_prey_cloud_num * 6/8],
-#             ["PCI", high_pci * 10 / 8, "sand_grain_num", original_prey_num * 6 / 8],
-#
-#             ["PCI", high_pci * 12/8, "prey_num", original_prey_num * 5/8],
-#             ["PCI", high_pci * 12/8, "prey_cloud_num", original_prey_cloud_num * 5/8],
-#             ["PCI", high_pci * 12 / 8, "sand_grain_num", original_prey_num * 5 / 8],
-#
-#             ["PCI", high_pci * 14/8, "prey_num", original_prey_num * 4/8],
-#             ["PCI", high_pci * 14/8, "prey_cloud_num", original_prey_cloud_num * 4/8],
-#             ["PCI", high_pci * 14 / 8, "sand_grain_num", original_prey_num * 4 / 8],
-#
-#             ["PCI", high_pci * 16/8, "prey_num", original_prey_num * 3/8],
-#             ["PCI", high_pci * 16/8, "prey_cloud_num", original_prey_cloud_num * 3/8],
-#             ["PCI", high_pci * 16 / 8, "sand_grain_num", original_prey_num * 3 / 8],
-#
-#             ["PCI", high_pci * 18/8, "prey_num", original_prey_num * 2/8],
-#             ["PCI", high_pci * 18/8, "prey_cloud_num", original_prey_cloud_num * 2/8],
-#             ["PCI", high_pci * 18 / 8, "sand_grain_num", original_prey_num * 2 / 8],
-#
-#             ["PCI", high_pci * 20/8, "prey_num", original_prey_num * 1/8],
-#             ["PCI", high_pci * 20/8, "prey_cloud_num", original_prey_cloud_num * 1/8],
-#             ["PCI", high_pci * 20/8, "sand_grain_num", original_prey_num * 1/8],
-#             ]
-
 
 low_pci *= 20 / 8
 high_pci *= 20 / 8
@@ -356,10 +304,10 @@ high_pci *= 20 / 8
 # 3) Fine Prey Capture 19-34
 changes += [["PCI", high_pci, "prey_fluid_displacement", True,
              "prey_jump", True,
-             ],
-            ["PCI", high_pci, "fish_mouth_radius", 4],
-            ["PCI", high_pci, "fraction_capture_permitted", 0.2],
-            ["PCI", high_pci, "capture_angle_deviation_allowance", np.pi / 5],
+             ],  # 9
+            ["PCI", high_pci, "fish_mouth_radius", 4],  # 10
+            ["PCI", high_pci, "fraction_capture_permitted", 0.2],  # 11
+            ["PCI", high_pci, "capture_angle_deviation_allowance", np.pi / 5],  # 12
 
             ]
 

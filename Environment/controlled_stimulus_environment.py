@@ -14,14 +14,23 @@ class ControlledStimulusEnvironment(BaseEnvironment):
     For this environment, the following stimuli are available: prey, predators.
     """
 
-    def __init__(self, env_variables, stimuli, using_gpu, tethered=True, set_positions=False, moving=False,
-                 random=False, reset_each_step=False, reset_interval=1, sediment=None, draw_screen=False, assay_all_details=None):
-        super().__init__(env_variables, draw_screen, using_gpu)
+    def __init__(self, env_variables, stimuli, using_gpu, tethered, set_positions, moving,
+                 random, reset_each_step, reset_interval, num_actions, assay_all_details=None, continuous=False):
+        super().__init__(env_variables, using_gpu, num_actions)
 
-        if tethered:
-            self.fish = TetheredFish(self.board, env_variables, self.dark_col, using_gpu)
+        self.tethered = tethered
+        if continuous:
+            self.continuous_actions = True
+            if tethered:
+                self.fish = ContinuousTetheredFish(self.board, env_variables, self.dark_col, using_gpu)
+            else:
+                self.fish = ContinuousFish(self.board, env_variables, self.dark_col, using_gpu)
         else:
-            self.fish = Fish(self.board, env_variables, self.dark_col, using_gpu)
+            if self.tethered:
+                self.fish = TetheredFish(self.board, env_variables, self.dark_col, using_gpu)
+            else:
+                self.fish = Fish(self.board, env_variables, self.dark_col, using_gpu)
+
         self.space.add(self.fish.body, self.fish.mouth, self.fish.head, self.fish.tail)
 
         self.prey_positions = {}
@@ -59,13 +68,11 @@ class ControlledStimulusEnvironment(BaseEnvironment):
 
         self.edge_col = self.space.add_collision_handler(1, 3)
         self.edge_col.begin = self.touch_wall
-        self.sediment = sediment
         self.pred_fish_col = self.space.add_collision_handler(3, 5)
         self.pred_fish_col.begin = self.no_collision
         self.prey_fish_col = self.space.add_collision_handler(3, 2)
         self.prey_fish_col.begin = self.no_collision
 
-        self.continuous_actions = False
         self.assay_full_detail = assay_all_details
 
     def reset(self):
@@ -75,18 +82,17 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         self.fish.body.velocity = (0, 0)
         self.create_stimuli(self.stimuli)
 
-    def special_reset(self):
+    def bring_fish_to_centre(self):
         self.fish.body.position = (self.env_variables['arena_width'] / 2, self.env_variables['arena_height'] / 2)
         self.fish.body.angle = 0
         self.fish.body.velocity = (0, 0)
 
-    def simulation_step(self, action, save_frames=False, frame_buffer=None, activations=None):
+    def simulation_step(self, action):
         self.prey_consumed_this_step = False
 
-        if self.reset_at_interval and self.num_steps % self.reset_interval == 0:
-            self.special_reset()
-        if frame_buffer is None:
-            frame_buffer = []
+        if self.reset_at_interval and self.num_steps % self.reset_interval == 0 and self.tethered:
+            self.bring_fish_to_centre()
+
         self.fish.making_capture = False
         reward = self.fish.take_action(action)
 
@@ -108,52 +114,31 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         for micro_step in range(self.env_variables['phys_steps_per_sim_step']):
             self.space.step(self.env_variables['phys_dt'])
 
-            # Salt health
-            if self.env_variables["salt"]:
-                salt_damage = self.salt_gradient[int(self.fish.body.position[0]), int(self.fish.body.position[1])]
-                self.salt_damage_history.append(salt_damage)
-                self.fish.salt_health = self.fish.salt_health + self.env_variables["salt_recovery"] - salt_damage
-                if self.fish.salt_health > 1.0:
-                    self.fish.salt_health = 1.0
-                if self.fish.salt_health < 0:
-                    print("Fish too salty")
-                    done = True
-                if "salt_reward_penalty" in self.env_variables:
-                    if self.env_variables["salt_reward_penalty"] > 0 and salt_damage > self.env_variables[
-                        "salt_recovery"]:
-                        reward -= self.env_variables["salt_reward_penalty"] * salt_damage
-            # Energy level
+        if self.tethered:
+            self.bring_fish_to_centre()
 
-            if self.env_variables["energy_state"]:
-                reward = self.fish.update_energy_level(reward, self.prey_consumed_this_step)
-                if self.assay_full_detail["energy_state_control"] == "Held":
-                    self.fish.energy_level = 1.0
-                elif self.assay_full_detail["energy_state_control"] is list:
-                    self.fish.energy_level = self.assay_full_detail["energy_state_control"][self.num_steps]
-                self.energy_level_log.append(self.fish.energy_level)
-                if self.fish.energy_level < 0:
-                    print("Fish ran out of energy")
-                    done = True
+        # Salt health
+        if self.env_variables["salt"]:
+            salt_damage = self.salt_gradient[int(self.fish.body.position[0]), int(self.fish.body.position[1])]
+            self.salt_damage_history.append(salt_damage)
+            self.fish.salt_health = self.fish.salt_health + self.env_variables["salt_recovery"] - salt_damage
+            if self.fish.salt_health > 1.0:
+                self.fish.salt_health = 1.0
+            if self.fish.salt_health < 0:
+                pass
+                # done = True
+                # self.recent_cause_of_death = "Salt"
 
-            if self.fish.touched_edge:
-                self.fish.touched_edge = False
-            if self.show_all:
-                self.board.erase(bkg=self.env_variables['background_brightness'])
-                self.draw_shapes(visualisation=True)
-                if self.draw_screen:
-                    self.board_image.set_data(self.output_frame(activations, np.array([0, 0]), scale=0.5)/255.)
-                    plt.pause(0.0001)
-
-        self.fish.body.position = (self.env_variables['arena_width'] / 2, self.env_variables['arena_height'] / 2)
-        self.fish.body.angle = 0
-        self.fish.body.velocity = (0, 0)
+            if self.env_variables[
+                "salt_reward_penalty"] > 0:  # and salt_damage > self.env_variables["salt_recovery"]:
+                reward -= self.env_variables["salt_reward_penalty"] * salt_damage
+        else:
+            salt_damage = 0
 
         # Log whether or not fish in light
         self.in_light_history.append(self.fish.body.position[0] > self.dark_col)
 
         self.num_steps += 1
-        self.board.erase(bkg=self.env_variables['background_brightness'])
-        self.draw_shapes(visualisation=False)
 
         # Calculate internal state
         internal_state = []
@@ -166,51 +151,26 @@ class ControlledStimulusEnvironment(BaseEnvironment):
             internal_state_order.append("stress")
         if self.env_variables['energy_state']:
             internal_state.append(self.fish.energy_level)
+            # print(self.fish.energy_level)
             internal_state_order.append("energy_state")
         if self.env_variables['salt']:
-            internal_state.append(salt_damage)
+            # Scale salt damage so is within same range as pixel counts going in (learning using these also failed with
+            # lower scaling)
+            # internal_state.append(0.0)
+            if self.env_variables["max_salt_damage"] > 0:
+                internal_state.append((255 * salt_damage)/self.env_variables["max_salt_damage"])
+            else:
+                internal_state.append(0.0)
+
             internal_state_order.append("salt")
         if len(internal_state) == 0:
             internal_state.append(0)
         internal_state = np.array([internal_state])
 
         # Observation
-        right_eye_pos = (-np.cos(np.pi/2-self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
-                         +np.sin(np.pi/2-self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
-        left_eye_pos = (+np.cos(np.pi/2-self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[0],
-                        -np.sin(np.pi/2-self.fish.body.angle) * self.env_variables['eyes_biasx'] + self.fish.body.position[1])
+        observation, full_masked_image = self.resolve_visual_input()
 
-        if self.predator_body is not None:
-            predator_bodies = np.array([self.predator_body.position])
-        else:
-            predator_bodies = np.array([])
-
-        full_masked_image = self.board.get_masked_pixels(np.array(self.fish.body.position),
-                                                         np.array([i.position for i in self.prey_bodies]),
-                                                         predator_bodies
-                                                         )
-
-        self.fish.left_eye.read(full_masked_image, left_eye_pos[0], left_eye_pos[1], self.fish.body.angle)
-        self.fish.right_eye.read(full_masked_image, right_eye_pos[0], right_eye_pos[1], self.fish.body.angle)
-
-        if save_frames or self.draw_screen:
-            self.board.erase_visualisation(bkg=0.3)
-            self.draw_shapes(visualisation=True)
-            relative_dark_gain = self.env_variables["dark_gain"]/self.env_variables["light_gain"]
-            self.board.apply_light(self.dark_col, relative_dark_gain, 1, visualisation=True)
-
-            if save_frames:
-                frame = self.output_frame(activations, internal_state, scale=0.25)
-                frame_buffer.append(frame)
-            if self.draw_screen:
-                frame = self.output_frame(activations, internal_state, scale=0.5) / 255.
-                self.board_image.set_data(frame)
-                plt.pause(0.000001)
-
-        observation = np.dstack((self.fish.readings_to_photons(self.fish.left_eye.readings),
-                                 self.fish.readings_to_photons(self.fish.right_eye.readings)))
-
-        return observation, reward, internal_state, done, frame_buffer
+        return observation, reward, internal_state, done, full_masked_image
 
     def create_stimuli(self, stimuli):
         for stimulus in stimuli:
@@ -234,10 +194,9 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         if "prey" in stimulus_key:
             self.prey_bodies[index].position = (a, b)
         elif "predator" in stimulus_key:
-            self.predator_bodies[index].position = (a, b)
+            self.predator_body.position = (a, b)
 
     def update_random_stimuli(self):
-        # TODO: Add in baseline feature.
         stimuli_to_delete = []
         for i, stimulus, in enumerate(self.random_stimuli.keys()):
             if self.num_steps % self.unset_stimuli[stimulus]["interval"] == 0:
@@ -301,7 +260,6 @@ class ControlledStimulusEnvironment(BaseEnvironment):
         return self.get_distance_for_size(stimulus, sizes[progression])
 
     def update_unset_stimuli(self):
-        # TODO: Still need to update so that can have multiple, sequential stimuli. Will require adding in onset into stimulus, as well as changing the baseline phase. Not useful for current requirements.
         stimuli_to_delete = []
         init_period = 100
         print(self.num_steps)
@@ -313,7 +271,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                 if "prey" in stimulus:
                     self.prey_bodies[i].position = (10, 10)
                 elif "predator" in stimulus:
-                    self.predator_bodies[i].position = (10, 10)
+                    self.predator_body.position = (10, 10)
             else:
 
                 if (self.num_steps-init_period) % self.unset_stimuli[stimulus]["interval"] == 0:
@@ -322,7 +280,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                     if "prey" in stimulus:
                         self.prey_bodies[i].position = (10, 10)
                     elif "predator" in stimulus:
-                        self.predator_bodies[i].position = (10, 10)
+                        self.predator_body.position = (10, 10)
 
                 elif (self.num_steps-init_period) % self.unset_stimuli[stimulus]["interval"] == round(self.unset_stimuli[stimulus]["interval"]/3):
                     # Pre onset period
@@ -330,7 +288,7 @@ class ControlledStimulusEnvironment(BaseEnvironment):
                     if "prey" in stimulus:
                         self.prey_bodies[i].position = (10, 10)
                     elif "predator" in stimulus:
-                        self.predator_bodies[i].position = (10, 10)
+                        self.predator_body.position = (10, 10)
 
                 elif (self.num_steps-init_period) % self.unset_stimuli[stimulus]["interval"] == round(2 * self.unset_stimuli[stimulus]["interval"]/3):
                     # Appearance period
@@ -391,15 +349,17 @@ class ControlledStimulusEnvironment(BaseEnvironment):
             except IndexError:
                 self.prey_bodies.pop(i)
                 self.prey_shapes.pop(i)
+                self.prey_ages.pop(i)
+                self.prey_identifiers.pop(i)
                 finished_prey.append(prey)
 
         for i, predator in enumerate(self.predator_positions):
             try:
-                self.predator_bodies[i].position = (self.predator_positions[predator][self.num_steps][0],
-                                                    self.predator_positions[predator][self.num_steps][1])
+                self.predator_body.position = (self.predator_positions[predator][self.num_steps][0],
+                                               self.predator_positions[predator][self.num_steps][1])
             except IndexError:
-                self.predator_bodies.pop(i)
-                self.predator_shapes.pop(i)
+                self.predator_body = None
+                self.predator_shape = None
                 finished_predators.append(predator)
 
         for item in finished_prey:

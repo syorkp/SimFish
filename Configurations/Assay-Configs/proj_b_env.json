@@ -8,7 +8,7 @@
     "known_max_fish_i": 100,
     "dark_light_ratio": 0.3,
     "light_gradient": 200,
-    "background_brightness": 0.1,
+    "background_brightness": 0.000645,
     "dark_gain": 60.0,
     "light_gain": 125.7,
     "light_decay_rate": 0.01,

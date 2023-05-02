@@ -9,9 +9,8 @@ from skimage import io
 
 class VisualisationBoard:
 
-    def __init__(self, width, height, prey_size=4,
-                 predator_size=100, visible_scatter=0.3, background_grating_frequency=50, dark_light_ratio=0.0,
-                 dark_gain=0.01, light_gain=1.0, light_gradient=200, max_visual_distance=1500, show_background=True):
+    def __init__(self, width, height, prey_size=4, predator_size=100, visible_scatter=0.3,
+                 background_grating_frequency=50, light_gain=1.0, light_gradient=200, max_visual_distance=1500):
 
         self.chosen_math_library = np
 
@@ -33,9 +32,6 @@ class VisualisationBoard:
         # For debugging purposes
         self.mask_buffer_time_point = None
 
-        # For obstruction mask (reset each time is called).
-        self.show_background = show_background
-
     def get_background_grating(self, frequency, linear=False):
         if linear:
             return self.linear_texture(frequency)
@@ -53,7 +49,6 @@ class VisualisationBoard:
         return full_arena
 
     def marble_texture(self):
-        # TODO: Can be made much more efficient through none repeating computations.
         # Generate these randomly so grid can have any orientation.
         xPeriod = self.chosen_math_library.random.uniform(0.0, 10.0)
         yPeriod = self.chosen_math_library.random.uniform(0.0, 10.0)
@@ -63,7 +58,6 @@ class VisualisationBoard:
 
         noise = self.chosen_math_library.absolute(self.chosen_math_library.random.randn(self.width, self.height))
 
-        # TODO: Stop repeating the following:
         xp, yp = self.chosen_math_library.arange(self.width), self.chosen_math_library.arange(self.height)
         xy, py = self.chosen_math_library.meshgrid(xp, yp)
         xy = self.chosen_math_library.expand_dims(xy, 2)
@@ -73,10 +67,8 @@ class VisualisationBoard:
         xy_values = (coords[:, :, 0] * xPeriod / self.width) + (coords[:, :, 1] * yPeriod / self.height)
         size = turbSize
 
-        # TODO: Stop repeating the following:
         turbulence = self.chosen_math_library.zeros((self.width, self.height))
 
-        # TODO: Stop repeating the following:
         while size >= 1:
             reduced_coords = coords / size
 
@@ -121,10 +113,9 @@ class VisualisationBoard:
         db[:, self.height - 2:self.height - 1] = self.chosen_math_library.array([1, 0, 0])
         self.db_visualisation = db
 
-        if self.show_background:
-            self.db_visualisation += self.chosen_math_library.concatenate((self.background_grating/10,
-                                                                           self.background_grating/10,
-                                                                           self.chosen_math_library.zeros(self.background_grating.shape)), axis=2)
+        self.db_visualisation += self.chosen_math_library.concatenate((self.background_grating/10,
+                                                                       self.background_grating/10,
+                                                                       self.chosen_math_library.zeros(self.background_grating.shape)), axis=2)
 
     def get_base_arena(self, bkg=0.0):
         if bkg == 0:

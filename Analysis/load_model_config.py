@@ -98,9 +98,9 @@ def load_assay_configuration_files(model_name):
                 with open(f"{model_location}/environment_configuration.json", 'r') as f:
                     env = json.load(f)
 
-    base_network_layers = params["base_network_layers"]
-    ops = params["ops"]
-    connectivity = params["connectivity"]
+    base_network_layers = None  # params["base_network_layers"]
+    ops = None  # params["ops"]
+    connectivity = None  # params["connectivity"]
     return params, env, base_network_layers, ops, connectivity
 
 

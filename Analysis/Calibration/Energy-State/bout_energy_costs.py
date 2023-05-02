@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 
 from Analysis.load_model_config import load_configuration_files_by_scaffold_point, get_scaffold_num_points
 from Environment.Action_Space.action_space_display_comparison import calculate_energy_cost
-from Environment.Action_Space.draw_angle_dist_new import draw_angle_dist_new
 from Environment.Action_Space.Bout_classification.action_masking import get_new_bout_params
 
 

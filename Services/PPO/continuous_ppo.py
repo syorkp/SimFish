@@ -7,7 +7,7 @@ import json
 # noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
 
-from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator_dynamic import PPONetworkMultivariate2Dynamic
+from Networks.PPO.proximal_policy_optimizer_continuous import PPONetworkActorMultivariate
 
 tf.disable_v2_behavior()
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -48,14 +48,12 @@ class ContinuousPPO:
         # Add attributes only if don't exist yet (prevents errors thrown).
         if not hasattr(self, "get_internal_state_order"):
             self.get_internal_state_order = None
-        if not hasattr(self, "sb_emulator"):
-            self.sb_emulator = None
         if not hasattr(self, "step_loop"):
             self.step_loop = None
         if not hasattr(self, "rnn_in_network"):
             self.rnn_in_network = None
-        if not hasattr(self, "get_positions"):
-            self.get_positions = None
+        if not hasattr(self, "get_feature_positions"):
+            self.get_feature_positions = None
         if not hasattr(self, "save_environmental_data"):
             self.save_environmental_data = None
         if not hasattr(self, "episode_buffer"):
@@ -72,6 +70,16 @@ class ContinuousPPO:
             self.efference_copy_interruptions = None
         if not hasattr(self, "preset_energy_state"):
             self.preset_energy_state = None
+        if not hasattr(self, "epsilon"):
+            self.epsilon = None
+        if not hasattr(self, "model_location"):
+            self.model_location = None
+        if not hasattr(self, "episode_number"):
+            self.episode_number = None
+        if not hasattr(self, "in_light_interruptions"):
+            self.in_light_interruptions = None
+        if not hasattr(self, "salt_interruptions"):
+            self.salt_interruptions = None
 
         self.continuous = True
 
@@ -81,7 +89,6 @@ class ContinuousPPO:
 
         # Placeholders
         self.epsilon_greedy = None
-        # self.e = None
         self.step_drop = None
 
         self.output_dimensions = 2
@@ -89,46 +96,36 @@ class ContinuousPPO:
 
     def create_network(self):
         """
-        Create the main and target Q networks, according to the configuration parameters.
-        :return: The main network and the target network graphs.
+        Create the PPO network, according to the configuration parameters.
         """
-        print("Creating networks...")
+        print("Creating networks")
         internal_states = sum(
             [1 for x in [self.environment_params['stress'],
                          self.environment_params['energy_state'], self.environment_params['in_light'],
                          self.environment_params['salt']] if x is True])
         internal_states = max(internal_states, 1)
-        internal_state_names = self.get_internal_state_order()
+        cell = tf.nn.rnn_cell.LSTMCell(num_units=self.learning_params['rnn_dim_shared'], state_is_tuple=True)
 
-        if "reuse_eyes" in self.learning_params:
-            reuse_eyes = self.learning_params['reuse_eyes']
-        else:
-            reuse_eyes = False
-        self.network = PPONetworkMultivariate2Dynamic(simulation=self.simulation,
-                                                      # rnn_dim=self.learning_params['rnn_dim_shared'],
-                                                      my_scope='PPO',
-                                                      internal_states=internal_states,
-                                                      internal_state_names=internal_state_names,
-                                                      max_impulse=self.environment_params[
-                                                          'max_impulse'],
-                                                      max_angle_change=self.environment_params[
-                                                          'max_angle_change'],
-                                                      clip_param=self.learning_params[
-                                                          'clip_param'],
-                                                      base_network_layers=self.learning_params[
-                                                          'base_network_layers'],
-                                                      modular_network_layers=self.learning_params[
-                                                          'modular_network_layers'],
-                                                      ops=self.learning_params['ops'],
-                                                      connectivity=self.learning_params[
-                                                          'connectivity'],
-                                                      reflected=self.learning_params['reflected'],
-                                                      reuse_eyes=reuse_eyes,
-                                                      )
+        self.network = PPONetworkActorMultivariate(simulation=self.simulation,
+                                                   rnn_dim=self.learning_params['rnn_dim_shared'],
+                                                   rnn_cell=cell,
+                                                   my_scope='PPO',
+                                                   internal_states=internal_states,
+                                                   max_impulse=self.environment_params['max_impulse'],
+                                                   max_angle_change=self.environment_params[
+                                                       'max_angle_change'],
+                                                   clip_param=self.learning_params[
+                                                       'clip_param'],
+                                                   input_sigmas=True,
+                                                   impose_action_mask=True,
+                                                   )
 
         print("Created network")
 
     def update_sigmas(self):
+        """Updates the current sigma exploration parameters according to specified decay. Not really used now, as
+        epsilon greedy used for PPO exploration."""
+
         self.sigma_total_steps += self.simulation.num_steps
 
         if self.learning_params["sigma_mode"] != "Decreasing":
@@ -142,8 +139,7 @@ class ContinuousPPO:
                                                "sigma_reduction_time"])])
             self.angle_sigma = np.array([self.learning_params["max_sigma_angle"] - (
                     self.learning_params["max_sigma_angle"] - self.learning_params["min_sigma_angle"]) * (
-                                                 self.sigma_total_steps / self.learning_params[
-                                             "sigma_reduction_time"])])
+                                                 self.sigma_total_steps / self.learning_params["sigma_reduction_time"])])
             # To prevent ever returning NaN
             if math.isnan(self.impulse_sigma[0]):
                 self.impulse_sigma = np.array([self.learning_params["min_sigma_impulse"]])
@@ -151,18 +147,18 @@ class ContinuousPPO:
                 self.angle_sigma = np.array([self.learning_params["min_sigma_angle"]])
 
     def _assay_step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
-        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
+        """Run network and simulation step in assay mode."""
+
         a = [a[0],
              a[1],
              self.simulation.fish.prev_action_impulse,
              self.simulation.fish.prev_action_angle,
-             ]  # Set impulse to scale to be inputted to network
+             ]
 
-        impulse, angle, V, updated_rnn_state, updated_rnn_state_ref, network_layers, \
+        impulse, angle, V, V_ref, updated_rnn_state, updated_rnn_state_ref, \
         mu_i, mu_a, mu1, mu1_ref, mu_a1, mu_a_ref, si_i, si_a = self.sess.run(
-            [self.network.impulse_output, self.network.angle_output, self.network.value_output,
+            [self.network.impulse_output, self.network.angle_output, self.network.value_output, self.network.value_fn_2,
              self.network.rnn_state_shared, self.network.rnn_state_ref,
-             self.network.network_graph,
              self.network.mu_impulse_combined,
              self.network.mu_angle_combined,
              self.network.mu_impulse,
@@ -198,62 +194,39 @@ class ContinuousPPO:
 
         o1, given_reward, new_internal_state, d, full_masked_image = self.simulation.simulation_step(action=action)
 
-        sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
-
         efference_copy = action + [self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle]
 
         # Update buffer
-        self.buffer.add_training(observation=o,
-                                 internal_state=internal_state,
+        self.buffer.add_training(observation=o1,
+                                 internal_state=new_internal_state,
                                  action=efference_copy,
                                  reward=given_reward,
                                  value=V,
+                                 value_ref=V_ref,
                                  l_p_action=0,
-                                 rnn_state=rnn_state,
-                                 rnn_state_ref=rnn_state_ref,
+                                 rnn_state=updated_rnn_state,
+                                 rnn_state_ref=updated_rnn_state_ref,
+                                 advantage=0,
+                                 advantage_ref=0
                                  )
         self.buffer.add_logging(mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref)
-
         if "environmental positions" in self.buffer.recordings:
-            prey_orientations = np.array([p.angle for p in self.simulation.prey_bodies]).astype(np.float32)
-            try:
-                predator_orientation = self.simulation.predator_body.angle
-            except:
-                predator_orientation = 0
-            prey_ages = self.simulation.prey_ages
-            prey_gait = self.simulation.paramecia_gaits
-
-            self.buffer.save_environmental_positions(self.simulation.fish.body.position,
-                                                     self.simulation.prey_consumed_this_step,
-                                                     self.simulation.predator_body,
-                                                     prey_positions,
-                                                     predator_position,
-                                                     sand_grain_positions,
-                                                     vegetation_positions,
-                                                     self.simulation.fish.body.angle,
-                                                     self.simulation.fish.salt_health,
-                                                     efference_copy=a,
-                                                     prey_orientation=prey_orientations,
-                                                     predator_orientation=predator_orientation,
-                                                     prey_age=prey_ages,
-                                                     prey_gait=prey_gait
-                                                     )
-
-        self.buffer.make_desired_recordings(network_layers)
+            self.log_data(efference_copy, action)
 
         return given_reward, new_internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, action
 
-    def _step_loop_full_logs(self, o, internal_state, a, rnn_state, rnn_state_ref):
-        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
+    def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
+        """Run network and simulation step in training mode."""
+
         a = [a[0],
              a[1],
              self.simulation.fish.prev_action_impulse,
              self.simulation.fish.prev_action_angle,
-             ]  # Set impulse to scale to be inputted to network
+             ]
 
-        impulse, angle, V, updated_rnn_state, updated_rnn_state_ref, neg_log_action_probability, mu_i, mu_a, \
+        impulse, angle, V, V_ref, updated_rnn_state, updated_rnn_state_ref, neg_log_action_probability, mu_i, mu_a, \
         si = self.sess.run(
-            [self.network.impulse_output, self.network.angle_output, self.network.value_output,
+            [self.network.impulse_output, self.network.angle_output, self.network.value_fn_1, self.network.value_fn_2,
              self.network.rnn_state_shared, self.network.rnn_state_ref,
              self.network.neg_log_prob,
              self.network.mu_impulse_combined,
@@ -266,7 +239,7 @@ class ContinuousPPO:
                        self.network.sigma_impulse_combined_proto: self.impulse_sigma,
                        self.network.sigma_angle_combined_proto: self.angle_sigma,
                        self.network.rnn_state_in: rnn_state,
-                       # self.network.rnn_state_in_ref: rnn_state_ref,
+                       # self.network.rnn_state_in_ref: rnn_state_ref,   TODO: Currently incorrect, though learning doesnt occur when correct.
                        self.network.batch_size: 1,
                        self.network.train_length: 1,
                        self.network.entropy_coefficient: self.learning_params["lambda_entropy"],
@@ -290,10 +263,9 @@ class ContinuousPPO:
                                self.network.sigma_impulse_combined_proto: self.impulse_sigma,
                                self.network.sigma_angle_combined_proto: self.angle_sigma,
                                self.network.rnn_state_in: rnn_state,
-                               # self.network.rnn_state_in_ref: rnn_state_ref,
+                               self.network.rnn_state_in_ref: rnn_state_ref,
                                self.network.batch_size: 1,
                                self.network.train_length: 1,
-
                                self.network.action_placeholder: np.reshape(action, (1, 2)),
                                }
                 )
@@ -310,42 +282,22 @@ class ContinuousPPO:
         action_consequences = [self.simulation.fish.prev_action_impulse / self.environment_params["max_impulse"],
                                self.simulation.fish.prev_action_angle / self.environment_params["max_angle_change"]]
 
-        action = action + action_consequences
+        efference_copy = action + action_consequences
         self.buffer.add_training(observation=o,
                                  internal_state=internal_state,
-                                 action=action,
+                                 action=efference_copy,
                                  reward=r,
-                                 value=V,
                                  l_p_action=neg_log_action_probability,
                                  rnn_state=rnn_state,
                                  rnn_state_ref=rnn_state_ref,
+                                 value=V,
+                                 value_ref=V_ref,
+                                 advantage=0,
+                                 advantage_ref=0,
                                  )
 
         if self.save_environmental_data:
-            sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
-            prey_orientations = [p.angle for p in self.simulation.prey_bodies]
-            try:
-                predator_orientation = self.simulation.predator_body.angle
-            except:
-                predator_orientation = 0
-            prey_ages = self.simulation.prey_ages
-            prey_gait = self.simulation.paramecia_gaits
-
-            self.buffer.save_environmental_positions(self.simulation.fish.body.position,
-                                                     self.simulation.prey_consumed_this_step,
-                                                     self.simulation.predator_body,
-                                                     prey_positions,
-                                                     predator_position,
-                                                     sand_grain_positions,
-                                                     vegetation_positions,
-                                                     self.simulation.fish.body.angle,
-                                                     self.simulation.fish.salt_health,
-                                                     efference_copy=a,
-                                                     prey_orientation=prey_orientations,
-                                                     predator_orientation=predator_orientation,
-                                                     prey_age=prey_ages,
-                                                     prey_gait=prey_gait
-                                                     )
+            self.log_data(action, efference_copy)
 
         si_i = si[0][0]
         si_a = si[0][1]
@@ -354,104 +306,10 @@ class ContinuousPPO:
         self.total_steps += 1
         return r, new_internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, action
 
-    def _step_loop_reduced_logs(self, o, internal_state, a, rnn_state, rnn_state_ref):
-
-        sa = np.zeros((1, 128))  # Placeholder for the state advantage stream.
-        # a = [a[0] / self.environment_params['max_impulse'],
-        #      a[1] / self.environment_params['max_angle_change']]  # Set impulse to scale to be inputted to network
-
-        a = [a[0],
-             a[1],
-             self.simulation.fish.prev_action_impulse,
-             self.simulation.fish.prev_action_angle,
-             ]  # Set impulse to scale to be inputted to network
-
-        impulse, angle, V, updated_rnn_state, updated_rnn_state_ref, mu_i, mu_a, neg_log_action_probability = self.sess.run(
-            [self.network.impulse_output, self.network.angle_output,
-             self.network.value_output,
-             self.network.rnn_state_shared, self.network.rnn_state_ref,
-             self.network.mu_impulse_combined,
-             self.network.mu_angle_combined,
-             self.network.neg_log_prob],
-
-            feed_dict={self.network.observation: o,
-                       self.network.internal_state: internal_state,
-                       self.network.prev_actions: np.reshape(a, (1, 2)),
-                       self.network.sigma_impulse_combined_proto: self.impulse_sigma,
-                       self.network.sigma_angle_combined_proto: self.angle_sigma,
-                       self.network.rnn_state_in: rnn_state,
-                       # self.network.rnn_state_in_ref: rnn_state_ref,
-                       self.network.batch_size: 1,
-                       self.network.train_length: 1,
-                       self.network.entropy_coefficient: self.learning_params["lambda_entropy"],
-                       }
-        )
-        if self.epsilon_greedy:
-            if np.random.rand(1) < self.epsilon:
-                action = [impulse[0][0], angle[0][0]]
-            else:
-                action = [mu_i[0][0] * self.environment_params["max_impulse"],
-                          mu_a[0][0] * self.environment_params["max_angle_change"]]
-
-                # And get updated neg_log_prob
-                neg_log_action_probability = self.sess.run(
-                    [self.network.new_neg_log_prob],
-
-                    feed_dict={self.network.observation: o,
-                               self.network.internal_state: internal_state,
-                               self.network.prev_actions: np.reshape(a, (1, 2)),
-                               self.network.sigma_impulse_combined_proto: self.impulse_sigma,
-                               self.network.sigma_angle_combined_proto: self.angle_sigma,
-                               self.network.rnn_state_in: rnn_state,
-                               # self.network.rnn_state_in_ref: rnn_state_ref,
-                               self.network.batch_size: 1,
-                               self.network.train_length: 1,
-
-                               self.network.action_placeholder: action,
-                               }
-                )
-
-            if self.epsilon > self.learning_params['endE']:
-                self.epsilon -= self.step_drop
-        else:
-            action = [impulse[0][0], angle[0][0]]
-
-        # Simulation step
-        o1, r, new_internal_state, d, full_masked_image = self.simulation.simulation_step(action=action)
-
-        action_consequences = [self.simulation.fish.prev_action_impulse / self.environment_params["max_impulse"],
-                               self.simulation.fish.prev_action_angle / self.environment_params["max_angle_change"]]
-
-        action = action + action_consequences
-        self.buffer.add_training(observation=o,
-                                 internal_state=internal_state,
-                                 action=action,
-                                 reward=r,
-                                 value=V,
-                                 l_p_action=neg_log_action_probability,
-                                 rnn_state=rnn_state,
-                                 rnn_state_ref=rnn_state_ref,
-                                 )
-
-        if self.save_environmental_data:
-            sand_grain_positions, prey_positions, predator_position, vegetation_positions = self.get_positions()
-            self.episode_buffer.save_environmental_positions(self.simulation.fish.body.position,
-                                                             self.simulation.prey_consumed_this_step,
-                                                             self.simulation.predator_body,
-                                                             prey_positions,
-                                                             predator_position,
-                                                             sand_grain_positions,
-                                                             vegetation_positions,
-                                                             self.simulation.fish.body.angle,
-                                                             )
-
-        self.total_steps += 1
-        return r, new_internal_state, o1, d, updated_rnn_state, updated_rnn_state_ref, action
-
     def get_batch(self, batch, observation_buffer, internal_state_buffer, action_buffer,
                   previous_action_buffer,
-                  log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer,
-                  target_outputs_buffer=None):
+                  log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer):
+        """Returns correctly sized arrays for network training values for a given batch."""
 
         observation_batch = observation_buffer[
                             batch * self.batch_size: (batch + 1) * self.batch_size]
@@ -472,29 +330,14 @@ class ContinuousPPO:
         value_batch = value_buffer[
                       batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params["batch_size"]]
 
-        if target_outputs_buffer is not None:
-            target_outputs_batch = target_outputs_buffer[
-                                   batch * self.learning_params["batch_size"]: (batch + 1) * self.learning_params[
-                                       "batch_size"]]
-
         current_batch_size = observation_batch.shape[0]
 
         # Stacking for correct network dimensions
         observation_batch = np.vstack(np.vstack(observation_batch))
         internal_state_batch = np.vstack(np.vstack(internal_state_batch))
-        try:
-            action_batch = np.concatenate(np.array(action_batch))
-            # print(action_batch.shape)
-            action_batch = np.reshape(np.array(action_batch),
-                                      (self.learning_params["trace_length"] * current_batch_size, 2))
-        except:
-            action_batch = np.concatenate(np.array(action_batch))
-
-            print("Error... ")
-            print(current_batch_size)
-            print(action_batch.shape)
-
-            action_batch = np.array(action_batch)
+        action_batch = np.concatenate(np.array(action_batch))
+        action_batch = np.reshape(np.array(action_batch),
+                                  (self.learning_params["trace_length"] * current_batch_size, 2))
 
         previous_action_batch = np.vstack(np.vstack(previous_action_batch))
         log_action_probability_batch = log_action_probability_batch.flatten()
@@ -507,6 +350,8 @@ class ContinuousPPO:
                current_batch_size
 
     def train_network(self):
+        """Perform training of PPO network for an episode."""
+
         if (self.learning_params["batch_size"] * self.learning_params["trace_length"]) * 2 > len(
                 self.buffer.reward_buffer):
             return
@@ -527,9 +372,9 @@ class ContinuousPPO:
 
             # Get the current batch
             observation_batch, internal_state_batch, action_batch, previous_action_batch, log_action_probability_batch, \
-                advantage_batch, return_batch, previous_value_batch, current_batch_size = self.get_batch(
-                    batch, observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer,
-                    log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer)
+            advantage_batch, return_batch, previous_value_batch, current_batch_size = self.get_batch(
+                batch, observation_buffer, internal_state_buffer, action_buffer, previous_action_buffer,
+                log_action_probability_buffer, advantage_buffer, return_buffer, value_buffer)
 
             # Loss value logging
             average_loss_value = 0
@@ -551,7 +396,7 @@ class ContinuousPPO:
                                self.network.prev_actions: previous_action_batch,
                                self.network.internal_state: internal_state_batch,
                                self.network.rnn_state_in: rnn_state_slice,
-                               # self.network.rnn_state_in_ref: rnn_state_ref_slice,
+                               self.network.rnn_state_in_ref: rnn_state_ref_slice,
 
                                self.network.sigma_impulse_combined_proto: self.impulse_sigma,
                                self.network.sigma_angle_combined_proto: self.angle_sigma,
@@ -597,13 +442,14 @@ class ContinuousPPO:
                     in range(int(num_rnns)))
         else:
             # Init states for RNN - For steps, not training.
-            rnn_state_shapes = self.network.get_rnn_state_shapes()
+            rnn_state_shapes = [self.learning_params['rnn_dim_shared']]
             self.init_rnn_state = tuple(
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
             self.init_rnn_state_ref = tuple(
                 (np.zeros([1, shape]), np.zeros([1, shape])) for shape in rnn_state_shapes)
 
     def _episode_loop(self, a=None):
+        """Run episode for Training mode only."""
         self.update_sigmas()
         if a is None:
             a = [4.0, 0.0]
@@ -627,33 +473,6 @@ class ContinuousPPO:
         self.step_number = 0
         while self.step_number < self.current_episode_max_duration:
             if self.assay is not None:
-                # Deal with interventions
-                if self.visual_interruptions is not None:
-                    if self.visual_interruptions[self.step_number] == 1:
-                        # mean values over all data
-                        o[:, 0, :] = 4
-                        o[:, 1, :] = 11
-                        o[:, 2, :] = 16
-                if self.efference_copy_interruptions is not None:
-                    if self.efference_copy_interruptions[self.step_number] is not False:
-                        a = [self.efference_copy_interruptions[self.step_number]]
-                if self.preset_energy_state is not None:
-                    if self.preset_energy_state[self.step_number] is not False:
-                        self.simulation.fish.energy_level = self.preset_energy_state[self.step_number]
-                        internal_state_order = self.get_internal_state_order()
-                        index = internal_state_order.index("energy_state")
-                        internal_state[0, index] = self.preset_energy_state[self.step_number]
-                if self.in_light_interruptions is not False:
-                    if self.in_light_interruptions[self.step_number] == 1:
-                        internal_state_order = self.get_internal_state_order()
-                        index = internal_state_order.index("in_light")
-                        internal_state[0, index] = self.in_light_interruptions[self.step_number]
-                if self.salt_interruptions is not False:
-                    if self.salt_interruptions[self.step_number] == 1:
-                        internal_state_order = self.get_internal_state_order()
-                        index = internal_state_order.index("salt")
-                        internal_state[0, index] = self.salt_interruptions[self.step_number]
-
                 self.previous_action = a
 
             self.step_number += 1
@@ -673,6 +492,7 @@ class ContinuousPPO:
                 break
 
     def get_rnn_states(self, rnn_key_points):
+        """Gets RNN states from buffer - used in Training."""
         batch_size = len(rnn_key_points)
         if self.rnn_in_network:
             rnn_state_buffer, rnn_state_ref_buffer = self.buffer.get_rnn_batch(rnn_key_points, batch_size)

@@ -45,7 +45,7 @@ def build_full_regressor_set(datas, model_name):
     label_names = [get_behavioural_context_name_by_index(i) for i in range(labels[0].shape[1])]
 
     # Continuous basic variables
-    continuous_variables = ["energy_state", "salt", "salt_health"]# TODO: , "reward"]
+    continuous_variables = ["energy_state", "salt", "salt_health"]
 
     for i, data in enumerate(datas):
         # Continuous variables

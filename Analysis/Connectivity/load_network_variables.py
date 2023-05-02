@@ -6,9 +6,9 @@ import json
 
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
-from Networks.PPO.proximal_policy_optimizer_continuous_sb_emulator_dynamic import PPONetworkMultivariate2Dynamic
+from Networks.PPO.proximal_policy_optimizer_continuous_dynamic import PPONetworkMultivariate2Dynamic
 
-from Networks.DQN.q_network_dynamic import QNetworkDynamic
+from Networks.DQN.q_network import QNetwork
 
 tf.disable_v2_behavior()
 
@@ -110,6 +110,55 @@ def load_network_variables_ppo(model_name, conf_name):
             sorted_vars[str(var.name)] = val
         return sorted_vars
 
+def load_network_variables_dqn_reduced(model_name, conf_name):
+    learning, env = load_configuration_files(f"{conf_name}")
+    simulation = DiscreteNaturalisticEnvironment(env, False, True, False)
+
+    with tf.Session() as sess:
+        cell = tf.nn.rnn_cell.LSTMCell(num_units=512, state_is_tuple=True)
+        internal_states = sum(
+            [1 for x in [env['stress'],
+                         env['energy_state'], env['in_light'],
+                         env['salt']] if x is True])
+        internal_states = max(internal_states, 1)
+        internal_state_names = get_internal_state_order(env)
+
+        network = QNetworkReduced(simulation=simulation,
+                                  rnn_dim=512,
+                                  rnn_cell=cell,
+                                  my_scope='main',
+                                  internal_states=internal_states,
+                                  num_actions=learning['num_actions'],
+                                  )
+
+        saver = tf.train.Saver(max_to_keep=5)
+        init = tf.global_variables_initializer()
+        try:
+            model_location = f"../Training-Output/{model_name}"
+            checkpoint = tf.train.get_checkpoint_state(model_location)
+            saver.restore(sess, checkpoint.model_checkpoint_path)
+
+        except AttributeError:
+            try:
+                model_location = f"../../Training-Output/{model_name}"
+                checkpoint = tf.train.get_checkpoint_state(model_location)
+                saver.restore(sess, checkpoint.model_checkpoint_path)
+            except AttributeError:
+                try:
+                    model_location = f"../../../Training-Output/{model_name}"
+                    checkpoint = tf.train.get_checkpoint_state(model_location)
+                    saver.restore(sess, checkpoint.model_checkpoint_path)
+                except AttributeError:
+                    model_location = f"../../../../Training-Output/{model_name}"
+                    checkpoint = tf.train.get_checkpoint_state(model_location)
+                    saver.restore(sess, checkpoint.model_checkpoint_path)
+
+        vars = tf.trainable_variables()
+        vals = sess.run(vars)
+        sorted_vars = {}
+        for var, val in zip(vars, vals):
+            sorted_vars[str(var.name)] = val
+    return sorted_vars
 
 def load_network_variables_dqn(model_name, conf_name, full_efference_copy=False):
     learning, env = load_configuration_files(f"{conf_name}")
@@ -124,7 +173,7 @@ def load_network_variables_dqn(model_name, conf_name, full_efference_copy=False)
         internal_states = max(internal_states, 1)
         internal_state_names = get_internal_state_order(env)
 
-        network = QNetworkDynamic(simulation=simulation,
+        network = QNetwork(simulation=simulation,
                                   my_scope='main',
                                   internal_states=internal_states,
                                   internal_state_names=internal_state_names,
@@ -175,9 +224,8 @@ if __name__ == "__main__":
     # rnn = v["main_rnn/lstm_cell/kernel:0"]
     # with open('dqn26_2_rnn.npy', 'wb') as f:
     #     np.save(f, rnn)
-    v = load_network_variables_ppo("ppo_scaffold_21-2", "ppo_21_2")
-    rnn = v["PPO_rnn/lstm_cell/kernel:0"]
-    with open('ppo21_2_rnn.npy', 'wb') as f:
-        np.save(f, rnn)
+    # v = load_network_variables_ppo("ppo_scaffold_21-2", "ppo_21_2")
+    v = load_network_variables_dqn_reduced("dqn_salt_only_reduced-1", "dqn_sor")
+
 
 

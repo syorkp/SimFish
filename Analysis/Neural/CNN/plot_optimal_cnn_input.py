@@ -59,7 +59,6 @@ def compute_optimal_filter_input(kernels, biases, input_size, output_dim=2, acti
 
             # Normalise output.
             output = output / max(abs(np.max(output)), abs(np.min(output)))
-            # output = np.clip(output, -0.2, 0.2) * 5  # TODO: Decide whether is valid.
             # output += chosen_bias
             # Collapse along constituent kernels.
             if i != 3:

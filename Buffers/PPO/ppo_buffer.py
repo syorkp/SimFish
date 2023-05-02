@@ -1,6 +1,4 @@
 import numpy as np
-import h5py
-import scipy.signal as sig
 
 from Buffers.base_buffer import BaseBuffer
 
@@ -8,7 +6,7 @@ from Buffers.base_buffer import BaseBuffer
 class PPOBuffer(BaseBuffer):
     """Buffer for full episode for PPO training, and logging."""
 
-    def __init__(self, gamma, lmbda, batch_size, train_length, assay, debug=False):
+    def __init__(self, gamma, lmbda, batch_size, train_length, assay):
         super().__init__()
 
         self.gamma = gamma
@@ -16,7 +14,6 @@ class PPOBuffer(BaseBuffer):
         self.batch_size = batch_size
         self.trace_length = train_length
         self.pointer = 0
-        self.debug = debug
         self.assay = assay
 
         # Buffer for training
@@ -84,28 +81,31 @@ class PPOBuffer(BaseBuffer):
         self.rnn_state_ref_buffer = np.array(self.rnn_state_ref_buffer)
         self.log_action_probability_buffer = np.array(self.log_action_probability_buffer)
 
-    def add_training(self, observation, internal_state, action, reward, value, l_p_action, rnn_state, rnn_state_ref,
-                     prediction_error=None, target_output=None):
-        self._add_training(observation, internal_state, reward, rnn_state, rnn_state_ref)
+    def add_training(self, observation, internal_state, action, reward, l_p_action, rnn_state, rnn_state_ref,
+                     value, value_ref, advantage, advantage_ref):
+        self._add_training(observation=observation, internal_state=internal_state, reward=reward,
+                           rnn_state=rnn_state, rnn_state_ref=rnn_state_ref, value=value, value_ref=value_ref,
+                           advantage=advantage, advantage_ref=advantage_ref)
 
-        self.value_buffer.append(value)
         self.log_action_probability_buffer.append(l_p_action)
         self.action_buffer.append(action)
 
-    def save_environmental_positions(self, fish_position, prey_consumed, predator_present, prey_positions,
-                                     predator_position, sand_grain_positions, fish_angle,
-                                     salt_health, efference_copy,
-                                     prey_orientation=None, predator_orientation=None, prey_age=None, prey_gait=None):
+    def save_environmental_positions(self, action, fish_position, prey_consumed, predator_present, prey_positions,
+                                     predator_position, sand_grain_positions, fish_angle, salt_health, efference_copy,
+                                     prey_orientation=None, predator_orientation=None, prey_age=None, prey_gait=None,
+                                     prey_identifiers=None):
         self._save_environmental_positions(fish_position, prey_consumed, predator_present, prey_positions,
                                            predator_position, sand_grain_positions, fish_angle, salt_health,
                                            efference_copy,
-                                           prey_orientation, predator_orientation, prey_age, prey_gait)
+                                           prey_orientation, predator_orientation, prey_age, prey_gait,
+                                           prey_identifiers)
 
     @staticmethod
     def pad_slice(buffer, desired_length, identity=None):
         """Zero pads a trace so all are same length.
         NOTE: Fails in case of previous action which doesnt need to be padded.
         """
+        buffer = np.array(buffer)
         shape_of_data = buffer.shape[1:]
         extra_pads = desired_length - buffer.shape[0]
         padding_shape = (extra_pads,) + shape_of_data
@@ -138,28 +138,16 @@ class PPOBuffer(BaseBuffer):
         self.advantage_buffer = advantages
         self.return_buffer = returns
 
-        if self.debug:
-            self.check_buffers()
-
     def save_assay_data(self, assay_id, data_save_location, assay_configuration_id, sediment, internal_state_order=None,
                         salt_location=None):
         hdf5_file, assay_group = self._save_assay_data(data_save_location, assay_configuration_id, assay_id, sediment,
                                                        internal_state_order, salt_location)
 
-        self.create_data_group("impulse", np.array(self.action_buffer)[:, 0], assay_group)
-        self.create_data_group("angle", np.array(self.action_buffer)[:, 1], assay_group)
+        self.create_data_group("impulse", np.array(self.efference_copy_buffer)[:, 0], assay_group)
+        self.create_data_group("angle", np.array(self.efference_copy_buffer)[:, 1], assay_group)
 
         print(f"{assay_id} Data Saved")
         hdf5_file.close()
-
-    def compute_rewards_to_go(self):
-        # NOT USED
-        rewards_to_go = []
-        current_discounted_reward = 0
-        for i, reward in enumerate(reversed(self.reward_buffer)):
-            current_discounted_reward = reward + current_discounted_reward * self.gamma
-            rewards_to_go.insert(0, current_discounted_reward)
-        return rewards_to_go
 
     def add_logging(self, mu_i, si_i, mu_a, si_a, mu1, mu1_ref, mu_a1, mu_a_ref):
         self.mu_i_buffer.append(mu_i)
@@ -245,9 +233,10 @@ class PPOBuffer(BaseBuffer):
                 log_action_probability_slice = self.log_action_probability_buffer[
                                                self.pointer:self.pointer + self.trace_length, :]
             except ValueError:
+                log_action_probability_slice = []
                 print(f"Pointer: {self.pointer}")
                 print(f"Trace length: {self.trace_length}")
-                print(f"Shape log action prob buffer: {self.log_action_probability_buffer.shape}")
+                print(f"Shape log action prob buffer: {np.array(self.log_action_probability_buffer).shape}")
 
             advantage_slice = self.advantage_buffer[self.pointer:self.pointer + self.trace_length]
             return_slice = self.return_buffer[self.pointer:self.pointer + self.trace_length]
@@ -259,14 +248,6 @@ class PPOBuffer(BaseBuffer):
         return observation_slice, internal_state_slice, action_slice, previous_action_slice, \
                log_action_probability_slice, advantage_slice, return_slice, value_slice
 
-    def check_buffers(self):
-        # Check for NaN
-        print("Checking Buffers")
-        buffers = [self.advantage_buffer, self.reward_buffer, self.observation_buffer, self.action_buffer,
-                   self.return_buffer, self.value_buffer, self.log_action_probability_buffer]
-        if np.isnan(np.sum(np.sum(buffer) for buffer in buffers)):
-            print("NaN Detected")
-
     def get_rnn_batch(self, key_points, batch_size):
         rnn_state_batch = []
         rnn_state_batch_ref = []
@@ -275,7 +256,7 @@ class PPOBuffer(BaseBuffer):
             rnn_state_batch.append(self.rnn_state_buffer[point])
             rnn_state_batch_ref.append(self.rnn_state_ref_buffer[point])
 
-        n_rnns = np.array(rnn_state_batch).shape[1]
+        n_rnns = 1 # np.array(rnn_state_batch).shape[1]
         n_units = np.array(rnn_state_batch).shape[-1]
 
         rnn_state_batch = np.reshape(np.array(rnn_state_batch), (n_rnns, batch_size, 2, n_units))

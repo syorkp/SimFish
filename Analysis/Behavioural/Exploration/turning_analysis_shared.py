@@ -232,6 +232,8 @@ def plot_turning_sequences(fish_angle, save_figure=True):
 
 
 def compute_cumulative_probability(sequence_lengths):
+    if len(sequence_lengths) == 0:
+        return 0.
     max_duration = max(sequence_lengths)
     count_seq_length = np.zeros((max_duration+1))
     for sequence in sequence_lengths:

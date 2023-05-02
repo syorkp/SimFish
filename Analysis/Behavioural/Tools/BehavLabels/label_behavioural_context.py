@@ -54,8 +54,6 @@ def label_behavioural_context(data, model_name):
         - 5 Wall interaction
         - 6 Directional brightness (when left hemisphere is brighter, encoded with 1)
     """
-    # TODO: load environment data and use below.
-
     learning_params, env_variables, _, _, _ = load_assay_configuration_files(model_name)
 
     capture_ts = label_capture_sequences(data, n=20) * 1

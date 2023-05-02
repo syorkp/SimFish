@@ -264,7 +264,7 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 def draw_episode(data, env_variables, save_location, continuous_actions, draw_past_actions=True, show_energy_state=True,
                  scale=1.0, draw_action_space_usage=True, trim_to_fish=True, save_id="", showed_region_quad=500, n_actions_to_show=500,
-                 s_per_frame=0.03, include_sediment=True, as_gif=False):
+                 s_per_frame=0.03, include_sediment=True, as_gif=False, max_steps=999999, show_salt_location=False):
     #try:
     #    with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
     #        env_variables = json.load(f)
@@ -296,7 +296,10 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
                 comment='Movie support!')
     writer = FFMpegWriter(fps=15, metadata=metadata, codec='mpeg4', bitrate=1000000)
 
-    board = DrawingBoard(env_variables["arena_width"], env_variables["arena_height"], data, include_sediment)
+    board = DrawingBoard(env_variables["arena_width"],
+                         env_variables["arena_height"],
+                         data,
+                         include_sediment)
     if show_energy_state:
         energy_levels = data["energy_state"]
     fish_positions = data["fish_position"]
@@ -324,7 +327,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
 
     with writer.saving(fig, f"{save_location}.mp4", 500):
 
-        for step in range(num_steps):
+        for step in range(min(num_steps, max_steps)):
             if "Training-Output" not in save_location:
                 print(f"{step}/{num_steps}")
             if continuous_actions:
@@ -389,6 +392,10 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
 
             if data["predator_presence"][step]:
                 board.circle(data["predator_positions"][step], env_variables['predator_radius'], (0, 1, 0))
+
+            if show_salt_location:
+                board.circle(data["salt_location"], 20, (1, 0, 1))
+
 
             # if draw_action_space_usage:
             #     if continuous_actions:
@@ -492,8 +499,9 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
 
             plot_start = max(0, step - 100)
             ax3.clear()
-            ax3.plot(energy_levels[plot_start:step], color='green', linewidth=0.5)
-            ax3.tick_params(left = False, right = False , labelleft = False ,
+            if show_energy_state:
+                ax3.plot(energy_levels[plot_start:step], color='green', linewidth=0.5)
+                ax3.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
             ax4.clear()
             ax4.plot(data['rnn_state'][plot_start:step, 0, :10], linewidth=0.5)
@@ -562,7 +570,8 @@ if __name__ == "__main__":
     # draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="A15")
     # model_name = "dqn_scaffold_14-1"
-    data = load_data("dqn_gamma-3", "Behavioural-Data-Free-A", "Naturalistic-1", training_data=False)
+    data = load_data("dqn_salt_reward_function-1", "Episode 200", "Episode 200", training_data=True)
+    data2 = load_data("ppo_proj-1", "Episode 100", "Episode 100", training_data=True)
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-3")
@@ -574,9 +583,9 @@ if __name__ == "__main__":
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-5")
     # data_file = sys.argv[1]
     # config_file = sys.argv[2]
-
     #data_file = "../../Assay-Output/dqn_gamma-1/Behavioural-Data-Empty.h5"
-    config_file = f"../../Configurations/Training-Configs/dqn_gamma/52_env.json"
+    config_file = f"../../Configurations/Training-Configs/dqn_0/1_env.json"
+    data["observation"] = data2["observation"]
 
     with open(config_file, 'r') as f:
         env_variables = json.load(f)
@@ -586,8 +595,9 @@ if __name__ == "__main__":
     #     for key in datfl[group].keys():
     #         data[key] = np.array(datfl[group][key])
 
-    draw_episode(data, env_variables, 'tttests', continuous_actions=False, show_energy_state=True,
-                 trim_to_fish=True, showed_region_quad=500, include_sediment=True)
+    draw_episode(data, env_variables, 'salt avoidance 27.4 2', continuous_actions=False, show_energy_state=False,
+                 trim_to_fish=False, showed_region_quad=500, include_sediment=False, scale=0.4, max_steps=300,
+                 show_salt_location=True)
 
 
 

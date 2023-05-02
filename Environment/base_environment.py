@@ -1,9 +1,6 @@
 import copy
-import math
 import random
 import numpy as np
-import matplotlib.pyplot as plt
-from skimage.transform import resize, rescale
 import pymunk
 
 from Environment.Board.drawing_board import DrawingBoard
@@ -17,13 +14,6 @@ class BaseEnvironment:
         self.num_actions = num_actions
 
         self.env_variables = env_variables
-        # Rescale background_brightness to avoid disruption for larger fields
-        model = np.poly1d([1.32283913e-18, -4.10522256e-14, 4.92470049e-10, -2.86744090e-06, 8.22376164e-03,
-                           4.07923942e-01])  # TODO: Keep parameters updated
-        print(f"Original bkg scatter: {self.env_variables['background_brightness']}")
-        self.env_variables["background_brightness"] = self.env_variables["background_brightness"] / (
-                model(self.env_variables["arena_width"]) / model(1500))
-        print(f"New bkg scatter: {self.env_variables['background_brightness']}")
 
         max_photoreceptor_rf_size = max([self.env_variables['uv_photoreceptor_rf_size'],
                                          self.env_variables['red_photoreceptor_rf_size']])
@@ -45,10 +35,11 @@ class BaseEnvironment:
                                   dark_gain=self.env_variables['dark_gain'],
                                   light_gain=self.env_variables['light_gain'],
                                   light_gradient=light_gradient,
-                                  max_visual_distance=max_visual_distance
+                                  max_visual_distance=max_visual_distance,
+                                  red_object_intensity=self.env_variables["red_object_intensity"],
+                                  red2_object_intensity=self.env_variables["background_point_intensity"],
                                   )
 
-        self.show_all = False
         self.num_steps = 0
         self.fish = None
 
@@ -68,7 +59,7 @@ class BaseEnvironment:
             self.prey_cloud_locations = [
                 [np.random.randint(
                     low=(self.env_variables['prey_cloud_region_size'] / 2) + self.env_variables['prey_radius'] +
-                         self.env_variables['fish_mouth_radius'],
+                        self.env_variables['fish_mouth_radius'],
                     high=self.env_variables['arena_width'] - ((
                                                                       self.env_variables['prey_radius'] +
                                                                       self.env_variables[
@@ -77,7 +68,7 @@ class BaseEnvironment:
                                                                           'prey_cloud_region_size'] / 2))),
                     np.random.randint(
                         low=(self.env_variables['prey_cloud_region_size'] / 2) + self.env_variables['prey_radius'] +
-                             self.env_variables['fish_mouth_radius'],
+                            self.env_variables['fish_mouth_radius'],
                         high=self.env_variables['arena_height'] - ((
                                                                            self.env_variables['prey_radius'] +
                                                                            self.env_variables[
@@ -90,17 +81,12 @@ class BaseEnvironment:
                 [np.random.randint(
                     low=120 + self.env_variables['sand_grain_radius'] + self.env_variables['fish_mouth_radius'],
                     high=self.env_variables['arena_width'] - (
-                            self.env_variables['sand_grain_radius'] + self.env_variables[
-                        'fish_mouth_radius']) - 120),
+                            self.env_variables['sand_grain_radius'] + self.env_variables['fish_mouth_radius']) - 120),
                     np.random.randint(
                         low=120 + self.env_variables['sand_grain_radius'] + self.env_variables['fish_mouth_radius'],
                         high=self.env_variables['arena_height'] - (
-                                self.env_variables['sand_grain_radius'] + self.env_variables[
-                            'fish_mouth_radius']) - 120)]
+                                self.env_variables['sand_grain_radius'] + self.env_variables['fish_mouth_radius']) - 120)]
                 for cloud in range(int(self.env_variables["sand_grain_num"]))]
-
-        self.predator_bodies = []
-        self.predator_shapes = []
 
         self.predator_body = None
         self.predator_shape = None
@@ -122,11 +108,8 @@ class BaseEnvironment:
         # New energy system (log)
         self.energy_level_log = []
 
-        # New complex predators
+        # New predator
         self.predator_location = None
-        self.remaining_predator_attacks = None
-        self.total_predator_steps = None
-        self.new_attack_due = False
 
         # New prey movement
         self.paramecia_gaits = None
@@ -145,10 +128,6 @@ class BaseEnvironment:
         if self.env_variables["prey_reproduction_mode"]:
             self.prey_ages = []
 
-        # For initial loom attack
-        self.first_attack = False
-        self.loom_predator_current_size = None
-
         self.touched_sand_grain = False
 
         # For visualisation of previous actions
@@ -162,8 +141,16 @@ class BaseEnvironment:
         self.survived_attack = False
 
         self.switch_step = None
+        self.available_prey = self.env_variables["prey_num"]
+        self.total_predators = 0
+
+        # Iteratively generated prey identifiers.
+        self.total_prey_created = 0
+        self.prey_identifiers = []
 
     def set_collisions(self):
+        """Specifies the collisions that occur in the Pymunk simulation."""
+
         # Collision Types:
         # 1: Edge
         # 2: Prey
@@ -205,6 +192,7 @@ class BaseEnvironment:
         self.pred_prey_wall2.begin = self.no_collision
 
     def draw_walls_and_sediment(self):
+        """Draws the walls and background sediment on the drawing board, which is used for computing visual inputs."""
         self.board.erase(bkg=self.env_variables['background_brightness'])
         self.board.draw_walls()
         self.board.draw_sediment()
@@ -222,25 +210,16 @@ class BaseEnvironment:
 
         self.prey_cloud_wall_shapes = []
 
-        self.paramecia_gaits = []
-
-        if self.env_variables["prey_reproduction_mode"]:
-            self.prey_ages = []
-
         if self.predator_shape is not None:
             self.remove_predator()
         self.predator_location = None
-        self.remaining_predator_attacks = None
-        self.total_predator_steps = None
-        self.new_attack_due = False
-        self.first_attack = False
-        self.loom_predator_current_size = None
 
         self.prey_shapes = []
         self.prey_bodies = []
-
-        self.predator_shapes = []
-        self.predator_bodies = []
+        self.prey_identifiers = []
+        self.paramecia_gaits = []
+        self.prey_ages = []
+        self.total_prey_created = 0
 
         self.sand_grain_shapes = []
         self.sand_grain_bodies = []
@@ -429,7 +408,7 @@ class BaseEnvironment:
         self.fish.touched_edge_this_step = True
         return True
 
-    def create_prey(self, prey_position=None, prey_orientation=None):
+    def create_prey(self, prey_position=None, prey_orientation=None, prey_gait=None, prey_age=None):
         self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
         self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_radius']))
         self.prey_shapes[-1].elasticity = 1.0
@@ -460,18 +439,25 @@ class BaseEnvironment:
             if prey_orientation is not None:
                 self.prey_bodies[-1].angle = prey_orientation
 
+        if prey_orientation is None:
+            # When is a new prey being created
+            self.prey_identifiers.append(self.total_prey_created)
+            self.total_prey_created += 1
+            self.paramecia_gaits.append(
+                np.random.choice([0, 1, 2], 1, p=[1 - (self.env_variables["p_fast"] + self.env_variables["p_slow"]),
+                                                  self.env_variables["p_slow"],
+                                                  self.env_variables["p_fast"]])[0])
+            if self.env_variables["prey_reproduction_mode"]:
+                self.prey_ages.append(0)
+        else:
+
+            self.paramecia_gaits.append(int(prey_gait))
+            if self.env_variables["prey_reproduction_mode"]:
+                self.prey_ages.append(int(prey_age))
+
         self.prey_shapes[-1].color = (0, 0, 1)
         self.prey_shapes[-1].collision_type = 2
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
-
-        # New prey motion
-        self.paramecia_gaits.append(
-            np.random.choice([0, 1, 2], 1, p=[1 - (self.env_variables["p_fast"] + self.env_variables["p_slow"]),
-                                              self.env_variables["p_slow"],
-                                              self.env_variables["p_fast"]])[0])
-
-        if self.env_variables["prey_reproduction_mode"]:
-            self.prey_ages.append(0)
 
     def check_proximity(self, feature_position, sensing_distance):
         sensing_area = [[feature_position[0] - sensing_distance,
@@ -487,6 +473,7 @@ class BaseEnvironment:
 
     def check_proximity_all_prey(self, sensing_distance):
         all_prey_positions = np.array([pr.position for pr in self.prey_bodies])
+
         fish_position = np.expand_dims(np.array(self.fish.body.position), 0)
         fish_prey_vectors = all_prey_positions - fish_position
 
@@ -633,12 +620,7 @@ class BaseEnvironment:
                         deviation = abs(deviation)
                     if deviation < self.env_variables["capture_angle_deviation_allowance"]:
                         valid_capture = True
-                        space.remove(shp, shp.body)
-                        self.prey_shapes.remove(shp)
-                        self.prey_bodies.remove(shp.body)
-                        del self.paramecia_gaits[i]
-                        if self.env_variables["prey_reproduction_mode"]:
-                            del self.prey_ages[i]
+                        self.remove_prey(i)
                     else:
                         self.failed_capture_attempts += 1
 
@@ -658,6 +640,7 @@ class BaseEnvironment:
         del self.prey_bodies[prey_index]
         del self.prey_ages[prey_index]
         del self.paramecia_gaits[prey_index]
+        del self.prey_identifiers[prey_index]
 
     def move_predator(self):
         if self.check_predator_at_target() or self.check_predator_outside_walls():
@@ -753,7 +736,6 @@ class BaseEnvironment:
         self.predator_body.position = (predator_position[0], predator_position[1])
         self.predator_body.angle = predator_orientation
         self.predator_target = predator_target
-        self.total_predator_steps = 0
 
         self.predator_shape.color = (0, 1, 0)
         self.predator_location = (predator_position[0], predator_position[1])
@@ -764,6 +746,7 @@ class BaseEnvironment:
         self.space.add(self.predator_body, self.predator_shape)
 
     def create_predator(self):
+        self.total_predators += 1
         self.predator_body = pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia'])
         self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_radius'])
         self.predator_shape.elasticity = 1.0
@@ -779,7 +762,6 @@ class BaseEnvironment:
 
         self.predator_body.position = (x_position, y_position)
         self.predator_target = fish_position
-        self.total_predator_steps = 0
 
         self.predator_shape.color = (0, 1, 0)
         self.predator_location = (x_position, y_position)
@@ -816,9 +798,8 @@ class BaseEnvironment:
             self.predator_body = None
             self.predator_location = None
             self.predator_target = None
-            self.remaining_predator_attacks = None
-            self.total_predator_steps = None
-            self.survived_attack = True
+            if not self.fish.touched_predator:
+                self.survived_attack = True
         else:
             pass
 

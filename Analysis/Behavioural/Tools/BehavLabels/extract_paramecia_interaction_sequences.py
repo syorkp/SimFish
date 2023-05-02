@@ -28,7 +28,7 @@ def get_paramecia_engagement_sequences(data, range_for_engagement=50, preceding_
     fp_within_range = (fp_distances < range_for_engagement) * 1
 
     interaction_timestamps = [i for i, v in enumerate(fp_within_range) if np.any(v == 1)]
-    # TODO: Pad out interaction sequences to include 10 prior steps - OR reduce so that contiguous steps dont count.
+    # Pad out interaction sequences to include 10 prior steps - OR reduce so that contiguous steps dont count.
 
     interaction_timestamps_sequences = []
     actions_compiled = []

@@ -1,8 +1,4 @@
-import numpy as np
-import matplotlib.pyplot as plt
-
 from Environment.naturalistic_environment import NaturalisticEnvironment
-from Environment.Fish.fish import Fish
 from Environment.Fish.continuous_fish import ContinuousFish
 
 
@@ -44,5 +40,5 @@ class ContinuousNaturalisticEnvironment(NaturalisticEnvironment):
     def load_simulation(self, buffer, sediment, energy_state):
         self.fish.prev_action_impulse = buffer.efference_copy_buffer[-1][2]
         self.fish.prev_action_angle = buffer.efference_copy_buffer[-1][3]
-        super().load_simulation(buffer, sediment, energy_state)
+        return super().load_simulation(buffer, sediment, energy_state)
 

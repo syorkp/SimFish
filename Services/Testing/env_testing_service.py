@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import copy
 from skimage.transform import resize, rescale
+import random
 
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
@@ -16,7 +17,6 @@ class EnvTestingService(BaseService):
                          trial_number=1,
                          total_steps=0,
                          episode_number=0,
-                         monitor_gpu=False,
                          using_gpu=False,
                          memory_fraction=1,
                          config_name=config_name,
@@ -71,9 +71,67 @@ class EnvTestingService(BaseService):
 
             if action == 99:
                 self.create_display_images()
+            elif action == 666:
+                print("Enter new position x: ")
+                new_position_x = input()
+
+                print("Enter new position y: ")
+                new_position_y = input()
+
+                new_position_x = int(new_position_x)
+                new_position_y = int(new_position_y)
+                self.simulation.fish.body.position = np.array([new_position_x, new_position_y])
             else:
                 self.simulation.simulation_step(action)
                 self.update_drawing()
+
+    def run_full_episode(self, num_steps, random_position):
+        """Runs en episode with random actions, logging data."""
+        ended = False
+        observation_log = []
+
+        while not ended:
+            if self.continuous_actions:
+                impulse = random.uniform(0.0, 10.0)
+                angle = random.uniform(-np.pi, np.pi)
+
+                impulse = float(impulse)
+                angle = float(angle)
+
+                action = [impulse, angle]
+            else:
+                action = random.randint(0, 11)
+                action = int(action)
+
+            if random_position:
+                self.simulation.fish.body.position = (np.random.randint(self.environment_params['fish_mouth_size'] + 40,
+                                                             self.environment_params['width'] - (self.environment_params[
+                                                                                                'fish_mouth_size'] + 40)),
+                                           np.random.randint(self.environment_params['fish_mouth_size'] + 40,
+                                                             self.environment_params['height'] - (self.environment_params[
+                                                                                                 'fish_mouth_size'] + 40)))
+                self.simulation.fish.body.angle = (np.random.rand() -0.5) * 2 * np.pi
+                observation, reward, internal_state, done, FOV = self.simulation.simulation_step(6)
+            else:
+                observation, reward, internal_state, done, FOV = self.simulation.simulation_step(action)
+
+            # self.update_drawing()
+            observation_log.append(observation)
+
+            print(self.simulation.num_steps)
+            if self.simulation.num_steps == num_steps:
+                ended = True
+        observation_log = np.array(observation_log)
+        plt.clf()
+        plt.close()
+
+        fig, axs = plt.subplots(3, sharex=True)
+
+        axs[0].hist(observation_log[:, :, 0].flatten())
+        axs[1].hist(observation_log[:, :, 1].flatten())
+        axs[2].hist(observation_log[:, :, 2].flatten())
+        plt.show()
+
 
     def create_display_images(self):
         # Save main plot
@@ -162,10 +220,7 @@ class EnvTestingService(BaseService):
             rrs, ccs = self.visualisation_board.multi_circles(px, py, prey_size)
 
             try:
-                if visualisation:
-                    self.visualisation_board.db_visualisation[rrs, ccs] = self.simulation.sand_grain_shapes[0].color
-                else:
-                    self.visualisation_board.db[rrs, ccs] = self.simulation.sand_grain_shapes[0].color
+                self.visualisation_board.db[rrs, ccs] = self.simulation.sand_grain_shapes[0].color
             except IndexError:
                 print(f"Index Error for: RRS: {max(rrs.flatten())}, CCS: {max(ccs.flatten())}")
                 if max(rrs.flatten()) > self.environment_params['arena_width']:
@@ -178,10 +233,6 @@ class EnvTestingService(BaseService):
                 self.simulation.sand_grain_bodies.pop(lost_index)
                 self.simulation.sand_grain_shapes.pop(lost_index)
                 self.draw_shapes()
-
-        for i, pr in enumerate(self.simulation.predator_bodies):
-            self.visualisation_board.circle(pr.position, self.environment_params['predator_radius'],
-                                            self.simulation.predator_shapes[i].color, True)
 
         if self.simulation.predator_body is not None:
             self.visualisation_board.circle(self.simulation.predator_body.position, self.environment_params['predator_radius'],
@@ -203,6 +254,11 @@ class EnvTestingService(BaseService):
         arena[:, self.environment_params['arena_width'] - 1, 0] = np.ones(self.environment_params['arena_height']) * 255
 
         empty_green_eyes = np.zeros((20, self.environment_params["arena_width"], 1))
+        print(f"""Red: {np.max(np.concatenate((self.simulation.fish.left_eye.readings[:, 0], self.simulation.fish.right_eye.readings[:, 0])))}
+        UV: {np.max(np.concatenate((self.simulation.fish.left_eye.readings[:, 1], self.simulation.fish.right_eye.readings[:, 1])))}              
+        Red2: {np.max(np.concatenate((self.simulation.fish.left_eye.readings[:, 2], self.simulation.fish.right_eye.readings[:, 2])))}              
+              """)
+
         left_photons = self.simulation.fish.readings_to_photons(self.simulation.fish.left_eye.readings)
         right_photons = self.simulation.fish.readings_to_photons(self.simulation.fish.right_eye.readings)
 

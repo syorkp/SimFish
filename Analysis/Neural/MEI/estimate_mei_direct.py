@@ -8,7 +8,6 @@ import tensorflow.compat.v1 as tf
 from Analysis.load_model_config import load_assay_configuration_files
 
 from Networks.DQN.q_network import QNetwork
-from Networks.DQN.q_network_dynamic import QNetworkDynamic
 from Analysis.Model.build_network import get_internal_state_order
 
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
@@ -34,7 +33,7 @@ def create_network(simulation, environment_params, learning_params, full_efferen
         reuse_eyes = learning_params['reuse_eyes']
     else:
         reuse_eyes = False
-    main_QN = QNetworkDynamic(simulation=simulation,
+    main_QN = QNetwork(simulation=simulation,
                               my_scope='main',
                               internal_states=internal_states,
                               internal_state_names=internal_state_names,

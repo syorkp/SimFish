@@ -111,7 +111,7 @@ def plot_pca_with_all_behavioural_periods_multiple_trials_2(datas, model_name, d
     for data in datas:
         if selected_neurons is None:
             if remove_value_stream:
-                rnn_data = data["rnn_state"][:, 0, 0, 0, :256] # TODO: Get rid of...
+                rnn_data = data["rnn_state"][:, 0, 0, 0, :256]
             else:
                 rnn_data = data["rnn_state"][:, 0, 0, :]
         else:

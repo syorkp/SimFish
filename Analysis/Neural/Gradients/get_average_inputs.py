@@ -22,7 +22,6 @@ def get_most_common_network_inputs(observations, rnn_state, energy_state, salt, 
 
 
 def get_most_common_network_inputs_from_data(data):
-    # TODO: make this work for multiple datas
     mean_observation = np.mean(data["observation"], axis=(0))
     mean_rnn_state = np.mean(data["rnn_state"], axis=(0))
     mean_rnn_state = (mean_rnn_state[0], mean_rnn_state[1])

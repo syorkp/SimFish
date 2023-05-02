@@ -60,7 +60,6 @@ def plot_all(rnn_data, observation, action_choice):
                            (0.75, 0.0, 1.0),
                            (0.5, 0.5, 0.5),
                            ])
-    # TODO: Select number of codes automatically
     colors = sns.color_palette("hls", len(set(action_choice)))
 
     axs[0].imshow(left, aspect="auto")

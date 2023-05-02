@@ -21,7 +21,7 @@ def identify_representations(response_vector, stimulus_vector, leeway=0.1):
 
 def compute_relative_vrv(response_vector):
     response_vector = np.array(response_vector)
-    basic_response, background_response = response_vector[:, :int(len(response_vector[0])/2)], response_vector[:, int(len(response_vector[0])/2):]  # TODO: Correct to use proper dimensions
+    basic_response, background_response = response_vector[:, :int(len(response_vector[0])/2)], response_vector[:, int(len(response_vector[0])/2):]
     relative_rv = []
     for i, neuron in enumerate(basic_response):
         neuron_vector = []

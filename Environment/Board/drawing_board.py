@@ -5,12 +5,16 @@ from Environment.Board.field_of_view import FieldOfView
 
 
 class DrawingBoard:
+    """Class used to create a 2D image of the environment and surrounding features, and use this to compute photoreceptor
+    inputs"""
 
     def __init__(self, arena_width, arena_height, uv_light_decay_rate, red_light_decay_rate, photoreceptor_rf_size,
                  using_gpu, prey_radius, predator_radius, visible_scatter, dark_light_ratio, dark_gain, light_gain,
-                 light_gradient, max_visual_distance):
+                 light_gradient, max_visual_distance, red_object_intensity, red2_object_intensity):
 
         self.using_gpu = using_gpu
+        self.red_object_intensity = red_object_intensity
+        self.red2_object_intensity = red2_object_intensity
 
         if using_gpu:
             import cupy as cp
@@ -120,7 +124,7 @@ class DrawingBoard:
         new_grating /= self.chosen_math_library.max(new_grating)  # Normalise
         new_grating = self.chosen_math_library.expand_dims(new_grating, 2)
 
-        return new_grating
+        return new_grating * self.red2_object_intensity
 
     def compute_repeated_computations(self):
         multiplication_matrix_unit = self.chosen_math_library.array([-1, 1, -1, 1])
@@ -552,7 +556,10 @@ class DrawingBoard:
         Returns masked pixels in form W.H.3
         With Red.UV.Red2
         """
-        A = self.chosen_math_library.array(self.local_db)
+        try:
+            A = self.chosen_math_library.array(self.local_db)
+        except ValueError:
+            print(self.local_db)
 
         # apply FOV portion of luminance mask
         local_luminance_mask = self.chosen_math_library.zeros(self.local_db.shape)
@@ -604,9 +611,7 @@ class DrawingBoard:
         if bkg == 0:
             db = self.chosen_math_library.zeros((self.local_dim, self.local_dim, 3), dtype=np.double)
         else:
-            # db = (self.chosen_math_library.ones((self.local_dim, self.local_dim, 3),
-            #                                     dtype=np.double) * bkg) / self.light_gain
-            db = (self.chosen_math_library.ones((self.local_dim, self.local_dim, 3), dtype=np.double) * bkg) / self.light_gain   # TODO: Added temporarily for match between.
+            db = (self.chosen_math_library.ones((self.local_dim, self.local_dim, 3), dtype=np.double) * bkg)
         return db
 
     def draw_sediment(self):
@@ -621,10 +626,10 @@ class DrawingBoard:
     def draw_walls(self):
         """Draws walls as deep into FOV beyond wall objects as possible."""
 
-        self.local_db[self.FOV.local_fov_top, self.FOV.local_fov_left:self.FOV.local_fov_right, 0] = 1
+        self.local_db[self.FOV.local_fov_top, self.FOV.local_fov_left:self.FOV.local_fov_right, 0] = self.red_object_intensity
 
-        self.local_db[self.FOV.local_fov_bottom - 1, self.FOV.local_fov_left:self.FOV.local_fov_right, 0] = 1
+        self.local_db[self.FOV.local_fov_bottom - 1, self.FOV.local_fov_left:self.FOV.local_fov_right, 0] = self.red_object_intensity
 
-        self.local_db[self.FOV.local_fov_top:self.FOV.local_fov_bottom, self.FOV.local_fov_left, 0] = 1
+        self.local_db[self.FOV.local_fov_top:self.FOV.local_fov_bottom, self.FOV.local_fov_left, 0] = self.red_object_intensity
 
-        self.local_db[self.FOV.local_fov_top:self.FOV.local_fov_bottom, self.FOV.local_fov_right - 1, 0] = 1
+        self.local_db[self.FOV.local_fov_top:self.FOV.local_fov_bottom, self.FOV.local_fov_right - 1, 0] = self.red_object_intensity

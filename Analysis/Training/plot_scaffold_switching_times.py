@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from Analysis.Training.load_from_logfiles import load_all_log_data
-from Analysis.Training.plot_metrics_newest import remove_repeated_switching_points
+from Analysis.Training.plot_metrics import remove_repeated_switching_points
 
 
 def get_all_switching_times(model_name, steps):
