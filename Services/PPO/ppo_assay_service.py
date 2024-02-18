@@ -1,8 +1,9 @@
 import numpy as np
+# noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
 import copy
 
-from Buffers.PPO.ppo_buffer_continuous import PPOBufferContinuousMultivariate2
+from Buffers.PPO.ppo_buffer import PPOBuffer
 
 from Services.PPO.continuous_ppo import ContinuousPPO
 from Services.assay_service import AssayService
@@ -13,30 +14,10 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 
 def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fraction):
-    if "monitor gpu" in trial:
-        monitor_gpu = trial["monitor gpu"]
-    else:
-        monitor_gpu = False
-
     if "Using GPU" in trial:
         using_gpu = trial["Using GPU"]
     else:
         using_gpu = True
-
-    if "Continuous Actions" in trial:
-        continuous_actions = trial["Continuous Actions"]
-    else:
-        continuous_actions = True
-
-    if "Realistic Bouts" in trial:
-        realistic_bouts = trial["Realistic Bouts"]
-    else:
-        realistic_bouts = True
-
-    if "SB Emulator" in trial:
-        sb_emulator = trial["SB Emulator"]
-    else:
-        sb_emulator = True
 
     if "Checkpoint" in trial:
         checkpoint = trial["Checkpoint"]
@@ -80,17 +61,12 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
                                         trial_number=trial["Trial Number"],
                                         total_steps=total_steps,
                                         episode_number=episode_number,
-                                        monitor_gpu=monitor_gpu,
                                         using_gpu=using_gpu,
                                         memory_fraction=memory_fraction,
                                         config_name=trial["Environment Name"],
-                                        realistic_bouts=realistic_bouts,
-                                        continuous_environment=continuous_actions,
                                         assays=trial["Assays"],
                                         set_random_seed=set_random_seed,
                                         assay_config_name=trial["Assay Configuration Name"],
-
-                                        sb_emulator=sb_emulator,
                                         checkpoint=checkpoint,
                                         behavioural_recordings=behavioural_recordings,
                                         network_recordings=network_recordings,
@@ -104,25 +80,22 @@ def ppo_assay_target_continuous(trial, total_steps, episode_number, memory_fract
 
 class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
-    def __init__(self, model_name, trial_number, total_steps, episode_number, monitor_gpu, using_gpu, memory_fraction,
-                 config_name, realistic_bouts, continuous_environment, assays, set_random_seed,
-                 assay_config_name, sb_emulator, checkpoint, behavioural_recordings, network_recordings, interventions,
-                 run_version, split_event, modification):
+    def __init__(self, model_name, trial_number, total_steps, episode_number, using_gpu, memory_fraction,
+                 config_name, assays, set_random_seed, assay_config_name,
+                 checkpoint, behavioural_recordings, network_recordings, interventions, run_version, split_event,
+                 modification):
         """
-        Runs a set of assays provided by the run configuraiton.
+        Runs a set of assays provided by the run configuration.
         """
-        print(f"H: {split_event}")
         # Set random seed
         super().__init__(model_name=model_name,
                          trial_number=trial_number,
                          total_steps=total_steps,
                          episode_number=episode_number,
-                         monitor_gpu=monitor_gpu,
                          using_gpu=using_gpu,
                          memory_fraction=memory_fraction,
                          config_name=config_name,
-                         realistic_bouts=realistic_bouts,
-                         continuous_environment=continuous_environment,
+                         continuous_environment=True,
                          assays=assays,
                          set_random_seed=set_random_seed,
                          assay_config_name=assay_config_name,
@@ -135,24 +108,16 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                          modification=modification
                          )
 
-        self.multivariate = self.learning_params["multivariate"]
-
         # Buffer for saving results of assay
-        self.buffer = PPOBufferContinuousMultivariate2(gamma=0.99,
-                                                      lmbda=0.9,
-                                                      batch_size=self.learning_params["batch_size"],
-                                                      train_length=self.learning_params["trace_length"],
-                                                      assay=True,
-                                                      debug=False,
-                                                      use_dynamic_network=self.environment_params[
-                                                          "use_dynamic_network"],
-                                                      )
-
+        self.buffer = PPOBuffer(gamma=0.99,
+                                lmbda=0.9,
+                                batch_size=self.learning_params["batch_size"],
+                                train_length=self.learning_params["trace_length"],
+                                assay=True,
+                                )
 
         self.ppo_version = ContinuousPPO
-        self.use_rnd = self.learning_params["use_rnd"]
-        self.sb_emulator = sb_emulator
-        self.e = self.learning_params["startE"] / 2
+        self.epsilon = self.learning_params["startE"] / 2
         self.epsilon_greedy = self.learning_params["epsilon_greedy"]
         self.last_position_dim = self.environment_params["prey_num"]
 
@@ -163,10 +128,44 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
             self.init_states()
             AssayService._run(self)
 
-    def perform_assay(self, assay, background=None, energy_state=None):
-        # self.assay_output_data_format = {key: None for key in
-        #                                  assay["behavioural recordings"] + assay["network recordings"]}
-        # self.buffer.init_assay_recordings(assay["behavioural recordings"], assay["network recordings"])
+    def load_simulation(self, sediment, energy_state, rnn_state, rnn_state_ref):
+        o = self.simulation.load_simulation(self.buffer, sediment, energy_state)
+        internal_state = self.buffer.internal_state_buffer[-1]
+        a = self.buffer.action_buffer[-1]
+        self.simulation.prey_identifiers = copy.copy(self.buffer.prey_identifiers_buffer[-1])
+        self.simulation.total_prey_created = int(max([max(p_i) for p_i in self.buffer.prey_identifiers_buffer]) + 1)
+
+        a = np.array(a + [self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle])
+
+        if self.run_version == "Modified-Completion":
+            self.simulation.make_modification()
+
+        impulse, angle, updated_rnn_state, updated_rnn_state_ref, mu_i, mu_a, \
+        si = \
+            self.sess.run(
+                [self.network.impulse_output, self.network.angle_output, self.network.rnn_state_shared,
+                 self.network.rnn_state_ref,
+                 self.network.mu_impulse_combined,
+                 self.network.mu_angle_combined,
+                 self.network.sigma_action,
+                 ],
+                feed_dict={self.network.observation: o,
+                           self.network.internal_state: internal_state,
+                           self.network.prev_actions: np.expand_dims(a, 0),
+                           self.network.train_length: 1,
+                           self.network.batch_size: 1,
+                           self.network.rnn_state_in: rnn_state,
+                           self.network.rnn_state_in_ref: rnn_state_ref,
+                           self.network.sigma_impulse_combined_proto: self.impulse_sigma,
+                           self.network.sigma_angle_combined_proto: self.angle_sigma,
+                           self.network.entropy_coefficient: self.learning_params["lambda_entropy"],
+
+                           })
+        a = [mu_i[0][0], mu_a[0][0]]
+        return a
+
+    def perform_assay(self, assay, sediment=None, energy_state=None):
+        """Perform assay - used instead of episode loop"""
 
         self.update_sigmas()
 
@@ -181,41 +180,12 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
         if assay["use_mu"]:
             self.use_mu = True
 
-        # TODO: implement environment loading etc as in dqn_assay_service. Will require modification of
-        #  self._episode_loop() for RNN state, env reset, step num,
-
         if self.run_version == "Original-Completion" or self.run_version == "Modified-Completion":
             print("Loading Simulation")
-            o = self.simulation.load_simulation(self.buffer, background, energy_state)
-            internal_state = self.buffer.internal_state_buffer[-1]
-            a = self.buffer.action_buffer[-1]
 
-            a = np.array(a + [self.simulation.fish.prev_action_impulse, self.simulation.fish.prev_action_angle])
-
-            if self.run_version == "Modified-Completion":
-                self.simulation.make_modification()
-
-            a, updated_rnn_state, rnn2_state, network_layers, sa, sv = \
-                self.sess.run(
-                    [self.main_QN.predict, self.main_QN.rnn_state_shared, self.main_QN.rnn_state_ref,
-                     self.main_QN.network_graph,
-
-                     self.main_QN.streamA,
-                     self.main_QN.streamV,
-                     ],
-                    feed_dict={self.main_QN.observation: o,
-                               self.main_QN.internal_state: internal_state,
-                               self.main_QN.prev_actions: np.expand_dims(a, 0),
-                               self.main_QN.train_length: 1,
-                               self.main_QN.rnn_state_in: rnn_state,
-                               self.main_QN.rnn_state_in_ref: rnn_state_ref,
-
-                               self.main_QN.batch_size: 1,
-                               self.main_QN.exp_keep: 1.0,
-                               # self.main_QN.learning_rate: self.learning_params["learning_rate"],
-                               })
-
+            a = self.load_simulation(sediment, energy_state, rnn_state, rnn_state_ref)
             self.step_number = len(self.buffer.internal_state_buffer)
+
         else:
             self.simulation.reset()
             a = [4.0, 0.0]
@@ -225,61 +195,36 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
             self.buffer.reset()
             self.just_trained = False
 
-        action = a + [self.simulation.fish.prev_action_impulse,
-                      self.simulation.fish.prev_action_angle]
+        efference_copy = a + [self.simulation.fish.prev_action_impulse,
+                              self.simulation.fish.prev_action_angle]
 
-        sa = np.zeros((1, 128))
-        o, r, internal_state, d, FOV = self.simulation.simulation_step(action=a, activations=(sa,))
+        o, r, internal_state, d, full_masked_image = self.simulation.simulation_step(action=a)
 
-        self.buffer.action_buffer.append(action)  # Add to buffer for loading of previous actions
+        self.buffer.action_buffer.append(efference_copy)  # Add to buffer for loading of previous actions
 
-        self.step_number = 0
+
         while self.step_number < self.current_episode_max_duration:
-            # print(self.step_number)
+
             if self.assay is not None:
                 # Deal with interventions
-                if self.visual_interruptions is not None:
-                    if self.visual_interruptions[self.step_number] == 1:
-                        # mean values over all data
-                        o[:, 0, :] = 4
-                        o[:, 1, :] = 11
-                        o[:, 2, :] = 16
-                if self.reafference_interruptions is not None:
-                    if self.reafference_interruptions[self.step_number] is not False:
-                        a = [self.reafference_interruptions[self.step_number]]
-                if self.preset_energy_state is not None:
-                    if self.preset_energy_state[self.step_number] is not False:
-                        self.simulation.fish.energy_level = self.preset_energy_state[self.step_number]
-                        internal_state_order = self.get_internal_state_order()
-                        index = internal_state_order.index("energy_state")
-                        internal_state[0, index] = self.preset_energy_state[self.step_number]
-                if self.in_light_interruptions is not False:
-                    if self.in_light_interruptions[self.step_number] == 1:
-                        internal_state_order = self.get_internal_state_order()
-                        index = internal_state_order.index("in_light")
-                        internal_state[0, index] = self.in_light_interruptions[self.step_number]
-                if self.salt_interruptions is not False:
-                    if self.salt_interruptions[self.step_number] == 1:
-                        internal_state_order = self.get_internal_state_order()
-                        index = internal_state_order.index("salt")
-                        internal_state[0, index] = self.salt_interruptions[self.step_number]
+                if self.interruptions:
+                    o, efference_copy, internal_state = self.perform_interruptions(o, efference_copy, internal_state)
 
                 self.previous_action = a
 
             self.step_number += 1
 
-            r, internal_state, o, d, rnn_state, rnn_state_ref, _, __, a = self.step_loop(
+            r, internal_state, o, d, rnn_state, rnn_state_ref, a = self.step_loop(
                 o=o,
                 internal_state=internal_state,
                 a=a,
-                rnn_state_actor=rnn_state,
-                rnn_state_actor_ref=rnn_state_ref,
-                rnn_state_critic=rnn_state,
-                rnn_state_critic_ref=rnn_state_ref
+                rnn_state=rnn_state,
+                rnn_state_ref=rnn_state_ref,
             )
 
             self.total_episode_reward += r
             if d:
+
                 if self.run_version == "Original":
                     if self.simulation.switch_step != None:
                         self.buffer.switch_step = self.simulation.switch_step
@@ -292,14 +237,6 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
 
         self.log_stimuli()
 
-        #     # make_gif(self.frame_buffer,
-        #     #          f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.gif",
-        #     #          duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-        #     make_video(self.frame_buffer,
-        #              f"{self.data_save_location}/{self.assay_configuration_id}-{assay['assay id']}.mp4",
-        #              duration=len(self.frame_buffer) * self.learning_params['time_per_step'], true_image=True)
-        # self.frame_buffer = []
-
         if "reward assessments" in self.buffer.recordings:
             self.buffer.calculate_advantages_and_returns()
 
@@ -309,15 +246,15 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
             salt_location = None
 
         if self.using_gpu:
-            background = self.simulation.board.global_background_grating.get()[:, :, 0]
+            background = self.simulation.board.global_sediment_grating.get()[:, :, 0]
         else:
-            background = self.simulation.board.global_background_grating[:, :, 0]
+            background = self.simulation.board.global_sediment_grating[:, :, 0]
 
         self.buffer.save_assay_data(assay_id=assay['assay id'],
                                     data_save_location=self.data_save_location,
                                     assay_configuration_id=self.assay_configuration_id,
                                     internal_state_order=self.get_internal_state_order(),
-                                    background=background,
+                                    sediment=background,
                                     salt_location=salt_location)
         self.buffer.reset()
         if assay["save frames"]:
@@ -325,26 +262,11 @@ class PPOAssayServiceContinuous(AssayService, ContinuousPPO):
                                      assay['assay id'], training_data=False)
             draw_episode(episode_data, self.config_name, f"{self.model_name}-{self.model_number}",
                          self.continuous_actions,
-                         save_id=f"{self.assay_configuration_id}-{assay['assay id']}", training_episode=False)
+                         save_id=f"{self.assay_configuration_id}-{assay['assay id']}")
 
         print(f"Assay: {assay['assay id']} Completed")
         print("")
         return True
 
-    def step_loop(self, o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
-                  rnn_state_critic_ref):
-        # if self.multivariate:
-        #     if self.sb_emulator:
-        #         return self._assay_step_loop_multivariate2(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-        #                                                    rnn_state_critic,
-        #                                                    rnn_state_critic_ref)
-        #     else:
-        #         return self._assay_step_loop_multivariate(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-        #                                                   rnn_state_critic,
-        #                                                   rnn_state_critic_ref)
-        # else:
-        #     return self._assay_step_loop(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref, rnn_state_critic,
-        #                                  rnn_state_critic_ref)
-        return self._assay_step_loop(o, internal_state, a, rnn_state_actor, rnn_state_actor_ref,
-                                     rnn_state_critic,
-                                     rnn_state_critic_ref)
+    def step_loop(self, o, internal_state, a, rnn_state, rnn_state_ref):
+        return self._assay_step_loop(o, internal_state, a, rnn_state, rnn_state_ref)

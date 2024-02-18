@@ -4,8 +4,7 @@ import matplotlib.pyplot as plt
 from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.eye import Eye
 
-# from Analysis.Video.behaviour_video_construction import DrawingBoard
-from Tools.drawing_board_new import DrawingBoard
+from Environment.Board.drawing_board import DrawingBoard
 from Analysis.load_data import load_data
 
 
@@ -13,18 +12,16 @@ from Analysis.load_data import load_data
 learning_params, env_variables, n, b, c = load_assay_configuration_files(model_name="dqn_scaffold_18-1")
 
 fish_body_colour = (0, 1, 0)
-board = DrawingBoard(env_variables["width"], env_variables["height"], env_variables["decay_rate"],
+board = DrawingBoard(env_variables["width"], env_variables["height"], env_variables["light_decay_rate"],
                         env_variables["uv_photoreceptor_rf_size"],
-                        using_gpu=False, visualise_mask=False, prey_size=1,
-                        light_gain=env_variables["light_gain"], visible_scatter=env_variables["bkg_scatter"],
+                        using_gpu=False, prey_radius=1,
+                        light_gain=env_variables["light_gain"], visible_scatter=env_variables["background_brightness"],
                         light_gradient=env_variables["light_gradient"],
                         dark_light_ratio=env_variables['dark_light_ratio'],
-                        red_occlusion_gain=env_variables["red_occlusion_gain"],
-                        uv_occlusion_gain=env_variables["uv_occlusion_gain"],
-                        red2_occlusion_gain=env_variables["red2_occlusion_gain"])
+)
 
 # Build eyes
-dark_col = int(env_variables['width'] * env_variables['dark_light_ratio'])
+dark_col = int(env_variables['arena_width'] * env_variables['dark_light_ratio'])
 verg_angle = env_variables['eyes_verg_angle'] * (np.pi / 180)
 retinal_field = env_variables['visual_field'] * (np.pi / 180)
 test_eye_l = Eye(board, verg_angle, retinal_field, True, env_variables, dark_col, False)

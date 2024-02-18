@@ -312,7 +312,7 @@ def get_transition_points_and_order(groups, vectors):
 
 
 
-# full_rv = create_full_response_vector(f"ppo_continuous_multivariate-9", background=True)
+# full_rv = create_full_response_vector(f"ppo_continuous_multivariate-9", sediment=True)
 # full_rv = np.array(full_rv)
 # full_rv, full_rv2 = list(full_rv[:, :int(len(full_rv[0])/2)]), list(full_rv[:, int(len(full_rv[0])/2):])
 # full_sv = create_full_stimulus_vector(f"ppo_continuous_multivariate-9")

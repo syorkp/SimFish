@@ -1,13 +1,10 @@
 import copy
 import numpy as np
-import matplotlib.pyplot as plt
-from skimage.transform import resize, rescale
+from skimage.transform import rescale
 
 from Analysis.load_data import load_data
 from Analysis.load_model_config import load_assay_configuration_files
-from Tools.make_gif import make_gif
-from Configurations.Networks.original_network import base_network_layers, ops, connectivity
-from Tools.make_video import make_video
+from Analysis.Video.make_video import make_video
 
 
 def get_num_layers_upstream(layer, connectivity_graph):
@@ -184,13 +181,13 @@ if __name__ == "__main__":
     learning_params, environment_params, base_network_layers, ops, connectivity = load_assay_configuration_files(model_name)
 
     data = load_data(model_name, "Behavioural-Data-Videos-CONV", "Naturalistic-2")
-    base_network_layers["rnn_state_actor"] = base_network_layers["rnn"]
+    base_network_layers["rnn_state"] = base_network_layers["rnn"]
     del base_network_layers["rnn"]
     network_data = {key: data[key] for key in list(base_network_layers.keys())}
-    network_data["rnn"] = data["rnn_state_actor"][:, 0, 0, :]
-    base_network_layers["rnn"] = base_network_layers["rnn_state_actor"]
-    del base_network_layers["rnn_state_actor"]
-    del network_data["rnn_state_actor"]
+    network_data["rnn"] = data["rnn_state"][:, 0, 0, :]
+    base_network_layers["rnn"] = base_network_layers["rnn_state"]
+    del base_network_layers["rnn_state"]
+    del network_data["rnn_state"]
 
     network_data["left_eye"] = data["observation"][:, :, :, 0]
     network_data["right_eye"] = data["observation"][:, :, :, 1]

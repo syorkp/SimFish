@@ -66,7 +66,7 @@ def display_activity_heat_map_capture_sequences_average(model_name, assay_config
     for i in range(1, n+1):
         data = load_data(model_name, assay_config, f"{assay_id}-{i}")
         capture_ts = label_capture_sequences(data, n=sequence_steps) * 1
-        rnn_data = data["rnn_state_actor"]
+        rnn_data = data["rnn_state"]
         all_rnn_activity.append(rnn_data)
         all_capture_timepoints.append(capture_ts)
 
@@ -178,10 +178,10 @@ if __name__ == "__main__":
     # # Normal trials
     # data = load_data("ppo_scaffold_21-2", "Behavioural-Data-Videos-A1", "Naturalistic-5")
     # consumption_events = [i for i, c in enumerate(data["consumed"]) if c == 1]
-    # display_activity_heat_map(data["rnn_state_actor"], consumption_events, "ppo_scaffold_21-2-Normal Behaviour")
+    # display_activity_heat_map(data["rnn_state"], consumption_events, "ppo_scaffold_21-2-Normal Behaviour")
     #
     # data = load_data("dqn_scaffold_26-2", "Behavioural-Data-Videos-A1", "Naturalistic-1")
     # consumption_events = [i for i, c in enumerate(data["consumed"]) if c == 1]
-    # display_activity_heat_map(data["rnn_state_actor"], consumption_events, "dqn_scaffold_26-2-Normal Behaviour")
+    # display_activity_heat_map(data["rnn_state"], consumption_events, "dqn_scaffold_26-2-Normal Behaviour")
 
 

@@ -59,7 +59,6 @@ def compute_optimal_filter_input(kernels, biases, input_size, output_dim=2, acti
 
             # Normalise output.
             output = output / max(abs(np.max(output)), abs(np.min(output)))
-            # output = np.clip(output, -0.2, 0.2) * 5  # TODO: Decide whether is valid.
             # output += chosen_bias
             # Collapse along constituent kernels.
             if i != 3:
@@ -83,7 +82,7 @@ def compute_optimal_filter_input(kernels, biases, input_size, output_dim=2, acti
 
 
 if __name__ == "__main__":
-    params = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", full_reafference=True)
+    params = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", full_efference_copy=True)
     k, b = get_conv_weights_and_biases(params, left=False)
     compute_optimal_filter_input(k, b, 100)
 

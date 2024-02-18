@@ -3,10 +3,10 @@ import numpy as np
 
 from Analysis.Training.load_from_logfiles import load_all_log_data, order_metric_data
 from Analysis.Training.tools import find_nearest
-from Analysis.Training.plot_metrics_newest import order_chosen_model_data, compute_rolling_averages
+from Analysis.Training.plot_metrics import order_chosen_model_data, compute_rolling_averages
 
 
-def plot_reward_pre_post_scaffold(model_list, model_list_no_scaffold, window):
+def plot_reward_pre_post_scaffold(model_list, model_list_no_scaffold, window, figure_name):
     metrics = ["episode reward", "Episode Duration"]
 
     # For normal models
@@ -48,6 +48,7 @@ def plot_reward_pre_post_scaffold(model_list, model_list_no_scaffold, window):
 
     max_steps = min(np.max(model_steps[:, 1]) for model_steps in all_episode_steps)
 
+    fig, axs = plt.subplots(figsize=(10, 6))
     # Normal models
     for m, model in enumerate(model_list):
         # Interpolate steps so is before and after introduction of scaffold. Scale to halfway point between both
@@ -61,7 +62,11 @@ def plot_reward_pre_post_scaffold(model_list, model_list_no_scaffold, window):
         # relevant_steps[~data_before_switch] /= (np.max(relevant_steps[data_before_switch]))
         relevant_steps *= max_steps
 
-        plt.plot(relevant_steps, reward)
+        if m == 0:
+            axs.plot(relevant_steps, reward, color="b", label="With Scaffold")
+        else:
+            axs.plot(relevant_steps, reward, color="b")
+
 
     # No scaffold models
     for m, model in enumerate(model_list_no_scaffold):
@@ -72,19 +77,27 @@ def plot_reward_pre_post_scaffold(model_list, model_list_no_scaffold, window):
         # relevant_steps[data_before_switch] /= (2 * np.max(relevant_steps[data_before_switch]))
         # relevant_steps[~data_before_switch] /= (np.max(relevant_steps[data_before_switch]))
 
-        plt.plot(relevant_steps, reward)
+        if m == 0:
+            axs.plot(relevant_steps, reward, color="y", label="No Scaffold")
+        else:
+            axs.plot(relevant_steps, reward, color="y")
 
-    plt.vlines(max_steps/2, min_reward, max_reward, color="r")
-    plt.xlim(0, max_steps)
-    plt.xlabel("Training Steps")
-    plt.ylabel("Episode Reward")
-    plt.show()
-    # TODO: Add adjustment for window size? (also to metric plot)
+
+    axs.vlines(max_steps/2, min_reward, max_reward, color="r")
+
+    axs.set_xlim(0, max_steps)
+    axs.set_xlabel("Training Steps", size=20)
+    axs.set_ylabel("Episode Reward", size=20)
+    axs.legend()
+
+    plt.savefig(f"../../Analysis-Output/Training/Metric-Plots/{figure_name}_normalised_reward.jpg")
+
+    plt.clf()
+    plt.close()
 
 
 if __name__ == "__main__":
     dqn_models = ["dqn_delta-1", "dqn_delta-2", "dqn_delta-3", "dqn_delta-4", "dqn_delta-5"]
     dqn_models_no_scaffold = ["dqn_delta_ns-1", "dqn_delta_ns-2"]
 
-    plot_reward_pre_post_scaffold(dqn_models, dqn_models_no_scaffold, 30)
-    # TODO: Add option for second set of models, which dont have scaffold switches
+    plot_reward_pre_post_scaffold(dqn_models, dqn_models_no_scaffold, 10, figure_name="dqn_delta")

@@ -79,7 +79,7 @@ def compute_filter_shapes_rnn(kernels_l, kernels_r, bias_l, bias_r, rnn_in_weigh
 
 
 if __name__ == "__main__":
-    params = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", full_reafference=True)
+    params = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", full_efference_copy=True)
     k_l, b_l = get_conv_weights_and_biases(params, left=True)
     k_r, b_r = get_conv_weights_and_biases(params, left=False)
 

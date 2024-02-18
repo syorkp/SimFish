@@ -6,7 +6,7 @@ from Analysis.Behavioural.Tools.BehavLabels.extract_exploration_sequences import
 
 def display_neurons_with_exploration_timestamps(model_name, assay_config, assay_id, neuron_indexes):
     data = load_data(f"dqn_scaffold_14-1", "Behavioural-Data-Free", f"Naturalistic-4")
-    full_unit_activity = [[state[0, 0, j] for i, state in enumerate(data["rnn_state_actor"])] for j in range(512)]
+    full_unit_activity = [[state[0, 0, j] for i, state in enumerate(data["rnn_state"])] for j in range(512)]
     exploration_timestamps, exploration_sequences, exploration_fish_positions = \
         extract_exploration_action_sequences_with_positions(
         data)

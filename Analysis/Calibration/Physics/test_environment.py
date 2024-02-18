@@ -4,8 +4,8 @@ import copy
 
 import pymunk
 
-from Environment.Action_Space.draw_angle_dist_new import draw_angle_dist_new as draw_angle_dist_narrowed
-from Environment.Action_Space.draw_angle_dist import convert_action_to_bout_id
+from Environment.Action_Space.draw_angle_and_distance import draw_angle_and_distance as draw_angle_dist_narrowed
+from Environment.Action_Space.draw_angle_dist_old import convert_action_to_bout_id
 
 
 
@@ -19,16 +19,15 @@ class TestEnvironment:
             'drag': 0.7,  # water drag
 
             'fish_mass': 140.,
-            'fish_mouth_size': 4.,  # FINAL VALUE - 0.2mm diameter, so 1.
-            'fish_head_size': 2.5,  # Old - 10
+            'fish_mouth_radius': 4.,  # FINAL VALUE - 0.2mm diameter, so 1.
+            'fish_head_radius': 2.5,  # Old - 10
             'fish_tail_length': 41.5,  # Old: 70
             'eyes_verg_angle': 77.,  # in deg
 
             'prey_mass': 1.,
             'prey_inertia': 40.,
-            'prey_size': 1,  # FINAL VALUE - 0.2mm diameter, so 1.
+            'prey_radius': 1,  # FINAL VALUE - 0.2mm diameter, so 1.
             'prey_max_turning_angle': 0.25,
-            'prey_escape_impulse': 2,
             'prey_sensing_distance': 20,
             'prey_jump': True,
             'prey_fluid_displacement': True,
@@ -40,12 +39,9 @@ class TestEnvironment:
             'p_escape': 0.5,
             'p_switch': 0.01,  # Corresponds to 1/average duration of movement type.
             'p_reorient': 0.04,
-            'slow_speed_paramecia': 0.0035,
-            # Actual values should be 0.0035,  # Impulse to generate 0.5mms-1 for given prey mass
-            'fast_speed_paramecia': 0.007,
-            # Actual values should be 0.07,  # Impulse to generate 1.0mms-1 for given prey mass
-            'jump_speed_paramecia': 0.1,
-            # Actual values should be 0.7,  # Impulse to generate 10.0mms-1 for given prey mass
+            'slow_impulse_paramecia': 0.0035, # Actual values should be 0.0035,  # Impulse to generate 0.5mms-1 for given prey mass
+            'fast_impulse_paramecia': 0.007, # Actual values should be 0.07,  # Impulse to generate 1.0mms-1 for given prey mass
+            'jump_impulse_paramecia': 0.1, # Actual values should be 0.7,  # Impulse to generate 10.0mms-1 for given prey mass
 
             'displacement_scaling_factor': 0.018,
             # Multiplied by previous impulse size to cause displacement of nearby features.
@@ -53,7 +49,7 @@ class TestEnvironment:
 
             'predator_mass': 200.,
             'predator_inertia': 0.0001,
-            'predator_size': 32,
+            'predator_radius': 32,
             'predator_impulse': predator_impulse,
 
             "max_predator_attacks": 5,
@@ -67,27 +63,27 @@ class TestEnvironment:
         }
 
         # Fish params
-        inertia = pymunk.moment_for_circle(self.env_variables['fish_mass'], 0, self.env_variables['fish_head_size'],
+        inertia = pymunk.moment_for_circle(self.env_variables['fish_mass'], 0, self.env_variables['fish_head_radius'],
                                            (0, 0))
         self.body = pymunk.Body(1, inertia)
         # Mouth
-        self.mouth = pymunk.Circle(self.body, self.env_variables['fish_mouth_size'], offset=(0, 0))
+        self.mouth = pymunk.Circle(self.body, self.env_variables['fish_mouth_radius'], offset=(0, 0))
         self.mouth.color = (0, 1, 0)
         self.mouth.elasticity = 1.0
         self.mouth.collision_type = 3
 
         # Head
-        self.head = pymunk.Circle(self.body, self.env_variables['fish_head_size'],
-                                  offset=(-self.env_variables['fish_head_size'], 0))
+        self.head = pymunk.Circle(self.body, self.env_variables['fish_head_radius'],
+                                  offset=(-self.env_variables['fish_head_radius'], 0))
         self.head.color = (0, 1, 0)
         self.head.elasticity = 1.0
         self.head.collision_type = 6
 
         # # Tail
-        tail_coordinates = ((-self.env_variables['fish_head_size'], 0),
-                            (-self.env_variables['fish_head_size'], - self.env_variables['fish_head_size']),
-                            (-self.env_variables['fish_head_size'] - self.env_variables['fish_tail_length'], 0),
-                            (-self.env_variables['fish_head_size'], self.env_variables['fish_head_size']))
+        tail_coordinates = ((-self.env_variables['fish_head_radius'], 0),
+                            (-self.env_variables['fish_head_radius'], - self.env_variables['fish_head_radius']),
+                            (-self.env_variables['fish_head_radius'] - self.env_variables['fish_tail_length'], 0),
+                            (-self.env_variables['fish_head_radius'], self.env_variables['fish_head_radius']))
         self.tail = pymunk.Poly(self.body, tail_coordinates)
         self.tail.color = (0, 1, 0)
         self.tail.elasticity = 1.0
@@ -131,7 +127,6 @@ class TestEnvironment:
 
         # New complex predators
         self.predator_location = None
-        self.remaining_predator_attacks = None
         self.total_predator_steps = None
         self.new_attack_due = False
 
@@ -205,7 +200,7 @@ class TestEnvironment:
 
     def create_prey(self, prey_position):
         self.prey_bodies.append(pymunk.Body(self.env_variables['prey_mass'], self.env_variables['prey_inertia']))
-        self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_size']))
+        self.prey_shapes.append(pymunk.Circle(self.prey_bodies[-1], self.env_variables['prey_radius']))
         self.prey_shapes[-1].elasticity = 1.0
         self.prey_bodies[-1].position = prey_position
         self.prey_shapes[-1].color = (0, 0, 1)
@@ -215,11 +210,6 @@ class TestEnvironment:
 
         self.space.add(self.prey_bodies[-1], self.prey_shapes[-1])
 
-        # New prey motion TODO: Check doesnt mess with base version.
-        # self.paramecia_gaits.append(
-        #     np.random.choice([0, 1, 2], 1, p=[1 - (self.env_variables["p_fast"] + self.env_variables["p_slow"]),
-        #                                       self.env_variables["p_slow"],
-        #                                       self.env_variables["p_fast"]])[0])
         # New prey motion
         self.paramecia_gaits.append(
             np.random.choice([0, 1, 2], 1, p=[1 - (self.env_variables["p_fast"] + self.env_variables["p_slow"]),
@@ -244,7 +234,7 @@ class TestEnvironment:
             return
 
         # Generate impulses
-        impulse_types = [0, self.env_variables["slow_speed_paramecia"], self.env_variables["fast_speed_paramecia"]]
+        impulse_types = [0, self.env_variables["slow_impulse_paramecia"], self.env_variables["fast_impulse_paramecia"]]
         impulses = [impulse_types[gait] for gait in self.paramecia_gaits]
 
         # Do once per step.
@@ -290,7 +280,7 @@ class TestEnvironment:
                 if self.env_variables["prey_jump"] and np.random.choice([0, 1], size=1,
                                                                         p=[1 - self.env_variables["p_escape"],
                                                                            self.env_variables["p_escape"]])[0] == 1:
-                    prey_body.apply_impulse_at_local_point((self.env_variables["jump_speed_paramecia"], 0))
+                    prey_body.apply_impulse_at_local_point((self.env_variables["jump_impulse_paramecia"], 0))
 
             else:
                 if micro_step == 0:
@@ -346,7 +336,7 @@ class TestEnvironment:
 
     def create_realistic_predator(self, position):
         self.predator_body = pymunk.Body(self.env_variables['predator_mass'], self.env_variables['predator_inertia'])
-        self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_size']/2)
+        self.predator_shape = pymunk.Circle(self.predator_body, self.env_variables['predator_radius']/2)
         self.predator_shape.elasticity = 1.0
 
         fish_position = self.body.position
@@ -361,10 +351,6 @@ class TestEnvironment:
 
         self.predator_shape.color = (0, 1, 0)
         self.predator_location = (x_position, y_position)
-        self.remaining_predator_attacks = 1 + np.sum(
-            np.random.choice([0, 1], self.env_variables["max_predator_attacks"] - 1,
-                             p=[1.0 - self.env_variables["further_attack_probability"],
-                                self.env_variables["further_attack_probability"]]))
 
         self.predator_shape.collision_type = 5
         self.predator_shape.filter = pymunk.ShapeFilter(

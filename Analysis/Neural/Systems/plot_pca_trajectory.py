@@ -408,7 +408,7 @@ if __name__ == "__main__":
     for i in choices:
         data = load_data("dqn_scaffold_14-1", "Interruptions-HA", f"Naturalistic-{i}")
         # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Free", "Naturalistic-1")
-        rnn_data = data["rnn_state_actor"][:, 0, 0, :]
+        rnn_data = data["rnn_state"][:, 0, 0, :]
         rnn_data = np.swapaxes(rnn_data, 0, 1)
         consumption_points.append([i for i in range(len(data["consumed"][:])) if data["consumed"][i]])
         rnn_data_full.append(rnn_data)
@@ -424,7 +424,7 @@ if __name__ == "__main__":
     plot_pca_trajectory_multiple_trials(rnn_data_full, consumption_points, display_numbers=False, detrend=True,
                                         include_only_active_neurons=True)
     # data = load_data("dqn_scaffold_18-1", "Behavioural-Data-Endless", f"Naturalistic-1")
-    # rnn_data = np.swapaxes(data["rnn_state_actor"][:, 0, 0, :], 0, 1)
+    # rnn_data = np.swapaxes(data["rnn_state"][:, 0, 0, :], 0, 1)
     # # reduced_rnn_data = remove_those_with_no_output(rnn_data, "dqn_scaffold_18-2", "dqn_18_2", proportion_to_remove=0.2)
     # reduced_rnn_data = rnn_data[:256]
     # # reduced_rnn_data = rnn_data[256:]

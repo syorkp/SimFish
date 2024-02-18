@@ -45,7 +45,7 @@ def build_full_regressor_set(datas, model_name):
     label_names = [get_behavioural_context_name_by_index(i) for i in range(labels[0].shape[1])]
 
     # Continuous basic variables
-    continuous_variables = ["energy_state", "salt", "salt_health"]# TODO: , "reward"]
+    continuous_variables = ["energy_state", "salt", "salt_health"]
 
     for i, data in enumerate(datas):
         # Continuous variables
@@ -124,9 +124,9 @@ def build_all_regression_models(datas, model_name):
     relative_scores_compiled = []
     for n in range(512):
 
-        compiled_rnn_data = datas[0]["rnn_state_actor"][:, 0, 0, n]
+        compiled_rnn_data = datas[0]["rnn_state"][:, 0, 0, n]
         for data in datas[1:]:
-            compiled_rnn_data = np.concatenate((compiled_rnn_data, data["rnn_state_actor"][:, 0, 0, n]), axis=0)
+            compiled_rnn_data = np.concatenate((compiled_rnn_data, data["rnn_state"][:, 0, 0, n]), axis=0)
 
         compiled_rnn_data = normalise_within_neuron(compiled_rnn_data)
 
@@ -171,10 +171,10 @@ def build_all_regression_models_activity_differential(datas, model_name):
     relative_scores_compiled = []
     for n in range(512):
 
-        compiled_rnn_data = datas[0]["rnn_state_actor"][1:, 0, 0, n] - datas[0]["rnn_state_actor"][:-1, 0, 0, n]
+        compiled_rnn_data = datas[0]["rnn_state"][1:, 0, 0, n] - datas[0]["rnn_state"][:-1, 0, 0, n]
         for data in datas[1:]:
             compiled_rnn_data = np.concatenate((compiled_rnn_data,
-                                                data["rnn_state_actor"][1:, 0, 0, n]-data["rnn_state_actor"][:-1, 0, 0, n]), axis=0)
+                                                data["rnn_state"][1:, 0, 0, n]-data["rnn_state"][:-1, 0, 0, n]), axis=0)
 
         compiled_rnn_data = normalise_within_neuron(compiled_rnn_data)
 

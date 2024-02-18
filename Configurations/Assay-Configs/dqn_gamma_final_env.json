@@ -149,7 +149,7 @@
     "consumption_reward_scaling": 1000000,
     "wall_reflection": false,
     "wall_touch_penalty": 2,
-    "current_setting": false,
+    "current_setting": "Circular",
     "max_current_strength": 0.04,
     "current_width": 0.2,
     "current_strength_variance": 1,

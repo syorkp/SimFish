@@ -14,7 +14,7 @@ def get_prey_stimulus(x, y, sim_state):
     y += 750
 
     sim_state.prey_bodies[0].position = [x, y]
-    sim_state.board.erase(bkg=sim_state.env_variables['bkg_scatter'])
+    sim_state.board.erase(bkg=sim_state.env_variables['background_brightness'])
     sim_state.draw_shapes(visualisation=False)
     observation = sim_state.resolve_visual_input_new(save_frames=True, activations=[],
                                                                    internal_state=np.array([[0]]))
@@ -68,11 +68,10 @@ def get_prey_stimuli_across_visual_field(prey_distance, intervals, model_name):
     """Returns intervals x observation for prey stimulus appearing across the visual field at a specified distance."""
     _, env, _, _, _ = load_assay_configuration_files(model_name)
     env["prey_num"] = 1
-    sim_state = DiscreteNaturalisticEnvironment(env, realistic_bouts=True, draw_screen=False,
-                                                using_gpu=False)
+    sim_state = DiscreteNaturalisticEnvironment(env, using_gpu=False)
     sim_state.reset()
 
-    sim_state.fish.body.position = [env["width"]/2, env["height"]/2]
+    sim_state.fish.body.position = [env["arena_width"]/2, env["arena_height"]/2]
     sim_state.fish.body.angle = 0
 
     orientation_values = np.linspace(-env["visual_field"]+env["eyes_verg_angle"]/2,

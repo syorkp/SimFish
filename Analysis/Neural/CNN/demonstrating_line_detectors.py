@@ -32,7 +32,7 @@ def get_present_distribution(image, threshold, colour_index=1):
 
 
 if __name__ == "__main__":
-    params = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", full_reafference=True)
+    params = load_network_variables_dqn("dqn_scaffold_18-1", "dqn_18_1", full_efference_copy=True)
     k_l, b = get_conv_weights_and_biases(params, left=True)
     k_r, b = get_conv_weights_and_biases(params, left=False)
     get_present_distribution(np.concatenate((k_l[0], k_r[0]), axis=1), threshold=0.05, colour_index=1)

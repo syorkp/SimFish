@@ -16,7 +16,7 @@ To create a graph of the style in Figure 3b of Marques et al. (2018)
 
 
 def draw_fish(x, y, mouth_size, head_size, tail_length, ax):
-    mouth_centre = (x, y)  # TODO: Make sure this is true
+    mouth_centre = (x, y)
 
     mouth = plt.Circle(mouth_centre, mouth_size, fc="green")
     ax.add_patch(mouth)
@@ -279,14 +279,14 @@ def create_density_cloud_compared(density_list1, density_list2, action_num, stim
 
 
 def get_all_density_plots(data, save_location):
-    for action_num in range(0, 10):
+    for action_num in range(0, 12):
         prey_1, pred_1 = get_clouds_with_action(data, action_num)
 
         if len(prey_1) > 2:
-            create_density_cloud(prey_1, action_num, "Prey", False, save_location)
+            create_density_cloud(prey_1, action_num, "Prey", False, save_location, "Training", 0)
 
         if len(pred_1) > 2:
-            create_density_cloud(pred_1, action_num, "Predator", False, save_location)
+            create_density_cloud(pred_1, action_num, "Predator", False, save_location, "Training", 0)
 
 
 def get_all_density_plots_all_subsets(p1, p2, p3, n, return_objects, steps_prior=0, position_predictive=False):
@@ -302,6 +302,7 @@ def get_all_density_plots_all_subsets(p1, p2, p3, n, return_objects, steps_prior
         prey_cloud = []
         pred_cloud = []
         for i in range(1, n + 1):
+            print(i)
             if i > 100:
                 data = load_data(p1, f"{p2}-2", f"{p3} {i}")
             else:
@@ -363,7 +364,6 @@ def create_overlap_plot(cloud_left, cloud_right, stimulus_name, action, model_na
 
     # Make the plot
     fig, ax = plt.subplots(figsize=(10, 10))
-    # zi = np.clip(zi, -0.0000015, 0.0000015)  # TODO: Remove
 
     pcm = ax.pcolormesh(xi, yi, zi.reshape(xi.shape), cmap='RdBu')
 
@@ -399,14 +399,14 @@ def create_j_turn_overlap_plot(p1, p2, p3, n, return_objects, save_location):
     pred_cloud_left = []
     for i in range(1, n + 1):
         data = load_data(p1, p2, f"{p3}-{i}")
-        prey_1, pred_1 = get_clouds_with_action(data, 5)
+        prey_1, pred_1 = get_clouds_with_action(data, 4)
         prey_cloud_left = prey_cloud_left + prey_1
         pred_cloud_left = pred_cloud_left + pred_1
     prey_cloud_right = []
     pred_cloud_right = []
     for i in range(1, n + 1):
         data = load_data(p1, p2, f"{p3}-{i}")
-        prey_1, pred_1 = get_clouds_with_action(data, 4)
+        prey_1, pred_1 = get_clouds_with_action(data, 5)
         prey_cloud_right = prey_cloud_right + prey_1
         pred_cloud_right = pred_cloud_right + pred_1
 
@@ -425,14 +425,14 @@ def create_j_turn_2_overlap_plot(p1, p2, p3, n, return_objects, save_location):
     pred_cloud_left = []
     for i in range(1, n + 1):
         data = load_data(p1, p2, f"{p3}-{i}")
-        prey_1, pred_1 = get_clouds_with_action(data, 11)
+        prey_1, pred_1 = get_clouds_with_action(data, 10)
         prey_cloud_left = prey_cloud_left + prey_1
         pred_cloud_left = pred_cloud_left + pred_1
     prey_cloud_right = []
     pred_cloud_right = []
     for i in range(1, n + 1):
         data = load_data(p1, p2, f"{p3}-{i}")
-        prey_1, pred_1 = get_clouds_with_action(data, 10)
+        prey_1, pred_1 = get_clouds_with_action(data, 11)
         prey_cloud_right = prey_cloud_right + prey_1
         pred_cloud_right = pred_cloud_right + pred_1
 
@@ -451,7 +451,7 @@ def create_routine_turn_overlap_plot(p1, p2, p3, n, return_objects, save_locatio
     pred_cloud_left = []
     for i in range(1, n + 1):
         data = load_data(p1, p2, f"{p3}-{i}")
-        prey_1, pred_1 = get_clouds_with_action(data, 2)
+        prey_1, pred_1 = get_clouds_with_action(data, 1)
         prey_cloud_left = prey_cloud_left + prey_1
         pred_cloud_left = pred_cloud_left + pred_1
 
@@ -459,7 +459,7 @@ def create_routine_turn_overlap_plot(p1, p2, p3, n, return_objects, save_locatio
     pred_cloud_right = []
     for i in range(1, n + 1):
         data = load_data(p1, p2, f"{p3}-{i}")
-        prey_1, pred_1 = get_clouds_with_action(data, 1)
+        prey_1, pred_1 = get_clouds_with_action(data, 2)
         prey_cloud_right = prey_cloud_right + prey_1
         pred_cloud_right = pred_cloud_right + pred_1
 
@@ -866,18 +866,24 @@ def plot_all_density_plots_across_scaffold(model_name, assay_config_a, assay_con
 if __name__ == "__main__":
     # VERSION 2, 2023
     # get_all_density_plots_all_subsets(f"dqn_gamma_pm-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
-    # get_all_density_plots_all_subsets(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 50, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_gamma-3", "Behavioural-Data-Free", "Naturalistic", 50, return_objects=False)
+    get_all_density_plots_all_subsets(f"dqn_0-1", "Behavioural-Data-Free", "Naturalistic", 10, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_0-7", "Behavioural-Data-Free", "Naturalistic", 40, return_objects=False)
+    # get_all_density_plots_all_subsets(f"dqn_0-5", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False)
 
-    save_location = f"../../../../Analysis-Output/Behavioural/Spatial-Density-Plots/dqn_gamma-4/"
-
-    create_cstart_overlap_plot(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False,
-                               save_location=save_location)
-    create_routine_turn_overlap_plot(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False,
-                               save_location=save_location)
-    create_j_turn_overlap_plot(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False,
-                               save_location=save_location)
-    create_j_turn_2_overlap_plot(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False,
-                               save_location=save_location)
+    # d = load_data("dqn_0-1", "Episode 800", "Episode 800", training_data=True)
+    # save_location = f"../../../../Analysis-Output/Behavioural/Spatial-Density-Plots/dqn_0-1/"
+    # get_all_density_plots(d, save_location)
+    #
+    # create_cstart_overlap_plot(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False,
+    #                            save_location=save_location)
+    # create_routine_turn_overlap_plot(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False,
+    #                            save_location=save_location)
+    # create_j_turn_overlap_plot(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False,
+    #                            save_location=save_location)
+    # create_j_turn_2_overlap_plot(f"dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100, return_objects=False,
+    #                            save_location=save_location)
 
     # save_location = f"../../../../Analysis-Output/Behavioural/Spatial-Density-Plots/dqn_gamma-1/"
     #

@@ -12,7 +12,7 @@ def display_energy_state_neurons(model_name, assay_config, assay_id, neuron_indi
     data = load_data(model_name, assay_config, assay_id)
     e = [i for i in data["energy_state"]][:3000]
 
-    activity_profiles = [[state[0, 0, j] for i, state in enumerate(data["rnn_state_actor"])] for j in neuron_indices]
+    activity_profiles = [[state[0, 0, j] for i, state in enumerate(data["rnn_state"])] for j in neuron_indices]
 
     fig, axs = plt.subplots(figsize=(10, 5))
 

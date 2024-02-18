@@ -38,17 +38,6 @@ def fitHMM(Q, nSamples, Qtest):
 
 
 if __name__ == "__main__":
-    # TODO: with new, trained models, need to work out which method is best for identifying hidden states:
-    # TODO:   - input angle and impulse values
-    # TODO:   - input action numbers
-    # TODO:   - input only turn sequences - binary lateralised
-
-    # TODO: Also need to work out which number of states is best used to localise turn sequences.
-
-    # TODO: Then try modifying action block plots with these states.
-    # TODO: Try labelling PCA (traj) space with turn states.
-
-
     data = load_data("dqn_scaffold_14-2", "Behavioural-Data-Empty", "Naturalistic-1")
     to_use = (data["fish_position"][:, 0] > 100) * (data["fish_position"][:, 1] > 100) *\
              (data["fish_position"][:, 0] < 1400) * (data["fish_position"][:, 1] < 1400)

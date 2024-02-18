@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 from Analysis.load_model_config import load_assay_configuration_files
 from Environment.Fish.eye import Eye
-from Tools.drawing_board_new import DrawingBoard
+from Environment.Board.drawing_board import DrawingBoard
 
 
 def get_orientation_to_closest_wall(width, height, x, y):
@@ -53,20 +53,20 @@ def generate_wall_inputs_full_field(eye, drawing_board, width, height, env_varia
 
 
 def build_board_and_eye(env_variables):
-    board = DrawingBoard(env_variables["width"], env_variables["height"], env_variables["decay_rate"],
+    board = DrawingBoard(env_variables["width"], env_variables["height"], env_variables["light_decay_rate"],
                             env_variables["uv_photoreceptor_rf_size"], False, False, 1,
-                            light_gain=env_variables["light_gain"], visible_scatter=env_variables["bkg_scatter"])
+                            light_gain=env_variables["light_gain"], visible_scatter=env_variables["background_brightness"])
 
     verg_angle = 77. * (np.pi / 180)
     retinal_field = 163. * (np.pi / 180)
-    dark_col = int(env_variables['width'] * env_variables['dark_light_ratio'])
+    dark_col = int(env_variables['arena_width'] * env_variables['dark_light_ratio'])
     eye = Eye(board, verg_angle, retinal_field, True, env_variables, dark_col, False)
-    board.erase(env_variables["bkg_scatter"])
+    board.erase(env_variables["background_brightness"])
     return eye, board
 
 
 learning_params, env_variables, n, b, c = load_assay_configuration_files("dqn_scaffold_15-1")
-env_variables["bkg_scatter"] = 0
+env_variables["background_brightness"] = 0
 eye, board = build_board_and_eye(env_variables)
 generate_wall_inputs_full_field(eye, board, 1500, 1500, env_variables)
 

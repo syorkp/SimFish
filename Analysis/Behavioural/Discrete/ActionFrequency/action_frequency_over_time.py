@@ -6,7 +6,7 @@ from Analysis.load_data import load_data
 
 def compare_action_usage_over_time(data, bins=5):
     bin_groups = np.linspace(0, len(data["action"]), bins+1, endpoint=True).astype(int)
-    action_counts = np.zeros((10, bins))
+    action_counts = np.zeros((12, bins))
     actions_present = np.array([])
 
     for i, b in enumerate(bin_groups):
@@ -20,7 +20,7 @@ def compare_action_usage_over_time(data, bins=5):
                 action_counts[a, i] += counts[j]
 
     action_proportions = action_counts / np.sum(action_counts[:, 0])
-    color_set = ['b', 'g', 'lightgreen', 'r', 'y', 'gold', "c", "m", "m", "black"]
+    color_set = ['b', 'g', 'g', 'r', 'y', 'gold', "c", "m", "m", "black", "lightgreen", "lightgreen"]
     actions_present = list(set(actions_present))
 
     fig, ax = plt.subplots(figsize=(20, 10))
@@ -43,7 +43,7 @@ def compare_action_usage_over_time_multiple_models(datas):
 
 
 if __name__ == "__main__":
-    data = load_data("dqn_scaffold_26-2", "Behavioural-Data-NaturalisticA", f"Naturalistic-3")
+    data = load_data("dqn_salt_only_reduced-1", "Behavioural-Data-Free", f"Naturalistic-5")
     compare_action_usage_over_time(data, bins=4)
 
 

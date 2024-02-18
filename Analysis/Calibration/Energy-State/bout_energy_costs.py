@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 
 from Analysis.load_model_config import load_configuration_files_by_scaffold_point, get_scaffold_num_points
 from Environment.Action_Space.action_space_display_comparison import calculate_energy_cost
-from Environment.Action_Space.draw_angle_dist_new import draw_angle_dist_new
 from Environment.Action_Space.Bout_classification.action_masking import get_new_bout_params
 
 
@@ -34,7 +33,7 @@ def plot_log_bout_energy_costs(model_config):
     actions = [9, 3, 4, 10, 7, 0, 1]
     action_names = ["AS", "sCS", "J-turn", "J-turn 2", "C-start", "Slow2", "RT"]
     costs = []
-    # env["ci"] = 1.0e-04
+    # env["i_scaling_energy_cost"] = 1.0e-04
     env["action_energy_use_scaling"] = "Nonlinear"
 
     for i, a in enumerate(actions):

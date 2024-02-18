@@ -7,6 +7,7 @@ from Analysis.Connectivity.load_network_variables import load_network_variables_
 from Analysis.load_data import load_data
 from Analysis.Neural.Tools.normalise_activity import normalise_within_neuron_multiple_traces
 
+# noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
 
 
@@ -112,7 +113,7 @@ Mean squared error - random neuron connections: {np.mean(squared_inter_differenc
 
 
 def get_activity_profiles_by_indices_pairs(data, indices_pairs):
-    activity = [[data["rnn_state_actor"][:, 0, 0, indices[0]], data["rnn_state_actor"][:, 0, 0, indices[1]]]
+    activity = [[data["rnn_state"][:, 0, 0, indices[0]], data["rnn_state"][:, 0, 0, indices[1]]]
                 for indices in indices_pairs]
     return np.array(activity)
 
@@ -200,27 +201,8 @@ def plot_mse_across(bins, mse, mse_diff, mse_random, mse_diff_random):
     plt.savefig("MSE diff bins.png")
     plt.clf()
 
-    x = True
-
 
 if __name__ == "__main__":
-    # with open('ablatedValues.npy', 'rb') as f:
-    #     ablated = np.load(f)
-    # PPO
-    # with open("ppo21_2_rnn.npy", "rb") as f:
-    #     network_variables_ppo = np.load(f)
-    # plot_hist_all_weights(network_variables_ppo, name="ppo_21-2-all", bins=2000)
-    # plot_hist_all_weights(network_variables_ppo[:512, 512:1024], name="ppo_21-2-selected", bins=2000)
-    #
-    #
-    # # DQN untrained model
-    # network_variables_2 = load_network_variables_dqn("dqn_scaffold_26-5", "dqn_26_2", True)
-    # rnn_interconnectivity_1 = get_rnn_interconnectivity(network_variables_2, gate_num=None)
-    # rnn_interconnectivity_1 = rnn_interconnectivity_1["main_rnn/lstm_cell/kernel:0"]
-    # plot_hist_all_weights(rnn_interconnectivity_1, name="untrained-full", bins=2000)
-    #
-    # tf.reset_default_graph()
-
     # DQN
     network_variables_1 = load_network_variables_dqn("dqn_scaffold_26-2", "dqn_26_2", True)
     rnn_interconnectivity_1 = get_rnn_interconnectivity(network_variables_1, gate_num=None)
@@ -238,10 +220,10 @@ if __name__ == "__main__":
     selected_weights *= (np.absolute(selected_weights) > to_include)
 
     rnn_interconnectivity_1[:512, 512:1024] = selected_weights
-    with open('../../Configurations/Ablation-Matrices/post_ablation_weights_1_dqn_26_2.npy', 'wb') as f:
+    with open('../../Configurations/Run-Configurations/Ablation-Matrices/post_ablation_weights_1_dqn_26_2.npy', 'wb') as f:
         np.save(f, rnn_interconnectivity_1)
     rnn_interconnectivity_1[:512, 512:1024] = 0
-    with open('../../Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_26_2.npy', 'wb') as f:
+    with open('../../Configurations/Run-Configurations/Ablation-Matrices/post_ablation_weights_2_dqn_26_2.npy', 'wb') as f:
         np.save(f, rnn_interconnectivity_1)
 
 

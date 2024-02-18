@@ -4,7 +4,7 @@ A simulated zebrafish larvae for a 2D environment created using deep Q learning.
 
 To run:
   1. create an environemtn with Python 3.7.10
-  2. Install dependencies using "pip install -r requirements.txt"
+  2. Install dependencies using "pip install -r requirements.txt" (or requirements_gpu.txt)
   3. Install ffmpeg
   4. Compile cython module using "python setup.py build_ext --inplace" from the Tools directory.  
   5. Run the "run.py" file, from which the chosen environment name and trial number can be adjusted.
@@ -39,9 +39,7 @@ Requirements to run in GPU mode:
 
 ## Run Configurations
 
-The run.py file contains example configurations which specify parameters for either mode: training, or experimental.
-
-The different modes take different configuration parameters.
+The Configurations/configuration_examples.py file contains example configurations which specify parameters for either mode: training, or assay.
 
 ## Simulation Configurations
 

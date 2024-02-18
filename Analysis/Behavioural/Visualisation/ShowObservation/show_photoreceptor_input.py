@@ -1,8 +1,7 @@
-import json
 import numpy as np
 import moviepy.editor as mp
 
-from Tools.make_gif import make_gif
+from Analysis.Video.make_gif import make_gif
 from Analysis.load_data import load_data
 
 """

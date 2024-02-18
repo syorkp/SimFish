@@ -2,14 +2,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from Analysis.Training.load_from_logfiles import load_all_log_data, order_metric_data
-from Analysis.Training.plot_metrics_newest import compute_rolling_averages_over_data, remove_repeated_switching_points, \
+from Analysis.Training.plot_metrics import compute_rolling_averages_over_data, remove_repeated_switching_points, \
     interpolate_metric_data
 from Analysis.load_model_config import load_configuration_files_by_scaffold_point, get_scaffold_num_points
 from Analysis.Training.tools import find_nearest
 
 
 def get_available_reward(environment_params, learning_params):
-    prey_reward_available = environment_params["capture_basic_reward"] * environment_params["prey_num"]
+    print("Error. not right reward computation.")
+    # prey_reward_available = environment_params["capture_basic_reward"] * environment_params["prey_num"]
     return prey_reward_available
 
 
@@ -64,7 +65,6 @@ def get_rewards_at_each_scaffold_point(reward_data, scaffold_points, window):
         end_rewards.append(mean_reward)
 
     cumulative_end_reward = [np.sum(end_rewards[:i+1]) for i in range(len(end_rewards))]
-    # TODO: Compute added difficulty by previous r - new r. Could account for ongoing training for old environment by initialising to the max.
     max_index = np.argmax(np.array(end_rewards))
 
     plt.plot(end_rewards)

@@ -2,27 +2,26 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
+# noinspection PyUnresolvedReferences
 import tensorflow.compat.v1 as tf
-
 
 from Analysis.load_model_config import load_assay_configuration_files
 
 from Networks.DQN.q_network import QNetwork
-from Networks.DQN.q_network_dynamic import QNetworkDynamic
 from Analysis.Model.build_network import get_internal_state_order
 
 from Environment.continuous_naturalistic_environment import ContinuousNaturalisticEnvironment
 from Environment.discrete_naturalistic_environment import DiscreteNaturalisticEnvironment
 
 
-def create_network(simulation, environment_params, learning_params, full_reafference):
+def create_network(simulation, environment_params, learning_params, full_efference_copy):
     """
     Create the main and target Q networks, according to the configuration parameters.
     :return: The main network and the target network graphs.
     """
     print("Creating networks...")
     internal_states = sum(
-        [1 for x in [environment_params['hunger'], environment_params['stress'],
+        [1 for x in [environment_params['stress'],
                      environment_params['energy_state'], environment_params['in_light'],
                      environment_params['salt']] if x is True])
     internal_states = max(internal_states, 1)
@@ -30,42 +29,31 @@ def create_network(simulation, environment_params, learning_params, full_reaffer
 
     cell = tf.nn.rnn_cell.LSTMCell(num_units=learning_params['rnn_dim_shared'], state_is_tuple=True)
 
-    if environment_params["use_dynamic_network"]:
-        if "reuse_eyes" in learning_params:
-            reuse_eyes = learning_params['reuse_eyes']
-        else:
-            reuse_eyes = False
-        main_QN = QNetworkDynamic(simulation=simulation,
-                                  my_scope='main',
-                                  internal_states=internal_states,
-                                  internal_state_names=internal_state_names,
-                                  num_actions=learning_params['num_actions'],
-                                  base_network_layers=learning_params[
-                                      'base_network_layers'],
-                                  modular_network_layers=learning_params[
-                                      'modular_network_layers'],
-                                  ops=learning_params['ops'],
-                                  connectivity=learning_params[
-                                      'connectivity'],
-                                  reflected=learning_params['reflected'],
-                                  reuse_eyes=reuse_eyes,
-                                  )
-
+    if "reuse_eyes" in learning_params:
+        reuse_eyes = learning_params['reuse_eyes']
     else:
-        main_QN = QNetwork(simulation=simulation,
-                           rnn_dim=learning_params['rnn_dim_shared'],
-                           rnn_cell=cell,
-                           my_scope='main',
-                           num_actions=learning_params['num_actions'],
-                           internal_states=internal_states,
-                           learning_rate=learning_params['learning_rate'],
-                           extra_layer=learning_params['extra_rnn'],
-                           full_reafference=full_reafference
-                           )
+        reuse_eyes = False
+    main_QN = QNetwork(simulation=simulation,
+                              my_scope='main',
+                              internal_states=internal_states,
+                              internal_state_names=internal_state_names,
+                              num_actions=learning_params['num_actions'],
+                              base_network_layers=learning_params[
+                                  'base_network_layers'],
+                              modular_network_layers=learning_params[
+                                  'modular_network_layers'],
+                              ops=learning_params['ops'],
+                              connectivity=learning_params[
+                                  'connectivity'],
+                              reflected=learning_params['reflected'],
+                              reuse_eyes=reuse_eyes,
+                              )
+
+
     return main_QN, internal_states
 
 
-def produce_meis(model_name, layer_name, full_reafference, iterations=1000, conv=True):
+def produce_meis(model_name, layer_name, full_efference_copy, iterations=1000, conv=True):
     """Does the same thing for the multiple neurons of a given model"""
     if not os.path.exists(f"./Generated-MEIs/Direct/{model_name}/"):
         os.makedirs(f"./Generated-MEIs/Direct/{model_name}/")
@@ -76,7 +64,7 @@ def produce_meis(model_name, layer_name, full_reafference, iterations=1000, conv
         simulation = DiscreteNaturalisticEnvironment(environment_params, True, True, False)
 
         # Creating graph
-        network, n_internal_states = create_network(simulation, environment_params, params, full_reafference)
+        network, n_internal_states = create_network(simulation, environment_params, params, full_efference_copy)
 
         saver = tf.train.Saver(max_to_keep=5)
         try:
@@ -211,7 +199,7 @@ def produce_meis(model_name, layer_name, full_reafference, iterations=1000, conv
         np.save(f, all_images)
 
 
-def produce_meis_extended(model_name, layer_name, full_reafference, iterations=1000):
+def produce_meis_extended(model_name, layer_name, full_efference_copy, iterations=1000):
     """Does the same thing for the multiple neurons of a given model.
 
     For conv layers only. Applies separately for the spatial components of each conv layer.
@@ -226,7 +214,7 @@ def produce_meis_extended(model_name, layer_name, full_reafference, iterations=1
         simulation = DiscreteNaturalisticEnvironment(environment_params, True, True, False)
 
         # Creating graph
-        network, n_is = create_network(simulation, environment_params, params, full_reafference)
+        network, n_is = create_network(simulation, environment_params, params, full_efference_copy)
 
         saver = tf.train.Saver(max_to_keep=5)
         model_location = f"../../../Training-Output/{model_name}"
@@ -329,10 +317,10 @@ def produce_meis_extended(model_name, layer_name, full_reafference, iterations=1
 
 
 if __name__ == "__main__":
-    produce_meis("dqn_scaffold_26-2", "Q_out", full_reafference=True, iterations=100, conv=False)
-    # produce_meis("dqn_scaffold_26-2", "conv4l", full_reafference=True, iterations=100)
-    # produce_meis("dqn_scaffold_26-2", "rnn_in", full_reafference=True, iterations=2, conv=False)
-    # produce_meis_extended("dqn_scaffold_26-2", "conv4l", full_reafference=True, iterations=10)
+    produce_meis("dqn_scaffold_26-2", "Q_out", full_efference_copy=True, iterations=100, conv=False)
+    # produce_meis("dqn_scaffold_26-2", "conv4l", full_efference_copy=True, iterations=100)
+    # produce_meis("dqn_scaffold_26-2", "rnn_in", full_efference_copy=True, iterations=2, conv=False)
+    # produce_meis_extended("dqn_scaffold_26-2", "conv4l", full_efference_copy=True, iterations=10)
 
 
 

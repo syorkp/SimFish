@@ -1,295 +1,491 @@
-import csv
-import random
-import copy
-
-import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
+
+from Analysis.Training.load_from_logfiles import load_all_log_data, order_metric_data
+from Analysis.Training.tools import find_nearest
 
 
-def plot_multiple_model_metrics_two_trace(models, models2, window):
-    eta_timeseries_prey = []
-    eta_timeseries_pred = []
+def interpolate_metric_data(data, scaffold_points):
+    scaffold_points = np.array(scaffold_points)
+    scaffold_points = scaffold_points[scaffold_points[:, 1].argsort()]
+    previous_switch_ep = 0
 
-    for model in models:
-        prey_capture, predator_avoidance = get_metrics_for_model(model)
-        prey_steps = [float(d[1]) for d in prey_capture[1:]]
-        pred_steps = [float(d[1]) for d in predator_avoidance[1:]]
-        prey_index = [float(d[2]) for d in prey_capture[1:]]
-        pred_index = [float(d[2]) for d in predator_avoidance[1:]]
-        prey_index_ra = [np.mean(prey_index[i:i+window]) for i, d in enumerate(prey_index) if i <len(prey_index)-window]
-        eta_timeseries_prey.append(prey_index_ra)
-        prey_steps = pred_steps[:-window]
-        pred_index = convert_poi_to_prop(pred_index)
-
-        pred_index_ra = [np.mean(pred_index[i:i + window]) for i, d in enumerate(pred_index) if
-                         i < len(pred_index) - window]
-        eta_timeseries_pred.append(pred_index_ra)
-        pred_steps = pred_steps[:-window]
-
-    eta_timeseries_prey = [ts[:min([len(tsi) for tsi in eta_timeseries_prey])] for ts in eta_timeseries_prey]
-    eta_timeseries_pred = [ts[:min([len(tsi) for tsi in eta_timeseries_pred])] for ts in eta_timeseries_pred]
-
-    average_prey = [np.mean([eta_timeseries_prey[m][i] for m, model in enumerate(eta_timeseries_prey)]) for i in range(len(eta_timeseries_prey[0]))]
-    average_pred = [np.mean([eta_timeseries_pred[m][i] for m, model in enumerate(eta_timeseries_pred)]) for i in range(len(eta_timeseries_pred[0]))]
-
-    prey_steps = prey_steps[:len(average_prey)]
-    pred_steps = pred_steps[:len(average_pred)]
+    for s in scaffold_points:
+        switch_ep = s[0]
+        data_before_switch = (data[:, 0] < switch_ep) * (data[:, 0] >= previous_switch_ep)
+        steps = data[data_before_switch, 0]
+        try:
+            switch_ep = np.max(steps) + 1
+        except ValueError:
+            # The final scaffold point
+            pass
 
 
+        switch_ep_difference = switch_ep - previous_switch_ep
+        data[data_before_switch, 0] -= previous_switch_ep
+        data[data_before_switch, 0] /= switch_ep_difference
+        data[data_before_switch, 0] += (s[1] - 1)
 
-    prey_max = [max([eta_timeseries_prey[m][i] for m, model in enumerate(models)]) for i in range(len(eta_timeseries_prey[0]))]
-    prey_min = [min([eta_timeseries_prey[m][i] for m, model in enumerate(models)]) for i in range(len(eta_timeseries_prey[0]))]
-    pred_max = [max([eta_timeseries_pred[m][i] for m, model in enumerate(models)]) for i in range(len(eta_timeseries_pred[0]))]
-    pred_min = [min([eta_timeseries_pred[m][i] for m, model in enumerate(models)]) for i in range(len(eta_timeseries_pred[0]))]
+        previous_switch_ep = s[0]
 
-    # Cut at 15000
-    prey_steps = [i for i in prey_steps if i<15001]
-    pred_steps = [i for i in pred_steps if 0<i]
-    average_prey = average_prey[:len( prey_steps)]
-    average_pred = average_pred[:len( pred_steps)]
-    prey_max = prey_max[:len( prey_steps)]
-    prey_min = prey_min[:len( prey_steps)]
-    pred_max = pred_max[:len( pred_steps)]
-    pred_min = pred_min[:len( pred_steps)]
+    data_before_switch = (data[:, 0] >= previous_switch_ep)
+    switch_ep_difference = np.sum(data_before_switch * 1) * 2
 
-    # SECOND GROUP
-    eta_timeseries_prey2 = []
-    eta_timeseries_pred2 = []
+    data[data_before_switch, 0] -= previous_switch_ep
+    data[data_before_switch, 0] /= switch_ep_difference
+    data[data_before_switch, 0] += s[1]
 
-    for model in models2:
-        prey_capture, predator_avoidance = get_metrics_for_model(model)
-        prey_steps2 = [float(d[1]) for d in prey_capture[1:]]
-        pred_steps2 = [float(d[1]) for d in predator_avoidance[1:]]
-        prey_index2 = [float(d[2]) for d in prey_capture[1:]]
-        pred_index2 = [float(d[2]) for d in predator_avoidance[1:]]
-        prey_index_ra2 = [np.mean(prey_index2[i:i + window]) for i, d in enumerate(prey_index2) if
-                         i < len(prey_index2) - window]
-        eta_timeseries_prey2.append(prey_index_ra2)
-        prey_steps2 = pred_steps2[:-window]
-        pred_index2 = convert_poi_to_prop(pred_index2)
-
-        pred_index_ra2 = [np.mean(pred_index2[i:i + window]) for i, d in enumerate(pred_index2) if
-                         i < len(pred_index2) - window]
-        eta_timeseries_pred2.append(pred_index_ra2)
-        pred_steps2 = pred_steps[:-window]
-
-    eta_timeseries_prey2 = [ts[:min([len(tsi) for tsi in eta_timeseries_prey2])] for ts in eta_timeseries_prey2]
-    eta_timeseries_pred2 = [ts[:min([len(tsi) for tsi in eta_timeseries_pred2])] for ts in eta_timeseries_pred2]
-
-    average_prey2 = [np.mean([eta_timeseries_prey2[m][i] for m, model in enumerate(eta_timeseries_prey2)]) for i in
-                    range(len(eta_timeseries_prey2[0]))]
-    average_pred2 = [np.mean([eta_timeseries_pred2[m][i] for m, model in enumerate(eta_timeseries_pred2)]) for i in
-                    range(len(eta_timeseries_pred2[0]))]
-
-    prey_steps2 = prey_steps2[:len(average_prey2)]
-    pred_steps2 = pred_steps2[:len(average_pred2)]
-
-    prey_max2 = [max([eta_timeseries_prey2[m][i] for m, model in enumerate(models2)]) for i in
-                range(len(eta_timeseries_prey2[0]))]
-    prey_min2 = [min([eta_timeseries_prey2[m][i] for m, model in enumerate(models2)]) for i in
-                range(len(eta_timeseries_prey2[0]))]
-    pred_max2 = [max([eta_timeseries_pred2[m][i] for m, model in enumerate(models2)]) for i in
-                range(len(eta_timeseries_pred2[0]))]
-    pred_min2 = [min([eta_timeseries_pred2[m][i] for m, model in enumerate(models2)]) for i in
-                range(len(eta_timeseries_pred2[0]))]
-
-    # Cut at 15000
-    prey_steps2 = [i for i in prey_steps2 if i < 15001]
-    pred_steps2 = [i for i in pred_steps2 if 0 < i]
-    average_prey2 = [a *1 for a in average_prey2[10:len(prey_steps2)]]
-    average_pred2 = [a *1 for a in average_pred2[10:len(pred_steps2)]]
-    prey_max2 = [a *1 for a in prey_max2[10:len(prey_steps2)]]
-    prey_min2 = [a *1 for a in prey_min2[10:len(prey_steps2)]]
-    pred_max2 = [a *0.8 for a in pred_max2[10:len(pred_steps2)]]
-    pred_min2 = [a *1 for a in pred_min2[10:len(pred_steps2)]]
-    prey_steps2 = prey_steps2[10:]
-    pred_steps2 = pred_steps2[10:]
-
-
-    sns.set()
-    plt.figure(figsize=(8,6))
-    plt.plot(prey_steps, average_prey, color="orange", label="512 Units")
-    plt.plot(prey_steps2, average_prey2, color="tomato", label="256 Units")
-    plt.hlines(0.15, 0, max(prey_steps), linestyles={'dashed'},linewidth=2, colors=["r"])
-    plt.fill_between(prey_steps, prey_max, prey_min, color="b", alpha=0.5)
-    plt.fill_between(prey_steps2, prey_max2, prey_min2, color="g", alpha=0.5)
-    plt.legend(fontsize=15)
-    plt.xlabel("Episode", fontsize=20)
-    plt.ylabel("Prey Caught (proportion)", fontsize=20)
-    plt.show()
-
-    sns.set()
-    plt.figure(figsize=(8,6))
-    plt.plot(np.linspace(0, 15000, len(pred_steps)), average_pred, color="orange", label="512 Units")
-    plt.plot(np.linspace(0, 15000, len(pred_steps2)), average_pred2, color="tomato", label="256 Units")
-    plt.hlines(0.6, 0, 15000,  linestyles={'dashed'}, linewidth=2, colors=["r"])
-    plt.legend(fontsize=15)
-
-    plt.fill_between(np.linspace(0, 15000, len(pred_steps)), pred_max, pred_min, color="b", alpha=0.5)
-    plt.fill_between(np.linspace(0, 15000, len(pred_steps2)), pred_max2, pred_min2, color="g", alpha=0.5)
-
-    plt.xlabel("Episode", fontsize=20)
-    plt.ylabel("Predators Avoided (proportion)", fontsize=20)
-    plt.show()
-
-
-def plot_multiple_model_metrics(models, window):
-    eta_timeseries_prey = []
-    eta_timeseries_pred = []
-
-    for model in models:
-        prey_capture, predator_avoidance = get_metrics_for_model(model)
-        prey_steps = [float(d[1]) for d in prey_capture[1:]]
-        pred_steps = [float(d[1]) for d in predator_avoidance[1:]]
-        prey_index = [float(d[2]) for d in prey_capture[1:]]
-        pred_index = [float(d[2]) for d in predator_avoidance[1:]]
-        prey_index_ra = [np.mean(prey_index[i:i+window]) for i, d in enumerate(prey_index) if i <len(prey_index)-window]
-        eta_timeseries_prey.append(prey_index_ra)
-        prey_steps = pred_steps[:-window]
-        pred_index = convert_poi_to_prop(pred_index)
-
-        pred_index_ra = [np.mean(pred_index[i:i + window]) for i, d in enumerate(pred_index) if
-                         i < len(pred_index) - window]
-        eta_timeseries_pred.append(pred_index_ra)
-        pred_steps = pred_steps[:-window]
-
-    eta_timeseries_prey = [ts[:min([len(tsi) for tsi in eta_timeseries_prey])] for ts in eta_timeseries_prey]
-    eta_timeseries_pred = [ts[:min([len(tsi) for tsi in eta_timeseries_pred])] for ts in eta_timeseries_pred]
-
-    average_prey = [np.mean([eta_timeseries_prey[m][i] for m, model in enumerate(eta_timeseries_prey)]) for i in range(len(eta_timeseries_prey[0]))]
-    average_pred = [np.mean([eta_timeseries_pred[m][i] for m, model in enumerate(eta_timeseries_pred)]) for i in range(len(eta_timeseries_pred[0]))]
-
-    prey_steps = prey_steps[:len(average_prey)]
-    pred_steps = pred_steps[:len(average_pred)]
-
-    prey_max = [max([eta_timeseries_prey[m][i] for m, model in enumerate(models)]) for i in range(len(eta_timeseries_prey[0]))]
-    prey_min = [min([eta_timeseries_prey[m][i] for m, model in enumerate(models)]) for i in range(len(eta_timeseries_prey[0]))]
-    pred_max = [max([eta_timeseries_pred[m][i] for m, model in enumerate(models)]) for i in range(len(eta_timeseries_pred[0]))]
-    pred_min = [min([eta_timeseries_pred[m][i] for m, model in enumerate(models)]) for i in range(len(eta_timeseries_pred[0]))]
-
-    # Cut at 15000
-    prey_steps = [i for i in prey_steps if i<15001]
-    pred_steps = [i for i in pred_steps if 0<i]
-    average_prey = average_prey[:len( prey_steps)]
-    average_pred = average_pred[:len( pred_steps)]
-    prey_max = prey_max[:len( prey_steps)]
-    prey_min = prey_min[:len( prey_steps)]
-    pred_max = pred_max[:len( pred_steps)]
-    pred_min = pred_min[:len( pred_steps)]
-
-    sns.set()
-    plt.figure(figsize=(8,6))
-    plt.plot(prey_steps, average_prey, color="o")
-    plt.hlines(0.15, 0, max(prey_steps), linestyles={'dashed'}, colors=["r"])
-    plt.fill_between(prey_steps, prey_max, prey_min, color="b", alpha=0.5)
-    plt.xlabel("Episode", fontsize=20)
-    plt.ylabel("Prey Caught (proportion)", fontsize=20)
-    plt.show()
-
-    sns.set()
-    plt.figure(figsize=(8,6))
-    plt.plot(np.linspace(0, 15000, len(pred_steps)), average_pred, color="o")
-    plt.hlines(0.6, 0, 15000,  linestyles={'dashed'}, colors=["r"])
-
-    plt.fill_between(np.linspace(0, 15000, len(pred_steps)), pred_max, pred_min, color="b", alpha=0.5)
-
-    plt.xlabel("Episode", fontsize=20)
-    plt.ylabel("Predators Avoided (proportion)", fontsize=20)
-    plt.show()
-
-
-def plot_metrics(prey_capture, pred_avoidance, window):
-    prey_steps = [float(d[1]) for d in prey_capture[1:]]
-    pred_steps = [float(d[1]) for d in pred_avoidance[1:]]
-    prey_index = [float(d[2]) for d in prey_capture[1:]]
-    pred_index = [float(d[2]) for d in pred_avoidance[1:]]
-
-    pred_index = convert_poi_to_prop(pred_index)
-    prey_index_ra = [np.mean(prey_index[i:i+window]) for i, d in enumerate(prey_index) if i <len(prey_index)-window]
-    prey_steps = prey_steps[:-window]
-
-    pred_index_ra = [np.mean(pred_index[i:i+window]) for i, d in enumerate(pred_index) if i <len(pred_index)-window]
-    pred_steps = pred_steps[:-window]
-
-    sns.set()
-    plt.figure(figsize=(8,6))
-    plt.plot(prey_steps, prey_index_ra, color="r")
-    plt.hlines(0.2, 0, 10000,  linestyles={'dashed'}, colors=["y"])
-    plt.xlabel("Episode", fontsize=20)
-    plt.ylabel("Prey Caught (proportion)", fontsize=20)
-    plt.show()
-
-
-
-    plt.figure(figsize=(8,6))
-    plt.plot([p-5000 for p in pred_steps], pred_index_ra, color="r")
-    plt.hlines(0.6, 0, 10000, linestyles={'dashed'}, colors=["y"])
-    plt.xlabel("Episode", fontsize=20)
-    plt.ylabel("Predators Avoided (proportion)", fontsize=20)
-    plt.show()
-
-
-def convert_poi_to_prop(data, p=0.05):
-    for i, d in enumerate(data):
-        if i == 0:
-            continue
-        predators = (d * p)
-        if predators == 0:
-            data[i] == 0
-        else:
-            data[i] = predators/(predators+1)
     return data
 
 
-def get_metrics_for_model(model_name):
-    with open(f'../Data/Metrics/{model_name}/run-.-tag-prey capture index (fraction caught).csv', newline='') as f:
-        reader = csv.reader(f)
-        pci = list(reader)
+def compute_rolling_averages_over_data_scaled_window(data, max_window, scaffold_points, min_window=5, exclude_overlapping=True):
+    # Compute episode length of each scaffold point...
+    scaffold_points = np.array(scaffold_points)
+    scaffold_points_order = np.argsort(scaffold_points[:, 1])
+    scaffold_points = scaffold_points[scaffold_points_order, :]
 
-    with open(f'../Data/Metrics/{model_name}/p_pred).csv') as f: #run-.-tag-predator avoidance index (avoided_p_pred).csv', newline='') as f:
-        reader = csv.reader(f)
-        pai = list(reader)
+    # Add final window for data since last scaffold point change
+    scaffold_points = np.concatenate((scaffold_points, np.array([[max(data[:, 0]), max(scaffold_points[:, 1]+1)]])))
 
-    with open(f'../Data/Metrics/{model_name}/run-.-tag-capture success rate.csv') as f: #run-.-tag-predator avoidance index (avoided_p_pred).csv', newline='') as f:
-        reader = csv.reader(f)
-        csr = list(reader)
+    scaffold_durations = scaffold_points[1:, 0] - scaffold_points[:-1, 0]
+    scaffold_durations = np.concatenate((scaffold_points[0:1, 0], scaffold_durations))
+    max_scaffold_duration = max(scaffold_durations)
+    window_scaling = max_scaffold_duration / max_window
+    window_sizes = scaffold_durations / window_scaling
+    window_sizes = np.ceil(window_sizes).astype(int)
+    window_sizes = np.clip(window_sizes, min_window, max_window)
 
-    with open(f'../Data/Metrics/{model_name}/run-.-tag-prey capture rate (fraction caught per step).csv') as f: #run-.-tag-predator avoidance index (avoided_p_pred).csv', newline='') as f:
-        reader = csv.reader(f)
-        pcr = list(reader)
+    window_start = 0
+    rolling_average_full = []
+    steps_cut_compiled = []
 
-    return pci, pai, csr, pcr
+    for w, window in enumerate(window_sizes):
+        if exclude_overlapping:
+            window_end = int(scaffold_points[w, 0] - window)
+        else:
+            window_end = int(scaffold_points[w, 0])
+        window_end_index = find_nearest(data[:, 0], window_end)
+
+        if w == len(window_sizes) - 1:
+            data_points = data.shape[0]
+            data_points_cut = data_points - window
+        else:
+            data_points_cut = len(data[:, 1])
+
+        if exclude_overlapping:
+            steps_cut_compiled.append(data[min(window_start, data_points_cut):min(window_end_index, data_points_cut), 0:1])
+
+        rolling_average = np.array([[np.mean(data[i: i + window, 1])] for i in range(window_start, window_end_index) if i < data_points_cut])
+        rolling_average_full.append(rolling_average)
+
+        if exclude_overlapping:
+            window_start = find_nearest(data[:, 0], window_end + window)
+        else:
+            window_start = window_end_index
+
+    rolling_average_full = [r for r in rolling_average_full if len(r) > 0]
+    rolling_average = np.concatenate((rolling_average_full), axis=0)
 
 
-def clean_metrics_data(reader, file_name, model):
-    increment = 0
-    previous_step = 0
-    with open(f"Metrics/{model}/{file_name}.csv", "w") as csv_file:
-        writer = csv.writer(csv_file, delimiter=',')
-        # writer.writerow(["Wall time", "Step", "Value"])
-        for i, row in enumerate(reader):
-            if i == 0:
-                pass
-            else:
-                current_step = int(row[1])
-                current_step += increment
-                if current_step <= previous_step:
-                    current_step += (previous_step-increment)
-                    increment += (previous_step-increment)
-                writer.writerow([row[0], current_step, row[2]])
-                previous_step = current_step
+    if exclude_overlapping:
+        steps_cut = np.concatenate(steps_cut_compiled, axis=0)
+    else:
+        steps_cut = data[:data_points_cut, 0:1]
 
+    rolling_average = np.concatenate((steps_cut, rolling_average), axis=1)
+    return rolling_average
+
+
+def compute_rolling_averages_over_data(data, window):
+    data_points = data.shape[0]
+    data_points_cut = data_points - window
+    rolling_average = np.array([[np.mean(data[i: i + window, 1])] for i in range(data_points) if i < data_points_cut])
+    steps_cut = data[:data_points_cut, 0:1]
+
+    rolling_average = np.concatenate((steps_cut, rolling_average), axis=1)
+    return rolling_average
+
+
+def get_metric_name(metric_label):
+    if metric_label == "prey caught":
+        metric_name = "Prey Caught"
+
+    elif metric_label == "capture success rate":
+        # metric_name = "Capture Success Rate"
+        metric_name = "CSR"
+
+    elif metric_label == "prey capture rate (fraction caught per step)":
+        # metric_name = "Prey Capture Rate (fraction caught per step)"
+        metric_name = "PCR"
+
+    elif metric_label == "prey capture index (fraction caught)":
+        # metric_name = "Prey Capture Index (fraction caught)"
+        metric_name = "PCI"
+
+    elif metric_label == "Energy Efficiency Index":
+        # metric_name = "Energy Efficiency Index"
+        metric_name = "EEI"
+
+    elif metric_label == "Episode Duration":
+        metric_name = "Episode Duration"
+
+    elif metric_label == "Mean salt damage taken per step":
+        # metric_name = "Salt Damage (mean per step)"
+        metric_name = "Salt Damage"
+
+    elif metric_label == "Phototaxis Index":
+        metric_name = "Phototaxis Index"
+
+    elif metric_label == "episode reward":
+        metric_name = "Episode Reward"
+
+    elif metric_label == "predator avoidance index (avoided/p_pred)":
+        # metric_name = "Predator Avoidance Index"
+        metric_name = "PAI"
+
+    elif metric_label == "predators avoided":
+        metric_name = "Predators Avoided"
+
+    elif metric_label == "Exploration Quotient":
+        metric_name = "EQ"
+
+    elif metric_label == "turn chain preference":
+        # metric_name = "Turn Chain Preference"
+        metric_name = "TCP"
+
+    elif metric_label == "Action Heterogeneity Score":
+        metric_name = "AHI"
+
+    else:
+        metric_name = metric_label
+
+    return metric_name
+
+
+def remove_repeated_switching_points(scaffold_switching_points):
+    """Removes switching points - chooses to keep those of a later episode."""
+
+    cleaned_scaffold_switching_points = []
+    for model_switching_points in scaffold_switching_points:
+        new_model_switching_points = []
+
+        config_nums = [m[1] for m in model_switching_points]
+        reduced_config_nums = list(set(config_nums))
+
+        for c in reduced_config_nums:
+            switching_points = [s[0] for s in model_switching_points if s[1] == c]
+            new_model_switching_points.append([max(switching_points), c])
+
+        # to_delete = []
+        # for i, c in enumerate(config_nums):
+        #     if i > 0:
+        #         if c == model_switching_points[i - 1][1]:
+        #             to_delete.append(i - 1)
+        #             print("Removing repeated")
+        # for d in reversed(to_delete):
+        #     del model_switching_points[d]
+        cleaned_scaffold_switching_points.append(new_model_switching_points)
+    return cleaned_scaffold_switching_points
+
+
+def order_chosen_model_data(metrics, model_data):
+    # Parsimonious way:
+    try:
+        ordered_chosen_model_data = [{metric: order_metric_data(model[metric]) for metric in metrics} for model in
+                                     model_data]
+    except KeyError:
+        ordered_chosen_model_data = []
+        for model in model_data:
+            metric_data = {}
+            for metric in metrics:
+                try:
+                    metric_data[metric] = order_metric_data(model[metric])
+                except KeyError:
+                    print(f"{metric} data unavailable")
+            ordered_chosen_model_data.append(metric_data)
+
+    return ordered_chosen_model_data
+
+
+def compute_rolling_averages(ordered_chosen_model_data, model_data, metrics, window, scaled_window):
+    try:
+        if scaled_window:
+            ordered_chosen_model_data_rolling_averages = [
+                {metric: compute_rolling_averages_over_data_scaled_window(model[metric], window,
+                                                            model_data[m]["Configuration change"]) for metric in metrics}
+                for m, model in enumerate(ordered_chosen_model_data)]
+        else:
+            ordered_chosen_model_data_rolling_averages = [
+                {metric: compute_rolling_averages_over_data(model[metric], window) for metric
+                 in metrics} for model in ordered_chosen_model_data]
+    except KeyError:
+        # With error handling:
+        ordered_chosen_model_data_rolling_averages = []
+        for model in ordered_chosen_model_data:
+            metric_data = {}
+            for metric in metrics:
+                try:
+                    metric_data[metric] = compute_rolling_averages_over_data(model[metric], window)
+                except KeyError:
+                    print(f"{metric} data unavailable")
+            ordered_chosen_model_data_rolling_averages.append(metric_data)
+    return ordered_chosen_model_data_rolling_averages
+
+
+def interpolate_scaffold_points_transitions(ordered_chosen_model_data_rolling_averages, model_data, metrics):
+    scaffold_switching_points = [model["Configuration change"] for model in model_data]
+    scaffold_switching_points = remove_repeated_switching_points(scaffold_switching_points)
+
+    new_orders = [np.argsort(np.array(model)[:, 1]) for model in scaffold_switching_points]
+    scaffold_switching_points = [np.array(model)[new_orders[i]] for i, model in
+                                 enumerate(scaffold_switching_points)]
+
+    # try:
+    #     # if scaled_window:
+    #     #     ordered_chosen_model_data_rolling_averages = [{metric: interpolate_metric_data_scaled_window(model[metric],
+    #     #                                                                                                  scaffold_switching_points[
+    #     #                                                                                                      i], window)
+    #     #                                                    for metric in metrics} for i, model in
+    #     #                                                   enumerate(ordered_chosen_model_data_rolling_averages)]
+    #     # else:
+    #     new_ordered_chosen_model_data_rolling_averages = [{metric: interpolate_metric_data(model[metric],
+    #                                                                                    scaffold_switching_points[i],
+    #                                                                                    )
+    #                                                    for metric in metrics} for i, model in
+    #                                                   enumerate(ordered_chosen_model_data_rolling_averages)]
+    # except KeyError:
+    new_ordered_chosen_model_data_rolling_averages = []
+    for i, model in enumerate(ordered_chosen_model_data_rolling_averages):
+        metric_data = {}
+        for metric in metrics:
+            try:
+                interpolated_data = interpolate_metric_data(model[metric], scaffold_switching_points[i])
+                metric_data[metric] = interpolated_data
+            except KeyError:
+                print(f"{metric} data unavailable")
+        new_ordered_chosen_model_data_rolling_averages.append(metric_data)
+
+    return new_ordered_chosen_model_data_rolling_averages, scaffold_switching_points
+
+
+def plot_multiple_metrics_multiple_models(model_list, metrics, window, interpolate_scaffold_points, figure_name,
+                                          key_scaffold_points=None, scaled_window=False, show_inset=None):
+    """Different to previous versions in that it uses data directly from log files, and scales points between scaffold
+    switching points to allow plotting between models. The resulting graph is x: config change point, y: metric.
+
+    window is the window for computing the rolling averages for each metric.
+    """
+
+    # Load raw data
+    model_data = [load_all_log_data(model) for model in model_list]
+
+    # Select only the data from selected metrics
+    ordered_chosen_model_data = order_chosen_model_data(metrics, model_data)
+
+    # Compute rolling averages
+    ordered_chosen_model_data_rolling_averages = compute_rolling_averages(ordered_chosen_model_data, model_data, metrics,
+                                                                          window, scaled_window)
+
+    # If specified, normalise x-axis variable so scaffold points have equal representation - allows model comparison.
+    if interpolate_scaffold_points:
+        ordered_chosen_model_data_rolling_averages, scaffold_switching_points = interpolate_scaffold_points_transitions(ordered_chosen_model_data_rolling_averages, model_data, metrics)
+
+    inset_scaffold_points = []
+    inset_metric_vals = []
+    metric_index = None
+
+    # Create plot
+    num_metrics = len(metrics)
+    fig, axs = plt.subplots(num_metrics, 1, figsize=(50, int(12 * num_metrics)), sharex=True)
+
+    for model in ordered_chosen_model_data_rolling_averages:
+        for i, metric in enumerate(metrics):
+            metric_name = get_metric_name(metric)
+
+            #           Special cases
+
+            # Remove AHI early phase
+            # if metric_name == "AHI":
+            #     to_zero = (model[metric][:, 0] < 2)
+            #     model[metric][to_zero, 1] = 0
+            # Adjust phototaxis index (earlier models had it computed wrong for part of training).
+            # if metric_name == "Phototaxis Index":
+            #     to_switch = (model[metric][:, 0] < 31)
+            #     model[metric][to_switch, 1] -= 0.5
+            #     model[metric][to_switch, 1] *= 2
+
+            # Plot metric data
+            try:
+                axs[i].plot(model[metric][:, 0], model[metric][:, 1], alpha=0.5)
+            except KeyError:
+                ...
+
+            # Add 0 line for metrics that cross it.
+            try:
+                if min(model[metric][:, 1]) < 0:
+                    axs[i].hlines(0, 0, max(model[metric][:, 0]), color="black", linestyles="solid", linewidth=0.5)
+            except KeyError:
+                ...
+
+            axs[i].grid(True, axis="x")
+
+            # if key_scaffold_points is not None:
+            #     ylim = axs[i].get_ylim()
+            #     for p in key_scaffold_points:
+            #         axs[i].vlines(p, ylim[0]-ylim[0], ylim[1]+ylim[1], color="r")
+            #     axs[i].set_ylim(ylim[0], ylim[1])
+            axs[i].set_ylabel(metric_name)
+
+            try:
+                if show_inset is not None:
+                    if show_inset[0] == metric:
+                        scaffold_point = show_inset[1]
+                        data_to_keep = (model[metric][:, 0] >= scaffold_point) * (model[metric][:, 0] < scaffold_point + 1)
+                        inset_scaffold_points.append(model[metric][data_to_keep, 0])
+                        inset_metric_vals.append(model[metric][data_to_keep, 1])
+                        metric_index = i
+            except KeyError:
+                ...
+            # plt.setp(axs[i].get_yticklabels(), rotation=30, horizontalalignment='right')
+
+    if interpolate_scaffold_points:
+        axs[-1].set_xlabel("Curriculum Point")
+        sc = np.concatenate(([np.array(s) for s in scaffold_switching_points]))
+        scaffold_indices = [t for t in range(0, int(np.max(sc[:, 1]))+1)]
+        axs[-1].set_xticks(scaffold_indices)
+        axs[-1].set_xlim(1, np.max(sc[:, 1]) + 1)
+    else:
+        axs[-1].set_xlabel("Episode")
+
+    if key_scaffold_points is not None:
+        for i in range(len(metrics)):
+            ylim = axs[i].get_ylim()
+            for p in key_scaffold_points:
+                axs[i].vlines(p, ylim[0], ylim[1], color="r")
+            axs[i].set_ylim(ylim[0], ylim[1])
+
+    if show_inset is not None:
+        inset_ylim = axs[metric_index].get_ylim()
+
+    plt.show()
+
+    plt.savefig(f"../../Analysis-Output/Training/Metric-Plots/{figure_name}.jpg")
+    plt.clf()
+    plt.close()
+
+    if show_inset is not None:
+        create_zoomed_inset(inset_scaffold_points, inset_metric_vals, get_metric_name(show_inset[0]), inset_ylim, figure_name)
+
+
+def create_zoomed_inset(scaffold_points, metric_vals, metric_name, inset_ylim, figure_name):
+    for model in range(len(scaffold_points)):
+        plt.plot(scaffold_points[model], metric_vals[model])
+
+    ax = plt.gca()
+    # ax.set_ylim(inset_ylim)
+    plt.ylabel(metric_name)
+    plt.xlabel("Scaffold Point")
+    plt.savefig(f"../../Analysis-Output/Training/Metric-Plots/{figure_name}_inset.jpg")
+    plt.clf()
+    plt.close()
+
+"""
+Possible metrics:
+   - "prey capture index (fraction caught)"
+   - "prey capture rate (fraction caught per step)"
+   - "Energy Efficiency Index
+   - "Episode Duration"
+   - "Mean salt damage taken per step"
+   - "Phototaxis Index"
+   - "capture success rate"
+   - "episode reward"
+   - "predator avoidance index (avoided/p_pred)"
+   - "predators avoided"
+   - "prey caught"
+   - "Exploration Quotient"
+   - "turn chain preference"                      
+   - "Cause of Death"
+   - Action Heterogeneity Score
+"""
 
 if __name__ == "__main__":
-    models = ["even_5", "even_6", "even_7","even_8"]
-    models2 = ["even_1", "even_2", "even_3", "even_4"]
-    models = ["dqn_14-1"]
-    models2 = ["dqn_14-1"]
+    dqn_models_old = ["dqn_scaffold_30-1", "dqn_scaffold_30-2"]
+    ppo_models_old = ["ppo_scaffold_21-1", "ppo_scaffold_21-2"]
 
-    filenames = ["run-.-tag-predator avoidance index (avoided_p_pred)",
-                 "run-.-tag-prey capture index (fraction caught)"]
+    dqn_models = ["dqn_gamma-1", "dqn_gamma-2", "dqn_gamma-3", "dqn_gamma-4", "dqn_gamma-5"]
+    dqn_models = ["dqn_0-1", "dqn_0-2", "dqn_0-3", "dqn_0-4"]#, "dqn_0-5", "dqn_0-6", "dqn_0-7", "dqn_0-8"]
+    dqn_models_mod = ["dqn_beta_mod-1", "dqn_beta_mod-2", "dqn_beta_mod-3", "dqn_beta_mod-4", "dqn_beta_mod-5"]
+    ppo_models = ["ppo_beta-1", "ppo_beta-2", "ppo_beta-3", "ppo_beta-4", "ppo_beta-5"]
+    ppo_models_mod = ["ppo_beta_mod-1", "ppo_beta_mod-2", "ppo_beta_mod-3", "ppo_beta_mod-4", "ppo_beta_mod-5"]
 
-    plot_multiple_model_metrics_two_trace(models, models2, 50)
+    limited_metrics_dqn = ["prey capture index (fraction caught)",
+                          "capture success rate",
+                          "episode reward",
+                          "Phototaxis Index"
+                          ]
+    chosen_metrics_dqn = ["prey capture index (fraction caught)",
+                          "capture success rate",
+                          # "episode reward",
+                          "Energy Efficiency Index",
+                          # "Episode Duration",
+                          # "Exploration Quotient",
+                          "Action Heterogeneity Score",
 
+                          "turn chain preference",
+                          # "Cause of Death",
+                          # Sand grain attempted captures.
+                          # DQN only
+                          "predator avoidance index (avoided/p_pred)",
+                          "Phototaxis Index"
+                          ]
+    chosen_metrics_dqn_mod = ["prey capture index (fraction caught)",
+                              "capture success rate",
+                              "episode reward",
+                              "Energy Efficiency Index",
+                              "Episode Duration",
+                              "Exploration Quotient",
+                              "Action Heterogeneity Score",
+
+                              "turn chain preference",
+                              # "Cause of Death",
+                              # Sand grain attempted captures.
+
+                              "predator avoidance index (avoided/p_pred)",
+                              "Phototaxis Index"
+                              ]
+    chosen_metrics_ppo = ["prey capture index (fraction caught)",
+                          "capture success rate",
+                          # "episode reward",
+                          # "Energy Efficiency Index",
+                          "Episode Duration",
+                          # "Exploration Quotient",
+                          # "turn chain preference",
+                          # "Cause of Death",
+                          # Sand grain attempted captures.
+                          # DQN only
+                          # "predator avoidance index (avoided/p_pred)",
+                          # "Phototaxis Index"
+                          ]
+    chosen_metrics_ppo_mod = ["prey capture index (fraction caught)",
+                              "capture success rate",
+                              # "episode reward",
+                              # "Energy Efficiency Index",
+                              "Episode Duration",
+                              # "Exploration Quotient",
+                              # "turn chain preference",
+                              # "Cause of Death",
+                              # Sand grain attempted captures.
+                              # DQN only
+                              # "predator avoidance index (avoided/p_pred)",
+                              # "Phototaxis Index"
+                              ]
+    plot_multiple_metrics_multiple_models(dqn_models, chosen_metrics_dqn, window=50, interpolate_scaffold_points=True,
+                                          figure_name="dqn_0", scaled_window=False,
+                                          show_inset=["capture success rate", 2], key_scaffold_points=[4, 5, 9, 10, 13, 14])
+    # plot_multiple_metrics_multiple_models(dqn_models_mod, chosen_metrics_dqn_mod, window=100, interpolate_scaffold_points=True,
+    #                                       figure_name="dqn_beta_mod", scaled_window=False,
+    #                                       show_inset=["capture success rate", 23])#, key_scaffold_points=[10, 16, 31])
+    # plot_multiple_metrics_multiple_models(ppo_models, chosen_metrics_ppo, window=100, interpolate_scaffold_points=False,
+    #                                       figure_name="ppo_beta")
+    # plot_multiple_metrics_multiple_models(ppo_models_mod, chosen_metrics_ppo_mod, window=100, interpolate_scaffold_points=False,
+    #                                       figure_name="ppo_beta_mod")

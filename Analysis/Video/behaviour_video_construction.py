@@ -1,5 +1,3 @@
-import copy
-
 import numpy as np
 import math
 import sys
@@ -7,41 +5,37 @@ import h5py
 import json
 import matplotlib.pyplot as plt
 import skimage.draw as draw
-from skimage import io
 
-from Analysis.load_data import load_data
-from Configurations.Networks.original_network import base_network_layers, ops, connectivity
-from Tools.make_video import make_video
-from skimage.transform import resize, rescale
-from Tools.make_gif import make_gif
+from skimage.transform import rescale
 from matplotlib.animation import FFMpegWriter
 
+from Analysis.load_data import load_data
 
 
 class DrawingBoard:
 
-    def __init__(self, width, height, data, include_background):
-        self.width = width
-        self.height = height
-        self.include_background = include_background
-        if include_background:
-            self.background = data["background"][:, :,]
-            self.background = np.expand_dims(self.background/10, 2)
-            self.background = np.concatenate((self.background,
-                                              self.background,
-                                              np.zeros(self.background.shape)), axis=2)
+    def __init__(self, arena_width, arena_height, data, include_sediment):
+        self.arena_width = arena_width
+        self.arena_height = arena_height
+        self.include_sediment = include_sediment
+        if include_sediment:
+            self.sediment = data["sediment"][:, :, ]
+            self.sediment = np.expand_dims(self.sediment / 10, 2)
+            self.sediment = np.concatenate((self.sediment,
+                                            self.sediment,
+                                            np.zeros(self.sediment.shape)), axis=2)
 
         self.db = self.get_base_arena(0.3)
 
 
     def get_base_arena(self, bkg=0.3):
-        db = (np.ones((self.height, self.width, 3), dtype=np.double) * bkg)
+        db = (np.ones((self.arena_height, self.arena_width, 3), dtype=np.double) * bkg)
         db[1:2, :] = np.array([1, 0, 0])
-        db[self.width - 2:self.width - 1, :] = np.array([1, 0, 0])
+        db[self.arena_width - 2:self.arena_width - 1, :] = np.array([1, 0, 0])
         db[:, 1:2] = np.array([1, 0, 0])
-        db[:, self.height - 2:self.height - 1] = np.array([1, 0, 0])
-        if self.include_background:
-            db += self.background
+        db[:, self.arena_height - 2:self.arena_height - 1] = np.array([1, 0, 0])
+        if self.include_sediment:
+            db += self.sediment
         return db
 
     def circle(self, center, rad, color):
@@ -147,7 +141,7 @@ class DrawingBoard:
             if self.light_gradient > 0 and dark_col > 0:
                 gradient = self.chosen_math_library.linspace(dark_gain, light_gain, self.light_gradient)
                 gradient = self.chosen_math_library.expand_dims(gradient, 0)
-                gradient = self.chosen_math_library.repeat(gradient, self.height, 0)
+                gradient = self.chosen_math_library.repeat(gradient, self.arena_height, 0)
                 gradient = self.chosen_math_library.expand_dims(gradient, 2)
                 self.db_visualisation[:, int(dark_col-(self.light_gradient/2)):int(dark_col+(self.light_gradient/2))] *= gradient
                 self.db_visualisation[:, :int(dark_col-(self.light_gradient/2))] *= dark_gain
@@ -160,7 +154,7 @@ class DrawingBoard:
             if self.light_gradient > 0 and dark_col > 0:
                 gradient = self.chosen_math_library.linspace(dark_gain, light_gain, self.light_gradient)
                 gradient = self.chosen_math_library.expand_dims(gradient, 0)
-                gradient = self.chosen_math_library.repeat(gradient, self.height, 0)
+                gradient = self.chosen_math_library.repeat(gradient, self.arena_height, 0)
                 gradient = self.chosen_math_library.expand_dims(gradient, 2)
                 self.db[:, int(dark_col-(self.light_gradient/2)):int(dark_col+(self.light_gradient/2))] *= gradient
                 self.db[:, :int(dark_col-(self.light_gradient/2))] *= dark_gain
@@ -171,7 +165,7 @@ class DrawingBoard:
 
 
 def draw_previous_actions(board, past_actions, past_positions, fish_angles, adjusted_colour_index,
-                          continuous_actions, n_actions_to_show, bkg_scatter, consumption_buffer=None):
+                          continuous_actions, n_actions_to_show, background_brightness, consumption_buffer=None):
     while len(past_actions) > n_actions_to_show:
         past_actions.pop(0)
     while len(past_positions) > n_actions_to_show:
@@ -185,9 +179,9 @@ def draw_previous_actions(board, past_actions, past_positions, fish_angles, adju
         if continuous_actions:
             if a[1] < 0:
                 action_colour = (
-                adjusted_colour_index, bkg_scatter, bkg_scatter)
+                adjusted_colour_index, background_brightness, background_brightness)
             else:
-                action_colour = (bkg_scatter, adjusted_colour_index, adjusted_colour_index)
+                action_colour = (background_brightness, adjusted_colour_index, adjusted_colour_index)
 
             board.show_action_continuous(a[0], a[1], fish_angles[i], past_positions[i][0],
                                               past_positions[i][1], action_colour)
@@ -270,32 +264,42 @@ def draw_action_space_usage_discrete(current_height, current_width, action_buffe
 
 def draw_episode(data, env_variables, save_location, continuous_actions, draw_past_actions=True, show_energy_state=True,
                  scale=1.0, draw_action_space_usage=True, trim_to_fish=True, save_id="", showed_region_quad=500, n_actions_to_show=500,
-                 s_per_frame=0.03, include_background=True, as_gif=False):
+                 s_per_frame=0.03, include_sediment=True, as_gif=False, max_steps=999999, show_salt_location=False):
     #try:
     #    with open(f"../../Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
     #        env_variables = json.load(f)
     #except FileNotFoundError:
     #    with open(f"Configurations/Assay-Configs/{config_name}_env.json", 'r') as f:
     #        env_variables = json.load(f)
+
     save_location += save_id
 
     fig = plt.figure(facecolor='0.9', figsize=(4, 3))
-    gs = fig.add_gridspec(nrows=9, ncols=9, left=0.05, right=0.85,
+    gs = fig.add_gridspec(nrows=10, ncols=10, left=0.05, right=0.85,
                       hspace=0.1, wspace=0.05)
-    ax0 = fig.add_subplot(gs[:-1, 0:6])
+    ax0 = fig.add_subplot(gs[:7, 0:6])
     
-    ax1 = fig.add_subplot(gs[-1, 0:4])
-    ax2 = fig.add_subplot(gs[-1, 4:8])
-    # ax3 = fig.add_subplot(gs[0, 6:])
-    # ax4 = fig.add_subplot(gs[1, 6:])
-    # ax5 = fig.add_subplot(gs[2, 6:])
-    # ax6 = fig.add_subplot(gs[3, 6:])
-    # ax7 = fig.add_subplot(gs[4, 6:])
+    ax1 = fig.add_subplot(gs[7, 0:3])
+    ax2 = fig.add_subplot(gs[7, 3:6])
+    ax3 = fig.add_subplot(gs[0, 6:10])
+    ax4 = fig.add_subplot(gs[1, 6:10])
+    ax5 = fig.add_subplot(gs[2, 6:10])
+    ax6 = fig.add_subplot(gs[3, 6:10])
+    ax7 = fig.add_subplot(gs[4, 6:10])
+    ax8 = fig.add_subplot(gs[5, 6])
+    if continuous_actions:
+        ax9 = fig.add_subplot(gs[5, 8])
+
+    ax10 = fig.add_subplot(gs[6:10, 6:10])
+
     metadata = dict(title='Movie Test', artist='Matplotlib',
                 comment='Movie support!')
     writer = FFMpegWriter(fps=15, metadata=metadata, codec='mpeg4', bitrate=1000000)
 
-    board = DrawingBoard(env_variables["width"], env_variables["height"], data, include_background)
+    board = DrawingBoard(env_variables["arena_width"],
+                         env_variables["arena_height"],
+                         data,
+                         include_sediment)
     if show_energy_state:
         energy_levels = data["energy_state"]
     fish_positions = data["fish_position"]
@@ -314,31 +318,43 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
     #     else:
     #         addon = 0
                 
-    #     frames = np.zeros((num_steps, np.int(env_variables["height"]*scale), np.int((env_variables["width"]+addon)*scale), 3))
-    with writer.saving(fig, f"{save_location}.mp4", 300):
+    #     frames = np.zeros((num_steps, np.int(env_variables["height"]*scale), np.int((env_variables["arena_width"]+addon)*scale), 3))
+    obs_len = data['observation'].shape[1]
+    obs_atom = env_variables['visual_field'] / obs_len
+    remaining = 360 - env_variables['visual_field']
+    pie_sizes = np.ones(obs_len) * obs_atom
+    pie_sizes = np.append(pie_sizes, remaining)
 
-        for step in range(num_steps):
+    with writer.saving(fig, f"{save_location}.mp4", 500):
+
+        for step in range(min(num_steps, max_steps)):
             if "Training-Output" not in save_location:
                 print(f"{step}/{num_steps}")
             if continuous_actions:
                 action_buffer.append([data["impulse"][step], data["angle"][step]])
             else:
                 action_buffer.append(data["action"][step])
+                bins = np.arange(0, np.max(action_buffer)+1.5) - 0.5
+                actions = np.arange(0, np.max(action_buffer)+1)
+
+                action_hist = np.histogram(action_buffer, bins)[0]
+                actions = actions[action_hist > 0]
+                action_hist = action_hist[action_hist > 0]
             position_buffer.append(fish_positions[step])
             orientation_buffer.append(data["fish_angle"][step])
             consumption_buffer.append(data["consumed"][step])
 
             if draw_past_actions:
-                # adjusted_colour_index = ((1 - env_variables["bkg_scatter"]) * (step + 1) / n_actions_to_show) + \
-                #                         env_variables["bkg_scatter"]
-                # adjusted_colour_index = (1 - env_variables["bkg_scatter"]) + env_variables["bkg_scatter"]
+                # adjusted_colour_index = ((1 - env_variables["background_brightness"]) * (step + 1) / n_actions_to_show) + \
+                #                         env_variables["background_brightness"]
+                # adjusted_colour_index = (1 - env_variables["background_brightness"]) + env_variables["background_brightness"]
                 adjusted_colour_index = 1
                 board, action_buffer, position_buffer, orientation_buffer = draw_previous_actions(board, action_buffer,
                                                                                                   position_buffer, orientation_buffer,
                                                                                                   adjusted_colour_index=adjusted_colour_index,
                                                                                                   continuous_actions=continuous_actions,
                                                                                                   n_actions_to_show=n_actions_to_show,
-                                                                                                  bkg_scatter=env_variables["bkg_scatter"],
+                                                                                                  background_brightness=env_variables["background_brightness"],
                                                                                                   consumption_buffer=consumption_buffer)
 
 
@@ -348,34 +364,38 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             else:
                 fish_body_colour = (0, 1, 0)
 
-            board.fish_shape(fish_positions[step], env_variables['fish_mouth_size'],
-                                env_variables['fish_head_size'], env_variables['fish_tail_length'],
+            board.fish_shape(fish_positions[step], env_variables['fish_mouth_radius'],
+                                env_variables['fish_head_radius'], env_variables['fish_tail_length'],
                             (0, 1, 0), fish_body_colour, data["fish_angle"][step])
 
             # Draw prey
             px = np.round(np.array([pr[0] for pr in data["prey_positions"][step]])).astype(int)
             py = np.round(np.array([pr[1] for pr in data["prey_positions"][step]])).astype(int)
-            rrs, ccs = board.multi_circles(px, py, env_variables["prey_size_visualisation"])
+            rrs, ccs = board.multi_circles(px, py, env_variables["prey_radius_visualisation"])
 
-            rrs = np.clip(rrs, 0, env_variables["width"]-1)
-            ccs = np.clip(ccs, 0, env_variables["height"]-1)
+            rrs = np.clip(rrs, 0, env_variables["arena_width"]-1)
+            ccs = np.clip(ccs, 0, env_variables["arena_height"]-1)
 
             board.db[rrs, ccs] = (0, 0, 1)
 
             # Draw sand grains
             if env_variables["sand_grain_num"] > 0:
-                px = np.round(np.array([pr.position[0] for pr in data["sand_grain_positions"]])).astype(int)
-                py = np.round(np.array([pr.position[1] for pr in data["sand_grain_positions"]])).astype(int)
-                rrs, ccs = board.multi_circles(px, py, env_variables["prey_size_visualisation"])
+                px = np.round(np.array([pr[0] for pr in data["sand_grain_positions"][step]])).astype(int)
+                py = np.round(np.array([pr[1] for pr in data["sand_grain_positions"][step]])).astype(int)
+                rrs, ccs = board.multi_circles(px, py, env_variables["prey_radius_visualisation"])
 
-                rrs = np.clip(rrs, 0, env_variables["width"] - 1)
-                ccs = np.clip(ccs, 0, env_variables["height"] - 1)
+                rrs = np.clip(rrs, 0, env_variables["arena_width"] - 1)
+                ccs = np.clip(ccs, 0, env_variables["arena_height"] - 1)
 
-                board.db_visualisation[rrs, ccs] = (0, 0, 1)
+                board.db[rrs, ccs] = (0, 1, 1)
 
 
             if data["predator_presence"][step]:
-                board.circle(data["predator_positions"][step], env_variables['predator_size'], (0, 1, 0))
+                board.circle(data["predator_positions"][step], env_variables['predator_radius'], (0, 1, 0))
+
+            if show_salt_location:
+                board.circle(data["salt_location"], 20, (1, 0, 1))
+
 
             # if draw_action_space_usage:
             #     if continuous_actions:
@@ -391,9 +411,9 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
                 centre_y, centre_x = fish_positions[step][0], fish_positions[step][1]
                 # print(centre_x, centre_y)
                 dist_x1 = centre_x
-                dist_x2 = env_variables["width"] - centre_x
+                dist_x2 = env_variables["arena_width"] - centre_x
                 dist_y1 = centre_y
-                dist_y2 = env_variables["height"] - centre_y
+                dist_y2 = env_variables["arena_height"] - centre_y
                 # print(dist_x1, dist_x2, dist_y1, dist_y2)
                 if dist_x1 < showed_region_quad:
                     centre_x += showed_region_quad - dist_x1
@@ -411,7 +431,7 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
 
             this_frame = rescale(frame, scale, multichannel=True, anti_aliasing=True)
             ax0.clear()
-            ax0.imshow(this_frame, interpolation='nearest', aspect='auto')
+            ax0.imshow(np.clip(this_frame, 0, 1), interpolation='nearest', aspect='auto')
             ax0.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
 
@@ -420,40 +440,111 @@ def draw_episode(data, env_variables, save_location, continuous_actions, draw_pa
             right_obs = data['observation'][step, :, :, 1].T
             ax1.clear()
             ax2.clear()
-            ax1.imshow(left_obs, interpolation='nearest', aspect='auto', vmin=1, vmax=256)
+            ax1.imshow(np.clip(left_obs, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
             ax1.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
-            ax2.imshow(right_obs, interpolation='nearest', aspect='auto', vmin=1, vmax=256)
+            ax2.imshow(np.clip(right_obs, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
             ax2.tick_params(left = False, right = False , labelleft = False ,
                     labelbottom = False, bottom = False)
 
+            # left_obs_c = data['observation_classic'][step, :, :, 0].T
+            #
+            # right_obs_c = data['observation_classic'][step, :, :, 1].T
+            # ax11.clear()
+            # ax22.clear()
+            # ax11.imshow(np.clip(left_obs_c, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
+            # ax11.tick_params(left = False, right = False , labelleft = False ,
+            #         labelbottom = False, bottom = False)
+            # ax22.imshow(np.clip(right_obs_c, 0, 255), interpolation='nearest', aspect='auto', vmin=1, vmax=256)
+            # ax22.tick_params(left = False, right = False , labelleft = False ,
+            #         labelbottom = False, bottom = False)
+
+            ax10.clear()
+
+            left_eye_pos = (+np.cos(np.pi / 2 - data["fish_angle"][step]) * env_variables['eyes_biasx']*0.05,
+                            +np.sin(np.pi / 2 - data["fish_angle"][step]) * env_variables['eyes_biasx']*0.05)
+            right_eye_pos = (-np.cos(np.pi / 2 - data["fish_angle"][step]) * env_variables['eyes_biasx']*0.05,
+                             -np.sin(np.pi / 2 - data["fish_angle"][step]) * env_variables['eyes_biasx']*0.05)
+
+            rad_div = 5
+            left_eye_start_angle = +env_variables['visual_field']/2 + 90 - env_variables['eyes_verg_angle'] / 2 - np.rad2deg(data["fish_angle"][step])
+            left_eye_start_angle = left_eye_start_angle % 360
+            alphas = np.clip(left_obs, 0, 255) / 255
+            colors = np.zeros(alphas.shape)
+            colors = np.concatenate((colors, np.ones((3, 1))), axis=1)
+            alphas = np.concatenate((alphas, np.zeros((3, 1))), axis=1)
+            colors_red = np.array([1-colors[0,:], colors[0,:], colors[0,:], alphas[0,:]]).T
+            colors_uv = np.array([1-colors[1,:], colors[1,:], 1-colors[1,:], alphas[1,:]]).T
+            colors_red2 = np.array([1-colors[2,:], colors[2,:], colors[2,:], alphas[2,:]]).T
+            ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=2.5/rad_div, colors=colors_uv, wedgeprops={"edgecolor": None, "width": 2.4/rad_div}, center = left_eye_pos)
+            ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=3.0/rad_div, colors=colors_red, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = left_eye_pos)
+            ax10.pie(pie_sizes, startangle=left_eye_start_angle, counterclock=False, radius=3.5/rad_div, colors=colors_red2, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = left_eye_pos)
+            
+            right_eye_start_angle = +env_variables['visual_field']/2 - 90 + env_variables['eyes_verg_angle'] / 2 - np.rad2deg(data["fish_angle"][step])
+            right_eye_start_angle = right_eye_start_angle % 360
+
+            alphas = np.clip(right_obs, 0, 255) / 255
+            colors = np.zeros(alphas.shape)
+            colors = np.concatenate((colors, np.ones((3, 1))), axis=1)
+            alphas = np.concatenate((alphas, np.zeros((3, 1))), axis=1)
+            colors_red = np.array([1-colors[0,:], colors[0,:], colors[0,:], alphas[0,:]]).T
+            colors_uv = np.array([1-colors[1,:], colors[1,:], 1-colors[1,:], alphas[1,:]]).T
+            colors_red2 = np.array([1-colors[2,:], colors[2,:], colors[2,:], alphas[2,:]]).T
+            ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=2.5/rad_div, colors=colors_uv, wedgeprops={"edgecolor": None, "width": 2.4/rad_div}, center = right_eye_pos)
+            ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=3.0/rad_div, colors=colors_red, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = right_eye_pos)
+            ax10.pie(pie_sizes, startangle=right_eye_start_angle, counterclock=False, radius=3.5/rad_div, colors=colors_red2, wedgeprops={"edgecolor": None, "width": 0.5/rad_div}, center = right_eye_pos)
+
+            ax10.set_xlim(-1, 1)
+            ax10.set_ylim(-1, 1)
+
             plot_start = max(0, step - 100)
-            # ax3.clear()
-            # ax3.plot(energy_levels[plot_start:step], color='green')
-            # ax3.tick_params(left = False, right = False , labelleft = False ,
-            #         labelbottom = False, bottom = False)
-            # ax4.clear()
-            # ax4.plot(data['rnn_state_actor'][plot_start:step, 0, :10])
-            # ax4.tick_params(left = False, right = False , labelleft = False ,
-            #         labelbottom = False, bottom = False)
-            # ax5.clear()
-            # ax5.plot(data['rnn_state_actor'][plot_start:step, 0, 10:20])
-            # ax5.tick_params(left = False, right = False , labelleft = False ,
-            #         labelbottom = False, bottom = False)
-            # ax6.clear()
-            # ax6.plot(data['rnn_state_actor'][plot_start:step, 0, 20:30])
-            # ax6.tick_params(left = False, right = False , labelleft = False ,
-            #         labelbottom = False, bottom = False)
-            # ax7.clear()
-            # ax7.plot(data['rnn_state_actor'][plot_start:step, 0, 30:40])
-            # ax7.tick_params(left=False, right=False , labelleft=False, labelbottom=False, bottom=False)
+            ax3.clear()
+            if show_energy_state:
+                ax3.plot(energy_levels[plot_start:step], color='green', linewidth=0.5)
+                ax3.tick_params(left = False, right = False , labelleft = False ,
+                    labelbottom = False, bottom = False)
+            ax4.clear()
+            ax4.plot(data['rnn_state'][plot_start:step, 0, :10], linewidth=0.5)
+            ax4.tick_params(left = False, right = False , labelleft = False ,
+                    labelbottom = False, bottom = False)
+            ax5.clear()
+            ax5.plot(data['rnn_state'][plot_start:step, 0, 10:20], linewidth=0.5)
+            ax5.tick_params(left = False, right = False , labelleft = False ,
+                    labelbottom = False, bottom = False)
+            ax6.clear()
+            ax6.plot(data['rnn_state'][plot_start:step, 0, 20:30], linewidth=0.5)
+            ax6.tick_params(left = False, right = False , labelleft = False ,
+                    labelbottom = False, bottom = False)
+            ax7.clear()
+            ax7.plot(data['rnn_state'][plot_start:step, 0, 30:40], linewidth=0.5)
+            ax7.tick_params(left=False, right=False , labelleft=False, labelbottom=False, bottom=False)
+
+            if continuous_actions:
+                ab = np.array(action_buffer)
+
+                ax8.clear()
+                ax8.hist(ab[:, 0], bins=20)
+                ax8.tick_params(axis='both', which='major', labelsize=3, length=1, width=0.1)
+                for _, spine in ax8.spines.items():
+                    spine.set_linewidth(0.1)
+
+                ax9.clear()
+                ax9.hist(ab[:, 1], bins=20)
+                ax9.tick_params(axis='both', which='major', labelsize=3, length=1, width=0.1)
+                for _, spine in ax9.spines.items():
+                    spine.set_linewidth(0.1)
+
+            else:
+
+                ax8.clear()
+                ax8.pie(action_hist, labels=actions, textprops={'fontsize': 2})
+
             #plt.draw()
             #plt.pause(0.001)
             board.db = board.get_base_arena(0.3)
             writer.grab_frame()
 
             board.db = board.get_base_arena(0.3)
-
     #frames *= 255
 
     #if training_episode:
@@ -479,7 +570,8 @@ if __name__ == "__main__":
     # draw_episode(data, assay_config_name, model_name, continuous_actions=True, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="A15")
     # model_name = "dqn_scaffold_14-1"
-    # data = load_data(model_name, "Interruptions-HA", "Naturalistic-3")
+    data = load_data("dqn_salt_reward_function-1", "Episode 200", "Episode 200", training_data=True)
+    data2 = load_data("ppo_proj-1", "Episode 100", "Episode 100", training_data=True)
     # assay_config_name = "dqn_14_1"
     # draw_episode(data, assay_config_name, model_name, continuous_actions=False, show_energy_state=False,
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-3")
@@ -491,10 +583,9 @@ if __name__ == "__main__":
     #              trim_to_fish=True, showed_region_quad=750, save_id="Interrupted-5")
     # data_file = sys.argv[1]
     # config_file = sys.argv[2]
-
-    data_file = "../../Assay-Output/dqn_gamma-4/Behavioural-Data-Free-C.h5"
-    config_file = f"../../Configurations/Assay-Configs/dqn_gamma_final_env.json"
-    data = load_data("dqn_gamma-4", "Behavioural-Data-Free-C", "Naturalistic-14", training_data=False)
+    #data_file = "../../Assay-Output/dqn_gamma-1/Behavioural-Data-Empty.h5"
+    config_file = f"../../Configurations/Training-Configs/dqn_0/1_env.json"
+    data["observation"] = data2["observation"]
 
     with open(config_file, 'r') as f:
         env_variables = json.load(f)
@@ -504,8 +595,9 @@ if __name__ == "__main__":
     #     for key in datfl[group].keys():
     #         data[key] = np.array(datfl[group][key])
 
-    draw_episode(data, env_variables, 'new-test', continuous_actions=False, show_energy_state=True,
-                 trim_to_fish=True, showed_region_quad=500, include_background=True)
+    draw_episode(data, env_variables, 'salt avoidance 27.4 2', continuous_actions=False, show_energy_state=False,
+                 trim_to_fish=False, showed_region_quad=500, include_sediment=False, scale=0.4, max_steps=300,
+                 show_salt_location=True)
 
 
 

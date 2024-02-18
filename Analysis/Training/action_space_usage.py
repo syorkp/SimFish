@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import multivariate_normal
@@ -16,7 +18,7 @@ For creation of displays of action space usage across training.
 
 
 def get_impulse_angle_space_usage(impulses, angles, dqn, max_impulse, max_angle):
-    res = 100    # TODO: Determine bin width as function of sample number
+    res = 200
     angles = np.absolute(angles)
 
     impulse_lim = [0, 45]
@@ -77,12 +79,15 @@ def get_impulse_angle_space_usage(impulses, angles, dqn, max_impulse, max_angle)
             max_angle_index = find_nearest(angle_range, max_angle)
             heatmap_array[max_angle_index+1:, :] *= 0
 
+    original_whitespace = copy.copy(heatmap_array)
 
     # Overlay action choices in colours in heatmap
     nearest_i = np.array([find_nearest(impulse_range, i) for i in impulses])
     nearest_a = np.array([find_nearest(angle_range, a) for a in angles])
 
     heatmap_array[nearest_a, nearest_i] = np.array([1.0, 0, 0])
+
+    heatmap_array *= original_whitespace
 
     heatmap_array = np.flip(heatmap_array, axis=0)
 
@@ -198,25 +203,27 @@ def display_binned_action_space_usage_multiple_trials(model_name, assay_config, 
 
 if __name__ == "__main__":
     # Impulse angle space DQN
-    display_impulse_angle_space_usage_multiple_trials("dqn_gamma-4", "Behavioural-Data-Free", "Naturalistic", 100,
-                                                      "dqn_gamma_4", dqn=True)
+    # display_impulse_angle_space_usage_multiple_trials("dqn_gamma-3", "Behavioural-Data-Free-A", "Naturalistic", 100,
+    #                                                   "dqn_gamma_3-A", dqn=True)
+    # display_impulse_angle_space_usage_multiple_trials("dqn_gamma-5", "Behavioural-Data-Free-A", "Naturalistic", 100,
+    #                                                   "dqn_gamma_5-A", dqn=True)
 
     # Bout usage single trial
     # display_binned_action_space_usage_multiple_trials("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic", 100,
     #                                                   "dqn_gamma_1")
 
     # Bout usage multiple trials
-    # display_binned_action_space_usage_comparison(["dqn_gamma-1", "dqn_gamma-2", "dqn_gamma-4", "dqn_gamma-5"], "Behavioural-Data-Free",
+    # display_binned_action_space_usage_comparison(["dqn_gamma-1", "dqn_gamma-3", "dqn_gamma-4", "dqn_gamma-5"], "Behavioural-Data-Free",
     #                                              "Naturalistic", 100, "dqn_gamma")
 
-    # d1 = load_data("dqn_gamma-1", "Behavioural-Data-Free", "Naturalistic-1")
-    # d2 = load_data("dqn_beta-1", "Behavioural-Data-Free", "Naturalistic-1")
-    # display_impulse_angle_space_usage_comparison(impulses_1=d1["impulse"],
-    #                                              angles_1=d1["angle"],
-    #                                              impulses_2=d2["efference_copy"][:, 0, 1],
-    #                                              angles_2=d2["efference_copy"][:, 0, 2],
-    #                                              figure_name="Test",
-    #                                              dqn=True)
+    d1 = load_data("dqn_gamma-4", "Behavioural-Data-Free-A", "Naturalistic-1")
+    d2 = load_data("dqn_gamma-4", "Behavioural-Data-Free-B", "Naturalistic-1")
+    display_impulse_angle_space_usage_comparison(impulses_1=d1["impulse"],
+                                                 angles_1=d1["angle"],
+                                                 impulses_2=d2["efference_copy"][:, 0, 1],
+                                                 angles_2=d2["efference_copy"][:, 0, 2],
+                                                 figure_name="Test",
+                                                 dqn=True)
 
     # display_impulse_angle_space_usage([d1["impulse"]], [d1["angle"]], "Test")
 

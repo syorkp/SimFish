@@ -1,28 +1,30 @@
 """
-To determine how to adjust scatter mask to incorporate implicit scatter.
+To determine how to adjust scatter mask to incorporate implicit scatter (which is a result of the way the visual system
+works.
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-def get_final_scatter_mask2(i, j, x, y, decay_rate, theta):
+def get_final_scatter_mask2(i, j, x, y, light_decay_rate, theta):
     positional_mask = (((x - i) ** 2 + (y - j) ** 2) ** 0.5)
-    desired_scatter = np.exp(-decay_rate * positional_mask)
+    desired_scatter = np.exp(-light_decay_rate * positional_mask)
     implicit_scatter = np.sin(theta) * positional_mask
     implicit_scatter[implicit_scatter < 1] = 1
     adjusted_scatter = desired_scatter * implicit_scatter
     return adjusted_scatter
 
-def get_final_scatter_mask(i, j, x, y, decay_rate, theta):
-    desired_scatter = np.exp(-decay_rate * (((x - i) ** 2 + (y - j) ** 2) ** 0.5))
+
+def get_final_scatter_mask(i, j, x, y, light_decay_rate, theta):
+    desired_scatter = np.exp(-light_decay_rate * (((x - i) ** 2 + (y - j) ** 2) ** 0.5))
     implicit_scatter = np.sin(theta) * (((x - i) ** 2 + (y - j) ** 2) ** 0.5)
     implicit_scatter[implicit_scatter < 1] = 1
     adjusted_scatter = desired_scatter * implicit_scatter
     return adjusted_scatter
 
-def scatter(i, j, x, y, decay_rate):
-    return np.exp(-decay_rate * (((x - i) ** 2 + (y - j) ** 2) ** 0.5))
+def scatter(i, j, x, y, light_decay_rate):
+    return np.exp(-light_decay_rate * (((x - i) ** 2 + (y - j) ** 2) ** 0.5))
 
 
 def implicit_decay(i, j, x, y, theta):

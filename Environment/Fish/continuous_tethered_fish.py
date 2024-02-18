@@ -1,21 +1,14 @@
-from Environment.Fish.fish import Fish
+from Environment.Fish.continuous_fish import ContinuousFish
 
 
-class ContinuousTetheredFish(Fish):
+class ContinuousTetheredFish(ContinuousFish):
 
     """
     Same as normal fish, though overwrites any movement consequences of action choice.
     """
 
-    def __init__(self, board, env_variables, dark_col, realistic_bouts):
-        super().__init__(board, env_variables, dark_col, realistic_bouts)
-
-    def calculate_distance(self, impulse):
-        return (1.771548 * impulse + self.env_variables['fish_mass'] * 0.004644 + 0.081417)/10
+    def __init__(self, board, env_variables, dark_col, using_gpu):
+        super().__init__(board, env_variables, dark_col, using_gpu)
 
     def take_action(self, action):
-        impulse = action[0]
-        angle = action[1]
-        distance = self.calculate_distance(impulse)
-        reward = - self.calculate_action_cost(angle, distance) - self.env_variables['baseline_penalty']
-        return reward
+        return 0

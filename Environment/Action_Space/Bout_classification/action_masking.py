@@ -1,24 +1,19 @@
 import copy
 import numpy as np
 import scipy.io
-from scipy import stats
 import matplotlib.pyplot as plt
 from sklearn.neighbors import KernelDensity
-from scipy.interpolate import griddata
-import matplotlib
-import h5py
 from scipy.stats import multivariate_normal
 
 # import tensorflow.compat.v1 as tf
 # import tensorflow_probability as tfp
 from sklearn.cluster import DBSCAN
 import statsmodels.api as sm
-import seaborn as sns
 import scipy.stats as st
 
 from Analysis.Training.tools import find_nearest
-from Environment.Action_Space.draw_angle_dist import convert_action_to_bout_id
-from Environment.Action_Space.final_bout_creation import get_bout_data
+from Analysis.Calibration.ActionSpace.draw_angle_dist_old import convert_action_to_bout_id
+from Analysis.Calibration.ActionSpace.final_bout_creation import get_bout_data
 
 # tf.disable_v2_behavior()
 
